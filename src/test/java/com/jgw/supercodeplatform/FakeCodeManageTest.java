@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 
 @RunWith(SpringJUnit4ClassRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
-@SpringBootTest(classes = SuperCodeManagerApplication.class) // 指定我们SpringBoot工程的Application启动类
+@SpringBootTest(classes = SuperCodeMarketingApplication.class) // 指定我们SpringBoot工程的Application启动类
 public class FakeCodeManageTest {
 	
 	/**

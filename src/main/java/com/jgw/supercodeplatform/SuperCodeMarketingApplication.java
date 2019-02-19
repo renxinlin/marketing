@@ -11,10 +11,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableEurekaClient
 @EnableAsync//允许异步
 @EnableScheduling
-public class SuperCodeManagerApplication {
+public class SuperCodeMarketingApplication {
 	
     public static void main(String[] args) {
-        SpringApplication.run(SuperCodeManagerApplication.class, args);
+        SpringApplication.run(SuperCodeMarketingApplication.class, args);
     }
 
 }
