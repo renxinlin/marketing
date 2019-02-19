@@ -1,0 +1,30 @@
+server: 
+  port: 10086
+  tomcat:
+    max-threads: 3000
+    min-spare-threads: 100
+    max-connections: 3000
+    
+spring: 
+  servlet:
+    multipart:
+      max-file-size: 100Mb
+  http: 
+    multipart:
+      max-request-size: 100Mb
+  application: 
+    name: platform-codemanager-supercode
+  cloud: 
+    config:
+      uri: http://192.168.2.216:7001
+      profile: dev
+      label: code
+     
+eureka: 
+  instance:
+    prefer-ip-address: true
+    non-secure-port: ${server.port}
+  client:
+    service-url: 
+      defaultZone:  /eureka/,http://192.168.2.216:8762/eureka/
+
