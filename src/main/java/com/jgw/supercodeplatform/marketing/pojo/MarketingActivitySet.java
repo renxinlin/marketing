@@ -8,8 +8,6 @@ public class MarketingActivitySet {
     private String activityTitle;//活动标题
     private String activityStartDate;//活动开始时间
     private String activityEndDate;//活动结束时间
-    private int activityProductId;//活动产品Id
-    private String activityProductName;//活动产品名称
     private String updateUserId;//更新用户Id
     private String updateUserName;//更新用户名称
     private String updateDate;//更新时间
@@ -21,15 +19,13 @@ public class MarketingActivitySet {
     public MarketingActivitySet() {
     }
 
-    public MarketingActivitySet(int activityId, String organizationId, String organizatioIdlName, String activityTitle, String activityStartDate, String activityEndDate, int activityProductId, String activityProductName, String updateUserId, String updateUserName, String updateDate, String activityStatus, int eachDayNumber, int eachMostNumber, String activityRangeMark) {
+    public MarketingActivitySet(int activityId, String organizationId, String organizatioIdlName, String activityTitle, String activityStartDate, String activityEndDate, String updateUserId, String updateUserName, String updateDate, String activityStatus, int eachDayNumber, int eachMostNumber, String activityRangeMark) {
         this.activityId = activityId;
         this.organizationId = organizationId;
         this.organizatioIdlName = organizatioIdlName;
         this.activityTitle = activityTitle;
         this.activityStartDate = activityStartDate;
         this.activityEndDate = activityEndDate;
-        this.activityProductId = activityProductId;
-        this.activityProductName = activityProductName;
         this.updateUserId = updateUserId;
         this.updateUserName = updateUserName;
         this.updateDate = updateDate;
@@ -85,22 +81,6 @@ public class MarketingActivitySet {
 
     public void setActivityEndDate(String activityEndDate) {
         this.activityEndDate = activityEndDate;
-    }
-
-    public int getActivityProductId() {
-        return activityProductId;
-    }
-
-    public void setActivityProductId(int activityProductId) {
-        this.activityProductId = activityProductId;
-    }
-
-    public String getActivityProductName() {
-        return activityProductName;
-    }
-
-    public void setActivityProductName(String activityProductName) {
-        this.activityProductName = activityProductName;
     }
 
     public String getUpdateUserId() {

@@ -3,24 +3,27 @@ package com.jgw.supercodeplatform.marketing.pojo;
 public class MarketingActivityProduct {
 
     private int id;//Id
-    private int activityId2;//活动Id
+    private int activityId;//活动Id
     private String codeType;//类型
     private String batchId;//批次号
-    private String startCode;//开始号码端
-    private String endCode;//结束号码端
-    private String outCode;//码
+    private int activityProductId;//活动产品Id
+    private String activityProductName;//活动产品名称
+    private String createDate;//建立日期
+    private String UpdateDate;//修改日期
+
 
     public MarketingActivityProduct() {
     }
 
-    public MarketingActivityProduct(int id, int activityId2, String codeType, String batchId, String startCode, String endCode, String outCode) {
+    public MarketingActivityProduct(int id, int activityId, String codeType, String batchId, int activityProductId, String activityProductName, String createDate, String updateDate) {
         this.id = id;
-        this.activityId2 = activityId2;
+        this.activityId = activityId;
         this.codeType = codeType;
         this.batchId = batchId;
-        this.startCode = startCode;
-        this.endCode = endCode;
-        this.outCode = outCode;
+        this.activityProductId = activityProductId;
+        this.activityProductName = activityProductName;
+        this.createDate = createDate;
+        UpdateDate = updateDate;
     }
 
     public int getId() {
@@ -31,12 +34,12 @@ public class MarketingActivityProduct {
         this.id = id;
     }
 
-    public int getActivityId2() {
-        return activityId2;
+    public int getActivityId() {
+        return activityId;
     }
 
-    public void setActivityId2(int activityId2) {
-        this.activityId2 = activityId2;
+    public void setActivityId(int activityId) {
+        this.activityId = activityId;
     }
 
     public String getCodeType() {
@@ -55,27 +58,35 @@ public class MarketingActivityProduct {
         this.batchId = batchId;
     }
 
-    public String getStartCode() {
-        return startCode;
+    public int getActivityProductId() {
+        return activityProductId;
     }
 
-    public void setStartCode(String startCode) {
-        this.startCode = startCode;
+    public void setActivityProductId(int activityProductId) {
+        this.activityProductId = activityProductId;
     }
 
-    public String getEndCode() {
-        return endCode;
+    public String getActivityProductName() {
+        return activityProductName;
     }
 
-    public void setEndCode(String endCode) {
-        this.endCode = endCode;
+    public void setActivityProductName(String activityProductName) {
+        this.activityProductName = activityProductName;
     }
 
-    public String getOutCode() {
-        return outCode;
+    public String getCreateDate() {
+        return createDate;
     }
 
-    public void setOutCode(String outCode) {
-        this.outCode = outCode;
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getUpdateDate() {
+        return UpdateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        UpdateDate = updateDate;
     }
 }
