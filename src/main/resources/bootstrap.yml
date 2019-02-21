@@ -1,5 +1,5 @@
 server: 
-  port: 10086
+  port: 9071
   tomcat:
     max-threads: 3000
     min-spare-threads: 100
@@ -13,7 +13,7 @@ spring:
     multipart:
       max-request-size: 100Mb
   application: 
-    name: platform-marketing-supercode-test
+    name: platform-marketing-supercode
   cloud: 
     config:
       uri: http://192.168.2.216:7001

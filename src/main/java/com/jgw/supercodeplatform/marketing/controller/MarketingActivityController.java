@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/marketing/members")
-public class MarketingMembersController {
+@RequestMapping("/marketing/activity")
+public class MarketingActivityController {
 
 
     @RequestMapping(value = "",method = RequestMethod.POST)
