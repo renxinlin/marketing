@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.exception.base;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+
 /**
  * 描述：
  * <p>

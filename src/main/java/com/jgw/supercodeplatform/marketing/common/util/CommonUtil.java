@@ -1,22 +1,21 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.marketing.common.page.NormalProperties;
-import com.jgw.supercodeplatform.marketing.common.page.Page;
-import com.jgw.supercodeplatform.marketing.common.page.ReturnParamsMap;
-import com.jgw.supercodeplatform.marketing.exception.SuperCodeException;
-import com.jgw.supercodeplatform.user.UserInfoUtil;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.page.NormalProperties;
+import com.jgw.supercodeplatform.marketing.common.page.Page;
+import com.jgw.supercodeplatform.user.UserInfoUtil;
 
 /**
  * 基础工具类
@@ -68,59 +67,6 @@ public class CommonUtil extends UserInfoUtil {
     }
 
 
-
-
-    /**
-     * 转换page类,并放到入参中
-     *
-     * @param params
-     * @param total
-     * @return
-     * @throws Exception
-     * @author liujianqiang
-     * @data 2018年11月12日
-     */
-    public ReturnParamsMap getPageAndRetuanMap(Map<String, Object> params, Integer total) throws Exception {
-        Map<String, Object> returnMap = new HashMap<String, Object>();
-        Page page = getPage(params, total);
-        params.put("startNumber", page.getStartNumber());//开始数字
-        params.put("pageSize", page.getPageSize());//每页记录数
-        ReturnParamsMap returnParamsMap = new ReturnParamsMap();
-        returnMap.put("pagination", page);
-        returnParamsMap.setParamsMap(params);
-        returnParamsMap.setReturnMap(returnMap);
-        return returnParamsMap;
-    }
-
-    /**
-     * 根据入参和总记录数，返回页码实体类
-     *
-     * @param params
-     * @param total
-     * @return
-     * @throws Exception
-     * @author liujianqiang
-     * @data 2018年10月11日
-     */
-    public Page getPage(Map<String, Object> params, int total) throws Exception {
-        Object pageCountObj = params.get("pageSize");//每页记录数
-        Object currentPageObj = params.get("current");//当前页
-        int pageCount;
-        int currentPage;
-        if (isNull(pageCountObj) || Integer.parseInt(pageCountObj.toString()) == 0) {//假如每页记录数为空,默认为10条
-            pageCount = NormalProperties.DEFAULT_PAGE_COUNT;
-        } else {
-            pageCount = Integer.parseInt(pageCountObj.toString());
-        }
-        if (isNull(currentPageObj) || Integer.parseInt(currentPageObj.toString()) == 0) {//假如当前页为空,则当前页设置为默认值1
-            currentPage = NormalProperties.DEFAULT_CURRENT_PAGE;
-        } else {
-            currentPage = Integer.parseInt(currentPageObj.toString());
-        }
-        return new Page(pageCount, currentPage, total);
-    }
-
-
     /**
      * 验证参数是否为空,为空返回true
      *
@@ -137,6 +83,33 @@ public class CommonUtil extends UserInfoUtil {
         }
     }
 
+    /**
+     * 根据入参和总记录数，返回页码实体类
+     * @param params
+     * @param total
+     * @return
+     * @throws Exception
+     * @author liujianqiang
+     * @data 2018年10月11日
+     */
+    public Page getPage(Map<String, Object> params, int total) throws SuperCodeException {
+        Object pageCountObj = params.get("pageSize");//每页记录数
+        Object currentPageObj = params.get("current");//当前页
+        int pageCount;
+        int currentPage;
+        if (isNull(pageCountObj) || Integer.parseInt(pageCountObj.toString()) == 0) {//假如每页记录数为空,默认为10条
+            pageCount = NormalProperties.DEFAULT_PAGE_COUNT;
+        } else {
+            pageCount = Integer.parseInt(pageCountObj.toString());
+        }
+        if (isNull(currentPageObj) || Integer.parseInt(currentPageObj.toString()) == 0) {//假如当前页为空,则当前页设置为默认值1
+            currentPage = NormalProperties.DEFAULT_CURRENT_PAGE;
+        } else {
+            currentPage = Integer.parseInt(currentPageObj.toString());
+        }
+        return new Page(pageCount, currentPage, total);
+    }
+    
     /**
      * 统一返回结果list字段名
      *

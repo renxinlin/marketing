@@ -2,7 +2,7 @@ package com.jgw.supercodeplatform.marketing.pojo;
 
 public class MarketingActivitySet {
 
-    private int activityId;//活动Id
+    private int activityId;//活动主键Id
     private String organizationId;//组织Id
     private String organizatioIdlName;//组织
     private String activityTitle;//活动标题
@@ -11,29 +11,12 @@ public class MarketingActivitySet {
     private String updateUserId;//更新用户Id
     private String updateUserName;//更新用户名称
     private String updateDate;//更新时间
-    private String activityStatus;//活动状态(1、表示上架进展，0 表示下架)
+    private Integer activityStatus;//活动状态(1、表示上架进展，0 表示下架)
     private int eachDayNumber;//每人每天次数
     private int eachMostNumber;//每人最多获奖次数
-    private String activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 3、仅使用一次 4、自动获取)
-
-    public MarketingActivitySet() {
-    }
-
-    public MarketingActivitySet(int activityId, String organizationId, String organizatioIdlName, String activityTitle, String activityStartDate, String activityEndDate, String updateUserId, String updateUserName, String updateDate, String activityStatus, int eachDayNumber, int eachMostNumber, String activityRangeMark) {
-        this.activityId = activityId;
-        this.organizationId = organizationId;
-        this.organizatioIdlName = organizatioIdlName;
-        this.activityTitle = activityTitle;
-        this.activityStartDate = activityStartDate;
-        this.activityEndDate = activityEndDate;
-        this.updateUserId = updateUserId;
-        this.updateUserName = updateUserName;
-        this.updateDate = updateDate;
-        this.activityStatus = activityStatus;
-        this.eachDayNumber = eachDayNumber;
-        this.eachMostNumber = eachMostNumber;
-        this.activityRangeMark = activityRangeMark;
-    }
+    private Integer activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 3、仅使用一次 4、自动获取)
+    private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
+    private Integer typeId;//在统一编码表里设置的活动类型
 
     public int getActivityId() {
         return activityId;
@@ -107,11 +90,11 @@ public class MarketingActivitySet {
         this.updateDate = updateDate;
     }
 
-    public String getActivityStatus() {
+    public Integer getActivityStatus() {
         return activityStatus;
     }
 
-    public void setActivityStatus(String activityStatus) {
+    public void setActivityStatus(Integer activityStatus) {
         this.activityStatus = activityStatus;
     }
 
@@ -131,11 +114,28 @@ public class MarketingActivitySet {
         this.eachMostNumber = eachMostNumber;
     }
 
-    public String getActivityRangeMark() {
+    public Integer getActivityRangeMark() {
         return activityRangeMark;
     }
 
-    public void setActivityRangeMark(String activityRangeMark) {
+    public void setActivityRangeMark(Integer activityRangeMark) {
         this.activityRangeMark = activityRangeMark;
     }
+
+	public Integer getAutoFetch() {
+		return autoFetch;
+	}
+
+	public void setAutoFetch(Integer autoFetch) {
+		this.autoFetch = autoFetch;
+	}
+
+	public Integer getTypeId() {
+		return typeId;
+	}
+
+	public void setTypeId(Integer typeId) {
+		this.typeId = typeId;
+	}
+    
 }

@@ -8,7 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.jgw.supercodeplatform.marketing.exception.base.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 
 
 /**

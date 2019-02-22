@@ -2,44 +2,41 @@ package com.jgw.supercodeplatform.marketing.pojo;
 
 public class MarketingWxMerchants {
 
-    private String merchantId;//商户Id
-    private String merchantName;//商户名称
+    private String id;
+    private String mchAppid;//商户账号appid
+    private String mchid;//商户号
     private String merchantKey;//商户key
     private String certificateAddress;//证书地址
     private String certificatePassword;//证书密码
     private String organizationId;//组织id
     private String organizatioIdlName;//组织
 
-    public MarketingWxMerchants() {
-    }
 
-    public MarketingWxMerchants(String merchantId, String merchantName, String merchantKey, String certificateAddress, String certificatePassword, String organizationId, String organizatioIdlName) {
-        this.merchantId = merchantId;
-        this.merchantName = merchantName;
-        this.merchantKey = merchantKey;
-        this.certificateAddress = certificateAddress;
-        this.certificatePassword = certificatePassword;
-        this.organizationId = organizationId;
-        this.organizatioIdlName = organizatioIdlName;
-    }
+    public String getId() {
+		return id;
+	}
 
-    public String getMerchantId() {
-        return merchantId;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setMerchantId(String merchantId) {
-        this.merchantId = merchantId;
-    }
+	public String getMchAppid() {
+		return mchAppid;
+	}
 
-    public String getMerchantName() {
-        return merchantName;
-    }
+	public void setMchAppid(String mchAppid) {
+		this.mchAppid = mchAppid;
+	}
 
-    public void setMerchantName(String merchantName) {
-        this.merchantName = merchantName;
-    }
+	public String getMchid() {
+		return mchid;
+	}
 
-    public String getMerchantKey() {
+	public void setMchid(String mchid) {
+		this.mchid = mchid;
+	}
+
+	public String getMerchantKey() {
         return merchantKey;
     }
 

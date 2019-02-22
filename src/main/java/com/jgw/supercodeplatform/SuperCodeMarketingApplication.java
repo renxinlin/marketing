@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class SuperCodeMarketingApplication {
 	
     public static void main(String[] args) {
+    	
         SpringApplication.run(SuperCodeMarketingApplication.class, args);
     }
 

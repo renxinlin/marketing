@@ -1,9 +1,11 @@
 package com.jgw.supercodeplatform.marketing.common.page;
 
+import java.io.Serializable;
+
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.io.Serializable;
 
 /**
  * 分页实体类
@@ -66,9 +68,9 @@ public class Page implements Serializable{
 	 * @return
 	 * @throws Exception
 	 */
-    public Page(int pageSize,int current,int total) throws Exception{
+    public Page(int pageSize,int current,int total) throws SuperCodeException{
     	if(pageSize < 1 || current < 1){
-    		throw new Exception("每页记录数或者当前页的值小于1");
+    		throw new SuperCodeException("每页记录数或者当前页的值小于1");
     	}
     	this.pageSize = pageSize;
     	this.current = current;
