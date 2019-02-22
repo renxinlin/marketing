@@ -3,9 +3,10 @@ package com.jgw.supercodeplatform.marketing.pojo;
 public class MarketingMembers {
 
     private int id;//序号
-    private String wxid;//微信id号
+    private String wxId;//微信id号
+    private String wxName;//微信id号
     private String mobile;//手机
-    private String usrId;//用户Id
+    private String userId;//用户Id
     private String userName;//用户姓名
     private String sex;//性别
     private String birthday;//生日
@@ -22,15 +23,20 @@ public class MarketingMembers {
     private String newRegisterFlag;//是否新注册的标志(1  表示是，0 表示不是)
     private String createDate;//建立日期
     private String updateDate;//修改日期
+    private String stores;//门店或经销商
+    private String storesType;//门店或经销商类型（1表示门店 ，2表示经销商）
+    private String babyBirthday;//宝宝生日
+
 
     public MarketingMembers() {
     }
 
-    public MarketingMembers(int id, String wxid, String mobile, String usrId, String userName, String sex, String birthday, String provinceCode, String countyCode, String cityCode, String provinceName, String countyName, String cityName, String registDate, String state, String organizationId, String organizationFullName, String newRegisterFlag, String createDate, String updateDate) {
+    public MarketingMembers(int id, String wxId, String wxName, String mobile, String userId, String userName, String sex, String birthday, String provinceCode, String countyCode, String cityCode, String provinceName, String countyName, String cityName, String registDate, String state, String organizationId, String organizationFullName, String newRegisterFlag, String createDate, String updateDate, String stores, String storesType, String babyBirthday) {
         this.id = id;
-        this.wxid = wxid;
+        this.wxId = wxId;
+        this.wxName = wxName;
         this.mobile = mobile;
-        this.usrId = usrId;
+        this.userId = userId;
         this.userName = userName;
         this.sex = sex;
         this.birthday = birthday;
@@ -47,6 +53,9 @@ public class MarketingMembers {
         this.newRegisterFlag = newRegisterFlag;
         this.createDate = createDate;
         this.updateDate = updateDate;
+        this.stores = stores;
+        this.storesType = storesType;
+        this.babyBirthday = babyBirthday;
     }
 
     public int getId() {
@@ -57,12 +66,12 @@ public class MarketingMembers {
         this.id = id;
     }
 
-    public String getWxid() {
-        return wxid;
+    public String getWxId() {
+        return wxId;
     }
 
-    public void setWxid(String wxid) {
-        this.wxid = wxid;
+    public void setWxId(String wxId) {
+        this.wxId = wxId;
     }
 
     public String getMobile() {
@@ -71,14 +80,6 @@ public class MarketingMembers {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
-    }
-
-    public String getUsrId() {
-        return usrId;
-    }
-
-    public void setUsrId(String usrId) {
-        this.usrId = usrId;
     }
 
     public String getUserName() {
@@ -207,5 +208,45 @@ public class MarketingMembers {
 
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getWxName() {
+        return wxName;
+    }
+
+    public void setWxName(String wxName) {
+        this.wxName = wxName;
+    }
+
+    public String getStores() {
+        return stores;
+    }
+
+    public void setStores(String stores) {
+        this.stores = stores;
+    }
+
+    public String getStoresType() {
+        return storesType;
+    }
+
+    public void setStoresType(String storesType) {
+        this.storesType = storesType;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getBabyBirthday() {
+        return babyBirthday;
+    }
+
+    public void setBabyBirthday(String babyBirthday) {
+        this.babyBirthday = babyBirthday;
     }
 }

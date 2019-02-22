@@ -4,17 +4,17 @@ public class MarketingOrganizationPortrait {
 
     private int id;//序列
     private String organizationId;//组织Id
-    private String organizatioIdlName;//组织
+    private String organizationFullName;//组织
     private String portraitCode;//画像编码
     private String portraitName;//画像名称
 
     public MarketingOrganizationPortrait() {
     }
 
-    public MarketingOrganizationPortrait(int id, String organizationId, String organizatioIdlName, String portraitCode, String portraitName) {
+    public MarketingOrganizationPortrait(int id, String organizationId, String organizationFullName, String portraitCode, String portraitName) {
         this.id = id;
         this.organizationId = organizationId;
-        this.organizatioIdlName = organizatioIdlName;
+        this.organizationFullName = organizationFullName;
         this.portraitCode = portraitCode;
         this.portraitName = portraitName;
     }
@@ -35,14 +35,6 @@ public class MarketingOrganizationPortrait {
         this.organizationId = organizationId;
     }
 
-    public String getOrganizatioIdlName() {
-        return organizatioIdlName;
-    }
-
-    public void setOrganizatioIdlName(String organizatioIdlName) {
-        this.organizatioIdlName = organizatioIdlName;
-    }
-
     public String getPortraitCode() {
         return portraitCode;
     }
@@ -57,5 +49,13 @@ public class MarketingOrganizationPortrait {
 
     public void setPortraitName(String portraitName) {
         this.portraitName = portraitName;
+    }
+
+    public String getOrganizationFullName() {
+        return organizationFullName;
+    }
+
+    public void setOrganizationFullName(String organizationFullName) {
+        this.organizationFullName = organizationFullName;
     }
 }
