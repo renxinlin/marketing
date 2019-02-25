@@ -5,7 +5,7 @@ import java.util.List;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "活动model")
+@ApiModel(value = "活动创建model")
 public class MarketingActivityParam {
 	
 	@ApiModelProperty(value = "活动id")

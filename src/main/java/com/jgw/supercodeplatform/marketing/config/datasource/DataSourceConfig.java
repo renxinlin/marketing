@@ -23,7 +23,7 @@ import javax.sql.DataSource;
  * @date 2017年12月13日
  */
 @Configuration
-@MapperScan(basePackages = "com.jgw.supercodeplatform.fake.dao.dao",sqlSessionFactoryRef="sqlSessionFactory")
+@MapperScan(basePackages = "com.jgw.supercodeplatform.marketing.dao",sqlSessionFactoryRef="sqlSessionFactory")
 public class DataSourceConfig {
 	
 	@Autowired

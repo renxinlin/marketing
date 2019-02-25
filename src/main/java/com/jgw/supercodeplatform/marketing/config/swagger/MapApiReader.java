@@ -17,7 +17,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.ParameterBuilderPlugin;
 import springfox.documentation.spi.service.contexts.ParameterContext;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Component
@@ -25,8 +24,7 @@ import java.util.Map;
 public class MapApiReader implements ParameterBuilderPlugin {
     @Autowired
     private TypeResolver typeResolver;
-    
-    private static Map<String, Class> apiNames=new HashMap<String, Class>();
+
     @Override
     public void apply(ParameterContext parameterContext) {
         ResolvedMethodParameter methodParameter = parameterContext.resolvedMethodParameter();
@@ -55,10 +53,6 @@ public class MapApiReader implements ParameterBuilderPlugin {
      */
     private Class createRefModel(ApiJsonProperty[] propertys, String name) {
         ClassPool pool = ClassPool.getDefault();
-        Class flag=apiNames.get(name);
-        if (null!=flag) {
-			return flag;
-		}
         CtClass ctClass = pool.makeClass(basePackage + name);
 
         try {
@@ -68,7 +62,6 @@ public class MapApiReader implements ParameterBuilderPlugin {
             if(ctClass.isFrozen()){
                 ctClass.defrost();
             }
-            apiNames.put(name, ctClass.toClass());
             return ctClass.toClass();
         } catch (Exception e) {
             e.printStackTrace();

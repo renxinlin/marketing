@@ -25,21 +25,45 @@ public class Swagger2Config {
     @Value("${swagger2.enable}") private boolean enable;
 
     
-    @Bean("防伪模块")
-    public Docket orgApis() {
+    @Bean("营销用户模块")
+    public Docket userApis() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("防伪模块")
+                .groupName("用户模块")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.fake.controller.relation"))
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.user"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo())
                 .enable(enable);
     }
 
+    @Bean("营销活动模块")
+    public Docket actApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("活动模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.activity"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+    
+    @Bean("营销微信模块")
+    public Docket weixApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("微信模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.wechat"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+    
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("新超级码系统平台接口文档")
+                .title("新超级码系统平台营销系统接口文档")
                 .description("")
                 .termsOfServiceUrl("")
                 .version("0.1")
