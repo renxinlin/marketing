@@ -2,45 +2,16 @@ package com.jgw.supercodeplatform.marketing.pojo;
 
 public class MarketingActivityProduct {
 
-    private int id;//Id
-    private int activityId;//活动Id
+    private Long id;//Id
+    private Long activitySetId;//活动设置主键Id
     private String codeType;//类型
-    private String batchId;//批次号
-    private int activityProductId;//活动产品Id
-    private String activityProductName;//活动产品名称
+    private String productBatchId;//批次号
+    private String productBatchName;//产品批次名称
+    private String productId;//活动产品Id
+    private String productName;//活动产品名称
     private String createDate;//建立日期
     private String UpdateDate;//修改日期
-
-
-    public MarketingActivityProduct() {
-    }
-
-    public MarketingActivityProduct(int id, int activityId, String codeType, String batchId, int activityProductId, String activityProductName, String createDate, String updateDate) {
-        this.id = id;
-        this.activityId = activityId;
-        this.codeType = codeType;
-        this.batchId = batchId;
-        this.activityProductId = activityProductId;
-        this.activityProductName = activityProductName;
-        this.createDate = createDate;
-        UpdateDate = updateDate;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getActivityId() {
-        return activityId;
-    }
-
-    public void setActivityId(int activityId) {
-        this.activityId = activityId;
-    }
+    
 
     public String getCodeType() {
         return codeType;
@@ -50,31 +21,31 @@ public class MarketingActivityProduct {
         this.codeType = codeType;
     }
 
-    public String getBatchId() {
-        return batchId;
-    }
+    public String getProductBatchId() {
+		return productBatchId;
+	}
 
-    public void setBatchId(String batchId) {
-        this.batchId = batchId;
-    }
+	public void setProductBatchId(String productBatchId) {
+		this.productBatchId = productBatchId;
+	}
 
-    public int getActivityProductId() {
-        return activityProductId;
-    }
+	public String getProductBatchName() {
+		return productBatchName;
+	}
 
-    public void setActivityProductId(int activityProductId) {
-        this.activityProductId = activityProductId;
-    }
+	public void setProductBatchName(String productBatchName) {
+		this.productBatchName = productBatchName;
+	}
 
-    public String getActivityProductName() {
-        return activityProductName;
-    }
+	public String getProductName() {
+		return productName;
+	}
 
-    public void setActivityProductName(String activityProductName) {
-        this.activityProductName = activityProductName;
-    }
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
 
-    public String getCreateDate() {
+	public String getCreateDate() {
         return createDate;
     }
 
@@ -89,4 +60,30 @@ public class MarketingActivityProduct {
     public void setUpdateDate(String updateDate) {
         UpdateDate = updateDate;
     }
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getActivitySetId() {
+		return activitySetId;
+	}
+
+	public void setActivitySetId(Long activitySetId) {
+		this.activitySetId = activitySetId;
+	}
+
+	public String getProductId() {
+		return productId;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+
+    
 }

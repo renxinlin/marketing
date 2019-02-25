@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.common.model.base;
+package com.jgw.supercodeplatform.marketing.dto.activity;
 
 import java.util.List;
 

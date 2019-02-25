@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.common.model.base;
+package com.jgw.supercodeplatform.marketing.dto.activity;
 /**
  * 活动中奖奖次设置实体
  * @author czm

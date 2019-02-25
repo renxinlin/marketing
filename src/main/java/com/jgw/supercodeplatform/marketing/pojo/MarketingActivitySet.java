@@ -1,8 +1,8 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
 public class MarketingActivitySet {
-
-    private int activityId;//活动主键Id
+    private Long id;
+    private Long activityId;//活动主键Id
     private String organizationId;//组织Id
     private String organizatioIdlName;//组织
     private String activityTitle;//活动标题
@@ -12,21 +12,36 @@ public class MarketingActivitySet {
     private String updateUserName;//更新用户名称
     private String updateDate;//更新时间
     private Integer activityStatus;//活动状态(1、表示上架进展，0 表示下架)
-    private int eachDayNumber;//每人每天次数
-    private int eachMostNumber;//每人最多获奖次数
-    private Integer activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 3、仅使用一次 4、自动获取)
+    private Integer eachDayNumber;//每人每天次数
+    private Integer eachMostNumber;//每人最多获奖次数
+    private Integer activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 )
     private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
-    private Integer typeId;//在统一编码表里设置的活动类型
 
-    public int getActivityId() {
-        return activityId;
-    }
+    public Long getId() {
+		return id;
+	}
 
-    public void setActivityId(int activityId) {
-        this.activityId = activityId;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getOrganizationId() {
+	public Long getActivityId() {
+		return activityId;
+	}
+
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
+
+	public void setEachDayNumber(Integer eachDayNumber) {
+		this.eachDayNumber = eachDayNumber;
+	}
+
+	public void setEachMostNumber(Integer eachMostNumber) {
+		this.eachMostNumber = eachMostNumber;
+	}
+
+	public String getOrganizationId() {
         return organizationId;
     }
 
@@ -42,7 +57,15 @@ public class MarketingActivitySet {
         this.organizatioIdlName = organizatioIdlName;
     }
 
-    public String getActivityTitle() {
+    public Integer getEachDayNumber() {
+		return eachDayNumber;
+	}
+
+	public Integer getEachMostNumber() {
+		return eachMostNumber;
+	}
+
+	public String getActivityTitle() {
         return activityTitle;
     }
 
@@ -97,23 +120,6 @@ public class MarketingActivitySet {
     public void setActivityStatus(Integer activityStatus) {
         this.activityStatus = activityStatus;
     }
-
-    public int getEachDayNumber() {
-        return eachDayNumber;
-    }
-
-    public void setEachDayNumber(int eachDayNumber) {
-        this.eachDayNumber = eachDayNumber;
-    }
-
-    public int getEachMostNumber() {
-        return eachMostNumber;
-    }
-
-    public void setEachMostNumber(int eachMostNumber) {
-        this.eachMostNumber = eachMostNumber;
-    }
-
     public Integer getActivityRangeMark() {
         return activityRangeMark;
     }
@@ -128,14 +134,6 @@ public class MarketingActivitySet {
 
 	public void setAutoFetch(Integer autoFetch) {
 		this.autoFetch = autoFetch;
-	}
-
-	public Integer getTypeId() {
-		return typeId;
-	}
-
-	public void setTypeId(Integer typeId) {
-		this.typeId = typeId;
 	}
     
 }

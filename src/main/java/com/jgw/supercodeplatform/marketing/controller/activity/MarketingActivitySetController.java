@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller;
+package com.jgw.supercodeplatform.marketing.controller.activity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,27 +8,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.base.MarketingActivityParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityService;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityParam;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/marketing/activity")
-public class MarketingActivityController {
+@RequestMapping("/marketing/activity/set")
+public class MarketingActivitySetController {
 
 	@Autowired
-	private MarketingActivityService service;
+	private MarketingActivitySetService service;
     /**
      * 活动创建
      * @param marketingActivityParam
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/create",method = RequestMethod.POST)
+    @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "活动创建", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> create(@RequestBody MarketingActivityParam marketingActivityParam) throws Exception {
@@ -37,21 +37,7 @@ public class MarketingActivityController {
     }
     
     /**
-     * 活动列表
-     * @param marketingActivityListParam
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/list",method = RequestMethod.POST)
-    @ApiOperation(value = "活动列表", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> list(@RequestBody MarketingActivityListParam marketingActivityListParam) throws Exception {
-    	RestResult<String> restResult=new RestResult<String>(200, "成功", null);
-    	return restResult;
-    }
-    
-    /**
-     * 活动创建
+     * 停用或启用活动
      * @param marketingActivityParam
      * @return
      * @throws Exception
@@ -65,7 +51,7 @@ public class MarketingActivityController {
     }
     
     /**
-     * 活动创建
+     * 
      * @param marketingActivityParam
      * @return
      * @throws Exception
@@ -73,8 +59,7 @@ public class MarketingActivityController {
     @RequestMapping(value = "/getPageInfo",method = RequestMethod.GET)
     @ApiOperation(value = "根据活动id获取领取页和中奖页数据", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动主键id",name="activityId")})
-    public RestResult<String> getPageInfo(@RequestParam(required=true) Integer activityId) throws Exception {
-    	RestResult<String> restResult=new RestResult<String>(200, "成功", null);
-    	return restResult;
+    public RestResult<ReceivingAndWinningPageVO> getPageInfo(@RequestParam(required=true) Long activityId) throws Exception {
+    	return service.getPageInfo(activityId);
     }
 }
