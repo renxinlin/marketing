@@ -3,7 +3,7 @@ package com.jgw.supercodeplatform.marketing.pojo;
 public class MarketingMembers {
 
     private int id;//序号
-    private String wxId;//微信id号
+    private String openid;//微信id号
     private String wxName;//微信id号
     private String mobile;//手机
     private String userId;//用户Id
@@ -31,9 +31,9 @@ public class MarketingMembers {
     public MarketingMembers() {
     }
 
-    public MarketingMembers(int id, String wxId, String wxName, String mobile, String userId, String userName, String sex, String birthday, String provinceCode, String countyCode, String cityCode, String provinceName, String countyName, String cityName, String registDate, String state, String organizationId, String organizationFullName, String newRegisterFlag, String createDate, String updateDate, String stores, String storesType, String babyBirthday) {
+    public MarketingMembers(int id, String openid, String wxName, String mobile, String userId, String userName, String sex, String birthday, String provinceCode, String countyCode, String cityCode, String provinceName, String countyName, String cityName, String registDate, String state, String organizationId, String organizationFullName, String newRegisterFlag, String createDate, String updateDate, String stores, String storesType, String babyBirthday) {
         this.id = id;
-        this.wxId = wxId;
+        this.openid = openid;
         this.wxName = wxName;
         this.mobile = mobile;
         this.userId = userId;
@@ -64,14 +64,6 @@ public class MarketingMembers {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getWxId() {
-        return wxId;
-    }
-
-    public void setWxId(String wxId) {
-        this.wxId = wxId;
     }
 
     public String getMobile() {
@@ -248,5 +240,13 @@ public class MarketingMembers {
 
     public void setBabyBirthday(String babyBirthday) {
         this.babyBirthday = babyBirthday;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
     }
 }

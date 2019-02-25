@@ -26,7 +26,7 @@ public class MarketingMembersController extends CommonUtil {
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult addMember(
             @ApiJsonObject(name = "addMembers", value = {
-                    @ApiJsonProperty(key = "wxId", example = "wxid_asds4ad564sa56d", description = "微信号,必需"),
+                    @ApiJsonProperty(key = "openid", example = "wxid_asds4ad564sa56d", description = "微信号,必需"),
                     @ApiJsonProperty(key = "wxName",example = "zhangsan",description="微信姓名,必需"),
                     @ApiJsonProperty(key = "mobileId", example = "18268322268", description = "手机号,必需"),
                     @ApiJsonProperty(key = "userName",example = "zhangsan",description="用户姓名,必需"),
@@ -57,7 +57,7 @@ public class MarketingMembersController extends CommonUtil {
             @ApiImplicitParam(name = "search", paramType = "query", defaultValue = "12", value = "搜索条件,可以根据姓名,手机号或者工号模糊搜索,非必需"),
             @ApiImplicitParam(name = "mobileId", paramType = "query", defaultValue = "18268322268", value = "高级搜索的手机号,非必需"),
             @ApiImplicitParam(name = "wxName", paramType = "query", defaultValue = "zhangsan", value = "高级搜索的微信名称,非必需"),
-            @ApiImplicitParam(name = "wxId", paramType = "query", defaultValue = "wxid_asds4ad564sa56d", value = "高级搜索的微信id,非必需"),
+            @ApiImplicitParam(name = "openid", paramType = "query", defaultValue = "wxid_asds4ad564sa56d", value = "高级搜索的微信id,非必需"),
             @ApiImplicitParam(name = "userName", paramType = "query", defaultValue = "zhangsan", value = "高级搜索的用户姓名,非必需"),
             @ApiImplicitParam(name = "sex", paramType = "query", defaultValue = "男", value = "高级搜索的性别,非必需"),
             @ApiImplicitParam(name = "birthday", paramType = "query", defaultValue = "1979-02-21", value = "高级搜索的生日,非必需"),
