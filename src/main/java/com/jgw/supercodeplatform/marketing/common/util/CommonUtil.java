@@ -155,4 +155,12 @@ public class CommonUtil extends UserInfoUtil {
     	return sdf.format(date);
     }
     
+	@Override
+	public String getOrganizationId() throws SuperCodeException {
+		try {
+			return super.getOrganizationId();
+		} catch (Exception e) {
+			throw new SuperCodeException("无组织信息，请确认当前用户为普通角色用户", 500);
+		}
+	}
 }

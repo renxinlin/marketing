@@ -1,7 +1,10 @@
-package com.jgw.supercodeplatform.marketing.common.model.base;
-
-public class MarketingTemplateParam {
-
+package com.jgw.supercodeplatform.marketing.pojo;
+/**
+ * 领取页
+ * @author czm
+ *
+ */
+public class MarketingReceivingPage {
     private int id;//序号
     private String templateId;//模板Id
     private String isReceivePage;//是否显示领取页面(1  表示显示，0 表示不显示)
@@ -12,22 +15,6 @@ public class MarketingTemplateParam {
     private String qrcodeUrl;//二维码Url
     private String createDate;//建立时间
     private String updateDate;//修改时间
-
-    public MarketingTemplateParam() {
-    }
-
-    public MarketingTemplateParam(int id, String templateId, String isReceivePage, String textContent, String fontSize1, String picAddress, String isQrcodeView, String qrcodeUrl, String createDate, String updateDate) {
-        this.id = id;
-        this.templateId = templateId;
-        this.isReceivePage = isReceivePage;
-        this.textContent = textContent;
-        this.fontSize1 = fontSize1;
-        this.picAddress = picAddress;
-        this.isQrcodeView = isQrcodeView;
-        this.qrcodeUrl = qrcodeUrl;
-        this.createDate = createDate;
-        this.updateDate = updateDate;
-    }
 
     public int getId() {
         return id;

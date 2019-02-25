@@ -33,7 +33,7 @@ public class MarketingActivityParam {
     private Integer autoFetch;
 	
 	@ApiModelProperty(value = "领取页参数")
-    private MarketingTemplateParam mTemplateParam;
+    private MarketingMarketingReceivingPageParam mTemplateParam;
 	
 	@ApiModelProperty(value = "中奖页页参数")
     private MarketingWinningPageParam mWinningPageParam;
@@ -110,11 +110,11 @@ public class MarketingActivityParam {
 		this.autoFetch = autoFetch;
 	}
 
-	public MarketingTemplateParam getmTemplateParam() {
+	public MarketingMarketingReceivingPageParam getmTemplateParam() {
 		return mTemplateParam;
 	}
 
-	public void setmTemplateParam(MarketingTemplateParam mTemplateParam) {
+	public void setmTemplateParam(MarketingMarketingReceivingPageParam mTemplateParam) {
 		this.mTemplateParam = mTemplateParam;
 	}
 

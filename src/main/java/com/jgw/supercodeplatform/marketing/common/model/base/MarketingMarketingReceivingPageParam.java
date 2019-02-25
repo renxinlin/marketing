@@ -1,6 +1,6 @@
-package com.jgw.supercodeplatform.marketing.pojo;
+package com.jgw.supercodeplatform.marketing.common.model.base;
 
-public class MarketingTemplate {
+public class MarketingMarketingReceivingPageParam {
 
     private int id;//序号
     private String templateId;//模板Id
@@ -13,10 +13,10 @@ public class MarketingTemplate {
     private String createDate;//建立时间
     private String updateDate;//修改时间
 
-    public MarketingTemplate() {
+    public MarketingMarketingReceivingPageParam() {
     }
 
-    public MarketingTemplate(int id, String templateId, String isReceivePage, String textContent, String fontSize1, String picAddress, String isQrcodeView, String qrcodeUrl, String createDate, String updateDate) {
+    public MarketingMarketingReceivingPageParam(int id, String templateId, String isReceivePage, String textContent, String fontSize1, String picAddress, String isQrcodeView, String qrcodeUrl, String createDate, String updateDate) {
         this.id = id;
         this.templateId = templateId;
         this.isReceivePage = isReceivePage;

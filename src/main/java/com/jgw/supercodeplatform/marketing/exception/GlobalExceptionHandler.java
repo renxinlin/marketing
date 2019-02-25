@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.exception.base.UserSqlException;
-import com.jgw.supercodeplatform.marketing.exception.result.RestResult;
 
 /**
  *

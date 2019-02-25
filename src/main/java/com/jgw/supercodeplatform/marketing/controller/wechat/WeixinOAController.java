@@ -1,38 +1,45 @@
 package com.jgw.supercodeplatform.marketing.controller.wechat;
 
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonObject;
-import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonProperty;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping("/marketing/members")
+@RequestMapping("/marketing/weixin")
 public class WeixinOAController {
-
-
-    @RequestMapping(value = "",method = RequestMethod.POST)
-    @ApiOperation(value = "招募会员（注册）", notes = "")
+    
+    @Autowired
+    private MarketingWxMerchantsService marketingWxMerchantsService;
+    
+    @RequestMapping(value = "/bind",method = RequestMethod.POST)
+    @ApiOperation(value = "微信商户信息绑定", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult addMember(
-            @ApiJsonObject(name = "addMembers", value = {
-                    @ApiJsonProperty(key = "Wxid", example = "wxid_asds4ad564sa56d", description = "微信号,必需"),
-                    @ApiJsonProperty(key = "mobileId", example = "18268322268", description = "手机号,必需"),
-                    @ApiJsonProperty(key = "UserName",example = "zhangsan",description="用户姓名,必需"),
-                    @ApiJsonProperty(key = "Sex", example = "男", description = "性别Name,必需"),
-                    @ApiJsonProperty(key = "name", example = "liujianqiang", description = "姓名,必需"),
-                    @ApiJsonProperty(key = "positionId", example = "f4c1054fe0b84bd0a448070d98110b22", description = "职位id,非必需"),
-                    @ApiJsonProperty(key = "positionIdName", example = "普通员工", description = "职位名字,非必需"),
-                    @ApiJsonProperty(key = "employeeNumber", example = "101", description = "工号,非必需"),
-                    @ApiJsonProperty(key = "employeeDate", example = "2018-09-11", description = "入职时间,非必需")
-            })
-            @RequestBody Map<String, Object> params) throws Exception {
+    public RestResult<String> bind(@RequestBody MarketingWxMerchantsParam wxMerchantsParam) throws Exception {
         return new RestResult(200, "success", null);
+    }
+    
+    @RequestMapping(value = "/update",method = RequestMethod.POST)
+    @ApiOperation(value = "微信商户信息修改", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<String> update(@RequestBody MarketingWxMerchantsParam wxMerchantsParam) throws Exception {
+        return new RestResult(200, "success", null);
+    }
+    
+    @RequestMapping(value = "/get",method = RequestMethod.POST)
+    @ApiOperation(value = "微信商户信息修改", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<MarketingWxMerchants> get() throws Exception {
+    	
+        return marketingWxMerchantsService.get();
     }
 }
