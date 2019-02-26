@@ -1,24 +1,39 @@
 package com.jgw.supercodeplatform.marketing.controller.user;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonObject;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonProperty;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/marketing/members")
 @Api(tags = "会员管理")
 public class MarketingMembersController extends CommonUtil {
+
+    @Autowired
+    private MarketingMembersService marketingMembersService;
 
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
@@ -45,7 +60,7 @@ public class MarketingMembersController extends CommonUtil {
                     @ApiJsonProperty(key = "babyBirthday", example = "1979-02-21", description = "宝宝生日")
             })
             @RequestBody Map<String, Object> params) throws Exception {
-        return new RestResult(200, "success", null);
+        return new RestResult(200, "success", marketingMembersService.addMember(params));
     }
 
 
@@ -76,7 +91,7 @@ public class MarketingMembersController extends CommonUtil {
     })
     public RestResult memberList(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "organizationId");
-        return new RestResult(200, "success", null);
+        return new RestResult(200, "success", marketingMembersService.getAllMarketingMembersLikeParams(params));
     }
 
 
@@ -89,7 +104,7 @@ public class MarketingMembersController extends CommonUtil {
     })
     public RestResult getUserMember(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "userId","organizationId");
-        return new RestResult(200, "success",null);
+        return new RestResult(200, "success",marketingMembersService.getMemberById(params));
     }
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
@@ -113,7 +128,7 @@ public class MarketingMembersController extends CommonUtil {
                     @ApiJsonProperty(key = "babyBirthday", example = "1979-02-21", description = "宝宝生日")
             })
             @RequestBody Map<String, Object> params) throws Exception {
-        return new RestResult(200, "success", null);
+        return new RestResult(200, "success", marketingMembersService.updateMembers(params));
     }
 
 
@@ -127,7 +142,7 @@ public class MarketingMembersController extends CommonUtil {
             })
             @RequestBody Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "userId");
-        return new RestResult(200, "success", null);
+        return new RestResult(200, "success", marketingMembersService.updateMembers(params));
     }
 
 
@@ -141,7 +156,7 @@ public class MarketingMembersController extends CommonUtil {
             })
             @RequestBody Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "userId");
-            return new RestResult(200, "success", null);
+            return new RestResult(200, "success", marketingMembersService.updateMembers(params));
     }
 
     /**
@@ -157,8 +172,30 @@ public class MarketingMembersController extends CommonUtil {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "content", paramType = "query", defaultValue = "http://www.baidu.com", value = "", required = true),
     })
-    public  boolean createQrCode(String content, HttpServletResponse response) throws IOException {
-        return true;
+    public  boolean createQrCode(String content,HttpServletResponse response) throws WriterException, IOException{
+        //设置二维码纠错级别ＭＡＰ
+        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
+        hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);  // 矫错级别
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        //创建比特矩阵(位矩阵)的QR码编码的字符串
+        BitMatrix byteMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 900, 900, hintMap);
+        // 使BufferedImage勾画QRCode  (matrixWidth 是行二维码像素点)
+        int matrixWidth = byteMatrix.getWidth();
+        BufferedImage image = new BufferedImage(matrixWidth-200, matrixWidth-200, BufferedImage.TYPE_INT_RGB);
+        image.createGraphics();
+        Graphics2D graphics = (Graphics2D) image.getGraphics();
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, matrixWidth, matrixWidth);
+        // 使用比特矩阵画并保存图像
+        graphics.setColor(Color.BLACK);
+        for (int i = 0; i < matrixWidth; i++){
+            for (int j = 0; j < matrixWidth; j++){
+                if (byteMatrix.get(i, j)){
+                    graphics.fillRect(i-100, j-100, 1, 1);
+                }
+            }
+        }
+        return ImageIO.write(image, "JPEG", response.getOutputStream());
     }
 
     @RequestMapping(value = "/getOrg",method = RequestMethod.GET)
@@ -168,8 +205,7 @@ public class MarketingMembersController extends CommonUtil {
     })
     public RestResult getUserOrg(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "userId","organizationId");
-        getOrganization();
-        return new RestResult(200, "success",null);
+        return new RestResult(200, "success",getOrganization());
     }
 
 

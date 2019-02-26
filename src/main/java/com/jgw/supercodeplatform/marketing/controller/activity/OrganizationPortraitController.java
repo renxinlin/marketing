@@ -5,10 +5,12 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonObject;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonProperty;
+import com.jgw.supercodeplatform.marketing.service.user.OrganizationPortraitService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -19,6 +21,9 @@ import java.util.Map;
 @Api(tags = "会员画像管理")
 public class OrganizationPortraitController  extends CommonUtil {
 
+    @Autowired
+    private OrganizationPortraitService organizationPortraitService;
+
     @RequestMapping(value = "/getSelectedPor", method = RequestMethod.GET)
     @ApiOperation(value = "根据组织id获取组织已选的画像编码", notes = "返回编码信息列表")
     @ApiImplicitParams({
@@ -26,7 +31,7 @@ public class OrganizationPortraitController  extends CommonUtil {
             @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "dsadsad165156163a1sddasd", value = "组织id,必需")
     })
     public RestResult getSelectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
-        return new RestResult(200, "success", null);
+        return new RestResult(200, "success", organizationPortraitService.getSelectedPortrait(params));
     }
 
     @RequestMapping(value = "/getUnselectedPor", method = RequestMethod.GET)
@@ -36,7 +41,7 @@ public class OrganizationPortraitController  extends CommonUtil {
             @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "dsadsad165156163a1sddasd", value = "组织id,必需")
     })
     public RestResult getUnselectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
-        return new RestResult(200, "success", null);
+        return new RestResult(200, "success", organizationPortraitService.getUnselectedPortrait(params));
     }
 
 

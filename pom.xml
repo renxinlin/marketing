@@ -232,6 +232,12 @@
 			<artifactId>interceptor</artifactId>
 			<version>0.0.1-RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>core</artifactId>
+			<version>RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 	
 	<!-- 指定spring cloud版本， 新版本使用Finchley.SR2 -->

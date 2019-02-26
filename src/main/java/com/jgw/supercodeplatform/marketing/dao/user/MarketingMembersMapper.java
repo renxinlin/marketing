@@ -1,13 +1,11 @@
-package com.jgw.supercodeplatform.marketing.dao.member;
+package com.jgw.supercodeplatform.marketing.dao.user;
 
-import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 会员类
@@ -86,8 +84,8 @@ public interface MarketingMembersMapper extends CommonSql {
             + " CityName,RegistDate,State,OrganizationId,OrganizationFullName,NewRegisterFlag,Stores,StoresType,BabyBirthday)"
             + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday},#{provinceCode},#{countyCode},#{cityCode},"
             + " #{provinceName},#{countyName},#{cityName},#{registDate},#{state},#{organizationId},#{organizationFullName},"
-            + " #{newRegisterFlag},#{stores},#{storesType},#{babyBirthday}, )")
-    int addMembers(MarketingMembers members);
+            + " #{newRegisterFlag},#{stores},#{storesType},#{babyBirthday} )")
+    int addMembers(Map<String,Object> map);
 
 
     /**
@@ -95,14 +93,52 @@ public interface MarketingMembersMapper extends CommonSql {
      * @return
      */
     @Select(" <script>"
-            + " SELECT "+selectSql+" FROM marketing_members "
+            + " SELECT "+selectSql+" FROM marketing_members a "
             + whereSelectMem
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
             + " </script>")
-    List<MarketingMembers> getAllMarketingMembersLikeParams(DaoSearch search);
+    List<MarketingMembers> getAllMarketingMembersLikeParams(Map<String,Object> map);
 
 
+    /**
+     * 修改会员信息
+     * @param members
+     * @return
+     */
+    @Update(" <script>"
+            + " UPDATE marketing_members "
+            + " <set>"
+            + " <if test='userName !=null and userName != &apos;&apos; '> UserName = #{userName} ,</if> "
+            + " <if test='sex !=null and sex != &apos;&apos; '> Sex = #{sex} ,</if> "
+            + " <if test='birthday !=null and birthday != &apos;&apos; '> Birthday = #{birthday} ,</if> "
+            + " <if test='provinceCode !=null and provinceCode != &apos;&apos; '> ProvinceCode = #{provinceCode} ,</if> "
+            + " <if test='countyCode !=null and countyCode != &apos;&apos; '> CountyCode = #{countyCode} ,</if> "
+            + " <if test='cityCode !=null and cityCode != &apos;&apos; '> CityCode = #{cityCode} ,</if> "
+            + " <if test='provinceName !=null and provinceName != &apos;&apos; '> ProvinceName = #{provinceName} ,</if> "
+            + " <if test='countyName !=null and countyName != &apos;&apos; '> CountyName = #{countyName} ,</if> "
+            + " <if test='cityName !=null and cityName != &apos;&apos; '> CityName = #{cityName} ,</if> "
+            + " <if test='newRegisterFlag !=null and newRegisterFlag != &apos;&apos; '> NewRegisterFlag = #{newRegisterFlag} ,</if> "
+            + " <if test='state !=null and state != &apos;&apos; '> State = #{state} ,</if> "
+            + " <if test='stores !=null and stores != &apos;&apos; '> Stores = #{stores} ,</if> "
+            + " <if test='storesType !=null and storesType != &apos;&apos; '> StoresType = #{storesType} ,</if> "
+            + " <if test='babyBirthday !=null and babyBirthday != &apos;&apos; '> BabyBirthday = #{babyBirthday} ,</if> "
+            + " </set>"
+            + " <where> "
+            + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+            + " <if test='userId !=null and userId != &apos;&apos; '> and UserId = #{userId} </if> "
+            + " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"
+            + " </where>"
+            + " </script>")
+    int updateMembers(Map<String,Object> map);
 
+
+    /**
+     * 根据id获取单个会员信息
+     * @param id
+     * @return
+     */
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE Id = #{id} AND OrganizationId = #{organizationId} ")
+    MarketingMembers getMemberById(@Param("id")int id,@Param("organizationId")String  organizationId);
 
 
 
