@@ -1,10 +1,13 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
+import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +16,9 @@ public class MarketingMembersService {
 
     @Autowired
     private MarketingMembersMapper marketingMembersMapper;
+
+    @Autowired
+    private OrganizationPortraitMapper organizationPortraitMapper;
 
 
     /**
@@ -31,6 +37,19 @@ public class MarketingMembersService {
      * @return
      */
     public List<MarketingMembers> getAllMarketingMembersLikeParams(Map<String,Object> map){
+        List<MarketingOrganizationPortrait> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(map.get("organization").toString());
+        List<String> portraitsList = new ArrayList<>();
+        portraitsList.add("Mobile");
+        portraitsList.add("WxName");
+        portraitsList.add("Openid");
+        for (MarketingOrganizationPortrait portrait:organizationPortraits){
+            if (!"Mobile".equals(portrait.getPortraitCode())){
+                portraitsList.add(portrait.getPortraitCode());
+            }
+        }
+        portraitsList.add("State");
+        String list = portraitsList.toString().replace("[","").replace("]","");;
+        map.put("portraitsList",list);
         return marketingMembersMapper.getAllMarketingMembersLikeParams(map);
     }
 

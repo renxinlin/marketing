@@ -55,9 +55,9 @@ public class MarketingMembersController extends CommonUtil {
                     @ApiJsonProperty(key = "provinceName", example = "浙江省", description = "省名称,必需"),
                     @ApiJsonProperty(key = "countyName", example = "浙江省", description = "县名称,必需"),
                     @ApiJsonProperty(key = "cityName", example = "杭州市", description = "市名称,必需"),
-                    @ApiJsonProperty(key = "stores", example = "杭州店", description = "门店或经销商"),
-                    @ApiJsonProperty(key = "storesType", example = "1", description = "门店或经销商类型（1表示门店 ，2表示经销商）"),
-                    @ApiJsonProperty(key = "babyBirthday", example = "1979-02-21", description = "宝宝生日")
+                    @ApiJsonProperty(key = "customerName", example = "杭州店", description = "门店名称,必需"),
+                    @ApiJsonProperty(key = "customerCode", example = "1s15s15s1123", description = "门店编码,必需"),
+                    @ApiJsonProperty(key = "babyBirthday", example = "1979-02-21", description = "宝宝生日,非必需")
             })
             @RequestBody Map<String, Object> params) throws Exception {
         return new RestResult(200, "success", marketingMembersService.addMember(params));
@@ -79,7 +79,7 @@ public class MarketingMembersController extends CommonUtil {
             @ApiImplicitParam(name = "provinceName", paramType = "query", defaultValue = "浙江省", value = "高级搜索的省名称,非必需"),
             @ApiImplicitParam(name = "countyName", paramType = "query", defaultValue = "浙江省", value = "高级搜索的县名称,非必需"),
             @ApiImplicitParam(name = "cityName", paramType = "query", defaultValue = "杭州市", value = "高级搜索的市名称,非必需"),
-            @ApiImplicitParam(name = "stores", paramType = "query", defaultValue = "杭州店", value = "高级搜索的注册门店,非必需"),
+            @ApiImplicitParam(name = "customerName", paramType = "query", defaultValue = "杭州店", value = "高级搜索的门店名称,非必需"),
             @ApiImplicitParam(name = "babyBirthday", paramType = "query", defaultValue = "1979-02-21", value = "高级搜索的宝宝生日,非必需"),
             @ApiImplicitParam(name = "newRegisterFlag", paramType = "query", defaultValue = "1", value = "高级搜索的是否新注册的标志(1  表示是，0 表示不是),非必需"),
             @ApiImplicitParam(name = "registDate", paramType = "query", defaultValue = "1979-02-21", value = "高级搜索的注册时间,非必需"),
@@ -123,8 +123,8 @@ public class MarketingMembersController extends CommonUtil {
                     @ApiJsonProperty(key = "provinceName", example = "浙江省", description = "省名称,必需"),
                     @ApiJsonProperty(key = "countyName", example = "浙江省", description = "县名称,必需"),
                     @ApiJsonProperty(key = "cityName", example = "杭州市", description = "市名称,必需"),
-                    @ApiJsonProperty(key = "stores", example = "杭州店", description = "门店或经销商"),
-                    @ApiJsonProperty(key = "storesType", example = "1", description = "门店或经销商类型（1表示门店 ，2表示经销商）"),
+                    @ApiJsonProperty(key = "customerName", example = "杭州店", description = "门店名称"),
+                    @ApiJsonProperty(key = "customerCode", example = "1huiof4ew6f465we", description = "门店编码"),
                     @ApiJsonProperty(key = "babyBirthday", example = "1979-02-21", description = "宝宝生日")
             })
             @RequestBody Map<String, Object> params) throws Exception {

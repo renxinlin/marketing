@@ -7,16 +7,9 @@ public class MarketingOrganizationPortrait {
     private String organizationFullName;//组织
     private String portraitCode;//画像编码
     private String portraitName;//画像名称
+    private int fieldWeight;//字段权重 用于控制页面显示顺序
 
     public MarketingOrganizationPortrait() {
-    }
-
-    public MarketingOrganizationPortrait(int id, String organizationId, String organizationFullName, String portraitCode, String portraitName) {
-        this.id = id;
-        this.organizationId = organizationId;
-        this.organizationFullName = organizationFullName;
-        this.portraitCode = portraitCode;
-        this.portraitName = portraitName;
     }
 
     public int getId() {
@@ -57,5 +50,13 @@ public class MarketingOrganizationPortrait {
 
     public void setOrganizationFullName(String organizationFullName) {
         this.organizationFullName = organizationFullName;
+    }
+
+    public int getFieldWeight() {
+        return fieldWeight;
+    }
+
+    public void setFieldWeight(int fieldWeight) {
+        this.fieldWeight = fieldWeight;
     }
 }
