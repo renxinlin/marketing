@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "活动创建model")
-public class MarketingActivityParam {
+public class MarketingActivitySetParam {
 	
 	@ApiModelProperty(value = "活动id")
     private Integer activityId;//活动Id
@@ -33,7 +33,7 @@ public class MarketingActivityParam {
     private Integer autoFetch;
 	
 	@ApiModelProperty(value = "领取页参数")
-    private MarketingMarketingReceivingPageParam mTemplateParam;
+    private MarketingReceivingPageParam mReceivingPageParam;
 	
 	@ApiModelProperty(value = "中奖页页参数")
     private MarketingWinningPageParam mWinningPageParam;
@@ -44,7 +44,9 @@ public class MarketingActivityParam {
 	@ApiModelProperty(value = "活动设置中奖奖次")
 	private List<MarketingPrizeTypeParam> marketingPrizeTypeParams;
 	
-	//TODO 活动渠道暂时省略待基础平台定义好再说
+	@ApiModelProperty(value = "渠道")
+	private List<MarketingChannelParam> mChannelParams;
+	
     public Integer getActivityId() {
         return activityId;
     }
@@ -110,12 +112,12 @@ public class MarketingActivityParam {
 		this.autoFetch = autoFetch;
 	}
 
-	public MarketingMarketingReceivingPageParam getmTemplateParam() {
-		return mTemplateParam;
+	public MarketingReceivingPageParam getmReceivingPageParam() {
+		return mReceivingPageParam;
 	}
 
-	public void setmTemplateParam(MarketingMarketingReceivingPageParam mTemplateParam) {
-		this.mTemplateParam = mTemplateParam;
+	public void setmReceivingPageParam(MarketingReceivingPageParam mReceivingPageParam) {
+		this.mReceivingPageParam = mReceivingPageParam;
 	}
 
 	public MarketingWinningPageParam getmWinningPageParam() {
@@ -141,6 +143,13 @@ public class MarketingActivityParam {
 	public void setMarketingPrizeTypeParams(List<MarketingPrizeTypeParam> marketingPrizeTypeParams) {
 		this.marketingPrizeTypeParams = marketingPrizeTypeParams;
 	}
-    
+
+	public List<MarketingChannelParam> getmChannelParams() {
+		return mChannelParams;
+	}
+
+	public void setmChannelParams(List<MarketingChannelParam> mChannelParams) {
+		this.mChannelParams = mChannelParams;
+	}
     
 }

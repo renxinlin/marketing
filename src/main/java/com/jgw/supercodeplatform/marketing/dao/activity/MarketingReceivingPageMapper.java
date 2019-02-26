@@ -8,9 +8,13 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 
 @Mapper
 public interface MarketingReceivingPageMapper {
-    static String allFields="Id id,TemplateId templateId,ActivityId activityId,IsReceivePage isReceivePage,TextContent textContent,PicAddress picAddress,IsQrcodeView isQrcodeView,QrcodeUrl qrcodeUrl,CreateDate createDate,UpdateDate updateDate";
+    static String allFields="Id id,TemplateId templateId,ActivitySetId activitySetId,IsReceivePage isReceivePage,TextContent textContent,PicAddress picAddress,IsQrcodeView isQrcodeView,QrcodeUrl qrcodeUrl,CreateDate createDate,UpdateDate updateDate";
 	
-    @Select("select "+allFields+" from marketing_ template where ActivityId=#{activityId}")
-    MarketingReceivingPage getByActivityId(@Param("activityId")Long activityId);
+    @Select("select "+allFields+" from marketing_ template where ActivitySetId=#{activitySetId}")
+    MarketingReceivingPage getByActivityId(@Param("activitySetId")Long activitySetId);
+
+	int insert(MarketingReceivingPage mPage);
+
+	void update(MarketingReceivingPage mReceivingPage);
 
 }

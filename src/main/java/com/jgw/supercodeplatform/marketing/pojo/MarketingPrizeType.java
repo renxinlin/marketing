@@ -6,25 +6,24 @@ package com.jgw.supercodeplatform.marketing.pojo;
  */
 public class MarketingPrizeType {
 
-    private int id;//序列Id
-    private int activityId;//活动Id
+    private Long id;//序列Id
+    private Long activitySetId;//活动设置Id
     private Integer prizeAmount;//金额数量,类型跟微信接口保持一致
     private Integer prizeProbability;//中奖几率
     private String prizeTypeName;//奖品类型名称
     private Byte randomAmount;//是否随机金额 1随机 0固定
-    private String organizationId;//组织Id
-    private String organizationFullName;//组织全名(门店）
-	public int getId() {
+
+	public Long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
-	public int getActivityId() {
-		return activityId;
+	public Long getActivitySetId() {
+		return activitySetId;
 	}
-	public void setActivityId(int activityId) {
-		this.activityId = activityId;
+	public void setActivitySetId(Long activitySetId) {
+		this.activitySetId = activitySetId;
 	}
 	public Integer getPrizeAmount() {
 		return prizeAmount;
@@ -50,18 +49,5 @@ public class MarketingPrizeType {
 	public void setRandomAmount(Byte randomAmount) {
 		this.randomAmount = randomAmount;
 	}
-	public String getOrganizationId() {
-		return organizationId;
-	}
-	public void setOrganizationId(String organizationId) {
-		this.organizationId = organizationId;
-	}
-	public String getOrganizationFullName() {
-		return organizationFullName;
-	}
-	public void setOrganizationFullName(String organizationFullName) {
-		this.organizationFullName = organizationFullName;
-	}
-
    
 }

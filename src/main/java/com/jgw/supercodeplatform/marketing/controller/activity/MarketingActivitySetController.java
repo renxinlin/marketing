@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 
@@ -31,9 +31,8 @@ public class MarketingActivitySetController {
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "活动创建", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> create(@RequestBody MarketingActivityParam marketingActivityParam) throws Exception {
-    	RestResult<String> restResult=new RestResult<String>(200, "成功", null);
-    	return restResult;
+    public RestResult<String> create(@RequestBody MarketingActivitySetParam activitySetParam) throws Exception {
+    	return service.add(activitySetParam);
     }
     
     /**
@@ -58,8 +57,8 @@ public class MarketingActivitySetController {
      */
     @RequestMapping(value = "/getPageInfo",method = RequestMethod.GET)
     @ApiOperation(value = "根据活动id获取领取页和中奖页数据", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动主键id",name="activityId")})
-    public RestResult<ReceivingAndWinningPageVO> getPageInfo(@RequestParam(required=true) Long activityId) throws Exception {
-    	return service.getPageInfo(activityId);
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
+    public RestResult<ReceivingAndWinningPageVO> getPageInfo(@RequestParam(required=true) Long activitySetId) throws Exception {
+    	return service.getPageInfo(activitySetId);
     }
 }

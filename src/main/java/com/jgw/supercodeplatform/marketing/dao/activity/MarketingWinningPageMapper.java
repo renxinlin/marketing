@@ -8,9 +8,13 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 
 @Mapper
 public interface MarketingWinningPageMapper {
-    static String allFields="Id id,LoginType loginType,TemplateId templateId,ActivityId activityId";
+    static String allFields="Id id,LoginType loginType,TemplateId templateId,ActivitySetId activitySetId";
     
-    @Select("select "+allFields+" from marketing_winning_page where ActivityId=#{activityId}")
-	MarketingWinningPage getByActivityId(@Param("activityId")Long activityId);
+    @Select("select "+allFields+" from marketing_winning_page where ActivitySetId=#{activitySetId}")
+	MarketingWinningPage getByActivityId(@Param("activitySetId")Long activitySetId);
+
+	int insert(MarketingWinningPage mWinningPage);
+
+	void update(MarketingWinningPage mWinningPage);
 
 }
