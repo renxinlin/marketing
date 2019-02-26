@@ -23,40 +23,15 @@ public class MarketingMembers {
     private String newRegisterFlag;//是否新注册的标志(1  表示是，0 表示不是)
     private String createDate;//建立日期
     private String updateDate;//修改日期
-    private String stores;//门店或经销商
-    private String storesType;//门店或经销商类型（1表示门店 ，2表示经销商）
+    private String customerName;//门店名称
+    private String customerCode;//门店编码
     private String babyBirthday;//宝宝生日
 
 
     public MarketingMembers() {
     }
 
-    public MarketingMembers(int id, String openid, String wxName, String mobile, String userId, String userName, String sex, String birthday, String provinceCode, String countyCode, String cityCode, String provinceName, String countyName, String cityName, String registDate, String state, String organizationId, String organizationFullName, String newRegisterFlag, String createDate, String updateDate, String stores, String storesType, String babyBirthday) {
-        this.id = id;
-        this.openid = openid;
-        this.wxName = wxName;
-        this.mobile = mobile;
-        this.userId = userId;
-        this.userName = userName;
-        this.sex = sex;
-        this.birthday = birthday;
-        this.provinceCode = provinceCode;
-        this.countyCode = countyCode;
-        this.cityCode = cityCode;
-        this.provinceName = provinceName;
-        this.countyName = countyName;
-        this.cityName = cityName;
-        this.registDate = registDate;
-        this.state = state;
-        this.organizationId = organizationId;
-        this.organizationFullName = organizationFullName;
-        this.newRegisterFlag = newRegisterFlag;
-        this.createDate = createDate;
-        this.updateDate = updateDate;
-        this.stores = stores;
-        this.storesType = storesType;
-        this.babyBirthday = babyBirthday;
-    }
+
 
     public int getId() {
         return id;
@@ -210,22 +185,6 @@ public class MarketingMembers {
         this.wxName = wxName;
     }
 
-    public String getStores() {
-        return stores;
-    }
-
-    public void setStores(String stores) {
-        this.stores = stores;
-    }
-
-    public String getStoresType() {
-        return storesType;
-    }
-
-    public void setStoresType(String storesType) {
-        this.storesType = storesType;
-    }
-
     public String getUserId() {
         return userId;
     }
@@ -248,5 +207,21 @@ public class MarketingMembers {
 
     public void setOpenid(String openid) {
         this.openid = openid;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerCode() {
+        return customerCode;
+    }
+
+    public void setCustomerCode(String customerCode) {
+        this.customerCode = customerCode;
     }
 }
