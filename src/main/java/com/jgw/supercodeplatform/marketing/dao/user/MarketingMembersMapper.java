@@ -1,6 +1,5 @@
 package com.jgw.supercodeplatform.marketing.dao.user;
 
-import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import org.apache.ibatis.annotations.*;
 
@@ -11,7 +10,7 @@ import java.util.Map;
  * 会员类
  */
 @Mapper
-public interface MarketingMembersMapper extends CommonSql {
+public interface MarketingMembersMapper {
     String selectSql = " a.WxName as wxName,a.Openid as openid,a.Mobile as mobile,"
             + " a.UserId as userId,a.UserName as userName,"
             + " a.Sex as sex,a.Birthday as birthday,a.ProvinceCode as provinceCode,"
@@ -45,7 +44,7 @@ public interface MarketingMembersMapper extends CommonSql {
                     "<if test='params.state != null and params.state != &apos;&apos;'> AND State like &apos;%${params.state}%&apos; </if>" +
                     "</when>" +
                     //普通搜索
-                    "<when test='search != null and search != &apos;&apos '> " +
+                    "<when test='search != null and search != &apos;&apos; '> " +
                     "<if test='search !=null and search != &apos;&apos;'>" +
                     " AND (" +
                     " Mobile LIKE CONCAT('%',#{search},'%')  " +
@@ -74,7 +73,7 @@ public interface MarketingMembersMapper extends CommonSql {
 
     /**
      * 会员注册
-     * @param members
+     * @param map
      * @return
      */
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
@@ -100,7 +99,7 @@ public interface MarketingMembersMapper extends CommonSql {
 
     /**
      * 修改会员信息
-     * @param members
+     * @param map
      * @return
      */
     @Update(" <script>"
@@ -137,10 +136,6 @@ public interface MarketingMembersMapper extends CommonSql {
      */
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE Id = #{id} AND OrganizationId = #{organizationId} ")
     MarketingMembers getMemberById(@Param("id")int id,@Param("organizationId")String  organizationId);
-
-
-
-
 
 
 
