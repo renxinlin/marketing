@@ -11,23 +11,25 @@ import java.util.Map;
  */
 @Mapper
 public interface MarketingMembersMapper {
-    String selectSql = " a.WxName as wxName,a.Openid as openid,a.Mobile as mobile,"
+    String selectSql = " a.Id as id, a.WxName as wxName,a.Openid as openid,a.Mobile as mobile,"
             + " a.UserId as userId,a.UserName as userName,"
             + " a.Sex as sex,a.Birthday as birthday,a.ProvinceCode as provinceCode,"
             + " a.CountyCode as countyCode,a.CityCode as cityCode,a.ProvinceName as provinceName,"
             + " a.CountyName as countyName,a.CityName as cityName,"
             + " DATE_FORMAT(a.RegistDate,'%Y-%m-%d') as registDate,"
             + " a.State as state,a.OrganizationId as organizationId,a.OrganizationFullName as organizationFullName,"
-            + " a.NewRegisterFlag as newRegisterFlag ,a.CustomerName as customerName,a.CustomerCode as customerCode,"
+            + " a.NewRegisterFlag as newRegisterFlag ,"
+            + " DATE_FORMAT(a.CreateDate,'%Y-%m-%d') as createDate,DATE_FORMAT(a.UpdateDate,'%Y-%m-%d') as updateDate,"
+            + "a.CustomerName as customerName,a.CustomerCode as customerCode,"
             + " a.BabyBirthday as babyBirthday ";
 
 
     String whereSelectMem =
             "<where>" +
+                    "<if test='params.organizationId != null and params.organizationId != &apos;&apos;'> AND OrganizationId = #{ params.organizationId}  </if>" +
                     "<choose>" +
-                    //高级搜索
-                    "<when test='search = null  '> " +
-                    "<if test='params.id != null and params.id != &apos;&apos;'> AND Id like &apos;%${params.id}%&apos; </if>" +
+                    //当search为空时要么为高级搜索要么没有搜索暂时为不搜索
+                    "<when test='search == null or search == &apos;&apos;'>" +
                     "<if test='params.mobile != null and params.mobile != &apos;&apos;'> AND Mobile like &apos;%${params.mobile}%&apos; </if>" +
                     "<if test='params.wxName != null and params.wxName != &apos;&apos;'> AND WxName like &apos;%${params.wxName}%&apos; </if>" +
                     "<if test='params.openid != null and params.openid != &apos;&apos;'> AND Openid like &apos;%${params.openid}%&apos; </if>" +
@@ -43,8 +45,8 @@ public interface MarketingMembersMapper {
                     "<if test='params.babyBirthday != null and params.babyBirthday != &apos;&apos;'> AND BabyBirthday like &apos;%${params.babyBirthday}%&apos; </if>" +
                     "<if test='params.state != null and params.state != &apos;&apos;'> AND State like &apos;%${params.state}%&apos; </if>" +
                     "</when>" +
-                    //普通搜索
-                    "<when test='search != null and search != &apos;&apos; '> " +
+                    //如果search不为空则普通搜索
+                    "<otherwise>" +
                     "<if test='search !=null and search != &apos;&apos;'>" +
                     " AND (" +
                     " Mobile LIKE CONCAT('%',#{search},'%')  " +
@@ -63,9 +65,6 @@ public interface MarketingMembersMapper {
                     " OR State LIKE CONCAT('%',#{search},'%') " +
                     ")" +
                     "</if>" +
-                    "</when>" +
-                    //其他，则为默认所有，不进行筛选
-                    "<otherwise>" +
                     "</otherwise>" +
                     "</choose>" +
                     "</where>";
@@ -78,10 +77,10 @@ public interface MarketingMembersMapper {
      */
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
             + " Sex,Birthday,ProvinceCode,CountyCode,CityCode,ProvinceName,CountyName,"
-            + " CityName,RegistDate,State,OrganizationId,OrganizationFullName,NewRegisterFlag,CustomerName,CustomerCode,BabyBirthday)"
+            + " CityName,RegistDate,OrganizationId,OrganizationFullName,CustomerName,CustomerCode,BabyBirthday)"
             + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday},#{provinceCode},#{countyCode},#{cityCode},"
-            + " #{provinceName},#{countyName},#{cityName},#{registDate},#{state},#{organizationId},#{organizationFullName},"
-            + " #{newRegisterFlag},#{customerName},#{customerCode},#{babyBirthday} )")
+            + " #{provinceName},#{countyName},#{cityName},NOW(),#{organizationId},#{organizationFullName},"
+            + " #{customerName},#{customerCode},#{babyBirthday} )")
     int addMembers(Map<String,Object> map);
 
 
@@ -90,11 +89,21 @@ public interface MarketingMembersMapper {
      * @return
      */
     @Select(" <script>"
-            + " SELECT  #{portraitsList}  FROM marketing_members a "
+            + " SELECT  #{portraitsList}  FROM marketing_members "
             + whereSelectMem
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
             + " </script>")
     List<MarketingMembers> getAllMarketingMembersLikeParams(Map<String,Object> map);
+
+    /**
+     * 条件查询会员数量
+     * @return
+     */
+    @Select(" <script>"
+            + " SELECT  COUNT(1)  FROM marketing_members "
+            + whereSelectMem
+            + " </script>")
+    Integer getAllMarketingMembersCount(Map<String,Object> map);
 
 
     /**
@@ -119,6 +128,7 @@ public interface MarketingMembersMapper {
             + " <if test='customerName !=null and customerName != &apos;&apos; '> CustomerName = #{customerName} ,</if> "
             + " <if test='customerCode !=null and customerCode != &apos;&apos; '> CustomerCode = #{customerCode} ,</if> "
             + " <if test='babyBirthday !=null and babyBirthday != &apos;&apos; '> BabyBirthday = #{babyBirthday} ,</if> "
+            + " <if test='updateDate !=null and updateDate != &apos;&apos; '> UpdateDate = NOW() ,</if> "
             + " </set>"
             + " <where> "
             + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
@@ -134,8 +144,9 @@ public interface MarketingMembersMapper {
      * @param id
      * @return
      */
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE Id = #{id} AND OrganizationId = #{organizationId} ")
-    MarketingMembers getMemberById(@Param("id")int id,@Param("organizationId")String  organizationId);
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE UserId = #{userId} AND OrganizationId = #{organizationId} ")
+    MarketingMembers getMemberById(@Param("userId")String userId,@Param("organizationId")String  organizationId);
+
 
 
 
