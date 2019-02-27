@@ -13,10 +13,14 @@ import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsSe
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-
+/**
+ * 商户公众号绑定
+ * @author czm
+ *
+ */
 @RestController
-@RequestMapping("/marketing/weixin")
-public class WeixinOAController {
+@RequestMapping("/marketing/snBind")
+public class WeixinSNBindController {
     
     @Autowired
     private MarketingWxMerchantsService marketingWxMerchantsService;
@@ -42,4 +46,5 @@ public class WeixinOAController {
     	
         return marketingWxMerchantsService.get();
     }
+    
 }

@@ -5,8 +5,6 @@ import java.util.List;
 public class MarketingChannelParam {
 	private Long id;
 
-	private Long activitySetId;// 活动设置主键ID
-
 	private String customerName;// 经销商或门店名称
 
 	private String customerCode;// 客户唯一编码
@@ -25,14 +23,6 @@ public class MarketingChannelParam {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getActivitySetId() {
-		return activitySetId;
-	}
-
-	public void setActivitySetId(Long activitySetId) {
-		this.activitySetId = activitySetId;
 	}
 
 	public String getCustomerName() {

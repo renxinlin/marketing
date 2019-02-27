@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
@@ -22,6 +23,7 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPagePa
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWinningPageParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
@@ -30,6 +32,9 @@ import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO
 
 @Service
 public class MarketingActivitySetService {
+   @Autowired
+   private MarketingActivitySetMapper mSetMapper;
+	
    @Autowired
    private MarketingWinningPageMapper marWinningPageMapper;
 	
@@ -264,6 +269,27 @@ public class MarketingActivitySetService {
 		restResult.setState(200);
 		restResult.setMsg("更新成功");
 		return restResult;
+	}
+	/**
+	 * 活动扫码判断逻辑
+	 * @return
+	 */
+	public boolean judgement() {
+		//TODO 活动设置id需要通过码信息获取暂时待码平台提供接口
+		Long activitySetId=null;
+		
+		//1、判断该码批次是否参与活动
+		
+		//2、判断该活动是否已经停用
+		MarketingActivitySet mSet=mSetMapper.selectById(activitySetId);
+		//4、从es查询该码有没有被扫过
+		
+		
+
+		
+		
+		
+		return false;
 	}
 
 }

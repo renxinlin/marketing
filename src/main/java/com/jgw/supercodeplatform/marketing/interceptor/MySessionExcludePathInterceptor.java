@@ -23,6 +23,8 @@ public class MySessionExcludePathInterceptor implements WebMvcSessionInterceptor
                 "/swagger-ui.html",
                 "/v2/**",
                 "/doc.html",
+                "/marketing/scan/",
+                "/marketing/auth/**",
                 //静态资源
                 "/webjars/**"
         };
