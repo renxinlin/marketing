@@ -1,11 +1,9 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.jgw.supercodeplatform.common.pojo.common.ReturnParamsMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -163,4 +161,51 @@ public class CommonUtil extends UserInfoUtil {
 			throw new SuperCodeException("无组织信息，请确认当前用户为普通角色用户", 500);
 		}
 	}
+
+    /**
+     * @return
+     * @Author corbett
+     * @Description //TODO 校验手机号格式是否正确
+     * @Date 9:17 2018/12/20
+     * @Param
+     **/
+    public void checkPhoneFormat(String phone) throws SuperCodeException {
+        if (!PhoneFormatCheckUtils.isPhoneLegal(phone)) {
+            throw new SuperCodeException("手机号格式不正确", 500);
+        }
+    }
+
+
+    /**
+     * 获取32位UUID，去掉中间的-
+     *
+     * @return
+     * @author corbett
+     * @data 2018年9月4日
+     */
+    public String getUUID() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    /**
+     * 转换page类,并放到入参中
+     *
+     * @param params
+     * @param total
+     * @return
+     * @throws Exception
+     * @author liujianqiang
+     * @data 2018年11月12日
+     */
+    public ReturnParamsMap getPageAndRetuanMap(Map<String, Object> params, Integer total) throws Exception {
+        Map<String, Object> returnMap = new HashMap<String, Object>();
+        Page page = getPage(params, total);
+        params.put("startNumber", page.getStartNumber());//开始数字
+        params.put("pageSize", page.getPageSize());//每页记录数
+        ReturnParamsMap returnParamsMap = new ReturnParamsMap();
+        returnMap.put("pagination", page);
+        returnParamsMap.setParamsMap(params);
+        returnParamsMap.setReturnMap(returnMap);
+        return returnParamsMap;
+    }
 }

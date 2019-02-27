@@ -85,6 +85,17 @@ public class OrganizationPortraitService {
         MarketingOrganizationPortrait organizationPortrait = new MarketingOrganizationPortrait();
         organizationPortrait.setOrganizationId(params.get("organizationId").toString());
         organizationPortrait.setPortraitCode(params.get("portraitCode").toString());
+        MarketingOrganizationPortrait organizationPortrait1 = organizationPortraitMapper.getPortraitByPortraitCode(organizationPortrait);
+        List<MarketingOrganizationPortrait> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(params.get("organizationId").toString());
+        for (MarketingOrganizationPortrait portrait:organizationPortraits){
+            if (portrait.getFieldWeight()>organizationPortrait1.getFieldWeight()){
+                Map<String, Object> map = new HashMap<>();
+                map.put("organizationId",portrait.getOrganizationId());
+                map.put("portraitCode",portrait.getPortraitCode());
+                map.put("fieldWeight",portrait.getFieldWeight()-1);
+                organizationPortraitMapper.updatePortraits(map);
+            }
+        }
         return organizationPortraitMapper.deleOrgPortrait(organizationPortrait);
     }
 }

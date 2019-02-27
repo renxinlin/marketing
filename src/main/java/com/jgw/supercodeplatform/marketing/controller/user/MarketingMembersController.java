@@ -6,6 +6,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.jgw.supercodeplatform.common.pojo.common.ReturnParamsMap;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonObject;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -43,24 +45,23 @@ public class MarketingMembersController extends CommonUtil {
             @ApiJsonObject(name = "addMembers", value = {
                     @ApiJsonProperty(key = "openid", example = "wxid_asds4ad564sa56d", description = "微信号,必需"),
                     @ApiJsonProperty(key = "wxName",example = "zhangsan",description="微信姓名,必需"),
-                    @ApiJsonProperty(key = "mobileId", example = "18268322268", description = "手机号,必需"),
+                    @ApiJsonProperty(key = "mobile", example = "18268322268", description = "手机号,必需"),
                     @ApiJsonProperty(key = "userName",example = "zhangsan",description="用户姓名,必需"),
-                    @ApiJsonProperty(key = "sex", example = "男", description = "性别Name,必需"),
-                    @ApiJsonProperty(key = "birthday", example = "1979-02-21", description = "生日,必需"),
-                    @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需"),
-                    @ApiJsonProperty(key = "organizationFullName",example = "中化通讯公司",description="组织全称,必需"),
-                    @ApiJsonProperty(key = "provinceCode", example = "f4c1054fe0b84bd0a448070d98110b22", description = "省编码,必需"),
-                    @ApiJsonProperty(key = "countyCode", example = "f4c1054fe0b84bd0a448070d98110b22", description = "县编码,必需"),
-                    @ApiJsonProperty(key = "cityCode", example = "f4c1054fe0b84bd0a448070d98110b22", description = "市编码,必需"),
-                    @ApiJsonProperty(key = "provinceName", example = "浙江省", description = "省名称,必需"),
-                    @ApiJsonProperty(key = "countyName", example = "浙江省", description = "县名称,必需"),
-                    @ApiJsonProperty(key = "cityName", example = "杭州市", description = "市名称,必需"),
-                    @ApiJsonProperty(key = "customerName", example = "杭州店", description = "门店名称,必需"),
-                    @ApiJsonProperty(key = "customerCode", example = "1s15s15s1123", description = "门店编码,必需"),
-                    @ApiJsonProperty(key = "babyBirthday", example = "1979-02-21", description = "宝宝生日,非必需")
+                    @ApiJsonProperty(key = "sex", example = "男", description = "性别Name,非必需"),
+                    @ApiJsonProperty(key = "birthday", example = "1979-02-21", description = "生日,非必需"),
+                    @ApiJsonProperty(key = "organizationId", example = "2a66d681b6b2426eaf34d125a82dbc06", description = "组织Id,必需"),
+                    @ApiJsonProperty(key = "organizationFullName",example = "中化资产管理有限公司",description="组织全称,必需"),
+                    @ApiJsonProperty(key = "cityCode", example = "321002", description = "最低一级地区编码,必需"),
+                    //@ApiJsonProperty(key = "cityName", example = "杭州市", description = "最低一级名称,必需"),
+                    @ApiJsonProperty(key = "customerName", example = "杭州店", description = "门店名称,非必需"),
+                    @ApiJsonProperty(key = "customerCode", example = "1s15s15s1123", description = "门店编码,非必需"),
+                    @ApiJsonProperty(key = "babyBirthday", example = "1999-10-12", description = "宝宝生日,非必需")
             })
             @RequestBody Map<String, Object> params) throws Exception {
-        return new RestResult(200, "success", marketingMembersService.addMember(params));
+        validateRequestParamAndValueNotNull(params, "openid","wxName","mobile","userName","organizationId","organizationFullName","cityCode");
+        checkPhoneFormat(params.get("mobile").toString());
+        marketingMembersService.addMember(params);
+        return new RestResult(200, "success",null );
     }
 
 
@@ -69,8 +70,8 @@ public class MarketingMembersController extends CommonUtil {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "dsadsad165156163a1sddasd", value = "组织id,必需"),
-            @ApiImplicitParam(name = "search", paramType = "query", defaultValue = "12", value = "搜索条件,可以根据姓名,手机号或者工号模糊搜索,非必需"),
-            @ApiImplicitParam(name = "mobileId", paramType = "query", defaultValue = "18268322268", value = "高级搜索的手机号,非必需"),
+            @ApiImplicitParam(name = "search", paramType = "query", defaultValue = "12", value = "搜索条件,可以根据姓名,手机号或者微信名称等模糊搜索,非必需"),
+            @ApiImplicitParam(name = "mobile", paramType = "query", defaultValue = "18268322268", value = "高级搜索的手机号,非必需"),
             @ApiImplicitParam(name = "wxName", paramType = "query", defaultValue = "zhangsan", value = "高级搜索的微信名称,非必需"),
             @ApiImplicitParam(name = "openid", paramType = "query", defaultValue = "wxid_asds4ad564sa56d", value = "高级搜索的微信id,非必需"),
             @ApiImplicitParam(name = "userName", paramType = "query", defaultValue = "zhangsan", value = "高级搜索的用户姓名,非必需"),
@@ -84,14 +85,16 @@ public class MarketingMembersController extends CommonUtil {
             @ApiImplicitParam(name = "newRegisterFlag", paramType = "query", defaultValue = "1", value = "高级搜索的是否新注册的标志(1  表示是，0 表示不是),非必需"),
             @ApiImplicitParam(name = "registDate", paramType = "query", defaultValue = "1979-02-21", value = "高级搜索的注册时间,非必需"),
             @ApiImplicitParam(name = "state", paramType = "query", defaultValue = "1", value = "高级搜索的状态(1、 表示正常，0 表示下线),非必需"),
-            @ApiImplicitParam(name = "startTime", paramType = "query", defaultValue = "2018-10-11", value = "高级搜索的开始时间,非必需"),
-            @ApiImplicitParam(name = "endTime", paramType = "query", defaultValue = "2018-10-11", value = "高级搜索的结束时间,非必需"),
             @ApiImplicitParam(name = "pageSize", paramType = "query", defaultValue = "30", value = "每页记录数,不传默认10条,非必需"),
             @ApiImplicitParam(name = "current", paramType = "query", defaultValue = "3", value = "当前页,不传默认第一页,非必需"),
     })
     public RestResult memberList(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "organizationId");
-        return new RestResult(200, "success", marketingMembersService.getAllMarketingMembersLikeParams(params));
+        int totalCount = marketingMembersService.getAllMarketingMembersCount(params);//获取全部员工信息
+        ReturnParamsMap returnParamsMap = getPageAndRetuanMap(params, totalCount);//转换page类,并放到入参中
+        Map<String, Object> returnMap = returnParamsMap.getReturnMap();//返回map
+        returnMap = getRetunMap(returnMap, marketingMembersService.getAllMarketingMembersLikeParams(returnParamsMap.getParamsMap()));//统一返回结果list字段名
+        return new RestResult(200, "success", returnMap);
     }
 
 
@@ -107,29 +110,29 @@ public class MarketingMembersController extends CommonUtil {
         return new RestResult(200, "success",marketingMembersService.getMemberById(params));
     }
 
+
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "编辑会员", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult updateMember(
             @ApiJsonObject(name = "updateMembers", value = {
                     @ApiJsonProperty(key = "userId", example = "ad156wd15d61a56d1w56d1d1", description = "用户id,必需"),
-                    @ApiJsonProperty(key = "userName",example = "zhangsan",description="用户姓名,必需"),
-                    @ApiJsonProperty(key = "sex", example = "男", description = "性别Name,必需"),
-                    @ApiJsonProperty(key = "birthday", example = "1979-02-21", description = "生日,必需"),
+                    @ApiJsonProperty(key = "userName",example = "zhangsan",description="用户姓名,非必需"),
+                    @ApiJsonProperty(key = "sex", example = "男", description = "性别Name,非必需"),
+                    @ApiJsonProperty(key = "birthday", example = "1979-02-21", description = "生日,非必需"),
                     @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需"),
-                    @ApiJsonProperty(key = "provinceCode", example = "f4c1054fe0b84bd0a448070d98110b22", description = "省编码,必需"),
-                    @ApiJsonProperty(key = "countyCode", example = "f4c1054fe0b84bd0a448070d98110b22", description = "县编码,必需"),
-                    @ApiJsonProperty(key = "cityCode", example = "f4c1054fe0b84bd0a448070d98110b22", description = "市编码,必需"),
-                    @ApiJsonProperty(key = "provinceName", example = "浙江省", description = "省名称,必需"),
-                    @ApiJsonProperty(key = "countyName", example = "浙江省", description = "县名称,必需"),
-                    @ApiJsonProperty(key = "cityName", example = "杭州市", description = "市名称,必需"),
-                    @ApiJsonProperty(key = "customerName", example = "杭州店", description = "门店名称"),
-                    @ApiJsonProperty(key = "customerCode", example = "1huiof4ew6f465we", description = "门店编码"),
-                    @ApiJsonProperty(key = "babyBirthday", example = "1979-02-21", description = "宝宝生日")
+                    @ApiJsonProperty(key = "cityCode", example = "f4c1054fe0b84bd0a448070d98110b22", description = "最低一级地区编码编码,非必需"),
+                    @ApiJsonProperty(key = "customerName", example = "杭州店", description = "门店名称,非必需"),
+                    @ApiJsonProperty(key = "customerCode", example = "1huiof4ew6f465we", description = "门店编码,非必需"),
+                    @ApiJsonProperty(key = "babyBirthday", example = "1979-02-21", description = "宝宝生日,非必需")
             })
             @RequestBody Map<String, Object> params) throws Exception {
-        return new RestResult(200, "success", marketingMembersService.updateMembers(params));
+        validateRequestParamAndValueNotNull(params, "userId","organizationId");
+        marketingMembersService.updateMembers(params);
+        return new RestResult(200, "success",null );
     }
+
+
 
 
     @RequestMapping(value = "/enable/status", method = RequestMethod.PUT)
@@ -141,8 +144,13 @@ public class MarketingMembersController extends CommonUtil {
                     @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需")
             })
             @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "userId");
-        return new RestResult(200, "success", marketingMembersService.updateMembers(params));
+        validateRequestParamAndValueNotNull(params, "userId","organizationId");
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("userId", params.get("userId").toString());
+        map.put("organizationId", params.get("organizationId").toString());
+        map.put("state","1");
+        marketingMembersService.updateMembers(map);
+        return new RestResult(200, "success", null);
     }
 
 
@@ -155,8 +163,13 @@ public class MarketingMembersController extends CommonUtil {
                     @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需")
             })
             @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "userId");
-            return new RestResult(200, "success", marketingMembersService.updateMembers(params));
+        validateRequestParamAndValueNotNull(params, "userId","organizationId");
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("userId", params.get("userId").toString());
+        map.put("organizationId", params.get("organizationId").toString());
+        map.put("state","0");
+        marketingMembersService.updateMembers(map);
+        return new RestResult(200, "success", null);
     }
 
     /**
@@ -204,7 +217,6 @@ public class MarketingMembersController extends CommonUtil {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult getUserOrg(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "userId","organizationId");
         return new RestResult(200, "success",getOrganization());
     }
 

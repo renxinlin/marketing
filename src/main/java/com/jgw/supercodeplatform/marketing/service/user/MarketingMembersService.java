@@ -1,24 +1,31 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
+import com.jgw.supercodeplatform.marketing.pojo.admincode.MarketingAdministrativeCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class MarketingMembersService {
+public class MarketingMembersService extends CommonUtil {
 
     @Autowired
     private MarketingMembersMapper marketingMembersMapper;
 
     @Autowired
     private OrganizationPortraitMapper organizationPortraitMapper;
+
+    @Autowired
+    private AdminstrativeCodeMapper adminstrativeCodeMapper;
 
 
     /**
@@ -28,6 +35,20 @@ public class MarketingMembersService {
      * @throws Exception
      */
     public int addMember(Map<String,Object> map) throws Exception{
+        String userId = getUUID();
+        map.put("userId",userId);
+        Map<String,Object> areaCode = new HashMap<>();
+        areaCode.put("areaCode",map.get("cityCode").toString());
+        MarketingAdministrativeCode marketingAdministrativeCode = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
+        map.put("cityName",marketingAdministrativeCode.getCityName());
+        areaCode.put("areaCode",marketingAdministrativeCode.getParentAreaCode());
+        MarketingAdministrativeCode marketingAdministrativeCode2 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
+        map.put("countyName",marketingAdministrativeCode2.getCityName());
+        map.put("countyCode",marketingAdministrativeCode2.getAreaCode());
+        areaCode.put("areaCode",marketingAdministrativeCode2.getParentAreaCode());
+        MarketingAdministrativeCode marketingAdministrativeCode3 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
+        map.put("provinceName",marketingAdministrativeCode3.getCityName());
+        map.put("provinceCode",marketingAdministrativeCode3.getAreaCode());
         return marketingMembersMapper.addMembers(map);
     }
 
@@ -54,6 +75,15 @@ public class MarketingMembersService {
     }
 
     /**
+     * 条件查询会员数量
+     * @param map
+     * @return
+     */
+    public Integer getAllMarketingMembersCount(Map<String,Object> map){
+        return marketingMembersMapper.getAllMarketingMembersCount(map);
+    }
+
+    /**
      * 修改会员信息
      * @param map
      * @return
@@ -68,8 +98,8 @@ public class MarketingMembersService {
      * @return
      */
     public MarketingMembers getMemberById(Map<String,Object> map){
-        int id = Integer.valueOf(map.get("id").toString());
+        String userId = map.get("userId").toString();
         String organizationId = map.get("organizationId").toString();
-        return marketingMembersMapper.getMemberById(id,organizationId);
+        return marketingMembersMapper.getMemberById(userId,organizationId);
     }
 }

@@ -14,7 +14,7 @@ spring:
       max-request-size: 100Mb
   application: 
     name: platform-marketing-supercode-test
-  cloud: 
+  cloud:
     config:
       uri: http://192.168.2.216:7001
       profile: dev
