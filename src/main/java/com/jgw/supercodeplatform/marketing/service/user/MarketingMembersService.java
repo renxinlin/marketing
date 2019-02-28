@@ -102,4 +102,8 @@ public class MarketingMembersService extends CommonUtil {
         String organizationId = map.get("organizationId").toString();
         return marketingMembersMapper.getMemberById(userId,organizationId);
     }
+
+	public MarketingMembers selectByOpenIdAndOrgId(String openid, String organizationId) {
+		return marketingMembersMapper.selectByOpenIdAndOrgId(openid,organizationId);
+	}
 }

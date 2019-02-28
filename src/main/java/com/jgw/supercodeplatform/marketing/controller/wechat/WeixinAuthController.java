@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.wechat;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 /**
  * 微信授权等
@@ -22,13 +30,20 @@ import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsSe
 @RequestMapping("/marketing/auth")
 public class WeixinAuthController {
 	protected static Logger logger = LoggerFactory.getLogger(WeixinAuthController.class);
-    @Autowired
-    private MarketingWxMerchantsService marketingWxMerchantsService;
 
-    
+    /**
+     * 微信授权回调方法
+     * @param code
+     * @param state
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/code",method = RequestMethod.GET)
     public String getWXCode(String code ,String state) throws Exception {
     	logger.info("微信授权回调获取code="+code+",state="+state);
+    	if (StringUtils.isBlank(state)) {
+    		throw new SuperCodeException("state不能为空", 500);
+		}
     	String tokenParams="?appid="+WechatConstants.APPID+"&secret="+WechatConstants.secret+"&code="+code+"&grant_type=authorization_code";
     	HttpClientResult tokenhttpResult=HttpRequestUtil.doGet(WechatConstants.AUTH_ACCESS_TOKEN_URL+tokenParams);
     	String tokenContent=tokenhttpResult.getContent();
@@ -52,15 +67,12 @@ public class WeixinAuthController {
         	throw new SuperCodeException(tokenContent, 500);
 		}
         JSONObject userinfoObj=JSONObject.parseObject(userinfoContent);
+        String nickName=userinfoObj.getString("nickname");
         
-        
-        //1、判断该用户状态是否合法
-        //用户不存在保存用户
-        //2、判断该用户是否超过每天的扫码量
-       //3.判断是否需要手机登录及注册及绑定对应的openid或更新手机号
-      
+        logger.info("--------------------授权成功--------------------------------");
+       
         String nickname=userinfoObj.getString("nickname");
         return "success";
     }
-    
+
 }

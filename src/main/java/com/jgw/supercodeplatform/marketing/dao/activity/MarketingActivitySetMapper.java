@@ -10,6 +10,8 @@ public interface MarketingActivitySetMapper {
  		+ "ActivityStatus ActivityStatus,EachDayNumber EachDayNumber,EachMostNumber EachMostNumber,ActivityRangeMark ActivityRangeMark,autoFetch autoFetch";
 
 MarketingActivitySet selectById(Long activitySetId);
+
+Integer selectEachDayNumber(Long activitySetId);
  
  
 }

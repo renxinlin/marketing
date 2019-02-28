@@ -1,14 +1,22 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
@@ -28,10 +36,13 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
+import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 
 @Service
 public class MarketingActivitySetService {
+	protected static Logger logger = LoggerFactory.getLogger(MarketingActivitySetService.class);
+	
    @Autowired
    private MarketingActivitySetMapper mSetMapper;
 	
@@ -47,6 +58,11 @@ public class MarketingActivitySetService {
    @Autowired
    private MarketingChannelMapper mChannelMapper;
    
+   @Autowired
+   private MarketingActivityProductMapper mProductMapper;
+   
+   @Autowired
+   private CodeEsService codeEsService;
     /**
      * 根据活动id获取领取页和中奖页信息
      * @param activitySetId
@@ -271,25 +287,69 @@ public class MarketingActivitySetService {
 		return restResult;
 	}
 	/**
-	 * 活动扫码判断逻辑
+	 * 活动扫码跳转授权前判断逻辑
+	 * @param productBatchId 
+	 * @param productId 
+	 * @param codeTypeId 
+	 * @param codeId 
 	 * @return
+	 * @throws SuperCodeException 
+	 * @throws ParseException 
 	 */
-	public boolean judgement() {
-		//TODO 活动设置id需要通过码信息获取暂时待码平台提供接口
-		Long activitySetId=null;
-		
-		//1、判断该码批次是否参与活动
-		
-		//2、判断该活动是否已经停用
-		MarketingActivitySet mSet=mSetMapper.selectById(activitySetId);
-		//4、从es查询该码有没有被扫过
-		
-		
-
-		
-		
-		
-		return false;
+	public ScanCodeInfoMO judgeActivityScanCodeParam(String codeId, String codeTypeId, String productId, String productBatchId) throws SuperCodeException, ParseException {
+		logger.info("扫码接收到参数codeId="+codeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
+		if (StringUtils.isBlank(codeId) || StringUtils.isBlank(codeId)||StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)) {
+			throw new SuperCodeException("接收到码平台扫码信息有空值", 500);
+		}
+    	//1、判断该码批次是否参与活动
+		MarketingActivityProduct mProduct=mProductMapper.selectByProductAndProductBatchId(productId,productBatchId);
+		if (null==mProduct) {
+			throw new SuperCodeException("该码未参与活动", 500);
+		}
+		Long activitySetId=mProduct.getActivitySetId();
+    	//2、判断该活动是否存在及是否已经停用
+    	MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
+    	if (null==mActivitySet) {
+    		throw new SuperCodeException("活动已被删除无法参与", 500);
+    	}
+    	Integer activityStatus= mActivitySet.getActivityStatus();
+    	if (null==activityStatus || 0==activityStatus) {
+    		throw new SuperCodeException("活动已停止", 500);
+    	}
+    	//2、如果活动开始或结束时间不为空的话则判断扫码时间是否处于活动时间之内
+    	String startdate=mActivitySet.getActivityStartDate();
+    	String enddate=mActivitySet.getActivityEndDate();
+    	
+    	SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+    	String nowdate=format.format(new Date());
+    	long currentTime=format.parse(nowdate).getTime();
+    	if (StringUtils.isNotBlank(startdate)) {
+    		long startTime=format.parse(startdate).getTime();
+    		if (currentTime<startTime) {
+    			throw new SuperCodeException("活动还未开始", 500);
+			}
+		}
+    	
+    	if (StringUtils.isNotBlank(enddate)) {
+    		long endTime=format.parse(enddate).getTime();
+    		if (currentTime>endTime) {
+    			throw new SuperCodeException("活动已结束", 500);
+			}
+		}
+		ScanCodeInfoMO pMo=new ScanCodeInfoMO();
+		pMo.setCodeId(codeId);
+		pMo.setCodeTypeId(codeTypeId);
+		pMo.setProductBatchId(productBatchId);
+		pMo.setProductId(productId);
+		pMo.setActivitySetId(activitySetId);
+		return pMo;
+	}
+	
+	public MarketingActivitySet selectById(Long activitySetId) {
+		return mSetMapper.selectById(activitySetId);
+	}
+	public Integer selectEachDayNumber(Long activitySetId) {
+		return mSetMapper.selectEachDayNumber(activitySetId);
 	}
 
 }

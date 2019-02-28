@@ -2,7 +2,7 @@ package com.jgw.supercodeplatform.marketing.pojo;
 
 public class MarketingMembers {
 
-    private int id;//序号
+    private Long id;//序号
     private String openid;//微信id号
     private String wxName;//微信id号
     private String mobile;//手机
@@ -17,7 +17,7 @@ public class MarketingMembers {
     private String countyName;//县名称
     private String cityName;//市名称
     private String registDate;//注册时间
-    private String state;//状态(1、 表示正常，0 表示下线)
+    private Byte state;//状态(1、 表示正常，0 表示下线)
     private String organizationId;//组织Id
     private String organizationFullName;//组织全名
     private String newRegisterFlag;//是否新注册的标志(1  表示是，0 表示不是)
@@ -33,13 +33,7 @@ public class MarketingMembers {
 
 
 
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getMobile() {
         return mobile;
@@ -129,15 +123,27 @@ public class MarketingMembers {
         this.registDate = registDate;
     }
 
-    public String getState() {
-        return state;
-    }
+    public Long getId() {
+		return id;
+	}
 
-    public void setState(String state) {
-        this.state = state;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getOrganizationId() {
+	public Byte getState() {
+		return state;
+	}
+
+	public void setState(Byte state) {
+		this.state = state;
+	}
+
+
+
+
+
+	public String getOrganizationId() {
         return organizationId;
     }
 

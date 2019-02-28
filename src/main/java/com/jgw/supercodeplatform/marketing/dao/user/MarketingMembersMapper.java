@@ -147,6 +147,9 @@ public interface MarketingMembersMapper {
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE UserId = #{userId} AND OrganizationId = #{organizationId} ")
     MarketingMembers getMemberById(@Param("userId")String userId,@Param("organizationId")String  organizationId);
 
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} ")
+	MarketingMembers selectByOpenIdAndOrgId(@Param("openid")String openid, @Param("organizationId")String  organizationId);
+
 
 
 

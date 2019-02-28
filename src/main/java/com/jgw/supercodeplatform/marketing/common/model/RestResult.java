@@ -67,7 +67,7 @@ public class RestResult <T>{
 	}
 
 
-	public Object getResults() {
+	public T getResults() {
 		return results;
 	}
 
