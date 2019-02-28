@@ -20,7 +20,6 @@ public class EseTest {
 	
 	@Test
 	public void test1() {
-		cService.addScanCodeRecord("1", "11", "133", "1442", 21L);
 	}
 	
 	@Test

@@ -13,7 +13,6 @@ public class MarketingActivitySet {
     private String updateDate;//更新时间
     private Integer activityStatus;//活动状态(1、表示上架进展，0 表示下架)
     private Integer eachDayNumber;//每人每天次数
-    private Integer eachMostNumber;//每人最多获奖次数
     private Integer activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 )
     private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
 
@@ -37,9 +36,6 @@ public class MarketingActivitySet {
 		this.eachDayNumber = eachDayNumber;
 	}
 
-	public void setEachMostNumber(Integer eachMostNumber) {
-		this.eachMostNumber = eachMostNumber;
-	}
 
 	public String getOrganizationId() {
         return organizationId;
@@ -61,9 +57,6 @@ public class MarketingActivitySet {
 		return eachDayNumber;
 	}
 
-	public Integer getEachMostNumber() {
-		return eachMostNumber;
-	}
 
 	public String getActivityTitle() {
         return activityTitle;

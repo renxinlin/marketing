@@ -11,6 +11,8 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonObject;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonProperty;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -22,6 +24,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -41,26 +44,9 @@ public class MarketingMembersController extends CommonUtil {
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "招募会员（注册）", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult addMember(
-            @ApiJsonObject(name = "addMembers", value = {
-                    @ApiJsonProperty(key = "openid", example = "wxid_asds4ad564sa56d", description = "微信号,必需"),
-                    @ApiJsonProperty(key = "wxName",example = "zhangsan",description="微信姓名,必需"),
-                    @ApiJsonProperty(key = "mobile", example = "18268322268", description = "手机号,必需"),
-                    @ApiJsonProperty(key = "userName",example = "zhangsan",description="用户姓名,必需"),
-                    @ApiJsonProperty(key = "sex", example = "男", description = "性别Name,非必需"),
-                    @ApiJsonProperty(key = "birthday", example = "1979-02-21", description = "生日,非必需"),
-                    @ApiJsonProperty(key = "organizationId", example = "2a66d681b6b2426eaf34d125a82dbc06", description = "组织Id,必需"),
-                    @ApiJsonProperty(key = "organizationFullName",example = "中化资产管理有限公司",description="组织全称,必需"),
-                    @ApiJsonProperty(key = "cityCode", example = "321002", description = "最低一级地区编码,必需"),
-                    //@ApiJsonProperty(key = "cityName", example = "杭州市", description = "最低一级名称,必需"),
-                    @ApiJsonProperty(key = "customerName", example = "杭州店", description = "门店名称,非必需"),
-                    @ApiJsonProperty(key = "customerCode", example = "1s15s15s1123", description = "门店编码,非必需"),
-                    @ApiJsonProperty(key = "babyBirthday", example = "1999-10-12", description = "宝宝生日,非必需")
-            })
-            @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "openid","wxName","mobile","userName","organizationId","organizationFullName","cityCode");
-        checkPhoneFormat(params.get("mobile").toString());
-        marketingMembersService.addMember(params);
+    public RestResult addMember(@Valid@RequestBody MarketingMembersAddParam marketingMembersAddParam) throws Exception {
+        checkPhoneFormat(marketingMembersAddParam.getMobile());
+        marketingMembersService.addMember(marketingMembersAddParam);
         return new RestResult(200, "success",null );
     }
 
@@ -114,21 +100,8 @@ public class MarketingMembersController extends CommonUtil {
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "编辑会员", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult updateMember(
-            @ApiJsonObject(name = "updateMembers", value = {
-                    @ApiJsonProperty(key = "userId", example = "ad156wd15d61a56d1w56d1d1", description = "用户id,必需"),
-                    @ApiJsonProperty(key = "userName",example = "zhangsan",description="用户姓名,非必需"),
-                    @ApiJsonProperty(key = "sex", example = "男", description = "性别Name,非必需"),
-                    @ApiJsonProperty(key = "birthday", example = "1979-02-21", description = "生日,非必需"),
-                    @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需"),
-                    @ApiJsonProperty(key = "cityCode", example = "f4c1054fe0b84bd0a448070d98110b22", description = "最低一级地区编码编码,非必需"),
-                    @ApiJsonProperty(key = "customerName", example = "杭州店", description = "门店名称,非必需"),
-                    @ApiJsonProperty(key = "customerCode", example = "1huiof4ew6f465we", description = "门店编码,非必需"),
-                    @ApiJsonProperty(key = "babyBirthday", example = "1979-02-21", description = "宝宝生日,非必需")
-            })
-            @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "userId","organizationId");
-        marketingMembersService.updateMembers(params);
+    public RestResult updateMember(@Valid @RequestBody MarketingMembersUpdateParam marketingMembersUpdateParam) throws Exception {
+        marketingMembersService.updateMembers(marketingMembersUpdateParam);
         return new RestResult(200, "success",null );
     }
 
@@ -149,7 +122,7 @@ public class MarketingMembersController extends CommonUtil {
         map.put("userId", params.get("userId").toString());
         map.put("organizationId", params.get("organizationId").toString());
         map.put("state","1");
-        marketingMembersService.updateMembers(map);
+        marketingMembersService.updateMembersStatus(map);
         return new RestResult(200, "success", null);
     }
 
@@ -168,7 +141,7 @@ public class MarketingMembersController extends CommonUtil {
         map.put("userId", params.get("userId").toString());
         map.put("organizationId", params.get("organizationId").toString());
         map.put("state","0");
-        marketingMembersService.updateMembers(map);
+        marketingMembersService.updateMembersStatus(map);
         return new RestResult(200, "success", null);
     }
 

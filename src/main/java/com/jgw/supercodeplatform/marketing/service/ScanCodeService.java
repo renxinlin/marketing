@@ -72,6 +72,7 @@ public class ScanCodeService {
 				}
 			}
     	}
+		return restResult;
         
       
        //3.判断是否需要手机登录及注册及绑定对应的openid或更新手机号

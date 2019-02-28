@@ -19,7 +19,7 @@ public interface MarketingActivityMapper extends CommonSql{
 					"<choose>" +
 					//当search为空时要么为高级搜索要么没有搜索暂时为不搜索
 					"<when test='search == null or search == &apos;&apos;'>" +
-					
+
 					"</when>" +
 					//如果search不为空则普通搜索
 					"<otherwise>" +
