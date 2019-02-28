@@ -1,9 +1,6 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 
@@ -15,12 +12,28 @@ public interface MarketingReceivingPageMapper {
     MarketingReceivingPage getByActivityId(@Param("activitySetId")Long activitySetId);
 
     @Insert(" INSERT INTO marketing_ template(TemplateId,ActivitySetId,IsReceivePage,TextContent,PicAddress,"
-            + " IsQrcodeView,QrcodeUrl,CreateDate,UpdateDate )"
+            + " IsQrcodeView,QrcodeUrl )"
             + " VALUES(#{templateId},#{activitySetId},#{isReceivePage},#{textContent},#{picAddress},"
-            + " #{isQrcodeView},#{qrcodeUrl},#{cityName},NOW(),#{organizationId},#{organizationFullName},"
-            + " #{customerName},#{customerCode},#{babyBirthday} )")
+            + " #{isQrcodeView},#{qrcodeUrl} )")
 	int insert(MarketingReceivingPage mPage);
 
+    @Update(" <script>"
+            + " UPDATE marketing_ template "
+            + " <set>"
+            + " <if test='templateId !=null and templateId != &apos;&apos; '> TemplateId = #{templateId} ,</if> "
+            + " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> ActivitySetId = #{activitySetId} ,</if> "
+            + " <if test='isReceivePage !=null and isReceivePage != &apos;&apos; '> IsReceivePage = #{isReceivePage} ,</if> "
+            + " <if test='provinceCode !=null and provinceCode != &apos;&apos; '> ProvinceCode = #{provinceCode} ,</if> "
+            + " <if test='textContent !=null and textContent != &apos;&apos; '> TextContent = #{textContent} ,</if> "
+            + " <if test='picAddress !=null and picAddress != &apos;&apos; '> PicAddress = #{picAddress} ,</if> "
+            + " <if test='isQrcodeView !=null and isQrcodeView != &apos;&apos; '> IsQrcodeView = #{isQrcodeView} ,</if> "
+            + " <if test='qrcodeUrl !=null and qrcodeUrl != &apos;&apos; '> QrcodeUrl = #{qrcodeUrl} ,</if> "
+            + " <if test='updateDate !=null and updateDate != &apos;&apos; '> UpdateDate = NOW() ,</if> "
+            + " </set>"
+            + " <where> "
+            + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+            + " </where>"
+            + " </script>")
 	void update(MarketingReceivingPage mReceivingPage);
 
 }
