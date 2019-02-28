@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.dao.user;
 
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import org.apache.ibatis.annotations.*;
 
@@ -35,7 +36,7 @@ public interface MarketingMembersMapper {
             + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday},#{provinceCode},#{countyCode},#{cityCode},"
             + " #{provinceName},#{countyName},#{cityName},NOW(),#{organizationId},#{organizationFullName},"
             + " #{customerName},#{customerCode},#{babyBirthday} )")
-    int addMembers(Map<String,Object> map);
+    int addMembers(MarketingMembersAddParam marketingMembersAddParam);
 
 
     /**

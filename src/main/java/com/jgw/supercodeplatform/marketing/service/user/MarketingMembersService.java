@@ -4,6 +4,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
@@ -35,22 +36,22 @@ public class MarketingMembersService extends CommonUtil {
      * @return
      * @throws Exception
      */
-    public int addMember(Map<String,Object> map) throws Exception{
+    public int addMember(MarketingMembersAddParam marketingMembersAddParam) throws Exception{
         String userId = getUUID();
-        map.put("userId",userId);
+        marketingMembersAddParam.setUserId(userId);
         Map<String,Object> areaCode = new HashMap<>();
-        areaCode.put("areaCode",map.get("cityCode").toString());
+        areaCode.put("areaCode",marketingMembersAddParam.getCityCode());
         MarketingAdministrativeCode marketingAdministrativeCode = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
-        map.put("cityName",marketingAdministrativeCode.getCityName());
+        marketingMembersAddParam.setCityName(marketingAdministrativeCode.getCityName());
         areaCode.put("areaCode",marketingAdministrativeCode.getParentAreaCode());
         MarketingAdministrativeCode marketingAdministrativeCode2 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
-        map.put("countyName",marketingAdministrativeCode2.getCityName());
-        map.put("countyCode",marketingAdministrativeCode2.getAreaCode());
+        marketingMembersAddParam.setCountyName(marketingAdministrativeCode2.getCityName());
+        marketingMembersAddParam.setCountyCode(marketingAdministrativeCode2.getAreaCode());
         areaCode.put("areaCode",marketingAdministrativeCode2.getParentAreaCode());
         MarketingAdministrativeCode marketingAdministrativeCode3 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
-        map.put("provinceName",marketingAdministrativeCode3.getCityName());
-        map.put("provinceCode",marketingAdministrativeCode3.getAreaCode());
-        return marketingMembersMapper.addMembers(map);
+        marketingMembersAddParam.setProvinceName(marketingAdministrativeCode3.getCityName());
+        marketingMembersAddParam.setProvinceCode(marketingAdministrativeCode3.getAreaCode());
+        return marketingMembersMapper.addMembers(marketingMembersAddParam);
     }
 
     /**
