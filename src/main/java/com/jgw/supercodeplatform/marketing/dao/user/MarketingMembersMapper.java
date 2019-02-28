@@ -24,52 +24,6 @@ public interface MarketingMembersMapper {
             + " a.BabyBirthday as babyBirthday ";
 
 
-    String whereSelectMem =
-            "<where>" +
-                    "<if test='params.organizationId != null and params.organizationId != &apos;&apos;'> AND OrganizationId = #{ params.organizationId}  </if>" +
-                    "<choose>" +
-                    //当search为空时要么为高级搜索要么没有搜索暂时为不搜索
-                    "<when test='search == null or search == &apos;&apos;'>" +
-                    "<if test='params.mobile != null and params.mobile != &apos;&apos;'> AND Mobile like &apos;%${params.mobile}%&apos; </if>" +
-                    "<if test='params.wxName != null and params.wxName != &apos;&apos;'> AND WxName like &apos;%${params.wxName}%&apos; </if>" +
-                    "<if test='params.openid != null and params.openid != &apos;&apos;'> AND Openid like &apos;%${params.openid}%&apos; </if>" +
-                    "<if test='params.userName != null and params.userName != &apos;&apos;'> AND UserName like &apos;%${params.userName}%&apos; </if>" +
-                    "<if test='params.sex != null and params.sex != &apos;&apos;'> AND Sex like &apos;%${params.sex}%&apos; </if>" +
-                    "<if test='params.birthday != null and params.birthday != &apos;&apos;'> AND Birthday like &apos;%${params.birthday}%&apos; </if>" +
-                    "<if test='params.provinceName != null and params.provinceName != &apos;&apos;'> AND ProvinceName like &apos;%${params.provinceName}%&apos; </if>" +
-                    "<if test='params.countyName != null and params.countyName != &apos;&apos;'> AND CountyName like &apos;%${params.countyName}%&apos; </if>" +
-                    "<if test='params.cityName != null and params.cityName != &apos;&apos;'> AND CityName like &apos;%${params.cityName}%&apos; </if>" +
-                    "<if test='params.customerName != null and params.customerName != &apos;&apos;'> AND CustomerName like &apos;%${params.customerName}%&apos; </if>" +
-                    "<if test='params.newRegisterFlag != null and params.newRegisterFlag != &apos;&apos;'> AND NewRegisterFlag like &apos;%${params.newRegisterFlag}%&apos; </if>" +
-                    "<if test='params.registDate != null and params.registDate != &apos;&apos;'> AND RegistDate like &apos;%${params.registDate}%&apos; </if>" +
-                    "<if test='params.babyBirthday != null and params.babyBirthday != &apos;&apos;'> AND BabyBirthday like &apos;%${params.babyBirthday}%&apos; </if>" +
-                    "<if test='params.state != null and params.state != &apos;&apos;'> AND State like &apos;%${params.state}%&apos; </if>" +
-                    "</when>" +
-                    //如果search不为空则普通搜索
-                    "<otherwise>" +
-                    "<if test='search !=null and search != &apos;&apos;'>" +
-                    " AND (" +
-                    " Mobile LIKE CONCAT('%',#{search},'%')  " +
-                    " OR WxName LIKE CONCAT('%',#{search},'%') " +
-                    " OR Openid LIKE CONCAT('%',#{search},'%') " +
-                    " OR UserName LIKE CONCAT('%',#{search},'%') " +
-                    " OR Sex LIKE CONCAT('%',#{search},'%') " +
-                    " OR Birthday LIKE CONCAT('%',#{search},'%') " +
-                    " OR ProvinceName LIKE CONCAT('%',#{search},'%') " +
-                    " OR CountyName LIKE CONCAT('%',#{search},'%') " +
-                    " OR CityName LIKE CONCAT('%',#{search},'%') " +
-                    " OR CustomerName LIKE CONCAT('%',#{search},'%') " +
-                    " OR NewRegisterFlag LIKE CONCAT('%',#{search},'%') " +
-                    " OR RegistDate LIKE CONCAT('%',#{search},'%') " +
-                    " OR BabyBirthday LIKE CONCAT('%',#{search},'%') " +
-                    " OR State LIKE CONCAT('%',#{search},'%') " +
-                    ")" +
-                    "</if>" +
-                    "</otherwise>" +
-                    "</choose>" +
-                    "</where>";
-
-
     /**
      * 会员注册
      * @param map
@@ -89,9 +43,43 @@ public interface MarketingMembersMapper {
      * @return
      */
     @Select(" <script>"
-            + " SELECT  #{portraitsList}  FROM marketing_members "
-            + whereSelectMem
+            + " SELECT  ${portraitsList}  FROM marketing_members "
+            + " <where>"
+            + "  OrganizationId = #{ organizationId }  "
+            + " <if test='mobile != null and mobile != &apos;&apos;'> AND Mobile like &apos;%${mobile}%&apos; </if>"
+            + " <if test='wxName != null and wxName != &apos;&apos;'> AND WxName like &apos;%${wxName}%&apos; </if>"
+            + " <if test='openid != null and openid != &apos;&apos;'> AND Openid like &apos;%${openid}%&apos; </if>"
+            + " <if test='userName != null and userName != &apos;&apos;'> AND UserName like &apos;%${userName}%&apos; </if>"
+            + " <if test='sex != null and sex != &apos;&apos;'> AND Sex like &apos;%${sex}%&apos; </if>"
+            + " <if test='birthday != null and birthday != &apos;&apos;'> AND Birthday like &apos;%${birthday}%&apos; </if>"
+            + " <if test='provinceName != null and provinceName != &apos;&apos;'> AND ProvinceName like &apos;%${provinceName}%&apos; </if>"
+            + " <if test='countyName != null and countyName != &apos;&apos;'> AND CountyName like &apos;%${countyName}%&apos; </if>"
+            + " <if test='cityName != null and cityName != &apos;&apos;'> AND CityName like &apos;%${cityName}%&apos; </if>"
+            + " <if test='customerName != null and customerName != &apos;&apos;'> AND CustomerName like &apos;%${customerName}%&apos; </if>"
+            + " <if test='newRegisterFlag != null and newRegisterFlag != &apos;&apos;'> AND NewRegisterFlag like &apos;%${newRegisterFlag}%&apos; </if>"
+            + " <if test='registDate != null and registDate != &apos;&apos;'> AND RegistDate like &apos;%${registDate}%&apos; </if>"
+            + " <if test='babyBirthday != null and babyBirthday != &apos;&apos;'> AND BabyBirthday like &apos;%${babyBirthday}%&apos; </if>"
+            + " <if test='state != null and state != &apos;&apos;'> AND State like &apos;%${state}%&apos; </if>"
+            + " <if test='search !=null and search != &apos;&apos;'>"
+            + " AND ("
+            + " Mobile LIKE binary CONCAT('%',#{search},'%')  "
+            + " OR WxName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Openid LIKE binary CONCAT('%',#{search},'%') "
+            + " OR UserName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Sex LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Birthday LIKE binary CONCAT('%',#{search},'%') "
+            + " OR ProvinceName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR CountyName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR CityName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR CustomerName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR NewRegisterFlag LIKE binary CONCAT('%',#{search},'%') "
+            + " OR RegistDate LIKE binary CONCAT('%',#{search},'%') "
+            + " OR BabyBirthday LIKE binary CONCAT('%',#{search},'%') "
+            + " OR State LIKE binary CONCAT('%',#{search},'%') "
+            + ")"
+            + " </if>"
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
+            + " </where>"
             + " </script>")
     List<MarketingMembers> getAllMarketingMembersLikeParams(Map<String,Object> map);
 
@@ -101,7 +89,41 @@ public interface MarketingMembersMapper {
      */
     @Select(" <script>"
             + " SELECT  COUNT(1)  FROM marketing_members "
-            + whereSelectMem
+            + " <where>"
+            + "  OrganizationId = #{ organizationId} "
+            + " <if test='mobile != null and mobile != &apos;&apos;'> AND Mobile like &apos;%${mobile}%&apos; </if>"
+            + " <if test='wxName != null and wxName != &apos;&apos;'> AND WxName like &apos;%${wxName}%&apos; </if>"
+            + " <if test='openid != null and openid != &apos;&apos;'> AND Openid like &apos;%${openid}%&apos; </if>"
+            + " <if test='userName != null and userName != &apos;&apos;'> AND UserName like &apos;%${userName}%&apos; </if>"
+            + " <if test='sex != null and sex != &apos;&apos;'> AND Sex like &apos;%${sex}%&apos; </if>"
+            + " <if test='birthday != null and birthday != &apos;&apos;'> AND Birthday like &apos;%${birthday}%&apos; </if>"
+            + " <if test='provinceName != null and provinceName != &apos;&apos;'> AND ProvinceName like &apos;%${provinceName}%&apos; </if>"
+            + " <if test='countyName != null and countyName != &apos;&apos;'> AND CountyName like &apos;%${countyName}%&apos; </if>"
+            + " <if test='cityName != null and cityName != &apos;&apos;'> AND CityName like &apos;%${cityName}%&apos; </if>"
+            + " <if test='customerName != null and customerName != &apos;&apos;'> AND CustomerName like &apos;%${customerName}%&apos; </if>"
+            + " <if test='newRegisterFlag != null and newRegisterFlag != &apos;&apos;'> AND NewRegisterFlag like &apos;%${newRegisterFlag}%&apos; </if>"
+            + " <if test='registDate != null and registDate != &apos;&apos;'> AND RegistDate like &apos;%${registDate}%&apos; </if>"
+            + " <if test='babyBirthday != null and babyBirthday != &apos;&apos;'> AND BabyBirthday like &apos;%${babyBirthday}%&apos; </if>"
+            + " <if test='state != null and state != &apos;&apos;'> AND State like &apos;%${state}%&apos; </if>"
+            + " <if test='search !=null and search != &apos;&apos;'>"
+            + " AND ("
+            + " Mobile LIKE binary CONCAT('%',#{search},'%')  "
+            + " OR WxName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Openid LIKE binary CONCAT('%',#{search},'%') "
+            + " OR UserName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Sex LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Birthday LIKE binary CONCAT('%',#{search},'%') "
+            + " OR ProvinceName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR CountyName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR CityName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR CustomerName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR NewRegisterFlag LIKE binary CONCAT('%',#{search},'%') "
+            + " OR RegistDate LIKE binary CONCAT('%',#{search},'%') "
+            + " OR BabyBirthday LIKE binary CONCAT('%',#{search},'%') "
+            + " OR State LIKE binary CONCAT('%',#{search},'%') "
+            + ")"
+            + " </if>"
+            + " </where>"
             + " </script>")
     Integer getAllMarketingMembersCount(Map<String,Object> map);
 

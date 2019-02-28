@@ -4,6 +4,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.admincode.MarketingAdministrativeCode;
@@ -58,19 +59,29 @@ public class MarketingMembersService extends CommonUtil {
      * @return
      */
     public List<MarketingMembers> getAllMarketingMembersLikeParams(Map<String,Object> map){
-        List<MarketingOrganizationPortrait> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(map.get("organization").toString());
+        List<MarketingOrganizationPortrait> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(map.get("organizationId").toString());
         List<String> portraitsList = new ArrayList<>();
         portraitsList.add("Mobile");
         portraitsList.add("WxName");
         portraitsList.add("Openid");
         for (MarketingOrganizationPortrait portrait:organizationPortraits){
             if (!"Mobile".equals(portrait.getPortraitCode())){
-                portraitsList.add(portrait.getPortraitCode());
+                if ("Birthday".equals(portrait.getPortraitCode())||"BabyBirthday".equals(portrait.getPortraitCode())){
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(" DATE_FORMAT( ");
+                    sb.append( portrait.getPortraitCode());
+                    sb.append(",'%Y-%m-%d') as " );
+                    sb.append(portrait.getPortraitCode() );
+                    portraitsList.add(sb.toString());
+                }else {
+                    portraitsList.add(portrait.getPortraitCode());
+                }
             }
         }
         portraitsList.add("State");
         String list = portraitsList.toString().replace("[","").replace("]","");;
         map.put("portraitsList",list);
+        System.out.println(list);
         return marketingMembersMapper.getAllMarketingMembersLikeParams(map);
     }
 
@@ -88,7 +99,38 @@ public class MarketingMembersService extends CommonUtil {
      * @param map
      * @return
      */
-    public int updateMembers(Map<String,Object> map){
+    public int updateMembers(MarketingMembersUpdateParam membersUpdateParam){
+        Map<String,Object> map = new HashMap<>();
+        map.put("userId",membersUpdateParam.getUserId());
+        map.put("userName",membersUpdateParam.getUserName());
+        map.put("sex",membersUpdateParam.getSex());
+        map.put("birthday",membersUpdateParam.getBirthday());
+        map.put("organizationId",membersUpdateParam.getOrganizationId());
+        map.put("cityCode",membersUpdateParam.getCityCode());
+        map.put("customerName",membersUpdateParam.getCustomerName());
+        map.put("customerCode",membersUpdateParam.getCustomerCode());
+        map.put("babyBirthday",membersUpdateParam.getBabyBirthday());
+        Map<String,Object> areaCode = new HashMap<>();
+        areaCode.put("areaCode",map.get("cityCode").toString());
+        MarketingAdministrativeCode marketingAdministrativeCode = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
+        map.put("cityName",marketingAdministrativeCode.getCityName());
+        areaCode.put("areaCode",marketingAdministrativeCode.getParentAreaCode());
+        MarketingAdministrativeCode marketingAdministrativeCode2 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
+        map.put("countyName",marketingAdministrativeCode2.getCityName());
+        map.put("countyCode",marketingAdministrativeCode2.getAreaCode());
+        areaCode.put("areaCode",marketingAdministrativeCode2.getParentAreaCode());
+        MarketingAdministrativeCode marketingAdministrativeCode3 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
+        map.put("provinceName",marketingAdministrativeCode3.getCityName());
+        map.put("provinceCode",marketingAdministrativeCode3.getAreaCode());
+        return marketingMembersMapper.updateMembers(map);
+    }
+
+    /**
+     * 修改会员状态
+     * @param map
+     * @return
+     */
+    public int updateMembersStatus(Map<String,Object> map){
         return marketingMembersMapper.updateMembers(map);
     }
 
