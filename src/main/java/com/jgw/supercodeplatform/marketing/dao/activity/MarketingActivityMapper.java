@@ -2,15 +2,13 @@ package com.jgw.supercodeplatform.marketing.dao.activity;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
+import org.apache.ibatis.mapping.StatementType;
 
 @Mapper
 public interface MarketingActivityMapper extends CommonSql{
@@ -75,10 +73,10 @@ public interface MarketingActivityMapper extends CommonSql{
 
 
 
-	@Insert(" INSERT INTO marketing_activity(ActivityType,ActivityType)"
-			+ " VALUES(#{activityType},#{activityType} )")
-	@Options(useGeneratedKeys=true, keyProperty="id", keyColumn="Id")
-	int addActivity(MarketingActivity marketingActivity);
+	@Insert(" INSERT INTO marketing_activity(ActivityType,ActivityName)"
+			+ " VALUES(#{ma.activityType},#{ma.activityName} )")
+	@Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
+	int addActivity(@Param("ma") MarketingActivity marketingActivity);
 
 
 

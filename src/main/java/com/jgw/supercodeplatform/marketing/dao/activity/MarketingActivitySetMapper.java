@@ -37,7 +37,7 @@ public interface MarketingActivitySetMapper {
    @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle,"
            + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus,EachDayNumber,"
            + " ActivityRangeMark,autoFetch) "
-           + " VALUES(#{activityId},#{organizationId},#{organizationFullName},#{activityTitle},#{activityStartDate},"
+           + " VALUES(#{activityId},#{organizationId},#{organizatioIdlName},#{activityTitle},#{activityStartDate},"
            + "#{activityEndDate},#{updateUserId},#{updateUserName},#{activityStatus},#{eachDayNumber},#{activityRangeMark}, "
            + "#{autoFetch}"
            + ")")

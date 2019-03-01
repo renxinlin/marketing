@@ -125,7 +125,10 @@ public class MarketingActivitySetService extends CommonUtil {
 		
 		//保存领取页
 		saveReceivingPage(mReceivingPageParam,activitySetId);
-		return null;
+		RestResult<String> restResult=new RestResult<String>();
+		restResult.setState(200);
+		restResult.setMsg("成功");
+		return restResult;
 	}
 	
 	/**
@@ -153,6 +156,8 @@ public class MarketingActivitySetService extends CommonUtil {
 		mPage.setPicAddress(mReceivingPageParam.getPicAddress());
 		//TODO 上传二维码
 		String qrcodeUrl=null;
+		mPage.setActivitySetId(activitySetId);
+		mPage.setQrcodeUrl(mReceivingPageParam.getQrcodeUrl());
 		mPage.setQrcodeUrl(qrcodeUrl);
 		mPage.setTemplateId(mReceivingPageParam.getTemplateId());
 		mPage.setTextContent(mReceivingPageParam.getTextContent());

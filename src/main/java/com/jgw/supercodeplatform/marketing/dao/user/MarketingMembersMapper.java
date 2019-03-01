@@ -24,7 +24,7 @@ public interface MarketingMembersMapper {
             + " a.CountyCode as countyCode,a.CityCode as cityCode,a.ProvinceName as provinceName,"
             + " a.CountyName as countyName,a.CityName as cityName,"
             + " DATE_FORMAT(a.RegistDate,'%Y-%m-%d') as registDate,"
-            + " a.State as state,a.OrganizationId as organizationId,a.OrganizationFullName as organizationFullName,"
+            + " a.State as state,a.OrganizationId as organizationId,"
             + " a.NewRegisterFlag as newRegisterFlag ,"
             + " DATE_FORMAT(a.CreateDate,'%Y-%m-%d') as createDate,DATE_FORMAT(a.UpdateDate,'%Y-%m-%d') as updateDate,"
             + "a.CustomerName as customerName,a.CustomerCode as customerCode,"
@@ -38,9 +38,9 @@ public interface MarketingMembersMapper {
      */
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
             + " Sex,Birthday,ProvinceCode,CountyCode,CityCode,ProvinceName,CountyName,"
-            + " CityName,RegistDate,OrganizationId,OrganizationFullName,CustomerName,CustomerCode,BabyBirthday)"
+            + " CityName,RegistDate,OrganizationId,CustomerName,CustomerCode,BabyBirthday)"
             + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday},#{provinceCode},#{countyCode},#{cityCode},"
-            + " #{provinceName},#{countyName},#{cityName},NOW(),#{organizationId},#{organizationFullName},"
+            + " #{provinceName},#{countyName},#{cityName},NOW(),#{organizationId},"
             + " #{customerName},#{customerCode},#{babyBirthday} )")
     int addMembers(MarketingMembersAddParam marketingMembersAddParam);
 

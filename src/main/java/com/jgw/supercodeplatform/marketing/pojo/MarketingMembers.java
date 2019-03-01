@@ -19,7 +19,6 @@ public class MarketingMembers {
     private String registDate;//注册时间
     private Byte state;//状态(1、 表示正常，0 表示下线)
     private String organizationId;//组织Id
-    private String organizationFullName;//组织全名
     private String newRegisterFlag;//是否新注册的标志(1  表示是，0 表示不是)
     private String createDate;//建立日期
     private String updateDate;//修改日期
@@ -154,14 +153,6 @@ public class MarketingMembers {
 
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
-    }
-
-    public String getOrganizationFullName() {
-        return organizationFullName;
-    }
-
-    public void setOrganizationFullName(String organizationFullName) {
-        this.organizationFullName = organizationFullName;
     }
 
     public String getNewRegisterFlag() {

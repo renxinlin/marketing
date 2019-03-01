@@ -7,7 +7,7 @@ package com.jgw.supercodeplatform.marketing.pojo;
 public class MarketingReceivingPage {
     private int id;//序号
     private String templateId;//模板Id
-    private String activitySetId;//活动设置主键id
+    private Long activitySetId;//活动设置主键id
     private Byte isReceivePage;//是否显示领取页面(1  表示显示，0 表示不显示)
     private String textContent;//文本内容及字号，支持多文本
     private String picAddress;//图片地址,支持多图片
@@ -88,11 +88,11 @@ public class MarketingReceivingPage {
         this.picAddress = picAddress;
     }
 
-    public String getActivitySetId() {
+    public Long getActivitySetId() {
         return activitySetId;
     }
 
-    public void setActivitySetId(String activitySetId) {
+    public void setActivitySetId(Long activitySetId) {
         this.activitySetId = activitySetId;
     }
 }
