@@ -1,18 +1,22 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
-import com.jgw.supercodeplatform.common.pojo.common.ReturnParamsMap;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.common.pojo.common.ReturnParamsMap;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.page.NormalProperties;
 import com.jgw.supercodeplatform.marketing.common.page.Page;
+import com.jgw.supercodeplatform.marketing.common.properties.NormalProperties;
 import com.jgw.supercodeplatform.user.UserInfoUtil;
 
 /**
@@ -22,9 +26,6 @@ import com.jgw.supercodeplatform.user.UserInfoUtil;
  */
 @Component
 public class CommonUtil extends UserInfoUtil {
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     public void validateRequestParamAndValueNotNull(Map<String, Object> params, String... args) throws SuperCodeException {
 
@@ -186,7 +187,23 @@ public class CommonUtil extends UserInfoUtil {
     public String getUUID() {
         return UUID.randomUUID().toString().replace("-", "");
     }
-
+    /**
+     * 产生6位随机数
+     *
+     * @return
+     * @throws Exception
+     * @author liujianqiang
+     * @data 2018年9月5日
+     */
+    public String getSixRandom() throws Exception {
+        Random random = new Random();
+        int sixRandom = random.nextInt(899999) + 100000;
+        String result = "" + sixRandom;
+        if (result.length() != 6) {
+            throw new Exception("不是六位随机数,number= " + result);
+        }
+        return result;
+    }
     /**
      * 转换page类,并放到入参中
      *

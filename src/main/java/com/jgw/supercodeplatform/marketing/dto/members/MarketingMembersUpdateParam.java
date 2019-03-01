@@ -18,9 +18,6 @@ public class MarketingMembersUpdateParam {
     @ApiModelProperty(value = "生日")
     private String birthday;//生日
 
-    @ApiModelProperty(value = "组织Id",required=true)
-    private String organizationId;//组织Id
-
     @ApiModelProperty(value = "市编码")
     private String cityCode;//市编码
 
@@ -33,6 +30,12 @@ public class MarketingMembersUpdateParam {
     @ApiModelProperty(value = "宝宝生日")
     private String babyBirthday;//宝宝生日
 
+    @ApiModelProperty(value = "微信id号")
+    private String openid;//微信id号
+
+    @ApiModelProperty(value = "微信昵称")
+    private String wxName;//微信昵称
+    
     public MarketingMembersUpdateParam() {
     }
 
@@ -66,14 +69,6 @@ public class MarketingMembersUpdateParam {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
-    }
-
-    public String getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
     }
 
     public String getCityCode() {
