@@ -8,17 +8,17 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 public interface MarketingReceivingPageMapper {
     static String allFields="Id id,TemplateId templateId,ActivitySetId activitySetId,IsReceivePage isReceivePage,TextContent textContent,PicAddress picAddress,IsQrcodeView isQrcodeView,QrcodeUrl qrcodeUrl,CreateDate createDate,UpdateDate updateDate";
 	
-    @Select("select "+allFields+" from marketing_ template where ActivitySetId=#{activitySetId}")
+    @Select("select "+allFields+" from marketing_template where ActivitySetId=#{activitySetId}")
     MarketingReceivingPage getByActivityId(@Param("activitySetId")Long activitySetId);
 
-    @Insert(" INSERT INTO marketing_ template(TemplateId,ActivitySetId,IsReceivePage,TextContent,PicAddress,"
+    @Insert(" INSERT INTO marketing_template(TemplateId,ActivitySetId,IsReceivePage,TextContent,PicAddress,"
             + " IsQrcodeView,QrcodeUrl )"
             + " VALUES(#{templateId},#{activitySetId},#{isReceivePage},#{textContent},#{picAddress},"
             + " #{isQrcodeView},#{qrcodeUrl} )")
 	int insert(MarketingReceivingPage mPage);
 
     @Update(" <script>"
-            + " UPDATE marketing_ template "
+            + " UPDATE marketing_template "
             + " <set>"
             + " <if test='templateId !=null and templateId != &apos;&apos; '> TemplateId = #{templateId} ,</if> "
             + " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> ActivitySetId = #{activitySetId} ,</if> "

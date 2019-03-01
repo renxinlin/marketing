@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dao.activity.*;
+import com.jgw.supercodeplatform.marketing.dto.activity.*;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,31 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPageUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWinningPageParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 
 @Service
-public class MarketingActivitySetService {
+public class MarketingActivitySetService extends CommonUtil {
 	protected static Logger logger = LoggerFactory.getLogger(MarketingActivitySetService.class);
 	
    @Autowired
@@ -60,6 +44,9 @@ public class MarketingActivitySetService {
    
    @Autowired
    private MarketingActivityProductMapper mProductMapper;
+
+	@Autowired
+	private MarketingActivityMapper mActivityMapper;
    
    @Autowired
    private CodeEsService codeEsService;
@@ -94,6 +81,8 @@ public class MarketingActivitySetService {
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		MarketingReceivingPageParam mReceivingPageParam=activitySetParam.getmReceivingPageParam();
 		MarketingWinningPageParam mWinningPageParam=activitySetParam.getmWinningPageParam();
+		MarketingActivitySet mActivitySetParam = activitySetParam.getmActivitySetParam();
+		MarketingActivity mActivityParam = activitySetParam.getmActivityParam();
 		
 		if (null==mPrizeTypeParams || mPrizeTypeParams.isEmpty()) {
 			throw new SuperCodeException("奖次信息不能为空", 500);
@@ -106,13 +95,27 @@ public class MarketingActivitySetService {
 		if (null==mChannelParams || mChannelParams.isEmpty()) {
 			throw new SuperCodeException("渠道信息不能为空", 500);
 		}
-		
-		Long activitySetId=null;
+
+		mActivityMapper.addActivity(mActivityParam);
+		mActivitySetParam.setActivityId(mActivityParam.getId());
+		mSetMapper.addActivitySet(mActivitySetParam);
+		Long activitySetId= mActivityParam.getId();
+
 		//保存渠道
 		saveChannels(mChannelParams,activitySetId);
-		
-		//保存商品批次
-		saveProductBatchs(maProductParams,activitySetId);
+
+		for (MarketingActivityProductParam mProduct:maProductParams){
+			for (ProductBatchParam productBatch:mProduct.getBatchParams()){
+				if (mProductMapper.selectByProductAndProductBatchId(mProduct.getProductId(),productBatch.getProductBatchId())==null){
+					//保存商品批次
+					saveProductBatchs(maProductParams,activitySetId);
+				}else{
+					throw new SuperCodeException("该批次已经被添加过了无法再次添加", 500);
+				}
+			}
+		}
+
+
 		
 		//保存奖次
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
@@ -198,6 +201,7 @@ public class MarketingActivitySetService {
 				}
 			}
 		}
+		mProductMapper.activityProductInsert(mList);
 	}
 	/**
 	 * 保存渠道数据
@@ -277,6 +281,7 @@ public class MarketingActivitySetService {
 		
 		MarketingWinningPageParam mWinningPageParam=mUpdateParam.getmWinningPageParam();
 		MarketingWinningPage mWinningPage=new MarketingWinningPage();
+		mWinningPage.setId(mWinningPageParam.getId());
 		mWinningPage.setLoginType(mWinningPageParam.getLoginType());
 		mWinningPage.setTemplateId(mWinningPageParam.getTemplateId());
 		marWinningPageMapper.update(mWinningPage);
@@ -343,6 +348,10 @@ public class MarketingActivitySetService {
 		pMo.setProductId(productId);
 		pMo.setActivitySetId(activitySetId);
 		return pMo;
+	}
+
+	public int updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus){
+		return mSetMapper.updateActivitySetStatus(mUpdateStatus);
 	}
 	
 	public MarketingActivitySet selectById(Long activitySetId) {

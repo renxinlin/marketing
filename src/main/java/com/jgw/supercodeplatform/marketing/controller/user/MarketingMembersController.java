@@ -46,6 +46,7 @@ public class MarketingMembersController extends CommonUtil {
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult addMember(@Valid@RequestBody MarketingMembersAddParam marketingMembersAddParam) throws Exception {
         checkPhoneFormat(marketingMembersAddParam.getMobile());
+        marketingMembersAddParam.setIsRegistered((byte) 1);
         marketingMembersService.addMember(marketingMembersAddParam);
         return new RestResult(200, "success",null );
     }
@@ -74,7 +75,7 @@ public class MarketingMembersController extends CommonUtil {
             @ApiImplicitParam(name = "pageSize", paramType = "query", defaultValue = "30", value = "每页记录数,不传默认10条,非必需"),
             @ApiImplicitParam(name = "current", paramType = "query", defaultValue = "3", value = "当前页,不传默认第一页,非必需"),
     })
-    public RestResult memberList(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
+    public RestResult<String> memberList(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "organizationId");
         int totalCount = marketingMembersService.getAllMarketingMembersCount(params);//获取全部员工信息
         ReturnParamsMap returnParamsMap = getPageAndRetuanMap(params, totalCount);//转换page类,并放到入参中
@@ -91,7 +92,7 @@ public class MarketingMembersController extends CommonUtil {
             @ApiImplicitParam(name = "userId", paramType = "query", defaultValue = "ad156wd15d61a56d1w56d1d1", value = "用户Id,必需", required = true),
             @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "02a61bd8703c4b0eb6a6f62fe709b0c6", value = "组织Id,必需", required = true)
     })
-    public RestResult getUserMember(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
+    public RestResult<String> getUserMember(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "userId","organizationId");
         return new RestResult(200, "success",marketingMembersService.getMemberById(params));
     }
@@ -100,7 +101,7 @@ public class MarketingMembersController extends CommonUtil {
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "编辑会员", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult updateMember(@Valid @RequestBody MarketingMembersUpdateParam marketingMembersUpdateParam) throws Exception {
+    public RestResult<String> updateMember(@Valid @RequestBody MarketingMembersUpdateParam marketingMembersUpdateParam) throws Exception {
         marketingMembersService.updateMembers(marketingMembersUpdateParam);
         return new RestResult(200, "success",null );
     }
@@ -111,7 +112,7 @@ public class MarketingMembersController extends CommonUtil {
     @RequestMapping(value = "/enable/status", method = RequestMethod.PUT)
     @ApiOperation(value = "启用会员", notes = "是否启用成功")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult enableStatus(
+    public RestResult<String> enableStatus(
             @ApiJsonObject(name = "enableMemStatus", value = {
                     @ApiJsonProperty(key = "userId", example = "64b379cd47c843458378f479a115c322", description = "用户id,必需"),
                     @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需")
@@ -130,7 +131,7 @@ public class MarketingMembersController extends CommonUtil {
     @RequestMapping(value = "/disable/status", method = RequestMethod.PUT)
     @ApiOperation(value = "禁用会员", notes = "是否禁用成功")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult disableStatus(
+    public RestResult<String> disableStatus(
             @ApiJsonObject(name = "disableMemStatus", value = {
                     @ApiJsonProperty(key = "userId", example = "64b379cd47c843458378f479a115c322", description = "用户id,必需"),
                     @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需")
@@ -158,13 +159,17 @@ public class MarketingMembersController extends CommonUtil {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "content", paramType = "query", defaultValue = "http://www.baidu.com", value = "", required = true),
     })
-    public  boolean createQrCode(String content,HttpServletResponse response) throws WriterException, IOException{
+    public  boolean createQrCode(String content,HttpServletResponse response) throws WriterException, IOException,Exception{
         //设置二维码纠错级别ＭＡＰ
         Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
         hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);  // 矫错级别
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         //创建比特矩阵(位矩阵)的QR码编码的字符串
-        BitMatrix byteMatrix = qrCodeWriter.encode(content, BarcodeFormat.QR_CODE, 900, 900, hintMap);
+        StringBuilder sb = new StringBuilder();
+        sb.append(content);
+        sb.append("?organizationId=");
+        sb.append(getOrganization().getOrganizationId());
+        BitMatrix byteMatrix = qrCodeWriter.encode(sb.toString(), BarcodeFormat.QR_CODE, 900, 900, hintMap);
         // 使BufferedImage勾画QRCode  (matrixWidth 是行二维码像素点)
         int matrixWidth = byteMatrix.getWidth();
         BufferedImage image = new BufferedImage(matrixWidth-200, matrixWidth-200, BufferedImage.TYPE_INT_RGB);
@@ -189,7 +194,7 @@ public class MarketingMembersController extends CommonUtil {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
-    public RestResult getUserOrg(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
+    public RestResult<String> getUserOrg(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         return new RestResult(200, "success",getOrganization());
     }
 

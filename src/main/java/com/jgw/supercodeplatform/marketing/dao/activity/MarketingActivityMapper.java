@@ -2,7 +2,9 @@ package com.jgw.supercodeplatform.marketing.dao.activity;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
@@ -46,12 +48,13 @@ public interface MarketingActivityMapper extends CommonSql{
 	List<MarketingActivity> selectAll();
 
 	@Select(startScript
-			+"select aset.Id id,  ac.ActivityName activityName,aset.ActivityTitle activityTitle,aset.ActivityStartDate activityStartDate,"
+			+"select aset.Id id, ac.ActivityType activityType , ac.ActivityName activityName,aset.ActivityTitle activityTitle,aset.ActivityStartDate activityStartDate,"
 			+ "aset.ActivityEndDate activityEndDate,aset.UpdateUserName updateUserName,aset.UpdateDate updateDate,aset.ActivityStatus activityStatus,"
 			+ "ap.ProductBatchName productBatchName,ap.ProductName productName,ap.ProductId productId,"
-			+ "ap.ProductBatchId productBatchId"
+			+ "ap.ProductBatchId productBatchId,mc.CustomerName customerName "
 			+ "from  marketing_activity_set aset left join  marketing_activity ac on aset.ActivityId=ac.Id "
-			+ "left join marketing_activity_product ap on aset.Id=ap.ActivitySetId"
+			+ "left join marketing_activity_product ap on aset.Id=ap.ActivitySetId "
+			+ "left join marketing_channel mc on aset.Id=mc.ActivitySetId"
 			+whereSearch
 			+ " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
 			+endScript)
@@ -63,10 +66,20 @@ public interface MarketingActivityMapper extends CommonSql{
 			 + "select count(*)"
 			 + "from  marketing_activity_set aset left join  marketing_activity ac on aset.ActivityId=ac.Id "
 			 + "left join marketing_activity_product ap on aset.Id=ap.ActivitySetId"
+			 + "left join marketing_channel mc on aset.Id=mc.ActivitySetId"
 			 +whereSearch
 			 +"group by aset.Id"
 			 + ")a"
 			+endScript)
 	int count(MarketingMembersWinRecordListParam searchParams);
+
+
+
+	@Insert(" INSERT INTO marketing_activity(ActivityType,ActivityType)"
+			+ " VALUES(#{activityType},#{activityType} )")
+	@Options(useGeneratedKeys=true, keyProperty="id", keyColumn="Id")
+	int addActivity(MarketingActivity marketingActivity);
+
+
 
 }

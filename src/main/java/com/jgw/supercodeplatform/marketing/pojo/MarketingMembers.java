@@ -26,6 +26,7 @@ public class MarketingMembers {
     private String customerName;//门店名称
     private String customerCode;//门店编码
     private String babyBirthday;//宝宝生日
+    private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
 
 
     public MarketingMembers() {
@@ -139,11 +140,15 @@ public class MarketingMembers {
 		this.state = state;
 	}
 
+    public Byte getIsRegistered() {
+        return isRegistered;
+    }
 
+    public void setIsRegistered(Byte isRegistered) {
+        this.isRegistered = isRegistered;
+    }
 
-
-
-	public String getOrganizationId() {
+    public String getOrganizationId() {
         return organizationId;
     }
 

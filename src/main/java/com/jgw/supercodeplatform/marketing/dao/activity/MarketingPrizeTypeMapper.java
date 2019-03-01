@@ -6,12 +6,21 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface MarketingPrizeTypeMapper {
 
-	@Insert(" INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,RandomAmount )"
-			+ " VALUES(#{activitySetId},#{prizeTypeName},#{prizeAmount},#{prizeProbability},#{randomAmount})")
-	void batchInsert(List<MarketingPrizeType> mList);
+
+
+	@Insert({
+			"<script>",
+			"INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,RandomAmount ) VALUES ",
+			"<foreach collection='mList' item='mPrize' index='index' separator=','>",
+			"(#{mPrize.activitySetId},#{mPrize.prizeTypeName},#{mPrize.prizeAmount},#{mPrize.prizeProbability},#{mPrize.randomAmount})",
+			"</foreach>",
+			"</script>"
+	})
+	void batchInsert(@Param(value="mList")List<MarketingPrizeType> mList);
 
 }

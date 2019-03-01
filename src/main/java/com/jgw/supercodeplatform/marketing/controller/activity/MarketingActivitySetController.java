@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,8 +45,11 @@ public class MarketingActivitySetController {
      */
     @RequestMapping(value = "/disOrEnable",method = RequestMethod.GET)
     @ApiOperation(value = "停用或启用", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动状态1启用，0停用",name="activityStatus")})
-    public RestResult<String> disOrEnable(@RequestParam(required=true) Integer activityStatus) throws Exception {
+    @ApiImplicitParams(value= {
+            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    })
+    public RestResult<String> disOrEnable(@RequestBody MarketingActivitySetStatusUpdateParam mUpdateStatus) throws Exception {
+        service.updateActivitySetStatus(mUpdateStatus);
     	RestResult<String> restResult=new RestResult<String>(200, "成功", null);
     	return restResult;
     }

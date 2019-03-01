@@ -30,7 +30,7 @@ public class OrganizationPortraitController  extends CommonUtil {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "dsadsad165156163a1sddasd", value = "组织id,必需")
     })
-    public RestResult getSelectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
+    public RestResult<String> getSelectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "organizationId");
         return new RestResult(200, "success", organizationPortraitService.getSelectedPortrait(params));
     }
@@ -42,7 +42,7 @@ public class OrganizationPortraitController  extends CommonUtil {
             @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "dsadsad165156163a1sddasd", value = "组织id,必需"),
             @ApiImplicitParam(name = "typeId", paramType = "query", defaultValue = "14001", value = "编码类型（14001为注册信息，14002为标签维护）,必需")
     })
-    public RestResult getUnselectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
+    public RestResult<String> getUnselectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "typeId","organizationId");
         return new RestResult(200, "success", organizationPortraitService.getUnselectedPortrait(params));
     }
@@ -51,7 +51,7 @@ public class OrganizationPortraitController  extends CommonUtil {
     @RequestMapping(value = "/addOrgPor",method = RequestMethod.POST)
     @ApiOperation(value = "添加组织画像关系", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult addOrgPortrait(
+    public RestResult<String> addOrgPortrait(
             @ApiJsonObject(name = "addOrgPortrait", value = {
                     @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需"),
                     @ApiJsonProperty(key = "organizationFullName",example = "中化通讯公司",description="组织全称,必需"),
@@ -71,7 +71,7 @@ public class OrganizationPortraitController  extends CommonUtil {
     @RequestMapping(value = "/deleOrgPor",method = RequestMethod.POST)
     @ApiOperation(value = "删除组织画像关系", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult deleOrgPortrait(
+    public RestResult<String> deleOrgPortrait(
             @ApiJsonObject(name = "deleOrgPortrait", value = {
                     @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需"),
                     @ApiJsonProperty(key = "portraitCode", example = "Mobile", description = "画像编码,必需"),

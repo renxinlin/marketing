@@ -60,6 +60,9 @@ public class MarketingMembersAddParam {
     @ApiModelProperty(value = "宝宝生日")
     private String babyBirthday;//宝宝生日
 
+    @ApiModelProperty(value = "是否已注册(1、表示已注册，0 表示未注册)")
+    private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
+
 
     public MarketingMembersAddParam() {
     }
@@ -207,5 +210,13 @@ public class MarketingMembersAddParam {
 
     public void setCityName(String cityName) {
         this.cityName = cityName;
+    }
+
+    public Byte getIsRegistered() {
+        return isRegistered;
+    }
+
+    public void setIsRegistered(Byte isRegistered) {
+        this.isRegistered = isRegistered;
     }
 }

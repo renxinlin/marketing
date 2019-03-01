@@ -9,6 +9,7 @@ public class MarketingActivityProduct {
     private String productBatchName;//产品批次名称
     private String productId;//活动产品Id
     private String productName;//活动产品名称
+	private Long codeTotalAmount;//该批次关联码总数
     private String createDate;//建立日期
     private String UpdateDate;//修改日期
     
@@ -85,5 +86,11 @@ public class MarketingActivityProduct {
 		this.productId = productId;
 	}
 
-    
+	public Long getCodeTotalAmount() {
+		return codeTotalAmount;
+	}
+
+	public void setCodeTotalAmount(Long codeTotalAmount) {
+		this.codeTotalAmount = codeTotalAmount;
+	}
 }
