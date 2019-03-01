@@ -1,5 +1,24 @@
 package com.jgw.supercodeplatform.marketing.controller.user;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -11,26 +30,14 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonObject;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonProperty;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/marketing/members")
@@ -39,17 +46,6 @@ public class MarketingMembersController extends CommonUtil {
 
     @Autowired
     private MarketingMembersService marketingMembersService;
-
-
-    @RequestMapping(value = "/add",method = RequestMethod.POST)
-    @ApiOperation(value = "招募会员（注册）", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult addMember(@Valid@RequestBody MarketingMembersAddParam marketingMembersAddParam) throws Exception {
-        checkPhoneFormat(marketingMembersAddParam.getMobile());
-        marketingMembersAddParam.setIsRegistered((byte) 1);
-        marketingMembersService.addMember(marketingMembersAddParam);
-        return new RestResult(200, "success",null );
-    }
 
 
     @RequestMapping(value = "/list",method = RequestMethod.GET)

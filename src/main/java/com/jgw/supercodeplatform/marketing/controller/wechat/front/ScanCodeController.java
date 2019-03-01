@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.wechat;
+package com.jgw.supercodeplatform.marketing.controller.wechat.front;
 
 import java.net.URLEncoder;
 
@@ -14,11 +14,10 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
 @Controller
-@RequestMapping("/marketing/scan")
+@RequestMapping("/marketing/front/scan")
 public class ScanCodeController {
     @Autowired
     private CommonUtil commonUtil;
@@ -45,7 +44,6 @@ public class ScanCodeController {
      */
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public String bind(String codeId,String codeTypeId,String productId,String productBatchId) throws Exception {
     	ScanCodeInfoMO sCodeInfoMO=mActivitySetService.judgeActivityScanCodeParam(codeId,codeTypeId,productId,productBatchId);
     	String	wxstate=commonUtil.getUUID();

@@ -6,11 +6,9 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
@@ -31,10 +29,10 @@ public class ScanCodeService {
      * 扫码授权后验证
      * @param openid
      * @param nickname
-     * @param state
+     * @param state:很重要，为后台生成标识唯一一次扫码请求
      * @return
      */
-    public RestResult<String> deal(String openid,String nickname,String state){
+    public RestResult<String> dealAfterAuth(String openid,String nickname,String state){
     	RestResult<String> restResult=new RestResult<String>();
         ScanCodeInfoMO scCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(state);
     	//1、从es查询该码有没有被扫过

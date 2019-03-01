@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.dao.user;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -156,6 +157,9 @@ public interface MarketingMembersMapper {
             + " <if test='customerName !=null and customerName != &apos;&apos; '> CustomerName = #{customerName} ,</if> "
             + " <if test='customerCode !=null and customerCode != &apos;&apos; '> CustomerCode = #{customerCode} ,</if> "
             + " <if test='babyBirthday !=null and babyBirthday != &apos;&apos; '> BabyBirthday = #{babyBirthday} ,</if> "
+            + " <if test='mobile !=null and mobile != &apos;&apos; '> Mobile = #{mobile} ,</if> "
+            + " <if test='wxName !=null and wxName != &apos;&apos; '> WxName = #{wxName} ,</if> "
+            + " <if test='openid !=null and openid != &apos;&apos; '> Openid = #{openid} ,</if> "
             + " <if test='updateDate !=null and updateDate != &apos;&apos; '> UpdateDate = NOW() ,</if> "
             + " </set>"
             + " <where> "
@@ -177,6 +181,12 @@ public interface MarketingMembersMapper {
 
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} ")
 	MarketingMembers selectByOpenIdAndOrgId(@Param("openid")String openid, @Param("organizationId")String  organizationId);
+
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} ")
+	MarketingMembers selectByMobileAndOrgId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId);
+
+    @Delete("delete from marketing_members where Id=#{id}")
+	void deleteById(@Param("id")Long id);
 
 
 

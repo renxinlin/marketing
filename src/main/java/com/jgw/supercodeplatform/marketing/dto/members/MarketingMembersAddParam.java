@@ -9,10 +9,10 @@ public class MarketingMembersAddParam {
     @ApiModelProperty(value = "用户Id")
     private String userId;//用户Id
 
-    @ApiModelProperty(value = "微信id号",required=true)
+    @ApiModelProperty(value = "微信id号")
     private String openid;//微信id号
 
-    @ApiModelProperty(value = "微信昵称",required=true)
+    @ApiModelProperty(value = "微信昵称")
     private String wxName;//微信昵称
 
     @ApiModelProperty(value = "手机",required=true)
@@ -47,9 +47,6 @@ public class MarketingMembersAddParam {
 
     @ApiModelProperty(value = "组织Id",required=true)
     private String organizationId;//组织Id
-
-    @ApiModelProperty(value = "组织全名",required=true)
-    private String organizationFullName;//组织全名
 
     @ApiModelProperty(value = "门店名称",required=true)
     private String customerName;//门店名称
@@ -130,14 +127,6 @@ public class MarketingMembersAddParam {
 
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
-    }
-
-    public String getOrganizationFullName() {
-        return organizationFullName;
-    }
-
-    public void setOrganizationFullName(String organizationFullName) {
-        this.organizationFullName = organizationFullName;
     }
 
     public String getCustomerName() {

@@ -21,12 +21,15 @@ public class MarketingMembersUpdateParam {
     @ApiModelProperty(value = "生日")
     private String birthday;//生日
 
+<<<<<<< HEAD
     @ApiModelProperty(value = "省编码")
     private String provinceCode;//省编码
 
     @ApiModelProperty(value = "县编码")
     private String countyCode;//县编码
 
+=======
+>>>>>>> 34e578ce2d4c0fd6abbdae749d8db2a4b946d5dd
     @ApiModelProperty(value = "市编码")
     private String cityCode;//市编码
 
@@ -57,9 +60,18 @@ public class MarketingMembersUpdateParam {
     @ApiModelProperty(value = "宝宝生日")
     private String babyBirthday;//宝宝生日
 
+<<<<<<< HEAD
     @ApiModelProperty(value = "是否已注册(1、表示已注册，0 表示未注册)")
     private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
 
+=======
+    @ApiModelProperty(value = "微信id号")
+    private String openid;//微信id号
+
+    @ApiModelProperty(value = "微信昵称")
+    private String wxName;//微信昵称
+    
+>>>>>>> 34e578ce2d4c0fd6abbdae749d8db2a4b946d5dd
     public MarketingMembersUpdateParam() {
     }
 
@@ -93,14 +105,6 @@ public class MarketingMembersUpdateParam {
 
     public void setBirthday(String birthday) {
         this.birthday = birthday;
-    }
-
-    public String getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
     }
 
     public String getCityCode() {

@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.common.properties.es;
+package com.jgw.supercodeplatform.marketing.common.properties;
 
 /**
  * 索引常量配置类

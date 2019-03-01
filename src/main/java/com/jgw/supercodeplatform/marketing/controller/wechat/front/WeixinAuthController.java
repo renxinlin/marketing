@@ -1,33 +1,24 @@
-package com.jgw.supercodeplatform.marketing.controller.wechat;
+package com.jgw.supercodeplatform.marketing.controller.wechat.front;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
-import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
-import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
-import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 /**
  * 微信授权等
  * @author czm
  *
  */
 @RestController
-@RequestMapping("/marketing/auth")
+@RequestMapping("/marketing/front/auth")
 public class WeixinAuthController {
 	protected static Logger logger = LoggerFactory.getLogger(WeixinAuthController.class);
 
