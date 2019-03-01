@@ -119,7 +119,6 @@ public class MarketingMembersService extends CommonUtil {
         Map<String,Object> map = new HashMap<>();
         map.put("mobile",membersUpdateParam.getMobile());
         map.put("state",membersUpdateParam.getState());
-        map.put("organizationFullName",membersUpdateParam.getOrganizationFullName());
         map.put("isRegistered",membersUpdateParam.getIsRegistered());
         map.put("userId",membersUpdateParam.getUserId());
         map.put("userName",membersUpdateParam.getUserName());

@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "会员编辑")
 public class MarketingMembersUpdateParam {
-
+    @ApiModelProperty(value = "id",required=true)
+    private Long id;//用户Id
+    
     @ApiModelProperty(value = "手机")
     private String mobile;//手机
 
@@ -21,15 +23,12 @@ public class MarketingMembersUpdateParam {
     @ApiModelProperty(value = "生日")
     private String birthday;//生日
 
-<<<<<<< HEAD
     @ApiModelProperty(value = "省编码")
     private String provinceCode;//省编码
 
     @ApiModelProperty(value = "县编码")
     private String countyCode;//县编码
 
-=======
->>>>>>> 34e578ce2d4c0fd6abbdae749d8db2a4b946d5dd
     @ApiModelProperty(value = "市编码")
     private String cityCode;//市编码
 
@@ -48,9 +47,6 @@ public class MarketingMembersUpdateParam {
     @ApiModelProperty(value = "组织Id")
     private String organizationId;//组织Id
 
-    @ApiModelProperty(value = "组织全名")
-    private String organizationFullName;//组织全名
-
     @ApiModelProperty(value = "门店名称")
     private String customerName;//门店名称
 
@@ -60,18 +56,15 @@ public class MarketingMembersUpdateParam {
     @ApiModelProperty(value = "宝宝生日")
     private String babyBirthday;//宝宝生日
 
-<<<<<<< HEAD
     @ApiModelProperty(value = "是否已注册(1、表示已注册，0 表示未注册)")
     private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
 
-=======
     @ApiModelProperty(value = "微信id号")
     private String openid;//微信id号
 
     @ApiModelProperty(value = "微信昵称")
     private String wxName;//微信昵称
     
->>>>>>> 34e578ce2d4c0fd6abbdae749d8db2a4b946d5dd
     public MarketingMembersUpdateParam() {
     }
 
@@ -155,14 +148,6 @@ public class MarketingMembersUpdateParam {
         this.state = state;
     }
 
-    public String getOrganizationFullName() {
-        return organizationFullName;
-    }
-
-    public void setOrganizationFullName(String organizationFullName) {
-        this.organizationFullName = organizationFullName;
-    }
-
     public Byte getIsRegistered() {
         return isRegistered;
     }
@@ -210,4 +195,37 @@ public class MarketingMembersUpdateParam {
     public void setCityName(String cityName) {
         this.cityName = cityName;
     }
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
+	}
+
+	public String getOpenid() {
+		return openid;
+	}
+
+	public void setOpenid(String openid) {
+		this.openid = openid;
+	}
+
+	public String getWxName() {
+		return wxName;
+	}
+
+	public void setWxName(String wxName) {
+		this.wxName = wxName;
+	}
+    
 }

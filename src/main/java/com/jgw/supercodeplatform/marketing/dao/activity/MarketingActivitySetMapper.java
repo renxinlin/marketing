@@ -1,14 +1,12 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import java.util.Map;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 
 @Mapper
 public interface MarketingActivitySetMapper {
