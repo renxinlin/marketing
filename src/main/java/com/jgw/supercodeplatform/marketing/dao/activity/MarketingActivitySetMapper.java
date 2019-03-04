@@ -11,7 +11,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 @Mapper
 public interface MarketingActivitySetMapper {
  static String allFields="Id id,ActivityId ActivityId,ActivityTitle ActivityTitle,ActivityStartDate ActivityStartDate,ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,UpdateDate UpdateDate,"
- 		+ "ActivityStatus ActivityStatus,EachDayNumber EachDayNumber,ActivityRangeMark ActivityRangeMark,autoFetch autoFetch";
+ 		+ "ActivityStatus ActivityStatus,EachDayNumber EachDayNumber,ActivityRangeMark ActivityRangeMark,autoFetch autoFetch,CodeTotalNum codeTotalNum";
 
 
 
@@ -36,10 +36,10 @@ public interface MarketingActivitySetMapper {
 
    @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle,"
            + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus,EachDayNumber,"
-           + " ActivityRangeMark,autoFetch) "
+           + " ActivityRangeMark,autoFetch,CodeTotalNum) "
            + " VALUES(#{activityId},#{organizationId},#{organizatioIdlName},#{activityTitle},#{activityStartDate},"
            + "#{activityEndDate},#{updateUserId},#{updateUserName},#{activityStatus},#{eachDayNumber},#{activityRangeMark}, "
-           + "#{autoFetch}"
+           + "#{autoFetch},#{codeTotalNum} "
            + ")")
    int addActivitySet(MarketingActivitySet marketingActivitySet);
 }
