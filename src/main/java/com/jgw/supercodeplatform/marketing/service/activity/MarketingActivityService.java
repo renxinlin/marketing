@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 
 import java.util.List;
 
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,12 +10,10 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 
 @Service
-public class MarketingActivityService extends AbstractPageService<MarketingMembersWinRecordListParam>{
+public class MarketingActivityService extends AbstractPageService<MarketingActivityListParam>{
     @Autowired
     private MarketingActivityMapper dao;
     
@@ -30,15 +29,15 @@ public class MarketingActivityService extends AbstractPageService<MarketingMembe
 
 
 	@Override
-	protected List<MarketingMembersWinRecord> searchResult(MarketingMembersWinRecordListParam searchParams) throws Exception {
-		List<MarketingActivityListMO> list=dao.list(searchParams);
-		return null;
+	protected List<MarketingActivityListMO> searchResult(MarketingActivityListParam marketingActivityListParam) throws Exception {
+		List<MarketingActivityListMO> list=dao.list(marketingActivityListParam);
+		return list;
 	}
 
 
 	@Override
-	protected int count(MarketingMembersWinRecordListParam searchParams) throws Exception {
-		return dao.count(searchParams);
+	protected int count(MarketingActivityListParam marketingActivityListParam) throws Exception {
+		return dao.count(marketingActivityListParam);
 	}
   
 

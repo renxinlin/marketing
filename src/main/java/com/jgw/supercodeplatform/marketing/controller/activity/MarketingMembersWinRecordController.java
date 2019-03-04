@@ -1,12 +1,20 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordAddParam;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
@@ -17,9 +25,12 @@ import com.jgw.supercodeplatform.marketing.service.activity.MarketingMembersWinR
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/marketing/winRecord")
-public class MarketingMembersWinRecordController {
+@Api(tags = "中奖管理")
+public class MarketingMembersWinRecordController extends CommonUtil {
     
 	@Autowired
 	private MarketingMembersWinRecordService service;
@@ -35,5 +46,28 @@ public class MarketingMembersWinRecordController {
     	restResult.setMsg("成功");
     	return restResult;
     }
+
+	@RequestMapping(value = "/add",method = RequestMethod.POST)
+	@ApiOperation(value = "添加中奖记录", notes = "")
+	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+	public RestResult<String> create(@RequestBody MarketingMembersWinRecordAddParam winRecordAddParam) throws Exception {
+		service.add(winRecordAddParam);
+		return new RestResult<String>(200, "success",null );
+	}
+
+
+	@GetMapping("/little-record")
+	public void littleWinRecordOutExcel(@RequestParam LinkedHashMap filedMap, HttpServletResponse response) throws SuperCodeException, UnsupportedEncodingException {
+		validateRequestParamAndValueNotNull(filedMap,"list");
+		List<String> ids = Arrays.asList(filedMap.get("list").toString().split(","));
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+		String fileName = simpleDateFormat.format(new Date()) + ".xls";
+		fileName = URLEncoder.encode(fileName, "UTF-8");
+		response.addHeader("Content-disposition", "attachment;filename=" + fileName);
+		response.setContentType("txt/plain");
+		service.littleGeneralWinRecordExcelOutToResponse(ids,response,filedMap);
+	}
+
+
     
 }

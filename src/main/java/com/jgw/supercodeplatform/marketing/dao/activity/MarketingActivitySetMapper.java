@@ -23,9 +23,9 @@ public interface MarketingActivitySetMapper {
 
 
     @Update(" <script>"
-            + " UPDATE marketing_members "
+            + " UPDATE marketing_activity_set "
             + " <set>"
-            + " <if test='activityStatus !=null and activityStatus != &apos;&apos; '> ActivityStatus = #{activityStatus} ,</if> "
+            + "  ActivityStatus = #{activityStatus} "
             + " </set>"
             + " <where> "
             + " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> and ActivitySetId = #{activitySetId} </if>"
