@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class OrganizationPortraitService {
+public class OrganizationPortraitService extends CommonUtil {
 
     @Autowired
     private OrganizationPortraitMapper organizationPortraitMapper;
@@ -65,7 +66,7 @@ public class OrganizationPortraitService {
      * @param params
      * @return
      */
-    public RestResult<String> addOrgPortrait(Map<String, Object> params){
+    public RestResult<String> addOrgPortrait(Map<String, Object> params) throws Exception{
         ArrayList<String> portraitCodeList = (ArrayList<String>)params.get("portraitCodeList");
         String organizationId = params.get("organizationId").toString();
         //获取组织已选画像
@@ -102,7 +103,7 @@ public class OrganizationPortraitService {
         for (String code:portraitCodeList){
             MarketingOrganizationPortrait organizationPortrait = new MarketingOrganizationPortrait();
             organizationPortrait.setOrganizationId(params.get("organizationId").toString());
-            organizationPortrait.setOrganizationFullName(params.get("organizationFullName").toString());
+            organizationPortrait.setOrganizationFullName(getOrganizationName());
             organizationPortrait.setPortraitCode(code);
             MarketingUnitcode marketingUnitcode = organizationPortraitMapper.getUnitcodeByCode(code);
             organizationPortrait.setPortraitName(marketingUnitcode.getCodeName());

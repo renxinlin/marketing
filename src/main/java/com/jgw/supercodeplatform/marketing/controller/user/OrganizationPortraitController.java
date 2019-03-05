@@ -28,7 +28,7 @@ public class OrganizationPortraitController  extends CommonUtil {
     @ApiOperation(value = "根据组织id获取组织已选的画像编码", notes = "返回编码信息列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-            @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "dsadsad165156163a1sddasd", value = "组织id,必需")
+            @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "2a66d681b6b2426eaf34d125a82dbc06", value = "组织id,必需")
     })
     public RestResult<String> getSelectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
         validateRequestParamAndValueNotNull(params, "organizationId");
@@ -39,7 +39,7 @@ public class OrganizationPortraitController  extends CommonUtil {
     @ApiOperation(value = "根据组织id获取组织未选的画像编码", notes = "返回编码信息列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-            @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "dsadsad165156163a1sddasd", value = "组织id,必需"),
+            @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "2a66d681b6b2426eaf34d125a82dbc06", value = "组织id,必需"),
             @ApiImplicitParam(name = "typeId", paramType = "query", defaultValue = "14001", value = "编码类型（14001为注册信息，14002为标签维护）,必需")
     })
     public RestResult<String> getUnselectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
@@ -53,13 +53,12 @@ public class OrganizationPortraitController  extends CommonUtil {
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> addOrgPortrait(
             @ApiJsonObject(name = "addOrgPortrait", value = {
-                    @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需"),
-                    @ApiJsonProperty(key = "organizationFullName",example = "中化通讯公司",description="组织全称,必需"),
-                    @ApiJsonProperty(key = "portraitCodeList", example = "\"[47f3a8abe0604ac694d328fc9e24bd68,47f3a8abe0604ac694d328fc9e24bd68]\"", description = "画像编码list,必需"),
+                    @ApiJsonProperty(key = "organizationId", example = "2a66d681b6b2426eaf34d125a82dbc06", description = "组织Id,必需"),
+                    @ApiJsonProperty(key = "portraitCodeList", example = "\"[Mobile,UserName]\"", description = "画像编码list,必需"),
                     //@ApiJsonProperty(key = "portraitName", example = "手机", description = "画像名称,必需")
             })
             @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "organizationId","organizationFullName","portraitCodeList");
+        validateRequestParamAndValueNotNull(params, "organizationId","portraitCodeList");
         return organizationPortraitService.addOrgPortrait(params);
     }
 
