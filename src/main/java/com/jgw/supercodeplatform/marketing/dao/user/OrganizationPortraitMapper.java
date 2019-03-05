@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dao.user;
 
 
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
 import org.apache.ibatis.annotations.*;
@@ -25,8 +26,8 @@ public interface OrganizationPortraitMapper {
      * @param organizationId
      * @return
      */
-    @Select(" SELECT "+selectSql+" FROM marketing_organization_portrait a WHERE a.OrganizationId = #{organizationId} ORDER BY a.FieldWeight")
-    List<MarketingOrganizationPortrait> getSelectedPortrait(@Param("organizationId")String organizationId);
+    @Select(" SELECT "+selectSql+",b.TypeId as typeId"+" FROM marketing_organization_portrait a left join marketing_unitcode b on a.PortraitCode = b.CodeId WHERE a.OrganizationId = #{organizationId} ORDER BY a.FieldWeight")
+    List<MarketingOrganizationPortraitListParam> getSelectedPortrait(@Param("organizationId")String organizationId);
 
 
     /**

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,12 +83,12 @@ public class MarketingMembersService extends CommonUtil {
      * @return
      */
     public List<MarketingMembers> getAllMarketingMembersLikeParams(Map<String,Object> map){
-        List<MarketingOrganizationPortrait> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(map.get("organizationId").toString());
+        List<MarketingOrganizationPortraitListParam> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(map.get("organizationId").toString());
         List<String> portraitsList = new ArrayList<>();
         portraitsList.add("Mobile");
         portraitsList.add("WxName");
         portraitsList.add("Openid");
-        for (MarketingOrganizationPortrait portrait:organizationPortraits){
+        for (MarketingOrganizationPortraitListParam portrait:organizationPortraits){
             if (!"Mobile".equals(portrait.getPortraitCode())){
                 if ("Birthday".equals(portrait.getPortraitCode())||"BabyBirthday".equals(portrait.getPortraitCode())){
                     StringBuilder sb = new StringBuilder();
@@ -241,7 +242,7 @@ public class MarketingMembersService extends CommonUtil {
 					h5LoginVO.setRegistered(1);
 			  }else {
 				  //3、如果未注册则进行注册 a直接注册 b前端再调接口完善
-					List<MarketingOrganizationPortrait> mPortraits=organizationPortraitMapper.getSelectedPortrait(organizationId);
+					List<MarketingOrganizationPortraitListParam> mPortraits=organizationPortraitMapper.getSelectedPortrait(organizationId);
 					//如果只有一个企业画像设置则认为就是手机号就跳过信息完善
 					if (null!=mPortraits && !mPortraits.isEmpty()) {
 						if (mPortraits.size()==1) {

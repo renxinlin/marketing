@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.service.user;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class OrganizationPortraitService extends CommonUtil {
      * @param params
      * @return
      */
-    public List<MarketingOrganizationPortrait> getSelectedPortrait(Map<String, Object> params){
+    public List<MarketingOrganizationPortraitListParam> getSelectedPortrait(Map<String, Object> params){
         String organizationId = params.get("organizationId").toString();
         return organizationPortraitMapper.getSelectedPortrait(organizationId);
     }
@@ -38,11 +39,11 @@ public class OrganizationPortraitService extends CommonUtil {
      */
     public List<MarketingUnitcode> getUnselectedPortrait(Map<String, Object> params){
         //获取组织已选择的画像
-        List<MarketingOrganizationPortrait> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(params.get("organizationId").toString());
+        List<MarketingOrganizationPortraitListParam> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(params.get("organizationId").toString());
         List<MarketingUnitcode> unitcodes = organizationPortraitMapper.getAllUnitcode();
         List<String> selectPortraitsCode = new ArrayList<>();
         List<String> codeIdList = new ArrayList<>();
-        for (MarketingOrganizationPortrait portrait:organizationPortraits){
+        for (MarketingOrganizationPortraitListParam portrait:organizationPortraits){
             selectPortraitsCode.add(portrait.getPortraitCode());
         }
         for (MarketingUnitcode unitcode:unitcodes){
@@ -70,9 +71,9 @@ public class OrganizationPortraitService extends CommonUtil {
         ArrayList<String> portraitCodeList = (ArrayList<String>)params.get("portraitCodeList");
         String organizationId = params.get("organizationId").toString();
         //获取组织已选画像
-        List<MarketingOrganizationPortrait> organizationPortraits =  organizationPortraitMapper.getSelectedPortrait(organizationId);
+        List<MarketingOrganizationPortraitListParam> organizationPortraits =  organizationPortraitMapper.getSelectedPortrait(organizationId);
         ArrayList<String> oldPortraitCodeList = new ArrayList<>();
-        for (MarketingOrganizationPortrait portrait:organizationPortraits){
+        for (MarketingOrganizationPortraitListParam portrait:organizationPortraits){
             oldPortraitCodeList.add(portrait.getPortraitCode());
         }
         ArrayList<String> list = new ArrayList<String>();
@@ -84,7 +85,7 @@ public class OrganizationPortraitService extends CommonUtil {
             oPor.setOrganizationId(params.get("organizationId").toString());
             oPor.setPortraitCode(oldCode);
             MarketingOrganizationPortrait organizationPortrait1 = organizationPortraitMapper.getPortraitByPortraitCode(oPor);
-            for (MarketingOrganizationPortrait portrait: organizationPortraits){
+            for (MarketingOrganizationPortraitListParam portrait: organizationPortraits){
                 if (portrait.getFieldWeight()>organizationPortrait1.getFieldWeight()){
                     Map<String, Object> map = new HashMap<>();
                     map.put("organizationId",portrait.getOrganizationId());
@@ -118,26 +119,4 @@ public class OrganizationPortraitService extends CommonUtil {
     }
 
 
-    /**
-     * 删除组织画像关系
-     * @param params
-     * @return
-     */
-    public int deleOrgPortrait(Map<String, Object> params){
-        MarketingOrganizationPortrait organizationPortrait = new MarketingOrganizationPortrait();
-        organizationPortrait.setOrganizationId(params.get("organizationId").toString());
-        organizationPortrait.setPortraitCode(params.get("portraitCode").toString());
-        MarketingOrganizationPortrait organizationPortrait1 = organizationPortraitMapper.getPortraitByPortraitCode(organizationPortrait);
-        List<MarketingOrganizationPortrait> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(params.get("organizationId").toString());
-        for (MarketingOrganizationPortrait portrait:organizationPortraits){
-            if (portrait.getFieldWeight()>organizationPortrait1.getFieldWeight()){
-                Map<String, Object> map = new HashMap<>();
-                map.put("organizationId",portrait.getOrganizationId());
-                map.put("portraitCode",portrait.getPortraitCode());
-                map.put("fieldWeight",portrait.getFieldWeight()-1);
-                organizationPortraitMapper.updatePortraits(map);
-            }
-        }
-        return organizationPortraitMapper.deleOrgPortrait(organizationPortrait);
-    }
 }
