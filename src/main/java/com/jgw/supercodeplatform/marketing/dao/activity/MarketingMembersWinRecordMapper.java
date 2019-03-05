@@ -2,6 +2,8 @@ package com.jgw.supercodeplatform.marketing.dao.activity;
 
 import java.util.List;
 
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordAddParam;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -56,5 +58,28 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 			+endScript
 		   )
 	List<MarketingMembersWinRecord> list(MarketingMembersWinRecordListParam searchParams);
+
+	@Insert(" INSERT INTO marketing_activity_set(ActivityType,MemberName,NickName,Openid,"
+			+ " PrizeTypeId,PrizeTypeName,WinningAmount,WinningCode,OrganizationId,Mobile,"
+			+ " Dealer,Store) "
+			+ " VALUES(#{activityType},#{memberName},#{nickName},#{openid},#{prizeTypeId},"
+			+ "#{prizeTypeName},#{winningAmount},#{winningCode},#{organizationId},#{mobile},#{dealer}, "
+			+ "#{store}"
+			+ ")")
+	int addWinRecord(MarketingMembersWinRecordAddParam winRecordAddParam);
+
+
+	@Select({
+			startScript,
+			allFields,
+			"from marketing_members_win ",
+			"where Id ",
+			"in(",
+			"<foreach collection = 'list' item = 'id' separator = ','>",
+			"#{id}",
+			"</foreach>)",
+			endScript
+	})
+	List<MarketingMembersWinRecord> getWinRecordByidArray(List<String> ids);
 
 }

@@ -23,7 +23,6 @@ public interface MarketingReceivingPageMapper {
             + " <if test='templateId !=null and templateId != &apos;&apos; '> TemplateId = #{templateId} ,</if> "
             + " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> ActivitySetId = #{activitySetId} ,</if> "
             + " <if test='isReceivePage !=null and isReceivePage != &apos;&apos; '> IsReceivePage = #{isReceivePage} ,</if> "
-            + " <if test='provinceCode !=null and provinceCode != &apos;&apos; '> ProvinceCode = #{provinceCode} ,</if> "
             + " <if test='textContent !=null and textContent != &apos;&apos; '> TextContent = #{textContent} ,</if> "
             + " <if test='picAddress !=null and picAddress != &apos;&apos; '> PicAddress = #{picAddress} ,</if> "
             + " <if test='isQrcodeView !=null and isQrcodeView != &apos;&apos; '> IsQrcodeView = #{isQrcodeView} ,</if> "

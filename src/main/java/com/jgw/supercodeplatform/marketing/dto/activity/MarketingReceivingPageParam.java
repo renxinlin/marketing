@@ -8,6 +8,7 @@ public class MarketingReceivingPageParam {
     private String textContent;//文本内容及字号，支持多文本
     private String picAddress;//图片地址
     private Byte isQrcodeView;//公众号二维码是否显示(1  表示显示，0 表示不显示)
+    private String qrcodeUrl;//二维码Url
  
     public int getId() {
         return id;
@@ -55,5 +56,13 @@ public class MarketingReceivingPageParam {
 
     public void setPicAddress(String picAddress) {
         this.picAddress = picAddress;
+    }
+
+    public String getQrcodeUrl() {
+        return qrcodeUrl;
+    }
+
+    public void setQrcodeUrl(String qrcodeUrl) {
+        this.qrcodeUrl = qrcodeUrl;
     }
 }

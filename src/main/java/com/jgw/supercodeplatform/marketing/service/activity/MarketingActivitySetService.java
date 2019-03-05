@@ -87,22 +87,41 @@ public class MarketingActivitySetService extends CommonUtil {
 		if (null==mPrizeTypeParams || mPrizeTypeParams.isEmpty()) {
 			throw new SuperCodeException("奖次信息不能为空", 500);
 		}
-		
+
+		List list = new ArrayList();
+		for (MarketingPrizeTypeParam prizeTypeParam:mPrizeTypeParams){
+			list.add(prizeTypeParam.getPrizeTypeName());
+		}
+
+		for  (int i = 0 ;i<list.size()-1;i++)  {
+			for  (int j = list.size()-1;j>i;j--)  {
+				if  (list.get(j).equals(list.get(i)))  {
+					throw new SuperCodeException("奖项名称不能重复", 500);
+				}
+			}
+		}
+
 		if (null==maProductParams || maProductParams.isEmpty()) {
 			throw new SuperCodeException("产品信息不能为空", 500);
 		}
 		
-		if (null==mChannelParams || mChannelParams.isEmpty()) {
-			throw new SuperCodeException("渠道信息不能为空", 500);
-		}
+
 
 		mActivityMapper.addActivity(mActivityParam);
 		mActivitySetParam.setActivityId(mActivityParam.getId());
+		mActivitySetParam.setActivityStatus(1);
+		mActivitySetParam.setOrganizationId(getOrganizationId());
+		mActivitySetParam.setOrganizatioIdlName(getOrganizationName());
+		if (mActivitySetParam.getActivityTitle()==null){
+			throw new SuperCodeException("活动标题不能为空", 500);
+		}
 		mSetMapper.addActivitySet(mActivitySetParam);
 		Long activitySetId= mActivityParam.getId();
 
-		//保存渠道
-		saveChannels(mChannelParams,activitySetId);
+		if (null!=mChannelParams && mChannelParams.size()!=0) {
+			//保存渠道
+			saveChannels(mChannelParams,activitySetId);
+		}
 
 		for (MarketingActivityProductParam mProduct:maProductParams){
 			for (ProductBatchParam productBatch:mProduct.getBatchParams()){
@@ -125,7 +144,10 @@ public class MarketingActivitySetService extends CommonUtil {
 		
 		//保存领取页
 		saveReceivingPage(mReceivingPageParam,activitySetId);
-		return null;
+		RestResult<String> restResult=new RestResult<String>();
+		restResult.setState(200);
+		restResult.setMsg("成功");
+		return restResult;
 	}
 	
 	/**
@@ -151,9 +173,8 @@ public class MarketingActivitySetService extends CommonUtil {
 		mPage.setIsQrcodeView(mReceivingPageParam.getIsQrcodeView());
 		mPage.setIsReceivePage(mReceivingPageParam.getIsReceivePage());
 		mPage.setPicAddress(mReceivingPageParam.getPicAddress());
-		//TODO 上传二维码
-		String qrcodeUrl=null;
-		mPage.setQrcodeUrl(qrcodeUrl);
+		mPage.setActivitySetId(activitySetId);
+		mPage.setQrcodeUrl(mReceivingPageParam.getQrcodeUrl());
 		mPage.setTemplateId(mReceivingPageParam.getTemplateId());
 		mPage.setTextContent(mReceivingPageParam.getTextContent());
 		maReceivingPageMapper.insert(mPage);		
@@ -168,6 +189,7 @@ public class MarketingActivitySetService extends CommonUtil {
 	private void savePrizeTypes(List<MarketingPrizeTypeParam> mPrizeTypeParams, Long activitySetId) throws SuperCodeException {
 
 		List<MarketingPrizeType> mList=new ArrayList<MarketingPrizeType>(mPrizeTypeParams.size());
+		int total = 0;
 		for (MarketingPrizeTypeParam marketingPrizeTypeParam : mPrizeTypeParams) {
 			MarketingPrizeType mPrizeType=new MarketingPrizeType();
 			mPrizeType.setActivitySetId(activitySetId);
@@ -175,7 +197,11 @@ public class MarketingActivitySetService extends CommonUtil {
 			mPrizeType.setPrizeProbability(marketingPrizeTypeParam.getPrizeProbability());
 			mPrizeType.setPrizeTypeName(marketingPrizeTypeParam.getPrizeTypeName());
 			mPrizeType.setRandomAmount(marketingPrizeTypeParam.getRandomAmount());
+			total = total+mPrizeType.getPrizeProbability();
 			mList.add(mPrizeType);
+		}
+		if (total>100){
+			throw new SuperCodeException("中奖概率有误", 500);
 		}
 		mPrizeTypeMapper.batchInsert(mList);
 	}
@@ -272,9 +298,7 @@ public class MarketingActivitySetService extends CommonUtil {
 		mReceivingPage.setIsQrcodeView(mReceivingPageParam.getIsQrcodeView());
 		mReceivingPage.setIsReceivePage(mReceivingPageParam.getIsReceivePage());
 		mReceivingPage.setPicAddress(mReceivingPageParam.getPicAddress());
-		//TODO 上传二维码
-		String qrcodeUrl=null;
-		mReceivingPage.setQrcodeUrl(qrcodeUrl);
+		mReceivingPage.setQrcodeUrl(mReceivingPageParam.getQrcodeUrl());
 		mReceivingPage.setTemplateId(mReceivingPageParam.getTemplateId());
 		mReceivingPage.setTextContent(mReceivingPageParam.getTextContent());
 		maReceivingPageMapper.update(mReceivingPage);
@@ -350,8 +374,12 @@ public class MarketingActivitySetService extends CommonUtil {
 		return pMo;
 	}
 
-	public int updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus){
-		return mSetMapper.updateActivitySetStatus(mUpdateStatus);
+	public RestResult<String> updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus){
+		mSetMapper.updateActivitySetStatus(mUpdateStatus);
+		RestResult<String> restResult=new RestResult<String>();
+		restResult.setState(200);
+		restResult.setMsg("更新成功");
+		return restResult;
 	}
 	
 	public MarketingActivitySet selectById(Long activitySetId) {

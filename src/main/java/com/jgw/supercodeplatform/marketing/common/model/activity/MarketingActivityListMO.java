@@ -1,151 +1,168 @@
 package com.jgw.supercodeplatform.marketing.common.model.activity;
 
+
 public class MarketingActivityListMO {
-	 private Long id;
-	    private Long activityId;//活动主键Id
-	    private String organizationId;//组织Id
-	    private String organizatioIdlName;//组织
-	    private String activityTitle;//活动标题
-	    private String activityStartDate;//活动开始时间
-	    private String activityEndDate;//活动结束时间
-	    private String updateUserName;//更新用户名称
-	    private String updateDate;//更新时间
-	    private Integer activityStatus;//活动状态(1、表示上架进展，0 表示下架)
-	    
-	    private String activityName;// 活动名称
-	    
-	    private String codeType;//类型
-	    private String productBatchId;//批次号
-	    private String productBatchName;//产品批次名称
-	    private String productId;//活动产品Id
-	    private String productName;//活动产品名称
-	    
-	    public Long getId() {
-			return id;
-		}
+	private Long id;
+	private Byte activityType;// 活动类型1微信红包
+	private String customerName;//经销商或门店名称
+	private Long activityId;//活动主键Id
+	private String organizationId;//组织Id
+	private String organizatioIdlName;//组织
+	private String activityTitle;//活动标题
+	private String activityStartDate;//活动开始时间
+	private String activityEndDate;//活动结束时间
+	private String updateUserName;//更新用户名称
+	private String updateDate;//更新时间
+	private Integer activityStatus;//活动状态(1、表示上架进展，0 表示下架)
+	private String activityName;// 活动名称
+	private String codeType;//类型
+	private String productBatchId;//批次号
+	private String productBatchName;//产品批次名称
+	private String productId;//活动产品Id
+	private String productName;//活动产品名称
 
-		public void setId(Long id) {
-			this.id = id;
-		}
 
-		public Long getActivityId() {
-			return activityId;
-		}
+	public Long getId() {
+		return id;
+	}
 
-		public void setActivityId(Long activityId) {
-			this.activityId = activityId;
-		}
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-		public String getOrganizationId() {
-	        return organizationId;
-	    }
+	public Long getActivityId() {
+		return activityId;
+	}
 
-	    public void setOrganizationId(String organizationId) {
-	        this.organizationId = organizationId;
-	    }
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
 
-	    public String getOrganizatioIdlName() {
-	        return organizatioIdlName;
-	    }
+	public String getOrganizationId() {
+		return organizationId;
+	}
 
-	    public void setOrganizatioIdlName(String organizatioIdlName) {
-	        this.organizatioIdlName = organizatioIdlName;
-	    }
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
+	}
 
-		public String getActivityTitle() {
-	        return activityTitle;
-	    }
+	public String getOrganizatioIdlName() {
+		return organizatioIdlName;
+	}
 
-	    public void setActivityTitle(String activityTitle) {
-	        this.activityTitle = activityTitle;
-	    }
+	public void setOrganizatioIdlName(String organizatioIdlName) {
+		this.organizatioIdlName = organizatioIdlName;
+	}
 
-	    public String getActivityStartDate() {
-	        return activityStartDate;
-	    }
+	public String getActivityTitle() {
+		return activityTitle;
+	}
 
-	    public void setActivityStartDate(String activityStartDate) {
-	        this.activityStartDate = activityStartDate;
-	    }
+	public void setActivityTitle(String activityTitle) {
+		this.activityTitle = activityTitle;
+	}
 
-	    public String getActivityEndDate() {
-	        return activityEndDate;
-	    }
+	public String getActivityStartDate() {
+		return activityStartDate;
+	}
 
-	    public void setActivityEndDate(String activityEndDate) {
-	        this.activityEndDate = activityEndDate;
-	    }
+	public void setActivityStartDate(String activityStartDate) {
+		this.activityStartDate = activityStartDate;
+	}
 
-	    public String getUpdateUserName() {
-	        return updateUserName;
-	    }
+	public String getActivityEndDate() {
+		return activityEndDate;
+	}
 
-	    public void setUpdateUserName(String updateUserName) {
-	        this.updateUserName = updateUserName;
-	    }
+	public void setActivityEndDate(String activityEndDate) {
+		this.activityEndDate = activityEndDate;
+	}
 
-	    public String getUpdateDate() {
-	        return updateDate;
-	    }
+	public String getUpdateUserName() {
+		return updateUserName;
+	}
 
-	    public void setUpdateDate(String updateDate) {
-	        this.updateDate = updateDate;
-	    }
+	public void setUpdateUserName(String updateUserName) {
+		this.updateUserName = updateUserName;
+	}
 
-	    public Integer getActivityStatus() {
-	        return activityStatus;
-	    }
+	public String getUpdateDate() {
+		return updateDate;
+	}
 
-	    public void setActivityStatus(Integer activityStatus) {
-	        this.activityStatus = activityStatus;
-	    }
+	public void setUpdateDate(String updateDate) {
+		this.updateDate = updateDate;
+	}
 
-		public String getActivityName() {
-			return activityName;
-		}
+	public Integer getActivityStatus() {
+		return activityStatus;
+	}
 
-		public void setActivityName(String activityName) {
-			this.activityName = activityName;
-		}
+	public void setActivityStatus(Integer activityStatus) {
+		this.activityStatus = activityStatus;
+	}
 
-		public String getCodeType() {
-			return codeType;
-		}
+	public String getActivityName() {
+		return activityName;
+	}
 
-		public void setCodeType(String codeType) {
-			this.codeType = codeType;
-		}
+	public void setActivityName(String activityName) {
+		this.activityName = activityName;
+	}
 
-		public String getProductBatchId() {
-			return productBatchId;
-		}
+	public String getCodeType() {
+		return codeType;
+	}
 
-		public void setProductBatchId(String productBatchId) {
-			this.productBatchId = productBatchId;
-		}
+	public void setCodeType(String codeType) {
+		this.codeType = codeType;
+	}
 
-		public String getProductBatchName() {
-			return productBatchName;
-		}
+	public String getProductBatchId() {
+		return productBatchId;
+	}
 
-		public void setProductBatchName(String productBatchName) {
-			this.productBatchName = productBatchName;
-		}
+	public void setProductBatchId(String productBatchId) {
+		this.productBatchId = productBatchId;
+	}
 
-		public String getProductId() {
-			return productId;
-		}
+	public String getProductBatchName() {
+		return productBatchName;
+	}
 
-		public void setProductId(String productId) {
-			this.productId = productId;
-		}
+	public void setProductBatchName(String productBatchName) {
+		this.productBatchName = productBatchName;
+	}
 
-		public String getProductName() {
-			return productName;
-		}
+	public String getProductId() {
+		return productId;
+	}
 
-		public void setProductName(String productName) {
-			this.productName = productName;
-		}
-	    
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public Byte getActivityType() {
+		return activityType;
+	}
+
+	public void setActivityType(Byte activityType) {
+		this.activityType = activityType;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 }
