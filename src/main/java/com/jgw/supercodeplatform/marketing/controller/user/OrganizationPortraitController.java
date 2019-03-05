@@ -49,26 +49,21 @@ public class OrganizationPortraitController  extends CommonUtil {
 
 
     @RequestMapping(value = "/addOrgPor",method = RequestMethod.POST)
-    @ApiOperation(value = "添加组织画像关系", notes = "")
+    @ApiOperation(value = "保存组织画像关系", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> addOrgPortrait(
             @ApiJsonObject(name = "addOrgPortrait", value = {
                     @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需"),
                     @ApiJsonProperty(key = "organizationFullName",example = "中化通讯公司",description="组织全称,必需"),
-                    @ApiJsonProperty(key = "portraitCode", example = "Mobile", description = "画像编码,必需"),
-                    @ApiJsonProperty(key = "portraitName", example = "手机", description = "画像名称,必需")
+                    @ApiJsonProperty(key = "portraitCodeList", example = "\"[47f3a8abe0604ac694d328fc9e24bd68,47f3a8abe0604ac694d328fc9e24bd68]\"", description = "画像编码list,必需"),
+                    //@ApiJsonProperty(key = "portraitName", example = "手机", description = "画像名称,必需")
             })
             @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "organizationId","organizationFullName","portraitCode","portraitName");
-        int record = organizationPortraitService.addOrgPortrait(params);
-        if (record!=0){
-            return new RestResult(200, "success", null);
-        }else{
-            return new RestResult(500, "删除组织画像关系失败", null);
-        }
+        validateRequestParamAndValueNotNull(params, "organizationId","organizationFullName","portraitCodeList");
+        return organizationPortraitService.addOrgPortrait(params);
     }
 
-    @RequestMapping(value = "/deleOrgPor",method = RequestMethod.POST)
+/*    @RequestMapping(value = "/deleOrgPor",method = RequestMethod.POST)
     @ApiOperation(value = "删除组织画像关系", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> deleOrgPortrait(
@@ -85,6 +80,6 @@ public class OrganizationPortraitController  extends CommonUtil {
             return new RestResult(500, "删除组织画像关系失败", null);
         }
 
-    }
+    }*/
 
 }

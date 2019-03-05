@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.weixin;
 
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,14 @@ public class MarketingWxMerchantsService {
 		restResult.setMsg("成功");
 		restResult.setResults(merchants);
 		return restResult;
+	}
+
+	public int addWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam){
+		return dao.addWxMerchants(marketingWxMerchantsParam);
+	}
+
+	public int updateWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam){
+		return dao.updateWxMerchants(marketingWxMerchantsParam);
 	}
 
 }

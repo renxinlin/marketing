@@ -8,6 +8,7 @@ public class MarketingWxMerchantsParam {
     private String id;
     private String mchAppid;//商户账号appid
     private String mchid;//商户号
+    private String MerchantName;//商户名称
     private String merchantKey;//商户key
     private String certificateAddress;//证书地址
     private String certificatePassword;//证书密码
@@ -77,5 +78,13 @@ public class MarketingWxMerchantsParam {
 
     public void setOrganizatioIdlName(String organizatioIdlName) {
         this.organizatioIdlName = organizatioIdlName;
+    }
+
+    public String getMerchantName() {
+        return MerchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        MerchantName = merchantName;
     }
 }

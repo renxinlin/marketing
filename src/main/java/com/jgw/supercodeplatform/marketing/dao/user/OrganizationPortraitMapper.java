@@ -114,4 +114,7 @@ public interface OrganizationPortraitMapper {
     @Select(" SELECT "+selectSql+" FROM marketing_organization_portrait a WHERE PortraitCode = #{portraitCode} AND OrganizationId = #{organizationId} ")
     MarketingOrganizationPortrait getPortraitByPortraitCode(MarketingOrganizationPortrait organizationPortrait);
 
+    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE CodeId = #{codeId} ")
+    MarketingUnitcode getUnitcodeByCode(@Param("codeId")String codeId);
+
 }

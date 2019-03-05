@@ -1,6 +1,6 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
-import com.jgw.supercodeplatform.exception.ExcelException;
+import com.jgw.supercodeplatform.marketing.exception.base.ExcelException;
 import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
