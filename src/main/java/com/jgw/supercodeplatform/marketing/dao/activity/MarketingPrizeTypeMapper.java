@@ -23,4 +23,8 @@ public interface MarketingPrizeTypeMapper {
 	})
 	void batchInsert(@Param(value="mList")List<MarketingPrizeType> mList);
 
+	List<MarketingPrizeType> selectByActivitySetId(Long activitySetId);
+
+	void update(MarketingPrizeType marketingPrizeType);
+
 }

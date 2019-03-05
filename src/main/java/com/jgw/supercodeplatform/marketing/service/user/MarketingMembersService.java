@@ -13,10 +13,13 @@ import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.LotteryUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
@@ -25,6 +28,7 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdatePar
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.admincode.MarketingAdministrativeCode;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
@@ -43,6 +47,9 @@ public class MarketingMembersService extends CommonUtil {
     @Autowired
     private MarketingActivitySetMapper mSetMapper;
 
+    @Autowired
+    private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
+    
     @Autowired
     private RedisUtil redisUtil;
     /**
@@ -268,6 +275,57 @@ public class MarketingMembersService extends CommonUtil {
 		restResult.setResults(h5LoginVO);
 		restResult.setMsg("登录成功");
 		return restResult;
+	}
+
+	public RestResult<String> lottery(Long activitySetId, String openId) throws SuperCodeException {
+		RestResult<String> restResult=new RestResult<String>();
+		if (StringUtils.isBlank(openId) || null==activitySetId) {
+			restResult.setState(500);
+			restResult.setMsg("参数不能为空");
+			return restResult;
+		}
+		
+		MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
+		if (null==mActivitySet) {
+			restResult.setState(500);
+			restResult.setMsg("该活动不存在");
+			return restResult;
+		}
+		List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetId(activitySetId);
+		if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
+			restResult.setState(500);
+			restResult.setMsg("该活动未设置中奖奖次");
+			return restResult;
+		}
+		List<MarketingPrizeTypeMO> mTypeMOs=new ArrayList<MarketingPrizeTypeMO>();
+		Long codeTotalNum=mActivitySet.getCodeTotalNum();
+		for (MarketingPrizeType marketingPrizeType : mPrizeTypes) {
+			Integer probability=marketingPrizeType.getPrizeProbability();
+			MarketingPrizeTypeMO mo=new MarketingPrizeTypeMO();
+			mo.setActivitySetId(activitySetId);
+			mo.setId(marketingPrizeType.getId());
+			mo.setPrizeAmount(marketingPrizeType.getPrizeAmount());
+			mo.setPrizeProbability(probability);
+			mo.setPrizeTypeName(marketingPrizeType.getPrizeTypeName());
+			mo.setRandomAmount(marketingPrizeType.getRandomAmount());
+			mo.setWiningNum(marketingPrizeType.getWiningNum());
+			long num = (long) (marketingPrizeType.getPrizeProbability() / 100.00 * codeTotalNum);
+			mo.setTotalNum(num);
+			mo.setRealPrize(marketingPrizeType.getRealPrize());
+			mTypeMOs.add(mo);
+		}
+		MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
+		//如果该奖次的参与数已经大于等于他所占的百分比则重新抽奖
+		while (mPrizeTypeMO.getTotalNum() <= mPrizeTypeMO.getWiningNum()) {
+			mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
+		}
+		mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
+		MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
+		marketingPrizeType.setId(mPrizeTypeMO.getId());
+		marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
+		mMarketingPrizeTypeMapper.update(marketingPrizeType);
+		System.out.println("中奖奖次：" + mPrizeTypeMO.getPrizeTypeName());
+		return null;
 	}
     
 }

@@ -42,7 +42,6 @@ public class MarketingMembersFrontController extends CommonUtil {
 
     @RequestMapping(value = "/register",method = RequestMethod.POST)
     @ApiOperation(value = "招募会员（注册）", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> addMember(@Valid@RequestBody MarketingMembersAddParam marketingMembersAddParam) throws Exception {
         checkPhoneFormat(marketingMembersAddParam.getMobile());
         marketingMembersService.addMember(marketingMembersAddParam);
@@ -51,9 +50,14 @@ public class MarketingMembersFrontController extends CommonUtil {
     
     @RequestMapping(value = "/infoImprove",method = RequestMethod.POST)
     @ApiOperation(value = "h5信息完善", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> register(@Valid@RequestBody MarketingMembersUpdateParam marketingMembersUpdateParam) throws Exception {
     	marketingMembersService.updateMembers(marketingMembersUpdateParam);
         return new RestResult<String>(200, "成功", null);
+    }
+    
+    @RequestMapping(value = "/lottery",method = RequestMethod.POST)
+    @ApiOperation(value = "h5信息完善", notes = "")
+    public RestResult<String> lottery(Long activitySetId,String openId) throws Exception {
+        return marketingMembersService.lottery(activitySetId,openId);
     }
 }

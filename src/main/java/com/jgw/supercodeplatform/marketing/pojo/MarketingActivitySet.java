@@ -15,7 +15,8 @@ public class MarketingActivitySet {
     private Integer eachDayNumber;//每人每天次数
     private Integer activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 )
     private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
-
+    private Long codeTotalNum;//参与该活动一共的码数
+    
     public Long getId() {
 		return id;
 	}
@@ -78,7 +79,15 @@ public class MarketingActivitySet {
         return activityEndDate;
     }
 
-    public void setActivityEndDate(String activityEndDate) {
+    public Long getCodeTotalNum() {
+		return codeTotalNum;
+	}
+
+	public void setCodeTotalNum(Long codeTotalNum) {
+		this.codeTotalNum = codeTotalNum;
+	}
+
+	public void setActivityEndDate(String activityEndDate) {
         this.activityEndDate = activityEndDate;
     }
 

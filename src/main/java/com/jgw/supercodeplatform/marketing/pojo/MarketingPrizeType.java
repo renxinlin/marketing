@@ -12,7 +12,8 @@ public class MarketingPrizeType {
     private Integer prizeProbability;//中奖几率
     private String prizeTypeName;//奖品类型名称
     private Byte randomAmount;//是否随机金额 1随机 0固定
-
+    private Long winingNum;//已中奖数
+    private Byte realPrize;//是否由用户创建的真实奖次
 	public Long getId() {
 		return id;
 	}
@@ -48,6 +49,18 @@ public class MarketingPrizeType {
 	}
 	public void setRandomAmount(Byte randomAmount) {
 		this.randomAmount = randomAmount;
+	}
+	public Long getWiningNum() {
+		return winingNum;
+	}
+	public void setWiningNum(Long winingNum) {
+		this.winingNum = winingNum;
+	}
+	public Byte getRealPrize() {
+		return realPrize;
+	}
+	public void setRealPrize(Byte realPrize) {
+		this.realPrize = realPrize;
 	}
    
 }
