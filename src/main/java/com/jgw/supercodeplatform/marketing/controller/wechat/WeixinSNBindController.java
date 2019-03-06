@@ -48,6 +48,7 @@ public class WeixinSNBindController extends CommonUtil {
             String fileName = file.getOriginalFilename();
             //截取参数之后剩余的字符串并返回（返回文件名中“.”的索引值），获取上传图片的后缀名
             String newFileName = getUUID();
+            wxMerchantsParam.setFileName(newFileName);
             String ext = fileName.substring(fileName.indexOf("."));
             List<String> list = new ArrayList<>();
             list.add(".DER");
@@ -70,7 +71,11 @@ public class WeixinSNBindController extends CommonUtil {
                 file.transferTo(newFile);
                 //上传成功发送给前台的提示信息
                 response.getWriter().write("true");
-                
+                if(null==marketingWxMerchants){
+                    marketingWxMerchantsService.addWxMerchants(wxMerchantsParam);
+                }else{
+                    marketingWxMerchantsService.updateWxMerchants(wxMerchantsParam);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -82,13 +87,13 @@ public class WeixinSNBindController extends CommonUtil {
         return new RestResult(200, "success", null);
     }
     
-    @RequestMapping(value = "/update",method = RequestMethod.POST)
+/*    @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "微信商户信息修改", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> update(@RequestBody MarketingWxMerchantsParam wxMerchantsParam) throws Exception {
         marketingWxMerchantsService.updateWxMerchants(wxMerchantsParam);
         return new RestResult(200, "success", null);
-    }
+    }*/
     
     @RequestMapping(value = "/get",method = RequestMethod.POST)
     @ApiOperation(value = "获取微信商户信息", notes = "")
