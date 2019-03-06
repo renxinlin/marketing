@@ -188,6 +188,14 @@ public interface MarketingMembersMapper {
     @Delete("delete from marketing_members where Id=#{id}")
 	void deleteById(@Param("id")Long id);
 
+    @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
+            + " Sex,Birthday,ProvinceCode,CountyCode,CityCode,ProvinceName,CountyName,"
+            + " CityName,RegistDate,OrganizationId,CustomerName,CustomerCode,BabyBirthday)"
+            + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday},#{provinceCode},#{countyCode},#{cityCode},"
+            + " #{provinceName},#{countyName},#{cityName},NOW(),#{organizationId},"
+            + " #{customerName},#{customerCode},#{babyBirthday} )")
+	void insert(MarketingMembers members);
+
 
 
 

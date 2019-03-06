@@ -1,9 +1,9 @@
 package com.jgw.supercodeplatform.marketing.vo.activity;
 
 public class H5LoginVO {
-	private Long memberId;
+	private Long memberId;//返回用户表主键id
 
-	private int registered;
+	private int registered;//1已注册不需要再去完善信息 0需要去完善信息
 
 	public Long getMemberId() {
 		return memberId;

@@ -3,15 +3,20 @@ package com.jgw.supercodeplatform.marketing.controller.wechat.front;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 /**
  * 微信授权等
  * @author czm
@@ -22,6 +27,12 @@ import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 public class WeixinAuthController {
 	protected static Logger logger = LoggerFactory.getLogger(WeixinAuthController.class);
 
+	@Autowired
+	private MarketingMembersService marketingMembersService;
+	
+    @Value("${marketing.activity.h5page.url}")
+    private String h5pageUrl;
+    
     /**
      * 微信授权回调方法
      * @param code
@@ -29,7 +40,7 @@ public class WeixinAuthController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/code",method = RequestMethod.GET)
+    @RequestMapping(value = "/code")
     public String getWXCode(String code ,String state) throws Exception {
     	logger.info("微信授权回调获取code="+code+",state="+state);
     	if (StringUtils.isBlank(state)) {
@@ -59,11 +70,23 @@ public class WeixinAuthController {
 		}
         JSONObject userinfoObj=JSONObject.parseObject(userinfoContent);
         String nickName=userinfoObj.getString("nickname");
-        
         logger.info("--------------------授权成功--------------------------------");
        
-        String nickname=userinfoObj.getString("nickname");
-        return "success";
+        //判断是否需要保存用户
+        ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(state);
+        if (null==scInfoMO) {
+			throw new SuperCodeException("授权回调方法无法根据state="+state+"获取到用户扫码缓存信息请重试", 500);
+		}
+        
+        synchronized (this) {
+        	MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, scInfoMO.getOrganizationId());
+        	if (null==members) {
+        		members=new MarketingMembers();
+        		members.setOrganizationId(scInfoMO.getOrganizationId());
+        		marketingMembersService.addMember(members);
+        	}
+		}
+        return h5pageUrl+"?openId="+openid+"&wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId();
     }
 
 }

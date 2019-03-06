@@ -1,12 +1,14 @@
 package com.jgw.supercodeplatform.marketing.common.model.activity;
 
 public class ScanCodeInfoMO {
-	private String codeId;
-	private String codeTypeId;
-	private String productId;
-	private String productBatchId;
-    private String openId;
-    private Long activitySetId;
+	private String codeId;//外码
+	private String codeTypeId;//码值id
+	private String productId;//产品id
+	private String productBatchId;//码平台传的产品批次id
+    private String openId;//当前扫码用户openid
+    private Long activitySetId;//当前扫码的码参与的活动设置id
+    private String organizationId;//当前扫码所属企业id
+    
 	public String getCodeId() {
 		return codeId;
 	}
@@ -53,6 +55,14 @@ public class ScanCodeInfoMO {
 
 	public void setActivitySetId(Long activitySetId) {
 		this.activitySetId = activitySetId;
+	}
+
+	public String getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
 }

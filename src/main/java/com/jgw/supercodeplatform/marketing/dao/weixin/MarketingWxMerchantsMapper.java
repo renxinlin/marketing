@@ -39,4 +39,7 @@ public interface MarketingWxMerchantsMapper {
 			+ " </script>")
 	int updateWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam);
 
+	@Select("select "+allFields+" from marketing_wx_merchants where OrganizationId=#{organizationId}")
+	MarketingWxMerchants selectByOrganizationId(@Param("organizationId")String organizationId);
+
 }

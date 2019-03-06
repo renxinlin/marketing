@@ -9,11 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.marketing.asyntask.WXPayAsynTask;
-import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
-import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeNoMapper;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
@@ -24,14 +21,9 @@ import com.jgw.supercodeplatform.marketing.weixinpay.requestparam.OrganizationPa
 
 @Service
 public class WXPayService {
-    @Autowired
-    private WXPayTradeNoMapper wxTradeNoMapper;
     
     @Autowired
     private MarketingWxMerchantsMapper mWxMerchantsMapper;
-    
-    @Autowired
-    private SpringContextUtil springContextUtil;
     
     private static ExecutorService exec=Executors.newFixedThreadPool(20);
     
@@ -43,7 +35,7 @@ public class WXPayService {
      * @param organizationId
      * @throws Exception
      */
-	public void qiyePay(String  openid,String  spbill_create_ip,int amount,String mobile,String  organizationId,MarketingMembersWinRecord redWinRecord) throws Exception {
+	public void qiyePay(String  openid,String  spbill_create_ip,int amount,String  organizationId) throws Exception {
 		MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.get(organizationId);
 		String key=mWxMerchants.getMerchantKey();
 		String partner_trade_no=WXPayTradeNoGenerator.tradeNo();
@@ -69,7 +61,7 @@ public class WXPayService {
 		signMap.put("sign", sign);
 
 		WXPay wxPay=new WXPay(config);
-		exec.submit(new WXPayAsynTask(wxPay, WechatConstants.ORGANIZATION_PAY_CHANGE_URL, signMap, 1000, 5000,redWinRecord));
+		exec.submit(new WXPayAsynTask(wxPay, WechatConstants.ORGANIZATION_PAY_CHANGE_URL, signMap, 1000, 5000));
 	}
 	
 	
