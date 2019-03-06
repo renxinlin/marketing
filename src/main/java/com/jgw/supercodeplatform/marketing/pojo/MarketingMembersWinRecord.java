@@ -7,7 +7,8 @@ package com.jgw.supercodeplatform.marketing.pojo;
 public class MarketingMembersWinRecord {
 
     private int id;//序列Id
-    private Long activityId;//奖品类型
+    private Long activityId;//活动id
+    private Long activitySetId;//活动设置id
     private String activityName;//奖品类型名称
     private String openId;//会员微信Id
     private Long prizeTypeId;//中奖奖次id
@@ -88,6 +89,14 @@ public class MarketingMembersWinRecord {
 
 	public void setOpenId(String openId) {
 		this.openId = openId;
+	}
+
+	public Long getActivitySetId() {
+		return activitySetId;
+	}
+
+	public void setActivitySetId(Long activitySetId) {
+		this.activitySetId = activitySetId;
 	}
     
 }
