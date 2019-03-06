@@ -36,6 +36,7 @@ protected int count(MarketingMembersWinRecordListParam searchParams) throws Exce
 
 
 public int add(MarketingMembersWinRecordAddParam winRecordAddParam){
+
 	return dao.addWinRecord(winRecordAddParam);
 }
 

@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dto.activity;
 
 import io.swagger.annotations.ApiModel;
+import org.springframework.web.multipart.MultipartFile;
 
 @ApiModel(value = "微信商户信息绑定model")
 public class MarketingWxMerchantsParam {
@@ -8,11 +9,13 @@ public class MarketingWxMerchantsParam {
     private String id;
     private String mchAppid;//商户账号appid
     private String mchid;//商户号
+    private String MerchantName;//商户名称
     private String merchantKey;//商户key
     private String certificateAddress;//证书地址
     private String certificatePassword;//证书密码
     private String organizationId;//组织id
     private String organizatioIdlName;//组织
+    private MultipartFile file;
 
 
     public String getId() {
@@ -77,5 +80,21 @@ public class MarketingWxMerchantsParam {
 
     public void setOrganizatioIdlName(String organizatioIdlName) {
         this.organizatioIdlName = organizatioIdlName;
+    }
+
+    public String getMerchantName() {
+        return MerchantName;
+    }
+
+    public void setMerchantName(String merchantName) {
+        MerchantName = merchantName;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 }
