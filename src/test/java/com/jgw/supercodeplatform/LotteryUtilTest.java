@@ -31,31 +31,39 @@ public class LotteryUtilTest {
 	}
 
 	public static void main(String[] args) throws SuperCodeException {
-//		List<MarketingPrizeTypeMO> marketingPrizeTypeMOs = init();
-//		long sum=0;
-//		for (MarketingPrizeTypeMO mTypeMO : marketingPrizeTypeMOs) {
-//			long num = (long) (mTypeMO.getPrizeProbability() / 100.00 * totalCodeNum);
-//			System.out.println(mTypeMO.getPrizeTypeName()+"中奖数："+num);
-//			sum+=num;
-//			mTypeMO.setTotalNum(num);
-//		}
-//		System.out.println("中奖总数=="+sum+",相差数量="+(sum-totalCodeNum));
-		for (int j = 0; j < 10; j++) {
-			List<MarketingPrizeTypeMO> marketingPrizeTypeMOs = init();
-			for (MarketingPrizeTypeMO mTypeMO : marketingPrizeTypeMOs) {
-				long num = (long) (mTypeMO.getPrizeProbability() / 100.00 * totalCodeNum);
+		List<MarketingPrizeTypeMO> marketingPrizeTypeMOs = init();
+		long sum=0;
+		int i=0;
+		long codeTotalNum=125485;
+		for (MarketingPrizeTypeMO mTypeMO : marketingPrizeTypeMOs) {
+			if (i==marketingPrizeTypeMOs.size()-1) {
+				mTypeMO.setTotalNum(codeTotalNum);
+			}else {
+				long num = (long) (mTypeMO.getPrizeProbability() / 100.00 * codeTotalNum);
+				mTypeMO.setTotalNum(num);
+				codeTotalNum=codeTotalNum-num;
+				sum+=num;
 				mTypeMO.setTotalNum(num);
 			}
-			for (int i = 0; i < totalCodeNum; i++) {
-				MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.lottery(marketingPrizeTypeMOs);
-				while (mPrizeTypeMO.getTotalNum() <= mPrizeTypeMO.getWiningNum()) {
-					mPrizeTypeMO = LotteryUtil.lottery(marketingPrizeTypeMOs);
-				}
-				mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
-				System.out.println("中奖奖次：" + mPrizeTypeMO.getPrizeTypeName());
-			}
-			System.out.println("-------------第 " + j + "次执行------------------------------");
+			i++;
+			System.out.println("第i="+i+"次，中奖奖次：" + mTypeMO.getPrizeTypeName()+",中奖总数="+mTypeMO.getTotalNum());
 		}
+//		for (int j = 0; j < 10; j++) {
+//			List<MarketingPrizeTypeMO> marketingPrizeTypeMOs = init();
+//			for (MarketingPrizeTypeMO mTypeMO : marketingPrizeTypeMOs) {
+//				long num = (long) (mTypeMO.getPrizeProbability() / 100.00 * totalCodeNum);
+//				mTypeMO.setTotalNum(num);
+//			}
+//			for (int i = 0; i < totalCodeNum; i++) {
+//				MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.lottery(marketingPrizeTypeMOs);
+//				while (mPrizeTypeMO.getTotalNum() <= mPrizeTypeMO.getWiningNum()) {
+//					mPrizeTypeMO = LotteryUtil.lottery(marketingPrizeTypeMOs);
+//				}
+//				mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
+//				System.out.println("中奖奖次：" + mPrizeTypeMO.getPrizeTypeName());
+//			}
+//			System.out.println("-------------第 " + j + "次执行------------------------------");
+//		}
 	}
 
 }

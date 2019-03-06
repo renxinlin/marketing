@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.FutureTask;
 
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import org.apache.commons.lang.StringUtils;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.asyntask.WXPayAsynTask;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
@@ -24,14 +28,21 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper
 import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
+import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
+import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeNoMapper;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.admincode.MarketingAdministrativeCode;
+import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConfig;
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPayMarketingConfig;
 
 @Service
 public class MarketingMembersService extends CommonUtil {
@@ -53,6 +64,10 @@ public class MarketingMembersService extends CommonUtil {
     
     @Autowired
     private RedisUtil redisUtil;
+    
+    @Autowired
+    private WXPayService wxpService;
+    
     /**
      * 会员注册
      * @param map
@@ -277,7 +292,13 @@ public class MarketingMembersService extends CommonUtil {
 		restResult.setMsg("登录成功");
 		return restResult;
 	}
-
+    /**
+     * 点击中奖逻辑
+     * @param activitySetId
+     * @param openId
+     * @return
+     * @throws SuperCodeException
+     */
 	public RestResult<String> lottery(Long activitySetId, String openId) throws SuperCodeException {
 		RestResult<String> restResult=new RestResult<String>();
 		if (StringUtils.isBlank(openId) || null==activitySetId) {
@@ -300,6 +321,7 @@ public class MarketingMembersService extends CommonUtil {
 		}
 		List<MarketingPrizeTypeMO> mTypeMOs=new ArrayList<MarketingPrizeTypeMO>();
 		Long codeTotalNum=mActivitySet.getCodeTotalNum();
+		int i=0;
 		for (MarketingPrizeType marketingPrizeType : mPrizeTypes) {
 			Integer probability=marketingPrizeType.getPrizeProbability();
 			MarketingPrizeTypeMO mo=new MarketingPrizeTypeMO();
@@ -310,23 +332,42 @@ public class MarketingMembersService extends CommonUtil {
 			mo.setPrizeTypeName(marketingPrizeType.getPrizeTypeName());
 			mo.setRandomAmount(marketingPrizeType.getRandomAmount());
 			mo.setWiningNum(marketingPrizeType.getWiningNum());
-			long num = (long) (marketingPrizeType.getPrizeProbability() / 100.00 * codeTotalNum);
-			mo.setTotalNum(num);
+			
+			if (i==mPrizeTypes.size()-1) {
+				mo.setTotalNum(codeTotalNum);
+			}else {
+				long num = (long) (marketingPrizeType.getPrizeProbability() / 100.00 * codeTotalNum);
+				mo.setTotalNum(num);
+				codeTotalNum=codeTotalNum-num;
+			}
 			mo.setRealPrize(marketingPrizeType.getRealPrize());
 			mTypeMOs.add(mo);
+			i++;
 		}
+		//执行中奖算法
 		MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
 		//如果该奖次的参与数已经大于等于他所占的百分比则重新抽奖
 		while (mPrizeTypeMO.getTotalNum() <= mPrizeTypeMO.getWiningNum()) {
 			mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
 		}
+		//更新中奖纪录
 		mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
 		MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
 		marketingPrizeType.setId(mPrizeTypeMO.getId());
 		marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
 		mMarketingPrizeTypeMapper.update(marketingPrizeType);
-		System.out.println("中奖奖次：" + mPrizeTypeMO.getPrizeTypeName());
-		return null;
+		
+		Byte realPrize=mPrizeTypeMO.getRealPrize();
+		if (realPrize.equals((byte)0)) {
+			restResult.setState(200);
+			restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+		}else if (realPrize.equals((byte)1)) {
+			restResult.setState(200);
+			restResult.setMsg("恭喜您获得"+mPrizeTypeMO.getPrizeAmount()+"元惊喜红包！");
+			
+			qiyePay(mActivitySet);
+		}
+		return restResult;
 	}
     
 }
