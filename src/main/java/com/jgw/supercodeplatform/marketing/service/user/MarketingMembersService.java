@@ -23,6 +23,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
@@ -32,8 +33,10 @@ import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeNoMapper;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
@@ -61,6 +64,9 @@ public class MarketingMembersService extends CommonUtil {
 
     @Autowired
     private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
+    
+    @Autowired
+    private MarketingActivityMapper mActivityMapper;
     
     @Autowired
     private RedisUtil redisUtil;
@@ -299,7 +305,7 @@ public class MarketingMembersService extends CommonUtil {
      * @return
      * @throws SuperCodeException
      */
-	public RestResult<String> lottery(Long activitySetId, String openId) throws SuperCodeException {
+	public RestResult<String> lottery(Long activitySetId, String openId,String mobile,String wxstate) throws SuperCodeException {
 		RestResult<String> restResult=new RestResult<String>();
 		if (StringUtils.isBlank(openId) || null==activitySetId) {
 			restResult.setState(500);
@@ -310,7 +316,7 @@ public class MarketingMembersService extends CommonUtil {
 		MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
 		if (null==mActivitySet) {
 			restResult.setState(500);
-			restResult.setMsg("该活动不存在");
+			restResult.setMsg("该活动设置不存在");
 			return restResult;
 		}
 		List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetId(activitySetId);
@@ -319,6 +325,14 @@ public class MarketingMembersService extends CommonUtil {
 			restResult.setMsg("该活动未设置中奖奖次");
 			return restResult;
 		}
+		
+		MarketingActivity activity=mActivityMapper.selectById(mActivitySet.getActivityId());
+		if (null==activity) {
+			restResult.setState(500);
+			restResult.setMsg("该活动设置对应的活动不存在");
+			return restResult;
+		}
+		
 		List<MarketingPrizeTypeMO> mTypeMOs=new ArrayList<MarketingPrizeTypeMO>();
 		Long codeTotalNum=mActivitySet.getCodeTotalNum();
 		int i=0;
@@ -365,7 +379,16 @@ public class MarketingMembersService extends CommonUtil {
 			restResult.setState(200);
 			restResult.setMsg("恭喜您获得"+mPrizeTypeMO.getPrizeAmount()+"元惊喜红包！");
 			
-			qiyePay(mActivitySet);
+			MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
+			redWinRecord.setActivityId(activity.getId());
+			redWinRecord.setActivityName(activity.getActivityName());
+			redWinRecord.setActivitySetId(activitySetId);
+			redWinRecord.setMobile(mobile);
+			redWinRecord.setOpenId(openId);
+			redWinRecord.setOrganizationId(mActivitySet.getOrganizationId());
+			redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
+//			redWinRecord.set
+//			wxpService.qiyePay(openid, spbill_create_ip, amount, mobile, organizationId,redWinRecord);;
 		}
 		return restResult;
 	}

@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeNoMapper;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeNo;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
@@ -22,15 +24,16 @@ public class WXPayAsynTask implements Runnable{
     private String urlSuffix;
     private Map<String, String> reqData;
     private int connectTimeoutMs,  readTimeoutMs;
-
+    private MarketingMembersWinRecord redWinRecord;
+    
 	public WXPayAsynTask(WXPay wxPay, String urlSuffix, Map<String, String> reqData, int connectTimeoutMs,
-			int readTimeoutMs) {
-		super();
+			int readTimeoutMs,MarketingMembersWinRecord redWinRecord) {
 		this.wxPay = wxPay;
 		this.urlSuffix = urlSuffix;
 		this.reqData = reqData;
 		this.connectTimeoutMs = connectTimeoutMs;
 		this.readTimeoutMs = readTimeoutMs;
+		this.redWinRecord=redWinRecord;
 	}
 
 	@Override
@@ -66,7 +69,9 @@ public class WXPayAsynTask implements Runnable{
 					if ("SUCCESS".equals(result_code)) {
 						wXTradeNo.setTradeStatus((byte)1);
 						//保存中奖纪录
-						
+						MarketingMembersWinRecordMapper reWinRecordMapper=SpringContextUtil.getBean(MarketingMembersWinRecordMapper.class);
+//						reWinRecordMapper.addWinRecord(winRecordAddParam)
+					    
 					}else if ("FAIL".equals(result_code)) {
 						wXTradeNo.setTradeStatus((byte)2);
 						String err_code=mapResult.get("err_code");

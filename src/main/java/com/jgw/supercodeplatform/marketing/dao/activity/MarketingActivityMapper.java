@@ -80,6 +80,9 @@ public interface MarketingActivityMapper extends CommonSql{
 	@Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
 	int addActivity(@Param("ma") MarketingActivity marketingActivity);
 
+	@Select("select "+allFileds +" from marketing_activity where Id=#{activityId}")
+	MarketingActivity selectById(@Param("activityId")Long activityId);
+
 
 
 }

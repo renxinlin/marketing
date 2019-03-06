@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeNoMapper;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
@@ -42,7 +43,7 @@ public class WXPayService {
      * @param organizationId
      * @throws Exception
      */
-	public void qiyePay(String  openid,String  spbill_create_ip,int amount,String mobile,String  organizationId) throws Exception {
+	public void qiyePay(String  openid,String  spbill_create_ip,int amount,String mobile,String  organizationId,MarketingMembersWinRecord redWinRecord) throws Exception {
 		MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.get(organizationId);
 		String key=mWxMerchants.getMerchantKey();
 		String partner_trade_no=WXPayTradeNoGenerator.tradeNo();
@@ -66,10 +67,9 @@ public class WXPayService {
 		//获取签名值sign
 		String sign=WXPayUtil.generateSignature(signMap, key, SignType.MD5);
 		signMap.put("sign", sign);
-		
-		
+
 		WXPay wxPay=new WXPay(config);
-		exec.submit(new WXPayAsynTask(wxPay, WechatConstants.ORGANIZATION_PAY_CHANGE_URL, signMap, 1000, 5000));
+		exec.submit(new WXPayAsynTask(wxPay, WechatConstants.ORGANIZATION_PAY_CHANGE_URL, signMap, 1000, 5000,redWinRecord));
 	}
 	
 	
