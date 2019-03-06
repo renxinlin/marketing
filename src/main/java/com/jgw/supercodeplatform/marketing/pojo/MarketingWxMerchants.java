@@ -11,6 +11,7 @@ public class MarketingWxMerchants {
     private String certificatePassword;//证书密码
     private String organizationId;//组织id
     private String organizatioIdlName;//组织
+    private String fileName;
 
 
     public String getId() {
@@ -83,5 +84,13 @@ public class MarketingWxMerchants {
 
     public void setMerchantName(String merchantName) {
         MerchantName = merchantName;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

@@ -23,7 +23,7 @@ public class MarketingMembers {
     private String createDate;//建立日期
     private String updateDate;//修改日期
     private String customerName;//门店名称
-    private String customerCode;//门店编码
+    private String customerId;//门店编码
     private String babyBirthday;//宝宝生日
     private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
 
@@ -219,11 +219,11 @@ public class MarketingMembers {
         this.customerName = customerName;
     }
 
-    public String getCustomerCode() {
-        return customerCode;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomerCode(String customerCode) {
-        this.customerCode = customerCode;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }

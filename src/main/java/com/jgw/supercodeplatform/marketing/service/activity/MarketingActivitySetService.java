@@ -197,11 +197,22 @@ public class MarketingActivitySetService extends CommonUtil {
 			mPrizeType.setPrizeProbability(marketingPrizeTypeParam.getPrizeProbability());
 			mPrizeType.setPrizeTypeName(marketingPrizeTypeParam.getPrizeTypeName());
 			mPrizeType.setRandomAmount(marketingPrizeTypeParam.getRandomAmount());
+			mPrizeType.setRealPrize((byte) 1);
 			total = total+mPrizeType.getPrizeProbability();
 			mList.add(mPrizeType);
 		}
 		if (total>100){
 			throw new SuperCodeException("中奖概率有误", 500);
+		}else if (total<100){
+			int i = 100-total;
+			MarketingPrizeType NoReal=new MarketingPrizeType();
+			NoReal.setActivitySetId(activitySetId);
+			NoReal.setPrizeAmount(0);
+			NoReal.setPrizeProbability(i);
+			NoReal.setPrizeTypeName("未中奖");
+			NoReal.setRandomAmount((byte) 0);
+			NoReal.setRealPrize((byte) 0);
+			mList.add(NoReal);
 		}
 		mPrizeTypeMapper.batchInsert(mList);
 	}

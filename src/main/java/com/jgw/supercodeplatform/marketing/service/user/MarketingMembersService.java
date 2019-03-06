@@ -134,7 +134,7 @@ public class MarketingMembersService extends CommonUtil {
         map.put("birthday",membersUpdateParam.getBirthday());
         map.put("cityCode",membersUpdateParam.getCityCode());
         map.put("customerName",membersUpdateParam.getCustomerName());
-        map.put("customerCode",membersUpdateParam.getCustomerCode());
+        map.put("customerCode",membersUpdateParam.getCustomerId());
         map.put("babyBirthday",membersUpdateParam.getBabyBirthday());
         Map<String,Object> areaCode = new HashMap<>();
         areaCode.put("areaCode",map.get("cityCode").toString());

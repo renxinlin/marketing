@@ -37,4 +37,8 @@ public class MarketingWxMerchantsService {
 		return dao.updateWxMerchants(marketingWxMerchantsParam);
 	}
 
+	public MarketingWxMerchants get(String organizationId){
+		return dao.get(organizationId);
+	}
+
 }

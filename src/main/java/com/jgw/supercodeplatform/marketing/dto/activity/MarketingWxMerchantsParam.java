@@ -16,6 +16,7 @@ public class MarketingWxMerchantsParam {
     private String organizationId;//组织id
     private String organizatioIdlName;//组织
     private MultipartFile file;
+    private String fileName;
 
 
     public String getId() {
@@ -96,5 +97,13 @@ public class MarketingWxMerchantsParam {
 
     public void setFile(MultipartFile file) {
         this.file = file;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }
