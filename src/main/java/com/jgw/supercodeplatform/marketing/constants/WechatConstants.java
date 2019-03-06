@@ -12,4 +12,8 @@ public interface WechatConstants {
 
 	//微信授权获取用户基本信息接口
     public static String USER_INFO_URL="https://api.weixin.qq.com/sns/userinfo";
+    
+
+	//微信企业付款到零钱接口
+    public static String ORGANIZATION_PAY_CHANGE_URL="https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
 }
