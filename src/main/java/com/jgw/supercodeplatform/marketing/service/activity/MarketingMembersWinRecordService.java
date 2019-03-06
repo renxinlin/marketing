@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordAddParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
 import com.jgw.supercodeplatform.marketing.exception.base.ExcelException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,8 +23,8 @@ public class MarketingMembersWinRecordService extends AbstractPageService<Market
  private MarketingMembersWinRecordMapper dao;
 
 @Override
-protected List<MarketingMembersWinRecord> searchResult(MarketingMembersWinRecordListParam searchParams) throws Exception {
-	List<MarketingMembersWinRecord> list=dao.list(searchParams);
+protected List<MarketingMembersWinRecordListReturn> searchResult(MarketingMembersWinRecordListParam searchParams) throws Exception {
+	List<MarketingMembersWinRecordListReturn> list=dao.list(searchParams);
 	return list;
 }
 
@@ -35,15 +35,14 @@ protected int count(MarketingMembersWinRecordListParam searchParams) throws Exce
 }
 
 
-public int add(MarketingMembersWinRecordAddParam winRecordAddParam){
-
-	return dao.addWinRecord(winRecordAddParam);
+public int add(MarketingMembersWinRecord winRecord){
+	return dao.addWinRecord(winRecord);
 }
 
 
 	public void littleGeneralWinRecordExcelOutToResponse(List<String> ids, HttpServletResponse response, LinkedHashMap filedMap) throws ExcelException {
 
-		List<MarketingMembersWinRecord> membersWinRecord = dao.getWinRecordByidArray(ids);
+		List<MarketingMembersWinRecordListReturn> membersWinRecord = dao.getWinRecordByidArray(ids);
 		ExcelUtils.listToExcel(membersWinRecord, filedMap, "中奖记录", response);
 	}
  

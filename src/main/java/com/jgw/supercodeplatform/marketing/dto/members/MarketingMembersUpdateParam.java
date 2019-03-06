@@ -51,7 +51,7 @@ public class MarketingMembersUpdateParam {
     private String customerName;//门店名称
 
     @ApiModelProperty(value = "门店编码")
-    private String customerCode;//门店编码
+    private String customerId;//门店编码
 
     @ApiModelProperty(value = "宝宝生日")
     private String babyBirthday;//宝宝生日
@@ -116,12 +116,12 @@ public class MarketingMembersUpdateParam {
         this.customerName = customerName;
     }
 
-    public String getCustomerCode() {
-        return customerCode;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomerCode(String customerCode) {
-        this.customerCode = customerCode;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
     public String getBabyBirthday() {

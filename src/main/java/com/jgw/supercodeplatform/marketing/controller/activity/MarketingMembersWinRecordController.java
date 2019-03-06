@@ -11,7 +11,7 @@ import java.util.List;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordAddParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +38,9 @@ public class MarketingMembersWinRecordController extends CommonUtil {
     @RequestMapping(value = "/page",method = RequestMethod.POST)
     @ApiOperation(value = "中奖纪录列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<PageResults<List<MarketingMembersWinRecord>>> list(@RequestBody MarketingMembersWinRecordListParam winRecordListParam) throws Exception {
-    	RestResult<PageResults<List<MarketingMembersWinRecord>>> restResult=new RestResult<PageResults<List<MarketingMembersWinRecord>>>();
-    	PageResults<List<MarketingMembersWinRecord>> pageResults=service.listSearchViewLike(winRecordListParam);
+    public RestResult<PageResults<List<MarketingMembersWinRecordListReturn>>> list(@RequestBody MarketingMembersWinRecordListParam winRecordListParam) throws Exception {
+    	RestResult<PageResults<List<MarketingMembersWinRecordListReturn>>> restResult=new RestResult<PageResults<List<MarketingMembersWinRecordListReturn>>>();
+    	PageResults<List<MarketingMembersWinRecordListReturn>> pageResults=service.listSearchViewLike(winRecordListParam);
     	restResult.setState(200);
     	restResult.setResults(pageResults);
     	restResult.setMsg("成功");
@@ -50,8 +50,8 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 	@RequestMapping(value = "/add",method = RequestMethod.POST)
 	@ApiOperation(value = "添加中奖记录", notes = "")
 	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-	public RestResult<String> create(@RequestBody MarketingMembersWinRecordAddParam winRecordAddParam) throws Exception {
-		service.add(winRecordAddParam);
+	public RestResult<String> create(@RequestBody MarketingMembersWinRecord winRecord) throws Exception {
+		service.add(winRecord);
 		return new RestResult<String>(200, "success",null );
 	}
 

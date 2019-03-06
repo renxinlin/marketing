@@ -2,7 +2,7 @@ package com.jgw.supercodeplatform.marketing.dao.activity;
 
 import java.util.List;
 
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordAddParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -13,8 +13,10 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 
 @Mapper
 public interface MarketingMembersWinRecordMapper extends CommonSql{
-	static String allFields="Id id,ActivityType activityType,MemberName memberName,NickName nickName,Openid openid,PrizeTypeId prizeTypeId,PrizeTypeName prizeTypeName,"
-			+ "WinningAmount winningAmount,WinningCode winningCode,Mobile mobile,Dealer dealer,Store store,OrganizationId organizationId";
+	static String allFields="mmw.Id as id,mmw.ActivityId as activityId,mmw.ActivitySetId as activitySetId,mmw.ActivityName as activityName,mmw.Openid as openid,mmw.PrizeTypeId as prizeTypeId,"
+			+ "mmw.WinningAmount as winningAmount,mmw.WinningCode as winningCode,mmw.Mobile as mobile,mmw.OrganizationId as organizationId,"
+			+ "mm.UserName as userName,mm.WxName as wxName,mm.CustomerName as customerName, "
+			+ "mpt.PrizeTypeName as prizeTypeName,map.ProductName as productName ";
 	static String whereSearch =
 			"<where>" +
 					"<choose>" +
@@ -45,34 +47,38 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 
 	
 	@Select(startScript
-			+"select count(*) from marketing_members_win "
+			+"select count(*) from "
+			+"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  "
+			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId "
 			+whereSearch
 			+endScript
 		   )
 	int count(MarketingMembersWinRecordListParam searchParams);
 
 	@Select(startScript
-			+"select "+allFields+" from marketing_members_win "
+			+"select "+allFields+" from "
+			+"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  "
+			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId  "
 			+whereSearch
 			+ " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
 			+endScript
 		   )
-	List<MarketingMembersWinRecord> list(MarketingMembersWinRecordListParam searchParams);
+	List<MarketingMembersWinRecordListReturn> list(MarketingMembersWinRecordListParam searchParams);
 
-	@Insert(" INSERT INTO marketing_activity_set(ActivityType,MemberName,NickName,Openid,"
-			+ " PrizeTypeId,PrizeTypeName,WinningAmount,WinningCode,OrganizationId,Mobile,"
-			+ " Dealer,Store) "
-			+ " VALUES(#{activityType},#{memberName},#{nickName},#{openid},#{prizeTypeId},"
-			+ "#{prizeTypeName},#{winningAmount},#{winningCode},#{organizationId},#{mobile},#{dealer}, "
-			+ "#{store}"
+	@Insert(" INSERT INTO marketing_members_win(ActivityId,ActivitySetId,ActivityName,Openid,"
+			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,Mobile)"
+			+ " VALUES(#{activityId},#{activitySetId},#{activityName},#{openid},#{prizeTypeId},"
+			+ "#{winningAmount},#{winningCode},#{organizationId},#{mobile} "
 			+ ")")
-	int addWinRecord(MarketingMembersWinRecordAddParam winRecordAddParam);
+	int addWinRecord(MarketingMembersWinRecord winRecord);
 
 
 	@Select({
 			startScript,
 			allFields,
-			"from marketing_members_win ",
+			"from  ",
+			"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  ",
+			"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId  ",
 			"where Id ",
 			"in(",
 			"<foreach collection = 'list' item = 'id' separator = ','>",
@@ -80,6 +86,6 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 			"</foreach>)",
 			endScript
 	})
-	List<MarketingMembersWinRecord> getWinRecordByidArray(List<String> ids);
+	List<MarketingMembersWinRecordListReturn> getWinRecordByidArray(List<String> ids);
 
 }

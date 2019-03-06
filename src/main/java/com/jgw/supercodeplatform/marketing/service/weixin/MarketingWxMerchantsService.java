@@ -40,5 +40,9 @@ public class MarketingWxMerchantsService {
 	public MarketingWxMerchants selectByOrganizationId(String organizationId) {
 		return dao.selectByOrganizationId(organizationId);
 	}
+	
+	public MarketingWxMerchants get(String organizationId){
+		return dao.get(organizationId);
+	}
 
 }

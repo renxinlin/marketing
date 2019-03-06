@@ -27,7 +27,7 @@ public interface MarketingMembersMapper {
             + " a.State as state,a.OrganizationId as organizationId,"
             + " a.NewRegisterFlag as newRegisterFlag ,"
             + " DATE_FORMAT(a.CreateDate,'%Y-%m-%d') as createDate,DATE_FORMAT(a.UpdateDate,'%Y-%m-%d') as updateDate,"
-            + "a.CustomerName as customerName,a.CustomerCode as customerCode,"
+            + "a.CustomerName as customerName,a.CustomerId as customerId,"
             + " a.BabyBirthday as babyBirthday ";
 
 
@@ -38,10 +38,10 @@ public interface MarketingMembersMapper {
      */
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
             + " Sex,Birthday,ProvinceCode,CountyCode,CityCode,ProvinceName,CountyName,"
-            + " CityName,RegistDate,OrganizationId,CustomerName,CustomerCode,BabyBirthday)"
+            + " CityName,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday)"
             + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday},#{provinceCode},#{countyCode},#{cityCode},"
             + " #{provinceName},#{countyName},#{cityName},NOW(),#{organizationId},"
-            + " #{customerName},#{customerCode},#{babyBirthday} )")
+            + " #{customerName},#{customerId},#{babyBirthday} )")
     int addMembers(MarketingMembersAddParam marketingMembersAddParam);
 
 
@@ -155,7 +155,7 @@ public interface MarketingMembersMapper {
             + " <if test='newRegisterFlag !=null and newRegisterFlag != &apos;&apos; '> NewRegisterFlag = #{newRegisterFlag} ,</if> "
             + " <if test='state !=null and state != &apos;&apos; '> State = #{state} ,</if> "
             + " <if test='customerName !=null and customerName != &apos;&apos; '> CustomerName = #{customerName} ,</if> "
-            + " <if test='customerCode !=null and customerCode != &apos;&apos; '> CustomerCode = #{customerCode} ,</if> "
+            + " <if test='customerId !=null and customerId != &apos;&apos; '> CustomerId = #{customerId} ,</if> "
             + " <if test='babyBirthday !=null and babyBirthday != &apos;&apos; '> BabyBirthday = #{babyBirthday} ,</if> "
             + " <if test='mobile !=null and mobile != &apos;&apos; '> Mobile = #{mobile} ,</if> "
             + " <if test='wxName !=null and wxName != &apos;&apos; '> WxName = #{wxName} ,</if> "
