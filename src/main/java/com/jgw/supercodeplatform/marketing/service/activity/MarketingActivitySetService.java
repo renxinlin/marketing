@@ -132,7 +132,7 @@ public class MarketingActivitySetService extends CommonUtil {
 			throw new SuperCodeException("活动标题不能为空", 500);
 		}
 		mSetMapper.addActivitySet(mActivitySetParam);
-		Long activitySetId= mActivityParam.getId();
+		Long activitySetId= mActivitySetParam.getId();
 
 		if (null!=mChannelParams && mChannelParams.size()!=0) {
 			//保存渠道
