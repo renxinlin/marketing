@@ -352,25 +352,34 @@ public class MarketingActivitySetService extends CommonUtil {
 	 * @throws SuperCodeException 
 	 * @throws ParseException 
 	 */
-	public ScanCodeInfoMO judgeActivityScanCodeParam(String codeId, String codeTypeId, String productId, String productBatchId) throws SuperCodeException, ParseException {
+	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String codeId, String codeTypeId, String productId, String productBatchId) throws SuperCodeException, ParseException {
 		logger.info("扫码接收到参数codeId="+codeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
+		RestResult<ScanCodeInfoMO> restResult=new RestResult<ScanCodeInfoMO>();
 		if (StringUtils.isBlank(codeId) || StringUtils.isBlank(codeId)||StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)) {
-			throw new SuperCodeException("接收到码平台扫码信息有空值", 500);
+			restResult.setState(500);
+			restResult.setMsg("接收到码平台扫码信息有空值");
+			return restResult;
 		}
     	//1、判断该码批次是否参与活动
 		MarketingActivityProduct mProduct=mProductMapper.selectByProductAndProductBatchId(productId,productBatchId);
 		if (null==mProduct) {
-			throw new SuperCodeException("该码对应的产品批次未参与活动", 500);
+			restResult.setState(500);
+			restResult.setMsg("该码对应的产品批次未参与活动");
+			return restResult;
 		}
 		Long activitySetId=mProduct.getActivitySetId();
     	//2、判断该活动是否存在及是否已经停用
     	MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
     	if (null==mActivitySet) {
-    		throw new SuperCodeException("活动已被删除无法参与", 500);
+			restResult.setState(500);
+			restResult.setMsg("活动已被删除无法参与");
+			return restResult;
     	}
     	Integer activityStatus= mActivitySet.getActivityStatus();
     	if (null==activityStatus || 0==activityStatus) {
-    		throw new SuperCodeException("活动已停止", 500);
+    		restResult.setState(500);
+			restResult.setMsg("活动已停止");
+			return restResult;
     	}
     	//2、如果活动开始或结束时间不为空的话则判断扫码时间是否处于活动时间之内
     	String startdate=mActivitySet.getActivityStartDate();
@@ -382,14 +391,18 @@ public class MarketingActivitySetService extends CommonUtil {
     	if (StringUtils.isNotBlank(startdate)) {
     		long startTime=format.parse(startdate).getTime();
     		if (currentTime<startTime) {
-    			throw new SuperCodeException("活动还未开始", 500);
+    			restResult.setState(500);
+    			restResult.setMsg("活动还未开始");
+    			return restResult;
 			}
 		}
     	
     	if (StringUtils.isNotBlank(enddate)) {
     		long endTime=format.parse(enddate).getTime();
     		if (currentTime>endTime) {
-    			throw new SuperCodeException("活动已结束", 500);
+    			restResult.setState(500);
+    			restResult.setMsg("活动已结束");
+    			return restResult;
 			}
 		}
 		ScanCodeInfoMO pMo=new ScanCodeInfoMO();
@@ -398,7 +411,10 @@ public class MarketingActivitySetService extends CommonUtil {
 		pMo.setProductBatchId(productBatchId);
 		pMo.setProductId(productId);
 		pMo.setActivitySetId(activitySetId);
-		return pMo;
+		pMo.setOrganizationId(mActivitySet.getOrganizationId());
+		restResult.setResults(pMo);
+		restResult.setState(200);
+		return restResult;
 	}
 
 	public RestResult<String> updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus){

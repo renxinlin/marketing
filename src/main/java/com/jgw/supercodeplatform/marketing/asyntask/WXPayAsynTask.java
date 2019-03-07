@@ -7,8 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
-import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeNoMapper;
-import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeNo;
+import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
+import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
 /**
@@ -39,9 +39,9 @@ public class WXPayAsynTask implements Runnable{
 			if (StringUtils.isBlank(partner_trade_no)) {
 				logger.error("支付时订单号partner_trade_no为空未能发起支付");
 			}
-			WXPayTradeNoMapper wxTradeNoMapper=SpringContextUtil.getBean(WXPayTradeNoMapper.class);
+			WXPayTradeOrderMapper wxTradeNoMapper=SpringContextUtil.getBean(WXPayTradeOrderMapper.class);
 			
-			WXPayTradeNo wXTradeNo=wxTradeNoMapper.selectByTradeNo(partner_trade_no);
+			WXPayTradeOrder wXTradeNo=wxTradeNoMapper.selectByTradeNo(partner_trade_no);
 			if (null==wXTradeNo) {
 				logger.error("根据订单号partner_trade_no="+partner_trade_no+" 无法查询到订单");
 				return ;

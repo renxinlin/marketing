@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
@@ -61,22 +62,13 @@ public class ScanCodeController {
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(String codeId,String codeTypeId,String productId,String productBatchId) throws Exception {
-    	ScanCodeInfoMO sCodeInfoMO=mActivitySetService.judgeActivityScanCodeParam(codeId,codeTypeId,productId,productBatchId);
+    	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(codeId,codeTypeId,productId,productBatchId);
+    	if (restResult.getState()==500) {
+    		 return "redirect:"+h5pageUrl+"?success=0&msg="+restResult.getMsg();
+		}
     	String	wxstate=commonUtil.getUUID();
-    	
-        Map<String,Object> params=new HashMap<String, Object>();
-        params.put("productId",productId);
-        ResponseEntity<String> responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl, params, null);
-        String body=responseEntity.getBody();
-        if (StringUtils.isBlank(body)) {
-			throw new SuperCodeException("获取商品基础信息失败", 500);
-		}
-        JSONObject bodyObj=JSONObject.parseObject(body);
-        int state=bodyObj.getIntValue("state");
-        if (500==state) {
-        	throw new SuperCodeException("获取商品基础信息失败，错误信息："+bodyObj.getString("msg"), 500);
-		}
-        String organizationId=bodyObj.getJSONObject("results").getString("organizationId");
+    	ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
+        String organizationId=sCodeInfoMO.getOrganizationId();
         MarketingWxMerchants mWxMerchants=mWxMerchantsService.selectByOrganizationId(organizationId);
         if (null==mWxMerchants || StringUtils.isBlank(mWxMerchants.getMchAppid())) {
         	throw new SuperCodeException("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId, 500);
@@ -86,7 +78,7 @@ public class ScanCodeController {
         
     	//微信授权需要对redirect_uri进行urlencode
     	String encoderedirectUri=URLEncoder.encode(wxauthRedirectUri, "utf-8");
-        return "redirect:"+h5pageUrl+"?state="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri;
+        return "redirect:"+h5pageUrl+"?state="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1";
     }
 
 }

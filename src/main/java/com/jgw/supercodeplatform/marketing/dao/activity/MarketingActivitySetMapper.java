@@ -10,12 +10,14 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 
 @Mapper
 public interface MarketingActivitySetMapper {
- static String allFields="Id id,ActivityId ActivityId,ActivityTitle ActivityTitle,ActivityStartDate ActivityStartDate,ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,UpdateDate UpdateDate,"
- 		+ "ActivityStatus ActivityStatus,EachDayNumber EachDayNumber,ActivityRangeMark ActivityRangeMark,autoFetch autoFetch,CodeTotalNum codeTotalNum";
+ static String allFields="Id id,ActivityId ActivityId,ActivityTitle ActivityTitle,ActivityStartDate ActivityStartDate,"
+ 		+ "ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,UpdateDate UpdateDate,"
+ 		+ "ActivityStatus ActivityStatus,EachDayNumber EachDayNumber,ActivityRangeMark ActivityRangeMark,"
+ 		+ "autoFetch autoFetch,CodeTotalNum codeTotalNum,OrganizationId organizationId,OrganizatioIdlName organizatioIdlName";
 
 
 
-    @Select("select "+allFields+" from marketing_activity_set where ActivitySetId=#{activitySetId}")
+    @Select("select "+allFields+" from marketing_activity_set where Id=#{activitySetId}")
     MarketingActivitySet selectById(Long activitySetId);
  
     @Select("select EachDayNumber from marketing_activity_set where ActivitySetId=#{activitySetId}")

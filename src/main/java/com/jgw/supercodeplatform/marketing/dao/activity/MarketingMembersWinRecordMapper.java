@@ -5,7 +5,9 @@ import java.util.List;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
@@ -87,5 +89,16 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 			endScript
 	})
 	List<MarketingMembersWinRecordListReturn> getWinRecordByidArray(List<String> ids);
+    
+	@Update(startScript
+			+"update marketing_members_win "
+				+ " <set>"
+			+ " <if test='newopenId !=null and newopenId != &apos;&apos; '> OpenId = #{newopenId} ,</if> "
+			+ " <if test='mobile !=null and mobile != &apos;&apos; '> Mobile = #{mobile} ,</if> "
+			+ " </set>"
+			+"where OrganizationId = #{organizationId} and OpenId= #{oldopenId}"
+			+endScript)
+	void updateOpenIdAndMobileByOpenIdAndOrgId(@Param("newopenId")String newopenId, @Param("mobile")String mobile,  @Param("mobile")String organizationId,
+			 @Param("oldopenId")String oldopenId);
 
 }

@@ -82,6 +82,8 @@ public class WeixinAuthController {
         	MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, scInfoMO.getOrganizationId());
         	if (null==members) {
         		members=new MarketingMembers();
+        		members.setOpenid(openid);
+        		members.setWxName(nickName);
         		members.setOrganizationId(scInfoMO.getOrganizationId());
         		marketingMembersService.addMember(members);
         	}

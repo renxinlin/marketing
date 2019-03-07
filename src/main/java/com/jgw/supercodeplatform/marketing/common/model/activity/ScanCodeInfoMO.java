@@ -1,13 +1,13 @@
 package com.jgw.supercodeplatform.marketing.common.model.activity;
 
 public class ScanCodeInfoMO {
-	private String codeId;//外码
-	private String codeTypeId;//码值id
-	private String productId;//产品id
-	private String productBatchId;//码平台传的产品批次id
-    private String openId;//当前扫码用户openid
-    private Long activitySetId;//当前扫码的码参与的活动设置id
-    private String organizationId;//当前扫码所属企业id
+	private String codeId;//外码,跳转到营销扫码接口时获取
+	private String codeTypeId;//码值id,跳转到营销扫码接口时获取
+	private String productId;//产品id,跳转到营销扫码接口时获取
+	private String productBatchId;//码平台传的产品批次id,跳转到营销扫码接口时获取
+    private String openId;//当前扫码用户openid授权接口获取
+    private Long activitySetId;//当前扫码的码参与的活动设置id,跳转到营销扫码接口时获取
+    private String organizationId;//当前扫码所属企业id,跳转到营销扫码接口时获取
     
 	public String getCodeId() {
 		return codeId;

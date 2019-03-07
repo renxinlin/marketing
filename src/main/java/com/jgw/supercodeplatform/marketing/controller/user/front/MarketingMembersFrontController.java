@@ -33,11 +33,11 @@ public class MarketingMembersFrontController extends CommonUtil {
     @RequestMapping(value = "/login",method = RequestMethod.POST)
     @ApiOperation(value = "h5登录", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "手机号",name="mobile"),
-    		@ApiImplicitParam(paramType="query",value = "活动设置id",name="activitySetId"),
+    		@ApiImplicitParam(paramType="query",value = "活动设置id",name="wxstate"),
     		@ApiImplicitParam(paramType="query",value = "手机验证码",name="verificationCode")
     		})
-    public RestResult<H5LoginVO> login(@RequestParam String mobile,@RequestParam String openId,@RequestParam Long activitySetId,@RequestParam String verificationCode) throws Exception {
-        return marketingMembersService.login(mobile,openId,activitySetId,verificationCode);
+    public RestResult<H5LoginVO> login(@RequestParam String mobile,@RequestParam String wxstate,@RequestParam String verificationCode) throws Exception {
+        return marketingMembersService.login(mobile,wxstate,verificationCode);
     }
 
     @RequestMapping(value = "/register",method = RequestMethod.POST)

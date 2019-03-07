@@ -4,7 +4,7 @@ package com.jgw.supercodeplatform.marketing.pojo.pay;
  * @author czm
  *
  */
-public class WXPayTradeNo {
+public class WXPayTradeOrder {
 	private Long id;
 
 	private String partnerTradeNo;//订单号
@@ -13,13 +13,11 @@ public class WXPayTradeNo {
 
 	private Integer amount;//支付金额单位 分
 
-	private String appId;//商户号的appid
-
-	private String mchId;//微信支付分配的商户号
-
 	private String tradeDate;//交易时间
 
 	private Byte tradeStatus;// 0未支付 1支付成功 2支付失败
+	
+	private String organizationId;//组织id
     /**
      * SUCCESS/FAIL
                    此字段是通信标识，非交易标识，交易是否成功需要查看result_code来判断
@@ -79,20 +77,12 @@ public class WXPayTradeNo {
 		this.amount = amount;
 	}
 
-	public String getAppId() {
-		return appId;
+	public String getOrganizationId() {
+		return organizationId;
 	}
 
-	public void setAppId(String appId) {
-		this.appId = appId;
-	}
-
-	public String getMchId() {
-		return mchId;
-	}
-
-	public void setMchId(String mchId) {
-		this.mchId = mchId;
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public String getTradeDate() {
