@@ -424,7 +424,7 @@ public class MarketingMembersService extends CommonUtil {
 			redWinRecord.setActivityName(activity.getActivityName());
 			redWinRecord.setActivitySetId(activitySetId);
 			redWinRecord.setMobile(mobile);
-			redWinRecord.setOpenId(openId);
+			redWinRecord.setOpenid(openId);
 			redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
 			redWinRecord.setWinningAmount(amount);
 			redWinRecord.setWinningCode(scanCodeInfoMO.getCodeId());

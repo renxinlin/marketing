@@ -132,7 +132,7 @@ public class MarketingActivitySetService extends CommonUtil {
 			throw new SuperCodeException("活动标题不能为空", 500);
 		}
 		mSetMapper.addActivitySet(mActivitySetParam);
-		Long activitySetId= mActivityParam.getId();
+		Long activitySetId= mActivitySetParam.getId();
 
 		if (null!=mChannelParams && mChannelParams.size()!=0) {
 			//保存渠道
@@ -207,6 +207,12 @@ public class MarketingActivitySetService extends CommonUtil {
 		List<MarketingPrizeType> mList=new ArrayList<MarketingPrizeType>(mPrizeTypeParams.size());
 		int total = 0;
 		for (MarketingPrizeTypeParam marketingPrizeTypeParam : mPrizeTypeParams) {
+			if(0==marketingPrizeTypeParam.getRandomAmount()&&0>=marketingPrizeTypeParam.getPrizeAmount()){
+				throw new SuperCodeException("固定金额中奖金额不能小于等于0", 500);
+			}
+			if (0>=marketingPrizeTypeParam.getPrizeProbability()){
+				throw new SuperCodeException("中奖概率不能小于等于0", 500);
+			}
 			MarketingPrizeType mPrizeType=new MarketingPrizeType();
 			mPrizeType.setActivitySetId(activitySetId);
 			mPrizeType.setPrizeAmount(marketingPrizeTypeParam.getPrizeAmount());

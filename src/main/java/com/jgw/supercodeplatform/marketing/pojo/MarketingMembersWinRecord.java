@@ -10,7 +10,7 @@ public class MarketingMembersWinRecord {
     private Long activityId;//活动id
     private Long activitySetId;//活动设置id
     private String activityName;//奖品类型名称
-    private String openId;//会员微信Id
+    private String openid;//会员微信Id
     private Long prizeTypeId;//中奖奖次id
     private Integer winningAmount;//中奖金额
     private String winningCode;//中奖码
@@ -83,12 +83,12 @@ public class MarketingMembersWinRecord {
 		this.activityName = activityName;
 	}
 
-	public String getOpenId() {
-		return openId;
+	public String getOpenid() {
+		return openid;
 	}
 
-	public void setOpenId(String openId) {
-		this.openId = openId;
+	public void setOpenid(String openid) {
+		this.openid = openid;
 	}
 
 	public Long getActivitySetId() {

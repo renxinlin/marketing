@@ -6,14 +6,14 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 
 @Mapper
 public interface MarketingWinningPageMapper {
-    static String allFields="Id id,LoginType loginType,TemplateId templateId,ActivitySetId activitySetId,WiningNum winingNum";
+    static String allFields="Id id,LoginType loginType,TemplateId templateId,ActivitySetId activitySetId";
     
     @Select("select "+allFields+" from marketing_winning_page where ActivitySetId=#{activitySetId}")
 	MarketingWinningPage getByActivityId(@Param("activitySetId")Long activitySetId);
 
 
-	@Insert(" INSERT INTO marketing_winning_page(LoginType,TemplateId,ActivitySetId,WiningNum )"
-			+ " VALUES(#{loginType},#{templateId},#{activitySetId},#{winingNum})")
+	@Insert(" INSERT INTO marketing_winning_page(LoginType,TemplateId,ActivitySetId )"
+			+ " VALUES(#{loginType},#{templateId},#{activitySetId})")
 	int insert(MarketingWinningPage mWinningPage);
 
 

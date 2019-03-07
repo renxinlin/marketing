@@ -15,10 +15,15 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 
 @Mapper
 public interface MarketingMembersWinRecordMapper extends CommonSql{
-	static String allFields="mmw.Id as id,mmw.ActivityId as activityId,mmw.ActivitySetId as activitySetId,mmw.ActivityName as activityName,mmw.Openid as openid,mmw.PrizeTypeId as prizeTypeId,"
+
+	static String allFields="Id as id,ActivityId as activityId,ActivitySetId as activitySetId,ActivityName as activityName,Openid as openid,PrizeTypeId as prizeTypeId,"
+			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId ";
+
+	static String allWinFields="mmw.Id as id,mmw.ActivityId as activityId,mmw.ActivitySetId as activitySetId,mmw.ActivityName as activityName,mmw.Openid as openid,mmw.PrizeTypeId as prizeTypeId,"
 			+ "mmw.WinningAmount as winningAmount,mmw.WinningCode as winningCode,mmw.Mobile as mobile,mmw.OrganizationId as organizationId,"
 			+ "mm.UserName as userName,mm.WxName as wxName,mm.CustomerName as customerName, "
 			+ "mpt.PrizeTypeName as prizeTypeName,map.ProductName as productName ";
+
 	static String whereSearch =
 			"<where>" +
 					"<choose>" +
@@ -44,7 +49,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 						"</if>" +
 					"</otherwise>" +
 					"</choose>" +
-					"<if test='organizationId !=null and organizationId != &apos;&apos; '> AND trace_funtemplatestatistical.organizationId = #{organizationId}</if>"+
+					"<if test='organizationId !=null and organizationId != &apos;&apos; '> AND mmw.OrganizationId = #{organizationId}</if>"+
 					"</where>";
 
 	
@@ -58,7 +63,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	int count(MarketingMembersWinRecordListParam searchParams);
 
 	@Select(startScript
-			+"select "+allFields+" from "
+			+"select "+allWinFields+" from "
 			+"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  "
 			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId  "
 			+whereSearch
@@ -77,7 +82,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 
 	@Select({
 			startScript,
-			allFields,
+			allWinFields,
 			"from  ",
 			"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  ",
 			"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId  ",

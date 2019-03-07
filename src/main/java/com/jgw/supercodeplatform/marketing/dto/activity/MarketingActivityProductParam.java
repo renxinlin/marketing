@@ -1,12 +1,20 @@
 package com.jgw.supercodeplatform.marketing.dto.activity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
+@ApiModel(value = "活动产品model")
 public class MarketingActivityProductParam {
 
+	@ApiModelProperty(value = "Id")
     private Long id;//Id
+	@ApiModelProperty(value = "活动产品Id")
     private String productId;//活动产品Id
+	@ApiModelProperty(value = "活动产品名称")
     private String productName;//活动产品名称
+	@ApiModelProperty(value = "产品批次参数")
     private List<ProductBatchParam> batchParams;
     
 	public Long getId() {

@@ -1,9 +1,6 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
@@ -39,9 +36,10 @@ public interface MarketingActivitySetMapper {
    @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle,"
            + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus,EachDayNumber,"
            + " ActivityRangeMark,autoFetch,CodeTotalNum) "
-           + " VALUES(#{activityId},#{organizationId},#{organizatioIdlName},#{activityTitle},#{activityStartDate},"
-           + "#{activityEndDate},#{updateUserId},#{updateUserName},#{activityStatus},#{eachDayNumber},#{activityRangeMark}, "
-           + "#{autoFetch},#{codeTotalNum} "
+           + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate},"
+           + "#{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.eachDayNumber},#{ma.activityRangeMark}, "
+           + "#{ma.autoFetch},#{ma.codeTotalNum} "
            + ")")
-   int addActivitySet(MarketingActivitySet marketingActivitySet);
+   @Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
+   int addActivitySet(@Param("ma")MarketingActivitySet marketingActivitySet);
 }
