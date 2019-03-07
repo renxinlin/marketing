@@ -56,8 +56,8 @@ public class MarketingMembersFrontController extends CommonUtil {
     }
     
     @RequestMapping(value = "/lottery",method = RequestMethod.POST)
-    @ApiOperation(value = "h5信息完善", notes = "")
-    public RestResult<String> lottery(Long activitySetId, String openId,String mobile,String wxstate) throws Exception {
-        return marketingMembersService.lottery(activitySetId,openId,mobile, wxstate);
+    @ApiOperation(value = "用户点击领奖方法", notes = "")
+    public RestResult<String> lottery(String wxstate,String mobile) throws Exception {
+        return marketingMembersService.lottery(wxstate,mobile);
     }
 }
