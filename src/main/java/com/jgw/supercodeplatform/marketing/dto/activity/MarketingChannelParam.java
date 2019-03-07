@@ -1,20 +1,26 @@
 package com.jgw.supercodeplatform.marketing.dto.activity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.List;
 
+@ApiModel(value = "活动门店或经销商")
 public class MarketingChannelParam {
+
+	@ApiModelProperty(value = "Id")
 	private Long id;
-
+	@ApiModelProperty(value = "经销商或门店名称")
 	private String customerName;// 经销商或门店名称
-
+	@ApiModelProperty(value = " 客户唯一编码")
 	private String customerCode;// 客户唯一编码
-
+	@ApiModelProperty(value = "客户类型 0-渠道经销；1-门店")
 	private Byte customerType;// 客户类型 0-渠道经销；1-门店
-
+	@ApiModelProperty(value = "父类类型 0-渠道经销；1-门店；2公司本部即组织")
 	private Byte customerSuperiorType;// 父类类型 0-渠道经销；1-门店；2公司本部即组织
-
+	@ApiModelProperty(value = "父类唯一编码")
 	private String customerSuperior;// 父类唯一编码
-
+	@ApiModelProperty(value = "下级门店参数")
 	private List<MarketingChannelParam> childrens;
 
 	public Long getId() {
