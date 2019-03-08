@@ -193,7 +193,7 @@ public interface MarketingMembersMapper {
             + " CityName,RegistDate,OrganizationId,CustomerName,CustomerCode,BabyBirthday)"
             + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday},#{provinceCode},#{countyCode},#{cityCode},"
             + " #{provinceName},#{countyName},#{cityName},NOW(),#{organizationId},"
-            + " #{customerName},#{customerCode},#{babyBirthday} )")
+            + " #{customerName},#{customerId},#{babyBirthday} )")
 	void insert(MarketingMembers members);
 
 
