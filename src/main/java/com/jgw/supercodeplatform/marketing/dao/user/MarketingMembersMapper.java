@@ -190,7 +190,7 @@ public interface MarketingMembersMapper {
 
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
             + " Sex,Birthday,ProvinceCode,CountyCode,CityCode,ProvinceName,CountyName,"
-            + " CityName,RegistDate,OrganizationId,CustomerName,CustomerCode,BabyBirthday)"
+            + " CityName,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday)"
             + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday},#{provinceCode},#{countyCode},#{cityCode},"
             + " #{provinceName},#{countyName},#{cityName},NOW(),#{organizationId},"
             + " #{customerName},#{customerId},#{babyBirthday} )")
