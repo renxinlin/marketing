@@ -5,14 +5,14 @@ public class MarketingWxMerchants {
     private String id;
     private String mchAppid;//商户账号appid
     private String mchid;//商户号
-    private String MerchantName;//商户名称
+    private String merchantName;//商户名称
     private String merchantKey;//商户key
     private String certificateAddress;//证书地址
     private String certificatePassword;//证书密码
     private String organizationId;//组织id
     private String organizatioIdlName;//组织
     private String fileName;
-
+    private String merchantSecret;//公众号secret
 
     public String getId() {
 		return id;
@@ -78,15 +78,24 @@ public class MarketingWxMerchants {
         this.organizatioIdlName = organizatioIdlName;
     }
 
+
     public String getMerchantName() {
-        return MerchantName;
-    }
+		return merchantName;
+	}
 
-    public void setMerchantName(String merchantName) {
-        MerchantName = merchantName;
-    }
+	public void setMerchantName(String merchantName) {
+		this.merchantName = merchantName;
+	}
 
-    public String getFileName() {
+	public String getMerchantSecret() {
+		return merchantSecret;
+	}
+
+	public void setMerchantSecret(String merchantSecret) {
+		this.merchantSecret = merchantSecret;
+	}
+
+	public String getFileName() {
         return fileName;
     }
 

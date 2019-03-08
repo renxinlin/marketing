@@ -8,15 +8,15 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 @Mapper
 public interface MarketingWxMerchantsMapper {
 	static String allFields="Id id,Mchid mchid,MchAppid mchAppid,MerchantName merchantName,MerchantKey merchantKey,CertificateAddress certificateAddress,"
-			+ "OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,FileName fileName";
+			+ "OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,FileName fileName,MerchantSecret merchantSecret";
 	
     @Select("select "+allFields+" from marketing_wx_merchants where OrganizationId=#{organizationId}")
 	MarketingWxMerchants get(@Param("organizationId") String organizationId);
 
 	@Insert(" INSERT INTO marketing_wx_merchants(Mchid,MchAppid,MerchantName,MerchantKey,"
-			+ " CertificateAddress,CertificatePassword,OrganizationId,OrganizatioIdlName,FileName ) "
+			+ " CertificateAddress,CertificatePassword,OrganizationId,OrganizatioIdlName,FileName,MerchantSecret) "
 			+ " VALUES(#{mchid},#{mchAppid},#{merchantName},#{merchantKey},#{certificateAddress},"
-			+ "#{certificatePassword},#{organizationId},#{organizatioIdlName},#{fileName} "
+			+ "#{certificatePassword},#{organizationId},#{organizatioIdlName},#{fileName},#{merchantSecret} "
 			+ ")")
 	int addWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam);
 
@@ -30,6 +30,7 @@ public interface MarketingWxMerchantsMapper {
 			+ " <if test='certificateAddress !=null and certificateAddress != &apos;&apos; '> CertificateAddress = #{certificateAddress} ,</if> "
 			+ " <if test='certificatePassword !=null and certificatePassword != &apos;&apos; '> CertificatePassword = #{certificatePassword} ,</if> "
 			+ " <if test='fileName !=null and fileName != &apos;&apos; '> FileName = #{fileName} ,</if> "
+			+ " <if test='merchantSecret !=null and merchantSecret != &apos;&apos; '> MerchantSecret = #{merchantSecret} ,</if> "
 			//+ " <if test='organizationId !=null and organizationId != &apos;&apos; '> OrganizationId = #{organizationId} ,</if> "
 			//+ " <if test='organizatioIdlName !=null and organizatioIdlName != &apos;&apos; '> OrganizatioIdlName = #{organizatioIdlName} ,</if> "
 			+ " </set>"

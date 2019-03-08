@@ -16,6 +16,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 /**
  * 微信授权等
@@ -29,6 +30,9 @@ public class WeixinAuthController {
 
 	@Autowired
 	private MarketingMembersService marketingMembersService;
+	
+	@Autowired
+	private GlobalRamCache globalRamCache;
 	
     @Value("${marketing.activity.h5page.url}")
     private String h5pageUrl;
@@ -46,7 +50,17 @@ public class WeixinAuthController {
     	if (StringUtils.isBlank(state)) {
     		throw new SuperCodeException("state不能为空", 500);
 		}
-    	String tokenParams="?appid="+WechatConstants.APPID+"&secret="+WechatConstants.secret+"&code="+code+"&grant_type=authorization_code";
+    	ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(state);
+    	if (null==scanCodeInfoMO) {
+    		throw new SuperCodeException("授权时无法根据state="+state+"查询到扫码缓存信息，请重新扫描商品码", 500);
+		}
+    	
+    	MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(scanCodeInfoMO.getOrganizationId());
+    	String appId=mWxMerchants.getMchAppid();
+    	String secret=mWxMerchants.getMerchantSecret();
+    	
+    	logger.info("微信授权回调根据组织id="+scanCodeInfoMO.getOrganizationId()+"获取获取appid"+appId+",secret="+secret);
+    	String tokenParams="?appid="+appId+"&secret="+secret+"&code="+code+"&grant_type=authorization_code";
     	HttpClientResult tokenhttpResult=HttpRequestUtil.doGet(WechatConstants.AUTH_ACCESS_TOKEN_URL+tokenParams);
     	String tokenContent=tokenhttpResult.getContent();
     	logger.info("调用获取授权access_token后返回内容："+tokenContent);
