@@ -1,24 +1,21 @@
 package com.jgw.supercodeplatform.marketing.controller.wechat.front;
 
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
@@ -28,11 +25,9 @@ import io.swagger.annotations.ApiOperation;
 @Controller
 @RequestMapping("/marketing/front/scan")
 public class ScanCodeController {
+	protected static Logger logger = LoggerFactory.getLogger(ScanCodeController.class);
     @Autowired
     private CommonUtil commonUtil;
-    
-    @Autowired
-    private RestTemplateUtil restTemplateUtil;
     
     @Autowired
     private MarketingActivitySetService mActivitySetService;
@@ -68,6 +63,7 @@ public class ScanCodeController {
 		}
     	String	wxstate=commonUtil.getUUID();
     	ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
+    	//在校验产品及产品批次时可以从活动设置表中获取组织id
         String organizationId=sCodeInfoMO.getOrganizationId();
         MarketingWxMerchants mWxMerchants=mWxMerchantsService.selectByOrganizationId(organizationId);
         if (null==mWxMerchants || StringUtils.isBlank(mWxMerchants.getMchAppid())) {
@@ -75,9 +71,12 @@ public class ScanCodeController {
 		}
         sCodeInfoMO.setOrganizationId(organizationId);
         GlobalRamCache.scanCodeInfoMap.put(wxstate, sCodeInfoMO);
+        logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
         
     	//微信授权需要对redirect_uri进行urlencode
     	String encoderedirectUri=URLEncoder.encode(wxauthRedirectUri, "utf-8");
+        logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid());
+    	
         return "redirect:"+h5pageUrl+"?state="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1";
     }
 

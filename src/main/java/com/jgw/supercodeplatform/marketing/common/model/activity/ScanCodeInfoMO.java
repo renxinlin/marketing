@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.common.model.activity;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 public class ScanCodeInfoMO {
 	private String codeId;//外码,跳转到营销扫码接口时获取
 	private String codeTypeId;//码值id,跳转到营销扫码接口时获取
@@ -63,6 +65,12 @@ public class ScanCodeInfoMO {
 
 	public void setOrganizationId(String organizationId) {
 		this.organizationId = organizationId;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("codeId", codeId).append("codeTypeId", codeTypeId).append("productId", productId)
+				.append("productBatchId", productBatchId).append("openId", openId).append("activitySetId", activitySetId).append("organizationId", organizationId).toString();
 	}
 
 }
