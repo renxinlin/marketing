@@ -56,8 +56,8 @@ public class WeixinAuthController {
 		}
     	
     	MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(scanCodeInfoMO.getOrganizationId());
-    	String appId=mWxMerchants.getMchAppid();
-    	String secret=mWxMerchants.getMerchantSecret();
+    	String appId=mWxMerchants.getMchAppid().trim();
+    	String secret=mWxMerchants.getMerchantSecret().trim();
     	
     	logger.info("微信授权回调根据组织id="+scanCodeInfoMO.getOrganizationId()+"获取获取appid"+appId+",secret="+secret);
     	String tokenParams="?appid="+appId+"&secret="+secret+"&code="+code+"&grant_type=authorization_code";
