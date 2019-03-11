@@ -62,7 +62,7 @@ public class WXPayMarketingConfig extends WXPayConfig{
 
 	@Override
 	IWXPayDomain getWXPayDomain() {
-		return null;
+		return new IWXPayMarketingDomain();
 	}
 
 }

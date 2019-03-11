@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.weixin;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -7,6 +8,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -27,7 +29,11 @@ public class WXPayService {
     @Autowired
     private MarketingWxMerchantsMapper mWxMerchantsMapper;
     
+    @Value("${weixin.certificate.path}")
+    private String certificatePath;
+    
     private static ExecutorService exec=Executors.newFixedThreadPool(20);
+    
     
     /**
      * 企业付款到零钱
@@ -52,10 +58,12 @@ public class WXPayService {
 		String key=mWxMerchants.getMerchantKey();
 		//设置配置类
 		WXPayMarketingConfig config=new WXPayMarketingConfig();
-		config.setAppId(mWxMerchants.getMchAppid());
+		config.setAppId(mechappid);
 		config.setKey(key);
-		config.setMchId(mWxMerchants.getMchid());
+		config.setMchId(mechid);
 		
+		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getFileName();
+		config.setCertificatePath(wholePath);
 		//封装请求参数实体
 		OrganizationPayRequestParam oRequestParam=new OrganizationPayRequestParam();
 		oRequestParam.setAmount(amount);
