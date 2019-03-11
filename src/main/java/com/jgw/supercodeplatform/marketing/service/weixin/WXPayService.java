@@ -5,9 +5,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.asyntask.WXPayAsynTask;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
@@ -37,7 +39,16 @@ public class WXPayService {
      * @throws Exception
      */
 	public void qiyePay(String  openid,String  spbill_create_ip,int amount,String  partner_trade_no, String organizationId) throws Exception {
+		if (StringUtils.isBlank(openid) || StringUtils.isBlank(spbill_create_ip)|| StringUtils.isBlank(partner_trade_no)|| StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeException("发起微信支付参数不能为空,openid="+openid+",spbill_create_ip="+spbill_create_ip+",partner_trade_no="+partner_trade_no+spbill_create_ip+",organizationId="+organizationId, 500);
+		}
 		MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.get(organizationId);
+		String mechid=mWxMerchants.getMchid();
+		String mechappid=mWxMerchants.getMchAppid();
+		if (StringUtils.isBlank(mechid) || StringUtils.isBlank(mechappid)) {
+			throw new SuperCodeException("获取到的企业公众号支付参数有空值，mechid="+mechid+",mechappid="+mechappid, 500);
+		}
+		
 		String key=mWxMerchants.getMerchantKey();
 		//设置配置类
 		WXPayMarketingConfig config=new WXPayMarketingConfig();
@@ -48,11 +59,13 @@ public class WXPayService {
 		//封装请求参数实体
 		OrganizationPayRequestParam oRequestParam=new OrganizationPayRequestParam();
 		oRequestParam.setAmount(amount);
-		oRequestParam.setMch_appid(mWxMerchants.getMchAppid());
+		oRequestParam.setMch_appid(mechappid);
 		oRequestParam.setOpenid(openid);
 		oRequestParam.setNonce_str(WXPayUtil.generateNonceStr());
 		oRequestParam.setPartner_trade_no(partner_trade_no);
 		oRequestParam.setSpbill_create_ip(spbill_create_ip);
+		oRequestParam.setMchid(mechid);
+		
 		//根据实体类转换成签名map
 		Map<String, String> signMap=generateMap(oRequestParam);
 		
