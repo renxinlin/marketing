@@ -52,6 +52,7 @@ public class WXPayAsynTask implements Runnable{
 				return ;
 			}
 			String result=wxPay.requestWithCert(urlSuffix, reqData, connectTimeoutMs, readTimeoutMs);
+			logger.info("发起支付后返回数据为："+result);
 			Map<String,String> mapResult=WXPayUtil.xmlToMap(result);
 			String return_code=mapResult.get("return_code");
 			String return_msg=mapResult.get("return_msg");

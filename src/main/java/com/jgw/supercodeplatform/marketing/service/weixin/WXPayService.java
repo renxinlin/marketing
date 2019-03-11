@@ -72,7 +72,6 @@ public class WXPayService {
 		oRequestParam.setPartner_trade_no(partner_trade_no);
 		oRequestParam.setSpbill_create_ip(spbill_create_ip);
 		oRequestParam.setMchid(mechid);
-		
 		//根据实体类转换成签名map
 		Map<String, String> signMap=generateMap(oRequestParam);
 		
