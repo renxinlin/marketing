@@ -28,6 +28,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -208,8 +209,8 @@ public abstract class AbstractEsSearch extends CommonUtil {
         }
 
         SearchResponse response = requestBuilder.setExplain(true).execute().actionGet();
-
-        return response.getHits().getTotalHits();
+        SearchHits searchHits=response.getHits();
+        return  searchHits.getTotalHits();
     }
 
     /**

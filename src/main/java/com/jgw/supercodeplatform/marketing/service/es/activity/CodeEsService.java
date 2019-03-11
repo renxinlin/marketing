@@ -45,8 +45,8 @@ public class CodeEsService extends AbstractEsSearch{
    */
   public Long countByUserAndActivityQuantum(String userId,Long activitySetId,String scanCodeTime) {
 	  Map<String, Object> addParam=new HashMap<String, Object>();
-	  addParam.put("userId", userId);
-	  addParam.put("scanCodeTime", scanCodeTime);
+	  addParam.put("userId.keyword", userId);
+	  addParam.put("scanCodeTime.keyword", scanCodeTime);
 	  addParam.put("activitySetId", activitySetId);
 	  EsSearch eSearch=new EsSearch();
 	  eSearch.setIndex(EsIndex.MARKETING);
@@ -62,8 +62,8 @@ public class CodeEsService extends AbstractEsSearch{
    */
   public Long countByBatch(String productId,String productBatchId) {
 	  Map<String, Object> addParam=new HashMap<String, Object>();
-	  addParam.put("productId", productId);
-	  addParam.put("productBatchId", productBatchId);
+	  addParam.put("productId.keyword", productId);
+	  addParam.put("productBatchId.keyword", productBatchId);
 	  
 	  EsSearch eSearch=new EsSearch();
 	  eSearch.setIndex(EsIndex.MARKETING);
@@ -80,8 +80,8 @@ public class CodeEsService extends AbstractEsSearch{
    */
   public Long countByCode(String codeId,String codeType) {
 	  Map<String, Object> addParam=new HashMap<String, Object>();
-	  addParam.put("codeId", codeId);
-	  addParam.put("codeType", codeType);
+	  addParam.put("codeId.keyword", codeId);
+	  addParam.put("codeType.keyword", codeType);
 	  EsSearch eSearch=new EsSearch();
 	  eSearch.setIndex(EsIndex.MARKETING);
 	  eSearch.setType(EsType.INFO);
@@ -97,8 +97,8 @@ public class CodeEsService extends AbstractEsSearch{
    */
   public List<SearchHit> selectScanCodeRecord(String codeId,String codeType) {
 	  Map<String, Object> addParam=new HashMap<String, Object>();
-	  addParam.put("codeId", codeId);
-	  addParam.put("codeType", codeType);
+	  addParam.put("codeId.keyword", codeId);
+	  addParam.put("codeType.keyword", codeType);
 	  
 	  EsSearch eSearch=new EsSearch();
 	  eSearch.setIndex(EsIndex.MARKETING);
