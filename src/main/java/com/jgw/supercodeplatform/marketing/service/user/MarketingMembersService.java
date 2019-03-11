@@ -382,6 +382,11 @@ public class MarketingMembersService extends CommonUtil {
 		}
 		//获取该活动设置下的参与码总数
 		Long codeTotalNum=mActivitySet.getCodeTotalNum();
+		if (null==codeTotalNum|| codeTotalNum.intValue()<=0) {
+			restResult.setState(500);
+			restResult.setMsg("该活动参与的码数量小于等于0");
+			return restResult;
+		}
 		String organizationId=mActivitySet.getOrganizationId();
 
 		//执行中奖算法
@@ -389,15 +394,26 @@ public class MarketingMembersService extends CommonUtil {
 		
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
 		synchronized (this) {
+			String nowTime=staticESSafeFormat.format(new Date());
 			Long codeCount=codeEsService.countByCode(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId());
 			if (null==codeCount ||codeCount.intValue()==0) {
-				//更新奖次被扫码数量
-				mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
-				MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
-				marketingPrizeType.setId(mPrizeTypeMO.getId());
-				marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
-				mMarketingPrizeTypeMapper.update(marketingPrizeType);
-				codeEsService.addScanCodeRecord(null, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId(), activitySetId, staticESSafeFormat.format(new Date()));
+				Integer scanLimit=mActivitySet.getEachDayNumber();
+				if (null!=scanLimit&& scanLimit.intValue()>0) {
+					Long userscanNum=codeEsService.countByUserAndActivityQuantum(openId, activitySetId, nowTime);
+					if (null==userscanNum || userscanNum.intValue()==0 ||userscanNum.intValue()<scanLimit.intValue()) {
+						//更新奖次被扫码数量
+						mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
+						MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
+						marketingPrizeType.setId(mPrizeTypeMO.getId());
+						marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
+						mMarketingPrizeTypeMapper.update(marketingPrizeType);
+						codeEsService.addScanCodeRecord(openId, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId(), activitySetId,nowTime);	
+					}else {
+						restResult.setState(200);
+						restResult.setMsg("您今日扫码已超过该活动限制数量");
+						return restResult;
+					}
+				}
 			}else {
 				restResult.setState(200);
 				restResult.setMsg("您手速太慢，刚刚该码已被其它用户扫过");
