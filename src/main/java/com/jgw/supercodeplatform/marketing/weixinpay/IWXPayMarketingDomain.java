@@ -4,7 +4,6 @@ public class IWXPayMarketingDomain implements IWXPayDomain{
 
 	@Override
 	public void report(String domain, long elapsedTimeMillis, Exception ex) {
-		ex.printStackTrace();
 	}
 
 	@Override
