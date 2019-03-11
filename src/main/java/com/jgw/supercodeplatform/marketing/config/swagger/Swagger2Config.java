@@ -60,6 +60,18 @@ public class Swagger2Config {
                 .apiInfo(apiInfo())
                 .enable(enable);
     }
+
+    @Bean("营销h5模块")
+    public Docket h5Apis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("h5模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.h5"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
     
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()

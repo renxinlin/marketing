@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.activity.front;
+package com.jgw.supercodeplatform.marketing.controller.h5;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

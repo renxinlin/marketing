@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.user.front;
+package com.jgw.supercodeplatform.marketing.controller.h5;
 
 import javax.validation.Valid;
 
