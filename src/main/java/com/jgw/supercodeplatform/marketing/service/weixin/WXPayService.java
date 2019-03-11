@@ -19,7 +19,6 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayMarketingConfig;
-import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
 import com.jgw.supercodeplatform.marketing.weixinpay.requestparam.OrganizationPayRequestParam;
 
@@ -82,7 +81,7 @@ public class WXPayService {
 		signMap.put("sign", sign);
 
 		WXPay wxPay=new WXPay(config);
-		exec.submit(new WXPayAsynTask(wxPay, WechatConstants.ORGANIZATION_PAY_CHANGE_URL, signMap, 1000, 5000));
+		exec.submit(new WXPayAsynTask(wxPay, WechatConstants.ORGANIZATION_PAY_CHANGE_Suffix_URL, signMap, 1000, 5000));
 	}
 	
 	

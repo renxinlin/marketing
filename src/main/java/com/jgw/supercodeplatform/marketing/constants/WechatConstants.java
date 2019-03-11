@@ -15,5 +15,5 @@ public interface WechatConstants {
     
 
 	//微信企业付款到零钱接口
-    public static String ORGANIZATION_PAY_CHANGE_URL="https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
+    public static String ORGANIZATION_PAY_CHANGE_Suffix_URL="/mmpaymkttransfers/promotion/transfers";
 }
