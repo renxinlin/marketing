@@ -391,15 +391,18 @@ public class MarketingMembersService extends CommonUtil {
 
 		//执行中奖算法
 		MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.lottery(mPrizeTypes,codeTotalNum);
-		
+		String codeId=scanCodeInfoMO.getCodeId();
+		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
 		synchronized (this) {
 			String nowTime=staticESSafeFormat.format(new Date());
-			Long codeCount=codeEsService.countByCode(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId());
-			if (null==codeCount ||codeCount.intValue()==0) {
+			Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
+			logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
+			if (null==codeCount ||codeCount.intValue()<1) {
 				Integer scanLimit=mActivitySet.getEachDayNumber();
 				if (null!=scanLimit&& scanLimit.intValue()>0) {
 					Long userscanNum=codeEsService.countByUserAndActivityQuantum(openId, activitySetId, nowTime);
+					logger.info("领取方法=====：根据openId="+openId+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum);
 					if (null==userscanNum || userscanNum.intValue()==0 ||userscanNum.intValue()<scanLimit.intValue()) {
 						//更新奖次被扫码数量
 						mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
