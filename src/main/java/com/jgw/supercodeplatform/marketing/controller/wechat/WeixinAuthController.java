@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.wechat.front;
+package com.jgw.supercodeplatform.marketing.controller.wechat;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
@@ -18,6 +19,8 @@ import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
+
+import io.swagger.annotations.Api;
 /**
  * 微信授权等
  * @author czm
@@ -25,6 +28,7 @@ import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
  */
 @RestController
 @RequestMapping("/marketing/front/auth")
+@Api(tags = "微信授权回调地址")
 public class WeixinAuthController {
 	protected static Logger logger = LoggerFactory.getLogger(WeixinAuthController.class);
 
@@ -44,7 +48,7 @@ public class WeixinAuthController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/code")
+    @RequestMapping(value = "/code",method=RequestMethod.GET)
     public String getWXCode(String code ,String state) throws Exception {
     	logger.info("微信授权回调获取code="+code+",state="+state);
     	if (StringUtils.isBlank(state)) {

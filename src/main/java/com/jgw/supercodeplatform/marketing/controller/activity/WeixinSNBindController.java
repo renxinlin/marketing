@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.wechat;
+package com.jgw.supercodeplatform.marketing.controller.activity;
 
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsPara
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/marketing/snBind")
+@Api(tags = "公众号绑定")
 public class WeixinSNBindController extends CommonUtil {
     
     @Autowired

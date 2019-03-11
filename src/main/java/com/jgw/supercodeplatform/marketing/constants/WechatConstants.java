@@ -1,11 +1,6 @@
 package com.jgw.supercodeplatform.marketing.constants;
 
 public interface WechatConstants {
-	//微信公众号APPID
-	public static String APPID="wx832dbcebd3f0a343";
-	
-	//微信公众号secret
-	public static String secret="0dfac9cd3dae12b6d988baf26a4bfe09";
     
 	//微信授权获取access_token接口地址
 	public static String AUTH_ACCESS_TOKEN_URL="https://api.weixin.qq.com/sns/oauth2/access_token";
@@ -16,4 +11,10 @@ public interface WechatConstants {
 
 	//微信企业付款到零钱接口
     public static String ORGANIZATION_PAY_CHANGE_Suffix_URL="/mmpaymkttransfers/promotion/transfers";
+    
+  //微信企业付款到零钱接口
+    public static String SEND_PHONE_CODE_URL="/sms/send/phone/code";
+    
+    //微信企业付款到零钱接口
+    public static String CODEMANAGER_GET_BATCH_CODE_INFO_URL="/code/relation/getBatchInfo";
 }

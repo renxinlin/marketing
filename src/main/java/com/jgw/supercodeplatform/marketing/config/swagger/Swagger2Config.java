@@ -72,7 +72,17 @@ public class Swagger2Config {
                 .apiInfo(apiInfo())
                 .enable(enable);
     }
-    
+    @Bean("公共接口模块")
+    public Docket commonApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("公共模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.common"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("新超级码系统平台营销系统接口文档")

@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 
@@ -22,5 +23,21 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
             + "#{resultCode},#{errCode},#{errCodeDes}"
             + ")")
 	int insert(WXPayTradeOrder tradeOrder);
+
+    @Update(" <script>"
+            + " UPDATE marketing_wx_trade_order "
+            + " <set>"
+            + " <if test='tradeStatus !=null and tradeStatus != &apos;&apos; '> TradeStatus = #{tradeStatus} ,</if> "
+            + " <if test='returnCode !=null and returnCode != &apos;&apos; '> ReturnCode = #{returnCode} ,</if> "
+            + " <if test='returnMsg !=null and returnMsg != &apos;&apos; '> ReturnMsg = #{returnMsg} ,</if> "
+            + " <if test='resultCode !=null and resultCode != &apos;&apos; '> ResultCode = #{resultCode} ,</if> "
+            + " <if test='errCode !=null and errCode != &apos;&apos; '> ErrCode = #{errCode} ,</if> "
+            + " <if test='errCodeDes !=null and errCodeDes != &apos;&apos; '> ErrCodeDes = #{errCodeDes} ,</if> "
+            + " </set>"
+            + " <where> "
+            + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+            + " </where>"
+            + " </script>")
+	void update(WXPayTradeOrder wXTradeNo);
 
 }

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
 
@@ -224,5 +226,16 @@ public class CommonUtil extends UserInfoUtil {
         returnParamsMap.setParamsMap(params);
         returnParamsMap.setReturnMap(returnMap);
         return returnParamsMap;
+    }
+    
+    
+    public static String replaceSpicialChactar(String data) {
+    	String regEx="[\n`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。， 、？_-]";
+    	//可以在中括号内加上任何想要替换的字符
+    	String aa= "";//这里是将特殊字符换为aa字符串,""代表直接去掉
+    	Pattern p = Pattern.compile(regEx);
+    	Matcher m = p.matcher(data);//这里把想要替换的字符串传进来
+    	String newString= m.replaceAll(aa).trim();
+		return newString;
     }
 }

@@ -17,7 +17,7 @@ public interface MarketingActivitySetMapper {
     @Select("select "+allFields+" from marketing_activity_set where Id=#{activitySetId}")
     MarketingActivitySet selectById(Long activitySetId);
  
-    @Select("select EachDayNumber from marketing_activity_set where ActivitySetId=#{activitySetId}")
+    @Select("select EachDayNumber from marketing_activity_set where Id=#{activitySetId}")
     Integer selectEachDayNumber(Long activitySetId);
 
 
@@ -27,7 +27,7 @@ public interface MarketingActivitySetMapper {
             + "  ActivityStatus = #{activityStatus} "
             + " </set>"
             + " <where> "
-            + " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> and ActivitySetId = #{activitySetId} </if>"
+            + " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> and Id = #{activitySetId} </if>"
             + " </where>"
             + " </script>")
     int updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus);
@@ -42,4 +42,15 @@ public interface MarketingActivitySetMapper {
            + ")")
    @Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
    int addActivitySet(@Param("ma")MarketingActivitySet marketingActivitySet);
+
+   @Update(" <script>"
+           + " UPDATE marketing_activity_set "
+           + " <set>"
+           + "  CodeTotalNum = #{codeTotalNum} "
+           + " </set>"
+           + " <where> "
+           + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+           + " </where>"
+           + " </script>")
+   void updateCodeTotalNum(@Param("id")Long id,@Param("codeTotalNum") Long codeSum);
 }

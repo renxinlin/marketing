@@ -10,6 +10,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingReceivingPageService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/marketing/front/receivingPag")
+@Api(tags = "h5页面获取领取页信息")
 public class MarketingReceivingPageFrontController {
 
 	@Autowired

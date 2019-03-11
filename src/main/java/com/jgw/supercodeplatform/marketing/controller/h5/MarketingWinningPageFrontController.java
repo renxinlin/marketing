@@ -10,6 +10,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingWinningPageService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +21,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/marketing/front/winningPag")
+@Api(tags = "h5获取中奖页信息")
 public class MarketingWinningPageFrontController {
 
 	@Autowired

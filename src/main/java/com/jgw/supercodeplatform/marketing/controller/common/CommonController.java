@@ -25,7 +25,7 @@ public class CommonController extends CommonUtil {
 
     @RequestMapping(value = "/sendPhoneCode",method = RequestMethod.POST)
     @ApiOperation(value = "发送手机验证码", notes = "")
-    @ApiImplicitParam(name = "mobile", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "手机号", required = true)
+    @ApiImplicitParam(name = "mobile", paramType = "query", defaultValue = "13925121452", value = "手机号", required = true)
     public RestResult<String> sendPhoneCode(@RequestParam String mobile) throws Exception {
         return service.sendPhoneCode(mobile);
     }

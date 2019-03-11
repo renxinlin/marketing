@@ -85,7 +85,7 @@ public class WXPayAsynTask implements Runnable{
 			}else {
 				wXTradeNo.setTradeStatus((byte)2);
 			}
-			
+			wxTradeNoMapper.update(wXTradeNo);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 

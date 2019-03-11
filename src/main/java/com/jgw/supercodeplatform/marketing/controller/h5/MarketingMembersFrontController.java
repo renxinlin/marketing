@@ -23,7 +23,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/marketing/front/members")
-@Api(tags = "会员管理")
+@Api(tags = "h5用户注册登录信息完善点击领奖")
 public class MarketingMembersFrontController extends CommonUtil {
 
     @Autowired

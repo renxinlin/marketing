@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -401,7 +402,8 @@ public class MarketingMembersService extends CommonUtil {
 			if (null==codeCount ||codeCount.intValue()<1) {
 				Integer scanLimit=mActivitySet.getEachDayNumber();
 				if (null!=scanLimit&& scanLimit.intValue()>0) {
-					Long userscanNum=codeEsService.countByUserAndActivityQuantum(openId, activitySetId, nowTime);
+					String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
+					Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTime);
 					logger.info("领取方法=====：根据openId="+openId+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum);
 					if (null==userscanNum || userscanNum.intValue()==0 ||userscanNum.intValue()<scanLimit.intValue()) {
 						//更新奖次被扫码数量
@@ -410,7 +412,7 @@ public class MarketingMembersService extends CommonUtil {
 						marketingPrizeType.setId(mPrizeTypeMO.getId());
 						marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
 						mMarketingPrizeTypeMapper.update(marketingPrizeType);
-						codeEsService.addScanCodeRecord(openId, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId(), activitySetId,nowTime);	
+						codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId(), activitySetId,nowTime);	
 					}else {
 						restResult.setState(200);
 						restResult.setMsg("您今日扫码已超过该活动限制数量");
@@ -424,13 +426,17 @@ public class MarketingMembersService extends CommonUtil {
 			}
 		}
 		
-		int amount=mPrizeTypeMO.getPrizeAmount();
+		Integer amount=mPrizeTypeMO.getPrizeAmount();
+		Byte randAmount=mPrizeTypeMO.getRandomAmount();
+		//如果是随机金额则生成随机金额
+		if (randAmount.equals((byte)1)) {
+			amount= (new Random().nextInt(5000) + 1)*100;
+		}
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
 			restResult.setState(200);
 			restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 		}else if (realPrize.equals((byte)1)) {
-			
 			MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
 			if (null==mWxMerchants) {
 				restResult.setState(500);
@@ -478,7 +484,6 @@ public class MarketingMembersService extends CommonUtil {
 		}
 		return restResult;
 	}
-
 
     
 }

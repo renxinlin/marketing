@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.wechat.front;
+package com.jgw.supercodeplatform.marketing.controller.h5;
 
 import java.net.URLEncoder;
 
@@ -20,10 +20,12 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping("/marketing/front/scan")
+@Api(tags = "h5接收码管理跳转路径")
 public class ScanCodeController {
 	protected static Logger logger = LoggerFactory.getLogger(ScanCodeController.class);
     @Autowired

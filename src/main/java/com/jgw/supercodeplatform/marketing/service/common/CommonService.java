@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 
 @Service
 public class CommonService {
@@ -38,9 +39,9 @@ public class CommonService {
 		String code=commonUtil.getSixRandom();
 		JSONObject jsonObj=new JSONObject();
 		jsonObj.put("code", code);
-		jsonObj.put("mobile", mobile);
+		jsonObj.put("phoneNumber", mobile);
 		String json=jsonObj.toJSONString();
-		ResponseEntity<String> responseEntity=restTemplateUtil.postJsonDataAndReturnJosn(restUserUrl, json, null);
+		ResponseEntity<String> responseEntity=restTemplateUtil.postJsonDataAndReturnJosn(restUserUrl+WechatConstants.SEND_PHONE_CODE_URL, json, null);
 		int status=responseEntity.getStatusCodeValue();
 		String body=responseEntity.getBody();
 		//如果HTTP响应成功
