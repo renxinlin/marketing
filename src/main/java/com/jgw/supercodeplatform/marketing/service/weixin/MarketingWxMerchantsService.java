@@ -27,7 +27,7 @@ public class MarketingWxMerchantsService {
 	@Autowired
 	private MarketingWxMerchantsMapper dao;
 	
-    @Value("${weixin.certificate.url}")
+    @Value("${weixin.certificate.path}")
     private String certificateUrl;
     
 	public RestResult<MarketingWxMerchants> get() throws SuperCodeException {
