@@ -2,12 +2,11 @@ package com.jgw.supercodeplatform.marketing.dto.activity;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import org.springframework.web.multipart.MultipartFile;
 
 @ApiModel(value = "微信商户信息绑定model")
 public class MarketingWxMerchantsParam {
     @ApiModelProperty(value = "序列Id")
-    private String id;
+    private Long id;
     @ApiModelProperty(value = "商户账号appid")
     private String mchAppid;//商户账号appid
     @ApiModelProperty(value = "商户号")
@@ -20,21 +19,15 @@ public class MarketingWxMerchantsParam {
     private String certificateAddress;//证书地址
     @ApiModelProperty(value = "证书密码")
     private String certificatePassword;//证书密码
-    @ApiModelProperty(value = "组织id")
-    private String organizationId;//组织id
-    @ApiModelProperty(value = "组织名称")
-    private String organizatioIdlName;//组织
-    @ApiModelProperty(value = "上传的文件")
-    private MultipartFile file;
     @ApiModelProperty(value = "文件名")
     private String fileName;
 
 
-    public String getId() {
+    public Long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -78,22 +71,6 @@ public class MarketingWxMerchantsParam {
         this.certificatePassword = certificatePassword;
     }
 
-    public String getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public String getOrganizatioIdlName() {
-        return organizatioIdlName;
-    }
-
-    public void setOrganizatioIdlName(String organizatioIdlName) {
-        this.organizatioIdlName = organizatioIdlName;
-    }
-
     public String getMerchantName() {
         return MerchantName;
     }
@@ -102,13 +79,6 @@ public class MarketingWxMerchantsParam {
         MerchantName = merchantName;
     }
 
-    public MultipartFile getFile() {
-        return file;
-    }
-
-    public void setFile(MultipartFile file) {
-        this.file = file;
-    }
 
     public String getFileName() {
         return fileName;

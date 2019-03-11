@@ -1,28 +1,31 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 商户公众号绑定
@@ -40,53 +43,51 @@ public class WeixinSNBindController extends CommonUtil {
     @Value("${weixin.certificate.path}")
     private String path;
 
+    
+	/**
+	 * 上传文件
+	 * @author liujianqiang
+	 * @data 2018年9月6日
+	 * @param file
+	 * @return
+	 * @throws Exception 
+	 */
+	@RequestMapping(value = "/upload",method = RequestMethod.POST)
+	@ApiOperation(value = "上传文件",notes = "文件唯一id")
+	@ApiImplicitParams({		
+		@ApiImplicitParam(name = "super-token",paramType ="header",defaultValue = "64b379cd47c843458378f479a115c322",value="token信息",required=true),
+		@ApiImplicitParam(name = "uploadFile",paramType ="file",required=true)
+	})
+	public RestResult<String> uploadFile(
+			@RequestBody MultipartFile file) throws Exception{
+	    if (null==file) {
+	    	throw new SuperCodeException("文件不能为空");
+		}
+	    RestResult<String> restResult=new RestResult<String>();
+	    restResult.setState(200);
+	    String name=marketingWxMerchantsService.uploadFile(file);
+	    restResult.setResults(name);
+	    restResult.setMsg("成功");
+		return restResult;
+	}
+	
     @RequestMapping(value = "/bind",method = RequestMethod.POST)
     @ApiOperation(value = "微信商户信息绑定", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> bind(@RequestBody MarketingWxMerchantsParam wxMerchantsParam, HttpServletRequest request, HttpServletResponse response) throws Exception {
         try {
-            MultipartFile file = wxMerchantsParam.getFile();
-            //获取上传文件的名称
-            String fileName = file.getOriginalFilename();
-            //截取参数之后剩余的字符串并返回（返回文件名中“.”的索引值），获取上传图片的后缀名
-            String newFileName = getUUID();
-            wxMerchantsParam.setFileName(newFileName);
-            String ext = fileName.substring(fileName.indexOf("."));
-            List<String> list = new ArrayList<>();
-            list.add(".DER");
-            list.add(".PEM");
-            list.add(".CER");
-            list.add(".CRT");
-            File newFile1 = new File(path + File.separator + getOrganizationId() + File.separator);
-            MarketingWxMerchants marketingWxMerchants = marketingWxMerchantsService.get(getOrganizationId());
-            if (marketingWxMerchants.getFileName()!=null){
-                for (File f : newFile1.listFiles()) {
-                    if (f.getName().contains(marketingWxMerchants.getFileName())) {
-                        //将指定的文件删除
-                        f.delete();
-                    }
-                }
-            }
+        	Long id=wxMerchantsParam.getId();
+            if (null==id) {
+            	 marketingWxMerchantsService.addWxMerchants(wxMerchantsParam);
+			}else {
+				 marketingWxMerchantsService.updateWxMerchants(wxMerchantsParam);
+			}
 
-            if (list.contains(ext)) {
-                File newFile = new File(path + File.separator + getOrganizationId() + File.separator, newFileName + ext);
-                file.transferTo(newFile);
-                //上传成功发送给前台的提示信息
-                response.getWriter().write("true");
-                if(null==marketingWxMerchants){
-                    marketingWxMerchantsService.addWxMerchants(wxMerchantsParam);
-                }else{
-                    marketingWxMerchantsService.updateWxMerchants(wxMerchantsParam);
-                }
-            }
         } catch (Exception e) {
             e.printStackTrace();
-            //上传失败，有异常发送给前台的提示信息
-            response.getWriter().write("false");
         }
 
-
-        return new RestResult(200, "success", null);
+        return new RestResult<String>(200, "success", null);
     }
     
 /*    @RequestMapping(value = "/update",method = RequestMethod.POST)
