@@ -28,7 +28,6 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
@@ -74,9 +73,6 @@ public class MarketingActivitySetService extends CommonUtil {
    
    @Autowired
    private MarketingActivityProductMapper mProductMapper;
-
-	@Autowired
-	private MarketingActivityMapper mActivityMapper;
 	
 	@Autowired
 	private RestTemplateUtil restTemplateUtil;
@@ -86,6 +82,9 @@ public class MarketingActivitySetService extends CommonUtil {
 	
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
+	
+	@Value("${marketing.domain.url}")
+	private String marketingDomain;
     /**
      * 根据活动id获取领取页和中奖页信息
      * @param activitySetId
@@ -328,6 +327,7 @@ public class MarketingActivitySetService extends CommonUtil {
 				if (array.isEmpty()) {
 					throw new SuperCodeException("获取码管理批次信息为空请确保该产品批次已进行码关联", 500);
 				}
+				List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
 				for(int i=0;i<array.size();i++) {
 					JSONObject batchobj=array.getJSONObject(i);
 					String productId=batchobj.getString("productId");
@@ -337,6 +337,12 @@ public class MarketingActivitySetService extends CommonUtil {
 					if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
 						throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
 					}
+					Map<String, Object> batchMap=new HashMap<String, Object>();
+					batchMap.put("batchId", codeBatch);
+					batchMap.put("businessType", 1);
+					batchMap.put("url", marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL);
+					bindBatchList.add(batchMap);
+					
 					MarketingActivityProduct mActivityProduct=activityProductMap.get(productId+productBatchId);
 					if (null!=mActivityProduct) {
 						mActivityProduct.setCodeTotalAmount(codeTotal);
@@ -345,8 +351,21 @@ public class MarketingActivitySetService extends CommonUtil {
 						codeSum+=codeTotal;
 					}
 				}
+				//生码批次跟url绑定
+				String bindJson=JSONObject.toJSONString(bindBatchList);
+				ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_BIND_BATCH_TO_URL, bindJson, headerMap);
+				String batchBody=bindBatchresponse.getBody();
+				JSONObject batchobj=JSONObject.parseObject(batchBody);
+				Integer batchstate=batchobj.getInteger("state");
+				if (null!=batchstate && batchstate.intValue()==200) {
+					mProductMapper.activityProductInsert(mList);
+				}else {
+					throw new SuperCodeException("请求码管理生码批次和url错误："+bindBatchresponse.toString(), 500);
+				}
+			}else {
+				throw new SuperCodeException("通过产品及产品批次获取码信息错误："+response.toString(), 500);
 			}
-			mProductMapper.activityProductInsert(mList);
+			
 		} catch (Exception e) {
 			throw new SuperCodeException("获取码管理批次信息错误："+e.getLocalizedMessage(), 500);
 		}

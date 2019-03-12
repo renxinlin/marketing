@@ -12,9 +12,15 @@ public interface WechatConstants {
 	//微信企业付款到零钱接口
     public static String ORGANIZATION_PAY_CHANGE_Suffix_URL="/mmpaymkttransfers/promotion/transfers";
     
-  //微信企业付款到零钱接口
+   //基础平台发送手机验证码接口
     public static String SEND_PHONE_CODE_URL="/sms/send/phone/code";
     
-    //微信企业付款到零钱接口
+    //码管理获取码管理批次信息接口
     public static String CODEMANAGER_GET_BATCH_CODE_INFO_URL="/code/relation/getBatchInfo";
+    
+    //码管理绑定url到批次接口
+    public static String CODEMANAGER_BIND_BATCH_TO_URL="/code/sbatchUrl/addSbatchUrl";
+    
+    //码管理跳转到营销系统路径
+    public static String SCAN_CODE_JUMP_URL="/code/relation/getBatchInfo";
 }

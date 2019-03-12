@@ -24,7 +24,6 @@ public class MySessionExcludePathInterceptor implements WebMvcSessionInterceptor
                 "/v2/**",
                 "/doc.html",
                 "/marketing/front/**",//h5接口不拦截
-                "/**",//测试使用
                 //静态资源
                 "/webjars/**"
         };

@@ -37,7 +37,7 @@ public class ScanCodeController {
     @Autowired
     private MarketingWxMerchantsService mWxMerchantsService;
     
-    @Value("${marketing.wxauth.redirect.uri}")
+    @Value("${marketing.domain.url}")
     private String wxauthRedirectUri;
     
     

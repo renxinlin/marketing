@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -55,7 +56,7 @@ public class WeixinSNBindController extends CommonUtil {
 		@ApiImplicitParam(name = "uploadFile",paramType ="file",required=true)
 	})
 	public RestResult<String> uploadFile(
-			@RequestBody MultipartFile file) throws Exception{
+			@RequestParam(value="uploadFile") MultipartFile file) throws Exception{
 	    if (null==file) {
 	    	throw new SuperCodeException("文件不能为空");
 		}
