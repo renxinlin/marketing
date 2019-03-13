@@ -389,7 +389,12 @@ public class MarketingMembersService extends CommonUtil {
 			return restResult;
 		}
 		String organizationId=mActivitySet.getOrganizationId();
-
+		MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
+		if (null==mWxMerchants) {
+			restResult.setState(500);
+			restResult.setMsg("当前企业未绑定公众号数据");
+			return restResult;
+		}
 		//执行中奖算法
 		MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.lottery(mPrizeTypes,codeTotalNum);
 		String codeId=scanCodeInfoMO.getCodeId();
@@ -430,19 +435,16 @@ public class MarketingMembersService extends CommonUtil {
 		Byte randAmount=mPrizeTypeMO.getRandomAmount();
 		//如果是随机金额则生成随机金额
 		if (randAmount.equals((byte)1)) {
-			amount= (new Random().nextInt(5000) + 1)*100;
+			int min=mPrizeTypeMO.getLowRand();
+			int max=mPrizeTypeMO.getHighRand();
+			amount=new Random().nextInt(max-min)+min;
 		}
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
 			restResult.setState(200);
 			restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 		}else if (realPrize.equals((byte)1)) {
-			MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
-			if (null==mWxMerchants) {
-				restResult.setState(500);
-				restResult.setMsg("当前企业未绑定公众号数据");
-				return restResult;
-			}
 			//插入中奖纪录
 			MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
 			redWinRecord.setActivityId(activity.getId());
@@ -478,12 +480,12 @@ public class MarketingMembersService extends CommonUtil {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+			//一切ok后清除缓存
+			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 			restResult.setState(200);
-			restResult.setMsg("恭喜您获得"+amount+"元惊喜红包！");
+			restResult.setMsg("恭喜您获得"+(amount/100)+"元惊喜红包！");
 		}
 		return restResult;
 	}
-
     
 }

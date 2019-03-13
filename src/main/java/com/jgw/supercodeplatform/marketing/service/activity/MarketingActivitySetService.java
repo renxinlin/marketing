@@ -35,7 +35,6 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
@@ -120,8 +119,6 @@ public class MarketingActivitySetService  {
 		MarketingReceivingPageParam mReceivingPageParam=activitySetParam.getmReceivingPageParam();
 		//获取中奖页参数
 		MarketingWinningPageParam mWinningPageParam=activitySetParam.getmWinningPageParam();
-		//获取活动参数
-		MarketingActivityParam mActivityParam = activitySetParam.getmActivityParam();
 		//获取活动实体
 		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getmActivitySetParam());
 		
@@ -145,12 +142,21 @@ public class MarketingActivitySetService  {
 						throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
 					}
 					prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount()*100);//转换为分
+				}else if (randomAmont.equals((byte)1)) {
+					//如果是随机金额则校验随机金额取值
+					Integer lowrand=prizeTypeParam.getLowRand();
+					Integer highrand=prizeTypeParam.getHighRand();
+					if (null==lowrand || null==highrand || lowrand.intValue()>=highrand.intValue()) {
+						throw new SuperCodeException("随机金额取值范围不能为空且低取值不能大于等于高取值", 500);
+					}
+					if (lowrand.intValue()<1 || highrand.intValue()>5000) {
+						throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在1-5000以内", 500);
+					}
 				}
 				Integer prizeProbability=prizeTypeParam.getPrizeProbability();
 				if (null==prizeProbability || prizeProbability<0 || prizeProbability>100) {
 					throw new SuperCodeException("概率参数非法prizeProbability="+prizeProbability, 500);
 				}
-				
 				set.add(prizeTypeParam.getPrizeTypeName());
 			}
 			if (set.size()>1) {

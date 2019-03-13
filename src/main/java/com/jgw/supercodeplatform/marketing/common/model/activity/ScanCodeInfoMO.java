@@ -10,7 +10,7 @@ public class ScanCodeInfoMO {
     private String openId;//当前扫码用户openid授权接口获取
     private Long activitySetId;//当前扫码的码参与的活动设置id,跳转到营销扫码接口时获取
     private String organizationId;//当前扫码所属企业id,跳转到营销扫码接口时获取
-    
+    private String createTime;//将用于定时任务检查清除已经长时间未用的扫码缓存 yyyy-MM-dd HH:mm:ss
 	public String getCodeId() {
 		return codeId;
 	}
@@ -67,10 +67,18 @@ public class ScanCodeInfoMO {
 		this.organizationId = organizationId;
 	}
 
+	public String getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this).append("codeId", codeId).append("codeTypeId", codeTypeId).append("productId", productId)
-				.append("productBatchId", productBatchId).append("openId", openId).append("activitySetId", activitySetId).append("organizationId", organizationId).toString();
+				.append("productBatchId", productBatchId).append("openId", openId).append("activitySetId", activitySetId).append("organizationId", organizationId).append("创建时间", createTime).toString();
 	}
 
 }

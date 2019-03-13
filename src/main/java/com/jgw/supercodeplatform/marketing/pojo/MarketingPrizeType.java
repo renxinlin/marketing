@@ -1,7 +1,5 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
-import io.swagger.annotations.ApiModelProperty;
-
 /**
  * 活动中奖奖次设置实体
  * @author czm

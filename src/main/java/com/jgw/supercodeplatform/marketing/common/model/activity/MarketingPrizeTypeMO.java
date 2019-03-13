@@ -19,7 +19,8 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
     private long totalNum;//当前批次剩下的码数量
     private long winingNum;//已中奖数
     private Byte realPrize;//是否由用户创建的真实奖次
-    
+    private Integer lowRand;
+    private Integer highRand;
 	public long getId() {
 		return id;
 	}
@@ -75,6 +76,19 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 	}
 	public void setRealPrize(Byte realPrize) {
 		this.realPrize = realPrize;
+	}
+	
+	public Integer getLowRand() {
+		return lowRand;
+	}
+	public void setLowRand(Integer lowRand) {
+		this.lowRand = lowRand;
+	}
+	public Integer getHighRand() {
+		return highRand;
+	}
+	public void setHighRand(Integer highRand) {
+		this.highRand = highRand;
 	}
 	@Override
 	public int compareTo(MarketingPrizeTypeMO o) {
