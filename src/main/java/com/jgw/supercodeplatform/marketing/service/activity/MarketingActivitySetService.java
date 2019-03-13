@@ -50,6 +50,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
+import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 
 @Service
@@ -77,6 +78,9 @@ public class MarketingActivitySetService  {
 	@Autowired
 	private RestTemplateUtil restTemplateUtil;
 	
+    @Autowired
+    private CodeEsService codeEsService;
+    
 	@Autowired
 	private CommonUtil commonUtil;
 	
@@ -540,6 +544,13 @@ public class MarketingActivitySetService  {
     			restResult.setMsg("活动已结束");
     			return restResult;
 			}
+		}
+    	Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
+		logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
+		if (null!=codeCount && codeCount.intValue()>=1) {
+			restResult.setState(500);
+			restResult.setMsg("该码已参与过活动不能重复参与");
+			return restResult;
 		}
 		ScanCodeInfoMO pMo=new ScanCodeInfoMO();
 		pMo.setCodeId(codeId);

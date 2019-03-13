@@ -430,21 +430,21 @@ public class MarketingMembersService extends CommonUtil {
 				return restResult;
 			}
 		}
-		
-		Integer amount=mPrizeTypeMO.getPrizeAmount();
-		Byte randAmount=mPrizeTypeMO.getRandomAmount();
-		//如果是随机金额则生成随机金额
-		if (randAmount.equals((byte)1)) {
-			int min=mPrizeTypeMO.getLowRand();
-			int max=mPrizeTypeMO.getHighRand();
-			amount=new Random().nextInt(max-min)+min;
-		}
+        //判断realprize是否为0,0表示不中奖
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
 			restResult.setState(200);
 			restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 		}else if (realPrize.equals((byte)1)) {
+			Integer amount=mPrizeTypeMO.getPrizeAmount();
+			Byte randAmount=mPrizeTypeMO.getRandomAmount();
+			//如果是随机金额则生成随机金额
+			if (randAmount.equals((byte)1)) {
+				int min=mPrizeTypeMO.getLowRand();
+				int max=mPrizeTypeMO.getHighRand();
+				amount=new Random().nextInt(max-min)+min;
+			}
 			//插入中奖纪录
 			MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
 			redWinRecord.setActivityId(activity.getId());
