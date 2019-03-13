@@ -7,10 +7,12 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface MarketingChannelMapper {
-
+   static String allFields="Id id,ActivitySetId activitySetId,CustomerName customerName,CustomerCode customerCode,CustomerType customerType"
+   		+ ",CustomerSuperiorType customerSuperiorType,CustomerSuperior customerSuperior";
 
 	@Insert({
 			"<script>",
@@ -22,4 +24,6 @@ public interface MarketingChannelMapper {
 	})
 	void batchInsert(@Param(value="mList")List<MarketingChannel> mList);
 
+	@Select("select "+allFields+" from marketing_channel where ActivitySetId=#{activitySetId}")
+	List<MarketingChannel> selectByActivitySetId(@Param("activitySetId")Long activitySetId);
 }

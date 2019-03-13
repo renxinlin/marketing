@@ -32,4 +32,7 @@ public interface MarketingActivityProductMapper {
 	})
 	void activityProductInsert(@Param(value="mList") List<MarketingActivityProduct> mList);
 
+	
+	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ActivitySetId = #{activitySetId} ")
+	List<MarketingActivityProduct> selectByActivitySetId(@Param("activitySetId") String activitySetId);
 }

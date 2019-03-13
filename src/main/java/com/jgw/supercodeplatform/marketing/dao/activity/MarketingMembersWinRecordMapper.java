@@ -35,16 +35,15 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 					"<otherwise>" +
 						"<if test='search !=null and search != &apos;&apos;'>" +
 						" AND (" +
-						" ActivityType LIKE CONCAT('%',#{search},'%')  " +
-						" OR MemberName LIKE CONCAT('%',#{search},'%') " +
-						" OR NickName LIKE CONCAT('%',#{search},'%') " +
-						" OR Openid LIKE CONCAT('%',#{search},'%') " +
-						" OR Mobile LIKE CONCAT('%',#{search},'%') " +
-						" OR PrizeTypeName LIKE CONCAT('%',#{search},'%') " +
-						" OR WinningAmount LIKE CONCAT('%',#{search},'%') " +
-						" OR WinningCode LIKE CONCAT('%',#{search},'%') " +
-						" OR Dealer LIKE CONCAT('%',#{search},'%') " +
-						" OR Store LIKE CONCAT('%',#{search},'%')" +
+						" mmw.ActivityName LIKE CONCAT('%',#{search},'%')  " +
+						" OR mm.MemberName LIKE CONCAT('%',#{search},'%') " +
+						" OR WxName LIKE CONCAT('%',#{search},'%') " +
+						" OR mmw.Openid LIKE CONCAT('%',#{search},'%') " +
+						" OR mmw.Mobile LIKE CONCAT('%',#{search},'%') " +
+						" OR mpt.PrizeTypeName LIKE CONCAT('%',#{search},'%') " +
+						" OR mpt.WinningCode LIKE CONCAT('%',#{search},'%') " +
+						" OR mm.Dealer LIKE CONCAT('%',#{search},'%') " +
+						" OR mm.Store LIKE CONCAT('%',#{search},'%')" +
 						")" +
 						"</if>" +
 					"</otherwise>" +

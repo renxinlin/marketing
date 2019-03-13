@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.type.JdbcType;
 
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
@@ -24,19 +25,13 @@ public interface MarketingActivityMapper extends CommonSql{
 					"<otherwise>" +
 						"<if test='search !=null and search != &apos;&apos;'>" +
 						" AND (" +
-						" ActivityType LIKE CONCAT('%',#{search},'%')  " +
-						" OR ActivityTitle LIKE CONCAT('%',#{search},'%') " +
-						" OR ActivityStartDate LIKE CONCAT('%',#{search},'%') " +
-						" OR ActivityEndDate LIKE CONCAT('%',#{search},'%') " +
-						" OR CustomerName LIKE CONCAT('%',#{search},'%') " +
-					    " OR CodeType LIKE CONCAT('%',#{search},'%') " +
-						" OR ProductBatchId LIKE CONCAT('%',#{search},'%') " +
-						" OR ProductBatchName LIKE CONCAT('%',#{search},'%') " +
-						" OR ProductId LIKE CONCAT('%',#{search},'%') " +
-						" OR ProductName LIKE CONCAT('%',#{search},'%') " +
-					    " OR UpdateUserName LIKE CONCAT('%',#{search},'%') " +
-					    " OR UpdateDate LIKE CONCAT('%',#{search},'%') " +
-					    " OR ActivityStatus LIKE CONCAT('%',#{search},'%') " +
+						" aset.ActivityTitle LIKE CONCAT('%',#{search},'%') " +
+						" OR aset.ActivityStartDate LIKE binary  CONCAT('%',#{search},'%') " +
+						" OR aset.ActivityEndDate LIKE binary  CONCAT('%',#{search},'%') " +
+						" OR ap.ProductBatchName LIKE CONCAT('%',#{search},'%') " +
+						" OR ap.ProductName LIKE CONCAT('%',#{search},'%') " +
+					    " OR aset.UpdateUserName LIKE CONCAT('%',#{search},'%') " +
+					    " OR aset.UpdateDate LIKE binary  CONCAT('%',#{search},'%') " +
 						")" +
 						"</if>" +
 					"</otherwise>" +
@@ -48,7 +43,7 @@ public interface MarketingActivityMapper extends CommonSql{
 	List<MarketingActivity> selectAll();
 
 	@Select(startScript
-			+ " select aset.Id id, ac.ActivityType activityType , ac.ActivityName activityName,aset.ActivityTitle activityTitle,aset.ActivityStartDate activityStartDate,"
+			+ " select aset.Id id, ac.ActivityName activityName,aset.ActivityTitle activityTitle,aset.ActivityStartDate activityStartDate,"
 			+ " aset.ActivityEndDate activityEndDate,aset.UpdateUserName updateUserName,aset.UpdateDate updateDate,aset.ActivityStatus activityStatus,"
 			+ " ap.ProductBatchName productBatchName,ap.ProductName productName,ap.ProductId productId,"
 			+ " ap.ProductBatchId productBatchId,mc.CustomerName customerName "
@@ -56,8 +51,23 @@ public interface MarketingActivityMapper extends CommonSql{
 			+ " left join marketing_activity_product ap on aset.Id=ap.ActivitySetId "
 			+ " left join marketing_channel mc on aset.Id=mc.ActivitySetId "
 			+whereSearch
+			+"group by aset.Id"
 			+ " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
 			+endScript)
+    @Results({
+        @Result(column = "Id", property = "id", jdbcType = JdbcType.BIGINT),
+        @Result(column = "ActivityName", property = "activityName", jdbcType = JdbcType.VARCHAR),
+        @Result(column = "ActivityTitle", property = "activityTitle", jdbcType = JdbcType.VARCHAR),
+        @Result(column = "ActivityStartDate", property = "activityStartDate", jdbcType = JdbcType.DATE),
+        @Result(column = "ActivityEndDate", property = "activityEndDate", jdbcType = JdbcType.DATE),
+        @Result(column = "UpdateUserName", property = "updateUserName", jdbcType = JdbcType.VARCHAR),
+        @Result(column = "UpdateDate", property = "updateDate", jdbcType = JdbcType.DATE),
+        @Result(column = "ActivityStatus", property = "activityStatus", jdbcType = JdbcType.VARCHAR),
+        @Result(column = "Id", property = "marketingChannels", javaType = List.class,
+                many = @Many(select = "com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper.selectByActivitySetId")),
+        @Result(column = "Id", property = "maActivityProducts", javaType = List.class,
+                many = @Many(select = "com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper.selectByActivitySetId"))
+      })
 	List<MarketingActivityListMO> list(MarketingActivityListParam marketingActivityListParam);
 
 	@Select(startScript
