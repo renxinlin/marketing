@@ -295,7 +295,7 @@ public class MarketingMembersService extends CommonUtil {
 		 //3.1该openid对应的用户之前绑定过手机号但是想换手机号了、3.2该openid用户从未绑定过手机号 
 		if (null==marketingMembersByPhone) {
 		    Map<String,Object> updatemap=new HashMap<String, Object>();
-		    updatemap.put("Id", userIdByOpenId);
+		    updatemap.put("id", userIdByOpenId);
 		    updatemap.put("mobile", mobile);
 			marketingMembersMapper.updateMembers(updatemap);
 			if (mPortraits.size()==1) {
@@ -323,7 +323,7 @@ public class MarketingMembersService extends CommonUtil {
 				}
                 //更新手机号对应的记录设置微信openid及昵称
 				Map<String,Object> map=new HashMap<String, Object>();
-				map.put("Id", userIdByPhone);
+				map.put("id", userIdByPhone);
 				map.put("openid", marketingMembersByOpenId.getOpenid());
 				map.put("wxName", marketingMembersByOpenId.getWxName());
 				marketingMembersMapper.updateMembers(map);
