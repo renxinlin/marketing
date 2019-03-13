@@ -106,7 +106,7 @@ public class WeixinAuthController {
         		marketingMembersService.addMember(members);
         	}
 		}
-        return h5pageUrl+"?openId="+openid+"&wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId();
+        return h5pageUrl+"?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId();
     }
 
 }

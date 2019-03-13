@@ -6,7 +6,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingWinningPageService;
 
@@ -29,9 +32,17 @@ public class MarketingWinningPageFrontController {
 	
 	@RequestMapping(value = "/getByAsId",method = RequestMethod.GET)
     @ApiOperation(value = "根据活动设置id获取中奖页记录", notes = "")
-	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "活动设置id",name="activitySetId")})
-	public RestResult<MarketingWinningPage> getByAsId(@RequestParam(required=true)Long activitySetId){
+	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "扫码唯一id",name="wxstate")})
+	public RestResult<MarketingWinningPage> getByAsId(@RequestParam(required=true)String wxstate) throws SuperCodeException{
+        ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
+        if (null==scInfoMO) {
+			throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
+		}
+        Long activitySetId=scInfoMO.getActivitySetId();
 		MarketingWinningPage mWinningPage=service.selectByActivitySetId(activitySetId);
+		if (null==mWinningPage) {
+			throw new SuperCodeException("h5扫码时获取中奖页信息失败根据activitySetId="+activitySetId+"无法获取中奖页信息", 500);
+		}
 		RestResult<MarketingWinningPage> restResult=new RestResult<MarketingWinningPage>();
 		restResult.setState(200);
 		restResult.setResults(mWinningPage);

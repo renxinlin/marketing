@@ -79,7 +79,7 @@ public class ScanCodeController {
     	String encoderedirectUri=URLEncoder.encode(wxauthRedirectUri, "utf-8");
         logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid());
     	
-        return "redirect:"+h5pageUrl+"?state="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1";
+        return "redirect:"+h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1";
     }
 
 }
