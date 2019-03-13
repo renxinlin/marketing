@@ -546,7 +546,7 @@ public class MarketingActivitySetService  {
 			}
 		}
     	Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
-		logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
+		logger.info("扫码方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
 		if (null!=codeCount && codeCount.intValue()>=1) {
 			restResult.setState(500);
 			restResult.setMsg("该码已参与过活动不能重复参与");
