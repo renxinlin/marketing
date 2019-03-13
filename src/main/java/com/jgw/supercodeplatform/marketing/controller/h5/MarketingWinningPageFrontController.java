@@ -32,13 +32,15 @@ public class MarketingWinningPageFrontController {
 	
 	@RequestMapping(value = "/getByAsId",method = RequestMethod.GET)
     @ApiOperation(value = "根据活动设置id获取中奖页记录", notes = "")
-	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "扫码唯一id",name="wxstate")})
-	public RestResult<MarketingWinningPage> getByAsId(@RequestParam(required=true)String wxstate) throws SuperCodeException{
-        ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
-        if (null==scInfoMO) {
-			throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
+	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "扫码唯一id",name="wxstate",required=false),@ApiImplicitParam(paramType="query",value = "获取设置主键id",name="activitySetId",required=false)})
+	public RestResult<MarketingWinningPage> getByAsId(String wxstate,Long activitySetId ) throws SuperCodeException{
+        if (null==activitySetId) {
+        	ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
+        	if (null==scInfoMO) {
+        		throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
+        	}
+        	activitySetId=scInfoMO.getActivitySetId();
 		}
-        Long activitySetId=scInfoMO.getActivitySetId();
 		MarketingWinningPage mWinningPage=service.selectByActivitySetId(activitySetId);
 		if (null==mWinningPage) {
 			throw new SuperCodeException("h5扫码时获取中奖页信息失败根据activitySetId="+activitySetId+"无法获取中奖页信息", 500);

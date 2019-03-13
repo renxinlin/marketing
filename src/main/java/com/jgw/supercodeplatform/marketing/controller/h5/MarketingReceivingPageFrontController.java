@@ -32,13 +32,15 @@ public class MarketingReceivingPageFrontController {
 	
 	@RequestMapping(value = "/getByAsId",method = RequestMethod.GET)
     @ApiOperation(value = "根据活动设置id获取领取页记录，扫码时可以通过该接口获取是否需要领取页", notes = "")
-	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "当前扫码唯一id",name="wxstate")})
-	public RestResult<MarketingReceivingPage> getByAsId(@RequestParam(required=true)String wxstate) throws SuperCodeException{
-        ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
-        if (null==scInfoMO) {
-			throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
+	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "当前扫码唯一id",name="wxstate",required=true),@ApiImplicitParam(paramType="query",value = "获取设置主键id",name="activitySetId",required=false)})
+	public RestResult<MarketingReceivingPage> getByAsId(@RequestParam(required=true)String wxstate,Long activitySetId) throws SuperCodeException{
+		if (null==activitySetId) {
+			ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
+			if (null==scInfoMO) {
+				throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
+			}
+			activitySetId=scInfoMO.getActivitySetId();
 		}
-        Long activitySetId=scInfoMO.getActivitySetId();
 		MarketingReceivingPage mReceivingPage=service.selectByActivitySetId(activitySetId);
 		if (null==mReceivingPage) {
 			throw new SuperCodeException("h5扫码时获取领取页信息失败根据activitySetId="+activitySetId+"无法获取领取页信息", 500);
