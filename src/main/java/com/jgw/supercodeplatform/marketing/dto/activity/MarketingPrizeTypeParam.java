@@ -8,24 +8,24 @@ import io.swagger.annotations.ApiModelProperty;
  * @author czm
  *
  */
-@ApiModel(value = "活动中奖奖次设置")
+@ApiModel(value = "活动中奖奖次设置model")
 public class MarketingPrizeTypeParam {
 
-	@ApiModelProperty(value = "序列Id")
+	@ApiModelProperty(value = "序列Id",name = "id",  example = "1")
     private Long id;//序列Id
-	@ApiModelProperty(value = "金额数量,类型跟微信接口保持一致")
+	@ApiModelProperty(value = "固定金额数量,类型跟微信接口保持一致",name = "prizeAmount",  example = "50")
     private Integer prizeAmount;//金额数量,类型跟微信接口保持一致
-	@ApiModelProperty(value = "中奖几率")
+	@ApiModelProperty(value = "中奖几率",name = "prizeProbability",  example = "20")
     private Integer prizeProbability;//中奖几率
-	@ApiModelProperty(value = "奖品类型名称")
+	@ApiModelProperty(value = "奖品类型名称",name = "prizeTypeName",  example = "一等奖")
     private String prizeTypeName;//奖品类型名称
-	@ApiModelProperty(value = "是否随机金额 1随机 0固定")
+	@ApiModelProperty(value = "是否随机金额 1随机 0固定",name = "randomAmount",  example = "1")
     private Byte randomAmount;//是否随机金额 1随机 0固定
-	@ApiModelProperty(value = "已中奖数")
-	private Long winingNum;//已中奖数
-	@ApiModelProperty(value = "是否由用户创建的真实奖次")
-	private Byte realPrize;//是否由用户创建的真实奖次
-
+	@ApiModelProperty(value = "随机金额低取值",name = "lowRand",  example = "1")
+    private Integer lowRand;
+	@ApiModelProperty(value = "随机金额高取值",name = "highRand",  example = "100")
+    private Integer highRand;
+    
 	public Long getId() {
 		return id;
 	}
@@ -56,20 +56,17 @@ public class MarketingPrizeTypeParam {
 	public void setRandomAmount(Byte randomAmount) {
 		this.randomAmount = randomAmount;
 	}
-
-	public Long getWiningNum() {
-		return winingNum;
+	public Integer getLowRand() {
+		return lowRand;
 	}
-
-	public void setWiningNum(Long winingNum) {
-		this.winingNum = winingNum;
+	public void setLowRand(Integer lowRand) {
+		this.lowRand = lowRand;
 	}
-
-	public Byte getRealPrize() {
-		return realPrize;
+	public Integer getHighRand() {
+		return highRand;
 	}
-
-	public void setRealPrize(Byte realPrize) {
-		this.realPrize = realPrize;
+	public void setHighRand(Integer highRand) {
+		this.highRand = highRand;
 	}
+	
 }

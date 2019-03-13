@@ -34,6 +34,8 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
@@ -43,7 +45,6 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWinningPageParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
@@ -53,7 +54,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 
 @Service
-public class MarketingActivitySetService extends CommonUtil {
+public class MarketingActivitySetService  {
 	protected static Logger logger = LoggerFactory.getLogger(MarketingActivitySetService.class);
 	
    @Autowired
@@ -110,7 +111,7 @@ public class MarketingActivitySetService extends CommonUtil {
      * @throws SuperCodeException 
      */
 	@Transactional
-	public RestResult<String> add(MarketingActivitySetParam activitySetParam) throws SuperCodeException {
+	public RestResult<String> add(MarketingActivityCreateParam activitySetParam) throws SuperCodeException {
 		List<MarketingChannelParam> mChannelParams=activitySetParam.getmChannelParams();
 		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		//获取奖次参数
@@ -119,71 +120,65 @@ public class MarketingActivitySetService extends CommonUtil {
 		MarketingReceivingPageParam mReceivingPageParam=activitySetParam.getmReceivingPageParam();
 		//获取中奖页参数
 		MarketingWinningPageParam mWinningPageParam=activitySetParam.getmWinningPageParam();
-		//获取活动设置参数
-		MarketingActivitySet mActivitySetParam = activitySetParam.getmActivitySetParam();
 		//获取活动参数
-		MarketingActivity mActivityParam = activitySetParam.getmActivityParam();
+		MarketingActivityParam mActivityParam = activitySetParam.getmActivityParam();
+		//获取活动实体
+		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getmActivitySetParam());
 		
-		if (null==mPrizeTypeParams || mPrizeTypeParams.isEmpty()) {
-			throw new SuperCodeException("奖次信息不能为空", 500);
-		}
-
-		Set<String> set = new HashSet<String>();
-
-		for (MarketingPrizeTypeParam prizeTypeParam:mPrizeTypeParams){
-			Byte randomAmont=prizeTypeParam.getRandomAmount();
-			if (null==randomAmont) {
-				throw new SuperCodeException("是否固定金额不能为空", 500);
-			}else if (randomAmont.equals((byte)0)) {
-				//如果固定金额则不能小于1大于5000
-				Integer amount=prizeTypeParam.getPrizeAmount();
-				if (null==amount|| amount<1 ||amount>5000) {
-					throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
-				}
-				prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount()*100);//转换为分
-			}
-			Integer prizeProbability=prizeTypeParam.getPrizeProbability();
-			if (null==prizeProbability || prizeProbability<0 || prizeProbability>100) {
-				throw new SuperCodeException("概率参数非法prizeProbability="+prizeProbability, 500);
-			}
-			
-			set.add(prizeTypeParam.getPrizeTypeName());
-		}
-        if (set.size()>1) {
-        	throw new SuperCodeException("奖项名称不能重复", 500);
-		}
-
+		//校验产品及批次数据是否为空
 		if (null==maProductParams || maProductParams.isEmpty()) {
 			throw new SuperCodeException("产品信息不能为空", 500);
 		}
-		
-
-
-//		mActivityMapper.addActivity(mActivityParam);
-		mActivitySetParam.setActivityId(mActivityParam.getId());
-		mActivitySetParam.setActivityStatus(1);
-		mActivitySetParam.setOrganizationId(getOrganizationId());
-		mActivitySetParam.setOrganizatioIdlName(getOrganizationName());
-		if (mActivitySetParam.getActivityTitle()==null){
-			throw new SuperCodeException("活动标题不能为空", 500);
+		//校验奖次信息
+		if (null==mPrizeTypeParams || mPrizeTypeParams.isEmpty()) {
+			throw new SuperCodeException("奖次信息不能为空", 500);
+		}else {
+			Set<String> set = new HashSet<String>();
+			for (MarketingPrizeTypeParam prizeTypeParam:mPrizeTypeParams){
+				Byte randomAmont=prizeTypeParam.getRandomAmount();
+				if (null==randomAmont) {
+					throw new SuperCodeException("是否固定金额不能为空", 500);
+				}else if (randomAmont.equals((byte)0)) {
+					//如果固定金额则不能小于1大于5000
+					Integer amount=prizeTypeParam.getPrizeAmount();
+					if (null==amount|| amount<1 ||amount>5000) {
+						throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
+					}
+					prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount()*100);//转换为分
+				}
+				Integer prizeProbability=prizeTypeParam.getPrizeProbability();
+				if (null==prizeProbability || prizeProbability<0 || prizeProbability>100) {
+					throw new SuperCodeException("概率参数非法prizeProbability="+prizeProbability, 500);
+				}
+				
+				set.add(prizeTypeParam.getPrizeTypeName());
+			}
+			if (set.size()>1) {
+				throw new SuperCodeException("奖项名称不能重复", 500);
+			}
 		}
-		mSetMapper.addActivitySet(mActivitySetParam);
-		Long activitySetId= mActivitySetParam.getId();
+		String organizationId=commonUtil.getOrganizationId();
+		String organizationName=commonUtil.getOrganizationName();
+        
+		MarketingActivitySet existmActivitySet =mSetMapper.selectByTitleOrgId(mActivitySet.getActivityTitle(),organizationId);
+		if (null!=existmActivitySet) {
+			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
+		}
+		mActivitySet.setActivityStatus(1);
+		mActivitySet.setOrganizationId(organizationId);
+		mActivitySet.setOrganizatioIdlName(organizationName);
+		mSetMapper.insert(mActivitySet);
+		
+		Long activitySetId= mActivitySet.getId();
 
 
         //待优化 校验商品批次是否被添加过
 		for (MarketingActivityProductParam mProduct:maProductParams){
-			for (ProductBatchParam productBatch:mProduct.getBatchParams()){
+			for (ProductBatchParam productBatch:mProduct.getProductBatchParams()){
 				if (mProductMapper.selectByProductAndProductBatchId(mProduct.getProductId(),productBatch.getProductBatchId())!=null){
 					throw new SuperCodeException("商品"+mProduct.getProductName()+"的批次"+productBatch.getProductBatchName()+"已经被添加过了无法再次添加", 500);
 				}
 			}
-		}
-		
-		//保存商品批次
-		Long codeSum=saveProductBatchs(maProductParams,activitySetId);
-		if (null==codeSum || codeSum.intValue()<1) {
-			throw new SuperCodeException("添加的产品批次的码关联数量小于1无法参与活动", 500);
 		}
 		
 		if (null!=mChannelParams && mChannelParams.size()!=0) {
@@ -200,13 +195,30 @@ public class MarketingActivitySetService extends CommonUtil {
 		//保存领取页
 		saveReceivingPage(mReceivingPageParam,activitySetId);
 		
-		mSetMapper.updateCodeTotalNum(mActivitySetParam.getId(),codeSum);
+		//保存商品批次活动总共批次参与的码总数
+		Long codeSum=saveProductBatchs(maProductParams,activitySetId);
+		mSetMapper.updateCodeTotalNum(activitySetId,codeSum);
 		RestResult<String> restResult=new RestResult<String>();
 		restResult.setState(200);
 		restResult.setMsg("成功");
 		return restResult;
 	}
 	
+	private MarketingActivitySet convertActivitySet(MarketingActivitySetParam activitySetParam) throws SuperCodeException {
+		String title=activitySetParam.getActivityTitle();
+		if (StringUtils.isBlank(title)) {
+			throw new SuperCodeException("添加的活动设置标题不能为空", 500);
+		}
+		MarketingActivitySet mSet=new MarketingActivitySet();
+		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
+		mSet.setActivityId(activitySetParam.getActivityId());
+		mSet.setActivityRangeMark(activitySetParam.getActivityRangeMark());
+		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
+		mSet.setActivityTitle(title);
+		mSet.setAutoFetch(activitySetParam.getAutoFetch());
+		mSet.setEachDayNumber(activitySetParam.getEachDayNumber());
+		return mSet;
+	}
 	/**
 	 * 保存中奖页
 	 * @param mWinningPageParam
@@ -289,7 +301,7 @@ public class MarketingActivitySetService extends CommonUtil {
 		Long codeSum=0L;
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId=marketingActivityProductParam.getProductId();
-			List<ProductBatchParam> batchParams=marketingActivityProductParam.getBatchParams();
+			List<ProductBatchParam> batchParams=marketingActivityProductParam.getProductBatchParams();
 			if (null!=batchParams && !batchParams.isEmpty()) {
 				ProductAndBatchGetCodeMO productAndBatchGetCodeMO=new ProductAndBatchGetCodeMO();
 				List<Map<String, String>>productBatchList=new ArrayList<Map<String,String>>();
@@ -369,7 +381,9 @@ public class MarketingActivitySetService extends CommonUtil {
 		} catch (Exception e) {
 			throw new SuperCodeException("获取码管理批次信息错误："+e.getLocalizedMessage(), 500);
 		}
-		
+		if (null==codeSum || codeSum.intValue()<1) {
+			throw new SuperCodeException("添加的产品批次的码关联数量小于1无法参与活动", 500);
+		}
 		return codeSum;
 	}
 	/**

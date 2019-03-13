@@ -10,15 +10,16 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 public interface MarketingPrizeTypeMapper {
 
 	String allFields =" Id id,ActivitySetId activitySetId,PrizeTypeName prizeTypeName,PrizeAmount prizeAmount,PrizeProbability prizeProbability,RandomAmount randomAmount,"
-			+"WiningNum winingNum,RealPrize realPrize ";
+			+"WiningNum winingNum,RealPrize realPrize,LowRand lowRand,HighRand highRand ";
 
 
 
 	@Insert({
 			"<script>",
-			"INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,RandomAmount,WiningNum,RealPrize ) VALUES ",
+			"INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,RandomAmount,WiningNum,RealPrize,LowRand,HighRand ) VALUES ",
 			"<foreach collection='mList' item='mPrize' index='index' separator=','>",
-			"(#{mPrize.activitySetId},#{mPrize.prizeTypeName},#{mPrize.prizeAmount},#{mPrize.prizeProbability},#{mPrize.randomAmount},#{mPrize.winingNum},#{mPrize.realPrize})",
+			"(#{mPrize.activitySetId},#{mPrize.prizeTypeName},#{mPrize.prizeAmount},#{mPrize.prizeProbability},#{mPrize.randomAmount},#{mPrize.winingNum},"
+			+ "#{mPrize.realPrize},#{mPrize.lowRand},#{mPrize.highRand})",
 			"</foreach>",
 			"</script>"
 	})
@@ -40,6 +41,8 @@ public interface MarketingPrizeTypeMapper {
 			+ " <if test='randomAmount !=null and randomAmount != &apos;&apos; '> RandomAmount = #{randomAmount} ,</if> "
 			+ " <if test='winingNum !=null and winingNum != &apos;&apos; '> WiningNum = #{winingNum} ,</if> "
 			+ " <if test='realPrize !=null and realPrize != &apos;&apos; '> RealPrize = #{realPrize} ,</if> "
+			+ " <if test='lowRand !=null and lowRand != &apos;&apos; '> LowRand = #{lowRand} ,</if> "
+			+ " <if test='highRand !=null and highRand != &apos;&apos; '> HighRand = #{highRand} ,</if> "
 			+ " </set>"
 			+ " <where> "
 			+ " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"

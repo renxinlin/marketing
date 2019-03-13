@@ -10,6 +10,7 @@ public class MarketingActivitySet {
     private String activityEndDate;//活动结束时间
     private String updateUserId;//更新用户Id
     private String updateUserName;//更新用户名称
+    private String createDate;//创建时间
     private String updateDate;//更新时间
     private Integer activityStatus;//活动状态(1、表示上架进展，0 表示下架)
     private Integer eachDayNumber;//每人每天次数
@@ -37,6 +38,13 @@ public class MarketingActivitySet {
 		this.eachDayNumber = eachDayNumber;
 	}
 
+	public String getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(String createDate) {
+		this.createDate = createDate;
+	}
 
 	public String getOrganizationId() {
         return organizationId;

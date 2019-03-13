@@ -1,89 +1,95 @@
 package com.jgw.supercodeplatform.marketing.dto.activity;
 
-import java.util.List;
-
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "活动创建model")
+@ApiModel(value = "活动设置model")
 public class MarketingActivitySetParam {
-
-    @ApiModelProperty(value = "活动基础参数")
-	private MarketingActivitySet mActivitySetParam;
-
-    @ApiModelProperty(value = "活动类型参数")
-    private MarketingActivity mActivityParam;
+	@ApiModelProperty(name = "id", value = "活动设置主键", example = "1")
+    private Long id;
 	
-	@ApiModelProperty(value = "领取页参数")
-    private MarketingReceivingPageParam mReceivingPageParam;
+	@ApiModelProperty(name = "activityId", value = "活动主键", example = "1")
+    private Long activityId;//活动主键Id
+	@ApiModelProperty(name = "activityTitle", value = "活动标题", example = "小活动")
+    private String activityTitle;//活动标题
 	
-	@ApiModelProperty(value = "中奖页页参数")
-    private MarketingWinningPageParam mWinningPageParam;
+	@ApiModelProperty(name = "activityStartDate", value = "活动开始时间", example = "2017-01-11")
+    private String activityStartDate;//活动开始时间
 	
-	@ApiModelProperty(value = "活动设置产品参数")
-	private List<MarketingActivityProductParam> mProductParams;
+	@ApiModelProperty(name = "activityEndDate", value = "活动结束时间", example = "2217-01-11")
+    private String activityEndDate;//活动结束时间
 	
-	@ApiModelProperty(value = "活动设置中奖奖次")
-	private List<MarketingPrizeTypeParam> marketingPrizeTypeParams;
+	@ApiModelProperty(name = "eachDayNumber", value = "每人每天次数", example = "2")
+    private Integer eachDayNumber;//每人每天次数
 	
-	@ApiModelProperty(value = "渠道")
-	private List<MarketingChannelParam> mChannelParams;
-
-	public MarketingReceivingPageParam getmReceivingPageParam() {
-		return mReceivingPageParam;
+	@ApiModelProperty(name = "activityRangeMark", value = "活动范围标志(1、表示部分产品有效 2、表示全部产品有效 ", example = "1")
+    private Integer activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 )
+	
+	@ApiModelProperty(name = "autoFetch", value = "是否自动获取(1、自动获取 2、仅此一次 ) ", example = "1")
+    private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
+	
+    
+    public Long getId() {
+		return id;
 	}
 
-	public void setmReceivingPageParam(MarketingReceivingPageParam mReceivingPageParam) {
-		this.mReceivingPageParam = mReceivingPageParam;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public MarketingWinningPageParam getmWinningPageParam() {
-		return mWinningPageParam;
+	public Long getActivityId() {
+		return activityId;
 	}
 
-	public void setmWinningPageParam(MarketingWinningPageParam mWinningPageParam) {
-		this.mWinningPageParam = mWinningPageParam;
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
 	}
 
-	public List<MarketingActivityProductParam> getmProductParams() {
-		return mProductParams;
+	public void setEachDayNumber(Integer eachDayNumber) {
+		this.eachDayNumber = eachDayNumber;
 	}
 
-	public void setmProductParams(List<MarketingActivityProductParam> mProductParams) {
-		this.mProductParams = mProductParams;
+    public Integer getEachDayNumber() {
+		return eachDayNumber;
 	}
 
-	public List<MarketingPrizeTypeParam> getMarketingPrizeTypeParams() {
-		return marketingPrizeTypeParams;
-	}
-
-	public void setMarketingPrizeTypeParams(List<MarketingPrizeTypeParam> marketingPrizeTypeParams) {
-		this.marketingPrizeTypeParams = marketingPrizeTypeParams;
-	}
-
-	public List<MarketingChannelParam> getmChannelParams() {
-		return mChannelParams;
-	}
-
-	public void setmChannelParams(List<MarketingChannelParam> mChannelParams) {
-		this.mChannelParams = mChannelParams;
-	}
-
-    public MarketingActivitySet getmActivitySetParam() {
-        return mActivitySetParam;
+	public String getActivityTitle() {
+        return activityTitle;
     }
 
-    public void setmActivitySetParam(MarketingActivitySet mActivitySetParam) {
-        this.mActivitySetParam = mActivitySetParam;
+    public void setActivityTitle(String activityTitle) {
+        this.activityTitle = activityTitle;
     }
 
-    public MarketingActivity getmActivityParam() {
-        return mActivityParam;
+    public String getActivityStartDate() {
+        return activityStartDate;
     }
 
-    public void setmActivityParam(MarketingActivity mActivityParam) {
-        this.mActivityParam = mActivityParam;
+    public void setActivityStartDate(String activityStartDate) {
+        this.activityStartDate = activityStartDate;
     }
+
+    public String getActivityEndDate() {
+        return activityEndDate;
+    }
+    public Integer getActivityRangeMark() {
+        return activityRangeMark;
+    }
+
+    public void setActivityRangeMark(Integer activityRangeMark) {
+        this.activityRangeMark = activityRangeMark;
+    }
+
+	public Integer getAutoFetch() {
+		return autoFetch;
+	}
+
+	public void setAutoFetch(Integer autoFetch) {
+		this.autoFetch = autoFetch;
+	}
+
+	public void setActivityEndDate(String activityEndDate) {
+		this.activityEndDate = activityEndDate;
+	}
+    
 }

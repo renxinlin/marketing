@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPageUpdateParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
@@ -35,7 +35,7 @@ public class MarketingActivitySetController {
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "活动创建", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> create(@RequestBody MarketingActivitySetParam activitySetParam) throws Exception {
+    public RestResult<String> create(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
     	return service.add(activitySetParam);
     }
     

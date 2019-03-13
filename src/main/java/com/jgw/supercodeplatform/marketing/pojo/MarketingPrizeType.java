@@ -1,4 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo;
+
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * 活动中奖奖次设置实体
  * @author czm
@@ -14,6 +17,8 @@ public class MarketingPrizeType {
     private Byte randomAmount;//是否随机金额 1随机 0固定
     private Long winingNum;//已中奖数
     private Byte realPrize;//是否由用户创建的真实奖次
+    private Integer lowRand;
+    private Integer highRand;
 	public Long getId() {
 		return id;
 	}
@@ -61,6 +66,18 @@ public class MarketingPrizeType {
 	}
 	public void setRealPrize(Byte realPrize) {
 		this.realPrize = realPrize;
+	}
+	public Integer getLowRand() {
+		return lowRand;
+	}
+	public void setLowRand(Integer lowRand) {
+		this.lowRand = lowRand;
+	}
+	public Integer getHighRand() {
+		return highRand;
+	}
+	public void setHighRand(Integer highRand) {
+		this.highRand = highRand;
 	}
    
 }
