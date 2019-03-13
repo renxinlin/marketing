@@ -552,6 +552,13 @@ public class MarketingActivitySetService  {
 			restResult.setMsg("该码已参与过活动不能重复参与");
 			return restResult;
 		}
+		//如果该活动已扫的码大于等于该活动参与的码总数则返回错误
+		Long scanSum=codeEsService.countByActivitySetId(activitySetId);
+		if (null!=scanSum && scanSum.intValue()>=mActivitySet.getCodeTotalNum().intValue()) {
+			restResult.setState(500);
+			restResult.setMsg("该活动已扫码数量:"+scanSum+"已达到活动设置的活动码数量"+mActivitySet.getCodeTotalNum()+"，请联系管理员");
+			return restResult;
+		}
 		ScanCodeInfoMO pMo=new ScanCodeInfoMO();
 		pMo.setCodeId(codeId);
 		pMo.setCodeTypeId(codeTypeId);

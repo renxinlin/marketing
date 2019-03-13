@@ -61,6 +61,7 @@ public class ScanCodeController {
     public String bind(String codeId,String codeTypeId,String productId,String productBatchId) throws Exception {
     	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(codeId,codeTypeId,productId,productBatchId);
     	if (restResult.getState()==500) {
+    		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
     		 return "redirect:"+h5pageUrl+"?success=0&msg="+restResult.getMsg();
 		}
     	String	wxstate=commonUtil.getUUID();

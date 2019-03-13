@@ -51,7 +51,8 @@ public class MarketingMembersWinRecordController extends CommonUtil {
     }
 
 
-	@GetMapping("/little-record")
+    @RequestMapping(value ="/export",method = RequestMethod.GET)
+	@ApiOperation(value = "导出中奖纪录", notes = "")
 	public void littleWinRecordOutExcel(@RequestParam LinkedHashMap filedMap, HttpServletResponse response) throws SuperCodeException, UnsupportedEncodingException {
 		validateRequestParamAndValueNotNull(filedMap,"list");
 		List<String> ids = Arrays.asList(filedMap.get("list").toString().split(","));

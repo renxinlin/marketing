@@ -395,8 +395,48 @@ public class MarketingMembersService extends CommonUtil {
 			restResult.setMsg("当前企业未绑定公众号数据");
 			return restResult;
 		}
-		//执行中奖算法
-		MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.lottery(mPrizeTypes,codeTotalNum);
+		
+		List<MarketingPrizeTypeMO> mTypeMOs=new ArrayList<MarketingPrizeTypeMO>();
+		int i=0;
+		boolean hasRightPrize=false;
+		for (MarketingPrizeType marketingPrizeType : mPrizeTypes) {
+			Integer probability=marketingPrizeType.getPrizeProbability();
+			MarketingPrizeTypeMO mo=new MarketingPrizeTypeMO();
+			mo.setActivitySetId(marketingPrizeType.getActivitySetId());
+			mo.setId(marketingPrizeType.getId());
+			mo.setPrizeAmount(marketingPrizeType.getPrizeAmount());
+			mo.setPrizeProbability(probability);
+			mo.setPrizeTypeName(marketingPrizeType.getPrizeTypeName());
+			mo.setRandomAmount(marketingPrizeType.getRandomAmount());
+			mo.setWiningNum(marketingPrizeType.getWiningNum()==null?0L:marketingPrizeType.getWiningNum());
+			mo.setLowRand(marketingPrizeType.getLowRand());
+		    mo.setHighRand(marketingPrizeType.getHighRand());
+			if (i==mPrizeTypes.size()-1) {
+				mo.setTotalNum(codeTotalNum);
+			}else {
+				long num = (long) (marketingPrizeType.getPrizeProbability() / 100.00 * codeTotalNum);
+				mo.setTotalNum(num);
+				codeTotalNum=codeTotalNum-num;
+			}
+			if (mo.getWiningNum() <mo.getTotalNum()) {
+				hasRightPrize=true;
+			}
+			mo.setRealPrize(marketingPrizeType.getRealPrize());
+			mTypeMOs.add(mo);
+			i++;
+		}
+		MarketingPrizeTypeMO mPrizeTypeMO =null;
+		if (hasRightPrize) {
+			//执行中奖算法
+			mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
+			logger.info("抽到中奖奖次为："+mPrizeTypeMO.toString());
+		}else {
+			//到这里说明流程已经出现问题，因为在扫码哪部分就会判断当前扫码量有没有达到活动对应的码数量
+			restResult.setState(500);
+			restResult.setMsg("所有奖次对应的中奖码数量都已达到上限无法继续抽奖");
+			return restResult;
+		}
+		
 		String codeId=scanCodeInfoMO.getCodeId();
 		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
@@ -430,6 +470,7 @@ public class MarketingMembersService extends CommonUtil {
 				return restResult;
 			}
 		}
+		logger.info("抽奖数据已保存到es");
         //判断realprize是否为0,0表示不中奖
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
@@ -445,6 +486,7 @@ public class MarketingMembersService extends CommonUtil {
 				int max=mPrizeTypeMO.getHighRand();
 				amount=new Random().nextInt(max-min)+min;
 			}
+			amount=amount*100;//金额转化为分
 			//插入中奖纪录
 			MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
 			redWinRecord.setActivityId(activity.getId());

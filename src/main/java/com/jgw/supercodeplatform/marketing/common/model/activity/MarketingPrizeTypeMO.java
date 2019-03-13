@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.common.model.activity;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * 活动中奖奖次设置实体
@@ -16,7 +17,7 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
     private Integer prizeProbability;//中奖几率
     private String prizeTypeName;//奖品类型名称
     private Byte randomAmount;//是否随机金额 1随机 0固定
-    private long totalNum;//当前批次剩下的码数量
+    private long totalNum;//当前奖次按照中奖率计算一共该中奖的码数量
     private long winingNum;//已中奖数
     private Byte realPrize;//是否由用户创建的真实奖次
     private Integer lowRand;
@@ -123,4 +124,14 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 		                 .append("activitySetId", rhs.activitySetId)
 		                 .isEquals();
 	}
+	@Override
+	public String toString() {
+		return new ToStringBuilder(this).append("奖次名称", prizeTypeName).append("realPrize", realPrize).append("winingNum", winingNum)
+				.append("activitySetId", activitySetId)
+				.append("该奖次一共该中奖码数量", totalNum)
+				.append("activitySetId", activitySetId)
+				.append("randomAmount", randomAmount)
+				.toString();
+	}
+	
 }

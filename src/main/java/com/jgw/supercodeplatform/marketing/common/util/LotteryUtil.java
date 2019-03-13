@@ -15,12 +15,14 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 
 public class LotteryUtil {
 	
-  public static MarketingPrizeTypeMO lottery(List<MarketingPrizeType> mPrizeTypes,Long codeTotalNum) throws SuperCodeException {
+  public static boolean judge(List<MarketingPrizeType> mPrizeTypes,Long codeTotalNum) throws SuperCodeException {
 	  if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
 		throw new SuperCodeException("中奖算法参数不能为空", 500);
 	  }
 		List<MarketingPrizeTypeMO> mTypeMOs=new ArrayList<MarketingPrizeTypeMO>();
 		int i=0;
+		boolean hasRightPrize=false;
+		
 		for (MarketingPrizeType marketingPrizeType : mPrizeTypes) {
 			Integer probability=marketingPrizeType.getPrizeProbability();
 			MarketingPrizeTypeMO mo=new MarketingPrizeTypeMO();
@@ -40,22 +42,28 @@ public class LotteryUtil {
 				mo.setTotalNum(num);
 				codeTotalNum=codeTotalNum-num;
 			}
+			if (mo.getWiningNum() <mo.getTotalNum()) {
+				hasRightPrize=true;
+			}
 			mo.setRealPrize(marketingPrizeType.getRealPrize());
 			mTypeMOs.add(mo);
 			i++;
 		}
-		Collections.sort(mTypeMOs);
-	
-		//执行中奖算法
-		MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.begin(mTypeMOs);
-		//如果该奖次的参与数已经大于等于他所占的百分比则重新抽奖
-		while (mPrizeTypeMO.getTotalNum() <= mPrizeTypeMO.getWiningNum()) {
-			mPrizeTypeMO = LotteryUtil.begin(mTypeMOs);
-		}
-		return mPrizeTypeMO;
+		return hasRightPrize;
   }
+
+public static MarketingPrizeTypeMO lottery(List<MarketingPrizeTypeMO> mTypeMOs) throws SuperCodeException {
+	Collections.sort(mTypeMOs);
+	//执行中奖算法
+	MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.get(mTypeMOs);
+	//如果该奖次的参与数已经大于等于他所占的百分比则重新抽奖
+	while (mPrizeTypeMO.getWiningNum() >=mPrizeTypeMO.getTotalNum() ) {
+		mPrizeTypeMO = LotteryUtil.get(mTypeMOs);
+	}
+	return mPrizeTypeMO;
+}
   
-  public static MarketingPrizeTypeMO  begin(List<MarketingPrizeTypeMO> mTypeMOs) throws SuperCodeException {
+  public static MarketingPrizeTypeMO  get(List<MarketingPrizeTypeMO> mTypeMOs) throws SuperCodeException {
 	  int w = (int)(Math.random()*100+1);
 	  MarketingPrizeTypeMO mTypeMO0=mTypeMOs.get(0);
 	  if (w<=mTypeMO0.getPrizeProbability() ) {
