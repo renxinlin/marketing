@@ -102,7 +102,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 			+ " </set>"
 			+"where OrganizationId = #{organizationId} and OpenId= #{oldopenId}"
 			+endScript)
-	void updateOpenIdAndMobileByOpenIdAndOrgId(@Param("newopenId")String newopenId, @Param("mobile")String mobile,  @Param("mobile")String organizationId,
+	void updateOpenIdAndMobileByOpenIdAndOrgId(@Param("newopenId")String newopenId, @Param("mobile")String mobile,  @Param("organizationId")String organizationId,
 			 @Param("oldopenId")String oldopenId);
 
 }
