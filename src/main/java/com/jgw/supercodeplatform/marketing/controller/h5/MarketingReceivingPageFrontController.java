@@ -33,7 +33,7 @@ public class MarketingReceivingPageFrontController {
 	@RequestMapping(value = "/getByAsId",method = RequestMethod.GET)
     @ApiOperation(value = "根据活动设置id获取领取页记录，扫码时可以通过该接口获取是否需要领取页", notes = "")
 	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "当前扫码唯一id",name="wxstate",required=true),@ApiImplicitParam(paramType="query",value = "获取设置主键id",name="activitySetId",required=false)})
-	public RestResult<MarketingReceivingPage> getByAsId(@RequestParam(required=true)String wxstate,Long activitySetId) throws SuperCodeException{
+	public RestResult<MarketingReceivingPage> getByAsId(String wxstate,Long activitySetId) throws SuperCodeException{
 		if (null==activitySetId) {
 			ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
 			if (null==scInfoMO) {
