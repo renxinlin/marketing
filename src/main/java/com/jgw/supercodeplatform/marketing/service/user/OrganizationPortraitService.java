@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
@@ -25,9 +26,10 @@ public class OrganizationPortraitService extends CommonUtil {
      * 根据组织id获取已选画像关系
      * @param params
      * @return
+     * @throws SuperCodeException 
      */
-    public List<MarketingOrganizationPortraitListParam> getSelectedPortrait(Map<String, Object> params){
-        String organizationId = params.get("organizationId").toString();
+    public List<MarketingOrganizationPortraitListParam> getSelectedPortrait() throws SuperCodeException{
+        String organizationId =getOrganizationId();
         return organizationPortraitMapper.getSelectedPortrait(organizationId);
     }
 
@@ -36,29 +38,25 @@ public class OrganizationPortraitService extends CommonUtil {
      * 根据组织id获取未选画像关系
      * @param params
      * @return
+     * @throws SuperCodeException 
      */
-    public List<MarketingUnitcode> getUnselectedPortrait(Map<String, Object> params){
+    public List<MarketingUnitcode> getUnselectedPortrait() throws SuperCodeException{
         //获取组织已选择的画像
-        List<MarketingOrganizationPortraitListParam> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(params.get("organizationId").toString());
+        List<MarketingOrganizationPortraitListParam> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(getOrganizationId());
         List<MarketingUnitcode> unitcodes = organizationPortraitMapper.getAllUnitcode();
-        List<String> selectPortraitsCode = new ArrayList<>();
-        List<String> codeIdList = new ArrayList<>();
-        for (MarketingOrganizationPortraitListParam portrait:organizationPortraits){
-            selectPortraitsCode.add(portrait.getPortraitCode());
-        }
-        for (MarketingUnitcode unitcode:unitcodes){
-            codeIdList.add(unitcode.getCodeId());
-        }
-        codeIdList.removeAll(selectPortraitsCode);
-        if (codeIdList.size()!=0){
-            Map<String, Object> map = new HashMap<>();
-            map.put("codeIdList",codeIdList);
-            map.put("typeId",params.get("typeId").toString());
-            return organizationPortraitMapper.getPortraitsList(map);
-        }else {
-            return null;
-        }
+        Map<String, Integer> judgeMap=new HashMap<String, Integer>();
 
+        List<MarketingUnitcode>unselectList=new ArrayList<MarketingUnitcode>();
+        for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : organizationPortraits) {
+        	judgeMap.put(marketingOrganizationPortraitListParam.getTypeId()+marketingOrganizationPortraitListParam.getPortraitCode(), 1);
+		}
+        for (MarketingUnitcode marketingUnitcode : unitcodes) {
+        	Integer flag=judgeMap.get(marketingUnitcode.getTypeId()+marketingUnitcode.getCodeId());
+        	if (null==flag) {
+        		unselectList.add(marketingUnitcode);
+			}
+		}
+     return unselectList;
     }
 
 

@@ -20,6 +20,7 @@ import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
@@ -34,6 +35,7 @@ import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
@@ -50,7 +52,7 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
 
 @Service
-public class MarketingMembersService extends CommonUtil {
+public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
 	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersService.class);
     @Autowired
     private MarketingMembersMapper marketingMembersMapper;
@@ -84,6 +86,9 @@ public class MarketingMembersService extends CommonUtil {
     private RedisUtil redisUtil;
     
     @Autowired
+    private CommonUtil commonUtil;
+    
+    @Autowired
     private WXPayService wxpService;
     
     @Autowired
@@ -92,10 +97,83 @@ public class MarketingMembersService extends CommonUtil {
     @Value("${marketing.server.ip}")
     private String serverIp;
     
-    
     private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
     
-    /**
+    
+    @Override
+	protected List<Map<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
+
+    	String listSQl = listSql(searchParams,false);
+    	List<Map<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
+    	return data;
+	}
+
+	private String listSql(MarketingMembersListParam searchParams,boolean isCount) throws SuperCodeException {
+    	String organizationId=commonUtil.getOrganizationId();
+    	List<MarketingOrganizationPortraitListParam> mPortraitListParams=organizationPortraitMapper.getSelectedPortrait(organizationId);
+    	if (null==mPortraitListParams || mPortraitListParams.isEmpty()) {
+			throw new SuperCodeException("企业未设置画像", 500);
+		}
+		StringBuffer fieldsbuf=new StringBuffer();
+    	StringBuffer commonSearchbuf=new StringBuffer();
+    	int i=0;
+    	boolean commonsearch=false;
+    	String search=searchParams.getSearch();
+    	if (StringUtils.isNotBlank(search)) {
+    		commonsearch=true;
+    		commonSearchbuf.append(" AND (");
+		}
+    	for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
+    		String code=marketingOrganizationPortraitListParam.getPortraitCode();
+    		fieldsbuf.append(code);
+    		if(i<mPortraitListParams.size()-1) {
+    			fieldsbuf.append(",");
+    		}
+    		if (commonsearch) {
+    			if (i>0) {
+    				commonSearchbuf.append(" OR ");
+				}
+    			commonSearchbuf.append(code).append(" like ");
+    			if (code.contains("Date")) {
+    				commonSearchbuf.append("binary");
+				}
+    			commonSearchbuf.append("CONCAT('%',").append("'").append(search).append("'").append(",'%')");
+    			if(i==mPortraitListParams.size()-1) {
+    				commonSearchbuf.append(")");
+    			}
+			}
+    		i++;
+		}
+    	String from=" from marketing_members ";
+    	String where=" where OrganizationId='"+organizationId+"'";
+    	String sql=null;
+    	if (isCount) {
+    		 sql=" select count(*) "+from+where;
+        	if (commonsearch) {
+        		sql+=commonSearchbuf.toString();
+    		}
+		}else {
+			Integer startNum=searchParams.getStartNumber();
+    		Integer pagesize=searchParams.getPageSize();
+    		 sql=" select "+fieldsbuf.toString()+from+where;
+        	if (commonsearch) {
+        		sql+=commonSearchbuf.toString();
+    		}
+        	if (null!=startNum && null!=pagesize) {
+        		sql+=" limit "+startNum+","+pagesize;
+			}
+		}
+		return sql;
+	}
+
+	@Override
+	protected int count(MarketingMembersListParam searchParams) throws Exception {
+	   	String listSQl = listSql(searchParams,true);
+    	Integer count=marketingMembersMapper.dynamicCount(listSQl);
+    	return count;
+	}
+
+	/**
      * 会员注册
      * @param map
      * @return

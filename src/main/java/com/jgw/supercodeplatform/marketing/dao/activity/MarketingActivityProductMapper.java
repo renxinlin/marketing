@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface MarketingActivityProductMapper {
 
 	String selectSql = " Id as id, ActivitySetId as activitySetId,CodeType as codeType,ProductBatchId as productBatchId,"
 			+ " ProductBatchName as productBatchName,ProductId as productId,"
-			+ " ProductName as productName,CodeTotalAmount as codeTotalAmount";
+			+ " ProductName as productName,CodeTotalAmount as codeTotalAmount,CreateDate createDate,UpdateDate updateDate";
 
 
 
@@ -35,4 +36,18 @@ public interface MarketingActivityProductMapper {
 	
 	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ActivitySetId = #{activitySetId} ")
 	List<MarketingActivityProduct> selectByActivitySetId(@Param("activitySetId") String activitySetId);
+
+
+
+	@Update(" <script>"
+			+ " UPDATE marketing_activity_product "
+			+ " <set>"
+			+ " <if test='codeTotalAmount !=null '> CodeTotalAmount = #{codeTotalAmount} ,</if> "
+			+ " UpdateDate=now(),"
+			+ " </set>"
+			+ " <where> "
+			+ " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+			+ " </where>"
+			+ " </script>")
+	void updateCodeTotalAmount(@Param("codeTotalAmount")Long sum, @Param("id")Long id);
 }

@@ -196,6 +196,12 @@ public interface MarketingMembersMapper {
             + " #{customerName},#{customerId},#{babyBirthday} )")
 	void insert(MarketingMembers members);
 
+    @Select("${sql}")
+	List<Map<String, Object>> dynamicList(@Param("sql")String listSQl);
+
+    @Select("${sql}")
+	Integer dynamicCount(@Param("sql")String listSQl);
+
 
 
 

@@ -1,20 +1,26 @@
 package com.jgw.supercodeplatform.marketing.controller.user;
 
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonObject;
 import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonProperty;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.service.user.OrganizationPortraitService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/marketing/portrait")
@@ -25,26 +31,21 @@ public class OrganizationPortraitController  extends CommonUtil {
     private OrganizationPortraitService organizationPortraitService;
 
     @RequestMapping(value = "/getSelectedPor", method = RequestMethod.GET)
-    @ApiOperation(value = "根据组织id获取组织已选的画像编码", notes = "返回编码信息列表")
+    @ApiOperation(value = "获取组织已选的画像编码", notes = "返回编码信息列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-            @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "2a66d681b6b2426eaf34d125a82dbc06", value = "组织id,必需")
     })
-    public RestResult<String> getSelectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "organizationId");
-        return new RestResult(200, "success", organizationPortraitService.getSelectedPortrait(params));
+    public RestResult<List<MarketingOrganizationPortraitListParam>> getSelectedPortrait() throws Exception {
+        return new RestResult<List<MarketingOrganizationPortraitListParam>>(200, "success", organizationPortraitService.getSelectedPortrait());
     }
 
     @RequestMapping(value = "/getUnselectedPor", method = RequestMethod.GET)
-    @ApiOperation(value = "根据组织id获取组织未选的画像编码", notes = "返回编码信息列表")
+    @ApiOperation(value = "获取组织未选的画像编码", notes = "返回编码信息列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-            @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "2a66d681b6b2426eaf34d125a82dbc06", value = "组织id,必需"),
-            @ApiImplicitParam(name = "typeId", paramType = "query", defaultValue = "14001", value = "编码类型（14001为注册信息，14002为标签维护）,必需")
     })
-    public RestResult<String> getUnselectedPortrait(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "typeId","organizationId");
-        return new RestResult(200, "success", organizationPortraitService.getUnselectedPortrait(params));
+    public RestResult<String> getUnselectedPortrait() throws Exception {
+        return new RestResult(200, "success", organizationPortraitService.getUnselectedPortrait());
     }
 
 

@@ -57,4 +57,7 @@ public interface MarketingActivitySetMapper {
    
    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId}")
    MarketingActivitySet selectByTitleOrgId(@Param("activityTitle")String activityTitle, @Param("organizationId")String organizationId);
+  
+   @Update("update marketing_activity_set set CodeTotalNum =CodeTotalNum+#{codeTotalNum} where Id = #{id}")
+   void addCodeTotalNum(@Param("codeTotalNum")Long codeNum, @Param("id")Long activitySetid);
 }
