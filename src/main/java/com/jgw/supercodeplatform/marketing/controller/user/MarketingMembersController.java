@@ -119,48 +119,6 @@ public class MarketingMembersController extends CommonUtil {
         return new RestResult(200, "success", null);
     }
 
-    /**
-     * 创建二维码
-     * @param content
-     * @param response
-     * @return
-     * @throws IOException
-     */
-    @RequestMapping(value = "/qrCode", method = RequestMethod.GET)
-    @ApiOperation(value = "生成二维码接口", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-            @ApiImplicitParam(name = "content", paramType = "query", defaultValue = "http://www.baidu.com", value = "", required = true),
-    })
-    public  boolean createQrCode(String content,HttpServletResponse response) throws WriterException, IOException,Exception{
-        //设置二维码纠错级别ＭＡＰ
-        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
-        hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);  // 矫错级别
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        //创建比特矩阵(位矩阵)的QR码编码的字符串
-        StringBuilder sb = new StringBuilder();
-        sb.append(content);
-        sb.append("?organizationId=");
-        sb.append(getOrganization().getOrganizationId());
-        BitMatrix byteMatrix = qrCodeWriter.encode(sb.toString(), BarcodeFormat.QR_CODE, 900, 900, hintMap);
-        // 使BufferedImage勾画QRCode  (matrixWidth 是行二维码像素点)
-        int matrixWidth = byteMatrix.getWidth();
-        BufferedImage image = new BufferedImage(matrixWidth-200, matrixWidth-200, BufferedImage.TYPE_INT_RGB);
-        image.createGraphics();
-        Graphics2D graphics = (Graphics2D) image.getGraphics();
-        graphics.setColor(Color.WHITE);
-        graphics.fillRect(0, 0, matrixWidth, matrixWidth);
-        // 使用比特矩阵画并保存图像
-        graphics.setColor(Color.BLACK);
-        for (int i = 0; i < matrixWidth; i++){
-            for (int j = 0; j < matrixWidth; j++){
-                if (byteMatrix.get(i, j)){
-                    graphics.fillRect(i-100, j-100, 1, 1);
-                }
-            }
-        }
-        return ImageIO.write(image, "JPEG", response.getOutputStream());
-    }
 
     @RequestMapping(value = "/getOrg",method = RequestMethod.GET)
     @ApiOperation(value = "获取当前用户登录的组织信息", notes = "")
