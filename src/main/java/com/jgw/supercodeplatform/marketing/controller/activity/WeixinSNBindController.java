@@ -68,24 +68,20 @@ public class WeixinSNBindController extends CommonUtil {
 		return restResult;
 	}
 	
-    @RequestMapping(value = "/bind",method = RequestMethod.POST)
-    @ApiOperation(value = "微信商户信息绑定", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> bind(@RequestBody MarketingWxMerchantsParam wxMerchantsParam, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        try {
-        	Long id=wxMerchantsParam.getId();
-            if (null==id) {
-            	 marketingWxMerchantsService.addWxMerchants(wxMerchantsParam);
-			}else {
-				 marketingWxMerchantsService.updateWxMerchants(wxMerchantsParam);
-			}
+	@RequestMapping(value = "/bind", method = RequestMethod.POST)
+	@ApiOperation(value = "微信商户信息绑定", notes = "")
+	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+	public RestResult<String> bind(@RequestBody MarketingWxMerchantsParam wxMerchantsParam, HttpServletRequest request,
+			HttpServletResponse response) throws Exception {
+		Long id = wxMerchantsParam.getId();
+		if (null == id) {
+			marketingWxMerchantsService.addWxMerchants(wxMerchantsParam);
+		} else {
+			marketingWxMerchantsService.updateWxMerchants(wxMerchantsParam);
+		}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return new RestResult<String>(200, "success", null);
-    }
+		return new RestResult<String>(200, "success", null);
+	}
     
 /*    @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "微信商户信息修改", notes = "")

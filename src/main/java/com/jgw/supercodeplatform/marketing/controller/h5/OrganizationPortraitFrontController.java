@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/marketing/front/portrait")
-@Api(tags = "会员画像管理")
+@Api(tags = "企业画像获取")
 public class OrganizationPortraitFrontController  extends CommonUtil {
 
     @Autowired

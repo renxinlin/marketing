@@ -61,7 +61,7 @@ public class WXPayService {
 		config.setKey(key);
 		config.setMchId(mechid);
 		
-		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getFileName();
+		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getCertificateAddress();
 		config.setCertificatePath(wholePath);
 		//封装请求参数实体
 		OrganizationPayRequestParam oRequestParam=new OrganizationPayRequestParam();

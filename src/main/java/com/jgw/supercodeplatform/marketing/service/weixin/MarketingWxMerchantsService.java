@@ -39,7 +39,11 @@ public class MarketingWxMerchantsService {
 		return restResult;
 	}
 
-	public int addWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam){
+	public int addWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam) throws SuperCodeException{
+		String organizationId=commonUtil.getOrganizationId();
+		String organizationName=commonUtil.getOrganizationName();
+		marketingWxMerchantsParam.setOrganizatioIdlName(organizationName);
+		marketingWxMerchantsParam.setOrganizationId(organizationId);
 		return dao.addWxMerchants(marketingWxMerchantsParam);
 	}
 
