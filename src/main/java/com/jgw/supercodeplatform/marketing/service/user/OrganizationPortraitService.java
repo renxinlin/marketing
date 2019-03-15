@@ -7,6 +7,8 @@ import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,25 +26,33 @@ public class OrganizationPortraitService extends CommonUtil {
 
     /**
      * 根据组织id获取已选画像关系
+     * @param organizationId2 
      * @param params
      * @return
      * @throws SuperCodeException 
      */
-    public List<MarketingOrganizationPortraitListParam> getSelectedPortrait() throws SuperCodeException{
-        String organizationId =getOrganizationId();
+    public List<MarketingOrganizationPortraitListParam> getSelectedPortrait(String organizationId) throws SuperCodeException{
+    	if (StringUtils.isBlank(organizationId)) {
+    		 organizationId =getOrganizationId();
+		}
         return organizationPortraitMapper.getSelectedPortrait(organizationId);
     }
 
 
     /**
      * 根据组织id获取未选画像关系
+     * @param organizationId 
      * @param params
      * @return
      * @throws SuperCodeException 
      */
-    public List<MarketingUnitcode> getUnselectedPortrait() throws SuperCodeException{
+    public List<MarketingUnitcode> getUnselectedPortrait(String organizationId) throws SuperCodeException{
+    	
+    	if (StringUtils.isBlank(organizationId)) {
+   		 organizationId =getOrganizationId();
+		}
         //获取组织已选择的画像
-        List<MarketingOrganizationPortraitListParam> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(getOrganizationId());
+        List<MarketingOrganizationPortraitListParam> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(organizationId);
         List<MarketingUnitcode> unitcodes = organizationPortraitMapper.getAllUnitcode();
         Map<String, Integer> judgeMap=new HashMap<String, Integer>();
 

@@ -123,6 +123,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
     		commonsearch=true;
     		commonSearchbuf.append(" AND (");
 		}
+    	fieldsbuf.append("Id,State,Openid,WxName,");
     	for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
     		String code=marketingOrganizationPortraitListParam.getPortraitCode();
     		fieldsbuf.append(code);
@@ -287,10 +288,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * 获取单个会员信息
      * @param map
      * @return
+     * @throws SuperCodeException 
      */
-    public MarketingMembers getMemberById(Map<String,Object> map){
+    public MarketingMembers getMemberById(Map<String,Object> map) throws SuperCodeException{
         String userId = map.get("userId").toString();
-        String organizationId = map.get("organizationId").toString();
+        String organizationId = getOrganizationId();
         return marketingMembersMapper.getMemberById(userId,organizationId);
     }
 

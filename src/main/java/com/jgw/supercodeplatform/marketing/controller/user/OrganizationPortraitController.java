@@ -36,7 +36,7 @@ public class OrganizationPortraitController  extends CommonUtil {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<List<MarketingOrganizationPortraitListParam>> getSelectedPortrait() throws Exception {
-        return new RestResult<List<MarketingOrganizationPortraitListParam>>(200, "success", organizationPortraitService.getSelectedPortrait());
+        return new RestResult<List<MarketingOrganizationPortraitListParam>>(200, "success", organizationPortraitService.getSelectedPortrait(null));
     }
 
     @RequestMapping(value = "/getUnselectedPor", method = RequestMethod.GET)
@@ -45,7 +45,7 @@ public class OrganizationPortraitController  extends CommonUtil {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> getUnselectedPortrait() throws Exception {
-        return new RestResult(200, "success", organizationPortraitService.getUnselectedPortrait());
+        return new RestResult(200, "success", organizationPortraitService.getUnselectedPortrait(null));
     }
 
 
@@ -54,12 +54,11 @@ public class OrganizationPortraitController  extends CommonUtil {
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> addOrgPortrait(
             @ApiJsonObject(name = "addOrgPortrait", value = {
-                    @ApiJsonProperty(key = "organizationId", example = "2a66d681b6b2426eaf34d125a82dbc06", description = "组织Id,必需"),
                     @ApiJsonProperty(key = "portraitCodeList", example = "\"[Mobile,UserName]\"", description = "画像编码list,必需"),
                     //@ApiJsonProperty(key = "portraitName", example = "手机", description = "画像名称,必需")
             })
             @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "organizationId","portraitCodeList");
+        validateRequestParamAndValueNotNull(params, "portraitCodeList");
         return organizationPortraitService.addOrgPortrait(params);
     }
 

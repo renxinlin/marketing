@@ -1,16 +1,9 @@
 package com.jgw.supercodeplatform.marketing.controller.user;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
@@ -50,10 +37,10 @@ public class MarketingMembersController extends CommonUtil {
     private MarketingMembersService marketingMembersService;
 
 
-    @RequestMapping(value = "/list",method = RequestMethod.POST)
+    @RequestMapping(value = "/list",method = RequestMethod.GET)
     @ApiOperation(value = "会员列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<PageResults<List<Map<String, Object>>>> memberList(@RequestBody MarketingMembersListParam param) throws Exception {
+    public RestResult<PageResults<List<Map<String, Object>>>> memberList(MarketingMembersListParam param) throws Exception {
         return new RestResult(200, "success", marketingMembersService.listSearchViewLike(param));
     }
 
@@ -63,10 +50,9 @@ public class MarketingMembersController extends CommonUtil {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "userId", paramType = "query", defaultValue = "ad156wd15d61a56d1w56d1d1", value = "用户Id,必需", required = true),
-            @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "02a61bd8703c4b0eb6a6f62fe709b0c6", value = "组织Id,必需", required = true)
     })
     public RestResult<String> getUserMember(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "userId","organizationId");
+        validateRequestParamAndValueNotNull(params, "userId");
         return new RestResult(200, "success",marketingMembersService.getMemberById(params));
     }
 
@@ -117,16 +103,6 @@ public class MarketingMembersController extends CommonUtil {
         map.put("state","0");
         marketingMembersService.updateMembersStatus(map);
         return new RestResult(200, "success", null);
-    }
-
-
-    @RequestMapping(value = "/getOrg",method = RequestMethod.GET)
-    @ApiOperation(value = "获取当前用户登录的组织信息", notes = "")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-    })
-    public RestResult<String> getUserOrg(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
-        return new RestResult(200, "success",getOrganization());
     }
 
 
