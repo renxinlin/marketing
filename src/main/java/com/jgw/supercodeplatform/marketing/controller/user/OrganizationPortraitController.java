@@ -2,7 +2,6 @@ package com.jgw.supercodeplatform.marketing.controller.user;
 
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,8 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonObject;
-import com.jgw.supercodeplatform.marketing.config.swagger.ApiJsonProperty;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingOrganizationPortraitParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.service.user.OrganizationPortraitService;
 
@@ -52,13 +50,7 @@ public class OrganizationPortraitController  extends CommonUtil {
     @RequestMapping(value = "/addOrgPor",method = RequestMethod.POST)
     @ApiOperation(value = "保存组织画像关系", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> addOrgPortrait(
-            @ApiJsonObject(name = "addOrgPortrait", value = {
-                    @ApiJsonProperty(key = "portraitCodeList", example = "\"[Mobile,UserName]\"", description = "画像编码list,必需"),
-                    //@ApiJsonProperty(key = "portraitName", example = "手机", description = "画像名称,必需")
-            })
-            @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "portraitCodeList");
+    public RestResult<String> addOrgPortrait(@RequestBody List<MarketingOrganizationPortraitParam> params) throws Exception {
         return organizationPortraitService.addOrgPortrait(params);
     }
 

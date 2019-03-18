@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dao.user;
 
 
+import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
@@ -13,10 +14,10 @@ import java.util.Map;
  * 会员画像类
  */
 @Mapper
-public interface OrganizationPortraitMapper {
+public interface OrganizationPortraitMapper extends CommonSql{
 
     String selectSql = " a.Id as id, a.OrganizationId as organizationId,a.OrganizationFullName as organizationFullName,"
-            + " a.PortraitCode as portraitCode,a.PortraitName as portraitName,a.FieldWeight as fieldWeight ";
+            + " a.UnitCodeId as unitCodeId,a.FieldWeight as fieldWeight ";
 
     String selectSqlUnitcode = " Id as id ,TypeId as typeId,CodeName as codeName,CodeId as codeId";
 
@@ -26,7 +27,7 @@ public interface OrganizationPortraitMapper {
      * @param organizationId
      * @return
      */
-    @Select(" SELECT "+selectSql+",b.TypeId as typeId"+" FROM marketing_organization_portrait a left join marketing_unitcode b on a.PortraitCode = b.CodeId WHERE a.OrganizationId = #{organizationId} ORDER BY a.FieldWeight")
+    @Select(" SELECT "+selectSql+",b.CodeName as codeName,b.TypeId as typeId,b.CodeId as codeId FROM marketing_organization_portrait a left join marketing_unitcode b on a.UnitCodeId = b.Id WHERE a.OrganizationId = #{organizationId} ORDER BY a.FieldWeight")
     List<MarketingOrganizationPortraitListParam> getSelectedPortrait(@Param("organizationId")String organizationId);
 
 
@@ -36,8 +37,8 @@ public interface OrganizationPortraitMapper {
      * @return
      */
     @Insert(" INSERT INTO marketing_organization_portrait(OrganizationId,OrganizationFullName,"
-            + " PortraitCode,PortraitName,FieldWeight) "
-            + " VALUES(#{organizationId},#{organizationFullName},#{portraitCode},#{portraitName},#{fieldWeight} "
+            + " UnitCodeId,FieldWeight) "
+            + " VALUES(#{organizationId},#{organizationFullName},#{unitCodeId},#{fieldWeight} "
             + ")")
     int addOrgPortrait(MarketingOrganizationPortrait organizationPortrait);
 
@@ -47,15 +48,15 @@ public interface OrganizationPortraitMapper {
      * @param organizationPortrait
      * @return
      */
-    @Delete(" DELETE FROM marketing_organization_portrait WHERE OrganizationId = #{organizationId} AND PortraitCode = #{portraitCode}")
-    int deleOrgPortrait(MarketingOrganizationPortrait organizationPortrait);
+    @Delete(" DELETE FROM marketing_organization_portrait WHERE OrganizationId = #{organizationId}")
+    int deleOrgPortrait(@Param("organizationId")String organizationId );
 
 
     /**
      * 获取所有的画像
      * @return
      */
-    @Select("SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE TypeId = '14001' OR TypeId = '14002' ")
+    @Select("SELECT "+selectSqlUnitcode+" FROM marketing_unitcode ")
     List<MarketingUnitcode> getAllUnitcode();
 
     /**
@@ -100,22 +101,30 @@ public interface OrganizationPortraitMapper {
             + " </set>"
             + " <where> "
             + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
-            + " <if test='portraitCode !=null and portraitCode != &apos;&apos; '> and PortraitCode = #{portraitCode} </if> "
             + " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"
             + " </where>"
             + " </script>")
     int updatePortraits(Map<String,Object> map);
 
 
-    /**
-     * 获取单个组织画像
-     * @param organizationPortrait
-     * @return
-     */
-    @Select(" SELECT "+selectSql+" FROM marketing_organization_portrait a WHERE PortraitCode = #{portraitCode} AND OrganizationId = #{organizationId} ")
-    MarketingOrganizationPortrait getPortraitByPortraitCode(MarketingOrganizationPortrait organizationPortrait);
-
     @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE CodeId = #{codeId} ")
     MarketingUnitcode getUnitcodeByCode(@Param("codeId")String codeId);
+
+    @Insert(startScript
+    		+"insert into marketing_organization_portrait (OrganizationId,OrganizationFullName,UnitCodeId,FieldWeight) values"
+    		+ "<foreach collection='list' item='item' index='index' separator=','>" 
+    		+       "("
+    		+ "        #{item.organizationId},"  
+    		+ "        #{item.organizationFullName},"
+    		+ "        #{item.unitCodeId},"
+    		+ "        #{item.fieldWeight}"
+    		+       ")"  
+    		+ "</foreach>"
+    		+endScript
+    		)
+	void batchInsert(@Param("list")List<MarketingOrganizationPortrait> mPortraits);
+
+    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
+	List<MarketingUnitcode> getUnselectedPortrait(@Param("organizationId")String organizationId);
 
 }

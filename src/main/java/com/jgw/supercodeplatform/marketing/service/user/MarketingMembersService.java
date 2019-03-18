@@ -125,7 +125,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
     	fieldsbuf.append("Id,State,Openid,WxName,");
     	for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
-    		String code=marketingOrganizationPortraitListParam.getPortraitCode();
+    		String code=marketingOrganizationPortraitListParam.getCodeId();
     		fieldsbuf.append(code);
     		if(i<mPortraitListParams.size()-1) {
     			fieldsbuf.append(",");
@@ -198,37 +198,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
         return marketingMembersMapper.addMembers(marketingMembersAddParam);
     }
 
-    /**
-     * 条件查询会员
-     * @param map
-     * @return
-     */
-    public List<MarketingMembers> getAllMarketingMembersLikeParams(Map<String,Object> map){
-        List<MarketingOrganizationPortraitListParam> organizationPortraits = organizationPortraitMapper.getSelectedPortrait(map.get("organizationId").toString());
-        List<String> portraitsList = new ArrayList<>();
-        portraitsList.add("Mobile");
-        portraitsList.add("WxName");
-        portraitsList.add("Openid");
-        for (MarketingOrganizationPortraitListParam portrait:organizationPortraits){
-            if (!"Mobile".equals(portrait.getPortraitCode())){
-                if ("Birthday".equals(portrait.getPortraitCode())||"BabyBirthday".equals(portrait.getPortraitCode())){
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(" DATE_FORMAT( ");
-                    sb.append( portrait.getPortraitCode());
-                    sb.append(",'%Y-%m-%d') as " );
-                    sb.append(portrait.getPortraitCode() );
-                    portraitsList.add(sb.toString());
-                }else {
-                    portraitsList.add(portrait.getPortraitCode());
-                }
-            }
-        }
-        portraitsList.add("State");
-        String list = portraitsList.toString().replace("[","").replace("]","");;
-        map.put("portraitsList",list);
-        System.out.println(list);
-        return marketingMembersMapper.getAllMarketingMembersLikeParams(map);
-    }
+
 
     /**
      * 条件查询会员数量

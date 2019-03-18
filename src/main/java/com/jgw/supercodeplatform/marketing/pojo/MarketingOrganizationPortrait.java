@@ -5,10 +5,8 @@ public class MarketingOrganizationPortrait {
     private int id;//序列
     private String organizationId;//组织Id
     private String organizationFullName;//组织
-    private String portraitCode;//画像编码
-    private String portraitName;//画像名称
     private int fieldWeight;//字段权重 用于控制页面显示顺序
-
+    private Long unitCodeId;//画像编码主键id
     public MarketingOrganizationPortrait() {
     }
 
@@ -28,23 +26,15 @@ public class MarketingOrganizationPortrait {
         this.organizationId = organizationId;
     }
 
-    public String getPortraitCode() {
-        return portraitCode;
-    }
+    public Long getUnitCodeId() {
+		return unitCodeId;
+	}
 
-    public void setPortraitCode(String portraitCode) {
-        this.portraitCode = portraitCode;
-    }
+	public void setUnitCodeId(Long unitCodeId) {
+		this.unitCodeId = unitCodeId;
+	}
 
-    public String getPortraitName() {
-        return portraitName;
-    }
-
-    public void setPortraitName(String portraitName) {
-        this.portraitName = portraitName;
-    }
-
-    public String getOrganizationFullName() {
+	public String getOrganizationFullName() {
         return organizationFullName;
     }
 
