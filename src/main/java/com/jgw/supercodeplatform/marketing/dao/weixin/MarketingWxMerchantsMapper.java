@@ -16,7 +16,7 @@ public interface MarketingWxMerchantsMapper {
 	@Insert(" INSERT INTO marketing_wx_merchants(Mchid,MchAppid,MerchantName,MerchantKey,"
 			+ " CertificateAddress,CertificatePassword,OrganizationId,OrganizatioIdlName,MerchantSecret) "
 			+ " VALUES(#{mchid},#{mchAppid},#{merchantName},#{merchantKey},#{certificateAddress},"
-			+ "#{certificatePassword},#{organizationId},#{organizatioIdlName},#{merchantSecret} "
+			+ "#{certificatePassword},#{organizationId},#{organizatioIdlName},#{merchantSecret}"
 			+ ")")
 	int addWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam);
 

@@ -20,7 +20,8 @@ public class MarketingOrganizationPortraitListParam {
     private int fieldWeight;//字段权重 用于控制页面显示顺序
     @ApiModelProperty(value = "类型")
     private int typeId;//类型
-
+    @ApiModelProperty(value = "统一编码表主键id")
+    private Long unitCodeId;
     public MarketingOrganizationPortraitListParam() {
     }
 
@@ -79,4 +80,13 @@ public class MarketingOrganizationPortraitListParam {
 	public void setTypeId(int typeId) {
         this.typeId = typeId;
     }
+
+	public Long getUnitCodeId() {
+		return unitCodeId;
+	}
+
+	public void setUnitCodeId(Long unitCodeId) {
+		this.unitCodeId = unitCodeId;
+	}
+	
 }
