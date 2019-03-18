@@ -136,7 +136,7 @@ public class MarketingActivitySetService  {
 		}else {
 			Set<String> set = new HashSet<String>();
 			for (MarketingPrizeTypeParam prizeTypeParam:mPrizeTypeParams){
-				Byte randomAmont=prizeTypeParam.getRandomAmount();
+				Byte randomAmont=prizeTypeParam.getIsRrandomMoney();
 				if (null==randomAmont) {
 					throw new SuperCodeException("是否固定金额不能为空", 500);
 				}else if (randomAmont.equals((byte)0)) {
@@ -163,7 +163,7 @@ public class MarketingActivitySetService  {
 				}
 				set.add(prizeTypeParam.getPrizeTypeName());
 			}
-			if (set.size()>1) {
+			if (set.size()<mPrizeTypeParams.size()) {
 				throw new SuperCodeException("奖项名称不能重复", 500);
 			}
 		}
@@ -276,7 +276,7 @@ public class MarketingActivitySetService  {
 			mPrizeType.setPrizeAmount(marketingPrizeTypeParam.getPrizeAmount());
 			mPrizeType.setPrizeProbability(prizeProbability);
 			mPrizeType.setPrizeTypeName(marketingPrizeTypeParam.getPrizeTypeName());
-			mPrizeType.setRandomAmount(marketingPrizeTypeParam.getRandomAmount());
+			mPrizeType.setIsRrandomMoney(marketingPrizeTypeParam.getIsRrandomMoney());
 			mPrizeType.setRealPrize((byte) 1);
 			mList.add(mPrizeType);
 			sumprizeProbability+=prizeProbability;
@@ -290,7 +290,7 @@ public class MarketingActivitySetService  {
 			NoReal.setPrizeAmount(0);
 			NoReal.setPrizeProbability(i);
 			NoReal.setPrizeTypeName("未中奖");
-			NoReal.setRandomAmount((byte) 0);
+			NoReal.setIsRrandomMoney((byte) 0);
 			NoReal.setRealPrize((byte) 0);
 			mList.add(NoReal);
 		}

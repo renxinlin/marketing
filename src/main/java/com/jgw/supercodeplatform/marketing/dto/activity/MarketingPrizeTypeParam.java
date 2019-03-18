@@ -19,8 +19,8 @@ public class MarketingPrizeTypeParam {
     private Integer prizeProbability;//中奖几率
 	@ApiModelProperty(value = "奖品类型名称",name = "prizeTypeName",  example = "一等奖")
     private String prizeTypeName;//奖品类型名称
-	@ApiModelProperty(value = "是否随机金额 1随机 0固定",name = "randomAmount",  example = "1")
-    private Byte randomAmount;//是否随机金额 1随机 0固定
+	@ApiModelProperty(value = "是否随机金额 1随机 0固定",name = "isRrandomMoney",  example = "1")
+    private Byte isRrandomMoney;//是否随机金额 1随机 0固定
 	@ApiModelProperty(value = "随机金额低取值",name = "lowRand",  example = "1")
     private Integer lowRand;
 	@ApiModelProperty(value = "随机金额高取值",name = "highRand",  example = "100")
@@ -50,12 +50,6 @@ public class MarketingPrizeTypeParam {
 	public void setPrizeTypeName(String prizeTypeName) {
 		this.prizeTypeName = prizeTypeName;
 	}
-	public Byte getRandomAmount() {
-		return randomAmount;
-	}
-	public void setRandomAmount(Byte randomAmount) {
-		this.randomAmount = randomAmount;
-	}
 	public Integer getLowRand() {
 		return lowRand;
 	}
@@ -67,6 +61,12 @@ public class MarketingPrizeTypeParam {
 	}
 	public void setHighRand(Integer highRand) {
 		this.highRand = highRand;
+	}
+	public Byte getIsRrandomMoney() {
+		return isRrandomMoney;
+	}
+	public void setIsRrandomMoney(Byte isRrandomMoney) {
+		this.isRrandomMoney = isRrandomMoney;
 	}
 	
 }

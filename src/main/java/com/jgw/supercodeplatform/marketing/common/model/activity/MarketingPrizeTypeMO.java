@@ -16,7 +16,7 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
     private Integer prizeAmount;//金额数量,类型跟微信接口保持一致
     private Integer prizeProbability;//中奖几率
     private String prizeTypeName;//奖品类型名称
-    private Byte randomAmount;//是否随机金额 1随机 0固定
+    private Byte isRrandomMoney;//是否随机金额 1随机 0固定
     private long totalNum;//当前奖次按照中奖率计算一共该中奖的码数量
     private long winingNum;//已中奖数
     private Byte realPrize;//是否由用户创建的真实奖次
@@ -52,13 +52,13 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 	public void setPrizeTypeName(String prizeTypeName) {
 		this.prizeTypeName = prizeTypeName;
 	}
-	public Byte getRandomAmount() {
-		return randomAmount;
-	}
-	public void setRandomAmount(Byte randomAmount) {
-		this.randomAmount = randomAmount;
-	}
 
+	public Byte getIsRrandomMoney() {
+		return isRrandomMoney;
+	}
+	public void setIsRrandomMoney(Byte isRrandomMoney) {
+		this.isRrandomMoney = isRrandomMoney;
+	}
 	public long getTotalNum() {
 		return totalNum;
 	}
@@ -130,7 +130,7 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 				.append("activitySetId", activitySetId)
 				.append("该奖次一共该中奖码数量", totalNum)
 				.append("activitySetId", activitySetId)
-				.append("randomAmount", randomAmount)
+				.append("isRrandomMoney", isRrandomMoney)
 				.toString();
 	}
 	

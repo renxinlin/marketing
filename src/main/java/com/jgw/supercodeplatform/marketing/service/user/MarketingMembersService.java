@@ -487,7 +487,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			mo.setPrizeAmount(marketingPrizeType.getPrizeAmount());
 			mo.setPrizeProbability(probability);
 			mo.setPrizeTypeName(marketingPrizeType.getPrizeTypeName());
-			mo.setRandomAmount(marketingPrizeType.getRandomAmount());
+			mo.setIsRrandomMoney(marketingPrizeType.getIsRrandomMoney());
 			mo.setWiningNum(marketingPrizeType.getWiningNum()==null?0L:marketingPrizeType.getWiningNum());
 			mo.setLowRand(marketingPrizeType.getLowRand());
 		    mo.setHighRand(marketingPrizeType.getHighRand());
@@ -559,7 +559,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 		}else if (realPrize.equals((byte)1)) {
 			Integer amount=mPrizeTypeMO.getPrizeAmount();
-			Byte randAmount=mPrizeTypeMO.getRandomAmount();
+			Byte randAmount=mPrizeTypeMO.getIsRrandomMoney();
 			//如果是随机金额则生成随机金额
 			if (randAmount.equals((byte)1)) {
 				int min=mPrizeTypeMO.getLowRand();

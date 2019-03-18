@@ -12,7 +12,7 @@ public class MarketingPrizeType {
     private Integer prizeAmount;//金额数量,类型跟微信接口保持一致
     private Integer prizeProbability;//中奖几率
     private String prizeTypeName;//奖品类型名称
-    private Byte randomAmount;//是否随机金额 1随机 0固定
+    private Byte isRrandomMoney;//是否随机金额 1随机 0固定
     private Long winingNum;//已中奖数
     private Byte realPrize;//是否由用户创建的真实奖次
     private Integer lowRand;
@@ -47,12 +47,6 @@ public class MarketingPrizeType {
 	public void setPrizeTypeName(String prizeTypeName) {
 		this.prizeTypeName = prizeTypeName;
 	}
-	public Byte getRandomAmount() {
-		return randomAmount;
-	}
-	public void setRandomAmount(Byte randomAmount) {
-		this.randomAmount = randomAmount;
-	}
 	public Long getWiningNum() {
 		return winingNum;
 	}
@@ -76,6 +70,12 @@ public class MarketingPrizeType {
 	}
 	public void setHighRand(Integer highRand) {
 		this.highRand = highRand;
+	}
+	public Byte getIsRrandomMoney() {
+		return isRrandomMoney;
+	}
+	public void setIsRrandomMoney(Byte isRrandomMoney) {
+		this.isRrandomMoney = isRrandomMoney;
 	}
    
 }

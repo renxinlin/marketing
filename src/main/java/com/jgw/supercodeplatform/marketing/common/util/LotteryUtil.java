@@ -31,7 +31,7 @@ public class LotteryUtil {
 			mo.setPrizeAmount(marketingPrizeType.getPrizeAmount());
 			mo.setPrizeProbability(probability);
 			mo.setPrizeTypeName(marketingPrizeType.getPrizeTypeName());
-			mo.setRandomAmount(marketingPrizeType.getRandomAmount());
+			mo.setIsRrandomMoney(marketingPrizeType.getIsRrandomMoney());
 			mo.setWiningNum(marketingPrizeType.getWiningNum()==null?0L:marketingPrizeType.getWiningNum());
 			mo.setLowRand(marketingPrizeType.getLowRand());
 		    mo.setHighRand(marketingPrizeType.getHighRand());

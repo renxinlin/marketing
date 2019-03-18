@@ -9,16 +9,16 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 @Mapper
 public interface MarketingPrizeTypeMapper {
 
-	String allFields =" Id id,ActivitySetId activitySetId,PrizeTypeName prizeTypeName,PrizeAmount prizeAmount,PrizeProbability prizeProbability,RandomAmount randomAmount,"
+	String allFields =" Id id,ActivitySetId activitySetId,PrizeTypeName prizeTypeName,PrizeAmount prizeAmount,PrizeProbability prizeProbability,IsRrandomMoney isRrandomMoney,"
 			+"WiningNum winingNum,RealPrize realPrize,LowRand lowRand,HighRand highRand ";
 
 
 
 	@Insert({
 			"<script>",
-			"INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,RandomAmount,WiningNum,RealPrize,LowRand,HighRand ) VALUES ",
+			"INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,IsRrandomMoney,WiningNum,RealPrize,LowRand,HighRand ) VALUES ",
 			"<foreach collection='mList' item='mPrize' index='index' separator=','>",
-			"(#{mPrize.activitySetId},#{mPrize.prizeTypeName},#{mPrize.prizeAmount},#{mPrize.prizeProbability},#{mPrize.randomAmount},#{mPrize.winingNum},"
+			"(#{mPrize.activitySetId},#{mPrize.prizeTypeName},#{mPrize.prizeAmount},#{mPrize.prizeProbability},#{mPrize.isRrandomMoney},#{mPrize.winingNum},"
 			+ "#{mPrize.realPrize},#{mPrize.lowRand},#{mPrize.highRand})",
 			"</foreach>",
 			"</script>"
@@ -38,7 +38,7 @@ public interface MarketingPrizeTypeMapper {
 			+ " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> ActivitySetId = #{activitySetId} ,</if> "
 			+ " <if test='prizeAmount !=null and prizeAmount != &apos;&apos; '> PrizeAmount = #{prizeAmount} ,</if> "
 			+ " <if test='prizeProbability !=null and prizeProbability != &apos;&apos; '> PrizeProbability = #{prizeProbability} ,</if> "
-			+ " <if test='randomAmount !=null and randomAmount != &apos;&apos; '> RandomAmount = #{randomAmount} ,</if> "
+			+ " <if test='isRrandomMoney !=null and isRrandomMoney != &apos;&apos; '> IsRrandomMoney = #{isRrandomMoney} ,</if> "
 			+ " <if test='winingNum !=null and winingNum != &apos;&apos; '> WiningNum = #{winingNum} ,</if> "
 			+ " <if test='realPrize !=null and realPrize != &apos;&apos; '> RealPrize = #{realPrize} ,</if> "
 			+ " <if test='lowRand !=null and lowRand != &apos;&apos; '> LowRand = #{lowRand} ,</if> "

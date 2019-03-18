@@ -19,7 +19,7 @@ import io.swagger.annotations.ApiModelProperty;
  **/
 @ApiModel(value = "搜索model")
 public class DaoSearch {
-    @ApiModelProperty(name = "flag", value = "搜索标记;0-高级搜索-使用and连接；1-普通搜索-使用or连接,为空时表示无条件查询", example = "1", required = false,hidden=false)
+    @ApiModelProperty(name = "flag", value = "搜索标记;0-高级搜索-使用and连接；1-普通搜索-使用or连接,为空时表示无条件查询", example = "1", required = false,hidden=true)
     private Integer flag;
     @ApiModelProperty(name = "search", value = "普通搜索值", example = "dsad")
     private String search;
