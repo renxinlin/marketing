@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -73,8 +74,8 @@ public class WeixinSNBindController extends CommonUtil {
 	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
 	public RestResult<String> bind(@RequestBody MarketingWxMerchantsParam wxMerchantsParam, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		Long id = wxMerchantsParam.getId();
-		if (null == id) {
+		String organizationId = wxMerchantsParam.getOrganizationId();
+		if (StringUtils.isEmpty(organizationId)) {
 			marketingWxMerchantsService.addWxMerchants(wxMerchantsParam);
 		} else {
 			marketingWxMerchantsService.updateWxMerchants(wxMerchantsParam);
