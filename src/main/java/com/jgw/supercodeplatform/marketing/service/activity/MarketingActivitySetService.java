@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,6 +175,20 @@ public class MarketingActivitySetService  {
 		if (null!=existmActivitySet) {
 			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
 		}
+
+		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
+		String activityEndDate = existmActivitySet.getActivityEndDate();
+		String activityStartDate = existmActivitySet.getActivityStartDate();
+		try {
+			Date endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd HH:mm:ss");
+			Date startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd HH:mm:ss");
+			if(startDate.after(endDate)){
+				throw new SuperCodeException("日期起止时间不合法",500);
+			}
+		}catch (Exception e){
+			throw new SuperCodeException("日期起止时间不合法",500);
+		}
+
 		mActivitySet.setActivityStatus(1);
 		mActivitySet.setOrganizationId(organizationId);
 		mActivitySet.setOrganizatioIdlName(organizationName);
