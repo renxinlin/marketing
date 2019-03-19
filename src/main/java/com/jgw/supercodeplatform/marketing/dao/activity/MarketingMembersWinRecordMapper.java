@@ -49,6 +49,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 					"</otherwise>" +
 					"</choose>" +
 					"<if test='organizationId !=null and organizationId != &apos;&apos; '> AND mmw.OrganizationId = #{organizationId}</if>"+
+					"<if test='activitySetId !=null and activitySetId != &apos;&apos; '> AND mmw.ActivitySetId = #{activitySetId}</if>"+
 					"</where>";
 
 	
