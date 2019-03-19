@@ -215,31 +215,20 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * @return
      */
     public int updateMembers(MarketingMembersUpdateParam membersUpdateParam){
-        Map<String,Object> map = new HashMap<>();
-        map.put("mobile",membersUpdateParam.getMobile());
-        map.put("state",membersUpdateParam.getState());
-        map.put("isRegistered",membersUpdateParam.getIsRegistered());
-        map.put("userId",membersUpdateParam.getUserId());
-        map.put("userName",membersUpdateParam.getUserName());
-        map.put("sex",membersUpdateParam.getSex());
-        map.put("birthday",membersUpdateParam.getBirthday());
-        map.put("cityCode",membersUpdateParam.getCityCode());
-        map.put("customerName",membersUpdateParam.getCustomerName());
-        map.put("customerCode",membersUpdateParam.getCustomerId());
-        map.put("babyBirthday",membersUpdateParam.getBabyBirthday());
-        Map<String,Object> areaCode = new HashMap<>();
-        areaCode.put("areaCode",map.get("cityCode").toString());
-        MarketingAdministrativeCode marketingAdministrativeCode = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
-        map.put("cityName",marketingAdministrativeCode.getCityName());
-        areaCode.put("areaCode",marketingAdministrativeCode.getParentAreaCode());
-        MarketingAdministrativeCode marketingAdministrativeCode2 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
-        map.put("countyName",marketingAdministrativeCode2.getCityName());
-        map.put("countyCode",marketingAdministrativeCode2.getAreaCode());
-        areaCode.put("areaCode",marketingAdministrativeCode2.getParentAreaCode());
-        MarketingAdministrativeCode marketingAdministrativeCode3 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
-        map.put("provinceName",marketingAdministrativeCode3.getCityName());
-        map.put("provinceCode",marketingAdministrativeCode3.getAreaCode());
-        return marketingMembersMapper.updateMembers(map);
+    	MarketingMembers members=new MarketingMembers();
+    	members.setBabyBirthday(membersUpdateParam.getBabyBirthday());
+    	members.setBirthday(membersUpdateParam.getBirthday());
+    	members.setCustomerId(membersUpdateParam.getCustomerId());
+    	members.setCustomerName(membersUpdateParam.getCustomerName());
+    	members.setMobile(membersUpdateParam.getMobile());
+    	members.setOpenid(membersUpdateParam.getOpenid());
+    	members.setpCCcode(membersUpdateParam.getpCCcode());
+    	members.setSex(membersUpdateParam.getSex());
+    	members.setState(membersUpdateParam.getState());
+    	members.setWxName(membersUpdateParam.getWxName());
+    	members.setUserName(membersUpdateParam.getUserName());
+    	members.setId(membersUpdateParam.getId());
+        return marketingMembersMapper.update(members);
     }
 
     /**
@@ -248,9 +237,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * @return
      * @throws SuperCodeException 
      */
-    public int updateMembersStatus(Map<String,Object> map) throws SuperCodeException{
-    	map.put("organizationId", commonUtil.getOrganizationId());
-        return marketingMembersMapper.updateMembers(map);
+    public int updateMembersStatus(Long id,int status) throws SuperCodeException{
+        return marketingMembersMapper.updateMembersStatus(id,status);
     }
 
 	public void addMember(MarketingMembers members) {
@@ -344,10 +332,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		//3、如果根据登录手机号无法查询到记录，则说明该手机号未进行过注册也为进行过绑定。可能情况：
 		 //3.1该openid对应的用户之前绑定过手机号但是想换手机号了、3.2该openid用户从未绑定过手机号 
 		if (null==marketingMembersByPhone) {
-		    Map<String,Object> updatemap=new HashMap<String, Object>();
-		    updatemap.put("id", userIdByOpenId);
-		    updatemap.put("mobile", mobile);
-			marketingMembersMapper.updateMembers(updatemap);
+			MarketingMembers members=new MarketingMembers();
+			members.setId(userIdByOpenId);
+			members.setMobile(mobile);
+			marketingMembersMapper.update(members);
 			if (mPortraits.size()==1) {
 				//如果企业画像只有一个那默认为手机号就不需要再去完善信息
 				h5LoginVO.setRegistered(1);
@@ -371,12 +359,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					//如果之前该手机号绑定过openid则更新之前的中奖纪录，没有的话就不更新哦
 					mWinRecordMapper.updateOpenIdAndMobileByOpenIdAndOrgId(openIdByOpendId,mobile,organizationId,openIdByPhone);
 				}
-                //更新手机号对应的记录设置微信openid及昵称
-				Map<String,Object> map=new HashMap<String, Object>();
-				map.put("id", userIdByPhone);
-				map.put("openid", marketingMembersByOpenId.getOpenid());
-				map.put("wxName", marketingMembersByOpenId.getWxName());
-				marketingMembersMapper.updateMembers(map);
+				//更新手机号对应的记录设置微信openid及昵称
+				MarketingMembers members=new MarketingMembers();
+				members.setId(userIdByPhone);
+				members.setOpenid( marketingMembersByOpenId.getOpenid());
+				members.setWxName(marketingMembersByOpenId.getWxName());
+				marketingMembersMapper.update(members);
 				
 				//删除openid查出的用户
 				marketingMembersMapper.deleteById(userIdByOpenId);

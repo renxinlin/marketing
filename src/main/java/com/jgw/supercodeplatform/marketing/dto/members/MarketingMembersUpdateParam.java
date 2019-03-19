@@ -22,24 +22,9 @@ public class MarketingMembersUpdateParam {
 
     @ApiModelProperty(value = "生日")
     private String birthday;//生日
-
-    @ApiModelProperty(value = "省编码")
-    private String provinceCode;//省编码
-
-    @ApiModelProperty(value = "县编码")
-    private String countyCode;//县编码
-
-    @ApiModelProperty(value = "市编码")
-    private String cityCode;//市编码
-
-    @ApiModelProperty(value = "省名称")
-    private String provinceName;//省名称
-
-    @ApiModelProperty(value = "县名称")
-    private String countyName;//县名称
-
-    @ApiModelProperty(value = "市名称")
-    private String cityName;//市名称
+    
+    @ApiModelProperty(value = "省市区及编码字段")
+    private String pCCcode;
 
     @ApiModelProperty(value = "状态(1、 表示正常，0 表示下线)")
     private Byte state;//状态(1、 表示正常，0 表示下线)
@@ -100,13 +85,6 @@ public class MarketingMembersUpdateParam {
         this.birthday = birthday;
     }
 
-    public String getCityCode() {
-        return cityCode;
-    }
-
-    public void setCityCode(String cityCode) {
-        this.cityCode = cityCode;
-    }
 
     public String getCustomerName() {
         return customerName;
@@ -156,45 +134,6 @@ public class MarketingMembersUpdateParam {
         this.isRegistered = isRegistered;
     }
 
-    public String getProvinceCode() {
-        return provinceCode;
-    }
-
-    public void setProvinceCode(String provinceCode) {
-        this.provinceCode = provinceCode;
-    }
-
-    public String getCountyCode() {
-        return countyCode;
-    }
-
-    public void setCountyCode(String countyCode) {
-        this.countyCode = countyCode;
-    }
-
-    public String getProvinceName() {
-        return provinceName;
-    }
-
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName;
-    }
-
-    public String getCountyName() {
-        return countyName;
-    }
-
-    public void setCountyName(String countyName) {
-        this.countyName = countyName;
-    }
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
 
 	public Long getId() {
 		return id;
@@ -226,6 +165,14 @@ public class MarketingMembersUpdateParam {
 
 	public void setWxName(String wxName) {
 		this.wxName = wxName;
+	}
+
+	public String getpCCcode() {
+		return pCCcode;
+	}
+
+	public void setpCCcode(String pCCcode) {
+		this.pCCcode = pCCcode;
 	}
     
 }

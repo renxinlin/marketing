@@ -78,10 +78,7 @@ public class MarketingMembersController extends CommonUtil {
     	if (null==id) {
 			throw new SuperCodeException("id不能为空", 500);
 		}
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", id);
-        map.put("state","1");
-        marketingMembersService.updateMembersStatus(map);
+        marketingMembersService.updateMembersStatus(id,1);
         return new RestResult(200, "success", null);
     }
 
@@ -96,10 +93,7 @@ public class MarketingMembersController extends CommonUtil {
     	if (null==id) {
 			throw new SuperCodeException("id不能为空", 500);
 		}
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", id);
-        map.put("state","0");
-        marketingMembersService.updateMembersStatus(map);
+        marketingMembersService.updateMembersStatus(id,0);
         return new RestResult(200, "success", null);
     }
 
