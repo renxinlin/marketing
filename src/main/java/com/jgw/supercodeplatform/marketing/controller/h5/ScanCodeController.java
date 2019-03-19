@@ -58,11 +58,11 @@ public class ScanCodeController {
      */
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
-    public String bind(String codeId,String codeTypeId,String productId,String productBatchId) throws Exception {
-    	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(codeId,codeTypeId,productId,productBatchId);
+    public String bind(String outerCodeId,String codeTypeId,String productId,String productBatchId) throws Exception {
+    	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId);
     	if (restResult.getState()==500) {
     		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
-    		 return "redirect:"+h5pageUrl+"?success=0&msg="+restResult.getMsg();
+    		 return "redirect:"+h5pageUrl+"?success=0&msg="+new String(restResult.getMsg().getBytes(), "utf-8");
 		}
     	String	wxstate=commonUtil.getUUID();
     	ScanCodeInfoMO sCodeInfoMO=restResult.getResults();

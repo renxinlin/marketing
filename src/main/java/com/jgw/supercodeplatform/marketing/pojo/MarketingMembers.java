@@ -10,12 +10,6 @@ public class MarketingMembers {
     private String userName;//用户姓名
     private String sex;//性别
     private String birthday;//生日
-    private String provinceCode;//省编码
-    private String countyCode;//县编码
-    private String cityCode;//市编码
-    private String provinceName;//省名称
-    private String countyName;//县名称
-    private String cityName;//市名称
     private String registDate;//注册时间
     private Byte state;//状态(1、 表示正常，0 表示下线)
     private String organizationId;//组织Id
@@ -26,16 +20,18 @@ public class MarketingMembers {
     private String customerId;//门店编码
     private String babyBirthday;//宝宝生日
     private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
-
+    private String pCCcode;
 
     public MarketingMembers() {
     }
+    public String getpCCcode() {
+		return pCCcode;
+	}
 
-
-
-
-
-    public String getMobile() {
+	public void setpCCcode(String pCCcode) {
+		this.pCCcode = pCCcode;
+	}
+	public String getMobile() {
         return mobile;
     }
 
@@ -67,53 +63,6 @@ public class MarketingMembers {
         this.birthday = birthday;
     }
 
-    public String getProvinceCode() {
-        return provinceCode;
-    }
-
-    public void setProvinceCode(String provinceCode) {
-        this.provinceCode = provinceCode;
-    }
-
-    public String getCountyCode() {
-        return countyCode;
-    }
-
-    public void setCountyCode(String countyCode) {
-        this.countyCode = countyCode;
-    }
-
-    public String getCityCode() {
-        return cityCode;
-    }
-
-    public void setCityCode(String cityCode) {
-        this.cityCode = cityCode;
-    }
-
-    public String getProvinceName() {
-        return provinceName;
-    }
-
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName;
-    }
-
-    public String getCountyName() {
-        return countyName;
-    }
-
-    public void setCountyName(String countyName) {
-        this.countyName = countyName;
-    }
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
 
     public String getRegistDate() {
         return registDate;
