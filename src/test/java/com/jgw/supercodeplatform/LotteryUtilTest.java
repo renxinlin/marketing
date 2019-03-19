@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,12 @@ public class LotteryUtilTest {
 		return marketingPrizeTypeMOs;
 	}
 
-	public static void main(String[] args) throws SuperCodeException {
+	public static void main(String[] args) throws SuperCodeException, UnsupportedEncodingException {
+		
+		String n="%E6%B4%BB%E5%8A%A8%E5%B7%B2%E5%81%9C%E6%AD%A2";
+		String nn=URLDecoder.decode(n, "utf-8");
+		String nnn=URLDecoder.decode(nn, "utf-8");
+		System.out.println(nnn);
 		List<MarketingPrizeTypeMO> marketingPrizeTypeMOs = init();
 		long sum=0;
 		int i=0;
