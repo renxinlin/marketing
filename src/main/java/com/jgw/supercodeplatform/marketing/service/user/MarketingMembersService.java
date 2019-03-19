@@ -246,8 +246,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * 修改会员状态
      * @param map
      * @return
+     * @throws SuperCodeException 
      */
-    public int updateMembersStatus(Map<String,Object> map){
+    public int updateMembersStatus(Map<String,Object> map) throws SuperCodeException{
+    	map.put("organizationId", commonUtil.getOrganizationId());
         return marketingMembersMapper.updateMembers(map);
     }
 

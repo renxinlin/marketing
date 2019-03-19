@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
@@ -73,14 +74,14 @@ public class MarketingMembersController extends CommonUtil {
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> enableStatus(
             @ApiJsonObject(name = "enableMemStatus", value = {
-                    @ApiJsonProperty(key = "userId", example = "64b379cd47c843458378f479a115c322", description = "用户id,必需"),
-                    @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需")
+                    @ApiJsonProperty(key = "id", example = "1", description = "用户id,必需"),
             })
-            @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "userId","organizationId");
+            @RequestBody Long id) throws Exception {
+    	if (null==id) {
+			throw new SuperCodeException("id不能为空", 500);
+		}
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("userId", params.get("userId").toString());
-        map.put("organizationId", params.get("organizationId").toString());
+        map.put("id", id);
         map.put("state","1");
         marketingMembersService.updateMembersStatus(map);
         return new RestResult(200, "success", null);
@@ -92,14 +93,14 @@ public class MarketingMembersController extends CommonUtil {
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> disableStatus(
             @ApiJsonObject(name = "disableMemStatus", value = {
-                    @ApiJsonProperty(key = "userId", example = "64b379cd47c843458378f479a115c322", description = "用户id,必需"),
-                    @ApiJsonProperty(key = "organizationId", example = "dsadsad165156163a1sddasd", description = "组织Id,必需")
+                    @ApiJsonProperty(key = "id", example = "1", description = "用户id,必需"),
             })
-            @RequestBody Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "userId","organizationId");
+           @RequestBody Long id ) throws Exception {
+    	if (null==id) {
+			throw new SuperCodeException("id不能为空", 500);
+		}
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("userId", params.get("userId").toString());
-        map.put("organizationId", params.get("organizationId").toString());
+        map.put("id", id);
         map.put("state","0");
         marketingMembersService.updateMembersStatus(map);
         return new RestResult(200, "success", null);
