@@ -46,15 +46,14 @@ public class MarketingMembersController extends CommonUtil {
     }
 
 
-    @RequestMapping(value = "/getMenberByUserId",method = RequestMethod.GET)
+    @RequestMapping(value = "/getMenberById",method = RequestMethod.GET)
     @ApiOperation(value = "根据会员id获取会员详细信息", notes = "返回会员详细信息")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-            @ApiImplicitParam(name = "userId", paramType = "query", defaultValue = "ad156wd15d61a56d1w56d1d1", value = "用户Id,必需", required = true),
+            @ApiImplicitParam(name = "id", paramType = "query", defaultValue = "1", value = "用户Id,必需", required = true),
     })
-    public RestResult<String> getUserMember(@ApiIgnore @RequestParam Map<String, Object> params) throws Exception {
-        validateRequestParamAndValueNotNull(params, "userId");
-        return new RestResult(200, "success",marketingMembersService.getMemberById(params));
+    public RestResult<String> getUserMember(Long id) throws Exception {
+        return new RestResult(200, "success",marketingMembersService.getMemberById(id));
     }
 
 
@@ -69,14 +68,13 @@ public class MarketingMembersController extends CommonUtil {
 
 
 
-    @RequestMapping(value = "/enable/status", method = RequestMethod.PUT)
+    @RequestMapping(value = "/enable/status", method = RequestMethod.GET)
     @ApiOperation(value = "启用会员", notes = "是否启用成功")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> enableStatus(
-            @ApiJsonObject(name = "enableMemStatus", value = {
-                    @ApiJsonProperty(key = "id", example = "1", description = "用户id,必需"),
-            })
-            @RequestBody Long id) throws Exception {
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
+        @ApiImplicitParam(name = "id", paramType = "query", defaultValue = "1", value = "用户Id,必需", required = true),
+})
+    public RestResult<String> enableStatus(Long id) throws Exception {
     	if (null==id) {
 			throw new SuperCodeException("id不能为空", 500);
 		}
@@ -88,14 +86,13 @@ public class MarketingMembersController extends CommonUtil {
     }
 
 
-    @RequestMapping(value = "/disable/status", method = RequestMethod.PUT)
+    @RequestMapping(value = "/disable/status", method = RequestMethod.GET)
     @ApiOperation(value = "禁用会员", notes = "是否禁用成功")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> disableStatus(
-            @ApiJsonObject(name = "disableMemStatus", value = {
-                    @ApiJsonProperty(key = "id", example = "1", description = "用户id,必需"),
-            })
-           @RequestBody Long id ) throws Exception {
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
+        @ApiImplicitParam(name = "id", paramType = "query", defaultValue = "1", value = "用户Id,必需", required = true),
+})
+    public RestResult<String> disableStatus(Long id ) throws Exception {
     	if (null==id) {
 			throw new SuperCodeException("id不能为空", 500);
 		}

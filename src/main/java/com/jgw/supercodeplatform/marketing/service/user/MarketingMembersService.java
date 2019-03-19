@@ -262,10 +262,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * @return
      * @throws SuperCodeException 
      */
-    public MarketingMembers getMemberById(Map<String,Object> map) throws SuperCodeException{
-        String userId = map.get("userId").toString();
-        String organizationId = getOrganizationId();
-        return marketingMembersMapper.getMemberById(userId,organizationId);
+    public MarketingMembers getMemberById(Long id) throws SuperCodeException{
+        return marketingMembersMapper.getMemberById(id);
     }
 
 	public MarketingMembers selectByOpenIdAndOrgId(String openid, String organizationId) {
