@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
+import io.swagger.annotations.ApiImplicitParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,7 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 	////////////////////////////////////////////////
 	@RequestMapping(value = "/page/v1",method = RequestMethod.POST)
 	@ApiOperation(value = "中奖纪录列表V1.1", notes = "")
-	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+	@ApiImplicitParams(value= { @ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token") 	})
 	public RestResult<PageResults<List<MarketingMembersWinRecordListReturn>>> listWithOrganization(@RequestBody MarketingMembersWinRecordListParam winRecordListParam) throws Exception {
 		// 查看当前用户所在组织的所有会员的中奖信息
 		RestResult<PageResults<List<MarketingMembersWinRecordListReturn>>> restResult=new RestResult<PageResults<List<MarketingMembersWinRecordListReturn>>>();
@@ -92,14 +93,19 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 
 
 	@RequestMapping(value ="/export/v1",method = RequestMethod.GET)
-	@ApiOperation(value = "导出中奖纪录V1.1", notes = "")
-	public void littleWinRecordOutExcelWithOrganization( HttpServletResponse response) throws SuperCodeException, UnsupportedEncodingException, Exception {
+	@ApiOperation(value = "根据活动Id导出中奖纪录V1.1,没有活动ID可查询用户的所有会员中奖", notes = "")
+	@ApiImplicitParams(value= {
+			@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")
+			,@ApiImplicitParam(paramType="long",value = "活动主键id",name="activitySetId")
+  	})
+	public void littleWinRecordOutExcelWithOrganization( Long activitySetId) throws SuperCodeException, UnsupportedEncodingException, Exception {
 
 		// step-1: 参数设置
 		MarketingMembersWinRecordListParam winRecordListParam = new MarketingMembersWinRecordListParam();
 		winRecordListParam.setStartNumber(1);
 		winRecordListParam.setPageSize(Integer.MAX_VALUE);
 		winRecordListParam.setOrganizationId(getOrganizationId());
+		winRecordListParam.setActivitySetId(activitySetId);
 
 		// step-2: 获取结果
 		// 数据表中数据很大会导致内存问题;请求慢，excel打开慢等问题
