@@ -30,7 +30,7 @@ public class MarketingMembersFrontController extends CommonUtil {
     private MarketingMembersService marketingMembersService;
 
 
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @RequestMapping(value = "/login",method = RequestMethod.GET)
     @ApiOperation(value = "h5登录", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "手机号",name="mobile"),
     		@ApiImplicitParam(paramType="query",value = "活动设置id",name="wxstate"),
