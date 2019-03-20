@@ -5,9 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -26,7 +26,7 @@ import io.swagger.annotations.Api;
  * @author czm
  *
  */
-@RestController
+@Controller
 @RequestMapping("/marketing/front/auth")
 @Api(tags = "微信授权回调地址")
 public class WeixinAuthController {
