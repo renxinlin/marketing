@@ -77,7 +77,7 @@ public class ScanCodeController {
         logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
         
     	//微信授权需要对redirect_uri进行urlencode
-        String wholeUrl=wxauthRedirectUri+"/marketing/front/auth";
+        String wholeUrl=wxauthRedirectUri+"/marketing/front/auth/code";
     	String encoderedirectUri=URLEncoder.encode(wholeUrl, "utf-8");
         logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid());
     	
