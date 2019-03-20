@@ -177,8 +177,8 @@ public class MarketingActivitySetService  {
 		}
 
 		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
-		String activityEndDate = existmActivitySet.getActivityEndDate();
-		String activityStartDate = existmActivitySet.getActivityStartDate();
+		String activityEndDate = mActivitySet.getActivityEndDate();
+		String activityStartDate = mActivitySet.getActivityStartDate();
 		try {
 			Date endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd HH:mm:ss");
 			Date startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd HH:mm:ss");
