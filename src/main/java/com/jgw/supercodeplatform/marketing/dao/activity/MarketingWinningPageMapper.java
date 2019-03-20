@@ -20,7 +20,7 @@ public interface MarketingWinningPageMapper {
 	@Update(" <script>"
 			+ " UPDATE marketing_winning_page "
 			+ " <set>"
-			+ " <if test='loginType !=null and loginType != &apos;&apos; '> LoginType = #{loginType} ,</if> "
+			+ " <if test='loginType !=null   '> LoginType = #{loginType} ,</if> "
 			+ " <if test='templateId !=null and templateId != &apos;&apos; '> TemplateId = #{templateId} ,</if> "
 			+ " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> ActivitySetId = #{activitySetId} ,</if> "
 			+ " </set>"

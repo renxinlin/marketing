@@ -27,7 +27,7 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
     @Update(" <script>"
             + " UPDATE marketing_wx_trade_order "
             + " <set>"
-            + " <if test='tradeStatus !=null and tradeStatus != &apos;&apos; '> TradeStatus = #{tradeStatus} ,</if> "
+            + " <if test='tradeStatus !=null '> TradeStatus = #{tradeStatus} ,</if> "
             + " <if test='returnCode !=null and returnCode != &apos;&apos; '> ReturnCode = #{returnCode} ,</if> "
             + " <if test='returnMsg !=null and returnMsg != &apos;&apos; '> ReturnMsg = #{returnMsg} ,</if> "
             + " <if test='resultCode !=null and resultCode != &apos;&apos; '> ResultCode = #{resultCode} ,</if> "
