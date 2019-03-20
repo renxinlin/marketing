@@ -39,7 +39,7 @@ public class CommonController extends CommonUtil {
     private CommonService service;
 
 
-    @RequestMapping(value = "/sendPhoneCode",method = RequestMethod.POST)
+    @RequestMapping(value = "/sendPhoneCode",method = RequestMethod.GET)
     @ApiOperation(value = "发送手机验证码", notes = "")
     @ApiImplicitParam(name = "mobile", paramType = "query", defaultValue = "13925121452", value = "手机号", required = true)
     public RestResult<String> sendPhoneCode(@RequestParam String mobile) throws Exception {
