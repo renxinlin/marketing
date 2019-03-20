@@ -1,5 +1,9 @@
 package com.jgw.supercodeplatform;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,18 +14,24 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.SuperCodeMarketingApplication;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
-import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 
 @RunWith(SpringJUnit4ClassRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
 @SpringBootTest(classes = SuperCodeMarketingApplication.class) // 指定我们SpringBoot工程的Application启动类
@@ -33,6 +43,13 @@ private MarketingMembersWinRecordMapper mWinRecordMapper;
 
 @Autowired
 private RestTemplateUtil restTemplateUtil;
+
+@Autowired
+private RestTemplate restTemplate;
+
+@Value("${rest.user.url}")
+private String restUserUrl;
+
 @Value("${rest.codemanager.url}")
 private String codeManagerUrl;
 	@Test
@@ -57,5 +74,34 @@ private String codeManagerUrl;
 		System.out.println(body);
 	}
 	
+	@Test
+	public void test() throws IOException {
+		String url = restUserUrl+"/file/upload";
+		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<>();
+		File file=new File("H:\\test\\gg.jpg");
+
+		FileInputStream fis = new FileInputStream(file);
+		byte[] bytesArray = new byte[fis.available()];
+		fis.read(bytesArray); //read file into bytes[]
+		fis.close();
+
+		ByteArrayResource contentsAsResource = new ByteArrayResource(bytesArray) {
+		    @Override
+		    public String getFilename() {
+		        return "img";
+		    }
+		};
+		paramMap.add("file", contentsAsResource);
+		paramMap.add("name", "ss.jpg");
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("super-token", "d6303ff76b6743fc88ee25e4d74ead25");
+		headers.set("content-type", "multipart/form-data");
+        
+        HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(paramMap, headers);
+		ResponseEntity<String> data=restTemplate.exchange(url,
+				HttpMethod.POST, entity, String.class);
+//		JSONObject json = restTemplate.postForObject(httpMethod, paramMap, JSONObject.class);
+		System.out.println("post json : " + data);
+	}
 	
 }

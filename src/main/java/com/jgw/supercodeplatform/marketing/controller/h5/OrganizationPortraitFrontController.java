@@ -33,7 +33,7 @@ public class OrganizationPortraitFrontController  extends CommonUtil {
     @RequestMapping(value = "/getSelectedPor", method = RequestMethod.GET)
     @ApiOperation(value = "获取组织已选的画像编码", notes = "返回编码信息列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "wxstate", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "组织id", required = true)
+            @ApiImplicitParam(name = "wxstate", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "扫码唯一id", required = true)
     })
     public RestResult<List<MarketingOrganizationPortraitListParam>> getSelectedPortrait(String wxstate) throws Exception {
 		ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
@@ -51,7 +51,7 @@ public class OrganizationPortraitFrontController  extends CommonUtil {
     @RequestMapping(value = "/getUnselectedPor", method = RequestMethod.GET)
     @ApiOperation(value = "获取组织未选的画像编码", notes = "返回编码信息列表")
     @ApiImplicitParams({
-    	   @ApiImplicitParam(name = "wxstate", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "组织id", required = true)
+    	   @ApiImplicitParam(name = "wxstate", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "扫码唯一id", required = true)
     })
     public RestResult<String> getUnselectedPortrait(String wxstate) throws Exception {
 		ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);

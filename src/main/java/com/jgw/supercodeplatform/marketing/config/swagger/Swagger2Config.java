@@ -37,6 +37,19 @@ public class Swagger2Config {
                 .enable(enable);
     }
 
+    
+    @Bean("测试使用模块")
+    public Docket testApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("测试模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.test"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+    
     @Bean("营销活动模块")
     public Docket actApis() {
         return new Docket(DocumentationType.SWAGGER_2)

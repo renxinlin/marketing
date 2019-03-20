@@ -1,10 +1,15 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -130,4 +135,31 @@ public class RestTemplateUtil {
         return responseEntity;
     }
 	
+	public ResponseEntity<String> uploadInputtream(String url,InputStream inputStream,String name,Map<String, String> headerMap) throws FileNotFoundException, IOException {
+		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<>();
+		byte[] bytesArray = new byte[(int) inputStream.available()];
+		inputStream.read(bytesArray); //read file into bytes[]
+		inputStream.close();
+
+		ByteArrayResource contentsAsResource = new ByteArrayResource(bytesArray) {
+		    @Override
+		    public String getFilename() {
+		        return "img";
+		    }
+		};
+		paramMap.add("file", contentsAsResource);
+		paramMap.add("name", name);
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("content-type", "multipart/form-data");
+		if (null!=headerMap && !headerMap.isEmpty()) {
+			for(String key:headerMap.keySet()) {
+				headers.set(key, headerMap.get(key));
+			}
+		}
+        HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(paramMap, headers);
+		ResponseEntity<String> data=restTemplate.exchange(url,
+				HttpMethod.POST, entity, String.class);
+		 return data;
+	}
 }
