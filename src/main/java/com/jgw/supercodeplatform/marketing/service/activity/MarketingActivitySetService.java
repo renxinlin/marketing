@@ -114,7 +114,7 @@ public class MarketingActivitySetService  {
      * @return
      * @throws SuperCodeException 
      */
-	@Transactional
+	@Transactional(rollbackFor = SuperCodeException.class)
 	public RestResult<String> add(MarketingActivityCreateParam activitySetParam) throws SuperCodeException {
 		List<MarketingChannelParam> mChannelParams=activitySetParam.getmChannelParams();
 		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
@@ -179,9 +179,17 @@ public class MarketingActivitySetService  {
 		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
 		String activityEndDate = mActivitySet.getActivityEndDate();
 		String activityStartDate = mActivitySet.getActivityStartDate();
+  		Date endDate = null;
+		Date startDate = null;
 		try {
-			Date endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd HH:mm:ss");
-			Date startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd HH:mm:ss");
+			if(activityEndDate.length() == 10){
+				endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd");
+				startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd");
+			}else{
+				endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd HH:mm:ss");
+				startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd HH:mm:ss");
+			}
+
 			if(startDate.after(endDate)){
 				throw new SuperCodeException("日期起止时间不合法",500);
 			}
