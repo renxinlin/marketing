@@ -21,7 +21,7 @@ public class MarketingWxMerchantsParam {
     private String certificatePassword;//证书密码
     @ApiModelProperty(value = "公众号secret",name="merchantSecret",example="sssdd22")
     private String merchantSecret;//公众号secret
-    @ApiModelProperty(value = "组织id必须传",name="organizationId",example="sssdd22")
+    @ApiModelProperty(value = "组织id不需要传",name="organizationId",example="sssdd22")
     private String organizationId;//组织id
     @ApiModelProperty(value = "组织名称不需要传",name="organizatioIdlName",example="sssdd22",hidden=true)
     private String organizatioIdlName;//组织
