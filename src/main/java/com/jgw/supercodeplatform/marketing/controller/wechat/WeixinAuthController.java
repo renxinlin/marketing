@@ -106,7 +106,9 @@ public class WeixinAuthController {
         		marketingMembersService.addMember(members);
         	}
 		}
-        return  "redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId();
+//        String redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId();
+        String redirectUrl="redirect:http://192.168.10.78:7081/?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId();
+        return  redirectUrl;
     }
 
 }

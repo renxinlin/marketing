@@ -180,8 +180,8 @@ public class MarketingActivitySetService  {
 		String activityEndDate = mActivitySet.getActivityEndDate();
 		String activityStartDate = mActivitySet.getActivityStartDate();
 		try {
-			Date endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd HH:mm:ss");
-			Date startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd HH:mm:ss");
+			Date endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd");
+			Date startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd");
 			if(startDate.after(endDate)){
 				throw new SuperCodeException("日期起止时间不合法",500);
 			}
@@ -668,5 +668,4 @@ public class MarketingActivitySetService  {
 		}
        
 	}
-
 }
