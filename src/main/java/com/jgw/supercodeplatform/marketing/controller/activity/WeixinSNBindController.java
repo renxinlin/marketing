@@ -74,8 +74,19 @@ public class WeixinSNBindController extends CommonUtil {
 	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
 	public RestResult<String> bind(@RequestBody MarketingWxMerchantsParam wxMerchantsParam, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		String organizationId = wxMerchantsParam.getOrganizationId();
-		if (StringUtils.isEmpty(organizationId)) {
+
+		// 校验组织ID
+		String organizationId = getOrganizationId();
+		if(StringUtils.isEmpty(organizationId)){
+			return new RestResult<String>(500, "获取组织信息失败", null);
+		}
+		// 新增还是更新基于数据库是否存在
+		MarketingWxMerchants marketingWxMerchants = marketingWxMerchantsService.selectByOrganizationId(organizationId);
+		// 补充组织参数
+		wxMerchantsParam.setOrganizationId(organizationId);
+		wxMerchantsParam.setOrganizatioIdlName(getOrganization().getOrganizationFullName());
+		// 存储商户公众号信息
+		if (StringUtils.isEmpty(marketingWxMerchants)) {
 			marketingWxMerchantsService.addWxMerchants(wxMerchantsParam);
 		} else {
 			marketingWxMerchantsService.updateWxMerchants(wxMerchantsParam);
@@ -83,7 +94,10 @@ public class WeixinSNBindController extends CommonUtil {
 
 		return new RestResult<String>(200, "success", null);
 	}
-    
+
+
+
+
 /*    @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "微信商户信息修改", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)

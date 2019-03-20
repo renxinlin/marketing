@@ -31,7 +31,7 @@ public interface MarketingWxMerchantsMapper {
 			+ " <if test='certificatePassword !=null and certificatePassword != &apos;&apos; '> CertificatePassword = #{certificatePassword} ,</if> "
 			+ " <if test='merchantSecret !=null and merchantSecret != &apos;&apos; '> MerchantSecret = #{merchantSecret} ,</if> "
 			//+ " <if test='organizationId !=null and organizationId != &apos;&apos; '> OrganizationId = #{organizationId} ,</if> "
-			//+ " <if test='organizatioIdlName !=null and organizatioIdlName != &apos;&apos; '> OrganizatioIdlName = #{organizatioIdlName} ,</if> "
+			+ " <if test='organizatioIdlName !=null and organizatioIdlName != &apos;&apos; '> OrganizatioIdlName = #{organizatioIdlName} ,</if> "
 			+ " </set>"
 			+ " <where> "
 			+ " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
