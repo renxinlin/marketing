@@ -257,7 +257,19 @@ public class MarketingActivitySetService  {
 	 * @param mWinningPageParam
 	 * @param activitySetId
 	 */
-	private void saveWinningPage(MarketingWinningPageParam mWinningPageParam, Long activitySetId) {
+	private void saveWinningPage(MarketingWinningPageParam mWinningPageParam, Long activitySetId) throws  SuperCodeException{
+	    // 校验
+	    if ( StringUtils.isBlank(mWinningPageParam.getTemplateId())){
+	        throw new SuperCodeException("中奖页参数不全", 500);
+        }
+	    if (activitySetId == null || activitySetId <= 0){
+            throw new SuperCodeException("中奖页参数不全", 500);
+        }
+	    if (mWinningPageParam.getLoginType() == null ){
+            throw new SuperCodeException("中奖页参数不全", 500);
+        }
+
+	    // 保存
 		MarketingWinningPage mWinningPage=new MarketingWinningPage();
 		mWinningPage.setLoginType(mWinningPageParam.getLoginType());
 		mWinningPage.setTemplateId(mWinningPageParam.getTemplateId());
@@ -270,7 +282,23 @@ public class MarketingActivitySetService  {
 	 * @param mReceivingPageParam
 	 * @param activitySetId
 	 */
-	private void saveReceivingPage(MarketingReceivingPageParam mReceivingPageParam, Long activitySetId) {
+	private void saveReceivingPage(MarketingReceivingPageParam mReceivingPageParam, Long activitySetId) throws SuperCodeException {
+        // 校验
+        if (StringUtils.isBlank(mReceivingPageParam.getTemplateId())){
+            throw new SuperCodeException("领取页参数不全", 500);
+        }
+        if (activitySetId == null || activitySetId <= 0){
+            throw new SuperCodeException("领取页参数不全", 500);
+        }
+        if (mReceivingPageParam.getIsReceivePage() == null ){
+            throw new SuperCodeException("领取页参数不全", 500);
+        }
+        if (mReceivingPageParam.getIsQrcodeView() == null ){
+            throw new SuperCodeException("领取页参数不全", 500);
+        }
+
+	    // 保存
+
 		MarketingReceivingPage mPage=new MarketingReceivingPage();
 		mPage.setIsQrcodeView(mReceivingPageParam.getIsQrcodeView());
 		mPage.setIsReceivePage(mReceivingPageParam.getIsReceivePage());
@@ -482,6 +510,16 @@ public class MarketingActivitySetService  {
 	 */
 	@Transactional
 	public RestResult<String> updatePage(MarketingPageUpdateParam mUpdateParam) {
+        RestResult<String> restResult=new RestResult<String>();
+        // 更新参数校验，中奖页和领取页参数
+	    boolean legal = validateParam(mUpdateParam);
+	    if (!legal){
+            restResult.setState(500);
+            restResult.setMsg("参数校验失败");
+            return restResult;
+        }
+
+	    // 保存领取页信息
 		MarketingReceivingPageParam mReceivingPageParam=mUpdateParam.getmReceivingPageParam();
 		MarketingReceivingPage mReceivingPage=new MarketingReceivingPage();
 		mReceivingPage.setId(mReceivingPageParam.getId());
@@ -500,12 +538,54 @@ public class MarketingActivitySetService  {
 		mWinningPage.setTemplateId(mWinningPageParam.getTemplateId());
 		marWinningPageMapper.update(mWinningPage);
 		
-		RestResult<String> restResult=new RestResult<String>();
-		restResult.setState(200);
+ 		restResult.setState(200);
 		restResult.setMsg("更新成功");
 		return restResult;
 	}
-	/**
+
+    private boolean validateParam(MarketingPageUpdateParam mUpdateParam) {
+	    // 校验更新中奖和领奖的参数;都执行了update所以参数要合法
+	    boolean validateResult = false;
+	    if (mUpdateParam == null){
+	        return  validateResult;
+        }
+	    // 领取页校验
+        MarketingReceivingPageParam marketingReceivingPageParam = mUpdateParam.getmReceivingPageParam();
+	    if (org.springframework.util.StringUtils.isEmpty(marketingReceivingPageParam)) {
+            return  validateResult;
+        }
+	    // 校验ID
+        if (marketingReceivingPageParam.getId() <= 0  ){
+            return  validateResult;
+        }
+        // 校验取值范围0-1 领取页是否显示
+        if (!(marketingReceivingPageParam.getIsReceivePage() ==0 || marketingReceivingPageParam.getIsReceivePage() ==1) ){
+            return  validateResult;
+        }
+        // 校验取值范围0-1 二维码是否显示
+        if (!(marketingReceivingPageParam.getIsQrcodeView() ==0 || marketingReceivingPageParam.getIsQrcodeView() ==1) ){
+            return  validateResult;
+        }
+	    // 中奖页校验
+        MarketingWinningPageParam marketingWinningPageParam = mUpdateParam.getmWinningPageParam();
+        if (org.springframework.util.StringUtils.isEmpty(marketingWinningPageParam)) {
+            return  validateResult;
+        }
+        // 校验ID
+        if ( marketingWinningPageParam.getId() <= 0  ){
+            return  validateResult;
+        }
+        // 1手机 2 微信
+        Byte loginType = marketingWinningPageParam.getLoginType();
+        if (loginType != 1 && loginType != 2){
+            return  validateResult;
+        }
+        // 校验通过
+        return  ! validateResult;
+    }
+
+
+    /**
 	 * 活动扫码跳转授权前判断逻辑
 	 * @param productBatchId 
 	 * @param productId 
