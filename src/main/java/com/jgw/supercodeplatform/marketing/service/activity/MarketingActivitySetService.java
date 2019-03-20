@@ -190,7 +190,7 @@ public class MarketingActivitySetService  {
 				startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd HH:mm:ss");
 			}
 
-			if(startDate.after(endDate)){
+  			if(startDate.after(endDate)){
 				throw new SuperCodeException("日期起止时间不合法",500);
 			}
 		}catch (Exception e){
@@ -676,5 +676,4 @@ public class MarketingActivitySetService  {
 		}
        
 	}
-
 }
