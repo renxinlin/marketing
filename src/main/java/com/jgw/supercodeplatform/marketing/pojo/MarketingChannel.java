@@ -1,4 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo;
+
+import java.util.List;
+
 /**
  * 渠道实体类
  * @author czm
@@ -19,6 +22,10 @@ public class MarketingChannel {
 	private Byte customerSuperiorType;//父类类型 0-渠道经销；1-门店；2公司本部即组织
 	
 	private String customerSuperior;//父类唯一编码
+
+
+	private List<MarketingChannel> children;// 子节点
+
 
 	public Long getId() {
 		return id;
@@ -75,6 +82,12 @@ public class MarketingChannel {
 	public void setCustomerSuperior(String customerSuperior) {
 		this.customerSuperior = customerSuperior;
 	}
-	
-	
+
+	public void setChildren(List<MarketingChannel> children) {
+		this.children = children;
+	}
+
+	public List<MarketingChannel> getChildren() {
+		return children;
+	}
 }
