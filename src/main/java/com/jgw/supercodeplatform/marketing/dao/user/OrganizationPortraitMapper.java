@@ -97,7 +97,7 @@ public interface OrganizationPortraitMapper extends CommonSql{
             + " UPDATE marketing_organization_portrait "
             + " <set>"
             + " <if test='portraitName !=null and portraitName != &apos;&apos; '> PortraitName = #{portraitName} ,</if> "
-            + " <if test='fieldWeight !=null and fieldWeight != &apos;&apos; '> FieldWeight = #{fieldWeight} ,</if> "
+            + " <if test='fieldWeight !=null '> FieldWeight = #{fieldWeight} ,</if> "
             + " </set>"
             + " <where> "
             + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
