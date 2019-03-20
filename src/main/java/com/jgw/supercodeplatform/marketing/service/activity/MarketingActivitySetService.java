@@ -756,4 +756,31 @@ public class MarketingActivitySetService  {
 		}
        
 	}
+
+
+
+
+	/**
+	 * 获取活动基础信息
+	 * @param activitySetId
+	 * @return
+	 */
+	public RestResult<MarketingActivitySet> getActivityBaseInfoByeditPage(Long activitySetId) {
+		RestResult restResult = new RestResult();
+		// 校验
+		if(activitySetId == null || activitySetId <= 0 ){
+			restResult.setState(500);
+			restResult.setMsg("活动id校验失败");
+			return  restResult;
+		}
+		// 获取
+		MarketingActivitySet marketingActivitySet = mSetMapper.selectById(activitySetId);
+		// 返回
+		restResult.setState(200);
+		restResult.setMsg("success");
+		restResult.setResults(marketingActivitySet);
+		return  restResult;
+
+	}
+
 }

@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,4 +75,21 @@ public class MarketingActivitySetController {
     public RestResult<String> updatePage(@RequestBody MarketingPageUpdateParam mUpdateParam) throws Exception {
     	return service.updatePage(mUpdateParam);
     }
+
+
+
+    /**
+     * 获取活动基础信息
+     * @param activitySetId
+     * @return
+     */
+    @RequestMapping(value = "/getBaseInfo",method = RequestMethod.GET)
+    @ApiOperation(value = "编辑活动： 获取活动基础信息", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
+    public RestResult<MarketingActivitySet> getActivityBaseInfoByeditPage(@RequestParam(required=true) Long activitySetId){
+        return service.getActivityBaseInfoByeditPage(activitySetId);
+
+    }
+
+
 }
