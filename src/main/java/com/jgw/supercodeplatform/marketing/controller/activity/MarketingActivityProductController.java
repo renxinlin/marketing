@@ -4,6 +4,7 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityProductService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -20,6 +21,7 @@ import java.util.HashSet;
  */
 @RestController
 @RequestMapping("/marketing/activity/product")
+@Api(tags = "活动产品管理")
 public class MarketingActivityProductController {
 
 
@@ -31,7 +33,7 @@ public class MarketingActivityProductController {
      * @return
      */
     @RequestMapping(value = "/getProductInfo",method = RequestMethod.GET)
-    @ApiOperation(value = "编辑活动： 获取活动奖次信息", notes = "")
+    @ApiOperation(value = "编辑活动： 获取活动产品信息", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
     public RestResult<HashSet<MarketingActivityProductParam>> getActivityProductInfoByeditPage(@RequestParam(required=true) Long activitySetId){
         return service.getActivityProductInfoByeditPage(activitySetId);
