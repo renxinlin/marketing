@@ -22,5 +22,5 @@ public interface WechatConstants {
     public static String CODEMANAGER_BIND_BATCH_TO_URL="/code/sbatchUrl/addSbatchUrl";
     
     //码管理跳转到营销系统路径
-    public static String SCAN_CODE_JUMP_URL="/code/relation/getBatchInfo";
+    public static String SCAN_CODE_JUMP_URL="/marketing/front/scan/";
 }
