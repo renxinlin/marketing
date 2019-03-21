@@ -34,7 +34,7 @@ public interface MarketingWxMerchantsMapper {
 			+ " <if test='organizatioIdlName !=null and organizatioIdlName != &apos;&apos; '> OrganizatioIdlName = #{organizatioIdlName} ,</if> "
 			+ " </set>"
 			+ " <where> "
- 			+ " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"
+ 			+ "   OrganizationId = #{organizationId}  "
 			+ " </where>"
 			+ " </script>")
 	int updateWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam);

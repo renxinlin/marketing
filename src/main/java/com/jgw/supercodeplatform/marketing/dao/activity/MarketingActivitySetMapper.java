@@ -27,7 +27,7 @@ public interface MarketingActivitySetMapper {
             + "  ActivityStatus = #{activityStatus} "
             + " </set>"
             + " <where> "
-            + " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> and Id = #{activitySetId} </if>"
+            + "  Id = #{activitySetId} "
             + " </where>"
             + " </script>")
     int updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus);
@@ -49,7 +49,7 @@ public interface MarketingActivitySetMapper {
            + "  CodeTotalNum = #{codeTotalNum} "
            + " </set>"
            + " <where> "
-           + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+           + " Id = #{id} "
            + " </where>"
            + " </script>")
    void updateCodeTotalNum(@Param("id")Long id,@Param("codeTotalNum") Long codeSum);

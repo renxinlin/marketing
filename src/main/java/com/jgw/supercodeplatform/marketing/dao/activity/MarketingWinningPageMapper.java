@@ -25,7 +25,7 @@ public interface MarketingWinningPageMapper {
 			+ " <if test='activitySetId !=null and activitySetId != &apos;&apos; '> ActivitySetId = #{activitySetId} ,</if> "
 			+ " </set>"
 			+ " <where> "
-			+ " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+			+ " Id = #{id} "
 			+ " </where>"
 			+ " </script>")
 	void update(MarketingWinningPage mWinningPage);

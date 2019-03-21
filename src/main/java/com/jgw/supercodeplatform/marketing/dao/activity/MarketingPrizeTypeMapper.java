@@ -45,7 +45,7 @@ public interface MarketingPrizeTypeMapper {
 			+ " <if test='highRand !=null '> HighRand = #{highRand} ,</if> "
 			+ " </set>"
 			+ " <where> "
-			+ " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+			+ " Id = #{id} "
 			+ " </where>"
 			+ " </script>")
 	void update(MarketingPrizeType marketingPrizeType);

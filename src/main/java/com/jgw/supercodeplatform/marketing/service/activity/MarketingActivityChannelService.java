@@ -33,7 +33,7 @@ public class MarketingActivityChannelService {
         }
         // 获取中奖规则-奖次信息
         List<MarketingChannel> marketingChannels = mapper.selectByActivitySetId(activitySetId);
-        // 转换渠道为树结构
+        // 转换渠道为树结构： 1先获取所有根节点，2在获取所有当前父节点以及子节点，3将子节点添加到父节点
         // 渠道父级编码可以不存在，但渠道编码必须存在
         List<MarketingChannel> treeMarketingChannels = getTree(marketingChannels);
         // 返回
@@ -75,7 +75,7 @@ public class MarketingActivityChannelService {
     }
 
     /**
-     *
+     * 获取子节点
      * @param rootTree 根节点
      * @param currentRoots 当前根节点
      * @param newDatas 待处理数据

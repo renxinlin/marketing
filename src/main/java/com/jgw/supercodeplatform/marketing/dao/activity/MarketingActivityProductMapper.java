@@ -46,7 +46,7 @@ public interface MarketingActivityProductMapper {
 			+ " UpdateDate=now(),"
 			+ " </set>"
 			+ " <where> "
-			+ " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+			+ " Id = #{id} "
 			+ " </where>"
 			+ " </script>")
 	void updateCodeTotalAmount(@Param("codeTotalAmount")Long sum, @Param("id")Long id);
