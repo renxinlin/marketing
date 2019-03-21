@@ -183,18 +183,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
     public int addMember(MarketingMembersAddParam marketingMembersAddParam) throws Exception{
         String userId = getUUID();
         marketingMembersAddParam.setUserId(userId);
-        Map<String,Object> areaCode = new HashMap<>();
-        areaCode.put("areaCode",marketingMembersAddParam.getCityCode());
-        MarketingAdministrativeCode marketingAdministrativeCode = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
-        marketingMembersAddParam.setCityName(marketingAdministrativeCode.getCityName());
-        areaCode.put("areaCode",marketingAdministrativeCode.getParentAreaCode());
-        MarketingAdministrativeCode marketingAdministrativeCode2 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
-        marketingMembersAddParam.setCountyName(marketingAdministrativeCode2.getCityName());
-        marketingMembersAddParam.setCountyCode(marketingAdministrativeCode2.getAreaCode());
-        areaCode.put("areaCode",marketingAdministrativeCode2.getParentAreaCode());
-        MarketingAdministrativeCode marketingAdministrativeCode3 = adminstrativeCodeMapper.getAdminCodeByAreaCode(areaCode);
-        marketingMembersAddParam.setProvinceName(marketingAdministrativeCode3.getCityName());
-        marketingMembersAddParam.setProvinceCode(marketingAdministrativeCode3.getAreaCode());
         return marketingMembersMapper.addMembers(marketingMembersAddParam);
     }
 

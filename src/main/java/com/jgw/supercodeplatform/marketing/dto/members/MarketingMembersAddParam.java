@@ -27,24 +27,6 @@ public class MarketingMembersAddParam {
     @ApiModelProperty(value = "生日")
     private String birthday;//生日
 
-    @ApiModelProperty(value = "省编码")
-    private String provinceCode;//省编码
-
-    @ApiModelProperty(value = "县编码")
-    private String countyCode;//县编码
-
-    @ApiModelProperty(value = "市编码",required=true)
-    private String cityCode;//市编码
-
-    @ApiModelProperty(value = "省名称")
-    private String provinceName;//省名称
-
-    @ApiModelProperty(value = "县名称")
-    private String countyName;//县名称
-
-    @ApiModelProperty(value = "市名称")
-    private String cityName;//市名称
-
     @ApiModelProperty(value = "组织Id",required=true)
     private String organizationId;//组织Id
 
@@ -56,10 +38,9 @@ public class MarketingMembersAddParam {
 
     @ApiModelProperty(value = "宝宝生日")
     private String babyBirthday;//宝宝生日
-
-    @ApiModelProperty(value = "是否已注册(1、表示已注册，0 表示未注册)")
-    private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
-
+    
+    @ApiModelProperty(value = "省市区及编码字段")
+    private String pCCcode;
 
     public MarketingMembersAddParam() {
     }
@@ -112,15 +93,6 @@ public class MarketingMembersAddParam {
         this.birthday = birthday;
     }
 
-    public String getCityCode() {
-        return cityCode;
-    }
-
-    public void setCityCode(String cityCode) {
-        this.cityCode = cityCode;
-    }
-
-
     public String getOrganizationId() {
         return organizationId;
     }
@@ -161,51 +133,12 @@ public class MarketingMembersAddParam {
         this.userId = userId;
     }
 
-    public String getProvinceCode() {
-        return provinceCode;
-    }
+	public String getpCCcode() {
+		return pCCcode;
+	}
 
-    public void setProvinceCode(String provinceCode) {
-        this.provinceCode = provinceCode;
-    }
-
-    public String getCountyCode() {
-        return countyCode;
-    }
-
-    public void setCountyCode(String countyCode) {
-        this.countyCode = countyCode;
-    }
-
-    public String getProvinceName() {
-        return provinceName;
-    }
-
-    public void setProvinceName(String provinceName) {
-        this.provinceName = provinceName;
-    }
-
-    public String getCountyName() {
-        return countyName;
-    }
-
-    public void setCountyName(String countyName) {
-        this.countyName = countyName;
-    }
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
-    }
-
-    public Byte getIsRegistered() {
-        return isRegistered;
-    }
-
-    public void setIsRegistered(Byte isRegistered) {
-        this.isRegistered = isRegistered;
-    }
+	public void setpCCcode(String pCCcode) {
+		this.pCCcode = pCCcode;
+	}
+    
 }
