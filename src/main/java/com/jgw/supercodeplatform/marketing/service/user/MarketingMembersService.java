@@ -181,7 +181,17 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * @throws Exception
      */
     public int addMember(MarketingMembersAddParam marketingMembersAddParam) throws Exception{
-        String userId = getUUID();
+    	// 校验是否已经注册
+		Map<String, Object> map = new HashMap<>();
+		map.put("organizationId",getOrganizationId());
+		map.put("mobile",marketingMembersAddParam.getMobile());
+		Integer allMarketingMembersCount = marketingMembersMapper.getAllMarketingMembersCount(map);
+
+		if(getOrganizationId() == null || allMarketingMembersCount >= 1){
+			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册失败");
+			throw  new SuperCodeException("注册失败",500);
+		}
+		String userId = getUUID();
         marketingMembersAddParam.setUserId(userId);
         return marketingMembersMapper.addMembers(marketingMembersAddParam);
     }

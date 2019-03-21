@@ -67,7 +67,7 @@ public class CommonController extends CommonUtil {
         //创建比特矩阵(位矩阵)的QR码编码的字符串
         StringBuilder sb = new StringBuilder();
         sb.append(content);
-        BitMatrix byteMatrix = qrCodeWriter.encode(sb.toString(), BarcodeFormat.QR_CODE, 900, 900, hintMap);
+        BitMatrix byteMatrix = qrCodeWriter.encode(sb.toString(), BarcodeFormat.QR_CODE, 1600, 1600, hintMap);
         // 使BufferedImage勾画QRCode  (matrixWidth 是行二维码像素点)
         int matrixWidth = byteMatrix.getWidth();
         BufferedImage image = new BufferedImage(matrixWidth-200, matrixWidth-200, BufferedImage.TYPE_INT_RGB);
