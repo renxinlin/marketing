@@ -100,7 +100,7 @@ public interface OrganizationPortraitMapper extends CommonSql{
             + " <if test='fieldWeight !=null '> FieldWeight = #{fieldWeight} ,</if> "
             + " </set>"
             + " <where> "
-            + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+            + "  Id = #{id} "
             + " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"
             + " </where>"
             + " </script>")

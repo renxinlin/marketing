@@ -35,7 +35,7 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
             + " <if test='errCodeDes !=null and errCodeDes != &apos;&apos; '> ErrCodeDes = #{errCodeDes} ,</if> "
             + " </set>"
             + " <where> "
-            + " <if test='id !=null and id != &apos;&apos; '> and Id = #{id} </if>"
+            + " Id = #{id} "
             + " </where>"
             + " </script>")
 	void update(WXPayTradeOrder wXTradeNo);

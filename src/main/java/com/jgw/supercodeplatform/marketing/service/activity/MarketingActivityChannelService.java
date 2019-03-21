@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -22,8 +23,8 @@ public class MarketingActivityChannelService {
     private MarketingChannelMapper mapper;
 
 
-    public RestResult<HashSet<MarketingActivityProductParam>> getActivityChannelInfoByeditPage(Long activitySetId) {
-        RestResult restResult = new RestResult();
+    public RestResult<List<MarketingChannel>> getActivityChannelInfoByeditPage(Long activitySetId) {
+        RestResult<List<MarketingChannel>> restResult = new RestResult<List<MarketingChannel>>();
         // 校验
         if(activitySetId == null || activitySetId <= 0 ){
             restResult.setState(500);
@@ -31,8 +32,9 @@ public class MarketingActivityChannelService {
             return  restResult;
         }
         // 获取中奖规则-奖次信息
-         List<MarketingChannel> marketingChannels = mapper.selectByActivitySetId(activitySetId);
-        // 转换渠道为树结构
+        List<MarketingChannel> marketingChannels = mapper.selectByActivitySetId(activitySetId);
+        // 转换渠道为树结构： 1先获取所有根节点，2在获取所有当前父节点以及子节点，3将子节点添加到父节点
+        // 渠道父级编码可以不存在，但渠道编码必须存在
         List<MarketingChannel> treeMarketingChannels = getTree(marketingChannels);
         // 返回
         restResult.setState(200);
@@ -58,7 +60,7 @@ public class MarketingActivityChannelService {
 
         for (MarketingChannel marketingChannel : marketingChannels) {
             // customerSuperior 上级编码
-            if(marketingChannel.getCustomerSuperior() == null){
+            if (StringUtils.isEmpty( marketingChannel.getCustomerSuperior())) {
                 rootTree.add(marketingChannel);
             }else{
                 newDatas.add(marketingChannel);
@@ -73,7 +75,7 @@ public class MarketingActivityChannelService {
     }
 
     /**
-     *
+     * 获取子节点
      * @param rootTree 根节点
      * @param currentRoots 当前根节点
      * @param newDatas 待处理数据
@@ -89,7 +91,8 @@ public class MarketingActivityChannelService {
             List<MarketingChannel> children  = new LinkedList();
             // 当前节点增加子节点
             for(MarketingChannel maybeSon : newDatas){
-                if(everyRoot.getCustomerCode().equals(maybeSon.getCustomerSuperior())){
+                if(!StringUtils.isEmpty(everyRoot.getCustomerCode())
+                        && everyRoot.getCustomerCode().equals(maybeSon.getCustomerSuperior())){
                     children.add(maybeSon);
                     newCurrentRoot.add(maybeSon);
                 }
@@ -105,7 +108,7 @@ public class MarketingActivityChannelService {
                         break;
                     }
 
-                    if(isAddChild.getCustomerCode().equals(everyRoot.getCustomerCode())){
+                    if(!StringUtils.isEmpty(isAddChild.getCustomerCode()) && isAddChild.getCustomerCode().equals(everyRoot.getCustomerCode())){
                         isAddChild.setChildren(children);
                         setSuccess = true;
                         break;
@@ -150,7 +153,7 @@ public class MarketingActivityChannelService {
             if (setSuccess){
                 break;
             }
-            if(isAddChildSon.getCustomerCode().equals(everyRoot.getCustomerCode())){
+            if(!StringUtils.isEmpty(isAddChildSon.getCustomerCode()) && isAddChildSon.getCustomerCode().equals(everyRoot.getCustomerCode())){
                 isAddChildSon.setChildren(children);
                 setSuccess  =true;
 
