@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityProductService;
 import io.swagger.annotations.Api;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * 活动产品批次信息
@@ -36,7 +38,7 @@ public class MarketingActivityChannelController {
     @RequestMapping(value = "/getchannelInfo",method = RequestMethod.GET)
     @ApiOperation(value = "编辑活动： 获取活动渠道信息", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
-    public RestResult<HashSet<MarketingActivityProductParam>> getActivityProductInfoByeditPage(@RequestParam(required=true) Long activitySetId){
+    public RestResult<List<MarketingChannel>> getActivityProductInfoByeditPage(@RequestParam(required=true) Long activitySetId){
         return service.getActivityChannelInfoByeditPage(activitySetId);
 
     }
