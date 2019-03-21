@@ -52,7 +52,9 @@ public interface MarketingActivityMapper extends CommonSql{
 			+ " left join marketing_channel mc on aset.Id=mc.ActivitySetId "
 			+whereSearch
 			+"group by aset.Id"
+			+ " ORDER BY UpdateDate DESC"
 			+ " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
+
 			+endScript)
     @Results({
         @Result(column = "Id", property = "id", jdbcType = JdbcType.BIGINT),
