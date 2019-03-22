@@ -177,25 +177,22 @@ public class MarketingActivitySetService  {
 		}
 
 		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
-//		String activityEndDate = mActivitySet.getActivityEndDate();
-//		String activityStartDate = mActivitySet.getActivityStartDate();
-//  		Date endDate = null;
-//		Date startDate = null;
-//		try {
-//			if(activityEndDate.length() == 10){
-//				endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd");
-//				startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd");
-//			}else{
-//				endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd HH:mm:ss");
-//				startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd HH:mm:ss");
-//			}
-//
-//  			if(startDate.after(endDate)){
-//				throw new SuperCodeException("日期起止时间不合法",500);
-//			}
-//		}catch (Exception e){
-//			throw new SuperCodeException("日期起止时间不合法",500);
-//		}
+		String activityEndDate = mActivitySet.getActivityEndDate();
+		String activityStartDate = mActivitySet.getActivityStartDate();
+  		Date endDate = null;
+		Date startDate = null;
+        if (!org.springframework.util.StringUtils.isEmpty(activityEndDate)
+                && !org.springframework.util.StringUtils.isEmpty(activityStartDate)) {
+            try {
+                endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd");
+                startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd");
+                if(startDate.after(endDate)){
+                    throw new SuperCodeException("日期起止时间不合法",500);
+                }
+            } catch (ParseException e) {
+                throw new SuperCodeException("日期起止时间不合法",500);
+            }
+        }
 
 		mActivitySet.setActivityStatus(1);
 		mActivitySet.setOrganizationId(organizationId);
