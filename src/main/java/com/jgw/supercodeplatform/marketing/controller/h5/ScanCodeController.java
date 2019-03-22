@@ -1,6 +1,8 @@
 package com.jgw.supercodeplatform.marketing.controller.h5;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.ParseException;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -54,11 +56,13 @@ public class ScanCodeController {
      * @param productId
      * @param productBatchId
      * @return
+     * @throws UnsupportedEncodingException 
+     * @throws ParseException 
      * @throws Exception
      */
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
-    public String bind(String outerCodeId,String codeTypeId,String productId,String productBatchId) throws Exception {
+    public String bind(String outerCodeId,String codeTypeId,String productId,String productBatchId) throws UnsupportedEncodingException, ParseException  {
     	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId);
     	if (restResult.getState()==500) {
     		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
@@ -70,7 +74,7 @@ public class ScanCodeController {
         String organizationId=sCodeInfoMO.getOrganizationId();
         MarketingWxMerchants mWxMerchants=mWxMerchantsService.selectByOrganizationId(organizationId);
         if (null==mWxMerchants || StringUtils.isBlank(mWxMerchants.getMchAppid())) {
-        	throw new SuperCodeException("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId, 500);
+        	 return "redirect:"+h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId,"utf-8"),"utf-8");
 		}
         sCodeInfoMO.setOrganizationId(organizationId);
         GlobalRamCache.scanCodeInfoMap.put(wxstate, sCodeInfoMO);

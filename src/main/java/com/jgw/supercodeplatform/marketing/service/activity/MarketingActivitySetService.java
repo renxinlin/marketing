@@ -595,7 +595,7 @@ public class MarketingActivitySetService  {
 	 * @throws SuperCodeException 
 	 * @throws ParseException 
 	 */
-	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String codeId, String codeTypeId, String productId, String productBatchId) throws SuperCodeException, ParseException {
+	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String codeId, String codeTypeId, String productId, String productBatchId) throws ParseException {
 		logger.info("扫码接收到参数codeId="+codeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
 		RestResult<ScanCodeInfoMO> restResult=new RestResult<ScanCodeInfoMO>();
 		if (StringUtils.isBlank(codeId) || StringUtils.isBlank(codeId)||StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)) {

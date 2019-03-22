@@ -8,7 +8,7 @@ public class MarketingWxMerchants {
     private String merchantName;//商户名称
     private String merchantKey;//商户key，微信支付签名时需要
     private String certificateAddress;//证书地址
-    private String certificatePassword = "******";//证书密码
+    private String certificatePassword;//证书密码
     private String organizationId;//组织id
     private String organizatioIdlName;//组织
     private String merchantSecret;//公众号secret微信授权获取token时需要用到
