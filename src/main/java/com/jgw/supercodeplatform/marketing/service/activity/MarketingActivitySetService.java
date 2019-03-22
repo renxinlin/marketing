@@ -242,7 +242,11 @@ public class MarketingActivitySetService  {
 		if (StringUtils.isBlank(title)) {
 			throw new SuperCodeException("添加的活动设置标题不能为空", 500);
 		}
-		MarketingActivitySet mSet=new MarketingActivitySet();
+        if(activitySetParam.getEachDayNumber() != null && activitySetParam.getEachDayNumber() <=0 ){
+            throw new SuperCodeException("上限为正整数或不填", 500);
+
+        }
+        MarketingActivitySet mSet=new MarketingActivitySet();
 		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
 		mSet.setActivityId(activitySetParam.getActivityId());
 		mSet.setActivityRangeMark(activitySetParam.getActivityRangeMark());
