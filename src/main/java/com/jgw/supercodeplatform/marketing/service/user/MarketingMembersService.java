@@ -123,10 +123,22 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
     		commonsearch=true;
     		commonSearchbuf.append(" AND (");
 		}
-    	fieldsbuf.append("Id,State,Openid,WxName,");
+    	fieldsbuf.append("Id, case state  when '0' then '下线' else '正常' end state,Openid,WxName,");
     	for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
     		String code=marketingOrganizationPortraitListParam.getCodeId();
-    		fieldsbuf.append(code);
+    		if("sex".equalsIgnoreCase(code)){
+                fieldsbuf.append(" case sex when '0' then '女' else '男' end sex ");
+
+            }else if( "birthday".equalsIgnoreCase(code)){
+                fieldsbuf.append(" date_format(birthday ,'%Y-%m-%d' ) birthday ");
+
+            } else if("babyBirthday".equalsIgnoreCase(code)){
+                fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) babyBirthday ");
+
+            }else{
+                fieldsbuf.append(code);
+
+            }
     		if(i<mPortraitListParams.size()-1) {
     			fieldsbuf.append(",");
     		}
