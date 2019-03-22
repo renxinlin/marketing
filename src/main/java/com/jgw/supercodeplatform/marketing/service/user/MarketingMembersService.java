@@ -553,7 +553,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			//保存订单
 			SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			WXPayTradeOrder tradeOrder=new WXPayTradeOrder();
-			tradeOrder.setAmount(amount);
+            int finalAmount = amount * 100;
+			tradeOrder.setAmount(finalAmount);
 			tradeOrder.setOpenId(openId);
 			tradeOrder.setTradeStatus((byte)0);
 			tradeOrder.setPartnerTradeNo(partner_trade_no);
@@ -566,7 +567,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				remoteAddr=serverIp;
 			}
 			try {
-				wxpService.qiyePay(openId, remoteAddr, amount,partner_trade_no, organizationId);
+				wxpService.qiyePay(openId, remoteAddr, finalAmount,partner_trade_no, organizationId);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

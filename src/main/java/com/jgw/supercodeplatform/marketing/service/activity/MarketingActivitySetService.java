@@ -146,7 +146,7 @@ public class MarketingActivitySetService  {
 					if (null==amount|| amount<1 ||amount>5000) {
 						throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
 					}
-					prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount()*100);//转换为分
+					prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount());//转换为分
 				}else if (randomAmont.equals((byte)1)) {
 					//如果是随机金额则校验随机金额取值
 					Integer lowrand=prizeTypeParam.getLowRand();
