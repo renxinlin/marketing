@@ -176,6 +176,7 @@ public class MarketingActivitySetService  {
 			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
 		}
 
+
 		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
 		String activityEndDate = mActivitySet.getActivityEndDate();
 		String activityStartDate = mActivitySet.getActivityStartDate();
