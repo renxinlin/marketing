@@ -182,8 +182,8 @@ public class MarketingActivitySetService  {
 		String activityStartDate = mActivitySet.getActivityStartDate();
   		Date endDate = null;
 		Date startDate = null;
-        if (!org.springframework.util.StringUtils.isEmpty(activityEndDate)
-                && !org.springframework.util.StringUtils.isEmpty(activityStartDate)) {
+        if (StringUtils.isNotBlank(activityEndDate)
+                && StringUtils.isNotBlank(activityStartDate)) {
             try {
                 endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd");
                 startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd");
