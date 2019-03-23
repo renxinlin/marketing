@@ -12,7 +12,6 @@ public class MarketingWxMerchants {
     private String organizationId;//组织id
     private String organizatioIdlName;//组织
     private String merchantSecret;//公众号secret微信授权获取token时需要用到
-    private String appId;//公众号appid
     public String getId() {
 		return id;
 	}
@@ -44,14 +43,6 @@ public class MarketingWxMerchants {
     public void setMerchantKey(String merchantKey) {
         this.merchantKey = merchantKey;
     }
-
-    public String getAppId() {
-		return appId;
-	}
-
-	public void setAppId(String appId) {
-		this.appId = appId;
-	}
 
 	public String getCertificateAddress() {
         return certificateAddress;

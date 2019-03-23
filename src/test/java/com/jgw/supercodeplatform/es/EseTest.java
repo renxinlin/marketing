@@ -40,9 +40,9 @@ public class EseTest {
 	@Test
 	public void test3() {
 		 Map<String, Object> addParam=new HashMap<String, Object>();
-//		 addParam.put("userId.keyword", "oeVn5sqwk7MH4jN2BUQfSRvA");
-     	  addParam.put("scanCodeTime", "2019-03-11");
-////		  addParam.put("activitySetId", 2l);
+		 addParam.put("userId.keyword", "oeVn5sgnslZcCSrigGXb3HE5A");
+     	  addParam.put("scanCodeTime.keyword", "2019-03-23");
+		  addParam.put("activitySetId", 269l);
 		  
 		  EsSearch eSearch=new EsSearch();
 		  eSearch.setIndex(EsIndex.MARKETING);
