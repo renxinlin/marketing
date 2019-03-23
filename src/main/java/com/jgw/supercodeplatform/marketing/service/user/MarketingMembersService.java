@@ -493,7 +493,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				if (null!=scanLimit&& scanLimit.intValue()>0) {
 					String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
 					Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTime);
-					logger.info("领取方法=====：根据openId="+openId+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum);
+					logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum);
 					if (null==userscanNum || userscanNum.intValue()==0 ||userscanNum.intValue()<scanLimit.intValue()) {
 						//更新奖次被扫码数量
 						mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
@@ -503,7 +503,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 						mMarketingPrizeTypeMapper.update(marketingPrizeType);
 						codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId(), activitySetId,nowTime);	
 					}else {
-						restResult.setState(200);
+						restResult.setState(500);
 						restResult.setMsg("您今日扫码已超过该活动限制数量");
 						return restResult;
 					}
@@ -562,15 +562,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				remoteAddr=serverIp;
 			}
 			try {
-				//wxpService.qiyePay(openId, remoteAddr, amount,partner_trade_no, organizationId);
-				wxpService.qiyePay(openId, remoteAddr, finalAmount,partner_trade_no, organizationId);
+//				wxpService.qiyePay(openId, remoteAddr, finalAmount,partner_trade_no, organizationId);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			//一切ok后清除缓存
 			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 			restResult.setState(200);
-			restResult.setMsg("恭喜您获得"+(amount/100)+"元惊喜红包！");
+			restResult.setMsg("恭喜您获得"+amount+"元惊喜红包！");
 		}
 		return restResult;
 	}
