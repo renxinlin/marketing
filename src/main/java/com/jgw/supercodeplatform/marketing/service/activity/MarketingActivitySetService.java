@@ -736,6 +736,7 @@ public class MarketingActivitySetService  {
 			String batchBody=bindBatchresponse.getBody();
 			JSONObject batchobj=JSONObject.parseObject(batchBody);
 			Integer batchstate=batchobj.getInteger("state");
+			commonUtil.getSuperToken();
 			if (batchstate.intValue()!=200) {
 				logger.error("处理码管理推送的mq消息时绑定生码批次与url的关系出错，错误信息："+bindBatchresponse.toString()+",批次信息："+bindJson);
 				return;

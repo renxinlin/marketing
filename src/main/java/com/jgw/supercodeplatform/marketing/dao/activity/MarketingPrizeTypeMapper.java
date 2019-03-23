@@ -25,7 +25,7 @@ public interface MarketingPrizeTypeMapper {
 	})
 	void batchInsert(@Param(value="mList")List<MarketingPrizeType> mList);
 
-	@Select("select "+allFields+" from marketing_prize_type where ActivitySetId=#{activitySetId}")
+	@Select("select "+allFields+" from marketing_prize_type where ActivitySetId=#{activitySetId} and RealPrize=1")
 	List<MarketingPrizeType> selectByActivitySetId(@Param("activitySetId") Long activitySetId);
 
 	@Select("select "+allFields+" from marketing_prize_type where Id=#{id}")
