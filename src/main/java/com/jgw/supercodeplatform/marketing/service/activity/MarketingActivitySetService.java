@@ -657,7 +657,7 @@ public class MarketingActivitySetService  {
 		Long scanSum=codeEsService.countByActivitySetId(activitySetId);
 		if (null!=scanSum && scanSum.intValue()>=mActivitySet.getCodeTotalNum().intValue()) {
 			restResult.setState(500);
-			restResult.setMsg("该活动已扫码数量:"+scanSum+"已达到活动设置的活动码数量"+mActivitySet.getCodeTotalNum()+"，请联系管理员");
+			restResult.setMsg("该活动已扫码数量"+scanSum+"已达到活动设置的活动码数量"+mActivitySet.getCodeTotalNum()+"，请联系管理员");
 			return restResult;
 		}
 		ScanCodeInfoMO pMo=new ScanCodeInfoMO();
@@ -728,12 +728,9 @@ public class MarketingActivitySetService  {
 	   }
 		try {
 			//绑定生码批次与url的关系
-			String superToken = commonUtil.getSuperToken();
-			Map<String,String> headerMap=new HashMap<String, String>();
-			headerMap.put("super-token", superToken);
 			//生码批次跟url绑定
 			String bindJson=JSONObject.toJSONString(bindBatchList);
-			ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_BIND_BATCH_TO_URL, bindJson, headerMap);
+			ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_BIND_BATCH_TO_URL, bindJson, null);
 			String batchBody=bindBatchresponse.getBody();
 			JSONObject batchobj=JSONObject.parseObject(batchBody);
 			Integer batchstate=batchobj.getInteger("state");

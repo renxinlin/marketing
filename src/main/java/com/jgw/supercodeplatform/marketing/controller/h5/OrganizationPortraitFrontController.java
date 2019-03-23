@@ -33,14 +33,9 @@ public class OrganizationPortraitFrontController  extends CommonUtil {
     @RequestMapping(value = "/getSelectedPor", method = RequestMethod.GET)
     @ApiOperation(value = "获取组织已选的画像编码", notes = "返回编码信息列表")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "wxstate", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "扫码唯一id", required = true)
+            @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "组织id", required = true)
     })
-    public RestResult<List<MarketingOrganizationPortraitListParam>> getSelectedPortrait(String wxstate) throws Exception {
-		ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
-		if (null==scInfoMO) {
-			throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
-		}
-		String organizationId=scInfoMO.getOrganizationId();
+    public RestResult<List<MarketingOrganizationPortraitListParam>> getSelectedPortrait(String organizationId) throws Exception {
 		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("组织id不存在", 500);
 		}
@@ -48,17 +43,13 @@ public class OrganizationPortraitFrontController  extends CommonUtil {
         return new RestResult<List<MarketingOrganizationPortraitListParam>>(200, "success", organizationPortraitService.getSelectedPortrait(organizationId));
     }
 
+    
     @RequestMapping(value = "/getUnselectedPor", method = RequestMethod.GET)
     @ApiOperation(value = "获取组织未选的画像编码", notes = "返回编码信息列表")
     @ApiImplicitParams({
-    	   @ApiImplicitParam(name = "wxstate", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "扫码唯一id", required = true)
+    	   @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "扫码唯一id", required = true)
     })
-    public RestResult<String> getUnselectedPortrait(String wxstate) throws Exception {
-		ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
-		if (null==scInfoMO) {
-			throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
-		}
-		String organizationId=scInfoMO.getOrganizationId();
+    public RestResult<String> getUnselectedPortrait(String organizationId) throws Exception {
 		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("组织id不存在", 500);
 		}

@@ -554,7 +554,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				remoteAddr=serverIp;
 			}
 			try {
-				wxpService.qiyePay(openId, remoteAddr, amount,partner_trade_no, organizationId);
+				//wxpService.qiyePay(openId, remoteAddr, amount,partner_trade_no, organizationId);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
