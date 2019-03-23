@@ -44,7 +44,6 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
-import com.jgw.supercodeplatform.marketing.pojo.admincode.MarketingAdministrativeCode;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
@@ -123,10 +122,22 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
     		commonsearch=true;
     		commonSearchbuf.append(" AND (");
 		}
-    	fieldsbuf.append("Id,State,Openid,WxName,");
+    	fieldsbuf.append("Id, case state  when '0' then '下线' else '正常' end state,Openid,WxName,");
     	for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
     		String code=marketingOrganizationPortraitListParam.getCodeId();
-    		fieldsbuf.append(code);
+    		if("sex".equalsIgnoreCase(code)){
+                fieldsbuf.append(" case sex when '0' then '女' else '男' end sex ");
+
+            }else if( "birthday".equalsIgnoreCase(code)){
+                fieldsbuf.append(" date_format(birthday ,'%Y-%m-%d' ) birthday ");
+
+            } else if("babyBirthday".equalsIgnoreCase(code)){
+                fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) babyBirthday ");
+
+            }else{
+                fieldsbuf.append(code);
+
+            }
     		if(i<mPortraitListParams.size()-1) {
     			fieldsbuf.append(",");
     		}
@@ -522,7 +533,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				int max=mPrizeTypeMO.getHighRand();
 				amount=new Random().nextInt(max-min)+min;
 			}
-			amount=amount*100;//金额转化为分
+			int finalAmount = amount * 100;//金额转化为分
 			//插入中奖纪录
 			MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
 			redWinRecord.setActivityId(activity.getId());
@@ -531,7 +542,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			redWinRecord.setMobile(mobile);
 			redWinRecord.setOpenid(openId);
 			redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
-			redWinRecord.setWinningAmount(amount);
+			redWinRecord.setWinningAmount(finalAmount);
 			redWinRecord.setWinningCode(scanCodeInfoMO.getCodeId());
 			redWinRecord.setOrganizationId(organizationId);
 			mWinRecordMapper.addWinRecord(redWinRecord);
@@ -541,7 +552,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			//保存订单
 			SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			WXPayTradeOrder tradeOrder=new WXPayTradeOrder();
-			tradeOrder.setAmount(amount);
+			tradeOrder.setAmount(finalAmount);
 			tradeOrder.setOpenId(openId);
 			tradeOrder.setTradeStatus((byte)0);
 			tradeOrder.setPartnerTradeNo(partner_trade_no);
@@ -555,6 +566,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			}
 			try {
 				//wxpService.qiyePay(openId, remoteAddr, amount,partner_trade_no, organizationId);
+				wxpService.qiyePay(openId, remoteAddr, finalAmount,partner_trade_no, organizationId);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
