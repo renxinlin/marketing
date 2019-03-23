@@ -49,7 +49,7 @@ public class CodeEsService extends AbstractEsSearch {
 	public Long countByUserAndActivityQuantum(String userId, Long activitySetId, String scanCodeTime) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("userId.keyword", userId);
-		addParam.put("scanCodeTime.keyword", scanCodeTime);
+		addParam.put("scanCodeTime", scanCodeTime);
 		addParam.put("activitySetId", activitySetId);
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
