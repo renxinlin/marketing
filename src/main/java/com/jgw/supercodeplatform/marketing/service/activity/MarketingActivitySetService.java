@@ -202,9 +202,25 @@ public class MarketingActivitySetService  {
 
 		Long activitySetId= mActivitySet.getId();
 
+		Set set = new HashSet();
+		int size = 0;
+		for (MarketingActivityProductParam mProduct:maProductParams){
+			// 去重
+			String productId = mProduct.getProductId();
+			for (ProductBatchParam productBatch:mProduct.getProductBatchParams()){
+				String productBatchId = productBatch.getProductBatchId();
+				set.add(productId+productBatchId);
+				size++;
+			}
+		}
+		if(set.size() != size){
+			throw new SuperCodeException("产品批次存在重复",500);
+		}
 
 		//待优化 校验商品批次是否被添加过
 		for (MarketingActivityProductParam mProduct:maProductParams){
+			// 去重
+
 			for (ProductBatchParam productBatch:mProduct.getProductBatchParams()){
 				if (mProductMapper.selectByProductAndProductBatchId(mProduct.getProductId(),productBatch.getProductBatchId())!=null){
 					throw new SuperCodeException("商品"+mProduct.getProductName()+"的批次"+productBatch.getProductBatchName()+"已经被添加过了无法再次添加", 500);
