@@ -14,7 +14,7 @@ public class MarketingPrizeTypeParam {
 	@ApiModelProperty(value = "序列Id",name = "id",  example = "1")
     private Long id;//序列Id
 	@ApiModelProperty(value = "固定金额数量,类型跟微信接口保持一致",name = "prizeAmount",  example = "50")
-    private Integer prizeAmount;//金额数量,类型跟微信接口保持一致
+    private Float prizeAmount;//金额数量,类型跟微信接口保持一致
 	@ApiModelProperty(value = "中奖几率",name = "prizeProbability",  example = "20")
     private Integer prizeProbability;//中奖几率
 	@ApiModelProperty(value = "奖品类型名称",name = "prizeTypeName",  example = "一等奖")
@@ -22,9 +22,9 @@ public class MarketingPrizeTypeParam {
 	@ApiModelProperty(value = "是否随机金额 1随机 0固定",name = "isRrandomMoney",  example = "1")
     private Byte isRrandomMoney;//是否随机金额 1随机 0固定
 	@ApiModelProperty(value = "随机金额低取值",name = "lowRand",  example = "1")
-    private Integer lowRand;
+    private Float lowRand;
 	@ApiModelProperty(value = "随机金额高取值",name = "highRand",  example = "100")
-    private Integer highRand;
+    private Float highRand;
     
 	public Long getId() {
 		return id;
@@ -32,10 +32,10 @@ public class MarketingPrizeTypeParam {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Integer getPrizeAmount() {
+	public Float getPrizeAmount() {
 		return prizeAmount;
 	}
-	public void setPrizeAmount(Integer prizeAmount) {
+	public void setPrizeAmount(Float prizeAmount) {
 		this.prizeAmount = prizeAmount;
 	}
 	public Integer getPrizeProbability() {
@@ -50,16 +50,16 @@ public class MarketingPrizeTypeParam {
 	public void setPrizeTypeName(String prizeTypeName) {
 		this.prizeTypeName = prizeTypeName;
 	}
-	public Integer getLowRand() {
+	public Float getLowRand() {
 		return lowRand;
 	}
-	public void setLowRand(Integer lowRand) {
+	public void setLowRand(Float lowRand) {
 		this.lowRand = lowRand;
 	}
-	public Integer getHighRand() {
+	public Float getHighRand() {
 		return highRand;
 	}
-	public void setHighRand(Integer highRand) {
+	public void setHighRand(Float highRand) {
 		this.highRand = highRand;
 	}
 	public Byte getIsRrandomMoney() {
