@@ -189,13 +189,17 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * @throws Exception
      */
     public int addMember(MarketingMembersAddParam marketingMembersAddParam) throws Exception{
+    	String organizationId=marketingMembersAddParam.getOrganizationId();
+    	if (StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeException("组织id比传", 500);
+		}
     	// 校验是否已经注册
 		Map<String, Object> map = new HashMap<>();
-		map.put("organizationId",getOrganizationId());
+		map.put("organizationId",organizationId);
 		map.put("mobile",marketingMembersAddParam.getMobile());
 		Integer allMarketingMembersCount = marketingMembersMapper.getAllMarketingMembersCount(map);
 
-		if(getOrganizationId() == null || allMarketingMembersCount >= 1){
+		if(allMarketingMembersCount >= 1){
 			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册失败");
 			throw  new SuperCodeException("注册失败",500);
 		}
@@ -569,7 +573,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			//一切ok后清除缓存
 			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 			restResult.setState(200);
-			restResult.setMsg("恭喜您获得"+amount+"元惊喜红包！");
+			restResult.setMsg(amount+".00");
 		}
 		return restResult;
 	}
