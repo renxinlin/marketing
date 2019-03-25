@@ -32,6 +32,11 @@ public class MarketingReceivingPage {
     @ApiModelProperty(value = "修改时间")
     private String updateDate;//修改时间
 
+    @ApiModelProperty(value = "组织ID")
+    private String organizationId;
+    @ApiModelProperty(value = "组织名称")
+    private String organizatioIdlName;
+
     public int getId() {
         return id;
     }
@@ -110,5 +115,21 @@ public class MarketingReceivingPage {
 
     public void setActivitySetId(Long activitySetId) {
         this.activitySetId = activitySetId;
+    }
+
+    public void setOrganizatioIdlName(String organizatioIdlName) {
+        this.organizatioIdlName = organizatioIdlName;
+    }
+
+    public String getOrganizatioIdlName() {
+        return organizatioIdlName;
+    }
+
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public String getOrganizationId() {
+        return organizationId;
     }
 }

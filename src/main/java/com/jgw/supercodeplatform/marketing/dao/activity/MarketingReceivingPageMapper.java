@@ -7,8 +7,11 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 @Mapper
 public interface MarketingReceivingPageMapper {
     static String allFields="Id id,TemplateId templateId,ActivitySetId activitySetId,IsReceivePage isReceivePage,TextContent textContent,PicAddress picAddress,IsQrcodeView isQrcodeView,QrcodeUrl qrcodeUrl,CreateDate createDate,UpdateDate updateDate";
-	
-    @Select("select "+allFields+" from marketing_template where ActivitySetId=#{activitySetId}")
+
+
+    static String allFieldsWhenJoin="a.Id id,a.TemplateId templateId,a.ActivitySetId activitySetId,a.IsReceivePage isReceivePage,a.TextContent textContent,a.PicAddress picAddress,a.IsQrcodeView isQrcodeView,a.QrcodeUrl qrcodeUrl,a.CreateDate createDate,a.UpdateDate updateDate";
+
+    @Select("select " + allFieldsWhenJoin + " ,b.OrganizationId organizationId ,b.OrganizatioIdlName organizatioIdlName  from marketing_template a left join marketing_activity_set b on a.ActivitySetId = b.Id where ActivitySetId=#{activitySetId}")
     MarketingReceivingPage getByActivityId(@Param("activitySetId")Long activitySetId);
 
     @Insert(" INSERT INTO marketing_template(TemplateId,ActivitySetId,IsReceivePage,TextContent,PicAddress,"

@@ -191,7 +191,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
     public int addMember(MarketingMembersAddParam marketingMembersAddParam) throws Exception{
     	String organizationId=marketingMembersAddParam.getOrganizationId();
     	if (StringUtils.isBlank(organizationId)) {
-			throw new SuperCodeException("组织id比传", 500);
+			throw new SuperCodeException("组织id获取失败", 500);
+		}
+		if(StringUtils.isBlank(marketingMembersAddParam.getBabyBirthday())){
+			marketingMembersAddParam.setBabyBirthday(null);
+		}
+
+		if(StringUtils.isBlank(marketingMembersAddParam.getBirthday())){
+			marketingMembersAddParam.setBirthday(null);
 		}
     	// 校验是否已经注册
 		Map<String, Object> map = new HashMap<>();
@@ -200,8 +207,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		Integer allMarketingMembersCount = marketingMembersMapper.getAllMarketingMembersCount(map);
 
 		if(allMarketingMembersCount >= 1){
-			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册失败");
-			throw  new SuperCodeException("注册失败",500);
+			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册已注册");
+			throw  new SuperCodeException("手机号注册已注册",500);
 		}
 		String userId = getUUID();
         marketingMembersAddParam.setUserId(userId);
@@ -226,8 +233,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      */
     public int updateMembers(MarketingMembersUpdateParam membersUpdateParam){
     	MarketingMembers members=new MarketingMembers();
-    	members.setBabyBirthday(membersUpdateParam.getBabyBirthday());
-    	members.setBirthday(membersUpdateParam.getBirthday());
+		// datetime类型处理
+    	if(!StringUtils.isBlank(membersUpdateParam.getBabyBirthday())){
+			members.setBabyBirthday(membersUpdateParam.getBabyBirthday());
+
+		}
+		if(!StringUtils.isBlank(membersUpdateParam.getBirthday())){
+			members.setBirthday(membersUpdateParam.getBirthday());
+		}
     	members.setCustomerId(membersUpdateParam.getCustomerId());
     	members.setCustomerName(membersUpdateParam.getCustomerName());
     	members.setMobile(membersUpdateParam.getMobile());
