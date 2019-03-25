@@ -8,11 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -49,10 +54,17 @@ import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
 	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersService.class);
+
+//	@Value( "${注册短信模板外部配置key}")
+	@Value( "恭亲爱的${user},恭喜成功注册成为${organization}的会员")
+	private  String registerMsgContent ;
+	@Value("${rest.org}")
+	private String userServiceUrl;
     @Autowired
     private MarketingMembersMapper marketingMembersMapper;
 
@@ -92,6 +104,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
     
     @Autowired
     private CodeEsService codeEsService;
+
+    @Autowired
+    private RestTemplateUtil restTemplateUtil;
+
+    @Autowired
+	private OrganizationPortraitService organizationPortraitService;
     
     @Value("${marketing.server.ip}")
     private String serverIp;
@@ -193,6 +211,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
     	if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("组织id获取失败", 500);
 		}
+		List<MarketingOrganizationPortraitListParam> selectedPortrait = organizationPortraitService.getSelectedPortrait(organizationId);
+    	if(CollectionUtils.isEmpty(selectedPortrait) ){
+			throw new SuperCodeException("组织id不存在", 500);
+
+		}
 		if(StringUtils.isBlank(marketingMembersAddParam.getBabyBirthday())){
 			marketingMembersAddParam.setBabyBirthday(null);
 		}
@@ -212,12 +235,46 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 		String userId = getUUID();
         marketingMembersAddParam.setUserId(userId);
-        return marketingMembersMapper.addMembers(marketingMembersAddParam);
+		int result = marketingMembersMapper.addMembers(marketingMembersAddParam);
+		// 调用用户模块发送短信
+		if(1 == result){
+			String msg = msgTimplate(marketingMembersAddParam.getUserName(),selectedPortrait.get(0).getOrganizationFullName());
+			sendRegisterMessage(marketingMembersAddParam.getMobile(),msg);
+
+		}
+		return  result;
     }
 
+	private void sendRegisterMessage(String mobile, String msg) {
+
+		try {
+			Map msgData = new HashMap();
+			msgData.put("mobileId",mobile);
+			msgData.put("sendContent",msg);
+			String jsonData= JSONObject.toJSONString(msgData);
+			restTemplateUtil.postJsonDataAndReturnJosn(userServiceUrl+ WechatConstants.SMS_SEND_PHONE_MESSGAE, jsonData, null);
+		} catch (SuperCodeException e) {
+			if(logger.isInfoEnabled()){
+				logger.info("注册用户的短信欢迎信息发送失败"+e.getMessage());
+			}
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * 注册短信内容模板生成器
+	 * @param userName
+	 * @param organizationFullName
+	 * @return
+	 */
+	private String msgTimplate(String userName, String organizationFullName) {
+		return  registerMsgContent.replace("${user}",userName).replace("${organization}",organizationFullName);
+
+	}
 
 
-    /**
+	/**
      * 条件查询会员数量
      * @param map
      * @return

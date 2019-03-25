@@ -29,7 +29,9 @@ public interface WechatConstants {
     
   //获取accesstoken
     public static String WECHAT_USER_INFO="https://api.weixin.qq.com/cgi-bin/user/info";
-    
+
+
+    public  static  String SMS_SEND_PHONE_MESSGAE="sms/send/phone/message";
     
     
 }
