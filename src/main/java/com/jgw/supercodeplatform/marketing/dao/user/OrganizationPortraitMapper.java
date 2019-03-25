@@ -127,4 +127,7 @@ public interface OrganizationPortraitMapper extends CommonSql{
     @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
 	List<MarketingUnitcode> getUnselectedPortrait(@Param("organizationId")String organizationId);
 
+
+    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE CodeId = 'Mobile' ")
+    MarketingUnitcode getMobilePortrait();
 }
