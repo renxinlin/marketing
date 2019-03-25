@@ -44,7 +44,7 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 
 
 	// 	@Value("${marketing.winRecord.sheetHead}")
-	@Value("{\"activityName\":\"奖品类型\",\"userName\":\"会员姓名\",\"wxName\":\"会员微信昵称\", \"openId\":\"会员微信ID\",\"mobile\":\"会员手机\",\"prizeTypeId\":\"中奖奖次\", \"winningAmount\":\"中奖金额\",\"winningCode\":\"中奖码\",\"productName\":\"中奖产品\"}")
+	@Value("{\"activityName\":\"奖品类型\",\"userName\":\"会员姓名\",\"wxName\":\"会员微信昵称\", \"openId\":\"会员微信ID\",\"mobile\":\"会员手机\",\"prizeTypeName\":\"中奖奖次\", \"winningAmount\":\"中奖金额\",\"winningCode\":\"中奖码\",\"productName\":\"中奖产品\",\"customerName\":\"活动门店\"}")
 	private String MARKET_WIN_RECORD_EXCEL_FIELD_MAP;
 
 	@RequestMapping(value = "/page",method = RequestMethod.POST)
