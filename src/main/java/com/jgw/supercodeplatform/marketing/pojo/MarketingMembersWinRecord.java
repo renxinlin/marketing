@@ -12,7 +12,7 @@ public class MarketingMembersWinRecord {
     private String activityName;//奖品类型名称
     private String openid;//会员微信Id
     private Long prizeTypeId;//中奖奖次id
-    private Integer winningAmount;//中奖金额
+    private Float winningAmount;//中奖金额
     private String winningCode;//中奖码
     private String organizationId;//组织id
     private String mobile;//会员手机号
@@ -26,12 +26,12 @@ public class MarketingMembersWinRecord {
     }
 
 
-	public void setWinningAmount(Integer winningAmount) {
+	public void setWinningAmount(Float winningAmount) {
 		this.winningAmount = winningAmount;
 	}
 
 
-	public Integer getWinningAmount() {
+	public Float getWinningAmount() {
 		return winningAmount;
 	}
 
