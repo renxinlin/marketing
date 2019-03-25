@@ -1,7 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +14,15 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingOrganizationPor
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrganizationPortraitService extends CommonUtil {
 
     @Autowired
     private OrganizationPortraitMapper organizationPortraitMapper;
+
+
 
 
     /**
@@ -62,23 +64,48 @@ public class OrganizationPortraitService extends CommonUtil {
      * @param params
      * @return
      */
+    @Transactional(rollbackFor = Exception.class)
     public RestResult<String> addOrgPortrait(List<MarketingOrganizationPortraitParam> params) throws Exception{
       if (null==params || params.isEmpty()) {
 		throw new SuperCodeException("参数不能为空", 500);
 	  }
+
+
       String organizationId=getOrganizationId();
       String organizationName=getOrganizationName();
       organizationPortraitMapper.deleOrgPortrait(organizationId);
-      List<MarketingOrganizationPortrait>mPortraits=new ArrayList<MarketingOrganizationPortrait>();
+
+
+      // 手机号画像添加
+      MarketingUnitcode mobileUnitCode = organizationPortraitMapper.getMobilePortrait();
+      Set mPortraitSets = new HashSet();
+      MarketingOrganizationPortrait mobilePortrait=new MarketingOrganizationPortrait();
+      mobilePortrait.setOrganizationFullName(organizationName);
+      mobilePortrait.setOrganizationId(organizationId);
+      int mobilePortraitId = mobileUnitCode.getId();
+      mobilePortrait.setUnitCodeId((long) mobilePortraitId);
+      // 手机的默认排序[优先级高]
+      mobilePortrait.setFieldWeight(0);
+      mPortraitSets.add(mobilePortrait);
+
       for (MarketingOrganizationPortraitParam marketingOrganizationPortraitParam : params) {
-    	 Long unitCodeId= marketingOrganizationPortraitParam.getUnitCodeId();
-    	 MarketingOrganizationPortrait mPortrait=new MarketingOrganizationPortrait();
-    	 mPortrait.setOrganizationFullName(organizationName);
-    	 mPortrait.setOrganizationId(organizationId);
-    	 mPortrait.setUnitCodeId(unitCodeId);
-    	 mPortrait.setFieldWeight(marketingOrganizationPortraitParam.getFieldWeight());
-    	 mPortraits.add(mPortrait);
-	  }
+          Long unitCodeId= marketingOrganizationPortraitParam.getUnitCodeId();
+          if(mobilePortraitId == marketingOrganizationPortraitParam.getUnitCodeId()){
+              // set中的对象都是画像元素都是手机的时候,对象不一定相等【权重】
+              continue;
+          }
+          MarketingOrganizationPortrait mPortrait=new MarketingOrganizationPortrait();
+          mPortrait.setOrganizationFullName(organizationName);
+          mPortrait.setOrganizationId(organizationId);
+          mPortrait.setUnitCodeId(unitCodeId);
+          mPortrait.setFieldWeight(marketingOrganizationPortraitParam.getFieldWeight());
+          mPortraitSets.add(mPortrait);
+      }
+
+
+
+
+      List<MarketingOrganizationPortrait> mPortraits= new ArrayList<>(mPortraitSets);
       organizationPortraitMapper.batchInsert(mPortraits);
       RestResult<String> restResult=new RestResult<String>();
       restResult.setState(200);
