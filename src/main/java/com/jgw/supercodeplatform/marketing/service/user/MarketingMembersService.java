@@ -457,51 +457,27 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			return restResult;
 		}
 		
-		List<MarketingPrizeTypeMO> mTypeMOs=new ArrayList<MarketingPrizeTypeMO>();
-		int i=0;
-		boolean hasRightPrize=false;
-		for (MarketingPrizeType marketingPrizeType : mPrizeTypes) {
-			Integer probability=marketingPrizeType.getPrizeProbability();
-			MarketingPrizeTypeMO mo=new MarketingPrizeTypeMO();
-			mo.setActivitySetId(marketingPrizeType.getActivitySetId());
-			mo.setId(marketingPrizeType.getId());
-			mo.setPrizeAmount(marketingPrizeType.getPrizeAmount());
-			mo.setPrizeProbability(probability);
-			mo.setPrizeTypeName(marketingPrizeType.getPrizeTypeName());
-			mo.setIsRrandomMoney(marketingPrizeType.getIsRrandomMoney());
-			mo.setWiningNum(marketingPrizeType.getWiningNum()==null?0L:marketingPrizeType.getWiningNum());
-			mo.setLowRand(marketingPrizeType.getLowRand());
-		    mo.setHighRand(marketingPrizeType.getHighRand());
-			if (i==mPrizeTypes.size()-1) {
-				mo.setTotalNum(codeTotalNum);
-			}else {
-				long num = (long) (marketingPrizeType.getPrizeProbability() / 100.00 * codeTotalNum);
-				mo.setTotalNum(num);
-				codeTotalNum=codeTotalNum-num;
-			}
-			if (mo.getWiningNum() <mo.getTotalNum()) {
-				hasRightPrize=true;
-			}
-			mo.setRealPrize(marketingPrizeType.getRealPrize());
-			mTypeMOs.add(mo);
-			i++;
-		}
-		MarketingPrizeTypeMO mPrizeTypeMO =null;
-		if (hasRightPrize) {
-			//执行中奖算法
-			mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
-			logger.info("抽到中奖奖次为："+mPrizeTypeMO.toString());
-		}else {
-			//到这里说明流程已经出现问题，因为在扫码哪部分就会判断当前扫码量有没有达到活动对应的码数量
-			restResult.setState(500);
-			restResult.setMsg("所有奖次对应的中奖码数量都已达到上限无法继续抽奖");
-			return restResult;
-		}
-		
 		String codeId=scanCodeInfoMO.getCodeId();
 		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
+		
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
+		MarketingPrizeTypeMO mPrizeTypeMO =null;
 		synchronized (this) {
+			List<MarketingPrizeTypeMO> mTypeMOs=LotteryUtil.judge(mPrizeTypes, codeTotalNum);
+
+			
+			if (null!=mTypeMOs && !mTypeMOs.isEmpty()) {
+				//执行中奖算法
+				mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
+				logger.info("抽到中奖奖次为："+mPrizeTypeMO);
+			}else {
+				//到这里说明流程已经出现问题，因为在刚开始扫码哪部分就会判断当前扫码量有没有达到活动对应的码数量
+				restResult.setState(500);
+				restResult.setMsg("所有奖次对应的中奖码数量都已达到上限无法继续抽奖");
+				return restResult;
+			}
+			
+			
 			String nowTime=staticESSafeFormat.format(new Date());
 			Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
 			logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
