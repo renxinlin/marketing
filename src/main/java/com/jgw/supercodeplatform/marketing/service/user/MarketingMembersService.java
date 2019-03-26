@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -248,16 +249,26 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @param mobile 手机号
 	 * @param msg 短信内容
 	 */
-	public void sendRegisterMessage(String mobile, String msg) {
+	public void sendRegisterMessage(String mobile, String msg) throws UnsupportedEncodingException {
 
 		try {
 			Map msgData = new HashMap();
 			msgData.put("mobileId",mobile);
 			msgData.put("sendContent",msg);
 			String jsonData= JSONObject.toJSONString(msgData);
+			String iso8859 = new String(jsonData.getBytes("iso8859-1"));
+			String gbk = new String(jsonData.getBytes("gbk"));
+			String utf8 = new String(jsonData.getBytes("utf-8"));
+			if(iso8859.equals(jsonData.toString())){
+				System.out.println("iso8859");
+			}else  if(gbk.equals(jsonData.toString())){
+				System.out.println("gbk");
+			}else  if(utf8.equals(jsonData.toString())){
+				System.out.println("utf8");
+			}
 			Map<String, String> headerMap = new HashMap<>();
 			headerMap.put("charset","UTF-8");
-			restTemplateUtil.postJsonDataAndReturnJosn(userServiceUrl+ WechatConstants.SMS_SEND_PHONE_MESSGAE, jsonData, headerMap);
+			restTemplateUtil.postJsonDataAndReturnJosnObject(userServiceUrl+ WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, headerMap);
 		} catch (SuperCodeException e) {
 			if(logger.isInfoEnabled()){
 				logger.info("注册用户的短信欢迎信息发送失败"+e.getMessage());
