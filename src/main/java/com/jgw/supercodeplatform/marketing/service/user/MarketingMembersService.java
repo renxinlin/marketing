@@ -313,6 +313,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		members.setWxName(membersUpdateParam.getWxName());
 		members.setUserName(membersUpdateParam.getUserName());
 		members.setId(membersUpdateParam.getId());
+		members.setIsRegistered((byte)1);
 		return marketingMembersMapper.update(members);
 	}
 
@@ -386,7 +387,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("验证码不正确");
 			return restResult;
 		}
-		
 		Long activitySetId=scanCodeInfoMO.getActivitySetId();
 		MarketingActivitySet maActivitySet=mSetMapper.selectById(activitySetId);
 		if (null==maActivitySet) {
@@ -394,13 +394,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("该活动设置id不存在");
 			return restResult;
 		}
-		//设置手机号
-		scanCodeInfoMO.setMobile(mobile);
-		
-		
 		String openId=scanCodeInfoMO.getOpenId();
 		String organizationId=maActivitySet.getOrganizationId();
-		
 		//1、首先保证授权时用户是保存成功的
 		MarketingMembers marketingMembersByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openId, organizationId);
 		if (null==marketingMembersByOpenId) {
@@ -435,7 +430,19 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				h5LoginVO.setMemberId(userIdByOpenId);
 			}
 		}else {
-			//如果根据登录手机号能找到用户则说明之前登陆过或者注册过就不需要注册完善信息，但需要比较跟openid查出的记录是否是一条记录，不是的话要合并
+			// zhuchuang老逻辑：如果根据登录手机号能找到用户则说明之前登陆过或者注册过就不需要注册完善信息，但需要比较跟openid查出的记录是否是一条记录，不是的话要合并
+			// renxinlin 新逻辑：已经注册用户如果画像只有手机则无需完善，如果完善过一次则无需完善
+			// 默认需要完善
+			h5LoginVO.setRegistered(0);
+			// 只有一个画像无需完善
+			if (mPortraits.size()==1){
+				h5LoginVO.setRegistered(1);
+			}
+			// 已经完善过不完善
+			if(marketingMembersByPhone.getIsRegistered() != null && marketingMembersByPhone.getIsRegistered() == 1){
+				h5LoginVO.setRegistered(1);
+
+			}
 			h5LoginVO.setRegistered(1);
 			Long userIdByPhone=marketingMembersByPhone.getId();
 			//4、如果分别根据openid和手机号查出两条记录且主键id不一致，则说明
@@ -462,6 +469,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 			}
 		}
+
+
+
 		restResult.setState(200);
 		restResult.setResults(h5LoginVO);
 		restResult.setMsg("登录成功");
@@ -473,7 +483,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @param openId
 	 * @return
 	 * @throws SuperCodeException
-	 * @throws ParseException 
 	 */
 	public RestResult<String> lottery(String wxstate) throws SuperCodeException, ParseException {
 		RestResult<String> restResult=new RestResult<String>();
@@ -484,12 +493,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("不存在扫码唯一纪录="+wxstate+"的扫码缓存信息，请重新扫码");
 			return restResult;
 		}
+
 		// 手机校验,抛出异常
 		String mobile=scanCodeInfoMO.getMobile();
 		if (StringUtils.isNotBlank(mobile)) {
 			checkPhoneFormat(mobile);
 		}
-		
+
 		String openId=scanCodeInfoMO.getOpenId();
 		if (StringUtils.isBlank(openId)) {
 			restResult.setState(500);
@@ -570,24 +580,25 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 						restResult.setMsg("您今日扫码已超过该活动限制数量");
 						return restResult;
 					}
-				
+
 				}
 			}else {
 				restResult.setState(200);
 				restResult.setMsg("您手速太慢，刚刚该码已被其它用户扫过");
 				return restResult;
 			}
-			
+
 			//更新奖次被扫码数量
 			mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
 			MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
 			marketingPrizeType.setId(mPrizeTypeMO.getId());
 			marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
 			mMarketingPrizeTypeMapper.update(marketingPrizeType);
-			
+
 			codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp);
 			logger.info("领取方法====：抽奖数据已保存到es");
 		}
+		logger.info("抽奖数据已保存到es");
 		//判断realprize是否为0,0表示不中奖
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
@@ -604,7 +615,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				amount=new Random().nextInt((int)(max-min))+min;
 			}
 			Float finalAmount = amount * 100;//金额转化为分
- 			//插入中奖纪录
+			//插入中奖纪录
 			MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
 			redWinRecord.setActivityId(activity.getId());
 			redWinRecord.setActivityName(activity.getActivityName());
@@ -612,7 +623,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			redWinRecord.setMobile(mobile);
 			redWinRecord.setOpenid(openId);
 			redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
-			redWinRecord.setWinningAmount((float)amount );
+			redWinRecord.setWinningAmount((float)finalAmount );
 			redWinRecord.setWinningCode(scanCodeInfoMO.getCodeId());
 			redWinRecord.setOrganizationId(organizationId);
 			mWinRecordMapper.addWinRecord(redWinRecord);
