@@ -60,7 +60,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersService.class);
 
 	//	@Value( "${注册短信模板外部配置key}")
-	@Value( "恭亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
+	@Value( "亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
 	private  String registerMsgContent ;
 	@Value("${rest.user.url}")
 	private String userServiceUrl;
