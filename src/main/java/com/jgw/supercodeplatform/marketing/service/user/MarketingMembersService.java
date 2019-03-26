@@ -457,7 +457,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				h5LoginVO.setRegistered(1);
 
 			}
-			h5LoginVO.setRegistered(1);
+
 			Long userIdByPhone=marketingMembersByPhone.getId();
 			//4、如果分别根据openid和手机号查出两条记录且主键id不一致，则说明
 			// 4.1、这两条信息没合并过
@@ -477,7 +477,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				members.setOpenid( marketingMembersByOpenId.getOpenid());
 				members.setWxName(marketingMembersByOpenId.getWxName());
 				marketingMembersMapper.update(members);
-
+				h5LoginVO.setMemberId(userIdByPhone);
 				//删除openid查出的用户
 				marketingMembersMapper.deleteById(userIdByOpenId);
 

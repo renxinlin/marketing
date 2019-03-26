@@ -177,6 +177,7 @@ public interface MarketingMembersMapper {
             + " <if test='pCCcode !=null and pCCcode != &apos;&apos; '> PCCcode = #{pCCcode} ,</if> "
             + " <if test='wxName !=null and wxName != &apos;&apos; '> WxName = #{wxName} ,</if> "
             + " <if test='openid !=null and openid != &apos;&apos; '> Openid = #{openid} ,</if> "
+            + " <if test=' isRegistered !=null and isRegistered != &apos;&apos; '> IsRegistered = #{isRegistered} ,</if> "
             + " UpdateDate = NOW() ,"
             + " </set>"
             + " <where> "
