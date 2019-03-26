@@ -61,9 +61,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersService.class);
 
 	//	@Value( "${注册短信模板外部配置key}")
-	@Value( "恭亲爱的${user},恭喜成功注册成为${organization}的会员")
+	@Value( "恭亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
 	private  String registerMsgContent ;
-	@Value("${rest.org}")
+	@Value("${rest.user.url}")
 	private String userServiceUrl;
 	@Autowired
 	private MarketingMembersMapper marketingMembersMapper;
@@ -269,7 +269,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @return
 	 */
 	private String msgTimplate(String userName, String organizationFullName) {
-		return  registerMsgContent.replace("${user}",userName).replace("${organization}",organizationFullName);
+		return  registerMsgContent.replace("{{user}}",userName).replace("{{organization}}",organizationFullName);
 
 	}
 
