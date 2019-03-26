@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -623,7 +624,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			if (randAmount.equals((byte)1)) {
 				float min=mPrizeTypeMO.getLowRand();
 				float max=mPrizeTypeMO.getHighRand();
-				amount=new Random().nextInt((int)(max-min))+min;
+				// [ )
+				amount=new Random().nextFloat() * (max - min)+min;
 			}
 			Float finalAmount = amount * 100;//金额转化为分
 			//插入中奖纪录
