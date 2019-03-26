@@ -1,7 +1,12 @@
 package com.jgw.supercodeplatform.marketing.controller.h5;
 
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
+import com.jgw.supercodeplatform.marketing.service.user.OrganizationPortraitService;
 import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +25,7 @@ import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 中奖页controller
@@ -33,13 +39,21 @@ public class MarketingWinningPageFrontController {
 
 	@Autowired
 	private MarketingWinningPageService service;
+
+	@Autowired
+	private OrganizationPortraitService organizationPortraitService;
+
+	@Autowired
+	private MarketingMembersService marketingMembersService;
+
+
 	
 	@RequestMapping(value = "/getByAsId",method = RequestMethod.GET)
     @ApiOperation(value = "根据活动设置id获取中奖页记录", notes = "")
 	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "扫码唯一id",name="wxstate",required=false),@ApiImplicitParam(paramType="query",value = "获取设置主键id",name="activitySetId",required=false)})
 	public RestResult<MarketingWinningPage> getByAsId(String wxstate, Long activitySetId , HttpServletResponse response) throws SuperCodeException{
+		ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
         if (null==activitySetId) {
-        	ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
         	if (null==scInfoMO) {
         		throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
         	}
@@ -50,13 +64,6 @@ public class MarketingWinningPageFrontController {
 			throw new SuperCodeException("h5扫码时获取中奖页信息失败根据activitySetId="+activitySetId+"无法获取中奖页信息", 500);
 		}
 
-		if(mWinningPage.getLoginType() == 1){
-			try {
-				response.sendRedirect("");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 		RestResult<MarketingWinningPage> restResult=new RestResult<MarketingWinningPage>();
 		restResult.setState(200);
 		restResult.setResults(mWinningPage);
