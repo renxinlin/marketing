@@ -1,26 +1,21 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -29,8 +24,10 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
@@ -55,7 +52,6 @@ import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
-import org.springframework.util.CollectionUtils;
 
 @Service
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
@@ -316,8 +312,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
         members.setWxName(membersUpdateParam.getWxName());
         members.setUserName(membersUpdateParam.getUserName());
         members.setId(membersUpdateParam.getId());
-        // 完善注册信息
-        members.setIsRegistered((byte )1);
+        members.setIsRegistered((byte)1);
         return marketingMembersMapper.update(members);
     }
 
@@ -488,16 +483,22 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * @return
      * @throws SuperCodeException
      */
-    public RestResult<String> lottery(String wxstate,String mobile) throws SuperCodeException {
+    public RestResult<String> lottery(String wxstate) throws SuperCodeException {
         RestResult<String> restResult=new RestResult<String>();
-        // 手机校验,抛出异常
-        checkPhoneFormat(mobile);
+
         ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
         if (null==scanCodeInfoMO) {
             restResult.setState(500);
             restResult.setMsg("不存在扫码唯一纪录="+wxstate+"的扫码缓存信息，请重新扫码");
             return restResult;
         }
+
+        // 手机校验,抛出异常
+        String mobile=scanCodeInfoMO.getMobile();
+        if (StringUtils.isNotBlank(mobile)) {
+            checkPhoneFormat(mobile);
+        }
+
         String openId=scanCodeInfoMO.getOpenId();
         if (StringUtils.isBlank(openId)) {
             restResult.setState(500);
@@ -510,12 +511,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
         if (null==mActivitySet) {
             restResult.setState(500);
             restResult.setMsg("该活动设置不存在");
-            return restResult;
-        }
-        List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetId(activitySetId);
-        if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
-            restResult.setState(500);
-            restResult.setMsg("该活动未设置中奖奖次");
             return restResult;
         }
 
@@ -546,6 +541,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
         //同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
         MarketingPrizeTypeMO mPrizeTypeMO =null;
         synchronized (this) {
+            List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetIdIncludeUnreal(activitySetId);
+            if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
+                restResult.setState(500);
+                restResult.setMsg("该活动未设置中奖奖次");
+                return restResult;
+            }
             List<MarketingPrizeTypeMO> mTypeMOs=LotteryUtil.judge(mPrizeTypes, codeTotalNum);
 
 
@@ -648,6 +649,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
             restResult.setMsg(amount+"");
         }
         return restResult;
+    }
+
+    public void update(MarketingMembers members) {
+        marketingMembersMapper.update(members);
     }
 
 }
