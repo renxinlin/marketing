@@ -472,13 +472,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 */
 	public RestResult<String> lottery(String wxstate,String mobile) throws SuperCodeException {
 		RestResult<String> restResult=new RestResult<String>();
-		boolean phone = LotteryUtil.isPhone(mobile);
-		if(!phone){
-			restResult.setState(500);
-			restResult.setMsg("手机号码格式错误");
-			return restResult;
-		}
-
+		// 手机校验,抛出异常
+		checkPhoneFormat(mobile);
 		ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
 		if (null==scanCodeInfoMO) {
 			restResult.setState(500);
