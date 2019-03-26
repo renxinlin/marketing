@@ -60,134 +60,134 @@ import org.springframework.util.CollectionUtils;
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
 	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersService.class);
 
-//	@Value( "${注册短信模板外部配置key}")
+	//	@Value( "${注册短信模板外部配置key}")
 	@Value( "恭亲爱的${user},恭喜成功注册成为${organization}的会员")
 	private  String registerMsgContent ;
 	@Value("${rest.org}")
 	private String userServiceUrl;
-    @Autowired
-    private MarketingMembersMapper marketingMembersMapper;
+	@Autowired
+	private MarketingMembersMapper marketingMembersMapper;
 
-    @Autowired
-    private OrganizationPortraitMapper organizationPortraitMapper;
+	@Autowired
+	private OrganizationPortraitMapper organizationPortraitMapper;
 
-    @Autowired
-    private AdminstrativeCodeMapper adminstrativeCodeMapper;
+	@Autowired
+	private AdminstrativeCodeMapper adminstrativeCodeMapper;
 
-    @Autowired
-    private MarketingActivitySetMapper mSetMapper;
+	@Autowired
+	private MarketingActivitySetMapper mSetMapper;
 
-    @Autowired
-    private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
-    
-    @Autowired
-    private MarketingActivityMapper mActivityMapper;
-    
-    @Autowired
-    private MarketingWxMerchantsMapper mWxMerchantsMapper;
-    
-    
-    @Autowired
-    private MarketingMembersWinRecordMapper mWinRecordMapper;
-    
-    @Autowired
-    private WXPayTradeOrderMapper wXPayTradeOrderMapper;
-    
-    @Autowired
-    private RedisUtil redisUtil;
-    
-    @Autowired
-    private CommonUtil commonUtil;
-    
-    @Autowired
-    private WXPayService wxpService;
-    
-    @Autowired
-    private CodeEsService codeEsService;
+	@Autowired
+	private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
 
-    @Autowired
-    private RestTemplateUtil restTemplateUtil;
+	@Autowired
+	private MarketingActivityMapper mActivityMapper;
 
-    @Autowired
+	@Autowired
+	private MarketingWxMerchantsMapper mWxMerchantsMapper;
+
+
+	@Autowired
+	private MarketingMembersWinRecordMapper mWinRecordMapper;
+
+	@Autowired
+	private WXPayTradeOrderMapper wXPayTradeOrderMapper;
+
+	@Autowired
+	private RedisUtil redisUtil;
+
+	@Autowired
+	private CommonUtil commonUtil;
+
+	@Autowired
+	private WXPayService wxpService;
+
+	@Autowired
+	private CodeEsService codeEsService;
+
+	@Autowired
+	private RestTemplateUtil restTemplateUtil;
+
+	@Autowired
 	private OrganizationPortraitService organizationPortraitService;
-    
-    @Value("${marketing.server.ip}")
-    private String serverIp;
-    
-    private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
-    
-    
-    @Override
+
+	@Value("${marketing.server.ip}")
+	private String serverIp;
+
+	private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
+
+
+	@Override
 	protected List<Map<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
 
-    	String listSQl = listSql(searchParams,false);
-    	List<Map<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
-    	return data;
+		String listSQl = listSql(searchParams,false);
+		List<Map<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
+		return data;
 	}
 
 	private String listSql(MarketingMembersListParam searchParams,boolean isCount) throws SuperCodeException {
-    	String organizationId=commonUtil.getOrganizationId();
-    	List<MarketingOrganizationPortraitListParam> mPortraitListParams=organizationPortraitMapper.getSelectedPortrait(organizationId);
-    	if (null==mPortraitListParams || mPortraitListParams.isEmpty()) {
+		String organizationId=commonUtil.getOrganizationId();
+		List<MarketingOrganizationPortraitListParam> mPortraitListParams=organizationPortraitMapper.getSelectedPortrait(organizationId);
+		if (null==mPortraitListParams || mPortraitListParams.isEmpty()) {
 			throw new SuperCodeException("企业未设置画像", 500);
 		}
 		StringBuffer fieldsbuf=new StringBuffer();
-    	StringBuffer commonSearchbuf=new StringBuffer();
-    	int i=0;
-    	boolean commonsearch=false;
-    	String search=searchParams.getSearch();
-    	if (StringUtils.isNotBlank(search)) {
-    		commonsearch=true;
-    		commonSearchbuf.append(" AND (");
+		StringBuffer commonSearchbuf=new StringBuffer();
+		int i=0;
+		boolean commonsearch=false;
+		String search=searchParams.getSearch();
+		if (StringUtils.isNotBlank(search)) {
+			commonsearch=true;
+			commonSearchbuf.append(" AND (");
 		}
-    	fieldsbuf.append("Id,State,Openid,WxName,");
-    	for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
-    		String code=marketingOrganizationPortraitListParam.getCodeId();
-           if( "birthday".equalsIgnoreCase(code)){
-                fieldsbuf.append(" date_format(birthday ,'%Y-%m-%d' ) Birthday ");
+		fieldsbuf.append("Id,State,Openid,WxName,");
+		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
+			String code=marketingOrganizationPortraitListParam.getCodeId();
+			if( "birthday".equalsIgnoreCase(code)){
+				fieldsbuf.append(" date_format(birthday ,'%Y-%m-%d' ) Birthday ");
 
-            } else if("babyBirthday".equalsIgnoreCase(code)){
-                fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
+			} else if("babyBirthday".equalsIgnoreCase(code)){
+				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
 
-            }else{
-                fieldsbuf.append(code);
+			}else{
+				fieldsbuf.append(code);
 
-            }
-    		if(i<mPortraitListParams.size()-1) {
-    			fieldsbuf.append(",");
-    		}
-    		if (commonsearch) {
-    			if (i>0) {
-    				commonSearchbuf.append(" OR ");
-				}
-    			commonSearchbuf.append(code).append(" like ");
-    			if (code.contains("Date")) {
-    				commonSearchbuf.append("binary");
-				}
-    			commonSearchbuf.append("CONCAT('%',").append("'").append(search).append("'").append(",'%')");
-    			if(i==mPortraitListParams.size()-1) {
-    				commonSearchbuf.append(")");
-    			}
 			}
-    		i++;
+			if(i<mPortraitListParams.size()-1) {
+				fieldsbuf.append(",");
+			}
+			if (commonsearch) {
+				if (i>0) {
+					commonSearchbuf.append(" OR ");
+				}
+				commonSearchbuf.append(code).append(" like ");
+				if (code.contains("Date")) {
+					commonSearchbuf.append("binary");
+				}
+				commonSearchbuf.append("CONCAT('%',").append("'").append(search).append("'").append(",'%')");
+				if(i==mPortraitListParams.size()-1) {
+					commonSearchbuf.append(")");
+				}
+			}
+			i++;
 		}
-    	String from=" from marketing_members ";
-    	String where=" where OrganizationId='"+organizationId+"'";
-    	String sql=null;
-    	if (isCount) {
-    		 sql=" select count(*) "+from+where;
-        	if (commonsearch) {
-        		sql+=commonSearchbuf.toString();
-    		}
+		String from=" from marketing_members ";
+		String where=" where OrganizationId='"+organizationId+"'";
+		String sql=null;
+		if (isCount) {
+			sql=" select count(*) "+from+where;
+			if (commonsearch) {
+				sql+=commonSearchbuf.toString();
+			}
 		}else {
 			Integer startNum=searchParams.getStartNumber();
-    		Integer pagesize=searchParams.getPageSize();
-    		 sql=" select "+fieldsbuf.toString()+from+where;
-        	if (commonsearch) {
-        		sql+=commonSearchbuf.toString();
-    		}
-        	if (null!=startNum && null!=pagesize) {
-        		sql+=" limit "+startNum+","+pagesize;
+			Integer pagesize=searchParams.getPageSize();
+			sql=" select "+fieldsbuf.toString()+from+where;
+			if (commonsearch) {
+				sql+=commonSearchbuf.toString();
+			}
+			if (null!=startNum && null!=pagesize) {
+				sql+=" limit "+startNum+","+pagesize;
 			}
 		}
 		return sql;
@@ -195,24 +195,24 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	@Override
 	protected int count(MarketingMembersListParam searchParams) throws Exception {
-	   	String listSQl = listSql(searchParams,true);
-    	Integer count=marketingMembersMapper.dynamicCount(listSQl);
-    	return count;
+		String listSQl = listSql(searchParams,true);
+		Integer count=marketingMembersMapper.dynamicCount(listSQl);
+		return count;
 	}
 
 	/**
-     * 会员注册
-     * @param map
-     * @return
-     * @throws Exception
-     */
-    public int addMember(MarketingMembersAddParam marketingMembersAddParam) throws Exception{
-    	String organizationId=marketingMembersAddParam.getOrganizationId();
-    	if (StringUtils.isBlank(organizationId)) {
+	 * 会员注册
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	public int addMember(MarketingMembersAddParam marketingMembersAddParam) throws Exception{
+		String organizationId=marketingMembersAddParam.getOrganizationId();
+		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("组织id获取失败", 500);
 		}
 		List<MarketingOrganizationPortraitListParam> selectedPortrait = organizationPortraitService.getSelectedPortrait(organizationId);
-    	if(CollectionUtils.isEmpty(selectedPortrait) ){
+		if(CollectionUtils.isEmpty(selectedPortrait) ){
 			throw new SuperCodeException("组织id不存在", 500);
 
 		}
@@ -223,18 +223,18 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if(StringUtils.isBlank(marketingMembersAddParam.getBirthday())){
 			marketingMembersAddParam.setBirthday(null);
 		}
-    	// 校验是否已经注册
+		// 校验是否已经注册
 		Map<String, Object> map = new HashMap<>();
 		map.put("organizationId",organizationId);
 		map.put("mobile",marketingMembersAddParam.getMobile());
 		Integer allMarketingMembersCount = marketingMembersMapper.getAllMarketingMembersCount(map);
 
-		if(allMarketingMembersCount >= 1){
-			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册已注册");
-			throw  new SuperCodeException("手机号注册已注册",500);
-		}
+//		if(allMarketingMembersCount >= 1){
+//			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册已注册");
+//			throw  new SuperCodeException("手机号注册已注册",500);
+//		}
 		String userId = getUUID();
-        marketingMembersAddParam.setUserId(userId);
+		marketingMembersAddParam.setUserId(userId);
 		int result = marketingMembersMapper.addMembers(marketingMembersAddParam);
 		// 调用用户模块发送短信
 		if(1 == result){
@@ -243,7 +243,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 		}
 		return  result;
-    }
+	}
 
 	private void sendRegisterMessage(String mobile, String msg) {
 
@@ -275,86 +275,86 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 
 	/**
-     * 条件查询会员数量
-     * @param map
-     * @return
-     */
-    public Integer getAllMarketingMembersCount(Map<String,Object> map){
-        return marketingMembersMapper.getAllMarketingMembersCount(map);
-    }
+	 * 条件查询会员数量
+	 * @param map
+	 * @return
+	 */
+	public Integer getAllMarketingMembersCount(Map<String,Object> map){
+		return marketingMembersMapper.getAllMarketingMembersCount(map);
+	}
 
-    /**
-     * 修改会员信息
-     * @param map
-     * @return
-     */
-    public int updateMembers(MarketingMembersUpdateParam membersUpdateParam){
-    	MarketingMembers members=new MarketingMembers();
+	/**
+	 * 修改会员信息
+	 * @param map
+	 * @return
+	 */
+	public int updateMembers(MarketingMembersUpdateParam membersUpdateParam){
+		MarketingMembers members=new MarketingMembers();
 		// datetime类型处理
-    	if(!StringUtils.isBlank(membersUpdateParam.getBabyBirthday())){
+		if(!StringUtils.isBlank(membersUpdateParam.getBabyBirthday())){
 			members.setBabyBirthday(membersUpdateParam.getBabyBirthday());
 
 		}
 		if(!StringUtils.isBlank(membersUpdateParam.getBirthday())){
 			members.setBirthday(membersUpdateParam.getBirthday());
 		}
-    	members.setCustomerId(membersUpdateParam.getCustomerId());
-    	members.setCustomerName(membersUpdateParam.getCustomerName());
-    	members.setMobile(membersUpdateParam.getMobile());
-    	members.setOpenid(membersUpdateParam.getOpenid());
-    	members.setpCCcode(membersUpdateParam.getpCCcode());
-    	members.setSex(membersUpdateParam.getSex());
-    	members.setState(membersUpdateParam.getState());
-    	members.setWxName(membersUpdateParam.getWxName());
-    	members.setUserName(membersUpdateParam.getUserName());
-    	members.setId(membersUpdateParam.getId());
-        return marketingMembersMapper.update(members);
-    }
+		members.setCustomerId(membersUpdateParam.getCustomerId());
+		members.setCustomerName(membersUpdateParam.getCustomerName());
+		members.setMobile(membersUpdateParam.getMobile());
+		members.setOpenid(membersUpdateParam.getOpenid());
+		members.setpCCcode(membersUpdateParam.getpCCcode());
+		members.setSex(membersUpdateParam.getSex());
+		members.setState(membersUpdateParam.getState());
+		members.setWxName(membersUpdateParam.getWxName());
+		members.setUserName(membersUpdateParam.getUserName());
+		members.setId(membersUpdateParam.getId());
+		return marketingMembersMapper.update(members);
+	}
 
-    /**
-     * 修改会员状态
-     * @param map
-     * @return
-     * @throws SuperCodeException 
-     */
-    public int updateMembersStatus(Long id,int status) throws SuperCodeException{
-        return marketingMembersMapper.updateMembersStatus(id,status);
-    }
+	/**
+	 * 修改会员状态
+	 * @param map
+	 * @return
+	 * @throws SuperCodeException
+	 */
+	public int updateMembersStatus(Long id,int status) throws SuperCodeException{
+		return marketingMembersMapper.updateMembersStatus(id,status);
+	}
 
 	public void addMember(MarketingMembers members) {
 		marketingMembersMapper.insert(members);
 	}
-    /**
-     * 获取单个会员信息
-     * @param map
-     * @return
-     * @throws SuperCodeException 
-     */
-    public MarketingMembers getMemberById(Long id) throws SuperCodeException{
-        return marketingMembersMapper.getMemberById(id);
-    }
+	/**
+	 * 获取单个会员信息
+	 * @param map
+	 * @return
+	 * @throws SuperCodeException
+	 */
+	public MarketingMembers getMemberById(Long id) throws SuperCodeException{
+		return marketingMembersMapper.getMemberById(id);
+	}
 
 	public MarketingMembers selectByOpenIdAndOrgId(String openid, String organizationId) {
 		return marketingMembersMapper.selectByOpenIdAndOrgId(openid,organizationId);
 	}
-    /**
-     * h5页面登录接口--既然已经执行登录接口那肯定是该活动中奖页设置了手机登录（通过活动设置id查询中奖页信息得知）
-     * @param mobile
-     * @param openId 
-     * @param activitySetId
-     * @param verificationCode
-     * @return
-     * @throws SuperCodeException
-     * 
-     * 1、根据手机号和组织id查
-     *   1.1、查的到则说明该用户注册过(再根据用户已注册字段确认)--这时需要把openid的记录和手机号两条记录合并
-     *   1.2、如果查不到
-     *      1.2.1、用户注册过但手机号换了---根据openid查，如果查出的记录用户已注册字段为是则验证该情况
-     *      1.2.2、用户未注册                       ---根据openid查，如果查出的记录用户已注册字段为否则验证该情况
-     *      
+	/**
+	 * h5页面登录接口--既然已经执行登录接口那肯定是该活动中奖页设置了手机登录（通过活动设置id查询中奖页信息得知）
+	 * @param mobile
+	 * @param openId
+	 * @param activitySetId
+	 * @param verificationCode
+	 * @return
+	 * @throws SuperCodeException
+	 *
+	 * 1、根据手机号和组织id查
+	 *   1.1、查的到则说明该用户注册过(再根据用户已注册字段确认)--这时需要把openid的记录和手机号两条记录合并
+	 *   1.2、如果查不到
+	 *      1.2.1、用户注册过但手机号换了---根据openid查，如果查出的记录用户已注册字段为是则验证该情况
+	 *      1.2.2、用户未注册                       ---根据openid查，如果查出的记录用户已注册字段为否则验证该情况
+	 *
 
-     */
-	
+	 */
+
 	public RestResult<H5LoginVO> login(String mobile, String wxstate, String verificationCode) throws SuperCodeException {
 		RestResult<H5LoginVO> restResult=new RestResult<H5LoginVO>();
 		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(verificationCode)|| StringUtils.isBlank(wxstate)) {
@@ -368,14 +368,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码");
 			return restResult;
 		}
-		
+
 		String redisPhoneCode=redisUtil.get(RedisKey.phone_code_prefix+mobile);
 		if (StringUtils.isBlank(redisPhoneCode) ) {
 			restResult.setState(500);
 			restResult.setMsg("验证码不存在或已过期请重新获取验证码");
 			return restResult;
 		}
-		
+
 		if (!redisPhoneCode.equals(verificationCode)) {
 			restResult.setState(500);
 			restResult.setMsg("验证码不正确");
@@ -402,15 +402,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("登录时获取企业画像设置为空，无法进行后续逻辑");
 			return restResult;
 		}
-		
-		
+
+
 		H5LoginVO h5LoginVO=new H5LoginVO();
 		Long userIdByOpenId=marketingMembersByOpenId.getId();
 		//2、根据输入的手机号和组织id查询该手机号是否存在记录
 		MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
-		
+
 		//3、如果根据登录手机号无法查询到记录，则说明该手机号未进行过注册也为进行过绑定。可能情况：
-		 //3.1该openid对应的用户之前绑定过手机号但是想换手机号了、3.2该openid用户从未绑定过手机号 
+		//3.1该openid对应的用户之前绑定过手机号但是想换手机号了、3.2该openid用户从未绑定过手机号
 		if (null==marketingMembersByPhone) {
 			MarketingMembers members=new MarketingMembers();
 			members.setId(userIdByOpenId);
@@ -431,7 +431,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			// 4.1、这两条信息没合并过
 			// 4.2、手机号这条记录合并过openid，可用户此时想换一个微信号openid
 			if (!userIdByOpenId.equals(userIdByPhone)) {
-				
+
 				String openIdByPhone=marketingMembersByPhone.getOpenid();
 				String openIdByOpendId=marketingMembersByOpenId.getOpenid();
 				//手机号这条记录的openid不为空，合并过openid就通过之前的openid更新中奖纪录里的openid和手机号
@@ -445,10 +445,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				members.setOpenid( marketingMembersByOpenId.getOpenid());
 				members.setWxName(marketingMembersByOpenId.getWxName());
 				marketingMembersMapper.update(members);
-				
+
 				//删除openid查出的用户
 				marketingMembersMapper.deleteById(userIdByOpenId);
-	
+
 			}
 		}
 		restResult.setState(200);
@@ -456,13 +456,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		restResult.setMsg("登录成功");
 		return restResult;
 	}
-    /**
-     * 点击中奖逻辑
-     * @param activitySetId
-     * @param openId
-     * @return
-     * @throws SuperCodeException
-     */
+	/**
+	 * 点击中奖逻辑
+	 * @param activitySetId
+	 * @param openId
+	 * @return
+	 * @throws SuperCodeException
+	 */
 	public RestResult<String> lottery(String wxstate,String mobile) throws SuperCodeException {
 		RestResult<String> restResult=new RestResult<String>();
 
@@ -479,7 +479,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			return restResult;
 		}
 		Long activitySetId=scanCodeInfoMO.getActivitySetId();
-		
+
 		MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
 		if (null==mActivitySet) {
 			restResult.setState(500);
@@ -492,7 +492,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("该活动未设置中奖奖次");
 			return restResult;
 		}
-		
+
 		MarketingActivity activity=mActivityMapper.selectById(mActivitySet.getActivityId());
 		if (null==activity) {
 			restResult.setState(500);
@@ -513,16 +513,16 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("当前企业未绑定公众号数据");
 			return restResult;
 		}
-		
+
 		String codeId=scanCodeInfoMO.getCodeId();
 		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
-		
+
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
 		MarketingPrizeTypeMO mPrizeTypeMO =null;
 		synchronized (this) {
 			List<MarketingPrizeTypeMO> mTypeMOs=LotteryUtil.judge(mPrizeTypes, codeTotalNum);
 
-			
+
 			if (null!=mTypeMOs && !mTypeMOs.isEmpty()) {
 				//执行中奖算法
 				mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
@@ -533,8 +533,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				restResult.setMsg("所有奖次对应的中奖码数量都已达到上限无法继续抽奖");
 				return restResult;
 			}
-			
-			
+
+
 			String nowTime=staticESSafeFormat.format(new Date());
 			Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
 			logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
@@ -551,7 +551,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 						marketingPrizeType.setId(mPrizeTypeMO.getId());
 						marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
 						mMarketingPrizeTypeMapper.update(marketingPrizeType);
-						codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId(), activitySetId,nowTime);	
+						codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId(), activitySetId,nowTime);
 					}else {
 						restResult.setState(500);
 						restResult.setMsg("您今日扫码已超过该活动限制数量");
@@ -565,23 +565,23 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			}
 		}
 		logger.info("抽奖数据已保存到es");
-        //判断realprize是否为0,0表示不中奖
+		//判断realprize是否为0,0表示不中奖
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
 			restResult.setState(200);
 			restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 		}else if (realPrize.equals((byte)1)) {
-			Integer amount=mPrizeTypeMO.getPrizeAmount();
+			Float amount=mPrizeTypeMO.getPrizeAmount();
 			Byte randAmount=mPrizeTypeMO.getIsRrandomMoney();
 			//如果是随机金额则生成随机金额
 			if (randAmount.equals((byte)1)) {
-				int min=mPrizeTypeMO.getLowRand();
-				int max=mPrizeTypeMO.getHighRand();
-				amount=new Random().nextInt(max-min)+min;
+				float min=mPrizeTypeMO.getLowRand();
+				float max=mPrizeTypeMO.getHighRand();
+				amount=new Random().nextInt((int)(max-min))+min;
 			}
-			int finalAmount = amount * 100;//金额转化为分
-			//插入中奖纪录
+			Float finalAmount = amount * 100;//金额转化为分
+ 			//插入中奖纪录
 			MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
 			redWinRecord.setActivityId(activity.getId());
 			redWinRecord.setActivityName(activity.getActivityName());
@@ -589,11 +589,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			redWinRecord.setMobile(mobile);
 			redWinRecord.setOpenid(openId);
 			redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
-			redWinRecord.setWinningAmount(finalAmount);
+			redWinRecord.setWinningAmount((float)finalAmount );
 			redWinRecord.setWinningCode(scanCodeInfoMO.getCodeId());
 			redWinRecord.setOrganizationId(organizationId);
 			mWinRecordMapper.addWinRecord(redWinRecord);
-			
+
 			//生成订单号
 			String partner_trade_no=WXPayTradeNoGenerator.tradeNo();
 			//保存订单
@@ -606,7 +606,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			tradeOrder.setTradeDate(format.format(new Date()));
 			tradeOrder.setOrganizationId(organizationId);
 			wXPayTradeOrderMapper.insert(tradeOrder);
-			
+
 			String remoteAddr = request.getRemoteAddr();
 			if (StringUtils.isBlank(remoteAddr)) {
 				remoteAddr=serverIp;
@@ -623,5 +623,5 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 		return restResult;
 	}
-    
+
 }

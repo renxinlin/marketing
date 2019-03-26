@@ -11,7 +11,7 @@ public class WXPayTradeOrder {
     
 	private String openId;//客户openid
 
-	private Integer amount;//支付金额单位 分
+	private Float amount;//支付金额单位 分
 
 	private String tradeDate;//交易时间
 
@@ -69,11 +69,11 @@ public class WXPayTradeOrder {
 		this.openId = openId;
 	}
 
-	public Integer getAmount() {
+	public Float getAmount() {
 		return amount;
 	}
 
-	public void setAmount(Integer amount) {
+	public void setAmount(Float amount) {
 		this.amount = amount;
 	}
 

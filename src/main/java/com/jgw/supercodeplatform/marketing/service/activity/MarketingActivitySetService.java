@@ -142,15 +142,15 @@ public class MarketingActivitySetService  {
 					throw new SuperCodeException("是否固定金额不能为空", 500);
 				}else if (randomAmont.equals((byte)0)) {
 					//如果固定金额则不能小于1大于5000
-					Integer amount=prizeTypeParam.getPrizeAmount();
+					Float amount=prizeTypeParam.getPrizeAmount();
 					if (null==amount|| amount<1 ||amount>5000) {
 						throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
 					}
 					prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount());//转换为分
 				}else if (randomAmont.equals((byte)1)) {
 					//如果是随机金额则校验随机金额取值
-					Integer lowrand=prizeTypeParam.getLowRand();
-					Integer highrand=prizeTypeParam.getHighRand();
+					Float lowrand=prizeTypeParam.getLowRand();
+					Float highrand=prizeTypeParam.getHighRand();
 					if (null==lowrand || null==highrand || lowrand.intValue()>=highrand.intValue()) {
 						throw new SuperCodeException("随机金额取值范围不能为空且低取值不能大于等于高取值", 500);
 					}
@@ -354,7 +354,7 @@ public class MarketingActivitySetService  {
 			int i = 100-sumprizeProbability;
 			MarketingPrizeType NoReal=new MarketingPrizeType();
 			NoReal.setActivitySetId(activitySetId);
-			NoReal.setPrizeAmount(0);
+			NoReal.setPrizeAmount((float)0);
 			NoReal.setPrizeProbability(i);
 			NoReal.setPrizeTypeName("未中奖");
 			NoReal.setIsRrandomMoney((byte) 0);

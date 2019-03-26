@@ -13,15 +13,15 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 
     private long id;//序列Id
     private long activitySetId;//活动设置Id
-    private Integer prizeAmount;//金额数量,类型跟微信接口保持一致
+    private Float prizeAmount;//金额数量,类型跟微信接口保持一致
     private Integer prizeProbability;//中奖几率
     private String prizeTypeName;//奖品类型名称
     private Byte isRrandomMoney;//是否随机金额 1随机 0固定
     private long totalNum;//当前奖次按照中奖率计算一共该中奖的码数量
     private long winingNum;//已中奖数
     private Byte realPrize;//是否由用户创建的真实奖次
-    private Integer lowRand;
-    private Integer highRand;
+    private Float lowRand;
+    private Float highRand;
 	public long getId() {
 		return id;
 	}
@@ -34,10 +34,10 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 	public void setActivitySetId(long activitySetId) {
 		this.activitySetId = activitySetId;
 	}
-	public Integer getPrizeAmount() {
+	public Float getPrizeAmount() {
 		return prizeAmount;
 	}
-	public void setPrizeAmount(Integer prizeAmount) {
+	public void setPrizeAmount(Float prizeAmount) {
 		this.prizeAmount = prizeAmount;
 	}
 	public Integer getPrizeProbability() {
@@ -79,16 +79,16 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 		this.realPrize = realPrize;
 	}
 	
-	public Integer getLowRand() {
+	public Float getLowRand() {
 		return lowRand;
 	}
-	public void setLowRand(Integer lowRand) {
+	public void setLowRand(Float lowRand) {
 		this.lowRand = lowRand;
 	}
-	public Integer getHighRand() {
+	public Float getHighRand() {
 		return highRand;
 	}
-	public void setHighRand(Integer highRand) {
+	public void setHighRand(Float highRand) {
 		this.highRand = highRand;
 	}
 	@Override

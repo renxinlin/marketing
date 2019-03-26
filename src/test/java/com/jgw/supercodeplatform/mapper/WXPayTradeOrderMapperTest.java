@@ -23,7 +23,7 @@ private MarketingMembersWinRecordMapper mWinRecordMapper;
 	@Test
 	public void contextLoads() {
 		WXPayTradeOrder w=new WXPayTradeOrder();
-		w.setAmount(11);
+		w.setAmount(11f);
 		w.setOpenId("ssss");
 		w.setErrCodeDes("签名错误");
 		w.setErrCode("errorcode");
