@@ -104,6 +104,9 @@ public class WeixinAuthController {
         		members.setWxName(nickName);
         		members.setOrganizationId(scInfoMO.getOrganizationId());
         		marketingMembersService.addMember(members);
+        	}else {
+        		members.setWxName(nickName);
+        		marketingMembersService.updateMembers(membersUpdateParam);
         	}
 		}
         String redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId()+"&organizationId="+scInfoMO.getOrganizationId();

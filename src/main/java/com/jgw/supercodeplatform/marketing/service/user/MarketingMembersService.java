@@ -641,4 +641,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return restResult;
 	}
 
+	public void update(MarketingMembers members) {
+		marketingMembersMapper.update(members);
+	}
+
 }
