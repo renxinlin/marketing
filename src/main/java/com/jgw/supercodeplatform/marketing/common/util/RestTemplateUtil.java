@@ -88,8 +88,19 @@ public class RestTemplateUtil {
 		HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
 		ResponseEntity<String> result = restTemplate.exchange(url,
 				HttpMethod.POST, requestEntity, String.class);
-        return result;
-    }
+		return result;
+	}
+
+
+	public Object postJsonDataAndReturnJosnObject(String url,Map json,Map<String, String> headerMap) throws SuperCodeException {
+		if (StringUtils.isBlank(url)) {
+			throw new SuperCodeException("postJsonDataAndReturnJosn参数url不能为空", 500);
+		}
+		Object o = restTemplate.postForEntity(url, json, Object.class);
+
+		return o;
+	}
+
 
     /**
      * 上传文件
