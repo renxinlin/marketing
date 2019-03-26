@@ -19,14 +19,23 @@ public class WriteAuthFileController {
     @ApiOperation(value = "下载文件", notes = "")
     @ApiImplicitParam(name = "mobile", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "手机号", required = true)
     public void sendPhoneCode(HttpServletResponse response) throws Exception {
-    	 InputStream in=this.getClass().getResourceAsStream("/MP_verify_dSYneurbj349sTas.txt");
-    	 byte[] buf=new byte[1024];
-    	 int len=0;
-    	 while((len=in.read(buf))!=-1) {
-    		 response.getOutputStream().write(buf, 0, len);
-    		 response.getOutputStream().flush();
-    	 }
-    	 in.close();
+    	InputStream in=null;
+    	try {
+    		in=this.getClass().getResourceAsStream("/MP_verify_dSYneurbj349sTas.txt");
+    		byte[] buf=new byte[1024];
+    		int len=0;
+    		while((len=in.read(buf))!=-1) {
+    			response.getOutputStream().write(buf, 0, len);
+    			response.getOutputStream().flush();
+    		}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally {
+			if (null!=in) {
+				in.close();
+			}
+		}
     }
 
 }
