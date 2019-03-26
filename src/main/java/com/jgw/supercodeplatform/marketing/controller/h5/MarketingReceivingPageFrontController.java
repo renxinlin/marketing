@@ -1,5 +1,8 @@
 package com.jgw.supercodeplatform.marketing.controller.h5;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +83,11 @@ public class MarketingReceivingPageFrontController {
 		return restResult;
 	}
 	
-	public boolean judgeUserSubsribeGZH(String appId,String sercert,String openId) throws Exception {
+	
+	public static void main(String[] args) throws Exception {
+		judgeUserSubsribeGZH("wx32ab5628a5951ecc", "e3fb09c9126cd8bc12399e56a35162c4", "oeVn5sq-wk7_MH4jN2BUQ_fSRv-A");
+	}
+	public static boolean  judgeUserSubsribeGZH(String appId,String sercert,String openId) throws Exception {
 		logger.info("判断是否关注过公众号方法参数appId="+appId+",sercert="+sercert+",openId="+openId);
 		HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(WechatConstants.ACCESS_TOKEN_URL+"&appid="+appId+"&secret="+sercert);
 	    String body=reHttpClientResult.getContent();
@@ -88,7 +95,11 @@ public class MarketingReceivingPageFrontController {
 	    if (body.contains("access_token")) {
 			JSONObject tokenObj=JSONObject.parseObject(body);
 			String token=tokenObj.getString("access_token");
-			HttpClientResult userInfoResult=HttpRequestUtil.doGet(WechatConstants.ACCESS_TOKEN_URL+"?access_token="+token+"&openid="+openId+"&lang=zh_CN");
+			Map<String, String> params=new HashMap<String, String>();
+			params.put("access_token", token);
+			params.put("openid", openId);
+			params.put("lang", "zh_CN ");
+			HttpClientResult userInfoResult=HttpRequestUtil.doGet(WechatConstants.USER_INFO_URL, params);
 			String userInfoBody=userInfoResult.getContent();
 			logger.info("判断是否关注过公众号方法获取用户基本信息返回结果="+userInfoBody);
 			if (userInfoBody.contains("subscribe")) {

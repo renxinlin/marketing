@@ -50,4 +50,7 @@ public interface MarketingPrizeTypeMapper {
 			+ " </script>")
 	void update(MarketingPrizeType marketingPrizeType);
 
+	@Select("select "+allFields+" from marketing_prize_type where ActivitySetId=#{activitySetId}")
+	List<MarketingPrizeType> selectByActivitySetIdIncludeUnreal(Long activitySetId);
+
 }

@@ -18,7 +18,7 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
     private String prizeTypeName;//奖品类型名称
     private Byte isRrandomMoney;//是否随机金额 1随机 0固定
     private long totalNum;//当前奖次按照中奖率计算一共该中奖的码数量
-    private long winingNum;//已中奖数
+    private Long winingNum;//已中奖数
     private Byte realPrize;//是否由用户创建的真实奖次
     private Float lowRand;
     private Float highRand;
@@ -65,10 +65,10 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 	public void setTotalNum(long totalNum) {
 		this.totalNum = totalNum;
 	}
-	public long getWiningNum() {
+	public Long getWiningNum() {
 		return winingNum;
 	}
-	public void setWiningNum(long winingNum) {
+	public void setWiningNum(Long winingNum) {
 		this.winingNum = winingNum;
 	}
 	

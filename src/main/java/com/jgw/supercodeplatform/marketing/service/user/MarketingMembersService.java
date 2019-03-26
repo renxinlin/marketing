@@ -486,12 +486,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("该活动设置不存在");
 			return restResult;
 		}
-		List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetId(activitySetId);
-		if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
-			restResult.setState(500);
-			restResult.setMsg("该活动未设置中奖奖次");
-			return restResult;
-		}
 
 		MarketingActivity activity=mActivityMapper.selectById(mActivitySet.getActivityId());
 		if (null==activity) {
@@ -520,6 +514,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
 		MarketingPrizeTypeMO mPrizeTypeMO =null;
 		synchronized (this) {
+			List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetIdIncludeUnreal(activitySetId);
+			if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
+				restResult.setState(500);
+				restResult.setMsg("该活动未设置中奖奖次");
+				return restResult;
+			}
 			List<MarketingPrizeTypeMO> mTypeMOs=LotteryUtil.judge(mPrizeTypes, codeTotalNum);
 
 
