@@ -229,10 +229,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		map.put("mobile",marketingMembersAddParam.getMobile());
 		Integer allMarketingMembersCount = marketingMembersMapper.getAllMarketingMembersCount(map);
 
-//		if(allMarketingMembersCount >= 1){
-//			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册已注册");
-//			throw  new SuperCodeException("手机号注册已注册",500);
-//		}
+		if(allMarketingMembersCount >= 1){
+			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册已注册");
+			throw  new SuperCodeException("手机号注册已注册",500);
+		}
 		String userId = getUUID();
 		marketingMembersAddParam.setUserId(userId);
 		int result = marketingMembersMapper.addMembers(marketingMembersAddParam);
