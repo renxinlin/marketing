@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.h5;
 
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +17,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 /**
  * 中奖页controller
  * @author czm
@@ -32,7 +37,7 @@ public class MarketingWinningPageFrontController {
 	@RequestMapping(value = "/getByAsId",method = RequestMethod.GET)
     @ApiOperation(value = "根据活动设置id获取中奖页记录", notes = "")
 	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "扫码唯一id",name="wxstate",required=false),@ApiImplicitParam(paramType="query",value = "获取设置主键id",name="activitySetId",required=false)})
-	public RestResult<MarketingWinningPage> getByAsId(String wxstate,Long activitySetId ) throws SuperCodeException{
+	public RestResult<MarketingWinningPage> getByAsId(String wxstate, Long activitySetId , HttpServletResponse response) throws SuperCodeException{
         if (null==activitySetId) {
         	ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
         	if (null==scInfoMO) {
@@ -43,6 +48,14 @@ public class MarketingWinningPageFrontController {
 		MarketingWinningPage mWinningPage=service.selectByActivitySetId(activitySetId);
 		if (null==mWinningPage) {
 			throw new SuperCodeException("h5扫码时获取中奖页信息失败根据activitySetId="+activitySetId+"无法获取中奖页信息", 500);
+		}
+
+		if(mWinningPage.getLoginType() == 1){
+			try {
+				response.sendRedirect("");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		RestResult<MarketingWinningPage> restResult=new RestResult<MarketingWinningPage>();
 		restResult.setState(200);

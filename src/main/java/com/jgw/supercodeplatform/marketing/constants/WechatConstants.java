@@ -27,10 +27,10 @@ public interface WechatConstants {
     //获取accesstoken
     public static String ACCESS_TOKEN_URL="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential";
     
-  //获取accesstoken
+  //获取信息
     public static String WECHAT_USER_INFO="https://api.weixin.qq.com/cgi-bin/user/info";
 
-
+    // 短信发送接口
     public  static  String SMS_SEND_PHONE_MESSGAE="/sms/send/phone/message";
     
     

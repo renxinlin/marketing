@@ -88,9 +88,9 @@ public class MarketingReceivingPageFrontController {
 	    if (body.contains("access_token")) {
 			JSONObject tokenObj=JSONObject.parseObject(body);
 			String token=tokenObj.getString("access_token");
-			HttpClientResult userInfoResult=HttpRequestUtil.doGet(WechatConstants.ACCESS_TOKEN_URL+"?access_token="+token+"&openid="+openId+"&lang=zh_CN");
+			HttpClientResult userInfoResult=HttpRequestUtil.doGet(WechatConstants.USER_INFO_URL+"?access_token="+token+"&openid="+openId+"&lang=zh_CN");
 			String userInfoBody=userInfoResult.getContent();
-			logger.info("判断是否关注过公众号方法获取用户基本信息返回结果="+userInfoBody);
+			logger.info("判断是否关注过公众号方法获取用户基本信息`返回结果="+userInfoBody);
 			if (userInfoBody.contains("subscribe")) {
 				JSONObject userObj=JSONObject.parseObject(userInfoBody);
 				int subscribe=userObj.getInteger("subscribe");
