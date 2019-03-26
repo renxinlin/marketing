@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.search.SearchHit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -16,7 +18,7 @@ import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
 
 @Service
 public class CodeEsService extends AbstractEsSearch {
-
+	protected static Logger logger = LoggerFactory.getLogger(CodeEsService.class);
 	public void addScanCodeRecord(String userId, String productId, String productBatchId, String codeId,
 			String codeType, Long activitySetId, Long scanCodeTime) throws SuperCodeException {
 		if (StringUtils.isBlank(userId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
@@ -24,6 +26,8 @@ public class CodeEsService extends AbstractEsSearch {
 				|| null == activitySetId) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
+		
+		logger.info("es保存 userId="+userId+",productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
 		addParam.put("productBatchId", productBatchId);
