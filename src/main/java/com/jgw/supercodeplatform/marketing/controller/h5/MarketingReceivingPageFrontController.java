@@ -1,8 +1,5 @@
 package com.jgw.supercodeplatform.marketing.controller.h5;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +13,6 @@ import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
@@ -95,13 +91,9 @@ public class MarketingReceivingPageFrontController {
 	    if (body.contains("access_token")) {
 			JSONObject tokenObj=JSONObject.parseObject(body);
 			String token=tokenObj.getString("access_token");
-			Map<String, String> params=new HashMap<String, String>();
-			params.put("access_token", token);
-			params.put("openid", openId);
-			params.put("lang", "zh_CN ");
-			HttpClientResult userInfoResult=HttpRequestUtil.doGet(WechatConstants.USER_INFO_URL, params);
+			HttpClientResult userInfoResult=HttpRequestUtil.doGet(WechatConstants.USER_INFO_URL+"?access_token="+token+"&openid="+openId+"&lang=zh_CN");
 			String userInfoBody=userInfoResult.getContent();
-			logger.info("判断是否关注过公众号方法获取用户基本信息返回结果="+userInfoBody);
+			logger.info("判断是否关注过公众号方法获取用户基本信息`返回结果="+userInfoBody);
 			if (userInfoBody.contains("subscribe")) {
 				JSONObject userObj=JSONObject.parseObject(userInfoBody);
 				int subscribe=userObj.getInteger("subscribe");

@@ -245,14 +245,21 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return  result;
 	}
 
-	private void sendRegisterMessage(String mobile, String msg) {
+	/**
+	 * 发送短信
+	 * @param mobile 手机号
+	 * @param msg 短信内容
+	 */
+	public void sendRegisterMessage(String mobile, String msg) {
 
 		try {
 			Map msgData = new HashMap();
 			msgData.put("mobileId",mobile);
 			msgData.put("sendContent",msg);
 			String jsonData= JSONObject.toJSONString(msgData);
-			restTemplateUtil.postJsonDataAndReturnJosn(userServiceUrl+ WechatConstants.SMS_SEND_PHONE_MESSGAE, jsonData, null);
+			Map<String, String> headerMap = new HashMap<>();
+			headerMap.put("charset","UTF-8");
+			restTemplateUtil.postJsonDataAndReturnJosn(userServiceUrl+ WechatConstants.SMS_SEND_PHONE_MESSGAE, jsonData, headerMap);
 		} catch (SuperCodeException e) {
 			if(logger.isInfoEnabled()){
 				logger.info("注册用户的短信欢迎信息发送失败"+e.getMessage());
@@ -465,6 +472,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 */
 	public RestResult<String> lottery(String wxstate,String mobile) throws SuperCodeException {
 		RestResult<String> restResult=new RestResult<String>();
+		boolean phone = LotteryUtil.isPhone(mobile);
+		if(!phone){
+			restResult.setState(500);
+			restResult.setMsg("手机号码格式错误");
+			return restResult;
+		}
 
 		ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
 		if (null==scanCodeInfoMO) {
@@ -619,7 +632,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			//一切ok后清除缓存
 			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 			restResult.setState(200);
-			restResult.setMsg(amount+".00");
+			restResult.setMsg(amount+"");
 		}
 		return restResult;
 	}
