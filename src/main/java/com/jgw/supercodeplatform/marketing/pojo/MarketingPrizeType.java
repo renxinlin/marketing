@@ -32,9 +32,15 @@ public class MarketingPrizeType {
 	@ApiModelProperty(value = "是否由用户创建的真实奖次",name = "realPrize",  example = "1")
 	private Byte realPrize;//是否由用户创建的真实奖次
 
+    private long totalNum;//当前奖次按照中奖率计算一共该中奖的码数量
 
-
- 	public Long getId() {
+ 	public long getTotalNum() {
+		return totalNum;
+	}
+	public void setTotalNum(long totalNum) {
+		this.totalNum = totalNum;
+	}
+	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {

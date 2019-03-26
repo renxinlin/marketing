@@ -31,9 +31,10 @@ public class LotteryUtilTest {
 		long third=0;
 		long four=0;
 		long sum=totalCodeNum;
-		List<MarketingPrizeType> list=mTypeMapper.selectByActivitySetIdIncludeUnreal(244L);
 		while(sum-->0) {
+			List<MarketingPrizeType> list=mTypeMapper.selectByActivitySetIdIncludeUnreal(244L);
 			List<MarketingPrizeTypeMO> moTypeMOs=LotteryUtil.judge(list, totalCodeNum);
+			System.out.println("判断后奖次总数："+moTypeMOs.size());
 			MarketingPrizeTypeMO marketingPrizeTypeMO=LotteryUtil.lottery(moTypeMOs);
 			switch (marketingPrizeTypeMO.getPrizeTypeName()) {
 			case "一等奖":
@@ -55,10 +56,10 @@ public class LotteryUtilTest {
 			default:
 				throw new SuperCodeException("无此奖次sum="+sum, 500);
 			}
-//			MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
-//			marketingPrizeType.setId(marketingPrizeTypeMO.getId());
-//			marketingPrizeType.setWiningNum((marketingPrizeTypeMO.getWiningNum()==null?0L:marketingPrizeTypeMO.getWiningNum())+1);
-//			mTypeMapper.update(marketingPrizeType);
+			MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
+			marketingPrizeType.setId(marketingPrizeTypeMO.getId());
+			marketingPrizeType.setWiningNum((marketingPrizeTypeMO.getWiningNum()==null?0L:marketingPrizeTypeMO.getWiningNum())+1);
+			mTypeMapper.update(marketingPrizeType);
 		}
 		System.out.println("一等奖："+first+"，二等奖："+sec+"，三等奖："+third+"，未中奖："+four);
 		

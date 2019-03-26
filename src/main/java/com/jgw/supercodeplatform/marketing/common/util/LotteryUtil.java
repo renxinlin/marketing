@@ -45,12 +45,14 @@ public class LotteryUtil {
 				mo.setTotalNum(num);
 				codeTotalNum = codeTotalNum - num;
 			}
+			System.out.println(mo.getPrizeTypeName()+":"+mo.getTotalNum());
 			// 只返回没有被抽完的奖次
 			if (mo.getWiningNum() < mo.getTotalNum()) {
 				mTypeMOs.add(mo);
 			}
 			i++;
 		}
+		System.out.println("=============================================================");
 		return mTypeMOs;
 	}
 

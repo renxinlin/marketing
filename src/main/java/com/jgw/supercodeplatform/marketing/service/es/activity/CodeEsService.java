@@ -18,9 +18,9 @@ import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
 public class CodeEsService extends AbstractEsSearch {
 
 	public void addScanCodeRecord(String userId, String productId, String productBatchId, String codeId,
-			String codeType, Long activitySetId, String scanCodeTime) throws SuperCodeException {
+			String codeType, Long activitySetId, Long scanCodeTime) throws SuperCodeException {
 		if (StringUtils.isBlank(userId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
-				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || StringUtils.isBlank(scanCodeTime)
+				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
 				|| null == activitySetId) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
@@ -38,7 +38,6 @@ public class CodeEsService extends AbstractEsSearch {
 		eSearch.setType(EsType.INFO);
 		add(eSearch, addParam);
 	}
-
 	/**
 	 * 根据产品id和批次id查询参与扫码的批次一共被扫了多少次
 	 * 
@@ -46,10 +45,10 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param productBatchId
 	 * @return
 	 */
-	public Long countByUserAndActivityQuantum(String userId, Long activitySetId, String scanCodeTime) {
+	public Long countByUserAndActivityQuantum(String userId, Long activitySetId, long nowTtimeStemp) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("userId.keyword", userId);
-		addParam.put("scanCodeTime", scanCodeTime);
+		addParam.put("scanCodeTime", nowTtimeStemp);
 		addParam.put("activitySetId", activitySetId);
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);

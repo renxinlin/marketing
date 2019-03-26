@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -472,8 +473,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @param openId
 	 * @return
 	 * @throws SuperCodeException
+	 * @throws ParseException 
 	 */
-	public RestResult<String> lottery(String wxstate) throws SuperCodeException {
+	public RestResult<String> lottery(String wxstate) throws SuperCodeException, ParseException {
 		RestResult<String> restResult=new RestResult<String>();
 
 		ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
@@ -482,7 +484,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("不存在扫码唯一纪录="+wxstate+"的扫码缓存信息，请重新扫码");
 			return restResult;
 		}
-		
 		// 手机校验,抛出异常
 		String mobile=scanCodeInfoMO.getMobile();
 		if (StringUtils.isNotBlank(mobile)) {
@@ -553,35 +554,40 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 
 			String nowTime=staticESSafeFormat.format(new Date());
+			long nowTtimeStemp=staticESSafeFormat.parse(nowTime).getTime();
 			Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
+			String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
 			logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
+			//校验码有没有被扫过
 			if (null==codeCount ||codeCount.intValue()<1) {
 				Integer scanLimit=mActivitySet.getEachDayNumber();
+				//校验有没有设置活动用户扫码量限制
 				if (null!=scanLimit&& scanLimit.intValue()>0) {
-					String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
-					Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTime);
-					logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum);
-					if (null==userscanNum || userscanNum.intValue()==0 ||userscanNum.intValue()<scanLimit.intValue()) {
-						//更新奖次被扫码数量
-						mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
-						MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
-						marketingPrizeType.setId(mPrizeTypeMO.getId());
-						marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
-						mMarketingPrizeTypeMapper.update(marketingPrizeType);
-						codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId(), activitySetId,nowTime);
-					}else {
+					Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTtimeStemp);
+					logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum+",当前活动扫码限制次数为："+scanLimit);
+					if (null!=userscanNum && userscanNum.intValue()>=scanLimit.intValue()) {
 						restResult.setState(500);
 						restResult.setMsg("您今日扫码已超过该活动限制数量");
 						return restResult;
 					}
+				
 				}
 			}else {
 				restResult.setState(200);
 				restResult.setMsg("您手速太慢，刚刚该码已被其它用户扫过");
 				return restResult;
 			}
+			
+			//更新奖次被扫码数量
+			mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
+			MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
+			marketingPrizeType.setId(mPrizeTypeMO.getId());
+			marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
+			mMarketingPrizeTypeMapper.update(marketingPrizeType);
+			
+			codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp);
+			logger.info("领取方法====：抽奖数据已保存到es");
 		}
-		logger.info("抽奖数据已保存到es");
 		//判断realprize是否为0,0表示不中奖
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
