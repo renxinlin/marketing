@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
+
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -7,7 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author czm
  *
  */
-public class MarketingPrizeType {
+public class MarketingPrizeType implements Comparable<MarketingPrizeType>{
 
 
 
@@ -32,7 +34,7 @@ public class MarketingPrizeType {
 	@ApiModelProperty(value = "是否由用户创建的真实奖次",name = "realPrize",  example = "1")
 	private Byte realPrize;//是否由用户创建的真实奖次
 
-    private long totalNum;//当前奖次按照中奖率计算一共该中奖的码数量
+    private long totalNum;//测试使用--当前奖次按照中奖率计算一共该中奖的码数量
 
  	public long getTotalNum() {
 		return totalNum;
@@ -100,5 +102,24 @@ public class MarketingPrizeType {
 	public void setIsRrandomMoney(Byte isRrandomMoney) {
 		this.isRrandomMoney = isRrandomMoney;
 	}
-   
+	@Override
+	public boolean equals(Object obj) {
+		   if (obj == null) { return false;}
+		   if (obj == this) { return true; }
+		   if (obj.getClass() != getClass()) {
+		     return false;
+		   }
+		   MarketingPrizeType rhs = (MarketingPrizeType) obj;
+		   return new EqualsBuilder()
+		   //这里调用父类的equals()方法，一般情况下不需要使用
+		                 .appendSuper(super.equals(obj))
+		                 .append("id", rhs.id)
+		                 .append("activitySetId", rhs.activitySetId)
+		                 .isEquals();
+	}
+	@Override
+	public int compareTo(MarketingPrizeType o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

@@ -6,6 +6,7 @@ package com.jgw.supercodeplatform.marketing.common.util;
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,7 +25,8 @@ public class LotteryUtil {
 		}
 		List<MarketingPrizeTypeMO> mTypeMOs = new ArrayList<MarketingPrizeTypeMO>();
 		int i = 0;
-
+        Collections.sort(mPrizeTypes);
+        Long sum=0L;
 		for (MarketingPrizeType marketingPrizeType : mPrizeTypes) {
 			Integer probability = marketingPrizeType.getPrizeProbability();
 			MarketingPrizeTypeMO mo = new MarketingPrizeTypeMO();
@@ -39,11 +41,11 @@ public class LotteryUtil {
 			mo.setHighRand(marketingPrizeType.getHighRand());
 			mo.setRealPrize(marketingPrizeType.getRealPrize());
 			if (i == mPrizeTypes.size() - 1) {
-				mo.setTotalNum(codeTotalNum);
+				mo.setTotalNum(codeTotalNum-sum);
 			} else {
 				long num = (long) ((marketingPrizeType.getPrizeProbability() / 100.00) * codeTotalNum);
 				mo.setTotalNum(num);
-				codeTotalNum = codeTotalNum - num;
+				sum += num;
 			}
 			System.out.println(mo.getPrizeTypeName()+":"+mo.getTotalNum());
 			// 只返回没有被抽完的奖次
@@ -70,17 +72,8 @@ public class LotteryUtil {
 	}
 
 	public static void main(String[] args) {
-		List<Integer> list = new ArrayList<Integer>();
-		list.add(1);
-		list.add(12);
-		list.add(21);
-		list.add(13);
-		int i = 0;
-		while (i++ < 1000) {
-			int num = (int) (Math.random() * list.size());
-			System.out.println(num);
-		}
-
+    double n=31/100.00*100;
+    System.out.println(n);
 	}
 
 }
