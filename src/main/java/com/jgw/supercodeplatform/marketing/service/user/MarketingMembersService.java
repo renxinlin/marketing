@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -640,7 +641,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				float min=mPrizeTypeMO.getLowRand();
 				float max=mPrizeTypeMO.getHighRand();
 				// [ )
-				amount=new Random().nextFloat() * (max - min)+min;
+//				amount=new Random().nextFloat() * (max - min)+min;
+// 保留两位小数
+                float init = new Random().nextFloat() *((float)(2111.333-1.222)) +(float)2.344;
+                DecimalFormat decimalFormat=new DecimalFormat(".00");
+                String strAmount=decimalFormat.format(init);//format 返回的是字符串
+                amount = Float.valueOf(strAmount);
 			}
 			Float finalAmount = amount * 100;//金额转化为分
 			//插入中奖纪录
@@ -689,5 +695,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	public void update(MarketingMembers members) {
 		marketingMembersMapper.update(members);
 	}
+
 
 }
