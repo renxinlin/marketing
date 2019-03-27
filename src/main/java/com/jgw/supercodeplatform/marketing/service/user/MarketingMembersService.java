@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -539,11 +540,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("该活动设置对应的活动不存在");
 			return restResult;
 		}
-		MarketingMembers marketingMembers = marketingMembersMapper.selectByMobileAndOrgId(scanCodeInfoMO.getMobile(), scanCodeInfoMO.getOrganizationId());
-		if(marketingMembers == null){
+
+		MarketingMembers marketingMembersInfo = marketingMembersMapper.selectByOpenIdAndOrgId(openId, scanCodeInfoMO.getOrganizationId());
+ 		if(marketingMembersInfo == null){
 			throw  new SuperCodeException("会员信息不存在",500);
 		}
-		if( marketingMembers.getState() == 0){
+		if( marketingMembersInfo.getState() == 0){
 			throw  new SuperCodeException("对不起,该会员已被加入黑名单",500);
 		}
 
@@ -639,7 +641,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				float min=mPrizeTypeMO.getLowRand();
 				float max=mPrizeTypeMO.getHighRand();
 				// [ )
-				amount=new Random().nextFloat() * (max - min)+min;
+//				amount=new Random().nextFloat() * (max - min)+min;
+// 保留两位小数
+                float init = new Random().nextFloat() *((float)(2111.333-1.222)) +(float)2.344;
+                DecimalFormat decimalFormat=new DecimalFormat(".00");
+                String strAmount=decimalFormat.format(init);//format 返回的是字符串
+                amount = Float.valueOf(strAmount);
 			}
 			Float finalAmount = amount * 100;//金额转化为分
 			//插入中奖纪录
@@ -654,6 +661,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			redWinRecord.setWinningCode(scanCodeInfoMO.getCodeId());
 			redWinRecord.setOrganizationId(organizationId);
 			mWinRecordMapper.addWinRecord(redWinRecord);
+			logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
 
 			//生成订单号
 			String partner_trade_no=WXPayTradeNoGenerator.tradeNo();
@@ -688,5 +696,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	public void update(MarketingMembers members) {
 		marketingMembersMapper.update(members);
 	}
+
 
 }
