@@ -539,11 +539,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("该活动设置对应的活动不存在");
 			return restResult;
 		}
-		MarketingMembers marketingMembers = marketingMembersMapper.selectByMobileAndOrgId(scanCodeInfoMO.getMobile(), scanCodeInfoMO.getOrganizationId());
-		if(marketingMembers == null){
+
+		MarketingMembers marketingMembersInfo = marketingMembersMapper.selectByOpenIdAndOrgId(openId, scanCodeInfoMO.getOrganizationId());
+ 		if(marketingMembersInfo == null){
 			throw  new SuperCodeException("会员信息不存在",500);
 		}
-		if( marketingMembers.getState() == 0){
+		if( marketingMembersInfo.getState() == 0){
 			throw  new SuperCodeException("对不起,该会员已被加入黑名单",500);
 		}
 
