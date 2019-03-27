@@ -474,7 +474,8 @@ public class MarketingActivitySetService  {
 		//遍历顶层
 		for (MarketingChannelParam marketingChannelParam : mChannelParams) {
 			Byte customerType=marketingChannelParam.getCustomerType();
-			String customerCode=marketingChannelParam.getCustomerCode();
+			// 将基础信息的customerId插入customerCode
+			String customerCode=marketingChannelParam.getCustomerId();
 			MarketingChannel mChannel=new MarketingChannel();
 			mChannel.setActivitySetId(activitySetId);
 			mChannel.setCustomerCode(customerCode);
@@ -506,7 +507,8 @@ public class MarketingActivitySetService  {
 		//遍历顶层
 		for (MarketingChannelParam marketingChannelParam : childrens) {
 			Byte customerType=marketingChannelParam.getCustomerType();
-			String customerCode=marketingChannelParam.getCustomerCode();
+			// 基础信息的CustomerId对应营销的customerCode
+			String customerCode=marketingChannelParam.getCustomerId();
 			MarketingChannel mChannel=new MarketingChannel();
 			mChannel.setActivitySetId(activitySetId);
 			mChannel.setCustomerCode(customerCode);
