@@ -43,8 +43,13 @@ public interface MarketingActivityMapper extends CommonSql{
 	List<MarketingActivity> selectAll();
 
 	@Select(startScript
-			+ " select aset.Id id, ac.ActivityName activityName,aset.ActivityTitle activityTitle,aset.ActivityStartDate activityStartDate,"
-			+ " aset.ActivityEndDate activityEndDate,aset.UpdateUserName updateUserName,aset.UpdateDate updateDate,aset.ActivityStatus activityStatus,"
+			+ " select aset.Id id, ac.ActivityName activityName,aset.ActivityTitle activityTitle, "
+			+ " DATE_FORMAT(aset.ActivityStartDate,'%Y-%m-%d') as activityStartDate, "
+			+ " DATE_FORMAT(aset.ActivityEndDate,'%Y-%m-%d') as activityEndDate, "
+			+ " aset.UpdateUserName updateUserName, "
+			+ " DATE_FORMAT(aset.UpdateDate,'%Y-%m-%d') as updateDate,"
+
+			+ " aset.ActivityStatus activityStatus,"
 			+ " ap.ProductBatchName productBatchName,ap.ProductName productName,ap.ProductId productId,"
 			+ " ap.ProductBatchId productBatchId,mc.CustomerName customerName "
 			+ " from  marketing_activity_set aset left join  marketing_activity ac on aset.ActivityId=ac.Id  "
