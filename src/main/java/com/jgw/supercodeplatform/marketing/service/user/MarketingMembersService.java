@@ -661,6 +661,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			redWinRecord.setWinningCode(scanCodeInfoMO.getCodeId());
 			redWinRecord.setOrganizationId(organizationId);
 			mWinRecordMapper.addWinRecord(redWinRecord);
+			logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
 
 			//生成订单号
 			String partner_trade_no=WXPayTradeNoGenerator.tradeNo();
