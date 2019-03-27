@@ -10,11 +10,13 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSONObject;
@@ -304,7 +306,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @param map
 	 * @return
 	 */
-	public int updateMembers(MarketingMembersUpdateParam membersUpdateParam){
+	public int updateMembers(MarketingMembersUpdateParam membersUpdateParam) throws SuperCodeException{
+		if(membersUpdateParam == null || membersUpdateParam.getId() == null || membersUpdateParam.getId() <= 0){
+			throw new SuperCodeException("完善信息未获取到会员唯一性ID",500);
+		}
 		MarketingMembers members=new MarketingMembers();
 		// datetime类型处理
 		if(!StringUtils.isBlank(membersUpdateParam.getBabyBirthday())){
@@ -380,6 +385,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			return restResult;
 		}
 		ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
+		scanCodeInfoMO.setMobile(mobile);
+		GlobalRamCache.scanCodeInfoMap.put(wxstate,scanCodeInfoMO);
 		if (null==scanCodeInfoMO) {
 			restResult.setState(500);
 			restResult.setMsg("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码");
@@ -454,7 +461,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				h5LoginVO.setRegistered(1);
 
 			}
-			h5LoginVO.setRegistered(1);
+
 			Long userIdByPhone=marketingMembersByPhone.getId();
 			//4、如果分别根据openid和手机号查出两条记录且主键id不一致，则说明
 			// 4.1、这两条信息没合并过
@@ -474,7 +481,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				members.setOpenid( marketingMembersByOpenId.getOpenid());
 				members.setWxName(marketingMembersByOpenId.getWxName());
 				marketingMembersMapper.update(members);
-
+				h5LoginVO.setMemberId(userIdByPhone);
 				//删除openid查出的用户
 				marketingMembersMapper.deleteById(userIdByOpenId);
 
@@ -532,6 +539,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("该活动设置对应的活动不存在");
 			return restResult;
 		}
+		MarketingMembers marketingMembers = marketingMembersMapper.selectByMobileAndOrgId(scanCodeInfoMO.getMobile(), scanCodeInfoMO.getOrganizationId());
+		if(marketingMembers == null){
+			throw  new SuperCodeException("会员信息不存在",500);
+		}
+		if( marketingMembers.getState() == 0){
+			throw  new SuperCodeException("对不起,该会员已被加入黑名单",500);
+		}
+
 		//获取该活动设置下的参与码总数
 		Long codeTotalNum=mActivitySet.getCodeTotalNum();
 		if (null==codeTotalNum|| codeTotalNum.intValue()<=0) {
@@ -623,7 +638,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			if (randAmount.equals((byte)1)) {
 				float min=mPrizeTypeMO.getLowRand();
 				float max=mPrizeTypeMO.getHighRand();
-				amount=new Random().nextInt((int)(max-min))+min;
+				// [ )
+				amount=new Random().nextFloat() * (max - min)+min;
 			}
 			Float finalAmount = amount * 100;//金额转化为分
 			//插入中奖纪录
@@ -634,7 +650,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			redWinRecord.setMobile(mobile);
 			redWinRecord.setOpenid(openId);
 			redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
-			redWinRecord.setWinningAmount((float)finalAmount );
+			redWinRecord.setWinningAmount((float)amount );
 			redWinRecord.setWinningCode(scanCodeInfoMO.getCodeId());
 			redWinRecord.setOrganizationId(organizationId);
 			mWinRecordMapper.addWinRecord(redWinRecord);
