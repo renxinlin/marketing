@@ -29,6 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
@@ -43,6 +44,9 @@ private MarketingMembersWinRecordMapper mWinRecordMapper;
 
 @Autowired
 private RestTemplateUtil restTemplateUtil;
+
+@Autowired
+private CommonUtil commonUtil;
 
 @Autowired
 private RestTemplate restTemplate;
@@ -104,4 +108,9 @@ private String codeManagerUrl;
 		System.out.println("post json : " + data);
 	}
 	
+	@Test
+	public void test2() throws IOException {
+
+		
+	}
 }

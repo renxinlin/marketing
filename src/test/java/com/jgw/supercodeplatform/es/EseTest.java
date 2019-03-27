@@ -29,7 +29,7 @@ public class EseTest {
 	public void add() throws SuperCodeException {
 //		cService.addScanCodeRecord("oeVn5sq-wk7_MH4jN2BUQ_fSRv-A", "0067a46e580e4b6cbc79b8c55576f617", "38fc70f6ed984c24b090a2421ba72375", "codeId", "codeTypeId", 2l, "2019-03-11");
 	    
-		Long count=cService.countByCode("20268964098434485", "12");
+		Long count=cService.countByCode("20268969617396421", "12");
 		System.out.println(count);
 	}
 	
@@ -47,11 +47,11 @@ public class EseTest {
 		
 		 Map<String, Object> addParam=new HashMap<String, Object>();
 //		 addParam.put("userId.keyword", "oeVn5sgnslZcCSrigGXb3HE5A");
-     	  addParam.put("scanCodeTime", d.getTime());
-		  addParam.put("activitySetId", 245l);
+//     	  addParam.put("scanCodeTime", d.getTime());
+//		  addParam.put("activitySetId", 245l);
 		  
-//		  addParam.put("codeId", 20268964098434485L);
-		  addParam.put("codeType.keyword", 12l);
+		  addParam.put("codeId.keyword", "20268969617396421");
+		  addParam.put("codeType.keyword", "12");
 		  EsSearch eSearch=new EsSearch();
 		  eSearch.setIndex(EsIndex.MARKETING);
 		  eSearch.setType(EsType.INFO);
