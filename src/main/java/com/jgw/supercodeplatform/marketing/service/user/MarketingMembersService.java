@@ -435,8 +435,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		logger.error("{==============================================详情页}"+mobile);
 		logger.error("{==============================================详情页}"+wxstate);
 		logger.error("{==============================================详情页}"+scanCodeInfoMO);
+		logger.error("{==============================================详情页}"+organizationId);
 
 		MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
+		logger.error("{==============================================详情页}"+marketingMembersByPhone);
 
 		//3、如果根据登录手机号无法查询到记录，则说明该手机号未进行过注册也为进行过绑定。可能情况：
 		//3.1该openid对应的用户之前绑定过手机号但是想换手机号了、3.2该openid用户从未绑定过手机号
@@ -466,6 +468,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				h5LoginVO.setRegistered(1);
 			}
 			// 已经完善过不完善
+			logger.error("{==============================================详情页212}"+marketingMembersByPhone.getIsRegistered() );
+			logger.error("{==============================================详情页212}"+marketingMembersByPhone );
+
 			if(marketingMembersByPhone.getIsRegistered() != null && marketingMembersByPhone.getIsRegistered() == 1){
 				logger.error("{==============================================详情页2}"+marketingMembersByPhone);
 
@@ -707,5 +712,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		marketingMembersMapper.update(members);
 	}
 
+	public static void main(String[] args) {
+		Byte b = (byte )1;
+		System.out.println(b == 1);
+	}
 
 }
