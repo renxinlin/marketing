@@ -26,7 +26,8 @@ public interface MarketingMembersMapper {
             + " a.NewRegisterFlag as newRegisterFlag ,"
             + " DATE_FORMAT(a.CreateDate,'%Y-%m-%d') as createDate,DATE_FORMAT(a.UpdateDate,'%Y-%m-%d') as updateDate,"
             + "a.CustomerName as customerName,a.CustomerId as customerId,"
-            + " a.BabyBirthday as babyBirthday ";
+            + " a.BabyBirthday as babyBirthday "
+            + " a.IsRegistered as isRegistered";
 
 
     /**
