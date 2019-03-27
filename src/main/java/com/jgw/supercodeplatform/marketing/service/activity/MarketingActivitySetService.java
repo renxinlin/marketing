@@ -730,6 +730,14 @@ public class MarketingActivitySetService  {
 			MarketingActivityProduct pActivityProduct=mProductMapper.selectByProductAndProductBatchId(strProductId, strProductBatchId);
 			if (null!=pActivityProduct) {
 				Long activitySetId=pActivityProduct.getActivitySetId();
+				MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
+				if (null==mActivitySet ) {
+					return;
+				}
+				Integer autoFecth=mActivitySet.getAutoFetch();
+				if (null==autoFecth || autoFecth.intValue()==2) {
+					return;
+				}
 				Long codeTotalAmount=(pActivityProduct.getCodeTotalAmount()==null?0L:pActivityProduct.getCodeTotalAmount())+codeTotalLon;
 				Long activityCodeSum=activityCodeSumMap.get(activitySetId);
 				if (null==activityCodeSum) {
