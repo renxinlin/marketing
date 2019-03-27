@@ -432,7 +432,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		H5LoginVO h5LoginVO=new H5LoginVO();
 		Long userIdByOpenId=marketingMembersByOpenId.getId();
 		//2、根据输入的手机号和组织id查询该手机号是否存在记录
+		logger.error("{==============================================详情页}"+mobile);
+		logger.error("{==============================================详情页}"+wxstate);
+		logger.error("{==============================================详情页}"+scanCodeInfoMO);
+		logger.error("{==============================================详情页}"+organizationId);
+
 		MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
+		logger.error("{==============================================详情页}"+marketingMembersByPhone);
 
 		//3、如果根据登录手机号无法查询到记录，则说明该手机号未进行过注册也为进行过绑定。可能情况：
 		//3.1该openid对应的用户之前绑定过手机号但是想换手机号了、3.2该openid用户从未绑定过手机号
@@ -441,6 +447,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			members.setId(userIdByOpenId);
 			members.setMobile(mobile);
 			marketingMembersMapper.update(members);
+			logger.error("{==============================================详情页1}"+marketingMembersByPhone);
 			if (mPortraits.size()==1) {
 				//如果企业画像只有一个那默认为手机号就不需要再去完善信息
 				h5LoginVO.setRegistered(1);
@@ -452,13 +459,21 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			// zhuchuang老逻辑：如果根据登录手机号能找到用户则说明之前登陆过或者注册过就不需要注册完善信息，但需要比较跟openid查出的记录是否是一条记录，不是的话要合并
 			// renxinlin 新逻辑：已经注册用户如果画像只有手机则无需完善，如果完善过一次则无需完善
 			// 默认需要完善
+
 			h5LoginVO.setRegistered(0);
 			// 只有一个画像无需完善
 			if (mPortraits.size()==1){
+				logger.error("{==============================================详情页3}"+mPortraits);
+
 				h5LoginVO.setRegistered(1);
 			}
 			// 已经完善过不完善
+			logger.error("{==============================================详情页212}"+marketingMembersByPhone.getIsRegistered() );
+			logger.error("{==============================================详情页212}"+marketingMembersByPhone );
+
 			if(marketingMembersByPhone.getIsRegistered() != null && marketingMembersByPhone.getIsRegistered() == 1){
+				logger.error("{==============================================详情页2}"+marketingMembersByPhone);
+
 				h5LoginVO.setRegistered(1);
 
 			}
@@ -485,6 +500,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				h5LoginVO.setMemberId(userIdByPhone);
 				//删除openid查出的用户
 				marketingMembersMapper.deleteById(userIdByOpenId);
+				restResult.setMsg("登录成功...");
 
 			}
 		}
@@ -493,7 +509,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 		restResult.setState(200);
 		restResult.setResults(h5LoginVO);
-		restResult.setMsg("登录成功");
 		return restResult;
 	}
 	/**
@@ -643,7 +658,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				// [ )
 //				amount=new Random().nextFloat() * (max - min)+min;
 // 保留两位小数
-                float init = new Random().nextFloat() *((float)(2111.333-1.222)) +(float)2.344;
+                float init = new Random().nextFloat() *((max-min)) +min;
                 DecimalFormat decimalFormat=new DecimalFormat(".00");
                 String strAmount=decimalFormat.format(init);//format 返回的是字符串
                 amount = Float.valueOf(strAmount);
@@ -697,5 +712,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		marketingMembersMapper.update(members);
 	}
 
+	public static void main(String[] args) {
+		Byte b = (byte )1;
+		System.out.println(b == 1);
+	}
 
 }

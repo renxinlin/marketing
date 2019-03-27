@@ -20,7 +20,8 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId ";
 
 	static String allWinFields="mmw.Id as id,mmw.ActivityId as activityId,mmw.ActivitySetId as activitySetId,mmw.ActivityName as activityName,mmw.Openid as openid,mmw.PrizeTypeId as prizeTypeId,"
-			+ "mmw.WinningAmount as winningAmount,mmw.WinningCode as winningCode,mmw.Mobile as mobile,mmw.OrganizationId as organizationId,"
+			+ " CAST(mmw.WinningAmount AS CHAR) as winningAmount "
+			+ ",mmw.WinningCode as winningCode,mmw.Mobile as mobile,mmw.OrganizationId as organizationId,"
 			+ "mm.UserName as userName,mm.WxName as wxName,mm.CustomerName as customerName, "
 			+ "mpt.PrizeTypeName as prizeTypeName,map.ProductName as productName ";
 
