@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSONObject;
@@ -646,7 +647,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			redWinRecord.setMobile(mobile);
 			redWinRecord.setOpenid(openId);
 			redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
-			redWinRecord.setWinningAmount((float)finalAmount );
+			redWinRecord.setWinningAmount((float)amount );
 			redWinRecord.setWinningCode(scanCodeInfoMO.getCodeId());
 			redWinRecord.setOrganizationId(organizationId);
 			mWinRecordMapper.addWinRecord(redWinRecord);
