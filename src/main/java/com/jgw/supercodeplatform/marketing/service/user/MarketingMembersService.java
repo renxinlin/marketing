@@ -432,6 +432,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		H5LoginVO h5LoginVO=new H5LoginVO();
 		Long userIdByOpenId=marketingMembersByOpenId.getId();
 		//2、根据输入的手机号和组织id查询该手机号是否存在记录
+		logger.error("{==============================================详情页}"+mobile);
+		logger.error("{==============================================详情页}"+wxstate);
+		logger.error("{==============================================详情页}"+scanCodeInfoMO);
+
 		MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
 
 		//3、如果根据登录手机号无法查询到记录，则说明该手机号未进行过注册也为进行过绑定。可能情况：
