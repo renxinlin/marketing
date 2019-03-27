@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +26,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
@@ -90,6 +90,8 @@ public class MarketingActivitySetService  {
 
 	@Value("${marketing.domain.url}")
 	private String marketingDomain;
+	
+	private static Object mqlock=new Object();
 	/**
 	 * 根据活动id获取领取页和中奖页信息
 	 * @param activitySetId
@@ -713,70 +715,75 @@ public class MarketingActivitySetService  {
 	 * @param batchList
 	 */
 	public void handleNewBindBatch(List<Map<String, Object>> batchList) {
-		Map<Long, Long> activityCodeSumMap=new HashMap<Long, Long>();
-		List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
-		for (Map<String, Object> map : batchList) {
-			Object productId=map.get("productId");
-			Object productBatchId=map.get("productBatchId");
-			Object codeTotal=map.get("codeTotal");
-			Object codeBatch=map.get("codeBatch");
-			if (null==productId || null==productBatchId ||null==codeTotal|| null==codeBatch) {
-				logger.error("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeTotal="+codeTotal+",codeBatch="+codeBatch);
-				continue;
-			}
-			Long codeTotalLon=Long.parseLong(String.valueOf(codeTotal));
-			String strProductId=String.valueOf(productId);
-			String strProductBatchId=String.valueOf(productBatchId);
-			MarketingActivityProduct pActivityProduct=mProductMapper.selectByProductAndProductBatchId(strProductId, strProductBatchId);
-			if (null!=pActivityProduct) {
-				Long activitySetId=pActivityProduct.getActivitySetId();
-				MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
-				if (null==mActivitySet ) {
-					return;
+		synchronized (mqlock) {
+			Map<Long, Long> activityCodeSumMap=new HashMap<Long, Long>();
+			List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
+			for (Map<String, Object> map : batchList) {
+				Object productId=map.get("productId");
+				Object productBatchId=map.get("productBatchId");
+				Object codeTotal=map.get("codeTotal");
+				Object codeBatch=map.get("codeBatch");
+				if (null==productId || null==productBatchId ||null==codeTotal|| null==codeBatch) {
+					logger.error("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeTotal="+codeTotal+",codeBatch="+codeBatch);
+					continue;
 				}
-				Integer autoFecth=mActivitySet.getAutoFetch();
-				if (null==autoFecth || autoFecth.intValue()==2) {
-					return;
-				}
-				Long codeTotalAmount=(pActivityProduct.getCodeTotalAmount()==null?0L:pActivityProduct.getCodeTotalAmount())+codeTotalLon;
-				Long activityCodeSum=activityCodeSumMap.get(activitySetId);
-				if (null==activityCodeSum) {
-					activityCodeSumMap.put(activitySetId, codeTotalAmount);
-				}else {
-					activityCodeSumMap.put(activitySetId, codeTotalAmount+activityCodeSum);
-				}
-				mProductMapper.updateCodeTotalAmount(codeTotalAmount,pActivityProduct.getId());
+				Long codeTotalLon=Long.parseLong(String.valueOf(codeTotal));
+				String strProductId=String.valueOf(productId);
+				String strProductBatchId=String.valueOf(productBatchId);
+				MarketingActivityProduct pActivityProduct=mProductMapper.selectByProductAndProductBatchId(strProductId, strProductBatchId);
+				if (null!=pActivityProduct) {
+					Long activitySetId=pActivityProduct.getActivitySetId();
+					MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
+					if (null==mActivitySet ) {
+						return;
+					}
+					Integer autoFecth=mActivitySet.getAutoFetch();
+					if (null==autoFecth || autoFecth.intValue()==2) {
+						return;
+					}
+					Long codeTotalAmount=(pActivityProduct.getCodeTotalAmount()==null?0L:pActivityProduct.getCodeTotalAmount())+codeTotalLon;
+					Long activityCodeSum=activityCodeSumMap.get(activitySetId);
+					if (null==activityCodeSum) {
+						activityCodeSumMap.put(activitySetId, codeTotalAmount);
+					}else {
+						activityCodeSumMap.put(activitySetId, codeTotalAmount+activityCodeSum);
+					}
+					mProductMapper.updateCodeTotalAmount(codeTotalAmount,pActivityProduct.getId());
 
-				Map<String, Object> batchMap=new HashMap<String, Object>();
-				batchMap.put("batchId", codeBatch);
-				batchMap.put("businessType", 1);
-				batchMap.put("url", marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL);
-				bindBatchList.add(batchMap);
+					Map<String, Object> batchMap=new HashMap<String, Object>();
+					batchMap.put("batchId", codeBatch);
+					batchMap.put("businessType", 1);
+					batchMap.put("url", marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL);
+					bindBatchList.add(batchMap);
+				}
 			}
-		}
-		try {
-			//绑定生码批次与url的关系
-			//生码批次跟url绑定
-			String bindJson=JSONObject.toJSONString(bindBatchList);
-			ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_BIND_BATCH_TO_URL, bindJson, null);
-			String batchBody=bindBatchresponse.getBody();
-			JSONObject batchobj=JSONObject.parseObject(batchBody);
-			Integer batchstate=batchobj.getInteger("state");
-//			commonUtil.getSuperToken();
-			if (batchstate.intValue()!=200) {
-				logger.error("处理码管理推送的mq消息时绑定生码批次与url的关系出错，错误信息："+bindBatchresponse.toString()+",批次信息："+bindJson);
-				return;
-			}
-			if (!activityCodeSumMap.isEmpty()){
-				for(Long activitySetid:activityCodeSumMap.keySet()) {
-					Long codeNum=activityCodeSumMap.get(activitySetid);
-					synchronized (this) {
-						mSetMapper.addCodeTotalNum(codeNum,activitySetid);
+			try {
+				if (bindBatchList.isEmpty()) {
+					return;
+				}
+				//绑定生码批次与url的关系
+				//生码批次跟url绑定
+				String bindJson=JSONObject.toJSONString(bindBatchList);
+				ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_BIND_BATCH_TO_URL, bindJson, null);
+				String batchBody=bindBatchresponse.getBody();
+				JSONObject batchobj=JSONObject.parseObject(batchBody);
+				Integer batchstate=batchobj.getInteger("state");
+//				commonUtil.getSuperToken();
+				if (batchstate.intValue()!=200) {
+					logger.error("处理码管理推送的mq消息时绑定生码批次与url的关系出错，错误信息："+bindBatchresponse.toString()+",批次信息："+bindJson);
+					return;
+				}
+				if (!activityCodeSumMap.isEmpty()){
+					for(Long activitySetid:activityCodeSumMap.keySet()) {
+						Long codeNum=activityCodeSumMap.get(activitySetid);
+						synchronized (this) {
+							mSetMapper.addCodeTotalNum(codeNum,activitySetid);
+						}
 					}
 				}
+			} catch (SuperCodeException e) {
+				e.printStackTrace();
 			}
-		} catch (SuperCodeException e) {
-			e.printStackTrace();
 		}
 
 	}
