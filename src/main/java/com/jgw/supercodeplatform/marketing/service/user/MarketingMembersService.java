@@ -306,7 +306,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @param map
 	 * @return
 	 */
-	public int updateMembers(MarketingMembersUpdateParam membersUpdateParam){
+	public int updateMembers(MarketingMembersUpdateParam membersUpdateParam) throws SuperCodeException{
+		if(membersUpdateParam == null || membersUpdateParam.getId() == null || membersUpdateParam.getId() <= 0){
+			throw new SuperCodeException("完善信息未获取到会员唯一性ID",500);
+		}
 		MarketingMembers members=new MarketingMembers();
 		// datetime类型处理
 		if(!StringUtils.isBlank(membersUpdateParam.getBabyBirthday())){
