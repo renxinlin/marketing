@@ -311,6 +311,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if(membersUpdateParam == null || membersUpdateParam.getId() == null || membersUpdateParam.getId() <= 0){
 			throw new SuperCodeException("完善信息未获取到会员唯一性ID",500);
 		}
+        if(StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  !StringUtils.isBlank(membersUpdateParam.getCustomerName())){
+            throw new SuperCodeException("门店编码和名称信息丢失：门店编码",500);
+        }
+        if(!StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  StringUtils.isBlank(membersUpdateParam.getCustomerName())){
+            throw new SuperCodeException("门店编码和名称信息丢失：门店名称",500);
+        }
 		MarketingMembers members=new MarketingMembers();
 		// datetime类型处理
 		if(!StringUtils.isBlank(membersUpdateParam.getBabyBirthday())){
