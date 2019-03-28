@@ -246,6 +246,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 		String userId = getUUID();
 		marketingMembersAddParam.setUserId(userId);
+		marketingMembersAddParam.setState(1);
 		int result = marketingMembersMapper.addMembers(marketingMembersAddParam);
 		// 调用用户模块发送短信
 		if(1 == result){

@@ -41,6 +41,10 @@ public class MarketingMembersAddParam {
     
     @ApiModelProperty(value = "省市区及编码字段")
     private String pCCcode;
+    
+    @ApiModelProperty(value = "是否停用",hidden=true)
+    private Integer state;
+    
     @ApiModelProperty(value = "手机验证码")
     private  String verificationCode;
 
@@ -79,7 +83,15 @@ public class MarketingMembersAddParam {
         this.mobile = mobile;
     }
 
-    public String getUserName() {
+    public Integer getState() {
+		return state;
+	}
+
+	public void setState(Integer state) {
+		this.state = state;
+	}
+
+	public String getUserName() {
         return userName;
     }
 
