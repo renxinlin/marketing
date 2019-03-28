@@ -41,6 +41,16 @@ public class MarketingMembersAddParam {
     
     @ApiModelProperty(value = "省市区及编码字段")
     private String pCCcode;
+    @ApiModelProperty(value = "手机验证码")
+    private  String verificationCode;
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
 
     public MarketingMembersAddParam() {
     }

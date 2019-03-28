@@ -19,7 +19,7 @@ public class MarketingMembersWinRecordListReturn {
     @ApiModelProperty(value = "中奖奖次id")
     private Long prizeTypeId;//中奖奖次id
     @ApiModelProperty(value = "中奖金额")
-    private Float winningAmount;//中奖金额
+    private String winningAmount;//中奖金额，入库float,出库String从而保留.00
     @ApiModelProperty(value = "中奖码")
     private String winningCode;//中奖码
     @ApiModelProperty(value = "组织id")
@@ -88,11 +88,11 @@ public class MarketingMembersWinRecordListReturn {
         this.prizeTypeId = prizeTypeId;
     }
 
-    public Float getWinningAmount() {
+    public String getWinningAmount() {
         return winningAmount;
     }
 
-    public void setWinningAmount(Float winningAmount) {
+    public void setWinningAmount(String winningAmount) {
         this.winningAmount = winningAmount;
     }
 

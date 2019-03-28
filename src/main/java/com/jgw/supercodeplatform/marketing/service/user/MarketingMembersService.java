@@ -209,6 +209,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @throws Exception
 	 */
 	public int addMember(MarketingMembersAddParam marketingMembersAddParam) throws Exception{
+		String mobile = marketingMembersAddParam.getMobile();
+		String redisPhoneCode=redisUtil.get(RedisKey.phone_code_prefix+ mobile);
+		if (StringUtils.isBlank(redisPhoneCode) ) {
+ 			throw new SuperCodeException("验证码不存在或已过期请重新获取验证码",500);
+		}
+
+		if (!redisPhoneCode.equals(marketingMembersAddParam.getVerificationCode())) {
+			throw new SuperCodeException("验证码不正确",500);
+		}
 		String organizationId=marketingMembersAddParam.getOrganizationId();
 		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("组织id获取失败", 500);
@@ -228,11 +237,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		// 校验是否已经注册
 		Map<String, Object> map = new HashMap<>();
 		map.put("organizationId",organizationId);
-		map.put("mobile",marketingMembersAddParam.getMobile());
+		map.put("mobile", mobile);
 		Integer allMarketingMembersCount = marketingMembersMapper.getAllMarketingMembersCount(map);
 
 		if(allMarketingMembersCount >= 1){
-			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册已注册");
+			logger.error(mobile + "手机号注册已注册");
 			throw  new SuperCodeException("手机号注册已注册",500);
 		}
 		String userId = getUUID();
@@ -241,7 +250,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		// 调用用户模块发送短信
 		if(1 == result){
 			String msg = msgTimplate(marketingMembersAddParam.getUserName(),selectedPortrait.get(0).getOrganizationFullName());
-			sendRegisterMessage(marketingMembersAddParam.getMobile(),msg);
+			sendRegisterMessage(mobile,msg);
 
 		}
 		return  result;
@@ -311,6 +320,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if(membersUpdateParam == null || membersUpdateParam.getId() == null || membersUpdateParam.getId() <= 0){
 			throw new SuperCodeException("完善信息未获取到会员唯一性ID",500);
 		}
+        if(StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  !StringUtils.isBlank(membersUpdateParam.getCustomerName())){
+            throw new SuperCodeException("门店编码和名称信息丢失：门店编码",500);
+        }
+        if(!StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  StringUtils.isBlank(membersUpdateParam.getCustomerName())){
+            throw new SuperCodeException("门店编码和名称信息丢失：门店名称",500);
+        }
 		MarketingMembers members=new MarketingMembers();
 		// datetime类型处理
 		if(!StringUtils.isBlank(membersUpdateParam.getBabyBirthday())){
@@ -432,13 +447,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		H5LoginVO h5LoginVO=new H5LoginVO();
 		Long userIdByOpenId=marketingMembersByOpenId.getId();
 		//2、根据输入的手机号和组织id查询该手机号是否存在记录
-		logger.error("{==============================================详情页}"+mobile);
-		logger.error("{==============================================详情页}"+wxstate);
-		logger.error("{==============================================详情页}"+scanCodeInfoMO);
-		logger.error("{==============================================详情页}"+organizationId);
-
 		MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
-		logger.error("{==============================================详情页}"+marketingMembersByPhone);
 
 		//3、如果根据登录手机号无法查询到记录，则说明该手机号未进行过注册也为进行过绑定。可能情况：
 		//3.1该openid对应的用户之前绑定过手机号但是想换手机号了、3.2该openid用户从未绑定过手机号
@@ -447,7 +456,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			members.setId(userIdByOpenId);
 			members.setMobile(mobile);
 			marketingMembersMapper.update(members);
-			logger.error("{==============================================详情页1}"+marketingMembersByPhone);
 			if (mPortraits.size()==1) {
 				//如果企业画像只有一个那默认为手机号就不需要再去完善信息
 				h5LoginVO.setRegistered(1);
@@ -463,19 +471,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			h5LoginVO.setRegistered(0);
 			// 只有一个画像无需完善
 			if (mPortraits.size()==1){
-				logger.error("{==============================================详情页3}"+mPortraits);
-
 				h5LoginVO.setRegistered(1);
 			}
 			// 已经完善过不完善
-			logger.error("{==============================================详情页212}"+marketingMembersByPhone.getIsRegistered() );
-			logger.error("{==============================================详情页212}"+marketingMembersByPhone );
-
 			if(marketingMembersByPhone.getIsRegistered() != null && marketingMembersByPhone.getIsRegistered() == 1){
-				logger.error("{==============================================详情页2}"+marketingMembersByPhone);
-
 				h5LoginVO.setRegistered(1);
-
 			}
 
 			Long userIdByPhone=marketingMembersByPhone.getId();
@@ -712,9 +712,5 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		marketingMembersMapper.update(members);
 	}
 
-	public static void main(String[] args) {
-		Byte b = (byte )1;
-		System.out.println(b == 1);
-	}
 
 }

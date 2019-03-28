@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
@@ -23,7 +24,7 @@ public class MarketingActivityChannelService {
     private MarketingChannelMapper mapper;
 
 
-    public RestResult<List<MarketingChannel>> getActivityChannelInfoByeditPage(Long activitySetId) {
+    public RestResult<List<MarketingChannel>> getActivityChannelInfoByeditPage(Long activitySetId)   {
         RestResult<List<MarketingChannel>> restResult = new RestResult<List<MarketingChannel>>();
         // 校验
         if(activitySetId == null || activitySetId <= 0 ){
@@ -48,7 +49,7 @@ public class MarketingActivityChannelService {
      * @param marketingChannels
      * @return
      */
-    private List<MarketingChannel> getTree(List<MarketingChannel> marketingChannels) {
+    private List<MarketingChannel> getTree(List<MarketingChannel> marketingChannels)  {
         // 空数据不做处理
         if(CollectionUtils.isEmpty(marketingChannels)){
             return new LinkedList<>();
@@ -58,14 +59,40 @@ public class MarketingActivityChannelService {
         // 剩下待处理节点
         List<MarketingChannel> newDatas = new LinkedList<>();
 
-        for (MarketingChannel marketingChannel : marketingChannels) {
-            // customerSuperior 上级编码
-            if (StringUtils.isEmpty( marketingChannel.getCustomerSuperior())) {
+
+        // 需要把不存在的父级找出来作为root节点，同时根节点本身也要找出
+        for( MarketingChannel marketingChannel: marketingChannels ){
+            boolean addToRoot = true;
+            for(MarketingChannel node: marketingChannels){
+                if(!StringUtils.isEmpty( marketingChannel.getCustomerSuperior())){
+                   if( marketingChannel.getCustomerSuperior().equals(node.getCustomerCode())){
+                       addToRoot = false;
+                   }
+                }else{
+                    addToRoot = true;
+
+                }
+            }
+            // 父节点添加到rootTree,不存在父节点但customerSuperior不为空的添加到rootTree
+            if(addToRoot){
                 rootTree.add(marketingChannel);
             }else{
                 newDatas.add(marketingChannel);
             }
         }
+
+
+//        for (MarketingChannel marketingChannel : marketingChannels) {
+//            // customerSuperior 上级编码
+//            if (StringUtils.isEmpty( marketingChannel.getCustomerSuperior())) {
+//                rootTree.add(marketingChannel);
+//            }else{
+//                newDatas.add(marketingChannel);
+//            }
+//        }
+
+
+
         // 递归处理树,结束后rootTree生成父子结构关系
         getSonByFatherWithAllData(rootTree,rootTree,newDatas);
         return rootTree;
