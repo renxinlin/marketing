@@ -47,7 +47,7 @@ public interface MarketingActivityMapper extends CommonSql{
 			+ " DATE_FORMAT(aset.ActivityStartDate,'%Y-%m-%d') as activityStartDate, "
 			+ " DATE_FORMAT(aset.ActivityEndDate,'%Y-%m-%d') as activityEndDate, "
 			+ " aset.UpdateUserName updateUserName, "
-			+ " DATE_FORMAT(aset.UpdateDate,'%Y-%m-%d') as updateDate,"
+			+ " DATE_FORMAT(aset.UpdateDate,'%Y-%m-%d %H:%i:%S') as updateDate,"
 
 			+ " aset.ActivityStatus activityStatus,"
 			+ " ap.ProductBatchName productBatchName,ap.ProductName productName,ap.ProductId productId,"

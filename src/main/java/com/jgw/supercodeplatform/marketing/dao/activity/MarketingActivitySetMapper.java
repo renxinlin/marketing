@@ -60,4 +60,30 @@ public interface MarketingActivitySetMapper {
   
    @Update("update marketing_activity_set set CodeTotalNum =CodeTotalNum+#{codeTotalNum} where Id = #{id}")
    void addCodeTotalNum(@Param("codeTotalNum")Long codeNum, @Param("id")Long activitySetid);
+
+    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId} and Id != #{id}")
+    MarketingActivitySet selectByTitleOrgIdWithOutSelf(@Param("activityTitle")String activityTitle, @Param("organizationId")String organizationId ,@Param("id")Long activitySetid);
+
+
+
+    @Update(" update marketing_activity_set " +
+            "<set> "
+            + " <if test='activityId !=null and activityId != &apos;&apos; '> ActivityId = #{activityId} ,</if> "
+            + " <if test='organizationId !=null and organizationId != &apos;&apos; '> OrganizationId = #{organizationId} ,</if> "
+            + " <if test='organizatioIdlName !=null and organizatioIdlName != &apos;&apos; '> OrganizatioIdlName = #{organizatioIdlName} ,</if> "
+            + " <if test='activityTitle !=null and activityTitle != &apos;&apos; '> ActivityTitle = #{activityTitle} ,</if> "
+            + " <if test='activityStartDate !=null and activityStartDate != &apos;&apos; '> ActivityStartDate = #{activityStartDate} ,</if> "
+            + " <if test='activityEndDate !=null and activityEndDate != &apos;&apos; '> ActivityEndDate = #{activityEndDate} ,</if> "
+            + " <if test='updateUserId !=null and updateUserId != &apos;&apos; '> UpdateUserId = #{updateUserId} ,</if> "
+            + " <if test='updateUserName !=null and updateUserName != &apos;&apos; '> UpdateUserName = #{updateUserName} ,</if> "
+            + " <if test='updateDate !=null and updateDate != &apos;&apos; '> UpdateDate = #{updateDate} ,</if> "
+            + " <if test='activityStatus !=null and activityStatus != &apos;&apos; '> ActivityStatus = #{activityStatus} ,</if> "
+            + " <if test='eachDayNumber !=null and eachDayNumber != &apos;&apos; '> EachDayNumber = #{eachDayNumber} ,</if> "
+            + " <if test='activityRangeMark !=null and activityRangeMark != &apos;&apos; '> ActivityRangeMark = #{activityRangeMark} ,</if> "
+            + " <if test='autoFetch !=null and autoFetch != &apos;&apos; '> autoFetch = #{autoFetch} ,</if> "
+            + " <if test='codeTotalNum !=null and codeTotalNum != &apos;&apos; '> CodeTotalNum = #{codeTotalNum} ,</if> "
+            + " </set> "
+            + " where Id = #{id}"
+    )
+    int update(MarketingActivitySet mActivitySet);
 }
