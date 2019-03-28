@@ -742,14 +742,12 @@ public class MarketingActivitySetService  {
 					if (null==autoFecth || autoFecth.intValue()==2) {
 						return;
 					}
-					Long codeTotalAmount=(pActivityProduct.getCodeTotalAmount()==null?0L:pActivityProduct.getCodeTotalAmount())+codeTotalLon;
 					Long activityCodeSum=activityCodeSumMap.get(activitySetId);
 					if (null==activityCodeSum) {
-						activityCodeSumMap.put(activitySetId, codeTotalAmount);
+						activityCodeSumMap.put(activitySetId, codeTotalLon);
 					}else {
-						activityCodeSumMap.put(activitySetId, codeTotalAmount+activityCodeSum);
+						activityCodeSumMap.put(activitySetId,  codeTotalLon+activityCodeSum);
 					}
-					mProductMapper.updateCodeTotalAmount(codeTotalAmount,pActivityProduct.getId());
 
 					Map<String, Object> batchMap=new HashMap<String, Object>();
 					batchMap.put("batchId", codeBatch);
