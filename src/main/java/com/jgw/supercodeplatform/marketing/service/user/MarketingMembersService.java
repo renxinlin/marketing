@@ -401,13 +401,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			return restResult;
 		}
 		ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
-		scanCodeInfoMO.setMobile(mobile);
 		GlobalRamCache.scanCodeInfoMap.put(wxstate,scanCodeInfoMO);
 		if (null==scanCodeInfoMO) {
 			restResult.setState(500);
 			restResult.setMsg("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码");
 			return restResult;
 		}
+		scanCodeInfoMO.setMobile(mobile);
 
 		String redisPhoneCode=redisUtil.get(RedisKey.phone_code_prefix+mobile);
 		if (StringUtils.isBlank(redisPhoneCode) ) {
