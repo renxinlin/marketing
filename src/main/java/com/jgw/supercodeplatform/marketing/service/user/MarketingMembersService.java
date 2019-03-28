@@ -432,13 +432,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		H5LoginVO h5LoginVO=new H5LoginVO();
 		Long userIdByOpenId=marketingMembersByOpenId.getId();
 		//2、根据输入的手机号和组织id查询该手机号是否存在记录
-		logger.error("{==============================================详情页}"+mobile);
-		logger.error("{==============================================详情页}"+wxstate);
-		logger.error("{==============================================详情页}"+scanCodeInfoMO);
-		logger.error("{==============================================详情页}"+organizationId);
-
 		MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
-		logger.error("{==============================================详情页}"+marketingMembersByPhone);
 
 		//3、如果根据登录手机号无法查询到记录，则说明该手机号未进行过注册也为进行过绑定。可能情况：
 		//3.1该openid对应的用户之前绑定过手机号但是想换手机号了、3.2该openid用户从未绑定过手机号
@@ -447,7 +441,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			members.setId(userIdByOpenId);
 			members.setMobile(mobile);
 			marketingMembersMapper.update(members);
-			logger.error("{==============================================详情页1}"+marketingMembersByPhone);
 			if (mPortraits.size()==1) {
 				//如果企业画像只有一个那默认为手机号就不需要再去完善信息
 				h5LoginVO.setRegistered(1);
@@ -463,19 +456,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			h5LoginVO.setRegistered(0);
 			// 只有一个画像无需完善
 			if (mPortraits.size()==1){
-				logger.error("{==============================================详情页3}"+mPortraits);
-
 				h5LoginVO.setRegistered(1);
 			}
 			// 已经完善过不完善
-			logger.error("{==============================================详情页212}"+marketingMembersByPhone.getIsRegistered() );
-			logger.error("{==============================================详情页212}"+marketingMembersByPhone );
-
 			if(marketingMembersByPhone.getIsRegistered() != null && marketingMembersByPhone.getIsRegistered() == 1){
-				logger.error("{==============================================详情页2}"+marketingMembersByPhone);
-
 				h5LoginVO.setRegistered(1);
-
 			}
 
 			Long userIdByPhone=marketingMembersByPhone.getId();
@@ -712,9 +697,5 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		marketingMembersMapper.update(members);
 	}
 
-	public static void main(String[] args) {
-		Byte b = (byte )1;
-		System.out.println(b == 1);
-	}
 
 }
