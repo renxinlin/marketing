@@ -36,10 +36,11 @@ public interface MarketingMembersMapper {
      * @return
      */
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
-            + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday)"
-            + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday}"
+            + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday,PCCcode,State)"
+            + " VALUES("
+            + " #{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday}"
             + " ,NOW(),#{organizationId},"
-            + " #{customerName},#{customerId},#{babyBirthday} )")
+            + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state})")
     int addMembers(MarketingMembersAddParam marketingMembersAddParam);
 
 
