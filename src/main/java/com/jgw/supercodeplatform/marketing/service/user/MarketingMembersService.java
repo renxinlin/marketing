@@ -209,6 +209,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @throws Exception
 	 */
 	public int addMember(MarketingMembersAddParam marketingMembersAddParam) throws Exception{
+		String mobile = marketingMembersAddParam.getMobile();
+		String redisPhoneCode=redisUtil.get(RedisKey.phone_code_prefix+ mobile);
+		if (StringUtils.isBlank(redisPhoneCode) ) {
+ 			throw new SuperCodeException("验证码不存在或已过期请重新获取验证码",500);
+		}
+
+		if (!redisPhoneCode.equals(marketingMembersAddParam.getVerificationCode())) {
+			throw new SuperCodeException("验证码不正确",500);
+		}
 		String organizationId=marketingMembersAddParam.getOrganizationId();
 		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("组织id获取失败", 500);
@@ -228,11 +237,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		// 校验是否已经注册
 		Map<String, Object> map = new HashMap<>();
 		map.put("organizationId",organizationId);
-		map.put("mobile",marketingMembersAddParam.getMobile());
+		map.put("mobile", mobile);
 		Integer allMarketingMembersCount = marketingMembersMapper.getAllMarketingMembersCount(map);
 
 		if(allMarketingMembersCount >= 1){
-			logger.error(marketingMembersAddParam.getMobile()+ "手机号注册已注册");
+			logger.error(mobile + "手机号注册已注册");
 			throw  new SuperCodeException("手机号注册已注册",500);
 		}
 		String userId = getUUID();
@@ -241,7 +250,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		// 调用用户模块发送短信
 		if(1 == result){
 			String msg = msgTimplate(marketingMembersAddParam.getUserName(),selectedPortrait.get(0).getOrganizationFullName());
-			sendRegisterMessage(marketingMembersAddParam.getMobile(),msg);
+			sendRegisterMessage(mobile,msg);
 
 		}
 		return  result;
