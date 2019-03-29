@@ -60,6 +60,7 @@ public class ScanCodeController {
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(String codeId,String codeTypeId,String productId,String productBatchId) throws Exception {
     	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(codeId,codeTypeId,productId,productBatchId);
+        logger.info("h5pageUrl="+h5pageUrl);
     	if (restResult.getState()==500) {
     		 return "redirect:"+h5pageUrl+"?success=0&msg="+restResult.getMsg();
 		}
@@ -77,7 +78,7 @@ public class ScanCodeController {
         
     	//微信授权需要对redirect_uri进行urlencode
     	String encoderedirectUri=URLEncoder.encode(wxauthRedirectUri, "utf-8");
-        logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid());
+        logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid()+",h5pageUrl="+h5pageUrl);
     	
         return "redirect:"+h5pageUrl+"?state="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1";
     }
