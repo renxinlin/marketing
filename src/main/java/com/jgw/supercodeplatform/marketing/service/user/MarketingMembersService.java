@@ -142,7 +142,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			commonsearch=true;
 			commonSearchbuf.append(" AND (");
 		}
-		fieldsbuf.append("Id,State,Openid,WxName,");
+		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate,");
 		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
 			String code=marketingOrganizationPortraitListParam.getCodeId();
 			if( "birthday".equalsIgnoreCase(code)){
@@ -189,7 +189,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				sql+=commonSearchbuf.toString();
 			}
 			if (null!=startNum && null!=pagesize) {
-				sql+=" limit "+startNum+","+pagesize;
+				sql+=" order by RegistDate desc limit "+startNum+","+pagesize;
 			}
 		}
 		return sql;
