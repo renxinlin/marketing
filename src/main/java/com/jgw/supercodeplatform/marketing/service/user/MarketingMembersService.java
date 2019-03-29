@@ -241,8 +241,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		Integer allMarketingMembersCount = marketingMembersMapper.getAllMarketingMembersCount(map);
 
 		if(allMarketingMembersCount >= 1){
-			logger.error(mobile + "手机号注册已注册");
-			throw  new SuperCodeException("手机号注册已注册",500);
+			logger.error(mobile + "手机号已注册");
+			throw  new SuperCodeException("手机号已注册",500);
 		}
 		String userId = getUUID();
 		marketingMembersAddParam.setUserId(userId);
