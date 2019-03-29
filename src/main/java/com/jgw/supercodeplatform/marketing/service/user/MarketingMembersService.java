@@ -247,6 +247,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String userId = getUUID();
 		marketingMembersAddParam.setUserId(userId);
 		marketingMembersAddParam.setState(1);
+
 		int result = marketingMembersMapper.addMembers(marketingMembersAddParam);
 		// 调用用户模块发送短信
 		if(1 == result){
@@ -503,7 +504,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				marketingMembersMapper.deleteById(userIdByOpenId);
 				restResult.setMsg("登录成功...");
 
-			}
+			}else{
+			    // 说明已经合并过但是没有完善：此时手机号的uid同openId的用户ID
+                h5LoginVO.setMemberId(userIdByPhone);
+
+            }
 		}
 
 
