@@ -62,8 +62,9 @@ public class ScanCodeController {
      */
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
-    public String bind(String outerCodeId,String codeTypeId,String productId,String productBatchId) throws UnsupportedEncodingException, ParseException  {
-    	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId);
+    public String bind(String codeId,String codeTypeId,String productId,String productBatchId) throws Exception {
+    	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(codeId,codeTypeId,productId,productBatchId);
+        logger.info("h5pageUrl="+h5pageUrl);
     	if (restResult.getState()==500) {
     		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
     		 return "redirect:"+h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
@@ -83,7 +84,7 @@ public class ScanCodeController {
     	//微信授权需要对redirect_uri进行urlencode
         String wholeUrl=wxauthRedirectUri+"/marketing/front/auth/code";
     	String encoderedirectUri=URLEncoder.encode(wholeUrl, "utf-8");
-        logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid());
+        logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid()+",h5pageUrl="+h5pageUrl);
     	
         return "redirect:"+h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1";
     }
