@@ -90,7 +90,7 @@ public class MarketingActivitySetService  {
 
 	@Value("${marketing.domain.url}")
 	private String marketingDomain;
-	
+
 	private static Object mqlock=new Object();
 	/**
 	 * 根据活动id获取领取页和中奖页信息
@@ -477,17 +477,17 @@ public class MarketingActivitySetService  {
 		for (MarketingChannelParam marketingChannelParam : mChannelParams) {
 			Byte customerType=marketingChannelParam.getCustomerType();
 			// 将基础信息的customerId插入customerCode
-			String customerCode=marketingChannelParam.getCustomerId();
+			String customerId=marketingChannelParam.getCustomerId();
 			MarketingChannel mChannel=new MarketingChannel();
 			mChannel.setActivitySetId(activitySetId);
-			mChannel.setCustomerCode(customerCode);
+			mChannel.setCustomerId(marketingChannelParam.getCustomerId());
 			mChannel.setCustomerName(marketingChannelParam.getCustomerName());
 			mChannel.setCustomerSuperior(marketingChannelParam.getCustomerSuperior());
 			mChannel.setCustomerSuperiorType(marketingChannelParam.getCustomerSuperiorType());
 			mChannel.setCustomerType(customerType);
 			mList.add(mChannel);
 			List<MarketingChannelParam> childrens=marketingChannelParam.getChildrens();
-			recursiveCreateChannel(customerCode,customerType,activitySetId,childrens,mList);
+			recursiveCreateChannel(customerId,customerType,activitySetId,childrens,mList);
 		}
 
 		mChannelMapper.batchInsert(mList);
@@ -510,17 +510,17 @@ public class MarketingActivitySetService  {
 		for (MarketingChannelParam marketingChannelParam : childrens) {
 			Byte customerType=marketingChannelParam.getCustomerType();
 			// 基础信息的CustomerId对应营销的customerCode
-			String customerCode=marketingChannelParam.getCustomerId();
+			String customerId=marketingChannelParam.getCustomerId();
 			MarketingChannel mChannel=new MarketingChannel();
 			mChannel.setActivitySetId(activitySetId);
-			mChannel.setCustomerCode(customerCode);
+			mChannel.setCustomerId(customerId);
 			mChannel.setCustomerName(marketingChannelParam.getCustomerName());
 			mChannel.setCustomerSuperior(parentCustomerCode);
 			mChannel.setCustomerSuperiorType(parentCustomerType);
 			mChannel.setCustomerType(customerType);
 			mList.add(mChannel);
 			List<MarketingChannelParam> childrens2=marketingChannelParam.getChildrens();
-			recursiveCreateChannel(customerCode,customerType,activitySetId,childrens2,mList);
+			recursiveCreateChannel(customerId,customerType,activitySetId,childrens2,mList);
 		}
 	}
 	/**

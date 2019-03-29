@@ -25,7 +25,7 @@ public class MarketingActivityChannelService {
 
 
     public RestResult<List<MarketingChannel>> getActivityChannelInfoByeditPage(Long activitySetId)   {
-        RestResult<List<MarketingChannel>> restResult = new RestResult<List<MarketingChannel>>();
+        RestResult<List<MarketingChannel>> restResult = new RestResult<>();
         // 校验
         if(activitySetId == null || activitySetId <= 0 ){
             restResult.setState(500);
@@ -65,7 +65,7 @@ public class MarketingActivityChannelService {
             boolean addToRoot = true;
             for(MarketingChannel node: marketingChannels){
                 if(!StringUtils.isEmpty( marketingChannel.getCustomerSuperior())){
-                   if( marketingChannel.getCustomerSuperior().equals(node.getCustomerCode())){
+                   if( marketingChannel.getCustomerSuperior().equals(node.getCustomerId())){
                        addToRoot = false;
                    }
                 }else{
@@ -118,8 +118,8 @@ public class MarketingActivityChannelService {
             List<MarketingChannel> children  = new LinkedList();
             // 当前节点增加子节点
             for(MarketingChannel maybeSon : newDatas){
-                if(!StringUtils.isEmpty(everyRoot.getCustomerCode())
-                        && everyRoot.getCustomerCode().equals(maybeSon.getCustomerSuperior())){
+                if(!StringUtils.isEmpty(everyRoot.getCustomerId())
+                        && everyRoot.getCustomerId().equals(maybeSon.getCustomerSuperior())){
                     children.add(maybeSon);
                     newCurrentRoot.add(maybeSon);
                 }
@@ -135,7 +135,7 @@ public class MarketingActivityChannelService {
                         break;
                     }
 
-                    if(!StringUtils.isEmpty(isAddChild.getCustomerCode()) && isAddChild.getCustomerCode().equals(everyRoot.getCustomerCode())){
+                    if(!StringUtils.isEmpty(isAddChild.getCustomerId()) && isAddChild.getCustomerId().equals(everyRoot.getCustomerId())){
                         isAddChild.setChildren(children);
                         setSuccess = true;
                         break;
@@ -180,7 +180,7 @@ public class MarketingActivityChannelService {
             if (setSuccess){
                 break;
             }
-            if(!StringUtils.isEmpty(isAddChildSon.getCustomerCode()) && isAddChildSon.getCustomerCode().equals(everyRoot.getCustomerCode())){
+            if(!StringUtils.isEmpty(isAddChildSon.getCustomerId()) && isAddChildSon.getCustomerId().equals(everyRoot.getCustomerId())){
                 isAddChildSon.setChildren(children);
                 setSuccess  =true;
 

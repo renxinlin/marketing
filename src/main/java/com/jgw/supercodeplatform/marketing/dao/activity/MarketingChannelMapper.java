@@ -11,14 +11,14 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface MarketingChannelMapper {
-   static String allFields="Id id,ActivitySetId activitySetId,CustomerName customerName,CustomerCode customerCode,CustomerType customerType"
+   static String allFields="Id id,ActivitySetId activitySetId,CustomerName customerName,CustomerId customerId,CustomerType customerType"
    		+ ",CustomerSuperiorType customerSuperiorType,CustomerSuperior customerSuperior";
 
 	@Insert({
 			"<script>",
-			"INSERT INTO marketing_channel(ActivitySetId,CustomerName,CustomerCode,CustomerType,CustomerSuperiorType,CustomerSuperior ) VALUES ",
+			"INSERT INTO marketing_channel(ActivitySetId,CustomerName,CustomerId,CustomerType,CustomerSuperiorType,CustomerSuperior ) VALUES ",
 			"<foreach collection='mList' item='mChannel' index='index' separator=','>",
-			"(#{mChannel.activitySetId},#{mChannel.customerName},#{mChannel.customerCode},#{mChannel.customerType},#{mChannel.customerSuperiorType},#{mChannel.customerSuperior})",
+			"(#{mChannel.activitySetId},#{mChannel.customerName},#{mChannel.customerId},#{mChannel.customerType},#{mChannel.customerSuperiorType},#{mChannel.customerSuperior})",
 			"</foreach>",
 			"</script>"
 	})

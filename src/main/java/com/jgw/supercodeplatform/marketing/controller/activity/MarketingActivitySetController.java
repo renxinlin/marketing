@@ -27,6 +27,23 @@ public class MarketingActivitySetController {
 
 	@Autowired
 	private MarketingActivitySetService service;
+
+
+    /**
+     * 活动编辑;本期不做
+     * @param marketingActivityParam
+     * @return
+     * @throws Exception
+     */
+//    @RequestMapping(value = "/edit",method = RequestMethod.POST)
+//    @ApiOperation(value = "活动编辑", notes = "")
+//    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+//    public RestResult<String> edit(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
+//        return service.edit(activitySetParam);
+//    }
+
+
+
     /**
      * 活动创建
      * @param marketingActivityParam
@@ -90,6 +107,11 @@ public class MarketingActivitySetController {
         return service.getActivityBaseInfoByeditPage(activitySetId);
 
     }
+
+
+
+
+
 
 
 }

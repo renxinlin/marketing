@@ -13,11 +13,6 @@ public class MarketingChannelParam {
 	@ApiModelProperty(value = "经销商或门店名称")
 	private String customerName;// 经销商或门店名称
 	@ApiModelProperty(value = " 客户唯一编码")
-	private String customerCode;// 客户唯一编码
-
-
-
-	@ApiModelProperty(value = " 基础信息客户唯一编码")
 	private String customerId;// 桶客户唯一编码
 
 
@@ -51,14 +46,6 @@ public class MarketingChannelParam {
 
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
-	}
-
-	public String getCustomerCode() {
-		return customerCode;
-	}
-
-	public void setCustomerCode(String customerCode) {
-		this.customerCode = customerCode;
 	}
 
 	public Byte getCustomerType() {

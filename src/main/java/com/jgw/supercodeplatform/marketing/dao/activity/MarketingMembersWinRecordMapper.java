@@ -37,14 +37,13 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 						"<if test='search !=null and search != &apos;&apos;'>" +
 						" AND (" +
 						" mmw.ActivityName LIKE CONCAT('%',#{search},'%')  " +
-						" OR mm.MemberName LIKE CONCAT('%',#{search},'%') " +
+						" OR mm.UserName LIKE CONCAT('%',#{search},'%') " +
 						" OR WxName LIKE CONCAT('%',#{search},'%') " +
 						" OR mmw.Openid LIKE CONCAT('%',#{search},'%') " +
 						" OR mmw.Mobile LIKE CONCAT('%',#{search},'%') " +
 						" OR mpt.PrizeTypeName LIKE CONCAT('%',#{search},'%') " +
-						" OR mpt.WinningCode LIKE CONCAT('%',#{search},'%') " +
-						" OR mm.Dealer LIKE CONCAT('%',#{search},'%') " +
-						" OR mm.Store LIKE CONCAT('%',#{search},'%')" +
+						" OR mmw.WinningAmount LIKE CONCAT('%',#{search},'%') " +
+						" OR map.ProductName LIKE CONCAT('%',#{search},'%') " +
 						")" +
 						"</if>" +
 					"</otherwise>" +
