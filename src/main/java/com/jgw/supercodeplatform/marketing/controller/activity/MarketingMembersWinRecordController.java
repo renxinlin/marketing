@@ -47,33 +47,6 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 	@Value("{\"activityName\":\"奖品类型\",\"userName\":\"会员姓名\",\"wxName\":\"会员微信昵称\", \"openId\":\"会员微信ID\",\"mobile\":\"会员手机\",\"prizeTypeName\":\"中奖奖次\", \"winningAmount\":\"中奖金额\",\"winningCode\":\"中奖码\",\"productName\":\"中奖产品\",\"customerName\":\"活动门店\"}")
 	private String MARKET_WIN_RECORD_EXCEL_FIELD_MAP;
 
-	@RequestMapping(value = "/page",method = RequestMethod.POST)
-	@ApiOperation(value = "中奖纪录列表", notes = "")
-	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-	public RestResult<PageResults<List<MarketingMembersWinRecordListReturn>>> list(@RequestBody MarketingMembersWinRecordListParam winRecordListParam) throws Exception {
-		RestResult<PageResults<List<MarketingMembersWinRecordListReturn>>> restResult=new RestResult<PageResults<List<MarketingMembersWinRecordListReturn>>>();
-		PageResults<List<MarketingMembersWinRecordListReturn>> pageResults=service.listSearchViewLike(winRecordListParam);
-		restResult.setState(200);
-		restResult.setResults(pageResults);
-		restResult.setMsg("成功");
-		return restResult;
-	}
-
-
-	@RequestMapping(value ="/export",method = RequestMethod.GET)
-	@ApiOperation(value = "导出中奖纪录", notes = "")
-	public void littleWinRecordOutExcel(@RequestParam LinkedHashMap filedMap, HttpServletResponse response) throws SuperCodeException, UnsupportedEncodingException {
-
-		validateRequestParamAndValueNotNull(filedMap,"list");
-		List<String> ids = Arrays.asList(filedMap.get("list").toString().split(","));
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-		String fileName = simpleDateFormat.format(new Date()) + ".xls";
-		fileName = URLEncoder.encode(fileName, "UTF-8");
-		response.addHeader("Content-disposition", "attachment;filename=" + fileName);
-		response.setContentType("txt/plain");
-		service.littleGeneralWinRecordExcelOutToResponse(ids,response,filedMap);
-	}
-
 
 
 	////////////////////////////////////////////////

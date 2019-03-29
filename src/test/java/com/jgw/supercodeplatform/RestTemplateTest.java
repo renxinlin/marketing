@@ -58,24 +58,24 @@ private String restUserUrl;
 private String codeManagerUrl;
 	@Test
 	public void selectByNo() throws SuperCodeException {
-		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs=new ArrayList<ProductAndBatchGetCodeMO>();
-		ProductAndBatchGetCodeMO pGetCodeMO=new ProductAndBatchGetCodeMO();
-		
-		List<Map<String,String>> productBatchList=new ArrayList<Map<String,String>>();
-		Map<String,String> map=new HashMap<String, String>();
-		map.put("productBatchId", "dbdd589a370c47c5bfbde4f1b6419b44");
-		productBatchList.add(map);
-		
-		pGetCodeMO.setProductBatchList(productBatchList);
-		pGetCodeMO.setProductId("dbdd589a370c47c5bfbde4f1b6419b44");
-		
-		productAndBatchGetCodeMOs.add(pGetCodeMO);
-		String jsonData=JSONObject.toJSONString(productAndBatchGetCodeMOs);
-		Map<String,String> headerMap=new HashMap<String, String>();
-		headerMap.put("super-token", "9b6d023cd4ed495a82aaf8ed4bf32b6f");
-		ResponseEntity<String> resp=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+"/code/relation/getBatchInfo", jsonData, headerMap);
-		String body=resp.getBody();
-		System.out.println(body);
+//		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs=new ArrayList<ProductAndBatchGetCodeMO>();
+//		ProductAndBatchGetCodeMO pGetCodeMO=new ProductAndBatchGetCodeMO();
+//		
+//		List<Map<String,String>> productBatchList=new ArrayList<Map<String,String>>();
+//		Map<String,String> map=new HashMap<String, String>();
+//		map.put("productBatchId", "dbdd589a370c47c5bfbde4f1b6419b44");
+//		productBatchList.add(map);
+//		
+//		pGetCodeMO.setProductBatchList(productBatchList);
+//		pGetCodeMO.setProductId("dbdd589a370c47c5bfbde4f1b6419b44");
+//		
+//		productAndBatchGetCodeMOs.add(pGetCodeMO);
+//		String jsonData=JSONObject.toJSONString(productAndBatchGetCodeMOs);
+//		Map<String,String> headerMap=new HashMap<String, String>();
+////		headerMap.put("super-token", "9b6d023cd4ed495a82aaf8ed4bf32b6f");
+//		ResponseEntity<String> resp=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+"/code/relation/getBatchInfo", jsonData, headerMap);
+//		String body=resp.getBody();
+//		System.out.println(body);
 	}
 	
 	@Test

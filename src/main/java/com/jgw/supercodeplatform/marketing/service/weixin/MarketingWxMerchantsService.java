@@ -33,9 +33,13 @@ public class MarketingWxMerchantsService {
 		RestResult<MarketingWxMerchants> restResult=new RestResult<MarketingWxMerchants>();
 		String organizationId=commonUtil.getOrganizationId();
 		MarketingWxMerchants merchants=dao.get(organizationId);
+		if (null==merchants) {
+			restResult.setResults(new MarketingWxMerchants());
+		}else {
+			restResult.setResults(merchants);
+		}
 		restResult.setState(200);
 		restResult.setMsg("成功");
-		restResult.setResults(merchants);
 		return restResult;
 	}
 
