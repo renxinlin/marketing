@@ -505,7 +505,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				restResult.setMsg("登录成功...");
 
 			}else{
-			    // 说明已经合并过但是没有完善：此时手机号的uid同openId的用户ID
+			    // 逻辑说明: 说明已经合并过但是没有完善：此时手机号的uid同openId的用户ID
+				// 业务声明: 所有setRegistered(1)表示需要完善的都要回传用户id,用于完善接口标志身份
                 h5LoginVO.setMemberId(userIdByPhone);
 
             }
@@ -702,7 +703,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				remoteAddr=serverIp;
 			}
 			try {
-//				wxpService.qiyePay(openId, remoteAddr, finalAmount,partner_trade_no, organizationId);
+				wxpService.qiyePay(openId, remoteAddr, Integer.parseInt(String.valueOf(finalAmount)),partner_trade_no, organizationId);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
