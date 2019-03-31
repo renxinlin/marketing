@@ -615,10 +615,10 @@ public class MarketingActivitySetService  {
 	 * @throws SuperCodeException
 	 * @throws ParseException
 	 */
-	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String codeId, String codeTypeId, String productId, String productBatchId) throws ParseException {
-		logger.info("扫码接收到参数codeId="+codeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
+	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String outerCodeId, String codeTypeId, String productId, String productBatchId) throws ParseException {
+		logger.info("扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
 		RestResult<ScanCodeInfoMO> restResult=new RestResult<ScanCodeInfoMO>();
-		if (StringUtils.isBlank(codeId) || StringUtils.isBlank(codeId)||StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)) {
+		if (StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(outerCodeId)||StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)) {
 			restResult.setState(500);
 			restResult.setMsg("接收到码平台扫码信息有空值");
 			return restResult;
@@ -668,8 +668,8 @@ public class MarketingActivitySetService  {
 				return restResult;
 			}
 		}
-		Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
-		logger.info("扫码方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
+		Long codeCount=codeEsService.countByCode(outerCodeId, codeTypeId);
+		logger.info("扫码方法=====：根据codeId="+outerCodeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
 		if (null!=codeCount && codeCount.intValue()>=1) {
 			restResult.setState(500);
 			restResult.setMsg("该码已参与过活动不能重复参与");
@@ -683,7 +683,7 @@ public class MarketingActivitySetService  {
 			return restResult;
 		}
 		ScanCodeInfoMO pMo=new ScanCodeInfoMO();
-		pMo.setCodeId(codeId);
+		pMo.setCodeId(outerCodeId);
 		pMo.setCodeTypeId(codeTypeId);
 		pMo.setProductBatchId(productBatchId);
 		pMo.setProductId(productId);
