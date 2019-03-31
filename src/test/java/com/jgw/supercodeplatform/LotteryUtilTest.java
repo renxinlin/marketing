@@ -1,7 +1,16 @@
 package com.jgw.supercodeplatform;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
@@ -85,44 +95,42 @@ public class LotteryUtilTest {
 		return marketingPrizeTypeMOs;
 	}
 
-	public static void main(String[] args) throws SuperCodeException, UnsupportedEncodingException {
-		
-		String n="%E6%B4%BB%E5%8A%A8%E5%B7%B2%E5%81%9C%E6%AD%A2";
-		String nn=URLDecoder.decode(n, "utf-8");
-		String nnn=URLDecoder.decode(nn, "utf-8");
-		System.out.println(nnn);
-		List<MarketingPrizeTypeMO> marketingPrizeTypeMOs = init();
-		long sum=0;
-		int i=0;
-		long codeTotalNum=125485;
-		for (MarketingPrizeTypeMO mTypeMO : marketingPrizeTypeMOs) {
-			if (i==marketingPrizeTypeMOs.size()-1) {
-				mTypeMO.setTotalNum(codeTotalNum);
-			}else {
-				long num = (long) (mTypeMO.getPrizeProbability() / 100.00 * codeTotalNum);
-				mTypeMO.setTotalNum(num);
-				codeTotalNum=codeTotalNum-num;
-				sum+=num;
-				mTypeMO.setTotalNum(num);
-			}
-			i++;
-			System.out.println("第i="+i+"次，中奖奖次：" + mTypeMO.getPrizeTypeName()+",中奖总数="+mTypeMO.getTotalNum());
-		}
-//		for (int j = 0; j < 10; j++) {
-//			List<MarketingPrizeTypeMO> marketingPrizeTypeMOs = init();
-//			for (MarketingPrizeTypeMO mTypeMO : marketingPrizeTypeMOs) {
-//				long num = (long) (mTypeMO.getPrizeProbability() / 100.00 * totalCodeNum);
-//				mTypeMO.setTotalNum(num);
+	public static void main(String[] args) throws SuperCodeException, NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
+		InputStream certStream=new FileInputStream("H:\\test\\cert\\113a2c2ef0cb438a84a69114c35b9a00\\CEEED.p12");
+        KeyStore ks = KeyStore.getInstance("PKCS12");
+        ks.load(certStream, "1269223601".toCharArray());
+        
+
+//		String suffix="P12";
+//		String prefix = "CEEED";
+//		FileOutputStream fileOutputStream=null;
+//		String newName=prefix+"."+suffix;
+//		try {
+//			String wholeFilePath="H:\\test\\cert\\113a2c2ef0cb438a84a69114c35b9a00";
+//			File dir=new File(wholeFilePath);
+//			if (!dir.exists()) {
+//				dir.mkdirs();
 //			}
-//			for (int i = 0; i < totalCodeNum; i++) {
-//				MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtil.lottery(marketingPrizeTypeMOs);
-//				while (mPrizeTypeMO.getTotalNum() <= mPrizeTypeMO.getWiningNum()) {
-//					mPrizeTypeMO = LotteryUtil.lottery(marketingPrizeTypeMOs);
-//				}
-//				mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
-//				System.out.println("中奖奖次：" + mPrizeTypeMO.getPrizeTypeName());
+//			String wholeName=wholeFilePath+File.separator+newName;
+//			
+//			fileOutputStream=new FileOutputStream(wholeName);
+//			byte[]buf=new byte[1024];
+//			int length=0;
+//			while((length=certStream.read(buf))>0) {
+//				fileOutputStream.write(buf, 0, length);
 //			}
-//			System.out.println("-------------第 " + j + "次执行------------------------------");
+//			fileOutputStream.flush();
+//			
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}finally {
+//			if (null!=certStream) {
+//				certStream.close();
+//			}
+//			
+//			if (null!=fileOutputStream) {
+//				fileOutputStream.close();
+//			}
 //		}
 	}
 

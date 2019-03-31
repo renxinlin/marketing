@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ import com.jgw.supercodeplatform.marketing.weixinpay.requestparam.OrganizationPa
 
 @Service
 public class WXPayService {
-    
+	protected static Logger logger = LoggerFactory.getLogger(WXPayService.class);
     @Autowired
     private MarketingWxMerchantsMapper mWxMerchantsMapper;
     
@@ -62,6 +64,7 @@ public class WXPayService {
 		config.setMchId(mechid);
 		
 		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getCertificateAddress();
+		logger.info("微信企业支付到零钱证书完整路径："+wholePath);
 		config.setCertificatePath(wholePath);
 		//封装请求参数实体
 		OrganizationPayRequestParam oRequestParam=new OrganizationPayRequestParam();

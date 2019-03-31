@@ -89,10 +89,10 @@ public class MarketingWxMerchantsService {
 			fileOutputStream=new FileOutputStream(wholeName);
 			byte[]buf=new byte[1024];
 			int length=0;
-			while((length=inputstream.read(buf, 0, length))>0) {
+			while((length=inputstream.read(buf))>0) {
 				fileOutputStream.write(buf, 0, length);
-				fileOutputStream.flush();
 			}
+			fileOutputStream.flush();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

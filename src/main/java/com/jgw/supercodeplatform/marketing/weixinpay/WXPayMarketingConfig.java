@@ -1,13 +1,16 @@
 package com.jgw.supercodeplatform.marketing.weixinpay;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WXPayMarketingConfig extends WXPayConfig{
-
+	protected static Logger logger = LoggerFactory.getLogger(WXPayMarketingConfig.class);
 	private String appId;
 	private String mchId;
 	private String key;
@@ -50,6 +53,10 @@ public class WXPayMarketingConfig extends WXPayConfig{
 	InputStream getCertStream() {
 		if (StringUtils.isBlank(certificatePath)) {
 			return null;
+		}
+		File file=new File(certificatePath);
+		if (!file.exists()) {
+			logger.error("证书路径："+certificatePath+"，对应的证书不存在");
 		}
 		FileInputStream in=null;
 		try {
