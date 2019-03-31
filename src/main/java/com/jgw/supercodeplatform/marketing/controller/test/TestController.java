@@ -3,8 +3,6 @@ package com.jgw.supercodeplatform.marketing.controller.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +22,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @Api(tags = "测试接口")
+@RequestMapping(value = "/marketing/test",method=RequestMethod.POST)
 public class TestController extends CommonUtil {
 
 	@Value("${rest.user.url}")
