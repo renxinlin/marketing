@@ -11,13 +11,11 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSONObject;
@@ -703,12 +701,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				remoteAddr=serverIp;
 			}
 			try {
-				wxpService.qiyePay(openId, remoteAddr, Integer.parseInt(String.valueOf(finalAmount)),partner_trade_no, organizationId);
+				wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(),partner_trade_no, organizationId);
 			} catch (Exception e) {
 				e.printStackTrace();
+			}finally {
+				//一切ok后清除缓存
+				GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 			}
-			//一切ok后清除缓存
-			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
 			restResult.setState(200);
 			restResult.setMsg(amount+"");
 		}
@@ -718,6 +717,5 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	public void update(MarketingMembers members) {
 		marketingMembersMapper.update(members);
 	}
-
 
 }
