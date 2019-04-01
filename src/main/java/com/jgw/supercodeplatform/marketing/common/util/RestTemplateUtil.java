@@ -97,7 +97,7 @@ public class RestTemplateUtil {
 	 */
 	public RestResult postJsonDataAndReturnJosnObject(String url,Map json,Map<String, String> headerMap)   {
 		ResponseEntity<RestResult> restResultResponseEntity = restTemplate.postForEntity(url, json, RestResult.class);
-		if(restResultResponseEntity.getStatusCode() == HttpStatus.OK && restResultResponseEntity.getBody().getState() == 200){
+		if(restResultResponseEntity.getStatusCode().value() == HttpStatus.OK.value() && restResultResponseEntity.getBody().getState() == 200){
 			return  new RestResult(200, "success", null);
 		}else {
 			return  new RestResult(500, "短信发送失败", null);
