@@ -7,15 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -91,14 +88,20 @@ public class RestTemplateUtil {
 		return result;
 	}
 
-
-	public Object postJsonDataAndReturnJosnObject(String url,Map json,Map<String, String> headerMap) throws SuperCodeException {
-		if (StringUtils.isBlank(url)) {
-			throw new SuperCodeException("postJsonDataAndReturnJosn参数url不能为空", 500);
+	/**
+	 * 解决短信发送JSON String乱码问题
+	 * @param url
+	 * @param json
+	 * @param headerMap
+	 * @return
+	 */
+	public RestResult postJsonDataAndReturnJosnObject(String url,Map json,Map<String, String> headerMap)   {
+		ResponseEntity<RestResult> restResultResponseEntity = restTemplate.postForEntity(url, json, RestResult.class);
+		if(restResultResponseEntity.getStatusCode().value() == HttpStatus.OK.value() && restResultResponseEntity.getBody().getState() == 200){
+			return  new RestResult(200, "success", null);
+		}else {
+			return  new RestResult(500, "短信发送失败", null);
 		}
-		Object o = restTemplate.postForEntity(url, json, Object.class);
-
-		return o;
 	}
 
 

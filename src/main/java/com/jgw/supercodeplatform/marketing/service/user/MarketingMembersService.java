@@ -62,7 +62,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	//	@Value( "${注册短信模板外部配置key}")
 	@Value( "亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
-	private  String registerMsgContent ;
+
+    private  String registerMsgContent ;
 	@Value("${rest.user.url}")
 	private String userServiceUrl;
 	@Autowired
@@ -252,6 +253,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			String msg = msgTimplate(marketingMembersAddParam.getUserName(),selectedPortrait.get(0).getOrganizationFullName());
 			sendRegisterMessage(mobile,msg);
 
+		}else {
+			throw  new SuperCodeException("保存注册数据失败",500);
 		}
 		return  result;
 	}
@@ -267,21 +270,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			Map msgData = new HashMap();
 			msgData.put("mobileId",mobile);
 			msgData.put("sendContent",msg);
-			String jsonData= JSONObject.toJSONString(msgData);
-			String iso8859 = new String(jsonData.getBytes("iso8859-1"));
-			String gbk = new String(jsonData.getBytes("gbk"));
-			String utf8 = new String(jsonData.getBytes("utf-8"));
-			if(iso8859.equals(jsonData.toString())){
-				System.out.println("iso8859");
-			}else  if(gbk.equals(jsonData.toString())){
-				System.out.println("gbk");
-			}else  if(utf8.equals(jsonData.toString())){
-				System.out.println("utf8");
-			}
-			Map<String, String> headerMap = new HashMap<>();
-			headerMap.put("charset","UTF-8");
-			restTemplateUtil.postJsonDataAndReturnJosnObject(userServiceUrl+ WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, headerMap);
-		} catch (SuperCodeException e) {
+			RestResult restResult = restTemplateUtil.postJsonDataAndReturnJosnObject(userServiceUrl + WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, null);
+		} catch (Exception e) {
 			if(logger.isInfoEnabled()){
 				logger.info("注册用户的短信欢迎信息发送失败"+e.getMessage());
 			}
@@ -297,7 +287,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @return
 	 */
 	private String msgTimplate(String userName, String organizationFullName) {
-		return  registerMsgContent.replace("{{user}}",userName).replace("{{organization}}",organizationFullName);
+		return  registerMsgContent.replace("user",userName).replace("organization",organizationFullName);
 
 	}
 
