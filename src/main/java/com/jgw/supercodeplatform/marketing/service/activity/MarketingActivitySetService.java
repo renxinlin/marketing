@@ -153,10 +153,10 @@ public class MarketingActivitySetService  {
 					//如果是随机金额则校验随机金额取值
 					Float lowrand=prizeTypeParam.getLowRand();
 					Float highrand=prizeTypeParam.getHighRand();
-					if (null==lowrand || null==highrand || lowrand.intValue()>=highrand.intValue()) {
+					if (null==lowrand || null==highrand || lowrand >=highrand) {
 						throw new SuperCodeException("随机金额取值范围不能为空且低取值不能大于等于高取值", 500);
 					}
-					if (lowrand.intValue()<1 || highrand.intValue()>5000) {
+					if (lowrand<1 || highrand>5000) {
 						throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在1-5000以内", 500);
 					}
 				}
@@ -492,6 +492,7 @@ public class MarketingActivitySetService  {
 
 		mChannelMapper.batchInsert(mList);
 	}
+
 
 	/**
 	 * 递归创建渠道实体
