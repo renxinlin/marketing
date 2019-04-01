@@ -252,6 +252,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			String msg = msgTimplate(marketingMembersAddParam.getUserName(),selectedPortrait.get(0).getOrganizationFullName());
 			sendRegisterMessage(mobile,msg);
 
+		}else {
+			throw  new SuperCodeException("保存注册数据失败");
 		}
 		return  result;
 	}
@@ -267,21 +269,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			Map msgData = new HashMap();
 			msgData.put("mobileId",mobile);
 			msgData.put("sendContent",msg);
-			String jsonData= JSONObject.toJSONString(msgData);
-			String iso8859 = new String(jsonData.getBytes("iso8859-1"));
-			String gbk = new String(jsonData.getBytes("gbk"));
-			String utf8 = new String(jsonData.getBytes("utf-8"));
-			if(iso8859.equals(jsonData.toString())){
-				System.out.println("iso8859");
-			}else  if(gbk.equals(jsonData.toString())){
-				System.out.println("gbk");
-			}else  if(utf8.equals(jsonData.toString())){
-				System.out.println("utf8");
-			}
-			Map<String, String> headerMap = new HashMap<>();
-			headerMap.put("charset","UTF-8");
-			restTemplateUtil.postJsonDataAndReturnJosnObject(userServiceUrl+ WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, headerMap);
-		} catch (SuperCodeException e) {
+			RestResult restResult = restTemplateUtil.postJsonDataAndReturnJosnObject(userServiceUrl + WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, null);
+		} catch (Exception e) {
 			if(logger.isInfoEnabled()){
 				logger.info("注册用户的短信欢迎信息发送失败"+e.getMessage());
 			}
