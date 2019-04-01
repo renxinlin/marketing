@@ -1,12 +1,8 @@
 package com.jgw.supercodeplatform.marketing.controller.h5;
 
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
-import com.jgw.supercodeplatform.marketing.service.user.OrganizationPortraitService;
-import org.apache.http.HttpResponse;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,15 +13,13 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingWinningPageService;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
+import com.jgw.supercodeplatform.marketing.service.user.OrganizationPortraitService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
 
 /**
  * 中奖页controller
