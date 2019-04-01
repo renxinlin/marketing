@@ -287,7 +287,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @return
 	 */
 	private String msgTimplate(String userName, String organizationFullName) {
-		return  registerMsgContent.replace("user",userName).replace("organization",organizationFullName);
+		return  registerMsgContent.replace("{{user}}",userName).replace("{{organization}}",organizationFullName);
 
 	}
 
