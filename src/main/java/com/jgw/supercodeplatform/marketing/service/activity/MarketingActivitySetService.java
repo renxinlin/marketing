@@ -133,6 +133,15 @@ public class MarketingActivitySetService  {
 		if (null==maProductParams || maProductParams.isEmpty()) {
 			throw new SuperCodeException("产品信息不能为空", 500);
 		}
+
+		// 活动起始时间空串处理
+		if("".equals(mActivitySet.getActivityStartDate())){
+            mActivitySet.setActivityStartDate(null);
+        }
+
+		if("".equals(mActivitySet.getActivityEndDate())){
+            mActivitySet.setActivityEndDate(null);
+        }
 		//校验奖次信息
 		if (null==mPrizeTypeParams || mPrizeTypeParams.isEmpty()) {
 			throw new SuperCodeException("奖次信息不能为空", 500);
