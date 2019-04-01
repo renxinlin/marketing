@@ -62,7 +62,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	//	@Value( "${注册短信模板外部配置key}")
 	@Value( "亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
-	private  String registerMsgContent ;
+
+    private  String registerMsgContent ;
 	@Value("${rest.user.url}")
 	private String userServiceUrl;
 	@Autowired
@@ -253,7 +254,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			sendRegisterMessage(mobile,msg);
 
 		}else {
-			throw  new SuperCodeException("保存注册数据失败");
+			throw  new SuperCodeException("保存注册数据失败",500);
 		}
 		return  result;
 	}
@@ -286,7 +287,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @return
 	 */
 	private String msgTimplate(String userName, String organizationFullName) {
-		return  registerMsgContent.replace("{{user}}",userName).replace("{{organization}}",organizationFullName);
+		return  registerMsgContent.replace("user",userName).replace("organization",organizationFullName);
 
 	}
 
