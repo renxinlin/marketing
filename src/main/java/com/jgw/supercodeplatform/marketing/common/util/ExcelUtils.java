@@ -59,7 +59,24 @@ public class ExcelUtils {
                 // 创建工作簿并发送到OutputStream指定的地方
                 wwb = Workbook.createWorkbook(os);
                 /*创建sheet页*/
-                wwb.createSheet(sheetName, 0);
+                WritableSheet sheet = wwb.createSheet(sheetName, 0);
+                int size = fieldMap.size();
+                String[] enFields = new String[size];
+                String[] cnFields = new String[size];
+
+                // 填充数组
+                int count = 0;
+                for (Map.Entry<String, String> entry : fieldMap.entrySet()) {
+                    enFields[count] = entry.getKey();
+                    cnFields[count] = entry.getValue();
+                    count++;
+                }
+
+                // 填充表头
+                for (int i = 0; i < cnFields.length; i++) {
+                    Label label = new Label(i, 0, cnFields[i]);
+                    sheet.addCell(label);
+                }
                 wwb.write();
                 wwb.close();
                 return;
