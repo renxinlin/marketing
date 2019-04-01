@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 
@@ -54,8 +56,44 @@ private RestTemplate restTemplate;
 @Value("${rest.user.url}")
 private String restUserUrl;
 
+@Value( "亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
+private  String registerMsgContent ;
+
 @Value("${rest.codemanager.url}")
 private String codeManagerUrl;
+
+@Value("${rest.user.url}")
+private String userServiceUrl;
+
+@Test
+public  void main() throws UnsupportedEncodingException, SuperCodeException {
+	long start=System.currentTimeMillis();
+	String userName="周几了";
+	String organizationFullName="阿里巴巴科技又像是";
+	String msg=registerMsgContent.replace("{{user}}",userName).replace("{{organization}}",organizationFullName);
+	String mobile="13805766204";
+	Map msgData = new HashMap();
+	msgData.put("mobileId",mobile);
+	msgData.put("sendContent",msg);
+	String jsonData= JSONObject.toJSONString(msgData);
+	String iso8859 = new String(jsonData.getBytes("iso8859-1"));
+	String gbk = new String(jsonData.getBytes("gbk"));
+	String utf8 = new String(jsonData.getBytes("utf-8"));
+	if(iso8859.equals(jsonData.toString())){
+		System.out.println("iso8859");
+	}else  if(gbk.equals(jsonData.toString())){
+		System.out.println("gbk");
+	}else  if(utf8.equals(jsonData.toString())){
+		System.out.println("utf8");
+	}
+	Map<String, String> headerMap = new HashMap<>();
+	headerMap.put("charset","UTF-8");
+	restTemplateUtil.postJsonDataAndReturnJosnObject(userServiceUrl+ WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, headerMap);
+	long end=System.currentTimeMillis();
+	System.out.println("耗时："+(end-start)/1000+"秒");
+	System.out.println("over");
+}
+
 	@Test
 	public void selectByNo() throws SuperCodeException {
 //		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs=new ArrayList<ProductAndBatchGetCodeMO>();
