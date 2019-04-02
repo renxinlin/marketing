@@ -9,8 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +98,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	private WXPayTradeOrderMapper wXPayTradeOrderMapper;
 
 	@Autowired
+    private RedissonClient redissonClient;
+
+	@Autowired
 	private RedisUtil redisUtil;
 
 	@Autowired
@@ -114,6 +120,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	@Value("${marketing.server.ip}")
 	private String serverIp;
+
+
+
 
 	private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
 
@@ -586,63 +595,92 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
 		MarketingPrizeTypeMO mPrizeTypeMO =null;
-		synchronized (this) {
-			List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetIdIncludeUnreal(activitySetId);
-			if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
-				restResult.setState(500);
-				restResult.setMsg("该活动未设置中奖奖次");
-				return restResult;
-			}
-			List<MarketingPrizeTypeMO> mTypeMOs=LotteryUtil.judge(mPrizeTypes, codeTotalNum);
+        boolean acquireLock = false;
+        RLock lock = redissonClient.getLock(activitySetId + ":" + codeId + ":" + codeTypeId);
+        try {
+            // 超时时间,租期
+            acquireLock = lock.tryLock(1000, 2000, TimeUnit.MILLISECONDS);
+            if(acquireLock){
+                List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetIdIncludeUnreal(activitySetId);
+                if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
+                    restResult.setState(500);
+                    restResult.setMsg("该活动未设置中奖奖次");
+                    return restResult;
+                }
+                List<MarketingPrizeTypeMO> mTypeMOs=LotteryUtil.judge(mPrizeTypes, codeTotalNum);
 
 
-			if (null!=mTypeMOs && !mTypeMOs.isEmpty()) {
-				//执行中奖算法
-				mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
-				logger.info("抽到中奖奖次为："+mPrizeTypeMO);
-			}else {
-				//到这里说明流程已经出现问题，因为在刚开始扫码哪部分就会判断当前扫码量有没有达到活动对应的码数量
-				restResult.setState(500);
-				restResult.setMsg("所有奖次对应的中奖码数量都已达到上限无法继续抽奖");
-				return restResult;
-			}
+                if (null!=mTypeMOs && !mTypeMOs.isEmpty()) {
+                    //执行中奖算法
+                    mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
+                    logger.info("抽到中奖奖次为："+mPrizeTypeMO);
+                }else {
+                    //到这里说明流程已经出现问题，因为在刚开始扫码哪部分就会判断当前扫码量有没有达到活动对应的码数量
+                    restResult.setState(500);
+                    restResult.setMsg("所有奖次对应的中奖码数量都已达到上限无法继续抽奖");
+                    return restResult;
+                }
 
 
-			String nowTime=staticESSafeFormat.format(new Date());
-			long nowTtimeStemp=staticESSafeFormat.parse(nowTime).getTime();
-			Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
-			String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
-			logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
-			//校验码有没有被扫过
-			if (null==codeCount ||codeCount.intValue()<1) {
-				Integer scanLimit=mActivitySet.getEachDayNumber();
-				//校验有没有设置活动用户扫码量限制
-				if (null!=scanLimit&& scanLimit.intValue()>0) {
-					Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTtimeStemp);
-					logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum+",当前活动扫码限制次数为："+scanLimit);
-					if (null!=userscanNum && userscanNum.intValue()>=scanLimit.intValue()) {
-						restResult.setState(500);
-						restResult.setMsg("您今日扫码已超过该活动限制数量");
-						return restResult;
-					}
+                String nowTime=staticESSafeFormat.format(new Date());
+                long nowTtimeStemp=staticESSafeFormat.parse(nowTime).getTime();
+                Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
+                String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
+                logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
+                //校验码有没有被扫过
+                if (null==codeCount ||codeCount.intValue()<1) {
+                    Integer scanLimit=mActivitySet.getEachDayNumber();
+                    //校验有没有设置活动用户扫码量限制
+                    if (null!=scanLimit&& scanLimit.intValue()>0) {
+                        Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTtimeStemp);
+                        logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum+",当前活动扫码限制次数为："+scanLimit);
+                        if (null!=userscanNum && userscanNum.intValue()>=scanLimit.intValue()) {
+                            restResult.setState(500);
+                            restResult.setMsg("您今日扫码已超过该活动限制数量");
+                            return restResult;
+                        }
 
-				}
-			}else {
-				restResult.setState(200);
-				restResult.setMsg("您手速太慢，刚刚该码已被其它用户扫过");
-				return restResult;
-			}
+                    }
+                }else {
+                    restResult.setState(200);
+                    restResult.setMsg("您手速太慢，刚刚该码已被其它用户扫过");
+                    return restResult;
+                }
 
-			//更新奖次被扫码数量
-			mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
-			MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
-			marketingPrizeType.setId(mPrizeTypeMO.getId());
-			marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
-			mMarketingPrizeTypeMapper.update(marketingPrizeType);
+                //更新奖次被扫码数量
+                mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
+                MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
+                marketingPrizeType.setId(mPrizeTypeMO.getId());
+                marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
+                mMarketingPrizeTypeMapper.update(marketingPrizeType);
 
-			codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp);
-			logger.info("领取方法====：抽奖数据已保存到es");
-		}
+                codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp);
+                logger.info("领取方法====：抽奖数据已保存到es");
+            }else {
+                logger.error("{锁获取失败:" +activitySetId + codeId +codeTypeId+ ",请检查}");
+                // 统计失败
+                redisUtil.hmSet("marketing:lock:fail",activitySetId + codeId +codeTypeId,new Date());
+                restResult.setState(500);
+                restResult.setMsg("扫码人数过多,请稍后再试");
+                return restResult;
+            }
+        } catch (InterruptedException e) {
+            logger.error("{锁获取发生中断异常:" +activitySetId + codeId +codeTypeId+ ",请检查}");
+            e.printStackTrace();
+            restResult.setState(500);
+            restResult.setMsg("领奖失败请重试");
+            return restResult;
+        }finally {
+            if(acquireLock){
+                try{
+                    // may throw an (unchecked) exception if the restriction is violated
+                    lock.unlock();
+                }catch (Exception e){
+                    logger.error("{锁释放失败:" +activitySetId + codeId +codeTypeId+ ",请检查}");
+                    e.printStackTrace();
+                }
+            }
+        }
 		logger.info("抽奖数据已保存到es");
 		//判断realprize是否为0,0表示不中奖
 		Byte realPrize=mPrizeTypeMO.getRealPrize();

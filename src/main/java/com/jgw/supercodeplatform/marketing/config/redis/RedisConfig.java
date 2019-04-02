@@ -1,5 +1,8 @@
 package com.jgw.supercodeplatform.marketing.config.redis;
 
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -74,6 +77,21 @@ public class RedisConfig {
 		return template;
 	}
 
+	@Bean
+	public RedissonClient getRedisson(){
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://" +host+":"+port).setPassword(password).setDatabase(database);
+        // 默认编码为org.redisson.codec.JsonJacksonCodec
+        // 数据兼容编码:org.springframework.data.redis.serializer.
+		config.setCodec(new org.redisson.client.codec.StringCodec());
+		config.useSingleServer().setConnectionPoolSize(maxTotal);
+		config.useSingleServer().setIdleConnectionTimeout(100000);
+		config.useSingleServer().setConnectTimeout(30000);
+		config.useSingleServer().setTimeout(3000);
+		config.useSingleServer().setPingTimeout(30000);
+		config.useSingleServer().setReconnectionTimeout(3000);
+        return Redisson.create(config);
+    }
 
 
 }
