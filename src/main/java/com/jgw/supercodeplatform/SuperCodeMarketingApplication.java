@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableScheduling
 @EnableTransactionManagement
 public class SuperCodeMarketingApplication {
-	
+
+
     public static void main(String[] args) {
     	
         SpringApplication.run(SuperCodeMarketingApplication.class, args);
