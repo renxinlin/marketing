@@ -1,24 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
-import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -28,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
@@ -44,17 +26,25 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
@@ -63,7 +53,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	//	@Value( "${注册短信模板外部配置key}")
 	@Value( "亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
 
-    private  String registerMsgContent ;
+	private  String registerMsgContent ;
 	@Value("${rest.user.url}")
 	private String userServiceUrl;
 	@Autowired
@@ -95,6 +85,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	private WXPayTradeOrderMapper wXPayTradeOrderMapper;
 
 	@Autowired
+	RedisLockUtil lock;
+
+	@Autowired
 	private RedisUtil redisUtil;
 
 	@Autowired
@@ -112,8 +105,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	@Autowired
 	private OrganizationPortraitService organizationPortraitService;
 
+
+	@Autowired
+	private GlobalRamCache globalRamCache;
+
 	@Value("${marketing.server.ip}")
 	private String serverIp;
+
+
+
 
 	private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
 
@@ -211,7 +211,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String mobile = marketingMembersAddParam.getMobile();
 		String redisPhoneCode=redisUtil.get(RedisKey.phone_code_prefix+ mobile);
 		if (StringUtils.isBlank(redisPhoneCode) ) {
- 			throw new SuperCodeException("验证码不存在或已过期请重新获取验证码",500);
+			throw new SuperCodeException("验证码不存在或已过期请重新获取验证码",500);
 		}
 
 		if (!redisPhoneCode.equals(marketingMembersAddParam.getVerificationCode())) {
@@ -310,17 +310,17 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if(membersUpdateParam == null || membersUpdateParam.getId() == null || membersUpdateParam.getId() <= 0){
 			throw new SuperCodeException("完善信息未获取到会员唯一性ID",500);
 		}
-        if(StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  !StringUtils.isBlank(membersUpdateParam.getCustomerName())){
-            throw new SuperCodeException("门店编码和名称信息丢失：门店编码",500);
-        }
-        if(!StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  StringUtils.isBlank(membersUpdateParam.getCustomerName())){
-            throw new SuperCodeException("门店编码和名称信息丢失：门店名称",500);
-        }
+		if(StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  !StringUtils.isBlank(membersUpdateParam.getCustomerName())){
+			throw new SuperCodeException("门店编码和名称信息丢失：门店编码",500);
+		}
+		if(!StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  StringUtils.isBlank(membersUpdateParam.getCustomerName())){
+			throw new SuperCodeException("门店编码和名称信息丢失：门店名称",500);
+		}
 
-        if("".equals(membersUpdateParam.getBabyBirthday())){
+		if("".equals(membersUpdateParam.getBabyBirthday())){
 			membersUpdateParam.setBabyBirthday(null);
 		}
-        if("".equals(membersUpdateParam.getBirthday())){
+		if("".equals(membersUpdateParam.getBirthday())){
 			membersUpdateParam.setBirthday(null);
 		}
 		MarketingMembers members=new MarketingMembers();
@@ -397,15 +397,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("请检查参数，参数不能为空");
 			return restResult;
 		}
-		ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
-		GlobalRamCache.scanCodeInfoMap.put(wxstate,scanCodeInfoMO);
+		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null==scanCodeInfoMO) {
 			restResult.setState(500);
 			restResult.setMsg("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码");
 			return restResult;
 		}
+		// 登录时候保存手机信息用于后续接口获取
 		scanCodeInfoMO.setMobile(mobile);
-
+		globalRamCache.putScanCodeInfoMO(wxstate,scanCodeInfoMO);
 		String redisPhoneCode=redisUtil.get(RedisKey.phone_code_prefix+mobile);
 		if (StringUtils.isBlank(redisPhoneCode) ) {
 			restResult.setState(500);
@@ -500,11 +500,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				restResult.setMsg("登录成功...");
 
 			}else{
-			    // 逻辑说明: 说明已经合并过但是没有完善：此时手机号的uid同openId的用户ID
+				// 逻辑说明: 说明已经合并过但是没有完善：此时手机号的uid同openId的用户ID
 				// 业务声明: 所有setRegistered(1)表示需要完善的都要回传用户id,用于完善接口标志身份
-                h5LoginVO.setMemberId(userIdByPhone);
+				h5LoginVO.setMemberId(userIdByPhone);
 
-            }
+			}
 		}
 
 
@@ -523,7 +523,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	public RestResult<String> lottery(String wxstate) throws SuperCodeException, ParseException {
 		RestResult<String> restResult=new RestResult<String>();
 
-		ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
+		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null==scanCodeInfoMO) {
 			restResult.setState(500);
 			restResult.setMsg("不存在扫码唯一纪录="+wxstate+"的扫码缓存信息，请重新扫码");
@@ -559,7 +559,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 
 		MarketingMembers marketingMembersInfo = marketingMembersMapper.selectByOpenIdAndOrgId(openId, scanCodeInfoMO.getOrganizationId());
- 		if(marketingMembersInfo == null){
+		if(marketingMembersInfo == null){
 			throw  new SuperCodeException("会员信息不存在",500);
 		}
 		if( marketingMembersInfo.getState() == 0){
@@ -586,70 +586,96 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
 		MarketingPrizeTypeMO mPrizeTypeMO =null;
-		synchronized (this) {
-			List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetIdIncludeUnreal(activitySetId);
-			if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
-				restResult.setState(500);
-				restResult.setMsg("该活动未设置中奖奖次");
-				return restResult;
-			}
-			List<MarketingPrizeTypeMO> mTypeMOs=LotteryUtil.judge(mPrizeTypes, codeTotalNum);
+		boolean acquireLock = false;
+		long startTime = System.currentTimeMillis();
 
-
-			if (null!=mTypeMOs && !mTypeMOs.isEmpty()) {
-				//执行中奖算法
-				mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
-				logger.info("抽到中奖奖次为："+mPrizeTypeMO);
-			}else {
-				//到这里说明流程已经出现问题，因为在刚开始扫码哪部分就会判断当前扫码量有没有达到活动对应的码数量
-				restResult.setState(500);
-				restResult.setMsg("所有奖次对应的中奖码数量都已达到上限无法继续抽奖");
-				return restResult;
-			}
-
-
-			String nowTime=staticESSafeFormat.format(new Date());
-			long nowTtimeStemp=staticESSafeFormat.parse(nowTime).getTime();
-			Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
-			String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
-			logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
-			//校验码有没有被扫过
-			if (null==codeCount ||codeCount.intValue()<1) {
-				Integer scanLimit=mActivitySet.getEachDayNumber();
-				//校验有没有设置活动用户扫码量限制
-				if (null!=scanLimit&& scanLimit.intValue()>0) {
-					Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTtimeStemp);
-					logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum+",当前活动扫码限制次数为："+scanLimit);
-					if (null!=userscanNum && userscanNum.intValue()>=scanLimit.intValue()) {
-						restResult.setState(500);
-						restResult.setMsg("您今日扫码已超过该活动限制数量");
-						return restResult;
-					}
-
+ 		try {
+			// 超时时间,重试次数，重试间隔
+			acquireLock = lock.lock(activitySetId + ":" + codeId + ":" + codeTypeId,5000,5,200);
+			if(acquireLock){
+				List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetIdIncludeUnreal(activitySetId);
+				if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
+					restResult.setState(500);
+					restResult.setMsg("该活动未设置中奖奖次");
+					return restResult;
 				}
+				List<MarketingPrizeTypeMO> mTypeMOs=LotteryUtil.judge(mPrizeTypes, codeTotalNum);
+
+
+				if (null!=mTypeMOs && !mTypeMOs.isEmpty()) {
+					//执行中奖算法
+					mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
+					logger.info("抽到中奖奖次为："+mPrizeTypeMO);
+				}else {
+					//到这里说明流程已经出现问题，因为在刚开始扫码哪部分就会判断当前扫码量有没有达到活动对应的码数量
+					restResult.setState(500);
+					restResult.setMsg("所有奖次对应的中奖码数量都已达到上限无法继续抽奖");
+					return restResult;
+				}
+
+
+				String nowTime=staticESSafeFormat.format(new Date());
+				long nowTtimeStemp=staticESSafeFormat.parse(nowTime).getTime();
+				Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
+				String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
+				logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
+				//校验码有没有被扫过
+				if (null==codeCount ||codeCount.intValue()<1) {
+					Integer scanLimit=mActivitySet.getEachDayNumber();
+					//校验有没有设置活动用户扫码量限制
+					if (null!=scanLimit&& scanLimit.intValue()>0) {
+						Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTtimeStemp);
+						logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum+",当前活动扫码限制次数为："+scanLimit);
+						if (null!=userscanNum && userscanNum.intValue()>=scanLimit.intValue()) {
+							restResult.setState(500);
+							restResult.setMsg("您今日扫码已超过该活动限制数量");
+							return restResult;
+						}
+
+					}
+				}else {
+					restResult.setState(200);
+					restResult.setMsg("您手速太慢，刚刚该码已被其它用户扫过");
+					return restResult;
+				}
+
+				//更新奖次被扫码数量
+				mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
+				MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
+				marketingPrizeType.setId(mPrizeTypeMO.getId());
+				marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
+				mMarketingPrizeTypeMapper.update(marketingPrizeType);
+
+				codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp);
+				logger.info("领取方法====：抽奖数据已保存到es");
 			}else {
-				restResult.setState(200);
-				restResult.setMsg("您手速太慢，刚刚该码已被其它用户扫过");
+				logger.error("{锁获取失败:" +activitySetId + codeId +codeTypeId+ ",请检查}");
+				// 统计失败
+				redisUtil.hmSet("marketing:lock:fail",activitySetId + codeId +codeTypeId,new Date());
+				restResult.setState(500);
+				restResult.setMsg("扫码人数过多,请稍后再试");
 				return restResult;
 			}
-
-			//更新奖次被扫码数量
-			mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
-			MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
-			marketingPrizeType.setId(mPrizeTypeMO.getId());
-			marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
-			mMarketingPrizeTypeMapper.update(marketingPrizeType);
-
-			codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp);
-			logger.info("领取方法====：抽奖数据已保存到es");
+		}  finally {
+			if(acquireLock){
+				try{
+					// lua脚本
+					lock.releaseLock(activitySetId + codeId +codeTypeId);
+				}catch (Exception e){
+					logger.error("{锁释放失败:" +activitySetId + codeId +codeTypeId+ ",请检查}");
+					e.printStackTrace();
+				}
+			}
 		}
+		long endTime = System.currentTimeMillis();
+		logger.error("==> 悲观锁一共耗时:"+(endTime-startTime)+"=======================");
 		logger.info("抽奖数据已保存到es");
 		//判断realprize是否为0,0表示不中奖
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
 			restResult.setState(200);
 			restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
-			GlobalRamCache.scanCodeInfoMap.remove(wxstate);
+			globalRamCache.deleteScanCodeInfoMO(wxstate);
 		}else if (realPrize.equals((byte)1)) {
 			Float amount=mPrizeTypeMO.getPrizeAmount();
 			Byte randAmount=mPrizeTypeMO.getIsRrandomMoney();
@@ -660,10 +686,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				// [ )
 //				amount=new Random().nextFloat() * (max - min)+min;
 // 保留两位小数
-                float init = new Random().nextFloat() *((max-min)) +min;
-                DecimalFormat decimalFormat=new DecimalFormat(".00");
-                String strAmount=decimalFormat.format(init);//format 返回的是字符串
-                amount = Float.valueOf(strAmount);
+				float init = new Random().nextFloat() *((max-min)) +min;
+				DecimalFormat decimalFormat=new DecimalFormat(".00");
+				String strAmount=decimalFormat.format(init);//format 返回的是字符串
+				amount = Float.valueOf(strAmount);
 			}
 			Float finalAmount = amount * 100;//金额转化为分
 			//插入中奖纪录
@@ -703,7 +729,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				e.printStackTrace();
 			}finally {
 				//一切ok后清除缓存
-				GlobalRamCache.scanCodeInfoMap.remove(wxstate);
+				globalRamCache.deleteScanCodeInfoMO(wxstate);
 			}
 			restResult.setState(200);
 			restResult.setMsg(amount+"");
@@ -716,3 +742,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	}
 
 }
+
+
+

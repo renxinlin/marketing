@@ -54,7 +54,7 @@ public class WeixinAuthController {
     	if (StringUtils.isBlank(state)) {
     		throw new SuperCodeException("state不能为空", 500);
 		}
-    	ScanCodeInfoMO scanCodeInfoMO=GlobalRamCache.scanCodeInfoMap.get(state);
+    	ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(state);
     	if (null==scanCodeInfoMO) {
     		throw new SuperCodeException("授权时无法根据state="+state+"查询到扫码缓存信息，请重新扫描商品码", 500);
 		}
@@ -91,7 +91,7 @@ public class WeixinAuthController {
         logger.info("--------------------授权成功--------------------------------");
        
         //判断是否需要保存用户
-        ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(state);
+        ScanCodeInfoMO scInfoMO=globalRamCache.getScanCodeInfoMO(state);
         if (null==scInfoMO) {
 			throw new SuperCodeException("授权回调方法无法根据state="+state+"获取到用户扫码缓存信息请重试", 500);
 		}

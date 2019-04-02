@@ -48,6 +48,9 @@ public class ScanCodeController {
     
     @Value("${rest.user.url}")
     private String restUserUrl;
+
+    @Autowired
+    private GlobalRamCache globalRamCache;
     
     /**
      * 客户扫码码平台跳转到营销系统地址接口
@@ -77,7 +80,7 @@ public class ScanCodeController {
         	 return "redirect:"+h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId,"utf-8"),"utf-8");
 		}
         sCodeInfoMO.setOrganizationId(organizationId);
-        GlobalRamCache.scanCodeInfoMap.put(wxstate, sCodeInfoMO);
+        globalRamCache.putScanCodeInfoMO(wxstate,sCodeInfoMO);
         logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
         
     	//微信授权需要对redirect_uri进行urlencode

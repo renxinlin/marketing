@@ -44,12 +44,15 @@ public class MarketingReceivingPageFrontController {
 	
 	@Autowired
 	private MarketingWxMerchantsService wxMerchantsService;
-	
+
+	@Autowired
+	private GlobalRamCache globalRamCache;
 	@RequestMapping(value = "/getByAsId",method = RequestMethod.GET)
     @ApiOperation(value = "根据活动设置id获取领取页记录，扫码时可以通过该接口获取是否需要领取页", notes = "")
 	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "当前扫码唯一id",name="wxstate",required=false),@ApiImplicitParam(paramType="query",value = "获取设置主键id",name="activitySetId",required=false)})
 	public RestResult<MarketingReceivingPage> getByAsId(String wxstate,Long activitySetId) throws Exception{
-		ScanCodeInfoMO scInfoMO=GlobalRamCache.scanCodeInfoMap.get(wxstate);
+		ScanCodeInfoMO scInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
+
 		if (null==activitySetId) {
 			if (null==scInfoMO) {
 				throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);

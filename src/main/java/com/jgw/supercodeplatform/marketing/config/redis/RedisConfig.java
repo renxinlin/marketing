@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.config.redis;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,7 @@ public class RedisConfig {
     // Redis服务器地址
     @Value("${redis.host}")
     private String host;
-    
+
     // Redis服务器连接端口
     @Value("${redis.port}")
     private int port;
@@ -74,9 +75,13 @@ public class RedisConfig {
 		return template;
 	}
 
+	@Bean
+    public RedisLockUtil getRedisLockUtil(@Autowired StringRedisTemplate stringRedisTemplate){
+        return new RedisLockUtil(stringRedisTemplate);
+    }
+
 
 
 }
 
-    
     
