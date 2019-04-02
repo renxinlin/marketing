@@ -287,7 +287,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @return
 	 */
 	private String msgTimplate(String userName, String organizationFullName) {
-		return  registerMsgContent.replace("user",userName).replace("organization",organizationFullName);
+		return  registerMsgContent.replace("{{user}}",userName).replace("{{organization}}",organizationFullName);
 
 	}
 
@@ -316,6 +316,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
         if(!StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  StringUtils.isBlank(membersUpdateParam.getCustomerName())){
             throw new SuperCodeException("门店编码和名称信息丢失：门店名称",500);
         }
+
+        if("".equals(membersUpdateParam.getBabyBirthday())){
+			membersUpdateParam.setBabyBirthday(null);
+		}
+        if("".equals(membersUpdateParam.getBirthday())){
+			membersUpdateParam.setBirthday(null);
+		}
 		MarketingMembers members=new MarketingMembers();
 		// datetime类型处理
 		if(!StringUtils.isBlank(membersUpdateParam.getBabyBirthday())){
