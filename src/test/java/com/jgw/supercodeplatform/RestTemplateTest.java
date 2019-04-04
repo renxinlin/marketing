@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
@@ -50,6 +53,10 @@ private RestTemplateUtil restTemplateUtil;
 @Autowired
 private CommonUtil commonUtil;
 
+
+@Autowired
+private RedisUtil redisUtil;
+
 @Autowired
 private RestTemplate restTemplate;
 
@@ -65,6 +72,57 @@ private String codeManagerUrl;
 @Value("${rest.user.url}")
 private String userServiceUrl;
 
+
+//扫码时保存产品和码信息到内存，待授权后根据授权state值获取
+private String  MARKETING_GLOBAL_SCAN_CODE_INFO="marketing:cache:scanCodeInfo";
+private String  MARKETING_GLOBAL_CACHE ="marketing:cache:wxMerchants";
+
+
+public void putScanCodeInfoMO(String wxsate, ScanCodeInfoMO scanCodeInfoMO) throws SuperCodeException {
+	if (StringUtils.isBlank(wxsate)) {
+		throw new SuperCodeException("wxstae为空", 500);
+	}
+	if(scanCodeInfoMO == null){
+		throw new SuperCodeException("扫码信息为空", 500);
+	}
+    
+	redisUtil.hmSet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate,JSONObject.toJSONString(scanCodeInfoMO));
+}
+
+
+public Long deleteScanCodeInfoMO(String wxsate) throws SuperCodeException {
+	if (StringUtils.isBlank(wxsate)) {
+		throw new SuperCodeException("wxstae为空", 500);
+	}
+	return redisUtil.deleteHmKey(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
+
+}
+
+
+
+public  ScanCodeInfoMO getScanCodeInfoMO(String wxsate) throws SuperCodeException {
+	if (StringUtils.isBlank(wxsate)) {
+		throw new SuperCodeException("获取扫码缓存信息时参数wxsate不能为空", 500);
+	}
+	String json =(String) redisUtil.hmGet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
+	ScanCodeInfoMO scanCodeInfoMO=JSONObject.parseObject(json, ScanCodeInfoMO.class);
+	if (null==scanCodeInfoMO) {
+		throw new SuperCodeException("根据wxsate="+wxsate+"无法获取扫码缓存信息请重新扫码", 500);
+	}
+	
+	return scanCodeInfoMO;
+}
+
+
+@Test
+public  void test1() throws UnsupportedEncodingException, SuperCodeException {
+	ScanCodeInfoMO scanCodeInfoMO=new ScanCodeInfoMO();
+	scanCodeInfoMO.setCodeId("22655");
+	putScanCodeInfoMO("1", scanCodeInfoMO);
+	
+	ScanCodeInfoMO scanCodeInfoMO2=getScanCodeInfoMO("1");
+	System.out.println(scanCodeInfoMO2);
+}
 @Test
 public  void main() throws UnsupportedEncodingException, SuperCodeException {
 	long start=System.currentTimeMillis();

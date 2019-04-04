@@ -1,8 +1,11 @@
 package com.jgw.supercodeplatform.marketing.common.model.activity;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class ScanCodeInfoMO {
+public class ScanCodeInfoMO implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private String codeId;//外码,跳转到营销扫码接口时获取
 	private String codeTypeId;//码值id,跳转到营销扫码接口时获取
 	private String productId;//产品id,跳转到营销扫码接口时获取

@@ -1,15 +1,13 @@
 package com.jgw.supercodeplatform.marketing.cache;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 @Component
@@ -33,9 +31,8 @@ public class GlobalRamCache {
 		if(scanCodeInfoMO == null){
 			throw new SuperCodeException("扫码信息为空", 500);
 		}
-
-		redisUtil.hmSet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate,scanCodeInfoMO);
-
+	    
+		redisUtil.hmSet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate,JSONObject.toJSONString(scanCodeInfoMO));
 	}
 
 
@@ -49,15 +46,16 @@ public class GlobalRamCache {
 
 
 
-
 	public  ScanCodeInfoMO getScanCodeInfoMO(String wxsate) throws SuperCodeException {
 		if (StringUtils.isBlank(wxsate)) {
 			throw new SuperCodeException("获取扫码缓存信息时参数wxsate不能为空", 500);
 		}
-		ScanCodeInfoMO scanCodeInfoMO =(ScanCodeInfoMO) redisUtil.hmGet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
+		String json =(String) redisUtil.hmGet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
+		ScanCodeInfoMO scanCodeInfoMO=JSONObject.parseObject(json, ScanCodeInfoMO.class);
 		if (null==scanCodeInfoMO) {
 			throw new SuperCodeException("根据wxsate="+wxsate+"无法获取扫码缓存信息请重新扫码", 500);
 		}
+		
 		return scanCodeInfoMO;
 	}
 
