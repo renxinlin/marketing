@@ -63,14 +63,16 @@ public class GlobalRamCache {
 		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("GlobalRamCache获取MarketingWxMerchants缓存时参数组织id不能为空", 500);
 		}
-		MarketingWxMerchants mWxMerchants = (MarketingWxMerchants)redisUtil.hmGet(MARKETING_GLOBAL_CACHE, organizationId);
-		if (null==mWxMerchants) {
+		 MarketingWxMerchants mWxMerchants=null;
+		String json = (String) redisUtil.hmGet(MARKETING_GLOBAL_CACHE, organizationId);
+		if (null==json) {
 			// 多节点后可以重复拉取该数据
 			if (null==mWxMerchants) {
 				mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
-				redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, mWxMerchants);
+				redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));
 			}
-
+		}else {
+			mWxMerchants=JSONObject.parseObject(json, MarketingWxMerchants.class);
 		}
 		if (null==mWxMerchants) {
 			throw new SuperCodeException("无法根据组织id="+organizationId+"获取组织商户公众号信息", 500);
