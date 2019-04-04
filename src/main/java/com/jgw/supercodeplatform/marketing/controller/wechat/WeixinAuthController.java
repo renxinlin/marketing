@@ -96,6 +96,8 @@ public class WeixinAuthController {
 			throw new SuperCodeException("授权回调方法无法根据state="+state+"获取到用户扫码缓存信息请重试", 500);
 		}
         scInfoMO.setOpenId(openid);
+        //更新扫码信息
+        globalRamCache.putScanCodeInfoMO(state, scInfoMO);
         synchronized (this) {
         	MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, scInfoMO.getOrganizationId());
         	if (null==members) {
