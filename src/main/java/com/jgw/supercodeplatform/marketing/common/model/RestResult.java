@@ -71,6 +71,32 @@ public class RestResult <T>{
 		return results;
 	}
 
+	public static RestResult success(){
+		RestResult result = new RestResult();
+		result.state = 200;
+		result.msg = "success";
+		result.results = null;
+		return  result;
+
+	}
+
+	public static <T> RestResult<T> successWithData(T data){
+		RestResult<T>  result = new RestResult();
+		result.state = 200;
+		result.msg = "success";
+		result.results = data;
+		return  result;
+	}
+
+
+	public static <T> RestResult<T> error(T data){
+		RestResult<T> result = new RestResult();
+		result.state = 200;
+		result.msg = "success";
+		result.results = data;
+		return  result;
+
+	}
 
 	public void setResults(T results) {
 		this.results = results;
