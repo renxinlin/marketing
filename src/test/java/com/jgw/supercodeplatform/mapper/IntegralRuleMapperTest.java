@@ -23,7 +23,6 @@ private IntegralRuleMapperExt ruleDao;
 	@Test
 	public void insert() {
 		IntegralRule rule=new IntegralRule();
-		rule.setTimeLimitDate(new Date());
 		ruleDao.insert(rule);
 	}
 }

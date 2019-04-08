@@ -1,19 +1,24 @@
 package com.jgw.supercodeplatform.marketing.controller.integral;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
-import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
+import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
+import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * 积分记录controller
@@ -24,7 +29,9 @@ import java.util.Map;
 @Api(tags = "通用积分规则")
 public class IntegralRuleController {
 
-
+  @Autowired
+  private IntegralRuleService service;
+  
     // 获取产品价格，基础信息
     // 获取基础信息产品列表：调用基础信息接口
 
@@ -58,8 +65,10 @@ public class IntegralRuleController {
     @RequestMapping(value = "/edit",method = RequestMethod.POST)
     @ApiOperation(value = "编辑通用积分规则", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult edit(@RequestBody IntegralRule integralRule) throws Exception {
-        RestResult  restResult=new RestResult();
+    public RestResult<String> edit(@RequestBody IntegralRule integralRule) throws Exception {
+    	RestResult<String>  restResult=new RestResult<String>();
+    	service.edit(integralRule);
+    	
         return restResult;
     }
 

@@ -31,7 +31,7 @@ public class IntegralRuleProduct {
 
     /** 0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分） */
     @ApiModelProperty(value = "0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分）")
-    private Boolean rewardRule;
+    private Byte rewardRule;
 
     /** 每消费多少元 */
     @ApiModelProperty(value = "每消费多少元")
@@ -89,15 +89,15 @@ public class IntegralRuleProduct {
         this.memberType = memberType;
     }
 
-    public Boolean getRewardRule() {
-        return rewardRule;
-    }
+    public Byte getRewardRule() {
+		return rewardRule;
+	}
 
-    public void setRewardRule(Boolean rewardRule) {
-        this.rewardRule = rewardRule;
-    }
+	public void setRewardRule(Byte rewardRule) {
+		this.rewardRule = rewardRule;
+	}
 
-    public Float getPerConsume() {
+	public Float getPerConsume() {
         return perConsume;
     }
 
