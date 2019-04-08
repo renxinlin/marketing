@@ -1,49 +1,69 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(value = "收货地址")
 public class DeliveryAddress {
     /** 主键 */
+    @ApiModelProperty(value = "ID")
     private Long id;
 
     /** 会员id */
-    private Integer memberid;
+    @ApiModelProperty(value = "会员id")
+    private Integer memberId;
 
     /** 会员名称 */
-    private String membername;
+    @ApiModelProperty(value = "会员名称")
+    private String memberName;
 
     /** 收货名称 */
+    @ApiModelProperty(value = "收货人")
     private String name;
 
     /** 收货手机 */
+    @ApiModelProperty(value = "收货手机")
     private String mobile;
 
     /** 省 */
+    @ApiModelProperty(value = "省")
     private String province;
 
     /** 市 */
+    @ApiModelProperty(value = "市")
     private String city;
 
     /** 区 */
+    @ApiModelProperty(value = "区")
     private String country;
 
     /** 街道 */
+    @ApiModelProperty(value = "街道")
     private String street;
 
     /**  */
-    private String provincecode;
+    @ApiModelProperty(value = "省编码")
+    private String provinceCode;
 
     /**  */
-    private String citycode;
+    @ApiModelProperty(value = "市编码")
+    private String cityCode;
 
     /**  */
-    private String countrycode;
+    @ApiModelProperty(value = "区编码")
+    private String countryCode;
 
     /**  */
-    private String streetcode;
+    @ApiModelProperty(value = "街道编码")
+    private String streetCode;
 
     /** 详细地址 */
+    @ApiModelProperty(value = "详细地址")
     private String detail;
 
     /** 邮编 */
+    @ApiModelProperty(value = "邮编")
     private String postcode;
 
     public Long getId() {
@@ -54,20 +74,20 @@ public class DeliveryAddress {
         this.id = id;
     }
 
-    public Integer getMemberid() {
-        return memberid;
+    public Integer getMemberId() {
+        return memberId;
     }
 
-    public void setMemberid(Integer memberid) {
-        this.memberid = memberid;
+    public void setMemberId(Integer memberId) {
+        this.memberId = memberId;
     }
 
-    public String getMembername() {
-        return membername;
+    public String getMemberName() {
+        return memberName;
     }
 
-    public void setMembername(String membername) {
-        this.membername = membername;
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
     }
 
     public String getName() {
@@ -118,36 +138,36 @@ public class DeliveryAddress {
         this.street = street;
     }
 
-    public String getProvincecode() {
-        return provincecode;
+    public String getProvinceCode() {
+        return provinceCode;
     }
 
-    public void setProvincecode(String provincecode) {
-        this.provincecode = provincecode;
+    public void setProvinceCode(String provinceCode) {
+        this.provinceCode = provinceCode;
     }
 
-    public String getCitycode() {
-        return citycode;
+    public String getCityCode() {
+        return cityCode;
     }
 
-    public void setCitycode(String citycode) {
-        this.citycode = citycode;
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
     }
 
-    public String getCountrycode() {
-        return countrycode;
+    public String getCountryCode() {
+        return countryCode;
     }
 
-    public void setCountrycode(String countrycode) {
-        this.countrycode = countrycode;
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
-    public String getStreetcode() {
-        return streetcode;
+    public String getStreetCode() {
+        return streetCode;
     }
 
-    public void setStreetcode(String streetcode) {
-        this.streetcode = streetcode;
+    public void setStreetCode(String streetCode) {
+        this.streetCode = streetCode;
     }
 
     public String getDetail() {

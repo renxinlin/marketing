@@ -1,85 +1,114 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
-import java.util.Date;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+@ApiModel(value = "积分兑换")
 public class IntegralExchange {
     /** 主键 */
+    @ApiModelProperty(value = "主键")
     private Long id;
 
     /** 兑换对象0会员 */
-    private Boolean exchangeobject;
+    @ApiModelProperty(value = "兑换对象0会员")
+    private Boolean exchangeObject;
 
     /** 兑换资源0非自卖1自卖产品 */
-    private Boolean exchangeresource;
+    @ApiModelProperty(value = "兑换资源0非自卖1自卖产品")
+    private Boolean exchangeResource;
 
     /** 兑换积分 */
-    private Integer exchangeintegral;
+    @ApiModelProperty(value = "每个产品兑换积分")
+    private Integer exchangeIntegral;
 
     /** 兑换库存[活动总共参与数量] */
-    private Integer exchangestock;
+    @ApiModelProperty(value = "兑换库存[活动总共参与数量]")
+    private Integer exchangeStock;
 
     /** 剩余库存 */
-    private Integer havestock;
+    @ApiModelProperty(value = "剩余库存")
+    private Integer haveStock;
 
     /** 每人限兑 */
-    private Integer customerlimitnum;
+    @ApiModelProperty(value = "每人限兑产品数量")
+    private Integer customerLimitNum;
 
     /** 兑换活动状态0上架1下架 */
+    @ApiModelProperty(value = "兑换活动状态0上架1下架")
     private Boolean status;
 
     /** 支付手段：0积分 */
-    private Boolean payway;
+    @ApiModelProperty(value = "支付手段：0积分")
+    private Boolean payWay;
 
     /** 自动下架设置0库存为0，1时间范围 */
-    private Boolean undercarriagesetway;
+    @ApiModelProperty(value = "自动下架设置0库存为0，1时间范围")
+    private Boolean undercarriageSetWay;
 
     /** 自动下架时间 */
-    private Date undercarriage;
+    @ApiModelProperty(value = "自动下架时间")
+    private Date underCarriage;
 
     /** 库存预警0不发出警告1发出警告 */
-    private Boolean stockwarning;
+    @ApiModelProperty(value = "库存预警0不发出警告1发出警告")
+    private Boolean stockWarning;
 
     /** 库存预警数量 */
-    private Integer stockwarningnum;
+    @ApiModelProperty(value = "库存预警数量")
+    private Integer stockWarningNum;
 
     /**  */
-    private Integer createuserid;
+    @ApiModelProperty(value = "创建人id")
+    private Integer createUserId;
 
     /**  */
-    private String createusername;
+    @ApiModelProperty(value = "创建人")
+    private String createUserName;
 
     /**  */
-    private Date createdate;
+    @ApiModelProperty(value = "创建日期")
+    private Date createDate;
 
     /**  */
-    private Integer updateuserid;
+    @ApiModelProperty(value = "更新人id")
+    private Integer updateUserId;
 
     /**  */
-    private String updateusername;
+    @ApiModelProperty(value = "更新人")
+    private String updateUserName;
 
     /**  */
-    private Date updatedate;
+    @ApiModelProperty(value = "更新时间")
+    private Date updateDate;
 
     /**  */
-    private Integer organizationid;
+    @ApiModelProperty(value = "组织id")
+    private Integer organizationId;
 
     /**  */
-    private String organizationname;
+    @ApiModelProperty(value = "组织名称")
+    private String organizationName;
 
     /** 产品id【业务主键，兼容基础平台】 */
-    private String productid;
+    @ApiModelProperty(value = "产品id【业务主键，兼容基础平台】")
+    private String productId;
 
     /** 产品名称 */
-    private String productname;
+    @ApiModelProperty(value = "产品名称")
+    private String productName;
 
     /** sku信息 */
-    private String skuname;
+    @ApiModelProperty(value = "sku信息")
+    private String skuName;
 
     /** 图片 */
-    private String skuurl;
+    @ApiModelProperty(value = "图片")
+    private String skuUrl;
 
     /** 0无sku,1有sku,决定库存增对产品还是sku */
-    private String skustatus;
+    @ApiModelProperty(value = "0无sku,1有sku,决定库存增对产品还是sku")
+    private String skuStatus;
 
     public Long getId() {
         return id;
@@ -89,52 +118,52 @@ public class IntegralExchange {
         this.id = id;
     }
 
-    public Boolean getExchangeobject() {
-        return exchangeobject;
+    public Boolean getExchangeObject() {
+        return exchangeObject;
     }
 
-    public void setExchangeobject(Boolean exchangeobject) {
-        this.exchangeobject = exchangeobject;
+    public void setExchangeObject(Boolean exchangeObject) {
+        this.exchangeObject = exchangeObject;
     }
 
-    public Boolean getExchangeresource() {
-        return exchangeresource;
+    public Boolean getExchangeResource() {
+        return exchangeResource;
     }
 
-    public void setExchangeresource(Boolean exchangeresource) {
-        this.exchangeresource = exchangeresource;
+    public void setExchangeResource(Boolean exchangeResource) {
+        this.exchangeResource = exchangeResource;
     }
 
-    public Integer getExchangeintegral() {
-        return exchangeintegral;
+    public Integer getExchangeIntegral() {
+        return exchangeIntegral;
     }
 
-    public void setExchangeintegral(Integer exchangeintegral) {
-        this.exchangeintegral = exchangeintegral;
+    public void setExchangeIntegral(Integer exchangeIntegral) {
+        this.exchangeIntegral = exchangeIntegral;
     }
 
-    public Integer getExchangestock() {
-        return exchangestock;
+    public Integer getExchangeStock() {
+        return exchangeStock;
     }
 
-    public void setExchangestock(Integer exchangestock) {
-        this.exchangestock = exchangestock;
+    public void setExchangeStock(Integer exchangeStock) {
+        this.exchangeStock = exchangeStock;
     }
 
-    public Integer getHavestock() {
-        return havestock;
+    public Integer getHaveStock() {
+        return haveStock;
     }
 
-    public void setHavestock(Integer havestock) {
-        this.havestock = havestock;
+    public void setHaveStock(Integer haveStock) {
+        this.haveStock = haveStock;
     }
 
-    public Integer getCustomerlimitnum() {
-        return customerlimitnum;
+    public Integer getCustomerLimitNum() {
+        return customerLimitNum;
     }
 
-    public void setCustomerlimitnum(Integer customerlimitnum) {
-        this.customerlimitnum = customerlimitnum;
+    public void setCustomerLimitNum(Integer customerLimitNum) {
+        this.customerLimitNum = customerLimitNum;
     }
 
     public Boolean getStatus() {
@@ -145,147 +174,147 @@ public class IntegralExchange {
         this.status = status;
     }
 
-    public Boolean getPayway() {
-        return payway;
+    public Boolean getPayWay() {
+        return payWay;
     }
 
-    public void setPayway(Boolean payway) {
-        this.payway = payway;
+    public void setPayWay(Boolean payWay) {
+        this.payWay = payWay;
     }
 
-    public Boolean getUndercarriagesetway() {
-        return undercarriagesetway;
+    public Boolean getUndercarriageSetWay() {
+        return undercarriageSetWay;
     }
 
-    public void setUndercarriagesetway(Boolean undercarriagesetway) {
-        this.undercarriagesetway = undercarriagesetway;
+    public void setUndercarriageSetWay(Boolean undercarriageSetWay) {
+        this.undercarriageSetWay = undercarriageSetWay;
     }
 
-    public Date getUndercarriage() {
-        return undercarriage;
+    public Date getUnderCarriage() {
+        return underCarriage;
     }
 
-    public void setUndercarriage(Date undercarriage) {
-        this.undercarriage = undercarriage;
+    public void setUnderCarriage(Date underCarriage) {
+        this.underCarriage = underCarriage;
     }
 
-    public Boolean getStockwarning() {
-        return stockwarning;
+    public Boolean getStockWarning() {
+        return stockWarning;
     }
 
-    public void setStockwarning(Boolean stockwarning) {
-        this.stockwarning = stockwarning;
+    public void setStockWarning(Boolean stockWarning) {
+        this.stockWarning = stockWarning;
     }
 
-    public Integer getStockwarningnum() {
-        return stockwarningnum;
+    public Integer getStockWarningNum() {
+        return stockWarningNum;
     }
 
-    public void setStockwarningnum(Integer stockwarningnum) {
-        this.stockwarningnum = stockwarningnum;
+    public void setStockWarningNum(Integer stockWarningNum) {
+        this.stockWarningNum = stockWarningNum;
     }
 
-    public Integer getCreateuserid() {
-        return createuserid;
+    public Integer getCreateUserId() {
+        return createUserId;
     }
 
-    public void setCreateuserid(Integer createuserid) {
-        this.createuserid = createuserid;
+    public void setCreateUserId(Integer createUserId) {
+        this.createUserId = createUserId;
     }
 
-    public String getCreateusername() {
-        return createusername;
+    public String getCreateUserName() {
+        return createUserName;
     }
 
-    public void setCreateusername(String createusername) {
-        this.createusername = createusername;
+    public void setCreateUserName(String createUserName) {
+        this.createUserName = createUserName;
     }
 
-    public Date getCreatedate() {
-        return createdate;
+    public Date getCreateDate() {
+        return createDate;
     }
 
-    public void setCreatedate(Date createdate) {
-        this.createdate = createdate;
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
-    public Integer getUpdateuserid() {
-        return updateuserid;
+    public Integer getUpdateUserId() {
+        return updateUserId;
     }
 
-    public void setUpdateuserid(Integer updateuserid) {
-        this.updateuserid = updateuserid;
+    public void setUpdateUserId(Integer updateUserId) {
+        this.updateUserId = updateUserId;
     }
 
-    public String getUpdateusername() {
-        return updateusername;
+    public String getUpdateUserName() {
+        return updateUserName;
     }
 
-    public void setUpdateusername(String updateusername) {
-        this.updateusername = updateusername;
+    public void setUpdateUserName(String updateUserName) {
+        this.updateUserName = updateUserName;
     }
 
-    public Date getUpdatedate() {
-        return updatedate;
+    public Date getUpdateDate() {
+        return updateDate;
     }
 
-    public void setUpdatedate(Date updatedate) {
-        this.updatedate = updatedate;
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
-    public Integer getOrganizationid() {
-        return organizationid;
+    public Integer getOrganizationId() {
+        return organizationId;
     }
 
-    public void setOrganizationid(Integer organizationid) {
-        this.organizationid = organizationid;
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
     }
 
-    public String getOrganizationname() {
-        return organizationname;
+    public String getOrganizationName() {
+        return organizationName;
     }
 
-    public void setOrganizationname(String organizationname) {
-        this.organizationname = organizationname;
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
 
-    public String getProductid() {
-        return productid;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setProductid(String productid) {
-        this.productid = productid;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
-    public String getProductname() {
-        return productname;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setProductname(String productname) {
-        this.productname = productname;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public String getSkuname() {
-        return skuname;
+    public String getSkuName() {
+        return skuName;
     }
 
-    public void setSkuname(String skuname) {
-        this.skuname = skuname;
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
     }
 
-    public String getSkuurl() {
-        return skuurl;
+    public String getSkuUrl() {
+        return skuUrl;
     }
 
-    public void setSkuurl(String skuurl) {
-        this.skuurl = skuurl;
+    public void setSkuUrl(String skuUrl) {
+        this.skuUrl = skuUrl;
     }
 
-    public String getSkustatus() {
-        return skustatus;
+    public String getSkuStatus() {
+        return skuStatus;
     }
 
-    public void setSkustatus(String skustatus) {
-        this.skustatus = skustatus;
+    public void setSkuStatus(String skuStatus) {
+        this.skuStatus = skuStatus;
     }
 }

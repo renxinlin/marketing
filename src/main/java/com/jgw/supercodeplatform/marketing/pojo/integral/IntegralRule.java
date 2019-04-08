@@ -1,70 +1,94 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
-import java.util.Date;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+@ApiModel(value = "通用积分规则")
 public class IntegralRule {
     /** 积分活动主表 */
+    @ApiModelProperty(value = "主键")
     private Long id;
 
     /** 积分有效期状态位0永久有效1存在有效期 */
+    @ApiModelProperty(value = "积分有效期状态位0永久有效1存在有效期")
     private Boolean timeLimitStatus;
 
     /** 从奖励开始多久后过期 */
+    @ApiModelProperty(value = "从奖励开始多久后过期")
     private Date timeLimit;
 
     /** 积分上限状态位0无上限，1每人每日最多获得的积分上限目前0有效 */
+    @ApiModelProperty(value = "积分上限状态位0无上限，1每人每日最多获得的积分上限目前0有效")
     private Boolean integralLimitStatus;
 
     /** 每人每日最多获得的积分上限 */
+    @ApiModelProperty(value = "每人每日最多获得的积分上限")
     private Integer integralLimit;
 
+    /** 每人每【2年1月0日】获取积分上限 */
+    @ApiModelProperty(value = "每人每【2年1月0日】获取积分上限")
+    private Boolean integralLimitAge;
+
     /** 额外送:注册 */
+    @ApiModelProperty(value = "额外送:注册")
     private Integer integralByRegister;
 
     /** 额外送:生日 */
+    @ApiModelProperty(value = "额外送:生日")
     private Integer integralByBirthday;
 
     /** 历史首次 */
+    @ApiModelProperty(value = "历史首次")
     private Integer integralByFirstTime;
 
     /** 额外送注册状态：0勾选有效1无效 */
+    @ApiModelProperty(value = "额外送注册状态：0勾选有效1无效")
     private Boolean integralByRegisterStatus;
 
     /** 额外送生日状态：0勾选有效1无效 */
+    @ApiModelProperty(value = "额外送生日状态：0勾选有效1无效")
     private Boolean integralByBirthdayStatus;
 
     /** 额外历史首次送状态：0勾选有效1无效 */
+    @ApiModelProperty(value = "额外历史首次送状态：0勾选有效1无效")
     private Boolean integralByFirstTimeStatus;
 
     /**  */
+    @ApiModelProperty(value = "创建人id")
     private Integer createUserId;
 
     /**  */
+    @ApiModelProperty(value = "创建人")
     private String createUserName;
 
     /**  */
+    @ApiModelProperty(value = "创建时间")
     private Date createDate;
 
     /**  */
+    @ApiModelProperty(value = "更新人ID")
     private Integer updateUserId;
 
     /**  */
+    @ApiModelProperty(value = "更新人")
     private String updateUserName;
 
     /**  */
+    @ApiModelProperty(value = "更新日期")
     private Date updateUserDate;
 
     /** 组织id */
+    @ApiModelProperty(value = "组织id")
     private Integer organizationId;
 
     /** 组织名称 */
+    @ApiModelProperty(value = "组织名称")
     private String organizationName;
 
     /** 积分通用规则0有效1无效 */
+    @ApiModelProperty(value = " 积分通用规则0有效1无效 ")
     private Byte isEffective;
-
-    /** 每人每【2年1月0日】获得的积分上限 */
-    private Boolean perage;
 
     public Long getId() {
         return id;
@@ -104,6 +128,14 @@ public class IntegralRule {
 
     public void setIntegralLimit(Integer integralLimit) {
         this.integralLimit = integralLimit;
+    }
+
+    public Boolean getIntegralLimitAge() {
+        return integralLimitAge;
+    }
+
+    public void setIntegralLimitAge(Boolean integralLimitAge) {
+        this.integralLimitAge = integralLimitAge;
     }
 
     public Integer getIntegralByRegister() {
@@ -224,13 +256,5 @@ public class IntegralRule {
 
     public void setIsEffective(Byte isEffective) {
         this.isEffective = isEffective;
-    }
-
-    public Boolean getPerage() {
-        return perage;
-    }
-
-    public void setPerage(Boolean perage) {
-        this.perage = perage;
     }
 }

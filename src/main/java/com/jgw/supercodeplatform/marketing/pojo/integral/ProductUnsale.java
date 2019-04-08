@@ -1,57 +1,77 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
-import java.util.Date;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+@ApiModel(value = "非自卖产品")
 public class ProductUnsale {
     /** 主键 */
+    @ApiModelProperty(value = "不用于对接前端和其他接口")
     private Long id;
 
     /** 主键，与基础信息保持一致 */
-    private String productid;
+    @ApiModelProperty(value = "主键，与基础信息保持一致,对接前端和其他接口 ")
+    private String productId;
 
     /** 产品名称 */
-    private String unsaleproductname;
+    @ApiModelProperty(value = "产品名称")
+    private String unsaleProductName;
 
     /** 图片 */
-    private String unsaleproductpic;
+    @ApiModelProperty(value = "图片")
+    private String unsaleProductPic;
 
     /** sku数量 */
-    private Integer unsaleproductskunum;
+    @ApiModelProperty(value = "sku数量")
+    private Integer unsaleProductSkuNum;
 
     /** 【json格式：【{"name":"小白星","[前缀可以不存储www.aaa.com]/a.jpg":""},{"":"","":""}】 */
-    private String unsaleproductskuinfo;
+    @ApiModelProperty(value = "【json格式：【{\"name\":\"小白星\",\"[前缀可以不存储www.aaa.com]/a.jpg\":\"\"},{\"\":\"\",\"\":\"\"}】 ")
+    private String unsaleProductSkuInfo;
 
     /** 展示价 */
-    private Float showprice;
+    @ApiModelProperty(value = "展示价")
+    private Float showPrice;
 
     /** 售价 */
-    private Float realprice;
+    @ApiModelProperty(value = "售价")
+    private Float realPrice;
 
     /**  */
-    private Integer updateuserid;
+    @ApiModelProperty(value = "更新人id")
+    private Integer updateUserId;
 
     /**  */
-    private String updateusername;
+    @ApiModelProperty(value = "更新人")
+    private String updateUserName;
 
     /**  */
-    private Date updatedate;
+    @ApiModelProperty(value = "更新日期")
+    private Date updateDate;
 
     /**  */
-    private Integer createuserid;
+    @ApiModelProperty(value = "创建人id")
+    private Integer createUserId;
 
     /**  */
-    private String createusername;
+    @ApiModelProperty(value = "创建人")
+    private String createUserName;
 
     /**  */
-    private Date createdate;
+    @ApiModelProperty(value = "创建日期")
+    private Date createDate;
 
     /**  */
-    private Integer organizationid;
+    @ApiModelProperty(value = "组织id")
+    private Integer organizationId;
 
     /** 组织名称 */
-    private String organizationname;
+    @ApiModelProperty(value = "组织名称")
+    private String organizationName;
 
     /** 详情 */
+    @ApiModelProperty(value = "详情")
     private String detail;
 
     public Long getId() {
@@ -62,124 +82,124 @@ public class ProductUnsale {
         this.id = id;
     }
 
-    public String getProductid() {
-        return productid;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setProductid(String productid) {
-        this.productid = productid;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
-    public String getUnsaleproductname() {
-        return unsaleproductname;
+    public String getUnsaleProductName() {
+        return unsaleProductName;
     }
 
-    public void setUnsaleproductname(String unsaleproductname) {
-        this.unsaleproductname = unsaleproductname;
+    public void setUnsaleProductName(String unsaleProductName) {
+        this.unsaleProductName = unsaleProductName;
     }
 
-    public String getUnsaleproductpic() {
-        return unsaleproductpic;
+    public String getUnsaleProductPic() {
+        return unsaleProductPic;
     }
 
-    public void setUnsaleproductpic(String unsaleproductpic) {
-        this.unsaleproductpic = unsaleproductpic;
+    public void setUnsaleProductPic(String unsaleProductPic) {
+        this.unsaleProductPic = unsaleProductPic;
     }
 
-    public Integer getUnsaleproductskunum() {
-        return unsaleproductskunum;
+    public Integer getUnsaleProductSkuNum() {
+        return unsaleProductSkuNum;
     }
 
-    public void setUnsaleproductskunum(Integer unsaleproductskunum) {
-        this.unsaleproductskunum = unsaleproductskunum;
+    public void setUnsaleProductSkuNum(Integer unsaleProductSkuNum) {
+        this.unsaleProductSkuNum = unsaleProductSkuNum;
     }
 
-    public String getUnsaleproductskuinfo() {
-        return unsaleproductskuinfo;
+    public String getUnsaleProductSkuInfo() {
+        return unsaleProductSkuInfo;
     }
 
-    public void setUnsaleproductskuinfo(String unsaleproductskuinfo) {
-        this.unsaleproductskuinfo = unsaleproductskuinfo;
+    public void setUnsaleProductSkuInfo(String unsaleProductSkuInfo) {
+        this.unsaleProductSkuInfo = unsaleProductSkuInfo;
     }
 
-    public Float getShowprice() {
-        return showprice;
+    public Float getShowPrice() {
+        return showPrice;
     }
 
-    public void setShowprice(Float showprice) {
-        this.showprice = showprice;
+    public void setShowPrice(Float showPrice) {
+        this.showPrice = showPrice;
     }
 
-    public Float getRealprice() {
-        return realprice;
+    public Float getRealPrice() {
+        return realPrice;
     }
 
-    public void setRealprice(Float realprice) {
-        this.realprice = realprice;
+    public void setRealPrice(Float realPrice) {
+        this.realPrice = realPrice;
     }
 
-    public Integer getUpdateuserid() {
-        return updateuserid;
+    public Integer getUpdateUserId() {
+        return updateUserId;
     }
 
-    public void setUpdateuserid(Integer updateuserid) {
-        this.updateuserid = updateuserid;
+    public void setUpdateUserId(Integer updateUserId) {
+        this.updateUserId = updateUserId;
     }
 
-    public String getUpdateusername() {
-        return updateusername;
+    public String getUpdateUserName() {
+        return updateUserName;
     }
 
-    public void setUpdateusername(String updateusername) {
-        this.updateusername = updateusername;
+    public void setUpdateUserName(String updateUserName) {
+        this.updateUserName = updateUserName;
     }
 
-    public Date getUpdatedate() {
-        return updatedate;
+    public Date getUpdateDate() {
+        return updateDate;
     }
 
-    public void setUpdatedate(Date updatedate) {
-        this.updatedate = updatedate;
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 
-    public Integer getCreateuserid() {
-        return createuserid;
+    public Integer getCreateUserId() {
+        return createUserId;
     }
 
-    public void setCreateuserid(Integer createuserid) {
-        this.createuserid = createuserid;
+    public void setCreateUserId(Integer createUserId) {
+        this.createUserId = createUserId;
     }
 
-    public String getCreateusername() {
-        return createusername;
+    public String getCreateUserName() {
+        return createUserName;
     }
 
-    public void setCreateusername(String createusername) {
-        this.createusername = createusername;
+    public void setCreateUserName(String createUserName) {
+        this.createUserName = createUserName;
     }
 
-    public Date getCreatedate() {
-        return createdate;
+    public Date getCreateDate() {
+        return createDate;
     }
 
-    public void setCreatedate(Date createdate) {
-        this.createdate = createdate;
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
-    public Integer getOrganizationid() {
-        return organizationid;
+    public Integer getOrganizationId() {
+        return organizationId;
     }
 
-    public void setOrganizationid(Integer organizationid) {
-        this.organizationid = organizationid;
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
     }
 
-    public String getOrganizationname() {
-        return organizationname;
+    public String getOrganizationName() {
+        return organizationName;
     }
 
-    public void setOrganizationname(String organizationname) {
-        this.organizationname = organizationname;
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
 
     public String getDetail() {

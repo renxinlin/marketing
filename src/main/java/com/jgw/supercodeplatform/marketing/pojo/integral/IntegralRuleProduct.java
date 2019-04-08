@@ -1,32 +1,45 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel(value = "积分通用规则产品")
 public class IntegralRuleProduct {
     /** 主键 */
+    @ApiModelProperty(value = "主键")
     private Long id;
 
     /** 积分规则主键 */
-    private Integer integralruleid;
+    @ApiModelProperty(value = "积分规则主键")
+    private Integer integralRuleId;
 
     /** 产品id */
-    private String productid;
+    @ApiModelProperty(value = "产品id")
+    private String productId;
 
     /** 产品名称|注意基础信息可以发生改变 */
-    private String productname;
+    @ApiModelProperty(value = "产品名称")
+    private String productName;
 
     /** 产品价格 */
-    private Float productprice;
+    @ApiModelProperty(value = "产品价格")
+    private Float productPrice;
 
     /** 奖励对象0会员 */
-    private Boolean rewardobject;
+    @ApiModelProperty(value = "奖励对象0会员")
+    private Boolean rewardObject;
 
     /** 0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分） */
-    private Boolean rewardrule;
+    @ApiModelProperty(value = "0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分）")
+    private Boolean rewardRule;
 
     /** 每消费多少元 */
-    private Float perconsume;
+    @ApiModelProperty(value = "每消费多少元")
+    private Float perConsume;
 
     /** 奖励积分 */
-    private Integer rewardintegral;
+    @ApiModelProperty(value = "奖励积分")
+    private Integer rewardIntegral;
 
     public Long getId() {
         return id;
@@ -36,67 +49,67 @@ public class IntegralRuleProduct {
         this.id = id;
     }
 
-    public Integer getIntegralruleid() {
-        return integralruleid;
+    public Integer getIntegralRuleId() {
+        return integralRuleId;
     }
 
-    public void setIntegralruleid(Integer integralruleid) {
-        this.integralruleid = integralruleid;
+    public void setIntegralRuleId(Integer integralRuleId) {
+        this.integralRuleId = integralRuleId;
     }
 
-    public String getProductid() {
-        return productid;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setProductid(String productid) {
-        this.productid = productid;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
-    public String getProductname() {
-        return productname;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setProductname(String productname) {
-        this.productname = productname;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public Float getProductprice() {
-        return productprice;
+    public Float getProductPrice() {
+        return productPrice;
     }
 
-    public void setProductprice(Float productprice) {
-        this.productprice = productprice;
+    public void setProductPrice(Float productPrice) {
+        this.productPrice = productPrice;
     }
 
-    public Boolean getRewardobject() {
-        return rewardobject;
+    public Boolean getRewardObject() {
+        return rewardObject;
     }
 
-    public void setRewardobject(Boolean rewardobject) {
-        this.rewardobject = rewardobject;
+    public void setRewardObject(Boolean rewardObject) {
+        this.rewardObject = rewardObject;
     }
 
-    public Boolean getRewardrule() {
-        return rewardrule;
+    public Boolean getRewardRule() {
+        return rewardRule;
     }
 
-    public void setRewardrule(Boolean rewardrule) {
-        this.rewardrule = rewardrule;
+    public void setRewardRule(Boolean rewardRule) {
+        this.rewardRule = rewardRule;
     }
 
-    public Float getPerconsume() {
-        return perconsume;
+    public Float getPerConsume() {
+        return perConsume;
     }
 
-    public void setPerconsume(Float perconsume) {
-        this.perconsume = perconsume;
+    public void setPerConsume(Float perConsume) {
+        this.perConsume = perConsume;
     }
 
-    public Integer getRewardintegral() {
-        return rewardintegral;
+    public Integer getRewardIntegral() {
+        return rewardIntegral;
     }
 
-    public void setRewardintegral(Integer rewardintegral) {
-        this.rewardintegral = rewardintegral;
+    public void setRewardIntegral(Integer rewardIntegral) {
+        this.rewardIntegral = rewardIntegral;
     }
 }

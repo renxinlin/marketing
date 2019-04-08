@@ -1,58 +1,78 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
-import java.util.Date;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+@ApiModel(value = "积分记录")
 public class IntegralRecord {
     /** 主键 */
+    @ApiModelProperty(value = "主键")
     private Long id;
 
     /** 0会员 */
-    private Boolean customertype;
+    @ApiModelProperty(value = "会员类型0会员")
+    private Boolean customerType;
 
     /** 会员id */
-    private Integer customerid;
+    @ApiModelProperty(value = "会员id")
+    private Integer customerId;
 
     /** 会员名称 */
-    private String customername;
+    @ApiModelProperty(value = "会员名称")
+    private String customerName;
 
     /** 手机 */
+    @ApiModelProperty(value = "手机")
     private String mobile;
 
     /** 奖品增减原因编码 */
-    private Integer integralreasoncode;
+    @ApiModelProperty(value = "奖品增减原因编码")
+    private Integer integralReasonCode;
 
     /** 奖品增减原因 */
-    private String integralreason;
+    @ApiModelProperty(value = "奖品增减原因")
+    private String integralReason;
 
     /** 产品id */
-    private String productid;
+    @ApiModelProperty(value = "产品id")
+    private String productId;
 
     /** 产品名称 */
-    private String productname;
+    @ApiModelProperty(value = "产品名称")
+    private String productName;
 
     /** 码信息 */
-    private String outercodeid;
+    @ApiModelProperty(value = "码信息")
+    private String outerCodeId;
 
     /** 码信息 */
-    private String codetypeid;
+    @ApiModelProperty(value = "码信息")
+    private String codeTypeId;
 
     /** 注册门店【h5注册的门店信息】 */
-    private String registerstore;
+    @ApiModelProperty(value = "注册门店【h5注册的门店信息】")
+    private String registerStore;
 
     /** 注册门店id */
-    private Integer registerstoreid;
+    @ApiModelProperty(value = "注册门店id")
+    private Integer registerStoreId;
 
     /** 创建时间 */
-    private Date createdate;
+    @ApiModelProperty(value = "创建时间")
+    private Date createDate;
 
     /** 组织id */
-    private Integer organizationid;
+    @ApiModelProperty(value = "组织id")
+    private Integer organizationId;
 
     /** 组织名称 */
-    private String organizationname;
+    @ApiModelProperty(value = "组织名称")
+    private String organizationName;
 
     /** 积分增减数值 */
-    private Integer integralnum;
+    @ApiModelProperty(value = "积分增减数值")
+    private Integer integralNum;
 
     public Long getId() {
         return id;
@@ -62,28 +82,28 @@ public class IntegralRecord {
         this.id = id;
     }
 
-    public Boolean getCustomertype() {
-        return customertype;
+    public Boolean getCustomerType() {
+        return customerType;
     }
 
-    public void setCustomertype(Boolean customertype) {
-        this.customertype = customertype;
+    public void setCustomerType(Boolean customerType) {
+        this.customerType = customerType;
     }
 
-    public Integer getCustomerid() {
-        return customerid;
+    public Integer getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomerid(Integer customerid) {
-        this.customerid = customerid;
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 
-    public String getCustomername() {
-        return customername;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setCustomername(String customername) {
-        this.customername = customername;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
     public String getMobile() {
@@ -94,99 +114,99 @@ public class IntegralRecord {
         this.mobile = mobile;
     }
 
-    public Integer getIntegralreasoncode() {
-        return integralreasoncode;
+    public Integer getIntegralReasonCode() {
+        return integralReasonCode;
     }
 
-    public void setIntegralreasoncode(Integer integralreasoncode) {
-        this.integralreasoncode = integralreasoncode;
+    public void setIntegralReasonCode(Integer integralReasonCode) {
+        this.integralReasonCode = integralReasonCode;
     }
 
-    public String getIntegralreason() {
-        return integralreason;
+    public String getIntegralReason() {
+        return integralReason;
     }
 
-    public void setIntegralreason(String integralreason) {
-        this.integralreason = integralreason;
+    public void setIntegralReason(String integralReason) {
+        this.integralReason = integralReason;
     }
 
-    public String getProductid() {
-        return productid;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setProductid(String productid) {
-        this.productid = productid;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
-    public String getProductname() {
-        return productname;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setProductname(String productname) {
-        this.productname = productname;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public String getOutercodeid() {
-        return outercodeid;
+    public String getOuterCodeId() {
+        return outerCodeId;
     }
 
-    public void setOutercodeid(String outercodeid) {
-        this.outercodeid = outercodeid;
+    public void setOuterCodeId(String outerCodeId) {
+        this.outerCodeId = outerCodeId;
     }
 
-    public String getCodetypeid() {
-        return codetypeid;
+    public String getCodeTypeId() {
+        return codeTypeId;
     }
 
-    public void setCodetypeid(String codetypeid) {
-        this.codetypeid = codetypeid;
+    public void setCodeTypeId(String codeTypeId) {
+        this.codeTypeId = codeTypeId;
     }
 
-    public String getRegisterstore() {
-        return registerstore;
+    public String getRegisterStore() {
+        return registerStore;
     }
 
-    public void setRegisterstore(String registerstore) {
-        this.registerstore = registerstore;
+    public void setRegisterStore(String registerStore) {
+        this.registerStore = registerStore;
     }
 
-    public Integer getRegisterstoreid() {
-        return registerstoreid;
+    public Integer getRegisterStoreId() {
+        return registerStoreId;
     }
 
-    public void setRegisterstoreid(Integer registerstoreid) {
-        this.registerstoreid = registerstoreid;
+    public void setRegisterStoreId(Integer registerStoreId) {
+        this.registerStoreId = registerStoreId;
     }
 
-    public Date getCreatedate() {
-        return createdate;
+    public Date getCreateDate() {
+        return createDate;
     }
 
-    public void setCreatedate(Date createdate) {
-        this.createdate = createdate;
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
-    public Integer getOrganizationid() {
-        return organizationid;
+    public Integer getOrganizationId() {
+        return organizationId;
     }
 
-    public void setOrganizationid(Integer organizationid) {
-        this.organizationid = organizationid;
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
     }
 
-    public String getOrganizationname() {
-        return organizationname;
+    public String getOrganizationName() {
+        return organizationName;
     }
 
-    public void setOrganizationname(String organizationname) {
-        this.organizationname = organizationname;
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
 
-    public Integer getIntegralnum() {
-        return integralnum;
+    public Integer getIntegralNum() {
+        return integralNum;
     }
 
-    public void setIntegralnum(Integer integralnum) {
-        this.integralnum = integralnum;
+    public void setIntegralNum(Integer integralNum) {
+        this.integralNum = integralNum;
     }
 }

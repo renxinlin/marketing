@@ -1,69 +1,93 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
-import java.util.Date;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+@ApiModel(value = "订单")
 public class IntegralOrder {
     /** 主键 */
+    @ApiModelProperty(value = "主键")
     private Long id;
 
     /** 订单业务主键 */
-    private String orderid;
+    @ApiModelProperty(value = "订单业务主键")
+    private String orderId;
 
     /** 兑换资源0非自卖1自卖产品 */
-    private Boolean exchangeresource;
+    @ApiModelProperty(value = "兑换资源0非自卖1自卖产品")
+    private Boolean exchangeResource;
 
     /** 产品id|UUID */
-    private String productid;
+    @ApiModelProperty(value = "产品id|UUID ")
+    private String productId;
 
     /** 产品名称 */
-    private String productname;
+    @ApiModelProperty(value = "产品名称")
+    private String productName;
 
     /** sku信息 */
-    private String skuname;
+    @ApiModelProperty(value = "sku信息")
+    private String skuName;
 
     /** sku图片url */
-    private String skuurl;
+    @ApiModelProperty(value = "sku图片url")
+    private String skuUrl;
 
     /** 兑换积分【单积分*数量】 */
-    private Integer exchangeintegralnum;
+    @ApiModelProperty(value = "兑换积分【单积分*数量】")
+    private Integer exchangeIntegralNum;
 
     /** 兑换数量 */
-    private Integer exchangenum;
+    @ApiModelProperty(value = "兑换数量")
+    private Integer exchangeNum;
 
     /** 收货名 */
+    @ApiModelProperty(value = "收货人")
     private String name;
 
     /** 收货手机 */
+    @ApiModelProperty(value = "收货手机")
     private String mobile;
 
     /** 收货地址 */
+    @ApiModelProperty(value = "收货地址")
     private String address;
 
     /** 物流状态0待发货1已发货 */
+    @ApiModelProperty(value = "主键")
     private String status;
 
     /** 会员id */
-    private Integer memberid;
+    @ApiModelProperty(value = "会员id")
+    private Integer memberId;
 
     /** 会员名称 */
-    private String membername;
+    @ApiModelProperty(value = "会员名称")
+    private String memberName;
 
     /** 创建时间 */
-    private Date createdate;
+    @ApiModelProperty(value = "创建时间")
+    private Date createDate;
 
     /** 更新人ID */
-    private Integer updateuserid;
+    @ApiModelProperty(value = "更新人ID")
+    private Integer updateUserId;
 
     /** 更新人 */
-    private String updateusername;
+    @ApiModelProperty(value = "更新人")
+    private String updateUserName;
 
     /** 更新时间 */
+    @ApiModelProperty(value = "更新时间")
     private Date updateDate;
 
     /** 组织id */
+    @ApiModelProperty(value = "组织id")
     private Integer organizationId;
 
     /** 组织名称 */
+    @ApiModelProperty(value = "组织名称")
     private String organizationName;
 
     public Long getId() {
@@ -74,68 +98,68 @@ public class IntegralOrder {
         this.id = id;
     }
 
-    public String getOrderid() {
-        return orderid;
+    public String getOrderId() {
+        return orderId;
     }
 
-    public void setOrderid(String orderid) {
-        this.orderid = orderid;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
-    public Boolean getExchangeresource() {
-        return exchangeresource;
+    public Boolean getExchangeResource() {
+        return exchangeResource;
     }
 
-    public void setExchangeresource(Boolean exchangeresource) {
-        this.exchangeresource = exchangeresource;
+    public void setExchangeResource(Boolean exchangeResource) {
+        this.exchangeResource = exchangeResource;
     }
 
-    public String getProductid() {
-        return productid;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setProductid(String productid) {
-        this.productid = productid;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
-    public String getProductname() {
-        return productname;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setProductname(String productname) {
-        this.productname = productname;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public String getSkuname() {
-        return skuname;
+    public String getSkuName() {
+        return skuName;
     }
 
-    public void setSkuname(String skuname) {
-        this.skuname = skuname;
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
     }
 
-    public String getSkuurl() {
-        return skuurl;
+    public String getSkuUrl() {
+        return skuUrl;
     }
 
-    public void setSkuurl(String skuurl) {
-        this.skuurl = skuurl;
+    public void setSkuUrl(String skuUrl) {
+        this.skuUrl = skuUrl;
     }
 
-    public Integer getExchangeintegralnum() {
-        return exchangeintegralnum;
+    public Integer getExchangeIntegralNum() {
+        return exchangeIntegralNum;
     }
 
-    public void setExchangeintegralnum(Integer exchangeintegralnum) {
-        this.exchangeintegralnum = exchangeintegralnum;
+    public void setExchangeIntegralNum(Integer exchangeIntegralNum) {
+        this.exchangeIntegralNum = exchangeIntegralNum;
     }
 
-    public Integer getExchangenum() {
-        return exchangenum;
+    public Integer getExchangeNum() {
+        return exchangeNum;
     }
 
-    public void setExchangenum(Integer exchangenum) {
-        this.exchangenum = exchangenum;
+    public void setExchangeNum(Integer exchangeNum) {
+        this.exchangeNum = exchangeNum;
     }
 
     public String getName() {
@@ -170,44 +194,44 @@ public class IntegralOrder {
         this.status = status;
     }
 
-    public Integer getMemberid() {
-        return memberid;
+    public Integer getMemberId() {
+        return memberId;
     }
 
-    public void setMemberid(Integer memberid) {
-        this.memberid = memberid;
+    public void setMemberId(Integer memberId) {
+        this.memberId = memberId;
     }
 
-    public String getMembername() {
-        return membername;
+    public String getMemberName() {
+        return memberName;
     }
 
-    public void setMembername(String membername) {
-        this.membername = membername;
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
     }
 
-    public Date getCreatedate() {
-        return createdate;
+    public Date getCreateDate() {
+        return createDate;
     }
 
-    public void setCreatedate(Date createdate) {
-        this.createdate = createdate;
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
-    public Integer getUpdateuserid() {
-        return updateuserid;
+    public Integer getUpdateUserId() {
+        return updateUserId;
     }
 
-    public void setUpdateuserid(Integer updateuserid) {
-        this.updateuserid = updateuserid;
+    public void setUpdateUserId(Integer updateUserId) {
+        this.updateUserId = updateUserId;
     }
 
-    public String getUpdateusername() {
-        return updateusername;
+    public String getUpdateUserName() {
+        return updateUserName;
     }
 
-    public void setUpdateusername(String updateusername) {
-        this.updateusername = updateusername;
+    public void setUpdateUserName(String updateUserName) {
+        this.updateUserName = updateUserName;
     }
 
     public Date getUpdateDate() {
@@ -222,15 +246,15 @@ public class IntegralOrder {
         return organizationId;
     }
 
-    public void setOrganizationId(Integer organizationId) {
-        this.organizationId = organizationId;
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
 
     public String getOrganizationName() {
         return organizationName;
     }
 
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
     }
 }
