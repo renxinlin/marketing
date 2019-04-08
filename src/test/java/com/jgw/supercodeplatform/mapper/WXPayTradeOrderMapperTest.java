@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.mapper;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.jgw.supercodeplatform.SuperCodeMarketingApplication;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
@@ -35,6 +40,23 @@ private MarketingMembersWinRecordMapper mWinRecordMapper;
 		dao.insert(w);
 	}
 
+	@Test
+	public void commonSearch() throws SuperCodeException {
+		DaoSearch daoSearch=new DaoSearch();
+		daoSearch.setSearch("证书");
+		
+		String xml=CommonUtil.commonSearchToXml("证书", "ReturnMsg", "ResultCode", "TradeDate");
+		daoSearch.setCommonSearchXml(xml);
+		
+		//或者
+		//CommonUtil.commonSearchToXml(daoSearch, "ReturnMsg", "ResultCode", "TradeDate");
+		List<WXPayTradeOrder> list=dao.commonSearch(daoSearch);
+		System.out.println(list);
+		
+		
+	}
+	
+	
 	@Test
 	public void selectByNo() {
 		WXPayTradeOrder w=dao.selectByTradeNo("12458774");
