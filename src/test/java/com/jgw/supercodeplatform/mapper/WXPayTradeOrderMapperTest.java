@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
+import com.jgw.supercodeplatform.marketing.dao.integral.generator.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
@@ -22,6 +23,10 @@ import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 public class WXPayTradeOrderMapperTest {
 @Autowired
 private WXPayTradeOrderMapper dao;
+
+@Autowired
+private IntegralRuleMapperExt ruleDao;
+
 @Autowired
 private MarketingMembersWinRecordMapper mWinRecordMapper;
 
@@ -41,11 +46,9 @@ private MarketingMembersWinRecordMapper mWinRecordMapper;
 	}
 
 	@Test
-	public void commonSearch() throws SuperCodeException {
-		DaoSearch daoSearch=new DaoSearch();
-		daoSearch.setSearch("证书");
+	public void commonSearch(DaoSearch daoSearch) throws SuperCodeException {
 		
-		String xml=CommonUtil.commonSearchToXml("证书", "ReturnMsg", "ResultCode", "TradeDate");
+		String xml=CommonUtil.commonSearchToXml(daoSearch.getSearch(), "ReturnMsg", "ResultCode", "TradeDate");
 		daoSearch.setCommonSearchXml(xml);
 		
 		//或者
