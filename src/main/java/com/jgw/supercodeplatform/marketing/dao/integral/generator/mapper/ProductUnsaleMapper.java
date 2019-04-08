@@ -36,7 +36,7 @@ public interface ProductUnsaleMapper {
         "#{updateUserId,jdbcType=INTEGER}, #{updateUserName,jdbcType=VARCHAR}, ",
         "#{updateDate,jdbcType=TIMESTAMP}, #{createUserId,jdbcType=INTEGER}, ",
         "#{createUserName,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, ",
-        "#{organizationId,jdbcType=INTEGER}, #{organizationName,jdbcType=VARCHAR}, ",
+        "#{organizationId,jdbcType=VARCHAR}, #{organizationName,jdbcType=VARCHAR}, ",
         "#{detail,jdbcType=LONGVARCHAR})"
     })
     int insert(ProductUnsale record);
@@ -67,7 +67,7 @@ public interface ProductUnsaleMapper {
         @Result(column="CreateUserId", property="createUserId", jdbcType=JdbcType.INTEGER),
         @Result(column="CreateUserName", property="createUserName", jdbcType=JdbcType.VARCHAR),
         @Result(column="CreateDate", property="createDate", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="OrganizationId", property="organizationId", jdbcType=JdbcType.INTEGER),
+        @Result(column="OrganizationId", property="organizationId", jdbcType=JdbcType.VARCHAR),
         @Result(column="OrganizationName", property="organizationName", jdbcType=JdbcType.VARCHAR),
         @Result(column="Detail", property="detail", jdbcType=JdbcType.LONGVARCHAR)
     })
@@ -91,7 +91,7 @@ public interface ProductUnsaleMapper {
           "CreateUserId = #{createUserId,jdbcType=INTEGER},",
           "CreateUserName = #{createUserName,jdbcType=VARCHAR},",
           "CreateDate = #{createDate,jdbcType=TIMESTAMP},",
-          "OrganizationId = #{organizationId,jdbcType=INTEGER},",
+          "OrganizationId = #{organizationId,jdbcType=VARCHAR},",
           "OrganizationName = #{organizationName,jdbcType=VARCHAR},",
           "Detail = #{detail,jdbcType=LONGVARCHAR}",
         "where Id = #{id,jdbcType=BIGINT}"
@@ -113,7 +113,7 @@ public interface ProductUnsaleMapper {
           "CreateUserId = #{createUserId,jdbcType=INTEGER},",
           "CreateUserName = #{createUserName,jdbcType=VARCHAR},",
           "CreateDate = #{createDate,jdbcType=TIMESTAMP},",
-          "OrganizationId = #{organizationId,jdbcType=INTEGER},",
+          "OrganizationId = #{organizationId,jdbcType=VARCHAR},",
           "OrganizationName = #{organizationName,jdbcType=VARCHAR}",
         "where Id = #{id,jdbcType=BIGINT}"
     })

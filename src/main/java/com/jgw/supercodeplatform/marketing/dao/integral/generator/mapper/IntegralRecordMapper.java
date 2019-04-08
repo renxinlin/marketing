@@ -36,7 +36,7 @@ public interface IntegralRecordMapper {
         "#{productName,jdbcType=VARCHAR}, #{outerCodeId,jdbcType=VARCHAR}, ",
         "#{codeTypeId,jdbcType=VARCHAR}, #{registerStore,jdbcType=VARCHAR}, ",
         "#{registerStoreId,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP}, ",
-        "#{organizationId,jdbcType=INTEGER}, #{organizationName,jdbcType=VARCHAR}, ",
+        "#{organizationId,jdbcType=VARCHAR}, #{organizationName,jdbcType=VARCHAR}, ",
         "#{integralNum,jdbcType=INTEGER})"
     })
     int insert(IntegralRecord record);
@@ -67,7 +67,7 @@ public interface IntegralRecordMapper {
         @Result(column="RegisterStore", property="registerStore", jdbcType=JdbcType.VARCHAR),
         @Result(column="RegisterStoreId", property="registerStoreId", jdbcType=JdbcType.INTEGER),
         @Result(column="CreateDate", property="createDate", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="OrganizationId", property="organizationId", jdbcType=JdbcType.INTEGER),
+        @Result(column="OrganizationId", property="organizationId", jdbcType=JdbcType.VARCHAR),
         @Result(column="OrganizationName", property="organizationName", jdbcType=JdbcType.VARCHAR),
         @Result(column="IntegralNum", property="integralNum", jdbcType=JdbcType.INTEGER)
     })
@@ -91,7 +91,7 @@ public interface IntegralRecordMapper {
           "RegisterStore = #{registerStore,jdbcType=VARCHAR},",
           "RegisterStoreId = #{registerStoreId,jdbcType=INTEGER},",
           "CreateDate = #{createDate,jdbcType=TIMESTAMP},",
-          "OrganizationId = #{organizationId,jdbcType=INTEGER},",
+          "OrganizationId = #{organizationId,jdbcType=VARCHAR},",
           "OrganizationName = #{organizationName,jdbcType=VARCHAR},",
           "IntegralNum = #{integralNum,jdbcType=INTEGER}",
         "where Id = #{id,jdbcType=BIGINT}"

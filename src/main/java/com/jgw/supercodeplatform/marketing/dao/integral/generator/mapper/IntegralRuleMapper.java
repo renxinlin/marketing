@@ -40,7 +40,7 @@ public interface IntegralRuleMapper {
         "#{createUserId,jdbcType=INTEGER}, #{createUserName,jdbcType=VARCHAR}, ",
         "#{createDate,jdbcType=TIMESTAMP}, #{updateUserId,jdbcType=INTEGER}, ",
         "#{updateUserName,jdbcType=VARCHAR}, #{updateUserDate,jdbcType=TIMESTAMP}, ",
-        "#{organizationId,jdbcType=INTEGER}, #{organizationName,jdbcType=VARCHAR}, ",
+        "#{organizationId,jdbcType=VARCHAR}, #{organizationName,jdbcType=VARCHAR}, ",
         "#{isEffective,jdbcType=TINYINT})"
     })
     int insert(IntegralRule record);
@@ -77,7 +77,7 @@ public interface IntegralRuleMapper {
         @Result(column="UpdateUserId", property="updateUserId", jdbcType=JdbcType.INTEGER),
         @Result(column="UpdateUserName", property="updateUserName", jdbcType=JdbcType.VARCHAR),
         @Result(column="UpdateUserDate", property="updateUserDate", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="OrganizationId", property="organizationId", jdbcType=JdbcType.INTEGER),
+        @Result(column="OrganizationId", property="organizationId", jdbcType=JdbcType.VARCHAR),
         @Result(column="OrganizationName", property="organizationName", jdbcType=JdbcType.VARCHAR),
         @Result(column="IsEffective", property="isEffective", jdbcType=JdbcType.TINYINT)
     })
@@ -105,7 +105,7 @@ public interface IntegralRuleMapper {
           "UpdateUserId = #{updateUserId,jdbcType=INTEGER},",
           "UpdateUserName = #{updateUserName,jdbcType=VARCHAR},",
           "UpdateUserDate = #{updateUserDate,jdbcType=TIMESTAMP},",
-          "OrganizationId = #{organizationId,jdbcType=INTEGER},",
+          "OrganizationId = #{organizationId,jdbcType=VARCHAR},",
           "OrganizationName = #{organizationName,jdbcType=VARCHAR},",
           "IsEffective = #{isEffective,jdbcType=TINYINT}",
         "where id = #{id,jdbcType=BIGINT}"

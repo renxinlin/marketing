@@ -40,7 +40,7 @@ public interface IntegralOrderMapper {
         "#{status,jdbcType=VARCHAR}, #{memberId,jdbcType=INTEGER}, ",
         "#{memberName,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, ",
         "#{updateUserId,jdbcType=INTEGER}, #{updateUserName,jdbcType=VARCHAR}, ",
-        "#{updateDate,jdbcType=TIMESTAMP}, #{organizationId,jdbcType=INTEGER}, ",
+        "#{updateDate,jdbcType=TIMESTAMP}, #{organizationId,jdbcType=VARCHAR}, ",
         "#{organizationName,jdbcType=VARCHAR})"
     })
     int insert(IntegralOrder record);
@@ -76,7 +76,7 @@ public interface IntegralOrderMapper {
         @Result(column="UpdateUserId", property="updateUserId", jdbcType=JdbcType.INTEGER),
         @Result(column="UpdateUserName", property="updateUserName", jdbcType=JdbcType.VARCHAR),
         @Result(column="UpdateDate", property="updateDate", jdbcType=JdbcType.TIMESTAMP),
-        @Result(column="OrganizationId", property="organizationId", jdbcType=JdbcType.INTEGER),
+        @Result(column="OrganizationId", property="organizationId", jdbcType=JdbcType.VARCHAR),
         @Result(column="OrganizationName", property="organizationName", jdbcType=JdbcType.VARCHAR)
     })
     IntegralOrder selectByPrimaryKey(Long id);
@@ -104,7 +104,7 @@ public interface IntegralOrderMapper {
           "UpdateUserId = #{updateUserId,jdbcType=INTEGER},",
           "UpdateUserName = #{updateUserName,jdbcType=VARCHAR},",
           "UpdateDate = #{updateDate,jdbcType=TIMESTAMP},",
-          "OrganizationId = #{organizationId,jdbcType=INTEGER},",
+          "OrganizationId = #{organizationId,jdbcType=VARCHAR},",
           "OrganizationName = #{organizationName,jdbcType=VARCHAR}",
         "where Id = #{id,jdbcType=BIGINT}"
     })
