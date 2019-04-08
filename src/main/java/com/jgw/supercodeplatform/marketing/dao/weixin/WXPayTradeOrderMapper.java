@@ -1,15 +1,19 @@
 package com.jgw.supercodeplatform.marketing.dao.weixin;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 
 @Mapper
-public interface WXPayTradeOrderMapper {
+public interface WXPayTradeOrderMapper extends CommonSql{
 static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amount amount,TradeDate tradeDate,TradeStatus tradeStatus,"
 		+ "OrganizationId organizationId,ReturnCode returnCode,ReturnMsg returnMsg,ResultCode resultCode,ErrCode errCode,ErrCodeDes errCodeDes";
 
@@ -39,5 +43,18 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
             + " </where>"
             + " </script>")
 	void update(WXPayTradeOrder wXTradeNo);
+
+
+    
+
+	
+	
+	 @Select(startScript
+	 		+ "select "+allFields+" from marketing_wx_trade_order"
+	 		+startWhere
+	 		+ search
+	 		+endWhere
+	 		+endScript)
+	List<WXPayTradeOrder> commonSearch(DaoSearch daoSearch);
 
 }

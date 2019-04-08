@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
@@ -238,4 +239,40 @@ public class CommonUtil extends UserInfoUtil {
     	String newString= m.replaceAll(aa).trim();
 		return newString;
     }
+    
+    
+
+    /**
+     * 普通搜索转查询xml工具方法
+     * @param search 搜索值
+     * @param fields 需要参与普通搜索的字段名
+     * @return
+     * @throws SuperCodeException
+     */
+    public static String commonSearchToXml(String search,String ... fields) throws SuperCodeException {
+    	if (null==fields || fields.length==0) {
+			throw new SuperCodeException("commonSearchToXml方法字段不能为空", 500);
+		}
+    	if (StringUtils.isNotBlank(search)) {
+			StringBuffer buf=new StringBuffer();
+			buf.append(" and ( ");
+			int i=0;
+			for (String field : fields) {
+				if (i>0) {
+					buf.append(" or ");	
+				}
+				buf.append(field).append(" like ");
+				if (field.contains("Date")) {
+					buf.append(" binary ");
+				}
+				buf.append(" CONCAT('%',").append("#{search}").append(",'%')");
+				i++;
+			}
+			buf.append(")");
+			String xml=buf.toString();
+			return xml;
+		}
+		return null;
+    }
+    
 }
