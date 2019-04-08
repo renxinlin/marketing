@@ -47,6 +47,9 @@ private MarketingMembersWinRecordMapper mWinRecordMapper;
 		
 		String xml=CommonUtil.commonSearchToXml("证书", "ReturnMsg", "ResultCode", "TradeDate");
 		daoSearch.setCommonSearchXml(xml);
+		
+		//或者
+		//CommonUtil.commonSearchToXml(daoSearch, "ReturnMsg", "ResultCode", "TradeDate");
 		List<WXPayTradeOrder> list=dao.commonSearch(daoSearch);
 		System.out.println(list);
 		

@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.common.pojo.common.ReturnParamsMap;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.common.properties.NormalProperties;
 import com.jgw.supercodeplatform.user.UserInfoUtil;
@@ -274,5 +275,10 @@ public class CommonUtil extends UserInfoUtil {
 		}
 		return null;
     }
+
+	public static void commonSearchToXml(DaoSearch daoSearch, String ... fields) throws SuperCodeException {
+		String xml=commonSearchToXml(daoSearch.getSearch(), fields);
+		daoSearch.setCommonSearchXml(xml);
+	}
     
 }
