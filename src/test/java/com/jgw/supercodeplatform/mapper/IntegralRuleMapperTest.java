@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.jgw.supercodeplatform.SuperCodeMarketingApplication;
-import com.jgw.supercodeplatform.marketing.dao.integral.generator.IntegralRuleMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 
 @RunWith(SpringJUnit4ClassRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
@@ -23,7 +23,7 @@ private IntegralRuleMapperExt ruleDao;
 	@Test
 	public void insert() {
 		IntegralRule rule=new IntegralRule();
-		rule.setTimeLimit(new Date());
+		rule.setTimeLimitDate(new Date());
 		ruleDao.insert(rule);
 	}
 }
