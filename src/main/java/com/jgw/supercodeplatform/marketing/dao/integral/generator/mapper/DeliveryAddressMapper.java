@@ -1,5 +1,6 @@
-package com.jgw.supercodeplatform.marketing.dao.integral;
+package com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper;
 
+import com.jgw.supercodeplatform.marketing.dao.integral.generator.provider.DeliveryAddressSqlProvider;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
@@ -29,7 +30,7 @@ public interface DeliveryAddressMapper {
     })
     int insert(DeliveryAddress record);
 
-    @InsertProvider(type=DeliveryAddressSqlProvider.class, method="insertSelective")
+    @InsertProvider(type= DeliveryAddressSqlProvider.class, method="insertSelective")
     int insertSelective(DeliveryAddress record);
 
     @Select({

@@ -1,5 +1,6 @@
-package com.jgw.supercodeplatform.marketing.dao.integral;
+package com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper;
 
+import com.jgw.supercodeplatform.marketing.dao.integral.generator.provider.ProductUnsaleSqlProvider;
 import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
@@ -33,7 +34,7 @@ public interface ProductUnsaleMapper {
     })
     int insert(ProductUnsale record);
 
-    @InsertProvider(type=ProductUnsaleSqlProvider.class, method="insertSelective")
+    @InsertProvider(type= ProductUnsaleSqlProvider.class, method="insertSelective")
     int insertSelective(ProductUnsale record);
 
     @Select({

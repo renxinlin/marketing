@@ -1,5 +1,6 @@
-package com.jgw.supercodeplatform.marketing.dao.integral;
+package com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper;
 
+import com.jgw.supercodeplatform.marketing.dao.integral.generator.provider.IntegralOrderSqlProvider;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
@@ -37,7 +38,7 @@ public interface IntegralOrderMapper {
     })
     int insert(IntegralOrder record);
 
-    @InsertProvider(type=IntegralOrderSqlProvider.class, method="insertSelective")
+    @InsertProvider(type= IntegralOrderSqlProvider.class, method="insertSelective")
     int insertSelective(IntegralOrder record);
 
     @Select({

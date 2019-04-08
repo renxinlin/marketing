@@ -1,5 +1,6 @@
-package com.jgw.supercodeplatform.marketing.dao.integral;
+package com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper;
 
+import com.jgw.supercodeplatform.marketing.dao.integral.generator.provider.IntegralRuleProductSqlProvider;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
@@ -25,7 +26,7 @@ public interface IntegralRuleProductMapper {
     })
     int insert(IntegralRuleProduct record);
 
-    @InsertProvider(type=IntegralRuleProductSqlProvider.class, method="insertSelective")
+    @InsertProvider(type= IntegralRuleProductSqlProvider.class, method="insertSelective")
     int insertSelective(IntegralRuleProduct record);
 
     @Select({
