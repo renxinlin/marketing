@@ -89,7 +89,7 @@ public class IntegralRuleSqlProvider {
         }
         
         if (record.getOrganizationId() != null) {
-            VALUES("OrganizationId", "#{organizationId,jdbcType=INTEGER}");
+            VALUES("OrganizationId", "#{organizationId,jdbcType=VARCHAR}");
         }
         
         if (record.getOrganizationName() != null) {
@@ -176,7 +176,7 @@ public class IntegralRuleSqlProvider {
         }
         
         if (record.getOrganizationId() != null) {
-            SET("OrganizationId = #{organizationId,jdbcType=INTEGER}");
+            SET("OrganizationId = #{organizationId,jdbcType=VARCHAR}");
         }
         
         if (record.getOrganizationName() != null) {
