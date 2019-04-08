@@ -84,7 +84,7 @@ public class IntegralExchange {
 
     /**  */
     @ApiModelProperty(value = "组织id")
-    private Integer organizationId;
+    private String organizationId;
 
     /**  */
     @ApiModelProperty(value = "组织名称")
@@ -262,11 +262,11 @@ public class IntegralExchange {
         this.updateDate = updateDate;
     }
 
-    public Integer getOrganizationId() {
+    public String getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(Integer organizationId) {
+    public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
 

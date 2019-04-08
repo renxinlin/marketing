@@ -1,11 +1,12 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 @ApiModel(value = "积分记录")
-public class IntegralRecord {
+public class IntegralRecord  extends DaoSearch {
     /** 主键 */
     @ApiModelProperty(value = "主键")
     private Long id;
@@ -64,7 +65,7 @@ public class IntegralRecord {
 
     /** 组织id */
     @ApiModelProperty(value = "组织id")
-    private Integer organizationId;
+    private String organizationId;
 
     /** 组织名称 */
     @ApiModelProperty(value = "组织名称")
@@ -186,11 +187,11 @@ public class IntegralRecord {
         this.createDate = createDate;
     }
 
-    public Integer getOrganizationId() {
+    public String getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(Integer organizationId) {
+    public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
 

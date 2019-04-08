@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
+import java.util.List;
+
 @ApiModel(value = "通用积分规则")
 public class IntegralRule {
     /** 积分活动主表 */
@@ -80,7 +82,7 @@ public class IntegralRule {
 
     /** 组织id */
     @ApiModelProperty(value = "组织id")
-    private Integer organizationId;
+    private String organizationId;
 
     /** 组织名称 */
     @ApiModelProperty(value = "组织名称")
@@ -89,6 +91,7 @@ public class IntegralRule {
     /** 积分通用规则0有效1无效 */
     @ApiModelProperty(value = " 积分通用规则0有效1无效 ")
     private Byte isEffective;
+
 
     public Long getId() {
         return id;
@@ -234,11 +237,11 @@ public class IntegralRule {
         this.updateUserDate = updateUserDate;
     }
 
-    public Integer getOrganizationId() {
+    public String getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(Integer organizationId) {
+    public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
 

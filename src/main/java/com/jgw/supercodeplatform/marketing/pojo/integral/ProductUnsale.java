@@ -64,7 +64,7 @@ public class ProductUnsale {
 
     /**  */
     @ApiModelProperty(value = "组织id")
-    private Integer organizationId;
+    private String organizationId;
 
     /** 组织名称 */
     @ApiModelProperty(value = "组织名称")
@@ -186,11 +186,11 @@ public class ProductUnsale {
         this.createDate = createDate;
     }
 
-    public Integer getOrganizationId() {
+    public String getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationId(Integer organizationId) {
+    public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
 
