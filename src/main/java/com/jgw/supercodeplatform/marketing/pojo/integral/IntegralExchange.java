@@ -12,11 +12,11 @@ public class IntegralExchange {
 
     /** 兑换对象0会员 */
     @ApiModelProperty(value = "兑换对象0会员")
-    private Boolean exchangeObject;
+    private Byte memberType;
 
     /** 兑换资源0非自卖1自卖产品 */
     @ApiModelProperty(value = "兑换资源0非自卖1自卖产品")
-    private Boolean exchangeResource;
+    private Byte exchangeResource;
 
     /** 兑换积分 */
     @ApiModelProperty(value = "每个产品兑换积分")
@@ -36,15 +36,15 @@ public class IntegralExchange {
 
     /** 兑换活动状态0上架1下架 */
     @ApiModelProperty(value = "兑换活动状态0上架1下架")
-    private Boolean status;
+    private Byte status;
 
     /** 支付手段：0积分 */
     @ApiModelProperty(value = "支付手段：0积分")
-    private Boolean payWay;
+    private Byte payWay;
 
     /** 自动下架设置0库存为0，1时间范围 */
     @ApiModelProperty(value = "自动下架设置0库存为0，1时间范围")
-    private Boolean undercarriageSetWay;
+    private Byte undercarriageSetWay;
 
     /** 自动下架时间 */
     @ApiModelProperty(value = "自动下架时间")
@@ -52,35 +52,11 @@ public class IntegralExchange {
 
     /** 库存预警0不发出警告1发出警告 */
     @ApiModelProperty(value = "库存预警0不发出警告1发出警告")
-    private Boolean stockWarning;
+    private Byte stockWarning;
 
     /** 库存预警数量 */
     @ApiModelProperty(value = "库存预警数量")
     private Integer stockWarningNum;
-
-    /**  */
-    @ApiModelProperty(value = "创建人id")
-    private Integer createUserId;
-
-    /**  */
-    @ApiModelProperty(value = "创建人")
-    private String createUserName;
-
-    /**  */
-    @ApiModelProperty(value = "创建日期")
-    private Date createDate;
-
-    /**  */
-    @ApiModelProperty(value = "更新人id")
-    private Integer updateUserId;
-
-    /**  */
-    @ApiModelProperty(value = "更新人")
-    private String updateUserName;
-
-    /**  */
-    @ApiModelProperty(value = "更新时间")
-    private Date updateDate;
 
     /**  */
     @ApiModelProperty(value = "组织id")
@@ -108,7 +84,7 @@ public class IntegralExchange {
 
     /** 0无sku,1有sku,决定库存增对产品还是sku */
     @ApiModelProperty(value = "0无sku,1有sku,决定库存增对产品还是sku")
-    private String skuStatus;
+    private Byte skuStatus;
 
     public Long getId() {
         return id;
@@ -118,19 +94,19 @@ public class IntegralExchange {
         this.id = id;
     }
 
-    public Boolean getExchangeObject() {
-        return exchangeObject;
+    public Byte getMemberType() {
+        return memberType;
     }
 
-    public void setExchangeObject(Boolean exchangeObject) {
-        this.exchangeObject = exchangeObject;
+    public void setMemberType(Byte memberType) {
+        this.memberType = memberType;
     }
 
-    public Boolean getExchangeResource() {
+    public Byte getExchangeResource() {
         return exchangeResource;
     }
 
-    public void setExchangeResource(Boolean exchangeResource) {
+    public void setExchangeResource(Byte exchangeResource) {
         this.exchangeResource = exchangeResource;
     }
 
@@ -166,27 +142,27 @@ public class IntegralExchange {
         this.customerLimitNum = customerLimitNum;
     }
 
-    public Boolean getStatus() {
+    public Byte getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Byte status) {
         this.status = status;
     }
 
-    public Boolean getPayWay() {
+    public Byte getPayWay() {
         return payWay;
     }
 
-    public void setPayWay(Boolean payWay) {
+    public void setPayWay(Byte payWay) {
         this.payWay = payWay;
     }
 
-    public Boolean getUndercarriageSetWay() {
+    public Byte getUndercarriageSetWay() {
         return undercarriageSetWay;
     }
 
-    public void setUndercarriageSetWay(Boolean undercarriageSetWay) {
+    public void setUndercarriageSetWay(Byte undercarriageSetWay) {
         this.undercarriageSetWay = undercarriageSetWay;
     }
 
@@ -198,11 +174,11 @@ public class IntegralExchange {
         this.underCarriage = underCarriage;
     }
 
-    public Boolean getStockWarning() {
+    public Byte getStockWarning() {
         return stockWarning;
     }
 
-    public void setStockWarning(Boolean stockWarning) {
+    public void setStockWarning(Byte stockWarning) {
         this.stockWarning = stockWarning;
     }
 
@@ -212,54 +188,6 @@ public class IntegralExchange {
 
     public void setStockWarningNum(Integer stockWarningNum) {
         this.stockWarningNum = stockWarningNum;
-    }
-
-    public Integer getCreateUserId() {
-        return createUserId;
-    }
-
-    public void setCreateUserId(Integer createUserId) {
-        this.createUserId = createUserId;
-    }
-
-    public String getCreateUserName() {
-        return createUserName;
-    }
-
-    public void setCreateUserName(String createUserName) {
-        this.createUserName = createUserName;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public Integer getUpdateUserId() {
-        return updateUserId;
-    }
-
-    public void setUpdateUserId(Integer updateUserId) {
-        this.updateUserId = updateUserId;
-    }
-
-    public String getUpdateUserName() {
-        return updateUserName;
-    }
-
-    public void setUpdateUserName(String updateUserName) {
-        this.updateUserName = updateUserName;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
     }
 
     public String getOrganizationId() {
@@ -310,11 +238,11 @@ public class IntegralExchange {
         this.skuUrl = skuUrl;
     }
 
-    public String getSkuStatus() {
+    public Byte getSkuStatus() {
         return skuStatus;
     }
 
-    public void setSkuStatus(String skuStatus) {
+    public void setSkuStatus(Byte skuStatus) {
         this.skuStatus = skuStatus;
     }
 }

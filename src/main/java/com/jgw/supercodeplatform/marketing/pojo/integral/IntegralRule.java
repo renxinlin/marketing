@@ -14,11 +14,11 @@ public class IntegralRule {
 
     /** 积分有效期状态位0永久有效1存在有效期 */
     @ApiModelProperty(value = "积分有效期状态位0永久有效1存在有效期")
-    private Boolean timeLimitStatus;
+    private Byte timeLimitStatus;
 
     /** 从奖励开始多久后过期 */
     @ApiModelProperty(value = "从奖励开始多久后过期")
-    private Date timeLimit;
+    private Date timeLimitDate;
 
     /** 积分上限状态位0无上限，1每人每日最多获得的积分上限目前0有效 */
     @ApiModelProperty(value = "积分上限状态位0无上限，1每人每日最多获得的积分上限目前0有效")
@@ -30,7 +30,7 @@ public class IntegralRule {
 
     /** 每人每【2年1月0日】获取积分上限 */
     @ApiModelProperty(value = "每人每【2年1月0日】获取积分上限")
-    private Boolean integralLimitAge;
+    private Byte integralLimitAge;
 
     /** 额外送:注册 */
     @ApiModelProperty(value = "额外送:注册")
@@ -46,39 +46,16 @@ public class IntegralRule {
 
     /** 额外送注册状态：0勾选有效1无效 */
     @ApiModelProperty(value = "额外送注册状态：0勾选有效1无效")
-    private Boolean integralByRegisterStatus;
+    private Byte integralByRegisterStatus;
 
     /** 额外送生日状态：0勾选有效1无效 */
     @ApiModelProperty(value = "额外送生日状态：0勾选有效1无效")
-    private Boolean integralByBirthdayStatus;
+    private Byte integralByBirthdayStatus;
 
     /** 额外历史首次送状态：0勾选有效1无效 */
     @ApiModelProperty(value = "额外历史首次送状态：0勾选有效1无效")
-    private Boolean integralByFirstTimeStatus;
+    private Byte integralByFirstTimeStatus;
 
-    /**  */
-    @ApiModelProperty(value = "创建人id")
-    private Integer createUserId;
-
-    /**  */
-    @ApiModelProperty(value = "创建人")
-    private String createUserName;
-
-    /**  */
-    @ApiModelProperty(value = "创建时间")
-    private Date createDate;
-
-    /**  */
-    @ApiModelProperty(value = "更新人ID")
-    private Integer updateUserId;
-
-    /**  */
-    @ApiModelProperty(value = "更新人")
-    private String updateUserName;
-
-    /**  */
-    @ApiModelProperty(value = "更新日期")
-    private Date updateUserDate;
 
     /** 组织id */
     @ApiModelProperty(value = "组织id")
@@ -92,7 +69,6 @@ public class IntegralRule {
     @ApiModelProperty(value = " 积分通用规则0有效1无效 ")
     private Byte isEffective;
 
-
     public Long getId() {
         return id;
     }
@@ -101,20 +77,20 @@ public class IntegralRule {
         this.id = id;
     }
 
-    public Boolean getTimeLimitStatus() {
+    public Byte getTimeLimitStatus() {
         return timeLimitStatus;
     }
 
-    public void setTimeLimitStatus(Boolean timeLimitStatus) {
+    public void setTimeLimitStatus(Byte timeLimitStatus) {
         this.timeLimitStatus = timeLimitStatus;
     }
 
-    public Date getTimeLimit() {
-        return timeLimit;
+    public Date getTimeLimitDate() {
+        return timeLimitDate;
     }
 
-    public void setTimeLimit(Date timeLimit) {
-        this.timeLimit = timeLimit;
+    public void setTimeLimitDate(Date timeLimitDate) {
+        this.timeLimitDate = timeLimitDate;
     }
 
     public Boolean getIntegralLimitStatus() {
@@ -133,11 +109,11 @@ public class IntegralRule {
         this.integralLimit = integralLimit;
     }
 
-    public Boolean getIntegralLimitAge() {
+    public Byte getIntegralLimitAge() {
         return integralLimitAge;
     }
 
-    public void setIntegralLimitAge(Boolean integralLimitAge) {
+    public void setIntegralLimitAge(Byte integralLimitAge) {
         this.integralLimitAge = integralLimitAge;
     }
 
@@ -165,76 +141,28 @@ public class IntegralRule {
         this.integralByFirstTime = integralByFirstTime;
     }
 
-    public Boolean getIntegralByRegisterStatus() {
+    public Byte getIntegralByRegisterStatus() {
         return integralByRegisterStatus;
     }
 
-    public void setIntegralByRegisterStatus(Boolean integralByRegisterStatus) {
+    public void setIntegralByRegisterStatus(Byte integralByRegisterStatus) {
         this.integralByRegisterStatus = integralByRegisterStatus;
     }
 
-    public Boolean getIntegralByBirthdayStatus() {
+    public Byte getIntegralByBirthdayStatus() {
         return integralByBirthdayStatus;
     }
 
-    public void setIntegralByBirthdayStatus(Boolean integralByBirthdayStatus) {
+    public void setIntegralByBirthdayStatus(Byte integralByBirthdayStatus) {
         this.integralByBirthdayStatus = integralByBirthdayStatus;
     }
 
-    public Boolean getIntegralByFirstTimeStatus() {
+    public Byte getIntegralByFirstTimeStatus() {
         return integralByFirstTimeStatus;
     }
 
-    public void setIntegralByFirstTimeStatus(Boolean integralByFirstTimeStatus) {
+    public void setIntegralByFirstTimeStatus(Byte integralByFirstTimeStatus) {
         this.integralByFirstTimeStatus = integralByFirstTimeStatus;
-    }
-
-    public Integer getCreateUserId() {
-        return createUserId;
-    }
-
-    public void setCreateUserId(Integer createUserId) {
-        this.createUserId = createUserId;
-    }
-
-    public String getCreateUserName() {
-        return createUserName;
-    }
-
-    public void setCreateUserName(String createUserName) {
-        this.createUserName = createUserName;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public Integer getUpdateUserId() {
-        return updateUserId;
-    }
-
-    public void setUpdateUserId(Integer updateUserId) {
-        this.updateUserId = updateUserId;
-    }
-
-    public String getUpdateUserName() {
-        return updateUserName;
-    }
-
-    public void setUpdateUserName(String updateUserName) {
-        this.updateUserName = updateUserName;
-    }
-
-    public Date getUpdateUserDate() {
-        return updateUserDate;
-    }
-
-    public void setUpdateUserDate(Date updateUserDate) {
-        this.updateUserDate = updateUserDate;
     }
 
     public String getOrganizationId() {

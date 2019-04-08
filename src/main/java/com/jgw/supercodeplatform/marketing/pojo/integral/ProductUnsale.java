@@ -40,7 +40,7 @@ public class ProductUnsale {
 
     /**  */
     @ApiModelProperty(value = "更新人id")
-    private Integer updateUserId;
+    private String updateUserId;
 
     /**  */
     @ApiModelProperty(value = "更新人")
@@ -52,7 +52,7 @@ public class ProductUnsale {
 
     /**  */
     @ApiModelProperty(value = "创建人id")
-    private Integer createUserId;
+    private String createUserId;
 
     /**  */
     @ApiModelProperty(value = "创建人")
@@ -138,11 +138,11 @@ public class ProductUnsale {
         this.realPrice = realPrice;
     }
 
-    public Integer getUpdateUserId() {
+    public String getUpdateUserId() {
         return updateUserId;
     }
 
-    public void setUpdateUserId(Integer updateUserId) {
+    public void setUpdateUserId(String updateUserId) {
         this.updateUserId = updateUserId;
     }
 
@@ -162,11 +162,11 @@ public class ProductUnsale {
         this.updateDate = updateDate;
     }
 
-    public Integer getCreateUserId() {
+    public String getCreateUserId() {
         return createUserId;
     }
 
-    public void setCreateUserId(Integer createUserId) {
+    public void setCreateUserId(String createUserId) {
         this.createUserId = createUserId;
     }
 

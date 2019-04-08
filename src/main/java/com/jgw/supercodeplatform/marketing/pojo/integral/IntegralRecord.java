@@ -13,15 +13,15 @@ public class IntegralRecord  extends DaoSearch {
 
     /** 0会员 */
     @ApiModelProperty(value = "会员类型0会员")
-    private Boolean customerType;
+    private Byte memberType;
 
     /** 会员id */
     @ApiModelProperty(value = "会员id")
-    private Integer customerId;
+    private Integer memberId;
 
     /** 会员名称 */
     @ApiModelProperty(value = "会员名称")
-    private String customerName;
+    private String memberName;
 
     /** 手机 */
     @ApiModelProperty(value = "手机")
@@ -53,11 +53,11 @@ public class IntegralRecord  extends DaoSearch {
 
     /** 注册门店【h5注册的门店信息】 */
     @ApiModelProperty(value = "注册门店【h5注册的门店信息】")
-    private String registerStore;
+    private String customerName;
 
     /** 注册门店id */
     @ApiModelProperty(value = "注册门店id")
-    private Integer registerStoreId;
+    private String customerId;
 
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间")
@@ -83,28 +83,28 @@ public class IntegralRecord  extends DaoSearch {
         this.id = id;
     }
 
-    public Boolean getCustomerType() {
-        return customerType;
+    public Byte getMemberType() {
+        return memberType;
     }
 
-    public void setCustomerType(Boolean customerType) {
-        this.customerType = customerType;
+    public void setMemberType(Byte memberType) {
+        this.memberType = memberType;
     }
 
-    public Integer getCustomerId() {
-        return customerId;
+    public Integer getMemberId() {
+        return memberId;
     }
 
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
+    public void setMemberId(Integer memberId) {
+        this.memberId = memberId;
     }
 
-    public String getCustomerName() {
-        return customerName;
+    public String getMemberName() {
+        return memberName;
     }
 
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
     }
 
     public String getMobile() {
@@ -163,20 +163,20 @@ public class IntegralRecord  extends DaoSearch {
         this.codeTypeId = codeTypeId;
     }
 
-    public String getRegisterStore() {
-        return registerStore;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setRegisterStore(String registerStore) {
-        this.registerStore = registerStore;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
-    public Integer getRegisterStoreId() {
-        return registerStoreId;
+    public String getCustomerId() {
+        return customerId;
     }
 
-    public void setRegisterStoreId(Integer registerStoreId) {
-        this.registerStoreId = registerStoreId;
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
     public Date getCreateDate() {

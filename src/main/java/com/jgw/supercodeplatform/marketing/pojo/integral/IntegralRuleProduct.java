@@ -27,7 +27,7 @@ public class IntegralRuleProduct {
 
     /** 奖励对象0会员 */
     @ApiModelProperty(value = "奖励对象0会员")
-    private Boolean rewardObject;
+    private Byte memberType;
 
     /** 0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分） */
     @ApiModelProperty(value = "0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分）")
@@ -81,12 +81,12 @@ public class IntegralRuleProduct {
         this.productPrice = productPrice;
     }
 
-    public Boolean getRewardObject() {
-        return rewardObject;
+    public Byte getMemberType() {
+        return memberType;
     }
 
-    public void setRewardObject(Boolean rewardObject) {
-        this.rewardObject = rewardObject;
+    public void setMemberType(Byte memberType) {
+        this.memberType = memberType;
     }
 
     public Boolean getRewardRule() {

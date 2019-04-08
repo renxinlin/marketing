@@ -16,7 +16,7 @@ public class IntegralOrder {
 
     /** 兑换资源0非自卖1自卖产品 */
     @ApiModelProperty(value = "兑换资源0非自卖1自卖产品")
-    private Boolean exchangeResource;
+    private Byte exchangeResource;
 
     /** 产品id|UUID */
     @ApiModelProperty(value = "产品id|UUID ")
@@ -55,7 +55,7 @@ public class IntegralOrder {
     private String address;
 
     /** 物流状态0待发货1已发货 */
-    @ApiModelProperty(value = "主键")
+    @ApiModelProperty(value = "物流状态0待发货1已发货")
     private String status;
 
     /** 会员id */
@@ -70,17 +70,10 @@ public class IntegralOrder {
     @ApiModelProperty(value = "创建时间")
     private Date createDate;
 
-    /** 更新人ID */
-    @ApiModelProperty(value = "更新人ID")
-    private Integer updateUserId;
+    /** 发货时间 */
+    @ApiModelProperty(value = "发货时间")
+    private Date deliveryDate;
 
-    /** 更新人 */
-    @ApiModelProperty(value = "更新人")
-    private String updateUserName;
-
-    /** 更新时间 */
-    @ApiModelProperty(value = "更新时间")
-    private Date updateDate;
 
     /** 组织id */
     @ApiModelProperty(value = "组织id")
@@ -106,11 +99,11 @@ public class IntegralOrder {
         this.orderId = orderId;
     }
 
-    public Boolean getExchangeResource() {
+    public Byte getExchangeResource() {
         return exchangeResource;
     }
 
-    public void setExchangeResource(Boolean exchangeResource) {
+    public void setExchangeResource(Byte exchangeResource) {
         this.exchangeResource = exchangeResource;
     }
 
@@ -218,43 +211,27 @@ public class IntegralOrder {
         this.createDate = createDate;
     }
 
-    public Integer getUpdateUserId() {
-        return updateUserId;
+    public Date getDeliveryDate() {
+        return deliveryDate;
     }
 
-    public void setUpdateUserId(Integer updateUserId) {
-        this.updateUserId = updateUserId;
-    }
-
-    public String getUpdateUserName() {
-        return updateUserName;
-    }
-
-    public void setUpdateUserName(String updateUserName) {
-        this.updateUserName = updateUserName;
-    }
-
-    public Date getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        this.updateDate = updateDate;
+    public void setDeliveryDate(Date deliveryDate) {
+        this.deliveryDate = deliveryDate;
     }
 
     public String getOrganizationId() {
         return organizationId;
     }
 
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
     }
 
     public String getOrganizationName() {
         return organizationName;
     }
 
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
     }
 }
