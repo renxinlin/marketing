@@ -21,7 +21,7 @@ public class IntegralRuleSqlProvider {
         }
         
         if (record.getTimeLimitStatus() != null) {
-            VALUES("TimeLimitStatus", "#{timeLimitStatus,jdbcType=TINYINT}");
+            VALUES("TimeLimitStatus", "#{timeLimitStatus,jdbcType=BIT}");
         }
         
         if (record.getTimeLimitDate() != null) {
@@ -29,7 +29,7 @@ public class IntegralRuleSqlProvider {
         }
         
         if (record.getIntegralLimitStatus() != null) {
-            VALUES("IntegralLimitStatus", "#{integralLimitStatus,jdbcType=TINYINT}");
+            VALUES("IntegralLimitStatus", "#{integralLimitStatus,jdbcType=BIT}");
         }
         
         if (record.getIntegralLimit() != null) {
@@ -37,7 +37,7 @@ public class IntegralRuleSqlProvider {
         }
         
         if (record.getIntegralLimitAge() != null) {
-            VALUES("IntegralLimitAge", "#{integralLimitAge,jdbcType=TINYINT}");
+            VALUES("IntegralLimitAge", "#{integralLimitAge,jdbcType=BIT}");
         }
         
         if (record.getIntegralByRegister() != null) {
@@ -53,15 +53,15 @@ public class IntegralRuleSqlProvider {
         }
         
         if (record.getIntegralByRegisterStatus() != null) {
-            VALUES("IntegralByRegisterStatus", "#{integralByRegisterStatus,jdbcType=TINYINT}");
+            VALUES("IntegralByRegisterStatus", "#{integralByRegisterStatus,jdbcType=BIT}");
         }
         
         if (record.getIntegralByBirthdayStatus() != null) {
-            VALUES("IntegralByBirthdayStatus", "#{integralByBirthdayStatus,jdbcType=TINYINT}");
+            VALUES("IntegralByBirthdayStatus", "#{integralByBirthdayStatus,jdbcType=BIT}");
         }
         
         if (record.getIntegralByFirstTimeStatus() != null) {
-            VALUES("IntegralByFirstTimeStatus", "#{integralByFirstTimeStatus,jdbcType=TINYINT}");
+            VALUES("IntegralByFirstTimeStatus", "#{integralByFirstTimeStatus,jdbcType=BIT}");
         }
         
         if (record.getOrganizationId() != null) {
@@ -72,10 +72,6 @@ public class IntegralRuleSqlProvider {
             VALUES("OrganizationName", "#{organizationName,jdbcType=VARCHAR}");
         }
         
-        if (record.getIsEffective() != null) {
-            VALUES("IsEffective", "#{isEffective,jdbcType=TINYINT}");
-        }
-        
         return SQL();
     }
 
@@ -84,7 +80,7 @@ public class IntegralRuleSqlProvider {
         UPDATE("marketing_integral_rule");
         
         if (record.getTimeLimitStatus() != null) {
-            SET("TimeLimitStatus = #{timeLimitStatus,jdbcType=TINYINT}");
+            SET("TimeLimitStatus = #{timeLimitStatus,jdbcType=BIT}");
         }
         
         if (record.getTimeLimitDate() != null) {
@@ -92,7 +88,7 @@ public class IntegralRuleSqlProvider {
         }
         
         if (record.getIntegralLimitStatus() != null) {
-            SET("IntegralLimitStatus = #{integralLimitStatus,jdbcType=TINYINT}");
+            SET("IntegralLimitStatus = #{integralLimitStatus,jdbcType=BIT}");
         }
         
         if (record.getIntegralLimit() != null) {
@@ -100,7 +96,7 @@ public class IntegralRuleSqlProvider {
         }
         
         if (record.getIntegralLimitAge() != null) {
-            SET("IntegralLimitAge = #{integralLimitAge,jdbcType=TINYINT}");
+            SET("IntegralLimitAge = #{integralLimitAge,jdbcType=BIT}");
         }
         
         if (record.getIntegralByRegister() != null) {
@@ -116,15 +112,15 @@ public class IntegralRuleSqlProvider {
         }
         
         if (record.getIntegralByRegisterStatus() != null) {
-            SET("IntegralByRegisterStatus = #{integralByRegisterStatus,jdbcType=TINYINT}");
+            SET("IntegralByRegisterStatus = #{integralByRegisterStatus,jdbcType=BIT}");
         }
         
         if (record.getIntegralByBirthdayStatus() != null) {
-            SET("IntegralByBirthdayStatus = #{integralByBirthdayStatus,jdbcType=TINYINT}");
+            SET("IntegralByBirthdayStatus = #{integralByBirthdayStatus,jdbcType=BIT}");
         }
         
         if (record.getIntegralByFirstTimeStatus() != null) {
-            SET("IntegralByFirstTimeStatus = #{integralByFirstTimeStatus,jdbcType=TINYINT}");
+            SET("IntegralByFirstTimeStatus = #{integralByFirstTimeStatus,jdbcType=BIT}");
         }
         
         if (record.getOrganizationId() != null) {
@@ -133,10 +129,6 @@ public class IntegralRuleSqlProvider {
         
         if (record.getOrganizationName() != null) {
             SET("OrganizationName = #{organizationName,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getIsEffective() != null) {
-            SET("IsEffective = #{isEffective,jdbcType=TINYINT}");
         }
         
         WHERE("Id = #{id,jdbcType=BIGINT}");

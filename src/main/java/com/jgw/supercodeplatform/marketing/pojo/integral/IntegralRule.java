@@ -3,9 +3,6 @@ package com.jgw.supercodeplatform.marketing.pojo.integral;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.util.Date;
-import java.util.List;
-
 @ApiModel(value = "通用积分规则")
 public class IntegralRule {
     /** 积分活动主表 */
@@ -17,31 +14,31 @@ public class IntegralRule {
     private Byte timeLimitStatus;
 
     /** 从奖励开始多久后过期 */
-    @ApiModelProperty(value = "从奖励开始多久后过期")
-    private Date timeLimitDate;
+    @ApiModelProperty(value = "从奖励开始多久后过期,如，如果timeLimitStatus设置为1的话",hidden=true)
+    private String timeLimitDate;
 
     /** 积分上限状态位0无上限，1每人每日最多获得的积分上限目前0有效 */
     @ApiModelProperty(value = "积分上限状态位0无上限，1每人每日最多获得的积分上限目前0有效")
-    private Boolean integralLimitStatus;
+    private Byte integralLimitStatus;
 
     /** 每人每日最多获得的积分上限 */
-    @ApiModelProperty(value = "每人每日最多获得的积分上限")
+    @ApiModelProperty(value = "每人每日最多获得的积分上限",hidden=true)
     private Integer integralLimit;
 
     /** 每人每【2年1月0日】获取积分上限 */
-    @ApiModelProperty(value = "每人每【2年1月0日】获取积分上限")
+    @ApiModelProperty(value = "每人每【2年1月0日】获取积分上限",hidden=true)
     private Byte integralLimitAge;
 
     /** 额外送:注册 */
-    @ApiModelProperty(value = "额外送:注册")
+    @ApiModelProperty(value = "注册额外送积分数:")
     private Integer integralByRegister;
 
     /** 额外送:生日 */
-    @ApiModelProperty(value = "额外送:生日")
+    @ApiModelProperty(value = "生日额外送积分")
     private Integer integralByBirthday;
 
     /** 历史首次 */
-    @ApiModelProperty(value = "历史首次")
+    @ApiModelProperty(value = "历史首次领取送积分数")
     private Integer integralByFirstTime;
 
     /** 额外送注册状态：0勾选有效1无效 */
@@ -56,18 +53,13 @@ public class IntegralRule {
     @ApiModelProperty(value = "额外历史首次送状态：0勾选有效1无效")
     private Byte integralByFirstTimeStatus;
 
-
     /** 组织id */
-    @ApiModelProperty(value = "组织id")
+    @ApiModelProperty(value = "组织id",hidden=true)
     private String organizationId;
 
     /** 组织名称 */
-    @ApiModelProperty(value = "组织名称")
+    @ApiModelProperty(value = "组织名称",hidden=true)
     private String organizationName;
-
-    /** 积分通用规则0有效1无效 */
-    @ApiModelProperty(value = " 积分通用规则0有效1无效 ")
-    private Byte isEffective;
 
     public Long getId() {
         return id;
@@ -85,23 +77,23 @@ public class IntegralRule {
         this.timeLimitStatus = timeLimitStatus;
     }
 
-    public Date getTimeLimitDate() {
+    public String getTimeLimitDate() {
         return timeLimitDate;
     }
 
-    public void setTimeLimitDate(Date timeLimitDate) {
+    public void setTimeLimitDate(String timeLimitDate) {
         this.timeLimitDate = timeLimitDate;
     }
 
-    public Boolean getIntegralLimitStatus() {
-        return integralLimitStatus;
-    }
+    public Byte getIntegralLimitStatus() {
+		return integralLimitStatus;
+	}
 
-    public void setIntegralLimitStatus(Boolean integralLimitStatus) {
-        this.integralLimitStatus = integralLimitStatus;
-    }
+	public void setIntegralLimitStatus(Byte integralLimitStatus) {
+		this.integralLimitStatus = integralLimitStatus;
+	}
 
-    public Integer getIntegralLimit() {
+	public Integer getIntegralLimit() {
         return integralLimit;
     }
 
@@ -181,11 +173,4 @@ public class IntegralRule {
         this.organizationName = organizationName;
     }
 
-    public Byte getIsEffective() {
-        return isEffective;
-    }
-
-    public void setIsEffective(Byte isEffective) {
-        this.isEffective = isEffective;
-    }
 }
