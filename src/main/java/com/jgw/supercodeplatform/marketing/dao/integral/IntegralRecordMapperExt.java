@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql {
-    static String allFileds=" Id id,CustomerType customerType,CustomerId customerId, " +
+    static String allFileds=" Id id,MemberType memberType,MemberId memberId, " +
             " CustomerName customerName,Mobile mobile,IntegralReasonCode integralReasonCode,IntegralReason integralReason, " +
             " ProductId productId,ProductName productName,OuterCodeId outerCodeId,CodeTypeId codeTypeId,RegisterStore registerStore, " +
             " RegisterStoreId registerStoreId,CreateDate createDate,OrganizationId organizationId,OrganizationName organizationName,IntegralNum integralNum ";
@@ -26,8 +26,8 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     "<if test='search !=null and search != &apos;&apos;'>" +
                     " AND (" +
                     // TODO TINYINT 是否可以这样
-                    " ir.CustomerType LIKE CONCAT('%',#{search},'%') " +
-                    " OR ir.CustomerId LIKE CONCAT('%',#{search},'%') " +
+                    " ir.MemberType LIKE CONCAT('%',#{search},'%') " +
+                    " OR ir.MemberId LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.CustomerName LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.Mobile LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.IntegralReasonCode LIKE CONCAT('%',#{search},'%') " +
@@ -47,7 +47,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
                     "</where>";
     @Select(startScript
-            + " select ir.Id id, ir.CustomerType customerType,ir.CustomerId customerId, "
+            + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, "
             + " ir.CustomerName customerName,ir.Mobile mobile,ir.IntegralReasonCode integralReasonCode,ir.IntegralReason integralReason, "
             + " ir.ProductId productId,ir.ProductName productName,ir.OuterCodeId outerCodeId,ir.CodeTypeId codeTypeId,ir.RegisterStore registerStore, "
             + " ir.RegisterStoreId registerStoreId,ir.CreateDate createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
