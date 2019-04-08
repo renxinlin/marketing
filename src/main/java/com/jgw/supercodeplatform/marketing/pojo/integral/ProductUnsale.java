@@ -1,9 +1,12 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
+import com.jgw.supercodeplatform.marketing.dto.SkuInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
+import java.util.List;
+
 @ApiModel(value = "非自卖产品")
 public class ProductUnsale {
     /** 主键 */
@@ -73,6 +76,18 @@ public class ProductUnsale {
     /** 详情 */
     @ApiModelProperty(value = "详情")
     private String detail;
+
+    // dto属性
+    @ApiModelProperty(value = "sku")
+    private List<SkuInfo> skuChild;
+
+    public List<SkuInfo> getSkuChild() {
+        return skuChild;
+    }
+
+    public void setSkuChild(List<SkuInfo> skuChild) {
+        this.skuChild = skuChild;
+    }
 
     public Long getId() {
         return id;

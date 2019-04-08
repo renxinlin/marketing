@@ -1,11 +1,12 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
-import io.swagger.annotations.ApiModel;
+ import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 @ApiModel(value = "订单")
-public class IntegralOrder {
+public class IntegralOrder extends DaoSearch {
     /** 主键 */
     @ApiModelProperty(value = "主键")
     private Long id;

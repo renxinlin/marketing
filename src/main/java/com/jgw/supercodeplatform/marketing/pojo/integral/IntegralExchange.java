@@ -1,11 +1,12 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 @ApiModel(value = "积分兑换")
-public class IntegralExchange {
+public class IntegralExchange extends DaoSearch {
     /** 主键 */
     @ApiModelProperty(value = "主键")
     private Long id;
@@ -35,7 +36,7 @@ public class IntegralExchange {
     private Integer customerLimitNum;
 
     /** 兑换活动状态0上架1下架 */
-    @ApiModelProperty(value = "兑换活动状态0上架1下架")
+    @ApiModelProperty(value = "兑换活动状态0上架1手动下架2自动下架")
     private Byte status;
 
     /** 支付手段：0积分 */

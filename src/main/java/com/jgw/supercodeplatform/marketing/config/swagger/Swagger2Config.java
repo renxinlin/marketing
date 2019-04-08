@@ -85,6 +85,22 @@ public class Swagger2Config {
                 .apiInfo(apiInfo())
                 .enable(enable);
     }
+
+
+    @Bean("积分模块")
+    public Docket integralApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("积分模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.integral"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+
+
+
     @Bean("公共接口模块")
     public Docket commonApis() {
         return new Docket(DocumentationType.SWAGGER_2)
