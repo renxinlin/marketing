@@ -65,11 +65,11 @@ public class IntegralOrderSqlProvider {
         }
         
         if (record.getStatus() != null) {
-            VALUES("Status", "#{status,jdbcType=VARCHAR}");
+            VALUES("Status", "#{status,jdbcType=TINYINT}");
         }
         
         if (record.getMemberId() != null) {
-            VALUES("MemberId", "#{memberId,jdbcType=INTEGER}");
+            VALUES("MemberId", "#{memberId,jdbcType=BIGINT}");
         }
         
         if (record.getMemberName() != null) {
@@ -144,11 +144,11 @@ public class IntegralOrderSqlProvider {
         }
         
         if (record.getStatus() != null) {
-            SET("Status = #{status,jdbcType=VARCHAR}");
+            SET("Status = #{status,jdbcType=TINYINT}");
         }
         
         if (record.getMemberId() != null) {
-            SET("MemberId = #{memberId,jdbcType=INTEGER}");
+            SET("MemberId = #{memberId,jdbcType=BIGINT}");
         }
         
         if (record.getMemberName() != null) {

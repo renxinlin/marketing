@@ -12,7 +12,7 @@ public class DeliveryAddress {
 
     /** 会员id */
     @ApiModelProperty(value = "会员id")
-    private Integer memberId;
+    private Long memberId;
 
     /** 会员名称 */
     @ApiModelProperty(value = "会员名称")
@@ -66,6 +66,19 @@ public class DeliveryAddress {
     @ApiModelProperty(value = "邮编")
     private String postcode;
 
+
+    @ApiModelProperty(value = "是否默认0是，1不是")
+    /** 是否默认0是，1不是 */
+    private Byte defaultUsing;
+
+    public Byte getDefaultUsing() {
+        return defaultUsing;
+    }
+
+    public void setDefaultUsing(Byte defaultUsing) {
+        this.defaultUsing = defaultUsing;
+    }
+
     public Long getId() {
         return id;
     }
@@ -74,11 +87,11 @@ public class DeliveryAddress {
         this.id = id;
     }
 
-    public Integer getMemberId() {
+    public Long getMemberId() {
         return memberId;
     }
 
-    public void setMemberId(Integer memberId) {
+    public void setMemberId(Long memberId) {
         this.memberId = memberId;
     }
 

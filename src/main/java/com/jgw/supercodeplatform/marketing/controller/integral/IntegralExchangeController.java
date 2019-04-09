@@ -109,7 +109,7 @@ public class IntegralExchangeController extends CommonUtil {
 
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
-    @ApiOperation(value = "兑换详情|【更新】", notes = "")
+    @ApiOperation(value = "兑换详情|【新增】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
     public RestResult<IntegralExchange> add(@RequestBody IntegralExchange integralExchange) throws Exception {
         RestResult<IntegralExchange>  restResult=new RestResult();

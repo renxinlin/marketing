@@ -44,7 +44,7 @@ public class IntegralOrderService extends AbstractPageService<IntegralOrder> {
         }
         IntegralOrder integralOrder = mapper.selectByPrimaryKey(orderId);
         if(organizationId.equals(integralOrder.getOrganizationId())){
-            integralOrder.setStatus("1");
+            integralOrder.setStatus((byte)1);
             int i = mapper.updateByPrimaryKeySelective(integralOrder);
             if(i != 1){
                 throw  new SuperCodeException("发货状态修改失败",500);

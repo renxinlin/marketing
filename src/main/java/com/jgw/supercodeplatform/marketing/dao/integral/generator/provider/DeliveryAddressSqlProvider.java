@@ -21,7 +21,7 @@ public class DeliveryAddressSqlProvider {
         }
         
         if (record.getMemberId() != null) {
-            VALUES("MemberId", "#{memberId,jdbcType=INTEGER}");
+            VALUES("MemberId", "#{memberId,jdbcType=BIGINT}");
         }
         
         if (record.getMemberName() != null) {
@@ -76,6 +76,10 @@ public class DeliveryAddressSqlProvider {
             VALUES("Postcode", "#{postcode,jdbcType=VARCHAR}");
         }
         
+        if (record.getDefaultUsing() != null) {
+            VALUES("DefaultUsing", "#{defaultUsing,jdbcType=TINYINT}");
+        }
+        
         return SQL();
     }
 
@@ -84,7 +88,7 @@ public class DeliveryAddressSqlProvider {
         UPDATE("marketing_delivery_address");
         
         if (record.getMemberId() != null) {
-            SET("MemberId = #{memberId,jdbcType=INTEGER}");
+            SET("MemberId = #{memberId,jdbcType=BIGINT}");
         }
         
         if (record.getMemberName() != null) {
@@ -137,6 +141,10 @@ public class DeliveryAddressSqlProvider {
         
         if (record.getPostcode() != null) {
             SET("Postcode = #{postcode,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getDefaultUsing() != null) {
+            SET("DefaultUsing = #{defaultUsing,jdbcType=TINYINT}");
         }
         
         WHERE("Id = #{id,jdbcType=BIGINT}");

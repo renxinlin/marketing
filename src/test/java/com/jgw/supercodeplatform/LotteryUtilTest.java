@@ -14,6 +14,7 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +95,13 @@ public class LotteryUtilTest {
 		marketingPrizeTypeMOs.add(m3);
 		return marketingPrizeTypeMOs;
 	}
-
+@Autowired
+	RedisLockUtil lock;
+	@Test
+	public void testlock(){
+		lock.lock("ssss",500000,5,200);
+		lock.releaseLock("ssss");
+	}
 	public static void main(String[] args) throws SuperCodeException, NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
 		InputStream certStream=new FileInputStream("H:\\test\\cert\\113a2c2ef0cb438a84a69114c35b9a00\\CEEED.p12");
         KeyStore ks = KeyStore.getInstance("PKCS12");

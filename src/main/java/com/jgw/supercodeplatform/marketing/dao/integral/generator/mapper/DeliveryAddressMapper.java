@@ -26,14 +26,16 @@ public interface DeliveryAddressMapper {
         "City, Country, Street, ",
         "ProvinceCode, CityCode, ",
         "CountryCode, StreetCode, ",
-        "Detail, Postcode)",
-        "values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=INTEGER}, ",
+        "Detail, Postcode, ",
+        "DefaultUsing)",
+        "values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, ",
         "#{memberName,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, ",
         "#{mobile,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, ",
         "#{city,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{street,jdbcType=VARCHAR}, ",
         "#{provinceCode,jdbcType=VARCHAR}, #{cityCode,jdbcType=VARCHAR}, ",
         "#{countryCode,jdbcType=VARCHAR}, #{streetCode,jdbcType=VARCHAR}, ",
-        "#{detail,jdbcType=VARCHAR}, #{postcode,jdbcType=VARCHAR})"
+        "#{detail,jdbcType=VARCHAR}, #{postcode,jdbcType=VARCHAR}, ",
+        "#{defaultUsing,jdbcType=TINYINT})"
     })
     int insert(DeliveryAddress record);
 
@@ -43,13 +45,13 @@ public interface DeliveryAddressMapper {
     @Select({
         "select",
         "Id, MemberId, MemberName, Name, Mobile, Province, City, Country, Street, ProvinceCode, ",
-        "CityCode, CountryCode, StreetCode, Detail, Postcode",
+        "CityCode, CountryCode, StreetCode, Detail, Postcode, DefaultUsing",
         "from marketing_delivery_address",
         "where Id = #{id,jdbcType=BIGINT}"
     })
     @Results({
         @Result(column="Id", property="id", jdbcType=JdbcType.BIGINT, id=true),
-        @Result(column="MemberId", property="memberId", jdbcType=JdbcType.INTEGER),
+        @Result(column="MemberId", property="memberId", jdbcType=JdbcType.BIGINT),
         @Result(column="MemberName", property="memberName", jdbcType=JdbcType.VARCHAR),
         @Result(column="Name", property="name", jdbcType=JdbcType.VARCHAR),
         @Result(column="Mobile", property="mobile", jdbcType=JdbcType.VARCHAR),
@@ -62,7 +64,8 @@ public interface DeliveryAddressMapper {
         @Result(column="CountryCode", property="countryCode", jdbcType=JdbcType.VARCHAR),
         @Result(column="StreetCode", property="streetCode", jdbcType=JdbcType.VARCHAR),
         @Result(column="Detail", property="detail", jdbcType=JdbcType.VARCHAR),
-        @Result(column="Postcode", property="postcode", jdbcType=JdbcType.VARCHAR)
+        @Result(column="Postcode", property="postcode", jdbcType=JdbcType.VARCHAR),
+        @Result(column="DefaultUsing", property="defaultUsing", jdbcType=JdbcType.TINYINT)
     })
     DeliveryAddress selectByPrimaryKey(Long id);
 
@@ -71,7 +74,7 @@ public interface DeliveryAddressMapper {
 
     @Update({
         "update marketing_delivery_address",
-        "set MemberId = #{memberId,jdbcType=INTEGER},",
+        "set MemberId = #{memberId,jdbcType=BIGINT},",
           "MemberName = #{memberName,jdbcType=VARCHAR},",
           "Name = #{name,jdbcType=VARCHAR},",
           "Mobile = #{mobile,jdbcType=VARCHAR},",
@@ -84,7 +87,8 @@ public interface DeliveryAddressMapper {
           "CountryCode = #{countryCode,jdbcType=VARCHAR},",
           "StreetCode = #{streetCode,jdbcType=VARCHAR},",
           "Detail = #{detail,jdbcType=VARCHAR},",
-          "Postcode = #{postcode,jdbcType=VARCHAR}",
+          "Postcode = #{postcode,jdbcType=VARCHAR},",
+          "DefaultUsing = #{defaultUsing,jdbcType=TINYINT}",
         "where Id = #{id,jdbcType=BIGINT}"
     })
     int updateByPrimaryKey(DeliveryAddress record);

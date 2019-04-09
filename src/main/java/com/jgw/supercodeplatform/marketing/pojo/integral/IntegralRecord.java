@@ -17,7 +17,7 @@ public class IntegralRecord  extends DaoSearch {
 
     /** 会员id */
     @ApiModelProperty(value = "会员id")
-    private Integer memberId;
+    private Long memberId;
 
     /** 会员名称 */
     @ApiModelProperty(value = "会员名称")
@@ -91,11 +91,11 @@ public class IntegralRecord  extends DaoSearch {
         this.memberType = memberType;
     }
 
-    public Integer getMemberId() {
+    public Long getMemberId() {
         return memberId;
     }
 
-    public void setMemberId(Integer memberId) {
+    public void setMemberId(Long memberId) {
         this.memberId = memberId;
     }
 

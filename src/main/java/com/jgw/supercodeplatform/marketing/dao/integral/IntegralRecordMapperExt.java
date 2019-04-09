@@ -11,9 +11,9 @@ import java.util.List;
 @Mapper
 public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql {
     static String allFileds=" Id id,MemberType memberType,MemberId memberId, " +
-            " CustomerName customerName,Mobile mobile,IntegralReasonCode integralReasonCode,IntegralReason integralReason, " +
-            " ProductId productId,ProductName productName,OuterCodeId outerCodeId,CodeTypeId codeTypeId,RegisterStore registerStore, " +
-            " RegisterStoreId registerStoreId,CreateDate createDate,OrganizationId organizationId,OrganizationName organizationName,IntegralNum integralNum ";
+            " MemberName memberName,Mobile mobile,IntegralReasonCode integralReasonCode,IntegralReason integralReason, " +
+            " ProductId productId,ProductName productName,OuterCodeId outerCodeId,CodeTypeId codeTypeId,CustomerName customerName, " +
+            " CustomerId customerId,CreateDate createDate,OrganizationId organizationId,OrganizationName organizationName,IntegralNum integralNum ";
 
     static String whereSearch =
             "<where>" +
@@ -28,7 +28,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     // TODO TINYINT 是否可以这样
                     " ir.MemberType LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.MemberId LIKE CONCAT('%',#{search},'%') " +
-                    " OR ir.CustomerName LIKE CONCAT('%',#{search},'%') " +
+                    " OR ir.MemberName LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.Mobile LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.IntegralReasonCode LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.IntegralReason LIKE CONCAT('%',#{search},'%') " +
@@ -36,8 +36,8 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     " OR ir.ProductName LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.OuterCodeId LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.CodeTypeId LIKE CONCAT('%',#{search},'%') " +
-                    " OR ir.RegisterStore LIKE CONCAT('%',#{search},'%') " +
-                    " OR ir.RegisterStoreId LIKE CONCAT('%',#{search},'%') " +
+                    " OR ir.CustomerName LIKE CONCAT('%',#{search},'%') " +
+                    " OR ir.CustomerId LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.IntegralNum LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.CreateDate LIKE binary  CONCAT('%',#{search},'%') " +
                     ")" +
@@ -48,9 +48,9 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     "</where>";
     @Select(startScript
             + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, "
-            + " ir.CustomerName customerName,ir.Mobile mobile,ir.IntegralReasonCode integralReasonCode,ir.IntegralReason integralReason, "
-            + " ir.ProductId productId,ir.ProductName productName,ir.OuterCodeId outerCodeId,ir.CodeTypeId codeTypeId,ir.RegisterStore registerStore, "
-            + " ir.RegisterStoreId registerStoreId,ir.CreateDate createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
+            + " ir.MemberName memberName,ir.Mobile mobile,ir.IntegralReasonCode integralReasonCode,ir.IntegralReason integralReason, "
+            + " ir.ProductId productId,ir.ProductName productName,ir.OuterCodeId outerCodeId,ir.CodeTypeId codeTypeId,ir.CustomerName customerName, "
+            + " ir.CustomerId customerId,ir.CreateDate createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
             + " from  marketing_integral_record ir "
 
             +whereSearch
@@ -62,8 +62,6 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
     @Select(startScript
             + " select  " +count + " from  marketing_integral_record ir "
             +whereSearch
-            + " ORDER BY CreateDate DESC"
-            + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
-            +endScript)
+              +endScript)
     int count(IntegralRecord integralRecord);
 }

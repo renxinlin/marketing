@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.dto.SkuInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -8,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @ApiModel(value = "非自卖产品")
-public class ProductUnsale {
+public class ProductUnsale extends DaoSearch {
     /** 主键 */
     @ApiModelProperty(value = "不用于对接前端和其他接口")
     private Long id;
@@ -30,11 +31,11 @@ public class ProductUnsale {
     private Integer unsaleProductSkuNum;
 
     /** 【json格式：【{"name":"小白星","[前缀可以不存储www.aaa.com]/a.jpg":""},{"":"","":""}】 */
-    @ApiModelProperty(value = "【json格式：【{\"name\":\"小白星\",\"[前缀可以不存储www.aaa.com]/a.jpg\":\"\"},{\"\":\"\",\"\":\"\"}】 ")
+    @ApiModelProperty(value = "【json格式：【{\"name\":\"小白星\",\"[前缀可以不存储www.aaa.com]/a.jpg\":\"\"},{\"\":\"\",\"\":\"\"}】 ",hidden = true)
     private String unsaleProductSkuInfo;
 
     /** 展示价 */
-    @ApiModelProperty(value = "展示价")
+    @ApiModelProperty(value = "展示价",hidden = true)
     private Float showPrice;
 
     /** 售价 */
@@ -80,6 +81,19 @@ public class ProductUnsale {
     // dto属性
     @ApiModelProperty(value = "sku")
     private List<SkuInfo> skuChild;
+
+
+
+    @ApiModelProperty(value = "展示价前端交互")
+    private String showPriceStr;
+
+    public String getShowPriceStr() {
+        return showPriceStr;
+    }
+
+    public void setShowPriceStr(String showPriceStr) {
+        this.showPriceStr = showPriceStr;
+    }
 
     public List<SkuInfo> getSkuChild() {
         return skuChild;

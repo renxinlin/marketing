@@ -25,7 +25,7 @@ public class IntegralRecordSqlProvider {
         }
         
         if (record.getMemberId() != null) {
-            VALUES("MemberId", "#{memberId,jdbcType=INTEGER}");
+            VALUES("MemberId", "#{memberId,jdbcType=BIGINT}");
         }
         
         if (record.getMemberName() != null) {
@@ -96,7 +96,7 @@ public class IntegralRecordSqlProvider {
         }
         
         if (record.getMemberId() != null) {
-            SET("MemberId = #{memberId,jdbcType=INTEGER}");
+            SET("MemberId = #{memberId,jdbcType=BIGINT}");
         }
         
         if (record.getMemberName() != null) {

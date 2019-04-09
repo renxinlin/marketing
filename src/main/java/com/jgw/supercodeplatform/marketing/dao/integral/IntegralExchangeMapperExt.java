@@ -59,8 +59,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     @Select(startScript
             + " select " + count + " from  marketing_integral_exchange ie "
             + whereSearch
-            + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
-            + endScript)
+             + endScript)
     int count(IntegralExchange searchParams);
 
     @Delete(startScript + "delete from marketing_integral_exchange ie where Id =  #{id} and OrganizationId = #{organizationId} " + endScript)

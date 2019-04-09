@@ -30,7 +30,7 @@ public class IntegralOrderController extends CommonUtil {
     @Autowired
     private IntegralOrderService integralOrderService;
 
-    @Value("")
+    @Value("{\"orderId\":\"订单号\",\"userName\":\"会员姓名\",\"wxName\":\"会员微信昵称\", \"openId\":\"会员微信ID\",\"mobile\":\"会员手机\",\"prizeTypeName\":\"中奖奖次\", \"winningAmount\":\"中奖金额\",\"winningCode\":\"中奖码\",\"productName\":\"中奖产品\",\"customerName\":\"活动门店\"}")
     private String MARKET_Integral_EXCEL_FIELD_MAP;
 
     /**
