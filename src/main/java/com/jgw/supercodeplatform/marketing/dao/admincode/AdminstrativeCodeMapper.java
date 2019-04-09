@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
 import java.util.Map;
 
 @Mapper
@@ -27,4 +28,10 @@ public interface AdminstrativeCodeMapper {
             + " </where>"
             + " </script>")
     MarketingAdministrativeCode getAdminCodeByAreaCode (Map<String,Object> map);
-}
+
+    @Select(  " <script> "
+            + " SELECT  "+selectSql+"  FROM marketing_administrative_code where id in "
+            + " <foreach collection='areaCodes' index='index' item='item' open='(' separator=',' close=')'> #{item} </foreach> "
+            + " </script>")
+    List<MarketingAdministrativeCode> getCodesName (List areaCodes);
+  }

@@ -14,7 +14,7 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
 
     static String allFileds=" Id id, OrderId orderId, ExchangeResource exchangeResource, " +
             " ProductId productId, ProductName productName,  " +
-            " SkuName skuName, SkuUrl skuUrl, ExchangeIntegralNum exchangeIntegralNum" +
+            " SkuName skuName, SkuUrl skuUrl, ExchangeIntegralNum exchangeIntegralNum, " +
             " ExchangeNum exchangeNum, Name name, Mobile mobile, Address address, Status status, MemberId memberId, MemberName memberName, " +
             " CreateDate createDate, DeliveryDate deliveryDate, OrganizationId organizationId, OrganizationName organizationName ";
     static String whereSearch =
@@ -45,17 +45,17 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
                     "</choose>" +
                     " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
                     "</where>";
-    @Select(startScript
-            + " select " +allFileds + " from  marketing_order ir "
-            + whereSearch
-            + " ORDER BY CreateDate DESC"
-            + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
-            + endScript)
-    int count(IntegralOrder searchParams);
 
     @Select(startScript
             + " select " + count + " from  marketing_order ir "
             + whereSearch
+            + endScript)
+    int count(IntegralOrder searchParams);
+
+    @Select(startScript
+            + " select " +allFileds + " from  marketing_order ir "
+            + whereSearch
+            + " ORDER BY CreateDate DESC"
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
             + endScript)
     List<IntegralOrder> list(IntegralOrder searchParams);

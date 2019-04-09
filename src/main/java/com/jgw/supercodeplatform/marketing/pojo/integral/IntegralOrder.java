@@ -57,11 +57,11 @@ public class IntegralOrder extends DaoSearch {
 
     /** 物流状态0待发货1已发货 */
     @ApiModelProperty(value = "物流状态0待发货1已发货")
-    private String status;
+    private Byte status;
 
     /** 会员id */
     @ApiModelProperty(value = "会员id")
-    private Integer memberId;
+    private Long memberId;
 
     /** 会员名称 */
     @ApiModelProperty(value = "会员名称")
@@ -180,19 +180,19 @@ public class IntegralOrder extends DaoSearch {
         this.address = address;
     }
 
-    public String getStatus() {
+    public Byte getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Byte status) {
         this.status = status;
     }
 
-    public Integer getMemberId() {
+    public Long getMemberId() {
         return memberId;
     }
 
-    public void setMemberId(Integer memberId) {
+    public void setMemberId(Long memberId) {
         this.memberId = memberId;
     }
 

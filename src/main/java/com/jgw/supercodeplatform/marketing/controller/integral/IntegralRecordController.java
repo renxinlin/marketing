@@ -51,6 +51,7 @@ public class IntegralRecordController extends CommonUtil {
             restResult.setResults(null);
             return restResult;
         }
+        integralRecord.setOrganizationId(organizationId);
         // 获取积分记录分页结果
         AbstractPageService.PageResults<List<IntegralRecord>> pages = integralRecordService.listSearchViewLike(integralRecord);
         restResult.setState(200);

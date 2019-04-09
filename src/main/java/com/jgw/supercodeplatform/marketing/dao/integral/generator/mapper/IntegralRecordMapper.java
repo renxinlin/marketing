@@ -30,7 +30,7 @@ public interface IntegralRecordMapper {
         "OrganizationId, OrganizationName, ",
         "IntegralNum)",
         "values (#{id,jdbcType=BIGINT}, #{memberType,jdbcType=TINYINT}, ",
-        "#{memberId,jdbcType=INTEGER}, #{memberName,jdbcType=VARCHAR}, ",
+        "#{memberId,jdbcType=BIGINT}, #{memberName,jdbcType=VARCHAR}, ",
         "#{mobile,jdbcType=VARCHAR}, #{integralReasonCode,jdbcType=INTEGER}, ",
         "#{integralReason,jdbcType=VARCHAR}, #{productId,jdbcType=VARCHAR}, ",
         "#{productName,jdbcType=VARCHAR}, #{outerCodeId,jdbcType=VARCHAR}, ",
@@ -55,7 +55,7 @@ public interface IntegralRecordMapper {
     @Results({
         @Result(column="Id", property="id", jdbcType=JdbcType.BIGINT, id=true),
         @Result(column="MemberType", property="memberType", jdbcType=JdbcType.TINYINT),
-        @Result(column="MemberId", property="memberId", jdbcType=JdbcType.INTEGER),
+        @Result(column="MemberId", property="memberId", jdbcType=JdbcType.BIGINT),
         @Result(column="MemberName", property="memberName", jdbcType=JdbcType.VARCHAR),
         @Result(column="Mobile", property="mobile", jdbcType=JdbcType.VARCHAR),
         @Result(column="IntegralReasonCode", property="integralReasonCode", jdbcType=JdbcType.INTEGER),
@@ -79,7 +79,7 @@ public interface IntegralRecordMapper {
     @Update({
         "update marketing_integral_record",
         "set MemberType = #{memberType,jdbcType=TINYINT},",
-          "MemberId = #{memberId,jdbcType=INTEGER},",
+          "MemberId = #{memberId,jdbcType=BIGINT},",
           "MemberName = #{memberName,jdbcType=VARCHAR},",
           "Mobile = #{mobile,jdbcType=VARCHAR},",
           "IntegralReasonCode = #{integralReasonCode,jdbcType=INTEGER},",
