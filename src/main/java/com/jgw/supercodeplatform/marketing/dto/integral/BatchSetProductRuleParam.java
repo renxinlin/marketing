@@ -1,21 +1,12 @@
-package com.jgw.supercodeplatform.marketing.pojo.integral;
+package com.jgw.supercodeplatform.marketing.dto.integral;
 
-import io.swagger.annotations.ApiModel;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModelProperty;
-@ApiModel(value = "积分通用规则产品")
-public class IntegralRuleProduct {
-	 /** 主键 */
-    @ApiModelProperty(value = "主键")
-    private Long id;
 
-    /** 产品id */
-    @ApiModelProperty(value = "产品id")
-    private String productId;
-
-    /** 产品名称|注意基础信息可以发生改变 */
-    @ApiModelProperty(value = "产品名称")
-    private String productName;
-
+public class BatchSetProductRuleParam {
     /** 产品价格 */
     @ApiModelProperty(value = "产品价格")
     private Float productPrice;
@@ -25,6 +16,7 @@ public class IntegralRuleProduct {
     private Byte memberType;
 
     /** 0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分） */
+    @NotNull
     @ApiModelProperty(value = "0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分）")
     private Byte rewardRule;
 
@@ -33,39 +25,12 @@ public class IntegralRuleProduct {
     private Float perConsume;
 
     /** 奖励积分 */
+    @NotNull
     @ApiModelProperty(value = "奖励积分")
     private Integer rewardIntegral;
-
-    /** 积分规则主键 */
-    @ApiModelProperty(value = "积分规则主键")
-    private Long integralRuleId;
     
-    @ApiModelProperty(value = "企业id",hidden=true)
-    private String organizationId;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getProductId() {
-		return productId;
-	}
-
-	public void setProductId(String productId) {
-		this.productId = productId;
-	}
-
-	public String getProductName() {
-		return productName;
-	}
-
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
+    @ApiModelProperty(value = "设置的产品集合")
+    private List<Product> products;
 
 	public Float getProductPrice() {
 		return productPrice;
@@ -107,21 +72,38 @@ public class IntegralRuleProduct {
 		this.rewardIntegral = rewardIntegral;
 	}
 
-	public Long getIntegralRuleId() {
-		return integralRuleId;
+	public List<Product> getProducts() {
+		return products;
 	}
 
-	public void setIntegralRuleId(Long integralRuleId) {
-		this.integralRuleId = integralRuleId;
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
+    
+	public class Product{
+	    /** 产品id */
+	    @ApiModelProperty(value = "产品id")
+	    private String productId;
 
-	public String getOrganizationId() {
-		return organizationId;
+	    /** 产品名称|注意基础信息可以发生改变 */
+	    @ApiModelProperty(value = "产品名称")
+	    private String productName;
+
+		public String getProductId() {
+			return productId;
+		}
+
+		public void setProductId(String productId) {
+			this.productId = productId;
+		}
+
+		public String getProductName() {
+			return productName;
+		}
+
+		public void setProductName(String productName) {
+			this.productName = productName;
+		}
 	}
-
-	public void setOrganizationId(String organizationId) {
-		this.organizationId = organizationId;
-	}
-
-   
 }
+

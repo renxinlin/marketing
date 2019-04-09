@@ -1,11 +1,9 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel(value = "通用积分规则")
 public class IntegralRule {
-    /** 积分活动主表 */
+	  /** 积分活动主表 */
     @ApiModelProperty(value = "主键")
     private Long id;
 
@@ -61,6 +59,7 @@ public class IntegralRule {
     @ApiModelProperty(value = "组织名称",hidden=true)
     private String organizationName;
 
+
     public Long getId() {
         return id;
     }
@@ -69,23 +68,23 @@ public class IntegralRule {
         this.id = id;
     }
 
-    public Byte getTimeLimitStatus() {
-        return timeLimitStatus;
-    }
+	public Byte getTimeLimitStatus() {
+		return timeLimitStatus;
+	}
 
-    public void setTimeLimitStatus(Byte timeLimitStatus) {
-        this.timeLimitStatus = timeLimitStatus;
-    }
+	public void setTimeLimitStatus(Byte timeLimitStatus) {
+		this.timeLimitStatus = timeLimitStatus;
+	}
 
-    public String getTimeLimitDate() {
-        return timeLimitDate;
-    }
+	public String getTimeLimitDate() {
+		return timeLimitDate;
+	}
 
-    public void setTimeLimitDate(String timeLimitDate) {
-        this.timeLimitDate = timeLimitDate;
-    }
+	public void setTimeLimitDate(String timeLimitDate) {
+		this.timeLimitDate = timeLimitDate;
+	}
 
-    public Byte getIntegralLimitStatus() {
+	public Byte getIntegralLimitStatus() {
 		return integralLimitStatus;
 	}
 
@@ -94,83 +93,83 @@ public class IntegralRule {
 	}
 
 	public Integer getIntegralLimit() {
-        return integralLimit;
-    }
+		return integralLimit;
+	}
 
-    public void setIntegralLimit(Integer integralLimit) {
-        this.integralLimit = integralLimit;
-    }
+	public void setIntegralLimit(Integer integralLimit) {
+		this.integralLimit = integralLimit;
+	}
 
-    public Byte getIntegralLimitAge() {
-        return integralLimitAge;
-    }
+	public Byte getIntegralLimitAge() {
+		return integralLimitAge;
+	}
 
-    public void setIntegralLimitAge(Byte integralLimitAge) {
-        this.integralLimitAge = integralLimitAge;
-    }
+	public void setIntegralLimitAge(Byte integralLimitAge) {
+		this.integralLimitAge = integralLimitAge;
+	}
 
-    public Integer getIntegralByRegister() {
-        return integralByRegister;
-    }
+	public Integer getIntegralByRegister() {
+		return integralByRegister;
+	}
 
-    public void setIntegralByRegister(Integer integralByRegister) {
-        this.integralByRegister = integralByRegister;
-    }
+	public void setIntegralByRegister(Integer integralByRegister) {
+		this.integralByRegister = integralByRegister;
+	}
 
-    public Integer getIntegralByBirthday() {
-        return integralByBirthday;
-    }
+	public Integer getIntegralByBirthday() {
+		return integralByBirthday;
+	}
 
-    public void setIntegralByBirthday(Integer integralByBirthday) {
-        this.integralByBirthday = integralByBirthday;
-    }
+	public void setIntegralByBirthday(Integer integralByBirthday) {
+		this.integralByBirthday = integralByBirthday;
+	}
 
-    public Integer getIntegralByFirstTime() {
-        return integralByFirstTime;
-    }
+	public Integer getIntegralByFirstTime() {
+		return integralByFirstTime;
+	}
 
-    public void setIntegralByFirstTime(Integer integralByFirstTime) {
-        this.integralByFirstTime = integralByFirstTime;
-    }
+	public void setIntegralByFirstTime(Integer integralByFirstTime) {
+		this.integralByFirstTime = integralByFirstTime;
+	}
 
-    public Byte getIntegralByRegisterStatus() {
-        return integralByRegisterStatus;
-    }
+	public Byte getIntegralByRegisterStatus() {
+		return integralByRegisterStatus;
+	}
 
-    public void setIntegralByRegisterStatus(Byte integralByRegisterStatus) {
-        this.integralByRegisterStatus = integralByRegisterStatus;
-    }
+	public void setIntegralByRegisterStatus(Byte integralByRegisterStatus) {
+		this.integralByRegisterStatus = integralByRegisterStatus;
+	}
 
-    public Byte getIntegralByBirthdayStatus() {
-        return integralByBirthdayStatus;
-    }
+	public Byte getIntegralByBirthdayStatus() {
+		return integralByBirthdayStatus;
+	}
 
-    public void setIntegralByBirthdayStatus(Byte integralByBirthdayStatus) {
-        this.integralByBirthdayStatus = integralByBirthdayStatus;
-    }
+	public void setIntegralByBirthdayStatus(Byte integralByBirthdayStatus) {
+		this.integralByBirthdayStatus = integralByBirthdayStatus;
+	}
 
-    public Byte getIntegralByFirstTimeStatus() {
-        return integralByFirstTimeStatus;
-    }
+	public Byte getIntegralByFirstTimeStatus() {
+		return integralByFirstTimeStatus;
+	}
 
-    public void setIntegralByFirstTimeStatus(Byte integralByFirstTimeStatus) {
-        this.integralByFirstTimeStatus = integralByFirstTimeStatus;
-    }
+	public void setIntegralByFirstTimeStatus(Byte integralByFirstTimeStatus) {
+		this.integralByFirstTimeStatus = integralByFirstTimeStatus;
+	}
 
-    public String getOrganizationId() {
-        return organizationId;
-    }
+	public String getOrganizationId() {
+		return organizationId;
+	}
 
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
-    }
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
+	}
 
-    public String getOrganizationName() {
-        return organizationName;
-    }
+	public String getOrganizationName() {
+		return organizationName;
+	}
 
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
-    }
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
+	}
 
 }

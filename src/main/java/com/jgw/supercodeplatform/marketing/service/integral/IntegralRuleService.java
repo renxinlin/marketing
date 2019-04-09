@@ -40,5 +40,11 @@ public class IntegralRuleService  extends AbstractPageService<IntegralRecord > {
 	   }
 	}
 
+	public IntegralRule getCurrOrgRule() throws SuperCodeException {
+		String organizationId=commonUtil.getOrganizationId();
+		IntegralRule eRule=dao.selectByOrgId(organizationId);
+		return eRule;
+	}
+
 
 }

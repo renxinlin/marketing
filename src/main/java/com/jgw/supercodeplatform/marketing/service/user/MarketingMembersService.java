@@ -1,5 +1,23 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
+import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -26,25 +44,17 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
-import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Service
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
@@ -378,6 +388,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @param openId
 	 * @param activitySetId
 	 * @param verificationCode
+	 * @param openid 
+	 * @param organizationId 
 	 * @return
 	 * @throws SuperCodeException
 	 *
@@ -390,22 +402,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	 */
 
-	public RestResult<H5LoginVO> login(String mobile, String wxstate, String verificationCode) throws SuperCodeException {
+	public RestResult<H5LoginVO> login(String mobile, String wxstate, String verificationCode, String openid, String organizationId) throws SuperCodeException {
 		RestResult<H5LoginVO> restResult=new RestResult<H5LoginVO>();
-		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(verificationCode)|| StringUtils.isBlank(wxstate)) {
+		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(verificationCode)) {
 			restResult.setState(500);
 			restResult.setMsg("请检查参数，参数不能为空");
 			return restResult;
 		}
-		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
-		if (null==scanCodeInfoMO) {
-			restResult.setState(500);
-			restResult.setMsg("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码");
-			return restResult;
-		}
-		// 登录时候保存手机信息用于后续接口获取
-		scanCodeInfoMO.setMobile(mobile);
-		globalRamCache.putScanCodeInfoMO(wxstate,scanCodeInfoMO);
+
 		String redisPhoneCode=redisUtil.get(RedisKey.phone_code_prefix+mobile);
 		if (StringUtils.isBlank(redisPhoneCode) ) {
 			restResult.setState(500);
@@ -418,12 +422,57 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("验证码不正确");
 			return restResult;
 		}
+		
+		if (StringUtils.isBlank(wxstate)) {
+			H5LoginVO h5LoginVO = loginWithWxstate(mobile, wxstate);
+			restResult.setResults(h5LoginVO);
+		}else {
+			MarketingMembers marketingMembersByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openid, organizationId);
+			if (null==marketingMembersByOpenId) {
+				logger.info("登录时无法根据openId及组织id查找到用户,openId="+openid+",组织id="+organizationId);
+				throw new SuperCodeException("无法根据openId及组织id查找到用户。可能用户已被删除，请尝试重新扫码进入授权或联系商家", 500);
+			}
+			
+			MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
+			Long userIdByPhone=marketingMembersByPhone.getId();
+			Long userIdByOpenId=marketingMembersByOpenId.getId();
+			if (!userIdByOpenId.equals(userIdByPhone)) {
+				String openIdByPhone=marketingMembersByPhone.getOpenid();
+				//手机号这条记录的openid不为空，合并过openid就通过之前的openid更新中奖纪录里的openid和手机号
+				if (StringUtils.isNotBlank(openIdByPhone)) {
+					//如果之前该手机号绑定过openid则更新之前的中奖纪录，没有的话就不更新哦
+					mWinRecordMapper.updateOpenIdAndMobileByOpenIdAndOrgId(openid,mobile,organizationId,openIdByPhone);
+				}
+				//合并两条记录
+				mergeMember(mobile,  organizationId,  openIdByPhone, openid,  userIdByPhone,  userIdByOpenId, marketingMembersByOpenId.getWxName());
+			}
+		}
+		
+		restResult.setState(200);
+		restResult.setMsg("登录成功...");
+		return restResult;
+	}
+	
+    /**
+     * 扫描产品防伪码登录
+     * @param mobile
+     * @param wxstate
+     * @return
+     * @throws SuperCodeException
+     */
+	private H5LoginVO loginWithWxstate(String mobile, String wxstate) throws SuperCodeException {
+		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
+		if (null==scanCodeInfoMO) {
+			throw new SuperCodeException("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码", 500);
+		}
+		// 登录时候保存手机信息用于后续接口获取
+		scanCodeInfoMO.setMobile(mobile);
+		globalRamCache.putScanCodeInfoMO(wxstate,scanCodeInfoMO);
+		
 		Long activitySetId=scanCodeInfoMO.getActivitySetId();
 		MarketingActivitySet maActivitySet=mSetMapper.selectById(activitySetId);
 		if (null==maActivitySet) {
-			restResult.setState(500);
-			restResult.setMsg("该活动设置id不存在");
-			return restResult;
+			throw new SuperCodeException("该活动设置id不存在", 500);
 		}
 		String openId=scanCodeInfoMO.getOpenId();
 		String organizationId=maActivitySet.getOrganizationId();
@@ -435,9 +484,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 		List<MarketingOrganizationPortraitListParam> mPortraits=organizationPortraitMapper.getSelectedPortrait(organizationId);
 		if (null==mPortraits || mPortraits.isEmpty()) {
-			restResult.setState(500);
-			restResult.setMsg("登录时获取企业画像设置为空，无法进行后续逻辑");
-			return restResult;
+			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
 		}
 
 
@@ -480,38 +527,45 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			// 4.1、这两条信息没合并过
 			// 4.2、手机号这条记录合并过openid，可用户此时想换一个微信号openid
 			if (!userIdByOpenId.equals(userIdByPhone)) {
-
 				String openIdByPhone=marketingMembersByPhone.getOpenid();
-				String openIdByOpendId=marketingMembersByOpenId.getOpenid();
+				String openIdByOpendId=openId;
 				//手机号这条记录的openid不为空，合并过openid就通过之前的openid更新中奖纪录里的openid和手机号
 				if (StringUtils.isNotBlank(openIdByPhone)) {
 					//如果之前该手机号绑定过openid则更新之前的中奖纪录，没有的话就不更新哦
 					mWinRecordMapper.updateOpenIdAndMobileByOpenIdAndOrgId(openIdByOpendId,mobile,organizationId,openIdByPhone);
 				}
-				//更新手机号对应的记录设置微信openid及昵称
-				MarketingMembers members=new MarketingMembers();
-				members.setId(userIdByPhone);
-				members.setOpenid( marketingMembersByOpenId.getOpenid());
-				members.setWxName(marketingMembersByOpenId.getWxName());
-				marketingMembersMapper.update(members);
+				//合并两条记录
+				mergeMember( mobile,  organizationId,  openIdByPhone, openIdByOpendId,  userIdByPhone,  userIdByOpenId, marketingMembersByOpenId.getWxName());
 				h5LoginVO.setMemberId(userIdByPhone);
-				//删除openid查出的用户
-				marketingMembersMapper.deleteById(userIdByOpenId);
-				restResult.setMsg("登录成功...");
 
 			}else{
 				// 逻辑说明: 说明已经合并过但是没有完善：此时手机号的uid同openId的用户ID
 				// 业务声明: 所有setRegistered(1)表示需要完善的都要回传用户id,用于完善接口标志身份
 				h5LoginVO.setMemberId(userIdByPhone);
-
 			}
 		}
+		return h5LoginVO;
+	}
+    /**
+     * 把openid和手机号对应的两条记录合并
+     * @param mobile
+     * @param organizationId
+     * @param marketingMembersByOpenId
+     * @param h5LoginVO
+     * @param userIdByOpenId
+     * @param marketingMembersByPhone
+     * @param userIdByPhone
+     */
+	private void mergeMember(String mobile, String organizationId, String openIdByPhone,String openIdByOpendId, Long userIdByPhone, Long userIdByOpenId,String nickname) {
 
-
-
-		restResult.setState(200);
-		restResult.setResults(h5LoginVO);
-		return restResult;
+		//更新手机号对应的记录设置微信openid及昵称
+		MarketingMembers members=new MarketingMembers();
+		members.setId(userIdByPhone);
+		members.setOpenid(openIdByOpendId);
+		members.setWxName(nickname);
+		marketingMembersMapper.update(members);
+		//删除openid查出的用户
+		marketingMembersMapper.deleteById(userIdByOpenId);
 	}
 	/**
 	 * 点击中奖逻辑

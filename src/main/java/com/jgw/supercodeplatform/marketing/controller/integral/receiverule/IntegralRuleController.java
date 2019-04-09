@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.integral;
+package com.jgw.supercodeplatform.marketing.controller.integral.receiverule;
 
 import java.util.List;
 
@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
-import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleService;
 
 import io.swagger.annotations.Api;
@@ -40,15 +40,18 @@ public class IntegralRuleController {
      *  获取积分规则
      * @param
      * @return
+     * @throws SuperCodeException 
      * @throws Exception
      */
     @RequestMapping(value = "/get",method = RequestMethod.GET)
     @ApiOperation(value = "积分规则： 获取积分规则信息", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token") })
-    public RestResult<IntegralRule> getActivityPrizeInfoByeditPage(){
+    public RestResult<IntegralRule> getActivityPrizeInfoByeditPage() throws SuperCodeException{
         RestResult<IntegralRule> result = new  RestResult<IntegralRule>();
+        IntegralRule rule=service.getCurrOrgRule();
+        result.setResults(rule);
+        result.setState(200);
         return  result;
-
     }
 
     @RequestMapping(value = "/setted-product/page",method = RequestMethod.POST)
@@ -60,23 +63,13 @@ public class IntegralRuleController {
     }
 
 
-
-
     @RequestMapping(value = "/edit",method = RequestMethod.POST)
     @ApiOperation(value = "编辑通用积分规则", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> edit(@RequestBody IntegralRule integralRule) throws Exception {
     	RestResult<String>  restResult=new RestResult<String>();
     	service.edit(integralRule);
-    	
-        return restResult;
-    }
-
-    @RequestMapping(value = "/add",method = RequestMethod.POST)
-    @ApiOperation(value = "新增通用积分规则产品", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult addProduct(@RequestBody IntegralRuleProduct integralRuleProduct) throws Exception {
-        RestResult  restResult=new RestResult();
+    	restResult.setState(200);
         return restResult;
     }
 
@@ -87,17 +80,6 @@ public class IntegralRuleController {
         RestResult  restResult=new RestResult();
         return restResult;
     }
-
-
-    @RequestMapping(value = "/delete",method = RequestMethod.POST)
-    @ApiOperation(value = "清空规则设置产品", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult deleteProduct() throws Exception {
-        // TODO 传入积分ID和积分产品ids
-        RestResult  restResult=new RestResult();
-        return restResult;
-    }
-
 
 
 }

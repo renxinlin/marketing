@@ -21,7 +21,7 @@ public class IntegralRuleProductSqlProvider {
         }
         
         if (record.getIntegralRuleId() != null) {
-            VALUES("IntegralRuleId", "#{integralRuleId,jdbcType=INTEGER}");
+            VALUES("IntegralRuleId", "#{integralRuleId,jdbcType=BIGINT}");
         }
         
         if (record.getProductId() != null) {
@@ -37,11 +37,11 @@ public class IntegralRuleProductSqlProvider {
         }
         
         if (record.getMemberType() != null) {
-            VALUES("MemberType", "#{memberType,jdbcType=TINYINT}");
+            VALUES("MemberType", "#{memberType,jdbcType=BIT}");
         }
         
         if (record.getRewardRule() != null) {
-            VALUES("RewardRule", "#{rewardRule,jdbcType=TINYINT}");
+            VALUES("RewardRule", "#{rewardRule,jdbcType=BIT}");
         }
         
         if (record.getPerConsume() != null) {
@@ -52,6 +52,10 @@ public class IntegralRuleProductSqlProvider {
             VALUES("RewardIntegral", "#{rewardIntegral,jdbcType=INTEGER}");
         }
         
+        if (record.getOrganizationId() != null) {
+            VALUES("OrganizationId", "#{organizationId,jdbcType=VARCHAR}");
+        }
+        
         return SQL();
     }
 
@@ -60,7 +64,7 @@ public class IntegralRuleProductSqlProvider {
         UPDATE("marketing_integral_rule_product");
         
         if (record.getIntegralRuleId() != null) {
-            SET("IntegralRuleId = #{integralRuleId,jdbcType=INTEGER}");
+            SET("IntegralRuleId = #{integralRuleId,jdbcType=BIGINT}");
         }
         
         if (record.getProductId() != null) {
@@ -76,11 +80,11 @@ public class IntegralRuleProductSqlProvider {
         }
         
         if (record.getMemberType() != null) {
-            SET("MemberType = #{memberType,jdbcType=TINYINT}");
+            SET("MemberType = #{memberType,jdbcType=BIT}");
         }
         
         if (record.getRewardRule() != null) {
-            SET("RewardRule = #{rewardRule,jdbcType=TINYINT}");
+            SET("RewardRule = #{rewardRule,jdbcType=BIT}");
         }
         
         if (record.getPerConsume() != null) {
@@ -89,6 +93,10 @@ public class IntegralRuleProductSqlProvider {
         
         if (record.getRewardIntegral() != null) {
             SET("RewardIntegral = #{rewardIntegral,jdbcType=INTEGER}");
+        }
+        
+        if (record.getOrganizationId() != null) {
+            SET("OrganizationId = #{organizationId,jdbcType=VARCHAR}");
         }
         
         WHERE("Id = #{id,jdbcType=BIGINT}");
