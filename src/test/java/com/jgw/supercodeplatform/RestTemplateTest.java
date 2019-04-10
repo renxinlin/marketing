@@ -32,9 +32,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
@@ -66,8 +68,7 @@ private String restUserUrl;
 @Value( "亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
 private  String registerMsgContent ;
 
-@Value("${rest.codemanager.url}")
-private String codeManagerUrl;
+private String codeManagerUrl="http://PLATFORM-CODEMANAGER-SUPERCODE-ZC";
 
 @Value("${rest.user.url}")
 private String userServiceUrl;
@@ -112,8 +113,29 @@ public  ScanCodeInfoMO getScanCodeInfoMO(String wxsate) throws SuperCodeExceptio
 	
 	return scanCodeInfoMO;
 }
-
-
+@Test
+public void unSelectPage() throws SuperCodeException {
+	Map<String, Object>params=new HashMap<String, Object>();
+	Integer current=1;
+	Integer pagesize=10;
+	
+	if (null!=current && null!=pagesize) {
+		params.put("startNumber", (current-1)*pagesize);
+		params.put("pageSize", pagesize);
+	}
+	String organizationId="86ff1c47b5204e88918cb89bbd739f12";
+	params.put("organizationId",organizationId );
+	params.put("search", null);
+	
+	List<String>productIds=new ArrayList<String>();
+	productIds.add("6ddcdfa718314dbeba04e297ba064bd2");
+	productIds.add("afcf7384963e4b5c914296e15113c500");
+	params.put("excludeProductIds",productIds);
+	ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.RELATION_PRODUCT_URL, params, null);
+	String body=responseEntity.getBody();
+	JSONObject json=JSONObject.parseObject(body);
+	System.out.println(json);
+}
 @Test
 public  void test1() throws UnsupportedEncodingException, SuperCodeException {
 	ScanCodeInfoMO scanCodeInfoMO=new ScanCodeInfoMO();

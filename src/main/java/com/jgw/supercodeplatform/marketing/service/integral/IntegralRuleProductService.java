@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
@@ -17,6 +18,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleProductMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam;
@@ -116,16 +118,18 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		if (null!=current && null!=pagesize) {
 			params.put("startNumber", (current-1)*pagesize);
 			params.put("pageSize", daoSearch.getPageSize());
-			
 		}
 		String organizationId=commonUtil.getOrganizationId();
 		params.put("organizationId",organizationId );
 		params.put("search", daoSearch.getSearch());
 		List<String> productIds=dao.selectProductIdsByOrgId(organizationId);
 		params.put("excludeProductIds",productIds);
-		restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl, params, null);
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl+CommonConstants.RELATION_PRODUCT_URL, params, null);
+		String body=responseEntity.getBody();
+		logger.info("接收到码管理进行过码关联的产品信息："+body);
 		
-		return null;
+		JSONObject json=JSONObject.parseObject(body);
+		return json;
 	}
     
     

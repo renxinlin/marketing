@@ -51,7 +51,7 @@
         <!-- 指定数据库表 -->
 
  		
-	<table schema="jgw_marketing" tableName="marketing_integral_rule" domainObjectName="IntegralRule"  enableCountByExample="false"   enableDeleteByExample="false" enableSelectByExample="false"    enableUpdateByExample="false">
+	<table schema="jgw_marketing" tableName="marketing_integral_rule_product" domainObjectName="IntegralRuleProduct"  enableCountByExample="false"   enableDeleteByExample="false" enableSelectByExample="false"    enableUpdateByExample="false">
       <property name="useActualColumnNames" value="true"/>
     </table>
 

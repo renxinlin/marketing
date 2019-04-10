@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/marketing/integral/ruleProduct")
-@Api(tags = "产品积分规则")
+@Api(tags = "积分领取设置")
 public class IntegralRuleProductController {
 
   @Autowired

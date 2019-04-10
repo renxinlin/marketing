@@ -87,12 +87,12 @@ public class Swagger2Config {
     }
 
 
-    @Bean("积分领取规则模块")
+    @Bean("积分模块")
     public Docket integralApis() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("积分领取规则设置模块")
+                .groupName("积分模块")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.integral.receiverule"))
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.integral"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo())
