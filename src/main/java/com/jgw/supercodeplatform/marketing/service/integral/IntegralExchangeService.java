@@ -31,6 +31,19 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
        return  mapper.list(searchParams);
     }
 
+
+
+    /**
+     * H5 兑换信息
+     * @param organizationId
+     * @return
+     */
+    public List<IntegralExchange> getOrganizationExchange(String organizationId) {
+        return  mapper.getOrganizationExchange(organizationId);
+
+    }
+
+
     /**
      * 分页count
      * @param searchParams
@@ -112,6 +125,23 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             logger.error("组织"+organizationId+"发生数据越权,数据id"+id );
             throw new SuperCodeException("组织" + organizationId + "无法查看" +id +"数据");
         }
+    }
+
+    /**
+     * H5会员查看详情
+     * @param id
+     * @return
+     * @throws SuperCodeException
+     */
+    public IntegralExchange selectById(Long id ) throws SuperCodeException{
+        if(id == null || id <= 0 ){
+            throw new SuperCodeException("兑换记录不存在");
+        }
+         IntegralExchange integralExchange = mapper.selectByPrimaryKey(id);
+        if(integralExchange == null){
+            throw new SuperCodeException("兑换商品记录不存在");
+        }
+         return integralExchange;
     }
 
     /**
@@ -247,7 +277,6 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         }
 
     }
-
 
 
 }

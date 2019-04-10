@@ -44,7 +44,12 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     "</if>" +
                     "</otherwise>" +
                     "</choose>" +
-                    " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
+                    " <if test='organizationId != null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
+                    " <if test='memberId != null and organizationId != &apos;&apos; '> and MemberId = #{memberId} </if>"+
+                    // 大于
+                    " <if test='integralType != null and integralType == 0 '> and IntegralNum &gt; 0 </if>"+
+                    // 小于
+                    " <if test='integralType != null and integralType == 1 '> and IntegralNum &lt;  0 </if>"+
                     "</where>";
     @Select(startScript
             + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, "

@@ -72,4 +72,11 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     @Update(startScript +" update marketing_integral_exchange ie set Status = #{status} where Id =  #{id} and OrganizationId = #{organizationId} " +
             " and Status = 0 "+ endScript)
     int updateStatusLowwer(IntegralExchange updateStatus);
+
+    // TODO 分组
+    @Select(startScript
+            + " select ProductId, ExchangeIntegral from marketing_integral_exchange ie  where OrganizationId = #{organizationId} and Status = 0 "
+            + " group by ProductId, ExchangeIntegral "
+            + endScript)
+    List<IntegralExchange> getOrganizationExchange(@Param("organizationId") String organizationId);
 }
