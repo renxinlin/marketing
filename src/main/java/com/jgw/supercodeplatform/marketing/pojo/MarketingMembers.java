@@ -21,6 +21,15 @@ public class MarketingMembers {
     private String babyBirthday;//宝宝生日
     private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
     private String pCCcode;
+    private Integer haveIntegral;
+
+    public Integer getHaveIntegral() {
+        return haveIntegral;
+    }
+
+    public void setHaveIntegral(Integer haveIntegral) {
+        this.haveIntegral = haveIntegral;
+    }
 
     public MarketingMembers() {
     }

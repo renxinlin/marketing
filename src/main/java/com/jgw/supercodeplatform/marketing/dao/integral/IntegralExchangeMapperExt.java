@@ -2,8 +2,11 @@ package com.jgw.supercodeplatform.marketing.dao.integral;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralExchangeMapper;
+import com.jgw.supercodeplatform.marketing.dto.ExchangeProductParam;
+import com.jgw.supercodeplatform.marketing.dto.IntegralExchangeDetailFirstParam;
+import com.jgw.supercodeplatform.marketing.dto.IntegralExchangeDetailParam;
+import com.jgw.supercodeplatform.marketing.dto.IntegralExchangeParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -20,7 +23,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " ExchangeIntegral exchangeIntegral, ExchangeStock exchangeStock, HaveStock haveStock, CustomerLimitNum customerLimitNum, " +
             " Status status, PayWay payWay, UndercarriageSetWay undercarriageSetWay, UnderCarriage underCarriage, StockWarning stockWarning, " +
             " StockWarningNum stockWarningNum, OrganizationId organizationId, OrganizationName organizationName, ProductId productId, ProductName productName, " +
-            " SkuName skuName, SkuUrl skuUrl, SkuStatus skuStatus";
+            " SkuName skuName, SkuUrl skuUrl, SkuStatus skuStatus, ProductPic productPic, ShowPrice showPrice ";
     static String whereSearch =
             "<where>" +
                     "<choose>" +
@@ -75,8 +78,27 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
     // TODO 分组
     @Select(startScript
-            + " select ProductId, ExchangeIntegral from marketing_integral_exchange ie  where OrganizationId = #{organizationId} and Status = 0 "
-            + " group by ProductId, ExchangeIntegral "
+            + " select ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral, ShowPrice showPriceStr from marketing_integral_exchange ie  where OrganizationId = #{organizationId} and Status = 0 "
+            + " group by ProductId,ProductName, ProductPic, ExchangeIntegral, ShowPrice"
             + endScript)
-    List<IntegralExchange> getOrganizationExchange(@Param("organizationId") String organizationId);
+    List<IntegralExchangeParam> getOrganizationExchange(@Param("organizationId") String organizationId);
+
+    // 没有匹配的详情信息去基础数据查询
+    @Select(startScript +
+            " select  ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral,ShowPrice showPriceStr, " +
+            " ExchangeResource exchangeResource, PayWay payWay, SkuStatus skuStatus , Detail detail" +
+            " from marketing_integral_exchange ie left join marketing_product_unsale mpu on ie.ProductId = mpu.ProductId " +
+            " where ie.ProductId = #{productId} " +
+            endScript)
+    List<IntegralExchangeDetailParam> selectH5ById(@Param("productId") Long productId);
+
+    @Select(startScript + "select " + allFileds + " from marketing_integral_exchange ie where ie.ProductId = #{productId} " + endScript)
+    List<IntegralExchange> selectH5ByIdFirst(@Param("productId") Long productId);
+    @Select(" select " + allFileds + " from marketing_integral_exchange ie where OrganizationId = #{organizationId} " +
+            " and ProductId = #{productId} " +
+            " <if test='skuName != null and skuName != &apos;&apos;'> and SkuName = #{skuName} </if>  for update")
+    IntegralExchange exists(@Param("organizationId") String organizationId, @Param("productId") String productId,@Param("skuName") String skuName);
+    // 保证数据一致性
+    @Update(" update marketing_integral_exchange ie set HaveStock = HaveStock - #{exchangeNum} where HaveStock- #{exchangeNum} > 0 ")
+    int reduceStock(ExchangeProductParam exchangeProductParam);
 }

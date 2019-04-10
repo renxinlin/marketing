@@ -29,7 +29,8 @@ public interface IntegralExchangeMapper {
         "StockWarningNum, OrganizationId, ",
         "OrganizationName, ProductId, ",
         "ProductName, SkuName, ",
-        "SkuUrl, SkuStatus)",
+        "SkuUrl, SkuStatus, ",
+        "ProductPic, ShowPrice)",
         "values (#{id,jdbcType=BIGINT}, #{memberType,jdbcType=TINYINT}, ",
         "#{exchangeResource,jdbcType=TINYINT}, #{exchangeIntegral,jdbcType=INTEGER}, ",
         "#{exchangeStock,jdbcType=INTEGER}, #{haveStock,jdbcType=INTEGER}, ",
@@ -39,7 +40,8 @@ public interface IntegralExchangeMapper {
         "#{stockWarningNum,jdbcType=INTEGER}, #{organizationId,jdbcType=VARCHAR}, ",
         "#{organizationName,jdbcType=VARCHAR}, #{productId,jdbcType=VARCHAR}, ",
         "#{productName,jdbcType=VARCHAR}, #{skuName,jdbcType=VARCHAR}, ",
-        "#{skuUrl,jdbcType=VARCHAR}, #{skuStatus,jdbcType=TINYINT})"
+        "#{skuUrl,jdbcType=VARCHAR}, #{skuStatus,jdbcType=TINYINT}, ",
+        "#{productPic,jdbcType=VARCHAR}, #{showPrice,jdbcType=REAL})"
     })
     int insert(IntegralExchange record);
 
@@ -51,7 +53,7 @@ public interface IntegralExchangeMapper {
         "Id, MemberType, ExchangeResource, ExchangeIntegral, ExchangeStock, HaveStock, ",
         "CustomerLimitNum, Status, PayWay, UndercarriageSetWay, UnderCarriage, StockWarning, ",
         "StockWarningNum, OrganizationId, OrganizationName, ProductId, ProductName, SkuName, ",
-        "SkuUrl, SkuStatus",
+        "SkuUrl, SkuStatus, ProductPic, ShowPrice",
         "from marketing_integral_exchange",
         "where Id = #{id,jdbcType=BIGINT}"
     })
@@ -75,7 +77,9 @@ public interface IntegralExchangeMapper {
         @Result(column="ProductName", property="productName", jdbcType=JdbcType.VARCHAR),
         @Result(column="SkuName", property="skuName", jdbcType=JdbcType.VARCHAR),
         @Result(column="SkuUrl", property="skuUrl", jdbcType=JdbcType.VARCHAR),
-        @Result(column="SkuStatus", property="skuStatus", jdbcType=JdbcType.TINYINT)
+        @Result(column="SkuStatus", property="skuStatus", jdbcType=JdbcType.TINYINT),
+        @Result(column="ProductPic", property="productPic", jdbcType=JdbcType.VARCHAR),
+        @Result(column="ShowPrice", property="showPrice", jdbcType=JdbcType.REAL)
     })
     IntegralExchange selectByPrimaryKey(Long id);
 
@@ -102,7 +106,9 @@ public interface IntegralExchangeMapper {
           "ProductName = #{productName,jdbcType=VARCHAR},",
           "SkuName = #{skuName,jdbcType=VARCHAR},",
           "SkuUrl = #{skuUrl,jdbcType=VARCHAR},",
-          "SkuStatus = #{skuStatus,jdbcType=TINYINT}",
+          "SkuStatus = #{skuStatus,jdbcType=TINYINT},",
+          "ProductPic = #{productPic,jdbcType=VARCHAR},",
+          "ShowPrice = #{showPrice,jdbcType=REAL}",
         "where Id = #{id,jdbcType=BIGINT}"
     })
     int updateByPrimaryKey(IntegralExchange record);

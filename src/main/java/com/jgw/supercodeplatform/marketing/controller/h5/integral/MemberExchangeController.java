@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.dto.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 import io.swagger.annotations.Api;
@@ -12,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
@@ -27,18 +29,13 @@ public class MemberExchangeController {
 
 
 
-    @RequestMapping(value = "/page",method = RequestMethod.GET)
+    @RequestMapping(value = "/list",method = RequestMethod.GET)
     @ApiOperation(value = "积分兑换设置列表", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<List<IntegralExchange>> list(@RequestParam("organizationId") String organizationId) throws Exception {
+     public RestResult<List<IntegralExchangeParam>> list(@RequestParam("organizationId") String organizationId) throws Exception {
         if(StringUtils.isBlank(organizationId)){
             throw new SuperCodeException("获取组织信息失败",500);
         }
-        List<IntegralExchange> results = integralExchangeService.getOrganizationExchange(organizationId);
-        // 处理当前兑换的积分下架：【经过评定自动下架采用查询后更新的方式】
-//        List<IntegralExchange> changingStatusList = objectPageResults.getList();
-//        List<IntegralExchange> changedStatusList = updateIntegralExchangeWhichNeedChangeStatus(changingStatusList);
-//        objectPageResults.setList(changedStatusList);
+        List<IntegralExchangeParam> results = integralExchangeService.getOrganizationExchange(organizationId);
         return RestResult.success("success", results);
     }
 
@@ -46,12 +43,34 @@ public class MemberExchangeController {
 
     @RequestMapping(value = "detailByMember",method = RequestMethod.GET)
     @ApiOperation(value = "兑换详情|【h5会员】", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
-            @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id")})
-    public RestResult<IntegralExchange> detailByMember(@RequestParam("id") Long id) throws Exception {
-        IntegralExchange integralExchange = integralExchangeService.selectById(id);
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "产品ID",name="productId"),
+            @ApiImplicitParam(paramType="query",value = "兑换积分",name="exchangeIntegral")})
+    public RestResult<IntegralExchangeDetailParam> detailByMember(@RequestParam("productId") Long productId) throws Exception {
+        IntegralExchangeDetailParam integralExchange = integralExchangeService.selectById(productId);
         return RestResult.success("success",integralExchange);
     }
+
+
+    @RequestMapping(value = "detailSkuByMember",method = RequestMethod.GET)
+    @ApiOperation(value = "兑换详情SKU+地址信息|【h5会员】", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token"),
+            @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id")})
+    public RestResult<IntegralExchangeSkuDetailAndAddress> detailSkuByMember(@RequestParam("productId") Long productId, @ApiIgnore JwtUser jwtUser) throws Exception {
+        return RestResult.success("success",integralExchangeService.detailSkuByMember(productId,jwtUser.getMemberId()));
+    }
+
+
+    @RequestMapping(value = "exchanging",method = RequestMethod.POST)
+    @ApiOperation(value = "商品兑换", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token"),
+            @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id")})
+    public RestResult<IntegralExchangeSkuDetailAndAddress> exchanging(@RequestParam("productId") ExchangeProductParam exchangeProductParam, @ApiIgnore JwtUser jwtUser) throws Exception {
+        integralExchangeService.exchanging(exchangeProductParam);
+        return RestResult.success("success",null);
+    }
+
+
+
 
 
 

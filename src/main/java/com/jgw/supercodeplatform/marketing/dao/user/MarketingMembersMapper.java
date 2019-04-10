@@ -27,7 +27,8 @@ public interface MarketingMembersMapper {
             + " DATE_FORMAT(a.CreateDate,'%Y-%m-%d') as createDate,DATE_FORMAT(a.UpdateDate,'%Y-%m-%d') as updateDate,"
             + "a.CustomerName as customerName,a.CustomerId as customerId,"
             + " a.BabyBirthday as babyBirthday ,"
-            + " a.IsRegistered as isRegistered ";
+            + " a.IsRegistered as isRegistered " +
+              " a.HaveIntegral as haveIntegral";
 
 
     /**
@@ -136,6 +137,7 @@ public interface MarketingMembersMapper {
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE Id = #{id}")
     MarketingMembers getMemberById(@Param("id")Long id);
 
+
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} ")
 	MarketingMembers selectByOpenIdAndOrgId(@Param("openid")String openid, @Param("organizationId")String  organizationId);
 
@@ -190,8 +192,6 @@ public interface MarketingMembersMapper {
 
     @Update("update marketing_members set State = #{state} where Id=#{id}")
 	int updateMembersStatus(@Param("id")Long id, @Param("state")int state);
-
-
-
-
+    @Update("update marketing_members set  HaveIntegral = HaveIntegral - #{ingetralNum} where Id=#{id} ")
+    int deleteIntegral(@Param("ingetralNum") Integer ingetralNum);
 }

@@ -96,6 +96,14 @@ public class IntegralExchangeSqlProvider {
             VALUES("SkuStatus", "#{skuStatus,jdbcType=TINYINT}");
         }
         
+        if (record.getProductPic() != null) {
+            VALUES("ProductPic", "#{productPic,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getShowPrice() != null) {
+            VALUES("ShowPrice", "#{showPrice,jdbcType=REAL}");
+        }
+        
         return SQL();
     }
 
@@ -177,6 +185,14 @@ public class IntegralExchangeSqlProvider {
         
         if (record.getSkuStatus() != null) {
             SET("SkuStatus = #{skuStatus,jdbcType=TINYINT}");
+        }
+        
+        if (record.getProductPic() != null) {
+            SET("ProductPic = #{productPic,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getShowPrice() != null) {
+            SET("ShowPrice = #{showPrice,jdbcType=REAL}");
         }
         
         WHERE("Id = #{id,jdbcType=BIGINT}");
