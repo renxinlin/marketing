@@ -19,19 +19,19 @@ public interface AdminstrativeCodeMapper {
      * @param map
      * @return
      */
-    @Select(" <script>"
+    @Select(  " <script> "
             + " SELECT  "+selectSql+"  FROM marketing_administrative_code "
             + " <where> "
-            + " <if test='areaCode !=null and areaCode != &apos;&apos; '> and AreaCode = #{areaCode} </if>"
+            + " <if test='areaCode !=null and areaCode != &apos;&apos; '> and AreaCode = #{areaCode} </if> "
             + " <if test='cityName !=null and cityName != &apos;&apos; '> and CityName = #{cityName} </if> "
-            + " <if test='parentAreaCode !=null and parentAreaCode != &apos;&apos; '> and ParentAreaCode = #{parentAreaCode} </if>"
-            + " </where>"
-            + " </script>")
+            + " <if test='parentAreaCode !=null and parentAreaCode != &apos;&apos; '> and ParentAreaCode = #{parentAreaCode} </if> "
+            + " </where> "
+            + " </script> ")
     MarketingAdministrativeCode getAdminCodeByAreaCode (Map<String,Object> map);
 
     @Select(  " <script> "
             + " SELECT  "+selectSql+"  FROM marketing_administrative_code where id in "
             + " <foreach collection='areaCodes' index='index' item='item' open='(' separator=',' close=')'> #{item} </foreach> "
-            + " </script>")
+            + " </script> ")
     List<MarketingAdministrativeCode> getCodesName (List areaCodes);
   }

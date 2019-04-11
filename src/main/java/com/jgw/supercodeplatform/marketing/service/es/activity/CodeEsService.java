@@ -127,4 +127,15 @@ public class CodeEsService extends AbstractEsSearch {
 		eSearch.setParam(addParam);
 		return getCount(eSearch);
 	}
-}
+
+
+	// 兑换数量插入
+	public void  putExchangeCount(String key, Integer count){
+		// TODO 待实现
+		// 刷入写数据
+	}
+	// 兑换数量统计
+	public Long getExchangeCount(String key){
+		return 0L;
+	}
+};

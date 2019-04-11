@@ -75,6 +75,19 @@ public class IntegralRecord  extends DaoSearch {
     @ApiModelProperty(value = "积分增减数值")
     private Integer integralNum;
 
+
+    /** 积分增减数值 */
+    @ApiModelProperty(value = "积分类型|null所有,0奖励,1消耗")
+    private Integer integralType;
+
+    public Integer getIntegralType() {
+        return integralType;
+    }
+
+    public void setIntegralType(Integer integralType) {
+        this.integralType = integralType;
+    }
+
     public Long getId() {
         return id;
     }

@@ -13,6 +13,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -115,8 +116,9 @@ public class JWTUtil {
 			ModelMapper mm = new ModelMapper();
 			JwtUser userInfo = mm.map(jwtU, JwtUser.class);
 			return userInfo;
-
-		} catch (Exception exception){
+		} catch (TokenExpiredException ex){
+			throw new SuperCodeException("jwt-token已过期",403);
+		}catch (Exception exception){
 			exception.printStackTrace();
 			throw new SuperCodeException("获取授权信息失败");
 		}

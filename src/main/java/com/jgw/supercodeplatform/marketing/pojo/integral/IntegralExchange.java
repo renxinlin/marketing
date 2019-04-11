@@ -74,7 +74,9 @@ public class IntegralExchange extends DaoSearch {
     /** 产品名称 */
     @ApiModelProperty(value = "产品名称")
     private String productName;
-
+    /** 产品图片 */
+    @ApiModelProperty(value = "产品图片")
+    private String productPic;
     /** sku信息 */
     @ApiModelProperty(value = "sku信息")
     private String skuName;
@@ -86,6 +88,37 @@ public class IntegralExchange extends DaoSearch {
     /** 0无sku,1有sku,决定库存增对产品还是sku */
     @ApiModelProperty(value = "0无sku,1有sku,决定库存增对产品还是sku")
     private Byte skuStatus;
+
+    /** 展示价 */
+    private Float showPrice;
+
+    /** 展示价Str */
+    @ApiModelProperty(value = "展示价")
+    private String showPriceStr;
+
+    public String getProductPic() {
+        return productPic;
+    }
+
+    public Float getShowPrice() {
+        return showPrice;
+    }
+
+    public void setShowPrice(Float showPrice) {
+        this.showPrice = showPrice;
+    }
+
+    public String getShowPriceStr() {
+        return showPriceStr;
+    }
+
+    public void setShowPriceStr(String showPriceStr) {
+        this.showPriceStr = showPriceStr;
+    }
+
+    public void setProductPic(String productPic) {
+        this.productPic = productPic;
+    }
 
     public Long getId() {
         return id;

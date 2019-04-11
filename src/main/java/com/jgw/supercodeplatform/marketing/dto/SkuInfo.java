@@ -6,23 +6,33 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "非自卖产品SKU")
 public class SkuInfo {
     @ApiModelProperty(value = "sku名称")
-    private String name;
+    private String skuName;
     @ApiModelProperty(value = "SKU图片")
-    private String pic;
+    private String skuUrl;
+    @ApiModelProperty(value = "SKU库存")
+    private String haveStock;
 
-    public String getName() {
-        return name;
+    public String getHaveStock() {
+        return haveStock;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setHaveStock(String haveStock) {
+        this.haveStock = haveStock;
     }
 
-    public String getPic() {
-        return pic;
+    public String getSkuName() {
+        return skuName;
     }
 
-    public void setPic(String pic) {
-        this.pic = pic;
+    public void setSkuName(String skuName) {
+        this.skuName = skuName;
+    }
+
+    public String getSkuUrl() {
+        return skuUrl;
+    }
+
+    public void setSkuUrl(String skuUrl) {
+        this.skuUrl = skuUrl;
     }
 }
