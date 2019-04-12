@@ -125,7 +125,7 @@ public class IntegralExchangeController extends CommonUtil {
 
 
 
-    // TODO  前端希望两个接口
+
     //////////////////积分推广////////////////////////
 
 
@@ -134,6 +134,8 @@ public class IntegralExchangeController extends CommonUtil {
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
             @ApiImplicitParam(paramType="type",value = "0非自卖1自卖产品",name="super-token")})
     public RestResult<List<Map<String,Object>>> getProduct(@RequestParam("type") String type) throws Exception {
+        // TODO  自卖产品由后台查询基础信息后返回前端，前端不查询基础信息接口
+        // TODO 过滤掉已经选择的产品
         String organizationId = getOrganizationId();
         if(SALE_TYPE.equals(type)){
             // 查询基础平台
