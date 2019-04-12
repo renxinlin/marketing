@@ -36,23 +36,23 @@ public class IntegralRuleController {
     // 获取基础信息产品列表：调用基础信息接口
 
 
-    /**
-     *  获取积分规则
-     * @param
-     * @return
-     * @throws SuperCodeException 
-     * @throws Exception
-     */
-    @RequestMapping(value = "/get",method = RequestMethod.GET)
-    @ApiOperation(value = "积分规则： 获取积分规则信息", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token") })
-    public RestResult<IntegralRule> getActivityPrizeInfoByeditPage() throws SuperCodeException{
-        RestResult<IntegralRule> result = new  RestResult<IntegralRule>();
-        IntegralRule rule=service.getCurrOrgRule();
-        result.setResults(rule);
-        result.setState(200);
-        return  result;
-    }
+  /**
+   *  获取积分规则
+   * @param
+   * @return
+   * @throws SuperCodeException 
+   * @throws Exception
+   */
+  @RequestMapping(value = "/get",method = RequestMethod.GET)
+  @ApiOperation(value = "积分规则： 获取积分规则信息", notes = "")
+  @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token") })
+  public RestResult<IntegralRule> get() throws SuperCodeException{
+      RestResult<IntegralRule> result = new  RestResult<IntegralRule>();
+      IntegralRule rule=service.getCurrOrgRule();
+      result.setResults(rule);
+      result.setState(200);
+      return  result;
+  }
 
     @RequestMapping(value = "/setted-product/page",method = RequestMethod.POST)
     @ApiOperation(value = "获取已设置产品列表", notes = "")

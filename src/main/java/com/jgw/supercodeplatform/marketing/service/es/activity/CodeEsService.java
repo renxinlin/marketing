@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -138,4 +139,57 @@ public class CodeEsService extends AbstractEsSearch {
 	public Long getExchangeCount(String key){
 		return 0L;
 	}
-};
+	
+	
+	/**
+	 * 添加积分领取记录
+	 * @param userId
+	 * @param outerCodeId
+	 * @param codeTypeId
+	 * @param productId
+	 * @param productBatchId
+	 * @param organizationId
+	 * @param parse
+	 * @throws SuperCodeException
+	 */
+	public void addCodeIntegral(Long userId, String outerCodeId, String codeTypeId, String productId, String productBatchId,
+			String organizationId, Date parse) throws SuperCodeException {
+		if (null==userId  || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
+				|| StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(codeTypeId) || StringUtils.isBlank(organizationId)|| null== parse) {
+			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
+		}
+		
+		logger.info("es保存 userId="+userId+",productId="+productId+",productBatchId="+productBatchId+",outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",organizationId="+organizationId);
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("productId", productId);
+		addParam.put("productBatchId", productBatchId);
+		addParam.put("outerCodeId", outerCodeId);
+		addParam.put("codeTypeId", codeTypeId);
+		addParam.put("organizationId", organizationId);
+		addParam.put("userId", userId);
+		addParam.put("scanCodeTime", parse);
+
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.INTEGRAL);
+		eSearch.setType(EsType.INFO);
+		add(eSearch, addParam);
+		
+	}
+	
+	/**
+	 * 根据码和码制查询当前码的积分有没有被领取
+	 * @param outerCodeId
+	 * @param codeTypeId
+	 * @return
+	 */
+	public Long countCodeIntegral(String outerCodeId, String codeTypeId) {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("outerCodeId.keyword", outerCodeId);
+		addParam.put("codeTypeId.keyword", codeTypeId);
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.INTEGRAL);
+		eSearch.setType(EsType.INFO);
+		eSearch.setParam(addParam);
+		return getCount(eSearch);
+	}
+}
