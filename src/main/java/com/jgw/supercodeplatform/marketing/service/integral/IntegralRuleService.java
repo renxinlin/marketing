@@ -46,5 +46,9 @@ public class IntegralRuleService  extends AbstractPageService<IntegralRecord > {
 		return eRule;
 	}
 
+	public IntegralRule selectByOrgId(String organizationId) {
+		return dao.selectByOrgId(organizationId);
+	}
+
 
 }

@@ -16,9 +16,11 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleProductService;
+import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 
 import io.swagger.annotations.Api;
@@ -40,6 +42,9 @@ public class IntegralFrontController {
 	@Autowired
 	private IntegralRuleProductService ruleProductService;
 
+	@Autowired
+	private IntegralRuleService ruleService;
+	
 	@Autowired
 	private MarketingMembersService memberService;
 
@@ -137,9 +142,9 @@ public class IntegralFrontController {
 			 result.setMsg("该码积分已被领取");
 			 return result;
 		 }
-		 
+		 IntegralRule integralRule=ruleService.selectByOrgId(organizationId);
 		// 6.判断当前用户是否符合积分设置规则的那些条件，符合就给对应积分
-
+           
 		// 7.把当前码存入积分ES。注意6,7是一个事务保证一致性且需在redis的同步锁里以防多个用户同时操作
 		result.setState(200);
 		return result;
