@@ -59,7 +59,7 @@ public class UnsaleProductController extends CommonUtil {
                 for(SkuInfo skuInfo : skuChilds){
                     sb.append(",").append(skuInfo.getSkuName());
                 }
-                productUnsaleVO.setSkuNames(sb.toString().replace(",",""));
+                productUnsaleVO.setSkuNames(sb.toString().replaceFirst(",",""));
             }
             listVOs.add(productUnsaleVO);
         }
@@ -77,7 +77,6 @@ public class UnsaleProductController extends CommonUtil {
         ProductUnsale productUnsale = unsaleProductService.selectById(id,getOrganizationId());
         return RestResult.success("success",productUnsale);
     }
-
 
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
