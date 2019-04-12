@@ -1,18 +1,23 @@
 package com.jgw.supercodeplatform.marketing.controller.integral;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductUnsaleParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
 import com.jgw.supercodeplatform.marketing.service.integral.UnsaleProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +28,8 @@ public class UnsaleProductController extends CommonUtil {
     // 列表，详情，添加，更新，删除
     @Autowired
     private UnsaleProductService unsaleProductService;
-
+    @Autowired
+    private ModelMapper modelmapper;
     /**
      *  积分记录列表
      * @param
@@ -33,10 +39,26 @@ public class UnsaleProductController extends CommonUtil {
     @RequestMapping(value = "/page",method = RequestMethod.GET)
     @ApiOperation(value = "获取非自卖列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<ProductUnsale>>> list(ProductUnsale productUnsale) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<ProductUnsaleParam>>> list(ProductUnsale productUnsale) throws Exception {
         productUnsale.setOrganizationId(getOrganizationId());
         AbstractPageService.PageResults<List<ProductUnsale>> objectPageResults = unsaleProductService.listSearchViewLike(productUnsale);
-        return RestResult.success("success",objectPageResults);
+        // DO转VO
+        List<ProductUnsale> listDO = objectPageResults.getList();
+        List<ProductUnsaleParam> listVOs = new ArrayList<>();
+        for(ProductUnsale productUnsaleDO: listDO){
+            ProductUnsaleParam productUnsaleVO = modelmapper.map(productUnsaleDO, ProductUnsaleParam.class);
+            // 处理sku信息
+            if (productUnsaleDO.getUnsaleProductSkuNum() != 0){
+                String skuJsonString = productUnsaleDO.getUnsaleProductSkuInfo();
+                List<SkuInfo> skuChilds = JSONArray.parseArray(skuJsonString, SkuInfo.class);
+                productUnsaleVO.setSkuInfos(skuChilds);
+             }
+            listVOs.add(productUnsaleVO);
+        }
+        AbstractPageService.PageResults<List<ProductUnsaleParam>> resultVO = new AbstractPageService.PageResults<List<ProductUnsaleParam>>(null,objectPageResults.getPagination());
+        resultVO.setOther(objectPageResults.getOther());
+        resultVO.setList(listVOs);
+        return RestResult.success("success",resultVO);
     }
 
     @RequestMapping(value = "/get",method = RequestMethod.GET)
