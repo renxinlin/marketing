@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
@@ -66,12 +67,21 @@ public class ScanCodeController {
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
+    	String	wxstate=commonUtil.getUUID();
+    	
+    	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate);
+    	
+    	
+        return "redirect:"+url;
+    }
+
+    public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate) throws UnsupportedEncodingException, ParseException, SuperCodeException {
     	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId);
     	if (restResult.getState()==500) {
     		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
     		 return "redirect:"+h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
 		}
-    	String	wxstate=commonUtil.getUUID();
+    	
     	ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
     	//在校验产品及产品批次时可以从活动设置表中获取组织id
         String organizationId=sCodeInfoMO.getOrganizationId();
@@ -87,8 +97,7 @@ public class ScanCodeController {
         String wholeUrl=wxauthRedirectUri+"/marketing/front/auth/code";
     	String encoderedirectUri=URLEncoder.encode(wholeUrl, "utf-8");
         logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid()+",h5pageUrl="+h5pageUrl);
-    	
-        return "redirect:"+h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1";
+        String url=h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1";
+        return url;
     }
-
 }
