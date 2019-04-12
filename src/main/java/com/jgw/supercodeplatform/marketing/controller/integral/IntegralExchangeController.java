@@ -103,10 +103,9 @@ public class IntegralExchangeController extends CommonUtil {
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "兑换|【更新】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
-    public RestResult<IntegralExchange> update(@RequestBody IntegralExchangeUpdateParam integralExchange) throws Exception {
-        RestResult<IntegralExchange>  restResult=new RestResult();
-        integralExchangeService.updateByOrganizationId(integralExchange,getOrganizationId(),getOrganizationName());
-         return restResult;
+    public RestResult update(@RequestBody IntegralExchangeUpdateParam integralExchange) throws Exception {
+         integralExchangeService.updateByOrganizationId(integralExchange,getOrganizationId(),getOrganizationName());
+         return RestResult.success();
     }
 
 
@@ -125,8 +124,6 @@ public class IntegralExchangeController extends CommonUtil {
 
 
 
-
-    //////////////////积分推广////////////////////////
 
 
     @RequestMapping(value = "/getProduct",method = RequestMethod.GET)
@@ -182,23 +179,23 @@ public class IntegralExchangeController extends CommonUtil {
      * @param changingStatusList
      * @return
      */
-    private List<IntegralExchange> updateIntegralExchangeWhichNeedChangeStatus(List<IntegralExchange> changingStatusList) {
-        List<IntegralExchange> needChangeList = new ArrayList<IntegralExchange>();
-        List<IntegralExchange> toWebList = new ArrayList<IntegralExchange>();
-
-        for(IntegralExchange integralExchange : changingStatusList){
-            // 自动下架设置0库存为0，1时间范围
-            Byte status = integralExchange.getUndercarriageSetWay();
-            // 库存为零下架
-            if(0 == status && integralExchange.getHaveStock() == 0){
-                // 注意: 这里库存不要求数据一致性，可以存在差错
-                needChangeList.add(integralExchange);
-            }
-            // 由定时任务实现，待产品确认
-
-        }
-        return  toWebList;
-    }
+//    private List<IntegralExchange> updateIntegralExchangeWhichNeedChangeStatus(List<IntegralExchange> changingStatusList) {
+//        List<IntegralExchange> needChangeList = new ArrayList<IntegralExchange>();
+//        List<IntegralExchange> toWebList = new ArrayList<IntegralExchange>();
+//
+//        for(IntegralExchange integralExchange : changingStatusList){
+//            // 自动下架设置0库存为0，1时间范围
+//            Byte status = integralExchange.getUndercarriageSetWay();
+//            // 库存为零下架
+//            if(0 == status && integralExchange.getHaveStock() == 0){
+//                // 注意: 这里库存不要求数据一致性，可以存在差错
+//                needChangeList.add(integralExchange);
+//            }
+//            // 由定时任务实现，待产品确认
+//
+//        }
+//        return  toWebList;
+//    }
 
 
 

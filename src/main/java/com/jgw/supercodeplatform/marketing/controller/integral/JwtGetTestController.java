@@ -20,8 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 public class JwtGetTestController {
 
     @RequestMapping(value = "/test",method = RequestMethod.POST)
-    @ApiImplicitParam(name = "memberId", paramType = "header", defaultValue = "1", value = "1", required = true)
-    public RestResult jwt(@ApiIgnore HttpServletResponse response, @RequestBody JwtUser user) throws SuperCodeException {
+     public RestResult jwt(@ApiIgnore HttpServletResponse response, @RequestBody JwtUser user) throws SuperCodeException {
         String tokenWithClaim = JWTUtil.createTokenWithClaim(user);
         response.setHeader("jwt-token",tokenWithClaim);
         return RestResult.success("success",tokenWithClaim);

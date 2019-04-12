@@ -28,8 +28,7 @@ public class DeliveryAddressController extends CommonUtil {
 
     @RequestMapping(value = "/getAll",method = RequestMethod.GET)
     @ApiOperation(value = "列表5个地址", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
-            @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息")
+    @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息")
     })
     public RestResult getAll(@ApiIgnore JwtUser jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
@@ -40,8 +39,7 @@ public class DeliveryAddressController extends CommonUtil {
 
     @RequestMapping(value = "/get",method = RequestMethod.GET)
     @ApiOperation(value = "获取地址详情", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
-            @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
+    @ApiImplicitParams(value= {  @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
     public RestResult get(@RequestParam("id") Long id, @ApiIgnore JwtUser jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
@@ -53,8 +51,7 @@ public class DeliveryAddressController extends CommonUtil {
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "新增地址不超过5个", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
-            @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
+    @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
     public RestResult add(@RequestBody DeliveryAddress deliveryAddress, @ApiIgnore JwtUser jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
@@ -67,8 +64,7 @@ public class DeliveryAddressController extends CommonUtil {
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "编辑地址|与设置默认地址", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
-            @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
+    @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
     public RestResult update(@RequestBody  DeliveryAddress deliveryAddress, @ApiIgnore JwtUser jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
@@ -81,8 +77,7 @@ public class DeliveryAddressController extends CommonUtil {
 
     @RequestMapping(value = "/delete",method = RequestMethod.GET)
     @ApiOperation(value = "删除地址", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
-            @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
+    @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
     public RestResult deleteProduct(@RequestParam("id") Long id, @ApiIgnore JwtUser jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();

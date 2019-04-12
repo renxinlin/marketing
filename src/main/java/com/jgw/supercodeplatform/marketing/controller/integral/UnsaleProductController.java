@@ -5,9 +5,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductUnsaleAddUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.ProductUnsaleParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
 import com.jgw.supercodeplatform.marketing.service.integral.UnsaleProductService;
 import io.swagger.annotations.Api;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -73,16 +72,18 @@ public class UnsaleProductController extends CommonUtil {
     @RequestMapping(value = "/get",method = RequestMethod.GET)
     @ApiOperation(value = "获取非自卖详情", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult get(@RequestParam("id") Long id) throws Exception {
+    public RestResult<ProductUnsaleAddUpdateParam> get(@RequestParam("id") Long id) throws Exception {
         ProductUnsale productUnsale = unsaleProductService.selectById(id,getOrganizationId());
-        return RestResult.success("success",productUnsale);
+        ProductUnsaleAddUpdateParam productUnsaleAdd = modelmapper.map(productUnsale, ProductUnsaleAddUpdateParam.class);
+        return RestResult.success("success",productUnsaleAdd);
     }
 
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "新增非自卖产品", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult add(@RequestBody ProductUnsale productUnsale) throws Exception {
+    public RestResult add(@RequestBody ProductUnsaleAddUpdateParam productUnsaleAdd) throws Exception {
+        ProductUnsale productUnsale = modelmapper.map(productUnsaleAdd, ProductUnsale.class);
         productUnsale.setOrganizationId(getOrganizationId());
         productUnsale.setOrganizationName(getOrganizationName());
         productUnsale.setCreateUserId(getUserLoginCache().getUserId());

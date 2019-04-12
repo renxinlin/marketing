@@ -49,18 +49,18 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
             HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
             token = request.getHeader(CommonConstants.JWT_TOKEN);
             if (token == null) {
-                throw new SuperCodeException("获取jwt信息失败");
+                throw new SuperCodeException("用户获取失败...");
             }
             JwtUser jwtUser = JWTUtil.verifyToken(token);
             if (jwtUser == null || jwtUser.getMemberId() == null) {
                 logger.error("jwt信息不全" + jwtUser);
-                throw new SuperCodeException("获取jwt信息失败");
+                throw new SuperCodeException("用户信息不存在...");
             }
             return jwtUser;
         } catch (Exception e) {
             logger.error("解析jwt异常" + token);
             e.printStackTrace();
-            throw new SuperCodeException("获取信息失败");
+            throw new SuperCodeException("用户信息解析异常...");
         }
     }
 }
