@@ -29,8 +29,9 @@ public class MySessionExcludePathInterceptor implements WebMvcSessionInterceptor
                 "/marketing/test/**",//测试
                 "/MP_verify_dSYneurbj349sTas.txt",
                 //静态资源
-                "/webjars/**"
-        };
+                "/webjars/**",
+                "/marketing/h5/**",
+         };
         return Arrays.asList(add);
     }
 }
