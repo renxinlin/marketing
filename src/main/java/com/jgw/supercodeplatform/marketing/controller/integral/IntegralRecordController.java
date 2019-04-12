@@ -2,13 +2,10 @@ package com.jgw.supercodeplatform.marketing.controller.integral;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dto.JwtUser;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -22,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.xml.ws.soap.Addressing;
 import java.util.List;
 
 /**

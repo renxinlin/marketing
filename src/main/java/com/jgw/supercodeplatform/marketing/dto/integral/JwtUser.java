@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.dto;
+package com.jgw.supercodeplatform.marketing.dto.integral;
 
 public class JwtUser {
 

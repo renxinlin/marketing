@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.dto;
+package com.jgw.supercodeplatform.marketing.dto.integral;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

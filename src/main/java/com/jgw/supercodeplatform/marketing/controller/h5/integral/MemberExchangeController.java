@@ -2,9 +2,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.dto.*;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
+import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

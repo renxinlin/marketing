@@ -69,6 +69,8 @@ public class UnsaleProductController extends CommonUtil {
     public RestResult update(@RequestBody ProductUnsale productUnsale) throws Exception {
         productUnsale.setUpdateUserId(getUserLoginCache().getUserId());
         productUnsale.setUpdateUserName(getUserLoginCache().getUserName());
+        productUnsale.setOrganizationId(getOrganizationId());
+        productUnsale.setOrganizationName(getOrganizationName());
         unsaleProductService.update(productUnsale);
         return RestResult.success();
     }
@@ -79,7 +81,8 @@ public class UnsaleProductController extends CommonUtil {
     @ApiOperation(value = "删除非自卖产品", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult deleteProduct(@RequestParam("id") Long id) throws Exception {
-        unsaleProductService.delete(id);
+        String organizationId = getOrganizationId();
+        unsaleProductService.delete(id,organizationId);
         return RestResult.success();
     }
 

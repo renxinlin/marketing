@@ -2,7 +2,9 @@ package com.jgw.supercodeplatform.marketing.dao.integral;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralExchangeMapper;
-import com.jgw.supercodeplatform.marketing.dto.*;
+import com.jgw.supercodeplatform.marketing.dto.integral.ExchangeProductParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeDetailParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import org.apache.ibatis.annotations.*;
 

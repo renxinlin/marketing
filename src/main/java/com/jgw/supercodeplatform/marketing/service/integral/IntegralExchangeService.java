@@ -4,15 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.dao.integral.*;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
-import com.jgw.supercodeplatform.marketing.dto.*;
+import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.*;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
-import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -23,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
-import scala.Int;
 
 import java.util.*;
 
@@ -210,7 +207,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         }
         // 查询详情
         if(integralExchangeDetailParam.getDetail() == null){
-            // TODO URL补充
+            // TODO URL补充【基础信息】
             Map datailFromBaseService = restTemplate.postForObject(BASE_SERVICE_NAME,integralExchangeDetailParam,Map.class);
             integralExchangeDetailParam.setDetail((String) datailFromBaseService.get("detail"));
         }
@@ -235,9 +232,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("产品不存在");
         }
 
-        // TODO 测试modelMapper数据传递是否成功
         if(integralExchanges.get(0).getSkuStatus() == 0){
-            // 无sku,产品不可重复添加，所以数据只有1条
+            // 无sku,产品不可重复添加，所以数据只有1条| 补充product信息
             modelMapper.map(integralExchanges.get(0),result);
         }else{
             List<SkuInfo> skuInfos = new ArrayList<SkuInfo>();
@@ -257,6 +253,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             for(DeliveryAddress da : deliveryAddresses){
                 if(da.getDefaultUsing().intValue() == 0){
                     deliveryAddress = da;
+                    break;
                 }
             }
         }
@@ -356,17 +353,16 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         record.setMobile(memberById.getMobile());
 
 
-        // TODO 原因: 从unitcode表查询
+        // TODO  原因: 从unitcode表查询【暂时保持，后期修改】
         record.setIntegralReasonCode(1);
         record.setIntegralReason("兑换商品");
 
         List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId());
         record.setProductName(integralExchanges.get(0).getProductName());
-        if(integralExchanges.get(0).getExchangeResource() == 1){
-            // 自卖产品
-            // TODO 获取码信息
-
-        }
+//        if(integralExchanges.get(0).getExchangeResource() == 1){
+            // 关于自卖产品的码信息
+            // 目前自卖和非自卖兑换产生的积分记录都没有码信息
+//        }
         // 门店ID
         record.setCustomerId(memberById.getCustomerId());
         // 门店名称
@@ -555,7 +551,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 根据业务补充数据
         List<IntegralExchange> integralExchanges = addFeildByBuzWhenAdd(integralExchange,organizationId,organizationName);
         int i = mapper.insertBatch(integralExchanges);
-        if(1 >= i){
+        if(1 > i){
             throw new SuperCodeException("插入兑换记录失败",500);
         }
 
@@ -691,8 +687,6 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
      * @return
      */
     private List<IntegralExchange> addFeildByBuzWhenAdd(IntegralExchangeAddParam integralExchange,String organizationId,String organizationName) {
-        // TODO 新增兑换时候补充数据
-
         List<IntegralExchange> list = new ArrayList<>();
         List<ProductAddParam> products = integralExchange.getProducts();
         // 0非自卖1自卖产品
@@ -764,10 +758,10 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
      * @param integralExchange
      * @return
      */
-    private IntegralExchange addFieldWhenUpdate(IntegralExchange integralExchange) {
-        // TODO 编辑兑换记录的属性转换与添加
-        return  integralExchange;
-    }
+//    private IntegralExchange addFieldWhenUpdate(IntegralExchange integralExchange) {
+//        //  编辑兑换记录的属性转换与添加
+//        return  integralExchange;
+//    }
 
 
 

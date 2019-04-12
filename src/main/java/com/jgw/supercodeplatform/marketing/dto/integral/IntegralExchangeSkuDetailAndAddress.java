@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.dto;
+package com.jgw.supercodeplatform.marketing.dto.integral;
 
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 
