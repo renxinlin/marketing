@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/marketing/h5/record")
 @Api(tags = "H5会员积分记录列表")
-public class IntegralRecordController   {
+public class H5IntegralRecordController   {
     @Autowired
     private IntegralRecordService integralRecordService;
     /**

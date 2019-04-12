@@ -30,10 +30,10 @@ public class UnsaleProductController extends CommonUtil {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/page",method = RequestMethod.POST)
+    @RequestMapping(value = "/page",method = RequestMethod.GET)
     @ApiOperation(value = "获取非自卖列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<ProductUnsale>>> list(@RequestBody ProductUnsale productUnsale) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<ProductUnsale>>> list(ProductUnsale productUnsale) throws Exception {
         productUnsale.setOrganizationId(getOrganizationId());
         AbstractPageService.PageResults<List<ProductUnsale>> objectPageResults = unsaleProductService.listSearchViewLike(productUnsale);
         return RestResult.success("success",objectPageResults);

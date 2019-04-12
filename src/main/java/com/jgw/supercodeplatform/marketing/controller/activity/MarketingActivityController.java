@@ -33,10 +33,10 @@ public class MarketingActivityController extends CommonUtil {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/page",method = RequestMethod.POST)
+    @RequestMapping(value = "/page",method = RequestMethod.GET)
     @ApiOperation(value = "活动列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<PageResults<List<MarketingActivityListMO>>> list(@RequestBody MarketingActivityListParam marketingActivityListParam) throws Exception {
+    public RestResult<PageResults<List<MarketingActivityListMO>>> list( MarketingActivityListParam marketingActivityListParam) throws Exception {
     	RestResult<PageResults<List<MarketingActivityListMO>>> restResult=new RestResult<PageResults<List<MarketingActivityListMO>>>();
     	marketingActivityListParam.setOrganizationId(getOrganizationId());
     	PageResults<List<MarketingActivityListMO>> pageResults=service.listSearchViewLike(marketingActivityListParam);

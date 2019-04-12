@@ -41,10 +41,10 @@ public class IntegralExchangeController extends CommonUtil {
     @Autowired
     private UnsaleProductService unsaleProductService;
 
-    @RequestMapping(value = "/page",method = RequestMethod.POST)
+    @RequestMapping(value = "/page",method = RequestMethod.GET)
     @ApiOperation(value = "积分兑换设置列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<IntegralExchange>>> list(@RequestBody IntegralExchange integralExchange) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<IntegralExchange>>> list(IntegralExchange integralExchange) throws Exception {
         String organizationId = getOrganizationId();
         if(StringUtils.isBlank(organizationId)){
             throw new SuperCodeException("获取组织信息失败",500);
