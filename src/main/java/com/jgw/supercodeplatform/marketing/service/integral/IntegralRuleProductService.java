@@ -131,6 +131,10 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		JSONObject json=JSONObject.parseObject(body);
 		return json;
 	}
+
+	public IntegralRuleProduct selectByProductIdAndOrgId(String productId, String organizationId) {
+		return dao.selectByProductIdAndOrgId(productId, organizationId);
+	}
     
     
 }
