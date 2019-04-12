@@ -51,11 +51,20 @@ public class UnsaleProductController extends CommonUtil {
             if (productUnsaleDO.getUnsaleProductSkuNum() != 0){
                 String skuJsonString = productUnsaleDO.getUnsaleProductSkuInfo();
                 List<SkuInfo> skuChilds = JSONArray.parseArray(skuJsonString, SkuInfo.class);
-                productUnsaleVO.setSkuInfos(skuChilds);
-             }
+                // 列表展示
+                productUnsaleVO.setSkuNameFirst(skuChilds.get(0).getSkuName());
+                // 鼠标悬浮
+                StringBuffer sb = new StringBuffer("");
+
+                for(SkuInfo skuInfo : skuChilds){
+                    sb.append(",").append(skuInfo.getSkuName());
+                }
+                productUnsaleVO.setSkuNames(sb.toString().replaceFirst(",",""));
+            }
             listVOs.add(productUnsaleVO);
         }
         AbstractPageService.PageResults<List<ProductUnsaleParam>> resultVO = new AbstractPageService.PageResults<List<ProductUnsaleParam>>(null,objectPageResults.getPagination());
+        resultVO.setPagination(objectPageResults.getPagination());
         resultVO.setOther(objectPageResults.getOther());
         resultVO.setList(listVOs);
         return RestResult.success("success",resultVO);
@@ -68,7 +77,6 @@ public class UnsaleProductController extends CommonUtil {
         ProductUnsale productUnsale = unsaleProductService.selectById(id,getOrganizationId());
         return RestResult.success("success",productUnsale);
     }
-
 
 
     @RequestMapping(value = "/add",method = RequestMethod.POST)

@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.dao.integral.*;
+import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.ExchangeStatisticsMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
@@ -43,8 +44,6 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
     @Autowired
     private IntegralRecordMapperExt recordMapper;
-    @Autowired
-    private UnsaleProductService unsaleService;
 
     @Autowired
     private ProductUnsaleMapperExt unsaleMapper;
@@ -55,9 +54,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
     @Autowired
     private RestTemplateUtil restTemplateUtil;
 
-    //  服务端有很多策略配置;准实时特性强，慎用
     @Autowired
-    private CodeEsService codeEsService;
+    private ExchangeStatisticsMapperExt exchangeStatisticsMapper;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -277,6 +275,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         //下架不可兑换[存在可能性]
         // 超过限兑换数量不可兑换
         // 积分不够不可兑换
+        // 开始锁表|涉及库存
         Map userExchangenum = validateBizWhenExchanging(exchangeProductParam);
         // 减少库存: 兑换数量不可以超过库存
         // 减少积分
@@ -307,7 +306,12 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             // 创建积分记录
             recordMapper.insertSelective(getRecordDo(exchangeProductParam));
             // 添加限兑数量
-            codeEsService.putExchangeCount((String) exchangeNumKey.get("key"), (Integer) exchangeNumKey.get("count"));
+            ExchangeStatistics exchangeStatistics = new ExchangeStatistics();
+            exchangeStatistics.setOrganizationId(exchangeProductParam.getOrganizationId());
+            exchangeStatistics.setProductId(exchangeProductParam.getProductId());
+            exchangeStatistics.setMemberId(exchangeProductParam.getMemberId());
+            exchangeStatistics.setExchangeNum((Integer) exchangeNumKey.get("count"));
+            int j = exchangeStatisticsMapper.updateCount(exchangeStatistics);
 
         }
     }
@@ -353,10 +357,9 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         record.setMobile(memberById.getMobile());
 
 
-        // TODO  原因: 从unitcode表查询【暂时保持，后期修改】
+        // TODO  兑换原因: 从unitcode表查询【暂时保持，后期修改】
         record.setIntegralReasonCode(1);
         record.setIntegralReason("兑换商品");
-
         List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId());
         record.setProductName(integralExchanges.get(0).getProductName());
 //        if(integralExchanges.get(0).getExchangeResource() == 1){
@@ -402,12 +405,13 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(exists.getHaveStock() <= 0){
             throw new SuperCodeException("库存不足");
         }
-        StringBuffer key = new StringBuffer("exchange:num").append(exchangeProductParam.getMemberId()).append(":").append(exchangeProductParam.getProductId());
-        if(exchangeProductParam.getSkuName() != null){
-            key.append(exchangeProductParam.getSkuName());
+
+        ExchangeStatistics exchangeStatistics = exchangeStatisticsMapper.selectCount(exchangeProductParam.getOrganizationId(), exchangeProductParam.getProductId(), exchangeProductParam.getMemberId());
+        if (exchangeStatistics == null){
+            exchangeStatistics = new ExchangeStatistics();
+            exchangeStatistics.setExchangeNum(0);
         }
-        Long userCount = codeEsService.getExchangeCount(key.toString());
-        if(exists.getCustomerLimitNum() <= userCount + exchangeProductParam.getExchangeNum()){
+        if(exists.getCustomerLimitNum() <= exchangeStatistics.getExchangeNum() + exchangeProductParam.getExchangeNum()){
             throw new SuperCodeException("兑换数量超过上限");
 
         }
@@ -415,9 +419,10 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("积分不足");
         }
         Map userExchangenum = new HashMap(2);// 2次方:4个容量
-        userExchangenum.put("key",key.toString());
-        userExchangenum.put("count",userCount + exchangeProductParam.getExchangeNum());
-        userExchangenum.put("ingetralNum",exchangeProductParam.getExchangeNum() * exists.getExchangeIntegral() );
+        // 需要被更新的兑换数
+        userExchangenum.put("count",exchangeStatistics.getExchangeNum() + exchangeProductParam.getExchangeNum());
+        // 兑换积分数
+        userExchangenum.put("ingetralNum",exchangeProductParam.getExchangeNum() * exists.getExchangeIntegral());
         return userExchangenum;
 
     }

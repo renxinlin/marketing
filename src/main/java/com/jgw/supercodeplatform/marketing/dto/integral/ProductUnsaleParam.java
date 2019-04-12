@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  *
@@ -27,8 +26,14 @@ public class ProductUnsaleParam {
     @ApiModelProperty(value = "图片")
     private String unsaleProductPic;
 
-    @ApiModelProperty(value = "sku")
-    private List skuInfos;
+
+        /** 图片 */
+        @ApiModelProperty(value = "sku鼠标悬浮")
+        private String skuNames;
+
+        /** 图片 */
+        @ApiModelProperty(value = "sku")
+        private String skuNameFirst;
 
 
     /**  */
@@ -43,14 +48,6 @@ public class ProductUnsaleParam {
     @ApiModelProperty(value = "更新日期")
     private Date updateDate;
 
-
-    public List getSkuInfos() {
-        return skuInfos;
-    }
-
-    public void setSkuInfos(List skuInfos) {
-        this.skuInfos = skuInfos;
-    }
 
     public Long getId() {
         return id;
@@ -84,6 +81,21 @@ public class ProductUnsaleParam {
         this.unsaleProductPic = unsaleProductPic;
     }
 
+    public String getSkuNames() {
+        return skuNames;
+    }
+
+    public void setSkuNames(String skuNames) {
+        this.skuNames = skuNames;
+    }
+
+    public String getSkuNameFirst() {
+        return skuNameFirst;
+    }
+
+    public void setSkuNameFirst(String skuNameFirst) {
+        this.skuNameFirst = skuNameFirst;
+    }
 
     public String getUpdateUserId() {
         return updateUserId;
