@@ -76,7 +76,7 @@ public class IntegralRecord  extends DaoSearch {
     private Integer integralNum;
 
 
-    /** 积分增减数值 */
+    /** 积分类型 */
     @ApiModelProperty(value = "积分类型|null所有,0奖励,1消耗")
     private Integer integralType;
 
