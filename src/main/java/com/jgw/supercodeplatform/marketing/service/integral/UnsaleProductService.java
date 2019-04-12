@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.SkuInfo;
+import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
 import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import org.apache.commons.lang.StringUtils;
@@ -143,7 +143,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         }
 
         if(StringUtils.isBlank(productUnsale.getCreateUserId()) || StringUtils.isBlank(productUnsale.getCreateUserName())){
-            throw new SuperCodeException("组织信息不存在");
+            throw new SuperCodeException("用户信息不存在");
         }
         // SKU信息转换
         List<SkuInfo> skuChild = productUnsale.getSkuChild();
@@ -183,9 +183,16 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
      * @return
      */
     public int update(ProductUnsale productUnsale) throws SuperCodeException{
-        // TODO 组织越权校验
         if(productUnsale.getId() == null || productUnsale.getId() <= 0){
             throw new SuperCodeException("非自卖产品id获取失败");
+        }
+        if(StringUtils.isBlank(productUnsale.getOrganizationId())){
+            throw new SuperCodeException("组织ID不存在");
+        }
+        ProductUnsale productUnsaleDO = mapper.selectByPrimaryKey(productUnsale.getId());
+        if(productUnsaleDO == null || !productUnsaleDO.getOrganizationId().equals(productUnsale.getOrganizationId()) ){
+            throw new SuperCodeException("更新失败");
+
         }
         List<SkuInfo> skuChild = productUnsale.getSkuChild();
 
@@ -217,8 +224,19 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
      * 删除非自卖产品
      * @param id
      */
-    public int delete(Long id) throws SuperCodeException{
-        // TODO 组织越权校验
+    public int delete(Long id,String organizationId) throws SuperCodeException{
+        if(StringUtils.isBlank(organizationId)){
+            throw new SuperCodeException("组织ID不存在");
+        }
+
+        ProductUnsale productUnsale = mapper.selectByPrimaryKey(id);
+        if(productUnsale == null){
+            throw new SuperCodeException("删除的信息不存在");
+        }
+        if(!productUnsale.getOrganizationId().equals(organizationId)){
+            logger.error("组织id"+organizationId+"删除非自卖产品"+id+"发送越权");
+            throw new SuperCodeException("组织越权");
+        }
         int i = mapper.deleteByPrimaryKey(id);
         if(i!=1){
             throw new SuperCodeException("删除非自卖产品失败");

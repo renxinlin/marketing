@@ -42,11 +42,6 @@ public class MarketingMembersWinRecordService extends AbstractPageService<Market
 	}
 
 
-	public void littleGeneralWinRecordExcelOutToResponse(List<String> ids, HttpServletResponse response, LinkedHashMap filedMap) throws ExcelException {
-
-		List<MarketingMembersWinRecordListReturn> membersWinRecord = dao.getWinRecordByidArray(ids);
-		ExcelUtils.listToExcel(membersWinRecord, filedMap, "中奖记录", response);
-	}
 
 
 

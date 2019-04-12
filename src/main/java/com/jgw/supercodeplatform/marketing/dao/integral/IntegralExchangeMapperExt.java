@@ -2,10 +2,9 @@ package com.jgw.supercodeplatform.marketing.dao.integral;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralExchangeMapper;
-import com.jgw.supercodeplatform.marketing.dto.ExchangeProductParam;
-import com.jgw.supercodeplatform.marketing.dto.IntegralExchangeDetailFirstParam;
-import com.jgw.supercodeplatform.marketing.dto.IntegralExchangeDetailParam;
-import com.jgw.supercodeplatform.marketing.dto.IntegralExchangeParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.ExchangeProductParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeDetailParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import org.apache.ibatis.annotations.*;
 
@@ -67,8 +66,8 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
     @Delete(startScript + "delete from marketing_integral_exchange ie where Id =  #{id} and OrganizationId = #{organizationId} " + endScript)
     int deleteByOrganizationId(@Param("id")Long id, @Param("organizationId")String organizationId);
-    // TODO 待产品确认自动下架能否上架，目前可以【兑换活动状态0上架1手动下架2自动下架】
-    @Update(startScript +" update marketing_integral_exchange ie set Status = #{status} where Id =  #{id} and OrganizationId = #{organizationId} " +
+
+     @Update(startScript +" update marketing_integral_exchange ie set Status = #{status} where Id =  #{id} and OrganizationId = #{organizationId} " +
             " and Status != 0 "+ endScript)
     int updateStatusUp(IntegralExchange updateStatus);
 
@@ -76,7 +75,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " and Status = 0 "+ endScript)
     int updateStatusLowwer(IntegralExchange updateStatus);
 
-    // TODO 分组
+
     @Select(startScript
             + " select ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral, ShowPrice showPriceStr from marketing_integral_exchange ie  where OrganizationId = #{organizationId} and Status = 0 "
             + " group by ProductId,ProductName, ProductPic, ExchangeIntegral, ShowPrice"
@@ -90,15 +89,81 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " from marketing_integral_exchange ie left join marketing_product_unsale mpu on ie.ProductId = mpu.ProductId " +
             " where ie.ProductId = #{productId} " +
             endScript)
-    List<IntegralExchangeDetailParam> selectH5ById(@Param("productId") Long productId);
+    List<IntegralExchangeDetailParam> selectH5ById(@Param("productId") String productId);
+
+
+
+    @Select(startScript + " select " + allFileds + " from marketing_integral_exchange ie where ie.ProductId = #{productId} " +  endScript)
+    List<IntegralExchange> selectByProductId(@Param("productId") String productId);
+
+
 
     @Select(startScript + "select " + allFileds + " from marketing_integral_exchange ie where ie.ProductId = #{productId} " + endScript)
     List<IntegralExchange> selectH5ByIdFirst(@Param("productId") Long productId);
-    @Select(" select " + allFileds + " from marketing_integral_exchange ie where OrganizationId = #{organizationId} " +
+
+
+
+
+
+    @Select(startScript + " select " + allFileds + " from marketing_integral_exchange ie where OrganizationId = #{organizationId} " +
             " and ProductId = #{productId} " +
-            " <if test='skuName != null and skuName != &apos;&apos;'> and SkuName = #{skuName} </if>  for update")
+            " <if test='skuName != null and skuName != &apos;&apos;'> and SkuName = #{skuName} </if>  for update" +endScript )
     IntegralExchange exists(@Param("organizationId") String organizationId, @Param("productId") String productId,@Param("skuName") String skuName);
+
+
+
+
+
+
+
+
     // 保证数据一致性
     @Update(" update marketing_integral_exchange ie set HaveStock = HaveStock - #{exchangeNum} where HaveStock- #{exchangeNum} > 0 ")
     int reduceStock(ExchangeProductParam exchangeProductParam);
+
+    @Insert(" insert into marketing_integral_exchange (MemberType,ExchangeResource,ExchangeIntegral,ExchangeStock, " +
+            " HaveStock,CustomerLimitNum,Status,PayWay,UndercarriageSetWay,UnderCarriage,StockWarning,StockWarningNum, " +
+            " OrganizationId,OrganizationName,ProductId,ProductName,SkuName,SkuUrl,SkuStatus,ProductPic,ShowPrice) values " +
+            "<foreach collection='list' item='item' index='index' separator=','> " +
+            " (#{item.memberType}, " +
+            " #{item.exchangeResource}, " +
+            " #{item.exchangeIntegral}, " +
+            " #{item.exchangeStock}," +
+            " #{item.haveStock}, " +
+            " #{item.customerLimitNum}, " +
+            " #{item.status}, " +
+            " #{item.payWay}, " +
+            " #{item.undercarriageSetWay}, " +
+            " #{item.underCarriage}, " +
+            " #{item.stockWarning}, " +
+            " #{item.stockWarningNum}, " +
+            " #{item.organizationId}, " +
+            " #{item.organizationName}, " +
+            " #{item.productId}, " +
+            " #{item.productName}, " +
+            " #{item.skuName}, " +
+            " #{item.skuUrl}, " +
+            " #{item.skuStatus}, " +
+            " #{item.productPic}, " +
+            " #{item.showPrice}) " +
+            " </foreach> ")
+    int insertBatch(List<IntegralExchange> integralExchanges);
+
+
+
+    @Select(startScript+" select " +allFileds + " from marketing_integral_exchange where ProductId " +
+            " in <foreach collection='array' item='productId' index='index' open='(' close=')' separator=','> #{productId} </foreach>" +endScript)
+    List<IntegralExchange> having(String[] productIds);
+
+    @Select("select " + allFileds + " from marketing_integral_exchange ie where ie.Status = 0 and ie.HaveStock = 0 and  DATE_FORMAT(UnderCarriage , '%Y-%m-%d') =  DATE_FORMAT(now(), '%Y-%m-%d') ")
+    List<IntegralExchange>  getNeedOffExchange();
+
+   // 自动下架
+    @Update( "update  marketing_integral_exchange ie  set ie.Status = 2 where ie.Id in (" +
+            "<foreach collection='list' item='item' index='index' open='' close=''  separator=','>#{item.id}</foreach>" +
+            ") ")
+    int undercarriage(List<IntegralExchange> readingToDb);
+
+
+
 }

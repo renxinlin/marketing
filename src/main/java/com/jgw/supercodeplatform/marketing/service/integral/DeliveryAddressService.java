@@ -83,7 +83,7 @@ public class DeliveryAddressService {
      */
     @Transactional(rollbackFor = Exception.class)
     public int update(DeliveryAddress deliveryAddress) throws SuperCodeException {
-        // TODO 优化成一条查询语句
+        //  优化成一条查询语句
         if(deliveryAddress == null ){
             throw  new SuperCodeException("地址信息不可为空");
         }

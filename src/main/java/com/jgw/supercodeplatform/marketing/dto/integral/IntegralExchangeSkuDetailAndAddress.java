@@ -1,18 +1,25 @@
-package com.jgw.supercodeplatform.marketing.dto;
+package com.jgw.supercodeplatform.marketing.dto.integral;
 
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
 /**
  * 聚合根:SKU信息和地址信息
  */
+@ApiModel("积分sku和地址详情页")
 public class IntegralExchangeSkuDetailAndAddress {
-
+    @ApiModelProperty("产品id")
     private String productId;
+    @ApiModelProperty("产品名称")
     private String productName;
+    @ApiModelProperty("产品图片")
     private String productPic;
+    @ApiModelProperty("sku信息")
     private List<SkuInfo> skuInfos;
+    @ApiModelProperty("地址信息")
     private DeliveryAddress deliveryAddress;
 
     public String getProductPic() {

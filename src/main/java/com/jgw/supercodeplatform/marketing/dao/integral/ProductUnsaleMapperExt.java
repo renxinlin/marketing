@@ -15,7 +15,7 @@ public interface ProductUnsaleMapperExt  extends ProductUnsaleMapper, CommonSql 
     static String allFeilds = " Id id, ProductId productId, UnsaleProductName unsaleProductName, UnsaleProductPic unsaleProductPic, " +
             " UnsaleProductSkuNum unsaleProductSkuNum, UnsaleProductSkuInfo unsaleProductSkuInfo, ShowPrice showPrice, RealPrice realPrice, " +
             " Detail detail, UpdateUserId updateUserId, UpdateUserName updateUserName, UpdateDate updateDate, CreateUserId createUserId, " +
-            " CreateUserName createUserName, CreateDate createDate, OrganizationId organizationId, OrganizationName organizationName";
+            " CreateUserName createUserName, CreateDate createDate, OrganizationId organizationId, OrganizationName organizationName, showPrice showPriceStr";
 
 
     static String whereSearch =
@@ -28,7 +28,7 @@ public interface ProductUnsaleMapperExt  extends ProductUnsaleMapper, CommonSql 
                     "<otherwise>" +
                     "<if test='search !=null and search != &apos;&apos;'>" +
                     " AND (" +
-                    // TODO TINYINT 是否可以这样
+                    // TODO TINYINT 这种模式不支持
                     " mpu.UnsaleProductName LIKE CONCAT('%',#{search},'%') " +
                     " OR mpu.UnsaleProductSkuInfo LIKE CONCAT('%',#{search},'%') " +
                     " OR mpu.UpdateUserName LIKE CONCAT('%',#{search},'%') " +
@@ -55,4 +55,7 @@ public interface ProductUnsaleMapperExt  extends ProductUnsaleMapper, CommonSql 
             +whereSearch
              +endScript)
     int count(ProductUnsale searchParams);
+
+    @Select(startScript+" select " +allFeilds + " from marketing_product_unsale mpu where mpu.ProductId = #{productId}"+endScript)
+    ProductUnsale selectByProductId(@Param("productId")  String productId);
 }

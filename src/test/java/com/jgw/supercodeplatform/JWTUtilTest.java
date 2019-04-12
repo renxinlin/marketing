@@ -11,10 +11,11 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.dto.JwtUser;
+import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
 import org.modelmapper.ModelMapper;
 
 public class JWTUtilTest {
@@ -29,7 +30,7 @@ public class JWTUtilTest {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
 		    Map<String, Object> map = new HashMap<String, Object>();
 		    Date nowDate = new Date();
-		    Date expireDate = getAfterDate(nowDate,0,0,0,2,0,0);//2小过期
+		    Date expireDate = getAfterDate(nowDate,0,0,0,0,0,1);//2小过期
 	        map.put("alg", "HS256");
 	        map.put("typ", "JWT");
 		    String token = JWT.create()
@@ -90,32 +91,36 @@ public class JWTUtilTest {
 			}
 			return cal.getTime();
 		}
-	public JwtUser verifyToken(String token) throws SuperCodeException{
+	public JwtUser verifyToken(String token) throws SuperCodeException,TokenExpiredException{
 		try {
-		    Algorithm algorithm = Algorithm.HMAC256("secret");
-		    JWTVerifier verifier = JWT.require(algorithm)
-		        .withIssuer("JGW CJM COMPANY")
-		        .build(); //Reusable verifier instance
-		    DecodedJWT jwt = verifier.verify(token);
- 		    Map<String, Claim> claims = jwt.getClaims();
- 		    // 直接json转对象由于反射对非空属性没处理会报错
- 			Map jwtU = (Map) JSONObject.parse(claims.get("jwtUser").asString());
+			Algorithm algorithm = Algorithm.HMAC256("secret");
+			JWTVerifier verifier = JWT.require(algorithm)
+					.withIssuer("JGW CJM COMPANY")
+					.build(); //Reusable verifier instance
+			DecodedJWT jwt = verifier.verify(token);
+			Map<String, Claim> claims = jwt.getClaims();
+			// 直接json转对象由于反射对非空属性没处理会报错
+			Map jwtU = (Map) JSONObject.parse(claims.get("jwtUser").asString());
 			ModelMapper mm = new ModelMapper();
 			JwtUser userInfo = mm.map(jwtU, JwtUser.class);
 			return userInfo;
+		}
+		catch (TokenExpiredException ex){
+ 			throw new SuperCodeException("jwt-token已过期",403);
 
-		} catch (Exception exception){
+		}catch (Exception exception){
 			exception.printStackTrace();
 			throw new SuperCodeException("获取授权信息失败");
 		}
 	}
 	
-	public static void main(String[] args) throws SuperCodeException {
+	public static void main(String[] args) throws Exception {
 		JWTUtilTest demo = new JWTUtilTest();
 		//String createToken = demo.createToken();
 		JwtUser j = new JwtUser();
 		j.setMemberId(124L);
 		String createTokenWithClaim = demo.createTokenWithClaim(j);
+		Thread.sleep(2000);
 		JwtUser jwtUser = demo.verifyToken(createTokenWithClaim);
 
 		System.out.println(jwtUser);

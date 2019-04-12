@@ -40,10 +40,10 @@ public class IntegralOrderController extends CommonUtil {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/page", method = RequestMethod.POST)
+    @RequestMapping(value = "/page", method = RequestMethod.GET)
     @ApiOperation(value = "兑换订单记录列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<IntegralOrder>>> list(@RequestBody IntegralOrder integralOrder) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<IntegralOrder>>> list(IntegralOrder integralOrder) throws Exception {
         String organizationId = getOrganizationId();
         integralOrder.setOrganizationId(organizationId);
         AbstractPageService.PageResults pageResults = integralOrderService.listSearchViewLike(integralOrder);

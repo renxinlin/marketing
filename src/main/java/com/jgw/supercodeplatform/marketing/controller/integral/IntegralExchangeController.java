@@ -5,7 +5,9 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dto.PromotionParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeAddParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.PromotionParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 import com.jgw.supercodeplatform.marketing.service.integral.UnsaleProductService;
@@ -29,6 +31,7 @@ import java.util.Map;
 public class IntegralExchangeController extends CommonUtil {
     private static final String UN_SALE_TYPE="0";
     private static final String SALE_TYPE="1";
+    // TODO h5商城url
     @Value("https://www.baidu.com?organizationId= ")
     private String H5_IMPERIAL_GRADEN_URL ;
     @Autowired
@@ -38,19 +41,16 @@ public class IntegralExchangeController extends CommonUtil {
     @Autowired
     private UnsaleProductService unsaleProductService;
 
-    @RequestMapping(value = "/page",method = RequestMethod.POST)
+    @RequestMapping(value = "/page",method = RequestMethod.GET)
     @ApiOperation(value = "积分兑换设置列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<IntegralExchange>>> list(@RequestBody IntegralExchange integralExchange) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<IntegralExchange>>> list(IntegralExchange integralExchange) throws Exception {
         String organizationId = getOrganizationId();
         if(StringUtils.isBlank(organizationId)){
             throw new SuperCodeException("获取组织信息失败",500);
         }
+        integralExchange.setOrganizationId(organizationId);
          AbstractPageService.PageResults<List<IntegralExchange>> objectPageResults = integralExchangeService.listSearchViewLike(integralExchange);
-        // 处理当前兑换的积分下架：【经过评定自动下架采用查询后更新的方式】
-//        List<IntegralExchange> changingStatusList = objectPageResults.getList();
-//        List<IntegralExchange> changedStatusList = updateIntegralExchangeWhichNeedChangeStatus(changingStatusList);
-//        objectPageResults.setList(changedStatusList);
         return RestResult.success("success", objectPageResults);
     }
 
@@ -61,14 +61,7 @@ public class IntegralExchangeController extends CommonUtil {
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
             @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id")})
     public RestResult deleteProduct(@RequestParam("id") Long id) throws Exception {
-
         String organizationId = getOrganizationId();
-                if(StringUtils.isBlank(organizationId)){
-            throw new SuperCodeException("获取组织信息失败",500);
-        }
-        if(id != null && id <= 0){
-            throw new SuperCodeException("id不合法",500);
-        }
         // 删除组织下的对象
         integralExchangeService.deleteByOrganizationId(id,organizationId);
         return RestResult.success();
@@ -85,9 +78,6 @@ public class IntegralExchangeController extends CommonUtil {
             @ApiImplicitParam(paramType="query",value = "【兑换活动状态0上架1手动下架2自动下架】",name="status")})
     public RestResult upperOrlower(@RequestParam("id") Long id,@RequestParam("status") Byte status) throws Exception {
         RestResult  restResult=new RestResult();
-        // TODO 自动下架后能否上架
-        // 如果已经上架，则不上架
-        // 如果自动下架【是否能上架,目前能】数据不能越权
         String organizationId = getOrganizationId();
         integralExchangeService.updateStatus(id,organizationId,status);
         return RestResult.success();
@@ -104,8 +94,7 @@ public class IntegralExchangeController extends CommonUtil {
         String organizationId = getOrganizationId();
         IntegralExchange integralExchange = integralExchangeService.selectById(id,organizationId);
         // 上下架组织下的兑换对象
-        // TODO 自动下架后能否上架
-        return RestResult.success("success",integralExchange);
+         return RestResult.success("success",integralExchange);
     }
 
 
@@ -114,9 +103,9 @@ public class IntegralExchangeController extends CommonUtil {
     @RequestMapping(value = "/update",method = RequestMethod.POST)
     @ApiOperation(value = "兑换|【更新】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
-    public RestResult<IntegralExchange> update(@RequestBody IntegralExchange integralExchange) throws Exception {
+    public RestResult<IntegralExchange> update(@RequestBody IntegralExchangeUpdateParam integralExchange) throws Exception {
         RestResult<IntegralExchange>  restResult=new RestResult();
-        integralExchangeService.updateByOrganizationId(integralExchange,getOrganizationId());
+        integralExchangeService.updateByOrganizationId(integralExchange,getOrganizationId(),getOrganizationName());
          return restResult;
     }
 
@@ -124,17 +113,19 @@ public class IntegralExchangeController extends CommonUtil {
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "兑换|【新增】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
-    public RestResult<IntegralExchange> add(@RequestBody IntegralExchange integralExchange) throws Exception {
+    public RestResult<IntegralExchange> add(@RequestBody IntegralExchangeAddParam integralExchange) throws Exception {
         RestResult<IntegralExchange>  restResult=new RestResult();
-        integralExchange.setOrganizationId(getOrganizationId());
-        integralExchangeService.add(integralExchange);
+        String organizationId = getOrganizationId();
+        String organizationName = getOrganizationName();
+
+        integralExchangeService.add(integralExchange, organizationId, organizationName);
         return restResult;
     }
 
 
 
 
-    // TODO 自动下架后能否上架 前端希望两个接口
+    // TODO  前端希望两个接口
     //////////////////积分推广////////////////////////
 
 

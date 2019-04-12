@@ -23,6 +23,17 @@ public class MarketingMembers {
     private String pCCcode;
     private Integer haveIntegral;
 
+
+    private Byte memberType; // 会员类型默认0
+
+    public Byte getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(Byte memberType) {
+        this.memberType = memberType;
+    }
+
     public Integer getHaveIntegral() {
         return haveIntegral;
     }

@@ -1,10 +1,10 @@
-package com.jgw.supercodeplatform.marketing.dto;
+package com.jgw.supercodeplatform.marketing.dto.integral;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("H5会员详情页")
-public class IntegralExchangeDetailParam {
+public class IntegralExchangeDetailFirstParam {
     @ApiModelProperty("商品ID")
     private String productId;
     @ApiModelProperty("商品名称")
@@ -21,18 +21,8 @@ public class IntegralExchangeDetailParam {
     private Byte payWay;
     @ApiModelProperty("0无sku,1有sku")
     private Byte skuStatus;
-    @ApiModelProperty("库存量")
-    private Integer haveStock;
     @ApiModelProperty("商品详情")
     private String detail;
-
-    public Integer getHaveStock() {
-        return haveStock;
-    }
-
-    public void setHaveStock(Integer haveStock) {
-        this.haveStock = haveStock;
-    }
 
     public String getProductId() {
         return productId;

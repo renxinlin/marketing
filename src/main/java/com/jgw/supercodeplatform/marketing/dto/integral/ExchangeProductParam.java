@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.dto;
+package com.jgw.supercodeplatform.marketing.dto.integral;
 
 
 import io.swagger.annotations.ApiModel;
@@ -26,6 +26,9 @@ public class ExchangeProductParam {
     private Integer exchangeNum;
     @ApiModelProperty("地址")
     private String address;
+
+
+
 
     public Long getMemberId() {
         return memberId;

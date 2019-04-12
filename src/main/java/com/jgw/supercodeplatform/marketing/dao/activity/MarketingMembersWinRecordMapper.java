@@ -89,21 +89,6 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	int addWinRecord(MarketingMembersWinRecord winRecord);
 
 
-	@Select({
-			startScript,
-			allWinFields,
-			"from  ",
-			"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  ",
-			"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId  ",
-			"where Id ",
-			"in(",
-			"<foreach collection = 'list' item = 'id' separator = ','>",
-			"#{id}",
-			"</foreach>)",
-			endScript
-	})
-	List<MarketingMembersWinRecordListReturn> getWinRecordByidArray(List<String> ids);
-    
 	@Update(startScript
 			+"update marketing_members_win "
 				+ " <set>"

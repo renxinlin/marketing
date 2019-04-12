@@ -2,9 +2,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.dto.*;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
+import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -45,7 +43,7 @@ public class MemberExchangeController {
     @ApiOperation(value = "兑换详情|【h5会员】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "产品ID",name="productId"),
             @ApiImplicitParam(paramType="query",value = "兑换积分",name="exchangeIntegral")})
-    public RestResult<IntegralExchangeDetailParam> detailByMember(@RequestParam("productId") Long productId) throws Exception {
+    public RestResult<IntegralExchangeDetailParam> detailByMember(@RequestParam("productId") String productId) throws Exception {
         IntegralExchangeDetailParam integralExchange = integralExchangeService.selectById(productId);
         return RestResult.success("success",integralExchange);
     }
@@ -62,9 +60,8 @@ public class MemberExchangeController {
 
     @RequestMapping(value = "exchanging",method = RequestMethod.POST)
     @ApiOperation(value = "商品兑换", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token"),
-            @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id")})
-    public RestResult<IntegralExchangeSkuDetailAndAddress> exchanging(@RequestParam("productId") ExchangeProductParam exchangeProductParam, @ApiIgnore JwtUser jwtUser) throws Exception {
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
+    public RestResult<IntegralExchangeSkuDetailAndAddress> exchanging(@RequestBody ExchangeProductParam exchangeProductParam, @ApiIgnore JwtUser jwtUser) throws Exception {
         integralExchangeService.exchanging(exchangeProductParam);
         return RestResult.success("success",null);
     }
