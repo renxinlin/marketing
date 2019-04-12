@@ -27,6 +27,9 @@ public class ExchangeProductParam {
     @ApiModelProperty("地址")
     private String address;
 
+
+
+
     public Long getMemberId() {
         return memberId;
     }
