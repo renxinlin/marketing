@@ -139,7 +139,7 @@ public class IntegralExchangeController extends CommonUtil {
 
 
     @RequestMapping(value = "/getProduct",method = RequestMethod.GET)
-    @ApiOperation(value = "获取自卖产品|非自卖产品", notes = "")
+    @ApiOperation(value = "获取自卖产品|非自卖产品,调用基础信息平台", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
             @ApiImplicitParam(paramType="type",value = "0非自卖1自卖产品",name="super-token")})
     public RestResult<List<Map<String,Object>>> getProduct(@RequestParam("type") String type) throws Exception {

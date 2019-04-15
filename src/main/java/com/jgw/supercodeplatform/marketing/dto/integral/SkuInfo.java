@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "非自卖产品SKU")
 public class SkuInfo {
+    @ApiModelProperty(value = "skuid")
+    private String skuId;
     @ApiModelProperty(value = "sku名称")
     private String skuName;
     @ApiModelProperty(value = "SKU图片")

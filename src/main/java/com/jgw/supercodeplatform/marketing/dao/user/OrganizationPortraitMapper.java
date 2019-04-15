@@ -102,4 +102,9 @@ public interface OrganizationPortraitMapper extends CommonSql{
      */
     @Select(" SELECT "+selectSql+",b.CodeName as codeName,b.TypeId as typeId,b.CodeId as codeId FROM marketing_organization_portrait a left join marketing_unitcode b on a.UnitCodeId = b.Id WHERE a.OrganizationId = #{organizationId} and b.TypeId = #{typeId} ORDER BY a.FieldWeight")
     List<MarketingOrganizationPortraitListParam> getSelectedLabel(String organizationId,@Param("typeId")Integer typeId);
+
+
+    @Select(" SELECT "+selectSql+",b.CodeName as codeName,b.TypeId as typeId,b.CodeId as codeId FROM marketing_organization_portrait a left join marketing_unitcode b on a.UnitCodeId = b.Id WHERE a.OrganizationId = #{organizationId}  ORDER BY a.FieldWeight")
+    List<MarketingOrganizationPortraitListParam> getSelectedPortraitAndLabel(@Param("organizationId")String organizationId);
+
 }

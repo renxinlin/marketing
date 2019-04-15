@@ -27,8 +27,7 @@ public interface MarketingMembersMapper {
             + " DATE_FORMAT(a.CreateDate,'%Y-%m-%d') as createDate,DATE_FORMAT(a.UpdateDate,'%Y-%m-%d') as updateDate,"
             + "a.CustomerName as customerName,a.CustomerId as customerId,"
             + " a.BabyBirthday as babyBirthday,  a.IsRegistered as isRegistered , "
-            + " a.HaveIntegral as haveIntegral , MemberType memberType, a.IntegralReceiveDate as integralReceiveDate, "
-            + " a.ExtendStatus as extendStatus";
+            + " a.HaveIntegral as haveIntegral , MemberType memberType, a.IntegralReceiveDate as integralReceiveDate ";
 
 
     /**

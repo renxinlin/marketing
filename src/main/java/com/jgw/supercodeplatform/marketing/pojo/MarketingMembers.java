@@ -26,18 +26,11 @@ public class MarketingMembers {
     private Integer haveIntegral; //  会员积分
     private Byte memberType; // 会员类型默认0
     private Date integralReceiveDate; // 最新一次积分领取时间
-    private Byte extendStatus;
     public Date getIntegralReceiveDate() {
         return integralReceiveDate;
     }
 
-    public Byte getExtendStatus() {
-        return extendStatus;
-    }
 
-    public void setExtendStatus(Byte extendStatus) {
-        this.extendStatus = extendStatus;
-    }
 
     public void setIntegralReceiveDate(Date integralReceiveDate) {
         this.integralReceiveDate = integralReceiveDate;
