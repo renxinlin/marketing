@@ -31,44 +31,43 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
     @Autowired
     private RestTemplateUtil restTemplateUtil;
     /**
-     * 基于组织id:非自卖产品查询
+     * 抽取到基础信息
      * @param organizationId
      * @return
      */
-    public List<Map<String, Object>> selectUnsale(String organizationId) throws SuperCodeException{
-        if(StringUtils.isBlank(organizationId)){
-            throw  new SuperCodeException("组织id获取失败");
-        }
-        // 获取所有的非自卖产品
-        List<ProductUnsale> productUnsales = mapper.selectAll(organizationId);
-
-        List<Map<String,Object>> productUnsaleMaps = new ArrayList<>();
-        if(CollectionUtils.isEmpty(productUnsales)){
-            return  productUnsaleMaps;
-        }
-        // 将非自卖的sku转化成子节点信息
-        ModelMapper modelMapper = new ModelMapper();
-
-        for(ProductUnsale productUnsale : productUnsales){
-            String unsaleProductSkuInfo = productUnsale.getUnsaleProductSkuInfo();
-            // [{k1:v1,k2,v2}] 属性name pic
-            List<SkuInfo> skuChilds = JSONArray.parseArray(unsaleProductSkuInfo, SkuInfo.class);
-            productUnsale.setSkuChild(skuChilds);
-            Map map = modelMapper.map(productUnsale, Map.class);
-            productUnsaleMaps.add(map);
-        }
-        return  productUnsaleMaps;
-    }
+//    public List<Map<String, Object>> selectUnsale(String organizationId) throws SuperCodeException{
+//        if(StringUtils.isBlank(organizationId)){
+//            throw  new SuperCodeException("组织id获取失败");
+//        }
+//        // 获取所有的非自卖产品
+//        List<ProductUnsale> productUnsales = mapper.selectAll(organizationId);
+//
+//        List<Map<String,Object>> productUnsaleMaps = new ArrayList<>();
+//        if(CollectionUtils.isEmpty(productUnsales)){
+//            return  productUnsaleMaps;
+//        }
+//        // 将非自卖的sku转化成子节点信息
+//        ModelMapper modelMapper = new ModelMapper();
+//
+//        for(ProductUnsale productUnsale : productUnsales){
+//            String unsaleProductSkuInfo = productUnsale.getUnsaleProductSkuInfo();
+//            // [{k1:v1,k2,v2}] 属性name pic
+//            List<SkuInfo> skuChilds = JSONArray.parseArray(unsaleProductSkuInfo, SkuInfo.class);
+//            productUnsale.setSkuChild(skuChilds);
+//            Map map = modelMapper.map(productUnsale, Map.class);
+//            productUnsaleMaps.add(map);
+//        }
+//        return  productUnsaleMaps;
+//    }
     /**
      * 基于组织id:自卖产品查询
      * @param organizationId
      * @return
      */
-    public List<Map<String, Object>> selectPruduct(String organizationId) {
-        // TODO 查询基础平台
-        return  null;
-
-    }
+//    public List<Map<String, Object>> selectPruduct(String organizationId) {
+//        return  null;
+//
+//    }
 
     /**
      * 分页查询组织非自卖产品

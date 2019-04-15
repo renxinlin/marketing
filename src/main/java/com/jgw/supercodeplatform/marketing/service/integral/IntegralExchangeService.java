@@ -9,9 +9,11 @@ import com.jgw.supercodeplatform.marketing.dao.integral.*;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.ExchangeStatisticsMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dto.integral.*;
+import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.*;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -194,7 +196,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(integralExchangeDetailParam.getSkuStatus() != 0 ){
             // 存在sku产品不展示库存
             integralExchangeDetailParam.setHaveStock(null);
-        }else{
+        }
+//        else{
             // desc 前端希望在下一个页面携带库存信息
             // 不存在sku产品不展示库存
 //            int stock = 0;
@@ -202,17 +205,15 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 //                stock = ed.getHaveStock() + stock;
 //            }
  //            integralExchangeDetailParam.setHaveStock(stock);
-        }
+//        }
         // 查询详情
-        if(integralExchangeDetailParam.getDetail() == null){
-            // TODO URL补充【基础信息】
-            Map datailFromBaseService = restTemplate.postForObject(BASE_SERVICE_NAME,integralExchangeDetailParam,Map.class);
-            integralExchangeDetailParam.setDetail((String) datailFromBaseService.get("detail"));
-        }
+        // TODO URL补充【基础信息】补充详情信息
+        Map datailFromBaseService = restTemplate.postForObject(BASE_SERVICE_NAME,integralExchangeDetailParam,Map.class);
+        integralExchangeDetailParam.setDetail((String) datailFromBaseService.get("detail"));
         if(integralExchangeDetailParam.getDetail() == null){
             throw new SuperCodeException("商品详情信息不存在");
         }
-         return integralExchangeDetailParam;
+        return integralExchangeDetailParam;
     }
 
     /**
@@ -234,7 +235,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             // 无sku,产品不可重复添加，所以数据只有1条| 补充product信息
             modelMapper.map(integralExchanges.get(0),result);
         }else{
-            List<SkuInfo> skuInfos = new ArrayList<SkuInfo>();
+            List<SkuInfo> skuInfos = new ArrayList<>();
             for(IntegralExchange integralExchange : integralExchanges){
                 // 注意此时库存页面和库可以不一致
                 SkuInfo skuInfo = modelMapper.map(integralExchange, SkuInfo.class);
@@ -296,6 +297,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 支付方式暂不考虑
         // 减少库存: 兑换数量不可以超过库存
         int i = mapper.reduceStock(exchangeProductParam);
+        // 在同一个事务中，此库存减少可见
         if(i == 0){
             throw new SuperCodeException("库存不足");
         }else{
@@ -356,10 +358,10 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 积分记录存储的为会员手机号而不是收货手机
         record.setMobile(memberById.getMobile());
 
+        // 积分兑换原因和编码
+        record.setIntegralReasonCode(IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReasonCode());
+        record.setIntegralReason(IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason());
 
-        // TODO  兑换原因: 从unitcode表查询【暂时保持，后期修改】
-        record.setIntegralReasonCode(1);
-        record.setIntegralReason("兑换商品");
         List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId());
         record.setProductName(integralExchanges.get(0).getProductName());
 //        if(integralExchanges.get(0).getExchangeResource() == 1){
@@ -622,31 +624,45 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("库存预警为正整数且大于0");
         }
 
+
         if(CollectionUtils.isEmpty(integralExchange.getProducts())){
+
             throw new SuperCodeException("兑换产品信息不存在");
         }else{
-            // 产品信息
+            // start 产品抽离到基础信息，直接网页传递所有基础信息数据
+            // end
             List<ProductAddParam> products = integralExchange.getProducts();
             for(ProductAddParam productAddParam : products){
-                if(productAddParam.getProductName() == null){
+                if(StringUtils.isBlank(productAddParam.getProductName())){
                     throw new SuperCodeException("产品名称不存在");
                 }
-                 if(productAddParam.getProductId() == null){
-                     throw new SuperCodeException("产品id不存在");
-                 }else {
-                     List<SkuInfo> skuinfos = productAddParam.getSkuinfos();
+                if(StringUtils.isBlank(productAddParam.getProductPic())){
+                    throw new SuperCodeException("产品图片不存在");
+                }
+                if(StringUtils.isBlank(productAddParam.getShowPriceStr())){
+                    throw new SuperCodeException("产品展示价不存在");
+                }
+                if(productAddParam.getProductId() == null){
+                    throw new SuperCodeException("产品id不存在");
+                }else {
+                    List<SkuInfo> skuinfos = productAddParam.getSkuinfos();
                      // sku可以不存在;存在则进行非空校验
-                     if(!CollectionUtils.isEmpty(skuinfos)){
-                         for(SkuInfo skuinfo:skuinfos ){
-                             if(StringUtils.isBlank(skuinfo.getSkuName())){
-                                 throw new SuperCodeException("sku名称不存在");                             }
-                         }
-                     }
-
-                 }
+                    if(!CollectionUtils.isEmpty(skuinfos)){
+                        for(SkuInfo skuinfo:skuinfos ){
+                            if(StringUtils.isBlank(skuinfo.getSkuName())){
+                                throw new SuperCodeException("sku名称不存在");
+                            }
+                            if(StringUtils.isBlank(skuinfo.getSkuUrl())){
+                                throw new SuperCodeException("sku 图片不存在");
+                            }
+                            if(StringUtils.isBlank(skuinfo.getSkuId())){
+                                throw new SuperCodeException("sku id不存在");
+                            }
+                        }
+                    }
+                }
              }
         }
-
     }
 
     /**
@@ -677,7 +693,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     if(have.getProductId().equals(productAddParam.getProductId()) && have.getSkuStatus() == 1){
                         List<SkuInfo> skuinfos = productAddParam.getSkuinfos();
                         for(SkuInfo skuinfo: skuinfos){
-                            if(skuinfo.getSkuName().equals(have.getSkuName())){
+                            if(skuinfo.getSkuId().equals(have.getSkuId())){
                                 throw new SuperCodeException("产品SKU已经添加");
                             }
                         }
@@ -715,13 +731,15 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                 }else{
                     exchangeDo.setStockWarning((byte)(1));
                 }
-                if(exchangeResource == 0){
-                    // TODO 调用基础信息售价
-                    ProductUnsale productUnsale = unsaleMapper.selectByProductId(exchangeDo.getProductId());
-                    exchangeDo.setShowPrice(productUnsale.getShowPrice());
-                }else{
-                    // TODO 调用基础信息售价
-                }
+                // 基础信息全部由网页传递
+                // 产品id
+                exchangeDo.setProductId(productAddParam.getProductId());
+                // 产品图片
+                exchangeDo.setProductPic(productAddParam.getProductPic());
+                // 产品名称
+                exchangeDo.setProductName(productAddParam.getProductName());
+                // 展示价格
+                exchangeDo.setShowPrice(Float.parseFloat(productAddParam.getShowPriceStr()));
                 list.add(exchangeDo);
             }else {
                 // 添加sku记录
@@ -733,26 +751,27 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     exchangeDo.setOrganizationId(organizationId);
                     exchangeDo.setOrganizationName(organizationName);
                     exchangeDo.setHaveStock(integralExchange.getExchangeStock());
+                    // 基础信息全部由网页传递
+                    // 产品id
+                    exchangeDo.setProductId(productAddParam.getProductId());
+                    // 产品图片
+                    exchangeDo.setProductPic(productAddParam.getProductPic());
+                    // 产品名称
+                    exchangeDo.setProductName(productAddParam.getProductName());
+                    // 展示价格
+                    exchangeDo.setShowPrice(Float.parseFloat(productAddParam.getShowPriceStr()));
+                    // sku id
+                    exchangeDo.setSkuId(skuinfo.getSkuId());
+                    // sku 图片
+                    exchangeDo.setSkuUrl(skuinfo.getSkuUrl());
+                    // sku 名称
+                    exchangeDo.setSkuName(skuinfo.getSkuName());
                     if(exchangeDo.getHaveStock() >= exchangeDo.getStockWarningNum() ){
                         // 不发出警告
                         exchangeDo.setStockWarning((byte)(0));
                     }else{
                         exchangeDo.setStockWarning((byte)(1));
                     }
-                    if(exchangeResource == 0){
-                        ProductUnsale productUnsale = unsaleMapper.selectByProductId(exchangeDo.getProductId());
-                        exchangeDo.setShowPrice(productUnsale.getShowPrice());
-                        exchangeDo.setSkuName(skuinfo.getSkuName());
-                        String skuJsonString = productUnsale.getUnsaleProductSkuInfo();
-                        List<SkuInfo> skuChilds = JSONArray.parseArray(skuJsonString, SkuInfo.class);
-                        for(SkuInfo skuChild : skuChilds){
-                            if(skuinfo.getSkuName().equals(skuChild.getSkuName())){
-                                exchangeDo.setSkuUrl(skuChild.getSkuUrl());
-                            }
-                        }
-                    }else{
-                        // TODO 调用基础信息展示售价和sku信息
-                     }
                     list.add(exchangeDo);
                 }
             }

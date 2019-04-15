@@ -85,8 +85,8 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     // 没有匹配的详情信息去基础数据查询
     @Select(startScript +
             " select  ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral,ShowPrice showPriceStr, " +
-            " ExchangeResource exchangeResource, PayWay payWay, SkuStatus skuStatus , Detail detail" +
-            " from marketing_integral_exchange ie left join marketing_product_unsale mpu on ie.ProductId = mpu.ProductId " +
+            " ExchangeResource exchangeResource, PayWay payWay, SkuStatus skuStatus " +
+            " from marketing_integral_exchange ie " +
             " where ie.ProductId = #{productId} " +
             endScript)
     List<IntegralExchangeDetailParam> selectH5ById(@Param("productId") String productId);

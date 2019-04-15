@@ -11,8 +11,17 @@ public class SkuInfo {
     private String skuName;
     @ApiModelProperty(value = "SKU图片")
     private String skuUrl;
-    @ApiModelProperty(value = "SKU库存")
+    @ApiModelProperty(value = "SKU库存|新增兑换时候不用传递")
     private String haveStock;
+
+
+    public String getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
+    }
 
     public String getHaveStock() {
         return haveStock;

@@ -17,7 +17,7 @@ public class ProductAddParam {
     @ApiModelProperty("产品图片")
     private String productPic;
     @ApiModelProperty("产品展示价")
-    private String showPrice;
+    private String showPriceStr;
     @ApiModelProperty("sku信息|只需要传入sku名称即可")
     private List<SkuInfo> skuinfos;
 
@@ -29,12 +29,12 @@ public class ProductAddParam {
         this.productPic = productPic;
     }
 
-    public String getShowPrice() {
-        return showPrice;
+    public String getShowPriceStr() {
+        return showPriceStr;
     }
 
-    public void setShowPrice(String showPrice) {
-        this.showPrice = showPrice;
+    public void setShowPriceStr(String showPriceStr) {
+        this.showPriceStr = showPriceStr;
     }
 
     public String getProductName() {
