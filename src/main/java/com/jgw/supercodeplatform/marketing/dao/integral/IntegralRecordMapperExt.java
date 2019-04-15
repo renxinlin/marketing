@@ -69,4 +69,17 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
             +whereSearch
               +endScript)
     int count(IntegralRecord integralRecord);
+
+    @Select(startScript
+            + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, "
+            + " ir.MemberName memberName,ir.Mobile mobile,ir.IntegralReasonCode integralReasonCode,ir.IntegralReason integralReason, "
+            + " ir.ProductId productId,ir.ProductName productName,ir.OuterCodeId outerCodeId,ir.CodeTypeId codeTypeId,ir.CustomerName customerName, "
+            + " ir.CustomerId customerId,ir.CreateDate createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
+            + " from  marketing_integral_record ir "
+            +startWhere
+            +  " <if test='memberId != null '>ir.MemberId=#{memberId} </if>"
+             +  " <if test='integralReasonCode != null '>ir.IntegralReasonCode=#{integralReasonCode} </if>"
+            +endWhere
+            +endScript)
+	List<IntegralRecord> selectByMemberIdAndIntegralReasonCode(Long memberId, Integer integralReasonCode);
 }

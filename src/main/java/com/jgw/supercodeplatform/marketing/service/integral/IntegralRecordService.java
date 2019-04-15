@@ -35,6 +35,16 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
     }
 
 
+	public List<IntegralRecord> selectByMemberIdAndIntegralReasonCode(Long memberId, Integer integralReasonCode) {
+		return recordMapper.selectByMemberIdAndIntegralReasonCode(memberId,integralReasonCode);
+	}
+
+
+	public void batchInsert(List<IntegralRecord> inRecords) {
+		
+	}
+
+
 
 
 }
