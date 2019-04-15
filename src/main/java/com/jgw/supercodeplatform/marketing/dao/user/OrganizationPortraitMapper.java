@@ -85,10 +85,21 @@ public interface OrganizationPortraitMapper extends CommonSql{
     @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE CodeId = 'Mobile' ")
     MarketingUnitcode getMobilePortrait();
 
+    /**
+     *
+     * @param organizationId
+     * @param typeId 14002
+     * @return
+     */
     @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE TypeId = #{typeId} and  Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
     List<MarketingOrganizationPortraitListParam> getUnSelectedLabel(String organizationId,@Param("typeId")Integer typeId);
 
-
+    /**
+     *
+     * @param organizationId
+     * @param typeId 14002
+     * @return
+     */
     @Select(" SELECT "+selectSql+",b.CodeName as codeName,b.TypeId as typeId,b.CodeId as codeId FROM marketing_organization_portrait a left join marketing_unitcode b on a.UnitCodeId = b.Id WHERE a.OrganizationId = #{organizationId} and b.TypeId = #{typeId} ORDER BY a.FieldWeight")
     List<MarketingOrganizationPortraitListParam> getSelectedLabel(String organizationId,@Param("typeId")Integer typeId);
 }
