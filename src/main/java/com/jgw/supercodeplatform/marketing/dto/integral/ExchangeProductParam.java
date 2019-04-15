@@ -4,7 +4,7 @@ package com.jgw.supercodeplatform.marketing.dto.integral;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-@ApiModel("积分兑换：操作")
+@ApiModel("积分兑换：H5操作")
 public class ExchangeProductParam {
     // 基本校验，地址，兑换数量，memberID,productID,组织id,sku信息【可有可无】
     // 收货地址 收货手机 收货名

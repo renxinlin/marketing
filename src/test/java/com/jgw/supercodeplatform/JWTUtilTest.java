@@ -30,7 +30,7 @@ public class JWTUtilTest {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
 		    Map<String, Object> map = new HashMap<String, Object>();
 		    Date nowDate = new Date();
-		    Date expireDate = getAfterDate(nowDate,0,0,0,0,0,1);//2小过期
+		    Date expireDate = getAfterDate(nowDate,0,0,0,2,0,0);//2小过期
 	        map.put("alg", "HS256");
 	        map.put("typ", "JWT");
 		    String token = JWT.create()
@@ -118,8 +118,10 @@ public class JWTUtilTest {
 		JWTUtilTest demo = new JWTUtilTest();
 		//String createToken = demo.createToken();
 		JwtUser j = new JwtUser();
-		j.setMemberId(124L);
+		j.setMemberId(1L);
+		j.setMobile("13211111111");
 		String createTokenWithClaim = demo.createTokenWithClaim(j);
+		System.out.println(createTokenWithClaim);
 		Thread.sleep(2000);
 		JwtUser jwtUser = demo.verifyToken(createTokenWithClaim);
 

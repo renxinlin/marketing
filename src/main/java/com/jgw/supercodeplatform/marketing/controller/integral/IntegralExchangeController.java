@@ -5,10 +5,9 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeAddParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.PromotionParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 import com.jgw.supercodeplatform.marketing.service.integral.UnsaleProductService;
 import com.jgw.supercodeplatform.pojo.cache.OrganizationCache;
@@ -17,6 +16,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +32,7 @@ public class IntegralExchangeController extends CommonUtil {
     private static final String UN_SALE_TYPE="0";
     private static final String SALE_TYPE="1";
     // TODO h5商城url
-    @Value("https://www.baidu.com?organizationId= ")
+    @Value("https://www.baidu.com?organizationId=")
     private String H5_IMPERIAL_GRADEN_URL ;
     @Autowired
     private IntegralExchangeService integralExchangeService;
@@ -41,17 +41,30 @@ public class IntegralExchangeController extends CommonUtil {
     @Autowired
     private UnsaleProductService unsaleProductService;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @RequestMapping(value = "/page",method = RequestMethod.GET)
     @ApiOperation(value = "积分兑换设置列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<IntegralExchange>>> list(IntegralExchange integralExchange) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<IntegralExchangeWebParam>>> list(IntegralExchange integralExchange) throws Exception {
         String organizationId = getOrganizationId();
         if(StringUtils.isBlank(organizationId)){
             throw new SuperCodeException("获取组织信息失败",500);
         }
         integralExchange.setOrganizationId(organizationId);
-         AbstractPageService.PageResults<List<IntegralExchange>> objectPageResults = integralExchangeService.listSearchViewLike(integralExchange);
-        return RestResult.success("success", objectPageResults);
+        AbstractPageService.PageResults<List<IntegralExchange>> objectPageResults = integralExchangeService.listSearchViewLike(integralExchange);
+
+        // 转换成VO
+        List<IntegralExchange> list = objectPageResults.getList();
+        List<IntegralExchangeWebParam> listVO = new ArrayList<>();
+        for (IntegralExchange ie : list){
+            listVO.add(modelMapper.map(ie,IntegralExchangeWebParam.class));
+        }
+        AbstractPageService.PageResults<List<IntegralExchangeWebParam>> pagesVO = new  AbstractPageService.PageResults<List<IntegralExchangeWebParam>>(null,objectPageResults.getPagination());
+        pagesVO.setList(listVO);
+        pagesVO.setOther(objectPageResults.getOther());
+        return RestResult.success("success", pagesVO);
     }
 
 
@@ -90,11 +103,12 @@ public class IntegralExchangeController extends CommonUtil {
     @ApiOperation(value = "兑换详情|【设置】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
             @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id")})
-    public RestResult<IntegralExchange> detail(@RequestParam("id") Long id) throws Exception {
+    public RestResult<IntegralExchangeWebParam> detail(@RequestParam("id") Long id) throws Exception {
         String organizationId = getOrganizationId();
         IntegralExchange integralExchange = integralExchangeService.selectById(id,organizationId);
         // 上下架组织下的兑换对象
-         return RestResult.success("success",integralExchange);
+        IntegralExchangeWebParam integralExchangeVO = modelMapper.map(integralExchange, IntegralExchangeWebParam.class);
+        return RestResult.success("success",integralExchangeVO);
     }
 
 
@@ -112,13 +126,11 @@ public class IntegralExchangeController extends CommonUtil {
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "兑换|【新增】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
-    public RestResult<IntegralExchange> add(@RequestBody IntegralExchangeAddParam integralExchange) throws Exception {
-        RestResult<IntegralExchange>  restResult=new RestResult();
+    public RestResult add(@RequestBody IntegralExchangeAddParam integralExchange) throws Exception {
         String organizationId = getOrganizationId();
         String organizationName = getOrganizationName();
-
         integralExchangeService.add(integralExchange, organizationId, organizationName);
-        return restResult;
+        return RestResult.success();
     }
 
 

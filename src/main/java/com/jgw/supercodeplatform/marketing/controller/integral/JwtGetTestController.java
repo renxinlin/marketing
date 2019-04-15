@@ -14,6 +14,9 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * 测试时获取jwt-token
+ */
 @RestController
 @RequestMapping("/marketing/jwt")
 @Api(tags = "jwt-token生成接口")

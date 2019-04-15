@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.dao.integral;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralOrderMapper;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
 import org.apache.ibatis.annotations.*;
 
@@ -58,5 +59,5 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
             + " ORDER BY CreateDate DESC"
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
             + endScript)
-    List<IntegralOrder> list(IntegralOrder searchParams);
+    List<IntegralOrderPageParam> list(IntegralOrder searchParams);
 }

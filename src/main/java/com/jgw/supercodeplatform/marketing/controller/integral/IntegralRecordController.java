@@ -61,7 +61,6 @@ public class IntegralRecordController extends CommonUtil {
         for (IntegralRecord ir : list){
             listVO.add(modelMapper.map(ir,IntegralRecordParam.class));
         }
-        modelMapper.map(list,List.class);
         AbstractPageService.PageResults<List<IntegralRecordParam>> pagesVO = new  AbstractPageService.PageResults<List<IntegralRecordParam>>(null,pages.getPagination());
         pagesVO.setList(listVO);
         pagesVO.setOther(pages.getOther());

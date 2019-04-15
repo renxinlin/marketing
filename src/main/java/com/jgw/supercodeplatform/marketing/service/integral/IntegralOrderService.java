@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.service.integral;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralOrderMapperExt;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import org.apache.commons.lang.StringUtils;
@@ -20,7 +21,7 @@ public class IntegralOrderService extends AbstractPageService<IntegralOrder> {
     private IntegralOrderMapperExt mapper;
 
     @Override
-    public List<IntegralOrder> searchResult(IntegralOrder searchParams) throws SuperCodeException {
+    public List<IntegralOrderPageParam> searchResult(IntegralOrder searchParams) throws SuperCodeException {
 
         return mapper.list(searchParams);
     }
@@ -44,6 +45,7 @@ public class IntegralOrderService extends AbstractPageService<IntegralOrder> {
         }
         IntegralOrder integralOrder = mapper.selectByPrimaryKey(orderId);
         if(organizationId.equals(integralOrder.getOrganizationId())){
+            // 发货状态
             integralOrder.setStatus((byte)1);
             int i = mapper.updateByPrimaryKeySelective(integralOrder);
             if(i != 1){

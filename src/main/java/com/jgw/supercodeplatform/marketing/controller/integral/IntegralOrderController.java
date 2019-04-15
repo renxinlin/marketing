@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralOrderService;
 import io.swagger.annotations.Api;
@@ -43,7 +44,7 @@ public class IntegralOrderController extends CommonUtil {
     @RequestMapping(value = "/page", method = RequestMethod.GET)
     @ApiOperation(value = "兑换订单记录列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<IntegralOrder>>> list(IntegralOrder integralOrder) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<IntegralOrderPageParam>>> list(IntegralOrder integralOrder) throws Exception {
         String organizationId = getOrganizationId();
         integralOrder.setOrganizationId(organizationId);
         AbstractPageService.PageResults pageResults = integralOrderService.listSearchViewLike(integralOrder);
