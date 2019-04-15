@@ -1,13 +1,23 @@
 package com.jgw.supercodeplatform.marketing.service.common;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.properties.NormalProperties;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
@@ -17,6 +27,7 @@ import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 
 @Service
 public class CommonService {
+	protected static Logger logger = LoggerFactory.getLogger(CommonService.class);
     @Autowired
     private CommonUtil commonUtil;
     
@@ -29,6 +40,9 @@ public class CommonService {
     @Value("${rest.user.url}")
     private String restUserUrl;
     
+	@Value("${rest.codemanager.url}")
+	private String codeManagerUrl;
+	
 	public RestResult<String> sendPhoneCode(String mobile) throws Exception {
 		RestResult<String> resuRestResult=new RestResult<String>();
 		if (StringUtils.isBlank(mobile)) {
@@ -69,6 +83,64 @@ public class CommonService {
 		resuRestResult.setState(500);
 		resuRestResult.setMsg(body);
 		return resuRestResult;
+	}
+	
+	
+	public String getBatchInfo(List<ProductAndBatchGetCodeMO>productAndBatchGetCodeMOs,String superToken) throws SuperCodeException {
+		String jsonData=JSONObject.toJSONString(productAndBatchGetCodeMOs);
+		Map<String,String> headerMap=new HashMap<String, String>();
+		headerMap.put("super-token", superToken);
+		ResponseEntity<String>  response=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL, jsonData, headerMap);
+		logger.info("请求码管理批次信息返回数据:"+response.toString());
+		String body=response.getBody();
+		return body;
+	}
+    /**
+     * 获取绑定批次和url的请求参数
+     * @param obj：通过产品和产品批次获取的码管理平台生码批次信息
+     * @param url
+     * @return
+     * @throws SuperCodeException 
+     */
+	public List<Map<String, Object>> getUrlToBatchParam(JSONObject obj,String url,int businessType) throws SuperCodeException {
+		JSONArray array=obj.getJSONArray("results");
+		if (array.isEmpty()) {
+			throw new SuperCodeException("获取码管理批次信息为空请确保该产品批次已进行码关联", 500);
+		}
+		List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
+		for(int i=0;i<array.size();i++) {
+			JSONObject batchobj=array.getJSONObject(i);
+			String productId=batchobj.getString("productId");
+			String productBatchId=batchobj.getString("productBatchId");
+			Long codeTotal=batchobj.getLong("codeTotal");
+			String codeBatch=batchobj.getString("codeBatch");
+			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+				throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
+			}
+			Map<String, Object> batchMap=new HashMap<String, Object>();
+			batchMap.put("batchId", codeBatch);
+			batchMap.put("businessType", businessType);
+			batchMap.put("url",  url);
+			bindBatchList.add(batchMap);
+		}
+		return bindBatchList;
+	}
+	/**
+	 * 生码批次绑定url
+	 * @param url
+	 * @param superToken
+	 * @return
+	 * @throws SuperCodeException 
+	 */
+	public String bindUrlToBatch(List<Map<String, Object>> bindBatchList,String superToken) throws SuperCodeException {
+		//生码批次跟url绑定
+		String bindJson=JSONObject.toJSONString(bindBatchList);
+		Map<String,String> headerMap=new HashMap<String, String>();
+		headerMap.put("super-token", superToken);
+		ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_BIND_BATCH_TO_URL, bindJson, headerMap);
+		logger.info("请求码管理绑定批次与url返回数据:"+bindBatchresponse.toString());
+		String body=bindBatchresponse.getBody();
+		return body;
 	}
 
 }
