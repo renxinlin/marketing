@@ -137,9 +137,17 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return data;
 	}
 
+	/**
+	 * 动态处理标签信息和画像信息
+	 * @param searchParams
+	 * @param isCount
+	 * @return
+	 * @throws SuperCodeException
+	 */
 	private String listSql(MarketingMembersListParam searchParams,boolean isCount) throws SuperCodeException {
 		String organizationId=commonUtil.getOrganizationId();
-		List<MarketingOrganizationPortraitListParam> mPortraitListParams=organizationPortraitMapper.getSelectedPortrait(organizationId,PortraitTypeEnum.PORTRAIT.getTypeId());
+		// 获取画像和标签
+		List<MarketingOrganizationPortraitListParam> mPortraitListParams=organizationPortraitMapper.getSelectedPortraitAndLabel(organizationId);
 		if (null==mPortraitListParams || mPortraitListParams.isEmpty()) {
 			throw new SuperCodeException("企业未设置画像", 500);
 		}
@@ -160,6 +168,24 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 			} else if("babyBirthday".equalsIgnoreCase(code)){
 				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
+
+			}else if("NoIntegralWithOneMonth".equalsIgnoreCase(code)){
+				fieldsbuf.append(" case when period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 1  " +
+						" then 1 " +
+						// 表示一个月没有积分
+						" else 0 as NoIntegralWithOneMonth");
+
+			}else if("NoIntegralWithThreeMonth".equalsIgnoreCase(code)){
+				fieldsbuf.append(" case when period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 3  " +
+						" then 1 " +
+						// 表示一个月没有积分
+						" else 0 as NoIntegralWithThreeMonth ");
+
+			}else if("NoIntegralWithSixMonth".equalsIgnoreCase(code)){
+				fieldsbuf.append(" case when period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 6  " +
+						" then 1 " +
+						// 表示一个月没有积分
+						" else 0 as NoIntegralWithSixMonth ");
 
 			}else{
 				fieldsbuf.append(code);

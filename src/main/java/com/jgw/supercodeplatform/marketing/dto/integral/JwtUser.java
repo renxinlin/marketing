@@ -1,7 +1,9 @@
 package com.jgw.supercodeplatform.marketing.dto.integral;
 
-public class JwtUser {
+import io.swagger.annotations.ApiModelProperty;
 
+public class JwtUser {
+    @ApiModelProperty("id传入即可")
     private Long memberId;
     private String openId;
     private String mobile;
