@@ -48,7 +48,7 @@ public class OrganizationPortraitController  extends CommonUtil {
 
 
     @RequestMapping(value = "/addOrgPor",method = RequestMethod.POST)
-    @ApiOperation(value = "保存组织画像关系", notes = "")
+    @ApiOperation(value = "保存组织画像关系|标签关系", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> addOrgPortrait(@RequestBody List<MarketingOrganizationPortraitParam> params) throws Exception {
         return organizationPortraitService.addOrgPortrait(params);
@@ -72,5 +72,27 @@ public class OrganizationPortraitController  extends CommonUtil {
         }
 
     }*/
+
+
+
+    @RequestMapping(value = "/getSelectedLabel", method = RequestMethod.GET)
+    @ApiOperation(value = "获取已经选择的标签", notes = "返回编码信息列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
+    })
+    public RestResult<List<MarketingOrganizationPortraitListParam>> getSelectedLabel() throws Exception {
+        return new RestResult<List<MarketingOrganizationPortraitListParam>>(200, "success", organizationPortraitService.getSelectedLabel(getOrganizationId()));
+    }
+
+
+    @RequestMapping(value = "/getUnSelectedLabel", method = RequestMethod.GET)
+    @ApiOperation(value = "获取未选择的标签", notes = "返回编码信息列表")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
+    })
+    public RestResult<List<MarketingOrganizationPortraitListParam>> getUnSelectedLabel() throws Exception {
+        return new RestResult<List<MarketingOrganizationPortraitListParam>>(200, "success", organizationPortraitService.getUnSelectedLabel(getOrganizationId()));
+    }
+
 
 }

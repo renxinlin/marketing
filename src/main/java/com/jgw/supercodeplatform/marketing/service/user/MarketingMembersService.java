@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,7 +139,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	private String listSql(MarketingMembersListParam searchParams,boolean isCount) throws SuperCodeException {
 		String organizationId=commonUtil.getOrganizationId();
-		List<MarketingOrganizationPortraitListParam> mPortraitListParams=organizationPortraitMapper.getSelectedPortrait(organizationId);
+		List<MarketingOrganizationPortraitListParam> mPortraitListParams=organizationPortraitMapper.getSelectedPortrait(organizationId,PortraitTypeEnum.PORTRAIT.getTypeId());
 		if (null==mPortraitListParams || mPortraitListParams.isEmpty()) {
 			throw new SuperCodeException("企业未设置画像", 500);
 		}
@@ -482,7 +483,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			logger.info("登录时无法根据openId及组织id查找到用户,openId="+openId+",组织id="+organizationId);
 			throw new SuperCodeException("无法根据openId及组织id查找到用户。可能用户已被删除，请尝试重新扫码进入授权或联系商家", 500);
 		}
-		List<MarketingOrganizationPortraitListParam> mPortraits=organizationPortraitMapper.getSelectedPortrait(organizationId);
+		List<MarketingOrganizationPortraitListParam> mPortraits=organizationPortraitMapper.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
 		if (null==mPortraits || mPortraits.isEmpty()) {
 			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
 		}

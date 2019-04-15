@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.service.user;
 
 import java.util.*;
 
+import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class OrganizationPortraitService extends CommonUtil {
     	if (StringUtils.isBlank(organizationId)) {
     		 organizationId =getOrganizationId();
 		}
-        return organizationPortraitMapper.getSelectedPortrait(organizationId);
+        return organizationPortraitMapper.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
     }
 
 
@@ -53,14 +54,14 @@ public class OrganizationPortraitService extends CommonUtil {
    		 organizationId =getOrganizationId();
 		}
 
-        List<MarketingUnitcode>unselectList=organizationPortraitMapper.getUnselectedPortrait(organizationId);
+        List<MarketingUnitcode>unselectList=organizationPortraitMapper.getUnselectedPortrait(organizationId,PortraitTypeEnum.PORTRAIT.getTypeId());
 
      return unselectList;
     }
 
 
     /**
-     * 添加组织画像关系
+     * 添加组织画像关系|以及标签
      * @param params
      * @return
      */
@@ -111,6 +112,25 @@ public class OrganizationPortraitService extends CommonUtil {
       restResult.setState(200);
       restResult.setMsg("成功");
       return restResult;
+    }
+
+    /**
+     * 获取已经选择的标签
+     * @param organizationId
+     * @return
+     */
+    public List<MarketingOrganizationPortraitListParam> getSelectedLabel(String organizationId) throws SuperCodeException{
+        if (StringUtils.isBlank(organizationId)) {
+            throw new SuperCodeException("获取组织信息失败...");
+        }
+        return  organizationPortraitMapper.getSelectedLabel(organizationId,PortraitTypeEnum.LABEL.getTypeId());
+    }
+
+    public List<MarketingOrganizationPortraitListParam> getUnSelectedLabel(String organizationId) throws SuperCodeException{
+        if (StringUtils.isBlank(organizationId)) {
+            throw new SuperCodeException("获取组织信息失败...");
+        }
+        return organizationPortraitMapper.getUnSelectedLabel(organizationId,PortraitTypeEnum.LABEL.getTypeId());
     }
 
 

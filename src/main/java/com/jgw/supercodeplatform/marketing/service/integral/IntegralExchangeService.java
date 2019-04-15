@@ -716,10 +716,11 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     exchangeDo.setStockWarning((byte)(1));
                 }
                 if(exchangeResource == 0){
+                    // TODO 调用基础信息售价
                     ProductUnsale productUnsale = unsaleMapper.selectByProductId(exchangeDo.getProductId());
                     exchangeDo.setShowPrice(productUnsale.getShowPrice());
                 }else{
-                    // TODO 调用基础信息展示售价
+                    // TODO 调用基础信息售价
                 }
                 list.add(exchangeDo);
             }else {
