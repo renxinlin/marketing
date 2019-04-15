@@ -393,6 +393,9 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             logger.error(" {会员ID"+exchangeProductParam.getMemberId()+"信息异常 ,统计出0条} ");
             throw new SuperCodeException("会员不存在");
         }
+        if(member.getState() == (byte)0){
+            throw new SuperCodeException("您已被管理员禁用...");
+        }
         // 查看组织id - productID-sku-是否存在 开启锁，强制阻塞
         IntegralExchange exists = mapper.exists(exchangeProductParam.getOrganizationId(), exchangeProductParam.getProductId(), exchangeProductParam.getSkuName());
         if(exists == null){

@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
+import java.util.Date;
+
 public class MarketingMembers {
 
     private Long id;//序号
@@ -19,12 +21,19 @@ public class MarketingMembers {
     private String customerName;//门店名称
     private String customerId;//门店编码
     private String babyBirthday;//宝宝生日
-    private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
+    private Byte isRegistered;// 是否已完善(1、表示已完善，0 表示未完善)
     private String pCCcode;
-    private Integer haveIntegral;
-
-
+    private Integer haveIntegral; //  会员积分
     private Byte memberType; // 会员类型默认0
+    private Date integralReceiveDate; // 最新一次积分领取时间
+
+    public Date getIntegralReceiveDate() {
+        return integralReceiveDate;
+    }
+
+    public void setIntegralReceiveDate(Date integralReceiveDate) {
+        this.integralReceiveDate = integralReceiveDate;
+    }
 
     public Byte getMemberType() {
         return memberType;
