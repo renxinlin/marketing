@@ -168,24 +168,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 			} else if("babyBirthday".equalsIgnoreCase(code)){
 				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
-
+			// TODO 这个月份是按天【DATEDIFF】计算还是跨月【period_dif，%Y%mf】计算
 			}else if("NoIntegralWithOneMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" case when period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 1  " +
-						" then 1 " +
-						// 表示一个月没有积分
-						" else 0 as NoIntegralWithOneMonth");
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 1 ,1,0) NoIntegralWithOneMonth ");
 
 			}else if("NoIntegralWithThreeMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" case when period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 3  " +
-						" then 1 " +
-						// 表示一个月没有积分
-						" else 0 as NoIntegralWithThreeMonth ");
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 1 ,1,0) NoIntegralWithThreeMonth ");
 
 			}else if("NoIntegralWithSixMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" case when period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 6  " +
-						" then 1 " +
-						// 表示一个月没有积分
-						" else 0 as NoIntegralWithSixMonth ");
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 1 ,1,0) NoIntegralWithSixMonth ");
 
 			}else{
 				fieldsbuf.append(code);
