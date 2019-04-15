@@ -75,7 +75,7 @@ public interface OrganizationPortraitMapper extends CommonSql{
      * @param organizationId 14001表示画像
      * @return
      */
-    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE TypeId = #{typeId} Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
+    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE TypeId = #{typeId} and Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
 	List<MarketingUnitcode> getUnselectedPortrait(@Param("organizationId")String organizationId, @Param("typeId")Integer typeId);
 
     /**
@@ -85,7 +85,7 @@ public interface OrganizationPortraitMapper extends CommonSql{
     @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE CodeId = 'Mobile' ")
     MarketingUnitcode getMobilePortrait();
 
-    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE TypeId = #{typeId} Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
+    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE TypeId = #{typeId} and  Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
     List<MarketingOrganizationPortraitListParam> getUnSelectedLabel(String organizationId,@Param("typeId")Integer typeId);
 
 
