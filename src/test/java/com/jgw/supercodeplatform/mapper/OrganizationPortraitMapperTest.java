@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,8 @@ private MarketingMembersWinRecordMapper mWinRecordMapper;
 	
 	@Test
 	public void select() {
-     List<MarketingOrganizationPortraitListParam> list=dao.getSelectedPortrait("55fbb365680a4fa9bfc8d1628d20deef");
-     List<MarketingUnitcode> list2=dao.getUnselectedPortrait("55fbb365680a4fa9bfc8d1628d20deef");
+     List<MarketingOrganizationPortraitListParam> list=dao.getSelectedPortrait("55fbb365680a4fa9bfc8d1628d20deef", PortraitTypeEnum.PORTRAIT.getTypeId());
+     List<MarketingUnitcode> list2=dao.getUnselectedPortrait("55fbb365680a4fa9bfc8d1628d20deef", PortraitTypeEnum.PORTRAIT.getTypeId());
      System.out.println(1);
 	}
 }

@@ -25,10 +25,11 @@ public interface OrganizationPortraitMapper extends CommonSql{
     /**
      * 获取组织已选画像
      * @param organizationId
+     * @param typeId 14001
      * @return
      */
-    @Select(" SELECT "+selectSql+",b.CodeName as codeName,b.TypeId as typeId,b.CodeId as codeId FROM marketing_organization_portrait a left join marketing_unitcode b on a.UnitCodeId = b.Id WHERE a.OrganizationId = #{organizationId} ORDER BY a.FieldWeight")
-    List<MarketingOrganizationPortraitListParam> getSelectedPortrait(@Param("organizationId")String organizationId);
+    @Select(" SELECT "+selectSql+",b.CodeName as codeName,b.TypeId as typeId,b.CodeId as codeId FROM marketing_organization_portrait a left join marketing_unitcode b on a.UnitCodeId = b.Id WHERE a.OrganizationId = #{organizationId} and b.TypeId = #{typeId} ORDER BY a.FieldWeight")
+    List<MarketingOrganizationPortraitListParam> getSelectedPortrait(@Param("organizationId")String organizationId,@Param("typeId") Integer typeId);
 
 
     /**
@@ -52,63 +53,6 @@ public interface OrganizationPortraitMapper extends CommonSql{
     int deleOrgPortrait(@Param("organizationId")String organizationId );
 
 
-    /**
-     * 获取所有的画像
-     * @return
-     */
-    @Select("SELECT "+selectSqlUnitcode+" FROM marketing_unitcode ")
-    List<MarketingUnitcode> getAllUnitcode();
-
-    /**
-     * 条件查询所有的画像
-     * @param map
-     * @return
-     */
-    @Select(" <script>"
-            + " SELECT " + selectSqlUnitcode
-            + " FROM marketing_unitcode  "
-            + " <where>"
-            + " <if test='typeId !=null and typeId != &apos;&apos; '> TypeId = #{typeId} </if> "
-            + " <if test='codeName !=null and codeName != &apos;&apos; '> AND CodeName = #{codeName}</if> "
-            + " <if test='codeId !=null and codeId != &apos;&apos; '> AND CodeId = #{codeId}</if> "
-            + " <if test='codeIdList !=null and codeIdList.size() !=0 '>  AND CodeId IN "
-            + " <foreach item='codeId' index='index' collection='codeIdList' open='(' separator=',' close=')'> #{codeId} </foreach> "
-            + " </if> "
-            + " </where>"
-            + " </script>")
-    List<MarketingUnitcode> getPortraitsList(Map<String, Object> map);
-
-
-    /**
-     * 获取组织已选画像数量
-     * @param organizationId
-     * @return
-     */
-    @Select(" SELECT COUNT(1)  FROM marketing_organization_portrait a WHERE a.OrganizationId = #{organizationId} ")
-    int getSelectedPortraitCount(@Param("organizationId")String organizationId);
-
-
-    /**
-     * 修改组织画像
-     * @param map
-     * @return
-     */
-    @Update(" <script>"
-            + " UPDATE marketing_organization_portrait "
-            + " <set>"
-            + " <if test='portraitName !=null and portraitName != &apos;&apos; '> PortraitName = #{portraitName} ,</if> "
-            + " <if test='fieldWeight !=null '> FieldWeight = #{fieldWeight} ,</if> "
-            + " </set>"
-            + " <where> "
-            + "  Id = #{id} "
-            + " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"
-            + " </where>"
-            + " </script>")
-    int updatePortraits(Map<String,Object> map);
-
-
-    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE CodeId = #{codeId} ")
-    MarketingUnitcode getUnitcodeByCode(@Param("codeId")String codeId);
 
     @Insert(startScript
     		+"insert into marketing_organization_portrait (OrganizationId,OrganizationFullName,UnitCodeId,FieldWeight) values"
@@ -124,10 +68,27 @@ public interface OrganizationPortraitMapper extends CommonSql{
     		)
 	void batchInsert(@Param("list")List<MarketingOrganizationPortrait> mPortraits);
 
-    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
-	List<MarketingUnitcode> getUnselectedPortrait(@Param("organizationId")String organizationId);
+    /**
+     * 获取组织没有选择的画像
+     *
+     * @param organizationId
+     * @param organizationId 14001表示画像
+     * @return
+     */
+    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE TypeId = #{typeId} Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
+	List<MarketingUnitcode> getUnselectedPortrait(@Param("organizationId")String organizationId, @Param("typeId")Integer typeId);
 
-
+    /**
+     * 获取unitcode 中mobile相关信息
+     * @return
+     */
     @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE CodeId = 'Mobile' ")
     MarketingUnitcode getMobilePortrait();
+
+    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE TypeId = #{typeId} Id not in (select UnitCodeId from marketing_organization_portrait where OrganizationId = #{organizationId}) ")
+    List<MarketingOrganizationPortraitListParam> getUnSelectedLabel(String organizationId,@Param("typeId")Integer typeId);
+
+
+    @Select(" SELECT "+selectSql+",b.CodeName as codeName,b.TypeId as typeId,b.CodeId as codeId FROM marketing_organization_portrait a left join marketing_unitcode b on a.UnitCodeId = b.Id WHERE a.OrganizationId = #{organizationId} and b.TypeId = #{typeId} ORDER BY a.FieldWeight")
+    List<MarketingOrganizationPortraitListParam> getSelectedLabel(String organizationId,@Param("typeId")Integer typeId);
 }
