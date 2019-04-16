@@ -122,11 +122,13 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     @Update(" update marketing_integral_exchange ie set HaveStock = HaveStock - #{exchangeNum} where HaveStock- #{exchangeNum} > 0 ")
     int reduceStock(ExchangeProductParam exchangeProductParam);
 
-    @Insert(" insert into marketing_integral_exchange (MemberType,ExchangeResource,ExchangeIntegral,ExchangeStock, " +
-            " HaveStock,CustomerLimitNum,Status,PayWay,UndercarriageSetWay,UnderCarriage,StockWarning,StockWarningNum, " +
+    @Insert(startScript +
+            " insert into marketing_integral_exchange (MemberType,ExchangeResource,ExchangeIntegral,ExchangeStock, " +
+            " HaveStock,CustomerLimitNum,Status,PayWay,UndercarriageSetWay,Undercarriage,StockWarning,StockWarningNum, " +
             " OrganizationId,OrganizationName,ProductId,ProductName,SkuName,SkuUrl,SkuStatus,ProductPic,ShowPrice) values " +
-            "<foreach collection='list' item='item' index='index' separator=','> " +
-            " (#{item.memberType}, " +
+            " <foreach collection='list' item='item' index='index' separator=','> " +
+            " (" +
+            " #{item.memberType}, " +
             " #{item.exchangeResource}, " +
             " #{item.exchangeIntegral}, " +
             " #{item.exchangeStock}," +
@@ -135,7 +137,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " #{item.status}, " +
             " #{item.payWay}, " +
             " #{item.undercarriageSetWay}, " +
-            " #{item.underCarriage}, " +
+            " #{item.undercarriage}, " +
             " #{item.stockWarning}, " +
             " #{item.stockWarningNum}, " +
             " #{item.organizationId}, " +
@@ -146,9 +148,11 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " #{item.skuUrl}, " +
             " #{item.skuStatus}, " +
             " #{item.productPic}, " +
-            " #{item.showPrice}) " +
-            " </foreach> ")
-    int insertBatch(@Param("list") List<IntegralExchange> integralExchanges);
+            " #{item.showPrice}" +
+            " ) " +
+            " </foreach> "+
+            endScript)
+    int insertBatch(@Param("list") List<IntegralExchange> list);
 
 
 
