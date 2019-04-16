@@ -23,7 +23,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " ExchangeIntegral exchangeIntegral, ExchangeStock exchangeStock, HaveStock haveStock, CustomerLimitNum customerLimitNum, " +
             " Status status, PayWay payWay, UndercarriageSetWay undercarriageSetWay, UnderCarriage underCarriage, StockWarning stockWarning, " +
             " StockWarningNum stockWarningNum, OrganizationId organizationId, OrganizationName organizationName, ProductId productId, ProductName productName, " +
-            " SkuName skuName, SkuUrl skuUrl, SkuStatus skuStatus, ProductPic productPic, ShowPrice showPrice ";
+            " SkuId skuId, SkuName skuName, SkuUrl skuUrl, SkuStatus skuStatus, ProductPic productPic, ShowPrice showPrice ";
     static String whereSearch =
             "<where>" +
                     "<choose>" +
@@ -76,7 +76,11 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " and Status = 0 "+ endScript)
     int updateStatusLowwer(IntegralExchange updateStatus);
 
-
+    /**
+     * 获取组织的兑换产品，产品不可重复
+     * @param organizationId
+     * @return
+     */
     @Select(startScript
             + " select ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral, ShowPrice showPriceStr from marketing_integral_exchange ie  where OrganizationId = #{organizationId} and Status = 0 "
             + " group by ProductId,ProductName, ProductPic, ExchangeIntegral, ShowPrice"
@@ -125,7 +129,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     @Insert(startScript +
             " insert into marketing_integral_exchange (MemberType,ExchangeResource,ExchangeIntegral,ExchangeStock, " +
             " HaveStock,CustomerLimitNum,Status,PayWay,UndercarriageSetWay,Undercarriage,StockWarning,StockWarningNum, " +
-            " OrganizationId,OrganizationName,ProductId,ProductName,SkuName,SkuUrl,SkuStatus,ProductPic,ShowPrice) values " +
+            " OrganizationId,OrganizationName,ProductId,ProductName,SkuId,SkuName,SkuUrl,SkuStatus,ProductPic,ShowPrice) values " +
             " <foreach collection='list' item='item' index='index' separator=','> " +
             " (" +
             " #{item.memberType}, " +
@@ -145,6 +149,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " #{item.productId}, " +
             " #{item.productName}, " +
             " #{item.skuName}, " +
+            " #{item.skuId}, " +
             " #{item.skuUrl}, " +
             " #{item.skuStatus}, " +
             " #{item.productPic}, " +

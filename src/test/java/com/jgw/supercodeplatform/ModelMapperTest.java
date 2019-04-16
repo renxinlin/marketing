@@ -7,9 +7,7 @@ import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import org.junit.Test;
 import org.modelmapper.ModelMapper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ModelMapperTest {
     public static void main(String[] args) {
@@ -90,4 +88,19 @@ public class ModelMapperTest {
         System.out.println(JSONObject.toJSONString(map1));
         System.out.println(parse);
     }
+
+    @Test
+    public void testModelMapper5(){
+        ModelMapper modelMapper = new ModelMapper();
+        ProductPageFromBaseServiceParam queryCondition = new ProductPageFromBaseServiceParam();
+        queryCondition.setExcludeProductIds(new ArrayList<>());
+        queryCondition.setCurrent(12);
+        String s = JSONObject.toJSONString(queryCondition);
+        Object parse = JSONObject.parse(s);
+        Map map = modelMapper.map(parse, HashMap.class);
+
+    }
+
+
+
 }

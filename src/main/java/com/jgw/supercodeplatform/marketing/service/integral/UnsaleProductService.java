@@ -34,7 +34,6 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
     @Value("${rest.user.url}")
     private  String baseService;
 
-    private static String SERVICE_BASE_INFO_URL = "";
     @Autowired
     private ProductUnsaleMapperExt mapper;
     @Autowired
@@ -114,12 +113,19 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         header.put("super-token",commonUtil.getSuperToken());
         if(isSale){
             // 自卖产品
-            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL, modelMapper.map(queryCondition, Map.class), header);
+            // 走下json解决反射问题
+            String s = JSONObject.toJSONString(queryCondition);
+            Map map = modelMapper.map(JSONObject.parse(s), HashMap.class);
+
+           // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,map, header);
             Object parse = JSONObject.parse(response.getBody());
             return modelMapper.map(parse, RestResult.class);
         }else{
             // 非自卖产品
-            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL, modelMapper.map(queryCondition, Map.class), header);
+            String s = JSONObject.toJSONString(queryCondition);
+            Map map = modelMapper.map(JSONObject.parse(s), HashMap.class);
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL,map, header);
             Object parse = JSONObject.parse(response.getBody());
             return modelMapper.map(parse, RestResult.class);
         }
