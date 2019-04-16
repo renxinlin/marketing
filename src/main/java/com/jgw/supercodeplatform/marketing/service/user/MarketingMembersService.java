@@ -170,13 +170,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
 			// TODO 这个月份是按天【DATEDIFF】计算还是跨月【period_dif，%Y%mf】计算
 			}else if("NoIntegralWithOneMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 1 ,1,0) NoIntegralWithOneMonth ");
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 1 ,1,0) NoIntegralWithOneMonth ");
 
 			}else if("NoIntegralWithThreeMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 1 ,1,0) NoIntegralWithThreeMonth ");
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 3 ,1,0) NoIntegralWithThreeMonth ");
 
 			}else if("NoIntegralWithSixMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) &lt;= 1 ,1,0) NoIntegralWithSixMonth ");
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 6 ,1,0) NoIntegralWithSixMonth ");
 
 			}else{
 				fieldsbuf.append(code);
