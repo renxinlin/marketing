@@ -14,9 +14,17 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeDetailParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
+import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -140,5 +148,24 @@ public class LotteryUtilTest {
 //			}
 //		}
 	}
+	@Autowired
+	private IntegralExchangeService integralExchangeService;
+	@Test
+	public void testHystrix() throws SuperCodeException{
+		System.out.println("================================start===========================");
+
+		IntegralExchangeDetailParam des = new IntegralExchangeDetailParam();
+
+		des.setProductId("8b1877394c1d4052806acec899563d6c");
+
+		RestResult detail = integralExchangeService.getDetail(des, (byte) 0);
+
+		System.out.println("================================end===========================");
+		System.out.println(JSONObject.toJSONString(detail));
+
+
+	}
+
+
 
 }

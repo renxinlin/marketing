@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import org.junit.Test;
@@ -66,5 +67,27 @@ public class ModelMapperTest {
         integralExchanges.setSkuUrl("url");
         SkuInfo result= modelMapper.map(integralExchanges,SkuInfo.class);
         System.out.println(JSONObject.toJSONString(result));
+    }
+
+
+    @Test
+    public void testModelMapper3(){
+        ModelMapper modelMapper = new ModelMapper();
+        ProductPageParam pageParam = new ProductPageParam();
+        pageParam.setCurrent(10);
+        pageParam.setSearch("ss");
+        ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
+    }
+
+    @Test
+    public void testModelMapper4(){
+        ModelMapper modelMapper = new ModelMapper();
+        String s ="{\"state\":200,\"msg\":\"s\"}";
+        RestResult map = modelMapper.map(s, RestResult.class);
+        Object parse = JSONObject.parse(s);
+        RestResult map1 = modelMapper.map(parse, RestResult.class);
+        System.out.println(JSONObject.toJSONString(map));
+        System.out.println(JSONObject.toJSONString(map1));
+        System.out.println(parse);
     }
 }

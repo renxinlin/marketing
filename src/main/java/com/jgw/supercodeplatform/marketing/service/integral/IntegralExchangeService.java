@@ -3,8 +3,11 @@ package com.jgw.supercodeplatform.marketing.service.integral;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.*;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.ExchangeStatisticsMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
@@ -13,6 +16,7 @@ import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.*;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -20,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -48,7 +53,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
     private IntegralRecordMapperExt recordMapper;
 
     @Autowired
-    private ProductUnsaleMapperExt unsaleMapper;
+    private CommonUtil commonUtil;
 
     // 对象转换器
     @Autowired
@@ -59,8 +64,6 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
     @Autowired
     private ExchangeStatisticsMapperExt exchangeStatisticsMapper;
 
-    @Autowired
-    private RestTemplate restTemplate;
     @Value("${rest.user.url}")
     private String BASE_SERVICE_NAME;
 
@@ -177,7 +180,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
     }
 
     /**
-     * H5会员查看详情
+     * H5会员查看详情|第一个详情页
      * @param productId
      * @return
      * @throws SuperCodeException
@@ -207,17 +210,53 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
  //            integralExchangeDetailParam.setHaveStock(stock);
 //        }
         // 查询详情
-        // TODO URL补充【基础信息】补充详情信息
-        Map datailFromBaseService = restTemplate.postForObject(BASE_SERVICE_NAME,integralExchangeDetailParam,Map.class);
-        integralExchangeDetailParam.setDetail((String) datailFromBaseService.get("detail"));
+        RestResult datailFromBaseServiceResult = getDetail(integralExchangeDetailParam,integralExchangeDetailParams.get(0).getExchangeResource());
+        if(datailFromBaseServiceResult.getState() != 200){
+            throw new SuperCodeException("商品详情查询失败");
+        }
+        Map map = modelMapper.map(datailFromBaseServiceResult.getResults(), Map.class);
+        String productDetails =(String) map.get("productDetails");
+        integralExchangeDetailParam.setDetail(productDetails);
         if(integralExchangeDetailParam.getDetail() == null){
             throw new SuperCodeException("商品详情信息不存在");
         }
         return integralExchangeDetailParam;
     }
+    // 选择线程池还是信号灯
+    @HystrixCommand(fallbackMethod = "getDetailByhystrix") //断路器命令
+    public RestResult  getDetail( IntegralExchangeDetailParam integralExchangeDetailParam,Byte exchangeResource) throws SuperCodeException{
+        // 查询参数
+        Map<String, String> header = new HashMap<>();
+        header.put("super-token",commonUtil.getSuperToken());
+        Map productId = new HashMap();
+        productId.put("productId",integralExchangeDetailParam.getProductId());
+       //兑换资源0非自卖1自卖产品
+        if(0== exchangeResource.intValue()){
+            // 查询基础信息自卖产品
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(BASE_SERVICE_NAME + CommonConstants.SALE_PRODUCT_DETAIL_URL,productId, header);
+            Object parse = JSONObject.parse(response.getBody());
+            return modelMapper.map(parse, RestResult.class);
+        }else if(1==exchangeResource.intValue()){
+            // 查询基础信息非自卖产品
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(BASE_SERVICE_NAME + CommonConstants.UN_SALE_PRODUCT_DETAIL_URL, productId, header);
+            Object parse = JSONObject.parse(response.getBody());
+            return modelMapper.map(parse, RestResult.class);
+        }
+        return RestResult.error("");
+
+
+
+
+        }
+
+    // hystrix方法
+    public RestResult  getDetailByhystrix(IntegralExchangeDetailParam integralExchangeDetailParam,Byte exchangeResource) throws SuperCodeException{
+        logger.error("base service failure by hystrix!");
+        return RestResult.error("");
+    }
 
     /**
-     * 兑换详情SKU+地址信息|【h5会员】
+     * 兑换详情SKU+地址信息|【h5会员】第二个详情页,预下单页面
      * @param productId
      * @return
      */

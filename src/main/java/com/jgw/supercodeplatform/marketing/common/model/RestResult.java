@@ -101,4 +101,7 @@ public class RestResult <T>{
 	public void setResults(T results) {
 		this.results = results;
 	}
+
+    public void setResults() {
+    }
 }

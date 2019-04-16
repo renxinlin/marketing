@@ -3,19 +3,28 @@ package com.jgw.supercodeplatform.marketing.service.integral;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
 import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -30,44 +39,102 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
     private ProductUnsaleMapperExt mapper;
     @Autowired
     private RestTemplateUtil restTemplateUtil;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+
+    @Autowired
+    private IntegralExchangeMapperExt integralExchangeMapper;
+
+
+    @Autowired
+    private CommonUtil commonUtil;
+
+
+
+    @Autowired
+    private ModelMapper modelMapper;
+
     /**
      * 抽取到基础信息
      * @param organizationId
      * @return
      */
-//    public List<Map<String, Object>> selectUnsale(String organizationId) throws SuperCodeException{
-//        if(StringUtils.isBlank(organizationId)){
-//            throw  new SuperCodeException("组织id获取失败");
-//        }
-//        // 获取所有的非自卖产品
-//        List<ProductUnsale> productUnsales = mapper.selectAll(organizationId);
-//
-//        List<Map<String,Object>> productUnsaleMaps = new ArrayList<>();
-//        if(CollectionUtils.isEmpty(productUnsales)){
-//            return  productUnsaleMaps;
-//        }
-//        // 将非自卖的sku转化成子节点信息
-//        ModelMapper modelMapper = new ModelMapper();
-//
-//        for(ProductUnsale productUnsale : productUnsales){
-//            String unsaleProductSkuInfo = productUnsale.getUnsaleProductSkuInfo();
-//            // [{k1:v1,k2,v2}] 属性name pic
-//            List<SkuInfo> skuChilds = JSONArray.parseArray(unsaleProductSkuInfo, SkuInfo.class);
-//            productUnsale.setSkuChild(skuChilds);
-//            Map map = modelMapper.map(productUnsale, Map.class);
-//            productUnsaleMaps.add(map);
-//        }
-//        return  productUnsaleMaps;
-//    }
+    public RestResult selectUnSalePruduct(String organizationId, ProductPageParam pageParam) throws SuperCodeException{
+        if(StringUtils.isBlank(organizationId)){
+            throw  new SuperCodeException("组织id获取失败");
+        }
+        // 基础校验
+        if(StringUtils.isBlank(organizationId)){
+            throw new SuperCodeException("获取组织ID信息失败");
+        }
+
+        // 获取组织已经添加的自卖产品集合
+        Set<String> excludeProductIds = integralExchangeMapper.selectUnSalePruduct(organizationId);
+        // 查询基础平台
+        ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
+        queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
+        RestResult restResult = getProductFromBaseService(queryCondition,false);
+        if(restResult.getState() == 200){
+            return  restResult;
+        }else{
+            return RestResult.error("基础信息异常...");
+        }
+    }
+
+
     /**
      * 基于组织id:自卖产品查询
      * @param organizationId
      * @return
      */
-//    public List<Map<String, Object>> selectPruduct(String organizationId) {
-//        return  null;
-//
-//    }
+    public RestResult selectSalePruduct(String organizationId, ProductPageParam pageParam) throws SuperCodeException{
+        // 基础校验
+        if(StringUtils.isBlank(organizationId)){
+            throw new SuperCodeException("获取组织ID信息失败");
+        }
+
+        // 获取组织已经添加的自卖产品集合
+        Set<String> excludeProductIds = integralExchangeMapper.selectSalePruduct(organizationId);
+        // 查询基础平台
+        ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
+        queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
+        RestResult restResult = getProductFromBaseService(queryCondition,true);
+        if(restResult.getState() == 200){
+           return  restResult;
+        }else{
+            return RestResult.error("基础信息异常...");
+        }
+    }
+
+    @HystrixCommand(fallbackMethod = "getProductFromBaseServiceHystrix")
+    public RestResult getProductFromBaseService(ProductPageFromBaseServiceParam queryCondition,boolean isSale)throws SuperCodeException{
+        Map<String, String> header = new HashMap<>();
+        header.put("super-token",commonUtil.getSuperToken());
+        if(isSale){
+            // 自卖产品
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL, modelMapper.map(queryCondition, Map.class), header);
+            Object parse = JSONObject.parse(response.getBody());
+            return modelMapper.map(parse, RestResult.class);
+        }else{
+            // 非自卖产品
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL, modelMapper.map(queryCondition, Map.class), header);
+            Object parse = JSONObject.parse(response.getBody());
+            return modelMapper.map(parse, RestResult.class);
+        }
+    }
+
+    /**
+     * 断路降级方法
+     * @param excludeProductIds
+     * @param isSale
+     * @return
+     * @throws SuperCodeException
+     */
+    public RestResult<Object> getProductFromBaseServiceHystrix( List<String> excludeProductIds,boolean isSale)throws SuperCodeException{
+        return RestResult.error("");
+    }
 
     /**
      * 分页查询组织非自卖产品

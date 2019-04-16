@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, CommonSql {
@@ -147,7 +148,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " #{item.productPic}, " +
             " #{item.showPrice}) " +
             " </foreach> ")
-    int insertBatch(List<IntegralExchange> integralExchanges);
+    int insertBatch(@Param("list") List<IntegralExchange> integralExchanges);
 
 
 
@@ -164,6 +165,18 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             ") ")
     int undercarriage(List<IntegralExchange> readingToDb);
 
-
-
+    /**
+     * 查询自卖产品;0非自卖1自卖产品
+     * @param organizationId
+     * @return
+     */
+    @Select(" select ProductId from marketing_integral_exchange ie where ie.OrganizationId=#{organizationId} and ie.ExchangeResource = 1 ")
+    Set<String> selectSalePruduct(@Param("organizationId") String organizationId);
+    /**
+     * 查询非自卖产品;0非自卖1自卖产品
+     * @param organizationId
+     * @return
+     */
+    @Select(" select ProductId from marketing_integral_exchange ie where ie.OrganizationId=#{organizationId} and ie.ExchangeResource = 0 ")
+    Set<String> selectUnSalePruduct(@Param("organizationId") String organizationId);
 }

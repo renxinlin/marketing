@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -19,14 +21,16 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestController
 @RequestMapping("/marketing/jwt")
-@Api(tags = "jwt-token生成接口")
+@Api(tags = "jwt-token生成接口|前端和网页调试使用H5页面使用")
 public class JwtGetTestController {
 
     @RequestMapping(value = "/test",method = RequestMethod.POST)
-     public RestResult jwt(@ApiIgnore HttpServletResponse response, @RequestBody JwtUser user) throws SuperCodeException {
+     public RestResult jwt(@ApiIgnore HttpServletResponse response, @ApiIgnore HttpServletRequest request, @RequestBody JwtUser user) throws SuperCodeException {
         String tokenWithClaim = JWTUtil.createTokenWithClaim(user);
         response.setHeader("jwt-token",tokenWithClaim);
+        // 方便调试
+        Cookie ck =new Cookie("jwt-token",tokenWithClaim);
+        response.addCookie(ck);
         return RestResult.success("success",tokenWithClaim);
-
     }
 }
