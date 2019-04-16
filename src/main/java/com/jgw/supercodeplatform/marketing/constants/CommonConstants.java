@@ -29,9 +29,9 @@ public class CommonConstants {
     /**
      * 单一产品信息
      */
-    public static final String SALE_PRODUCT_DETAIL_URL ="/product/market" ;
+    public static final String SALE_PRODUCT_DETAIL_URL ="/product/market/no-filter" ;
     /**
      * 单一产品信息
      */
-    public static final String UN_SALE_PRODUCT_DETAIL_URL ="/non-self-selling/product/market" ;
+    public static final String UN_SALE_PRODUCT_DETAIL_URL ="/non-self-selling/product/market/no-filter" ;
 }
