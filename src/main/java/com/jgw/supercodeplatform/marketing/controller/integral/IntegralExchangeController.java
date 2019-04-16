@@ -144,11 +144,11 @@ public class IntegralExchangeController extends CommonUtil {
         if(SALE_TYPE.intValue() == pageParam.getType().intValue()){
             // 查询基础信息自卖产品
             return  unsaleProductService.selectSalePruduct(organizationId, pageParam);
-        }else if(SALE_TYPE.intValue() == pageParam.getType().intValue()){
+        }else if(UN_SALE_TYPE.intValue() == pageParam.getType().intValue()){
             // 查询基础信息非自卖产品
             return unsaleProductService.selectUnSalePruduct(organizationId, pageParam);
         }
-        return RestResult.error(null);
+        return RestResult.error("兑换产品资源类型不存在");
     }
 
     @RequestMapping(value = "/promotion",method = RequestMethod.GET)

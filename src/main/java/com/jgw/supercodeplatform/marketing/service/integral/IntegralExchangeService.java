@@ -139,7 +139,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         IntegralExchange updateStatus = new IntegralExchange();
         updateStatus.setId(id);
         updateStatus.setOrganizationId(organizationId);
-
+        updateStatus.setStatus(status);
         // 兑换活动状态0上架1手动下架2自动下架
         int i = 0;
         if(status == (byte) 0){
