@@ -26,13 +26,23 @@ public class MarketingMembers {
     private Integer haveIntegral; //  会员积分
     private Byte memberType; // 会员类型默认0
     private Date integralReceiveDate; // 最新一次积分领取时间
+    private String wechatHeadImgUrl;
+    
     public Date getIntegralReceiveDate() {
         return integralReceiveDate;
     }
 
+    public String getWechatHeadImgUrl() {
+		return wechatHeadImgUrl;
+	}
+
+	public void setWechatHeadImgUrl(String wechatHeadImgUrl) {
+		this.wechatHeadImgUrl = wechatHeadImgUrl;
+	}
 
 
-    public void setIntegralReceiveDate(Date integralReceiveDate) {
+
+	public void setIntegralReceiveDate(Date integralReceiveDate) {
         this.integralReceiveDate = integralReceiveDate;
     }
 

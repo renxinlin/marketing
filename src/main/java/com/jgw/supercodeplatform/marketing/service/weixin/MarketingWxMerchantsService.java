@@ -56,11 +56,19 @@ public class MarketingWxMerchantsService {
 	}
 
 	public MarketingWxMerchants selectByOrganizationId(String organizationId) {
-		return dao.selectByOrganizationId(organizationId);
+		MarketingWxMerchants mWxMerchants=dao.selectByOrganizationId(organizationId);
+		if (null==mWxMerchants) {
+			mWxMerchants=dao.selectDefault();
+		}
+		return mWxMerchants;
 	}
 	
 	public MarketingWxMerchants get(String organizationId){
-		return dao.get(organizationId);
+		MarketingWxMerchants mWxMerchants=dao.get(organizationId);
+		if (null==mWxMerchants) {
+			mWxMerchants=dao.selectDefault();
+		}
+		return mWxMerchants;
 	}
     
 	/**

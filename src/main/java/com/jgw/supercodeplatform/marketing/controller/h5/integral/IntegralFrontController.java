@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
@@ -64,6 +65,8 @@ public class IntegralFrontController {
 	@Autowired
 	private RedisUtil redisUtil;
 
+	@Autowired
+	private RedisLockUtil lockUtil;
 	/**
 	 * 领取积分
 	 * 
@@ -118,7 +121,8 @@ public class IntegralFrontController {
 		}
 		Map<String, Object> data=calculateReceiveIntegral(outerCodeId,codeTypeId,productId,null,organizationId,members, integralRule, nowTime,inRuleProduct);
 		Integer haveIntegral=members.getHaveIntegral()==null?0:members.getHaveIntegral();
-		synchronized (this) {
+		boolean acquireLock = lockUtil.lock("intrgral:" + outerCodeId + ":" + codeTypeId,5000,5,200);
+		if (acquireLock) {
 			Long num= esService.countCodeIntegral(outerCodeId,codeTypeId);
 			if (null!=num && num.intValue()>=1) {
 				result.setState(500);
@@ -127,13 +131,19 @@ public class IntegralFrontController {
 			}
 			// 7.把当前码存入积分ES。注意6,7是一个事务保证一致性且需在redis的同步锁里以防多个用户同时操作
 			esService.addCodeIntegral(members.getId(), outerCodeId, codeTypeId, productId, productBatchId, organizationId, staticESSafeFormat.parse(nowTime));
+		}else {
+			result.setState(500);
+			result.setMsg("扫码人数过多请稍后再试");
+			return result;
 		}
-		  members.setHaveIntegral(haveIntegral+(Integer)data.get("integralSum"));
-		  memberService.update(members);
-		  List<IntegralRecord> inRecords= (List<IntegralRecord>) data.get("integralRecords");
-		  if (null!=inRecords && !inRecords.isEmpty()) {
-			  integralRecordService.batchInsert(inRecords);
-		  }
+		Integer sum=(Integer)data.get("integralSum");
+	    members.setHaveIntegral(haveIntegral+sum);
+	    memberService.update(members);
+	    List<IntegralRecord> inRecords= (List<IntegralRecord>) data.get("integralRecords");
+	    if (null!=inRecords && !inRecords.isEmpty()) {
+		  integralRecordService.batchInsert(inRecords);
+	    }
+	    result.setMsg("恭喜领取+"+sum+"积分");
 		result.setState(200);
 		return result;
 	}

@@ -102,11 +102,7 @@ public class CommonService {
      * @return
      * @throws SuperCodeException 
      */
-	public List<Map<String, Object>> getUrlToBatchParam(JSONObject obj,String url,int businessType) throws SuperCodeException {
-		JSONArray array=obj.getJSONArray("results");
-		if (array.isEmpty()) {
-			throw new SuperCodeException("获取码管理批次信息为空请确保该产品批次已进行码关联", 500);
-		}
+	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
 		List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
 		for(int i=0;i<array.size();i++) {
 			JSONObject batchobj=array.getJSONObject(i);
@@ -143,4 +139,30 @@ public class CommonService {
 		return body;
 	}
 
+	
+	
+    /**
+     * 根据产品集合获取产品和批次集合
+     * @param productIds
+     * @param superToken
+     * @return
+     * @throws SuperCodeException
+     */
+	public JSONArray requestPriductBatchIds(List<String> productIds, String superToken)
+			throws SuperCodeException {
+		Map<String,String>headerMap=new HashMap<String, String>();
+		headerMap.put("super-token", superToken);
+		
+		Map<String, Object>params=new HashMap<String, Object>();
+		params.put("productIds", productIds);
+		ResponseEntity<String> response=restTemplateUtil.getRequestAndReturnJosn(restUserUrl, params, headerMap);
+		logger.info("根据产品集合请求基础平台批次数据收到响应："+response.toString());
+		String body=response.getBody();
+		JSONObject jsonObject=JSONObject.parseObject(body);
+		Integer state=jsonObject.getInteger("state");
+		if (null!=state && state.intValue()==1) {
+			throw new SuperCodeException("根据产品集合获取产品批次集合出错:"+body, 500);
+		}
+		return jsonObject.getJSONArray("results");
+	}
 }

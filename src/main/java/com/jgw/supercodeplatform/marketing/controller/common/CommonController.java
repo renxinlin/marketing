@@ -87,4 +87,6 @@ public class CommonController extends CommonUtil {
         return ImageIO.write(image, "JPEG", response.getOutputStream());
     }
 
+    
+    
 }

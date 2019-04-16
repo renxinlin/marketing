@@ -16,8 +16,10 @@ public class GlobalRamCache {
 	//扫码时保存产品和码信息到内存，待授权后根据授权state值获取
 	private String  MARKETING_GLOBAL_SCAN_CODE_INFO="marketing:cache:scanCodeInfo";
 	private String  MARKETING_GLOBAL_CACHE ="marketing:cache:wxMerchants";
+	
 	@Autowired
 	private MarketingWxMerchantsMapper mWxMerchantsMapper;
+	
 	@Autowired
 	private RedisUtil redisUtil;
 

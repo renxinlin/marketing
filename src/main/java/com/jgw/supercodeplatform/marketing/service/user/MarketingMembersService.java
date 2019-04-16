@@ -449,29 +449,65 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("验证码不正确");
 			return restResult;
 		}
-		
+		H5LoginVO h5LoginVO =null;
 		if (StringUtils.isBlank(wxstate)) {
-			H5LoginVO h5LoginVO = loginWithWxstate(mobile, wxstate);
+			 h5LoginVO = loginWithWxstate(mobile, wxstate);
 			restResult.setResults(h5LoginVO);
 		}else {
-			MarketingMembers marketingMembersByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openid, organizationId);
-			if (null==marketingMembersByOpenId) {
-				logger.info("登录时无法根据openId及组织id查找到用户,openId="+openid+",组织id="+organizationId);
-				throw new SuperCodeException("无法根据openId及组织id查找到用户。可能用户已被删除，请尝试重新扫码进入授权或联系商家", 500);
-			}
-			
+			h5LoginVO=new H5LoginVO();
+			h5LoginVO.setMobile(mobile);			//积分登录openid不一定存在
+			h5LoginVO.setRegistered(1);
 			MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
-			Long userIdByPhone=marketingMembersByPhone.getId();
-			Long userIdByOpenId=marketingMembersByOpenId.getId();
-			if (!userIdByOpenId.equals(userIdByPhone)) {
-				String openIdByPhone=marketingMembersByPhone.getOpenid();
-				//手机号这条记录的openid不为空，合并过openid就通过之前的openid更新中奖纪录里的openid和手机号
-				if (StringUtils.isNotBlank(openIdByPhone)) {
-					//如果之前该手机号绑定过openid则更新之前的中奖纪录，没有的话就不更新哦
-					mWinRecordMapper.updateOpenIdAndMobileByOpenIdAndOrgId(openid,mobile,organizationId,openIdByPhone);
+			MarketingMembers marketingMembersByOpenId=null;
+			if (StringUtils.isNotBlank(openid)) {
+			   marketingMembersByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openid, organizationId);
+			}
+			if (null==marketingMembersByPhone) {
+				if (null==marketingMembersByOpenId) {
+					MarketingMembers member=new MarketingMembers();
+					member.setOpenid(openid);
+					member.setMobile(mobile);
+					member.setState((byte)1);
+					member.setHaveIntegral(0);
+					member.setMemberType((byte)0);
+					member.setOrganizationId(organizationId);
+					marketingMembersMapper.insert(member);
+					h5LoginVO.setMemberId(member.getId());
+					h5LoginVO.setHaveIntegral(0);
+				}else {
+					marketingMembersByOpenId.setMobile(mobile);
+					marketingMembersByOpenId.setState((byte)1);
+					marketingMembersMapper.update(marketingMembersByOpenId);
+					h5LoginVO.setMemberId(marketingMembersByOpenId.getId());
 				}
-				//合并两条记录
-				mergeMember(mobile,  organizationId,  openIdByPhone, openid,  userIdByPhone,  userIdByOpenId, marketingMembersByOpenId.getWxName());
+			}else {
+				if (null!=marketingMembersByOpenId) {
+					Long userIdByPhone=marketingMembersByPhone.getId();
+					Long userIdByOpenId=marketingMembersByOpenId.getId();
+					if (!userIdByOpenId.equals(userIdByPhone)) {
+						String openIdByPhone=marketingMembersByPhone.getOpenid();
+						//手机号这条记录的openid不为空，合并过openid就通过之前的openid更新中奖纪录里的openid和手机号
+						if (StringUtils.isNotBlank(openIdByPhone)) {
+							//如果之前该手机号绑定过openid则更新之前的中奖纪录，没有的话就不更新哦
+							mWinRecordMapper.updateOpenIdAndMobileByOpenIdAndOrgId(openid,mobile,organizationId,openIdByPhone);
+						}
+						//合并两条记录
+						//更新手机号对应的记录设置微信openid及昵称
+						MarketingMembers members=new MarketingMembers();
+						members.setId(userIdByPhone);
+						members.setOpenid(openid);
+						members.setWxName(marketingMembersByOpenId.getWxName());
+						members.setWechatHeadImgUrl(marketingMembersByOpenId.getWechatHeadImgUrl());
+						members.setState((byte)1);
+						marketingMembersMapper.update(members);
+						h5LoginVO.setHaveIntegral(members.getHaveIntegral());
+						h5LoginVO.setMemberId(userIdByPhone);
+						h5LoginVO.setRegistered(1);
+						
+						//删除openid查出的用户
+						marketingMembersMapper.deleteById(userIdByOpenId);
+					}
+				}
 			}
 		}
 		
@@ -562,7 +598,17 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					mWinRecordMapper.updateOpenIdAndMobileByOpenIdAndOrgId(openIdByOpendId,mobile,organizationId,openIdByPhone);
 				}
 				//合并两条记录
-				mergeMember( mobile,  organizationId,  openIdByPhone, openIdByOpendId,  userIdByPhone,  userIdByOpenId, marketingMembersByOpenId.getWxName());
+				//更新手机号对应的记录设置微信openid及昵称
+				MarketingMembers members=new MarketingMembers();
+				members.setId(userIdByPhone);
+				members.setOpenid(openIdByOpendId);
+				members.setWxName(marketingMembersByOpenId.getWxName());
+				members.setWechatHeadImgUrl(marketingMembersByOpenId.getWechatHeadImgUrl());
+				members.setState((byte)1);
+				marketingMembersMapper.update(members);
+				//删除openid查出的用户
+				marketingMembersMapper.deleteById(userIdByOpenId);
+				
 				h5LoginVO.setMemberId(userIdByPhone);
 
 			}else{
@@ -572,27 +618,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			}
 		}
 		return h5LoginVO;
-	}
-    /**
-     * 把openid和手机号对应的两条记录合并
-     * @param mobile
-     * @param organizationId
-     * @param marketingMembersByOpenId
-     * @param h5LoginVO
-     * @param userIdByOpenId
-     * @param marketingMembersByPhone
-     * @param userIdByPhone
-     */
-	private void mergeMember(String mobile, String organizationId, String openIdByPhone,String openIdByOpendId, Long userIdByPhone, Long userIdByOpenId,String nickname) {
-
-		//更新手机号对应的记录设置微信openid及昵称
-		MarketingMembers members=new MarketingMembers();
-		members.setId(userIdByPhone);
-		members.setOpenid(openIdByOpendId);
-		members.setWxName(nickname);
-		marketingMembersMapper.update(members);
-		//删除openid查出的用户
-		marketingMembersMapper.deleteById(userIdByOpenId);
 	}
 	/**
 	 * 点击中奖逻辑

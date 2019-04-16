@@ -1,16 +1,15 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 
 /**
  * 积分记录

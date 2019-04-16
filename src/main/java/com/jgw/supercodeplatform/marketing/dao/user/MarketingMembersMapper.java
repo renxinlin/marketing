@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -27,8 +28,8 @@ public interface MarketingMembersMapper {
             + " DATE_FORMAT(a.CreateDate,'%Y-%m-%d') as createDate,DATE_FORMAT(a.UpdateDate,'%Y-%m-%d') as updateDate,"
             + "a.CustomerName as customerName,a.CustomerId as customerId,"
             + " a.BabyBirthday as babyBirthday,  a.IsRegistered as isRegistered , "
-            + " a.HaveIntegral as haveIntegral , MemberType memberType, a.IntegralReceiveDate as integralReceiveDate ";
-
+            + " a.HaveIntegral as haveIntegral , MemberType memberType, a.IntegralReceiveDate as integralReceiveDate "
+            +" a.WechatHeadImgUrl as wechatHeadImgUrl";
 
     /**
      * 会员注册
@@ -36,11 +37,11 @@ public interface MarketingMembersMapper {
      * @return
      */
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
-            + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday,PCCcode,State,IsRegistered)"
+            + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday,PCCcode,State,IsRegistered,WechatHeadImgUrl)"
             + " VALUES("
             + " #{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday}"
             + " ,NOW(),#{organizationId},"
-            + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state},1)")
+            + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state},1,#{wechatHeadImgUrl})")
     int addMembers(MarketingMembersAddParam marketingMembersAddParam);
 
 
@@ -145,7 +146,8 @@ public interface MarketingMembersMapper {
 
     @Delete("delete from marketing_members where Id=#{id}")
 	void deleteById(@Param("id")Long id);
-
+    
+    @Options(useGeneratedKeys=true, keyProperty="id", keyColumn="Id")
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
             + " Sex,Birthday,"
             + " PCCcode,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday)"
@@ -180,6 +182,7 @@ public interface MarketingMembersMapper {
             + " <if test='pCCcode !=null and pCCcode != &apos;&apos; '> PCCcode = #{pCCcode} ,</if> "
             + " <if test='wxName !=null and wxName != &apos;&apos; '> WxName = #{wxName} ,</if> "
             + " <if test='openid !=null and openid != &apos;&apos; '> Openid = #{openid} ,</if> "
+            + " <if test='wechatHeadImgUrl !=null and wechatHeadImgUrl != &apos;&apos; '> WechatHeadImgUrl = #{wechatHeadImgUrl} ,</if> "
             + " <if test=' isRegistered !=null and isRegistered != &apos;&apos; '> IsRegistered = #{isRegistered} ,</if> "
             + " UpdateDate = NOW() ,"
             + " </set>"
