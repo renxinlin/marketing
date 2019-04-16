@@ -41,8 +41,8 @@ public class MemberExchangeController {
 
     @RequestMapping(value = "detailByMember",method = RequestMethod.GET)
     @ApiOperation(value = "兑换详情|【h5会员】", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "产品ID",name="productId"),
-            @ApiImplicitParam(paramType="query",value = "兑换积分",name="exchangeIntegral")})
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "请求头",name="super-token"),
+            @ApiImplicitParam(paramType="query",value = "产品ID",name="productId")})
     public RestResult<IntegralExchangeDetailParam> detailByMember(@RequestParam("productId") String productId) throws Exception {
         IntegralExchangeDetailParam integralExchange = integralExchangeService.selectById(productId);
         return RestResult.success("success",integralExchange);

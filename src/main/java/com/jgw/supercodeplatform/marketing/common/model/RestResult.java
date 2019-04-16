@@ -91,8 +91,8 @@ public class RestResult <T>{
 
 	public static <T> RestResult<T> error(T data){
 		RestResult<T> result = new RestResult();
-		result.state = 200;
-		result.msg = "success";
+		result.state = 500;
+		result.msg = "ERROR";
 		result.results = data;
 		return  result;
 
@@ -101,4 +101,7 @@ public class RestResult <T>{
 	public void setResults(T results) {
 		this.results = results;
 	}
+
+    public void setResults() {
+    }
 }

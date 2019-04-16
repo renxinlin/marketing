@@ -79,7 +79,8 @@ public interface IntegralExchangeMapper {
         @Result(column="SkuUrl", property="skuUrl", jdbcType=JdbcType.VARCHAR),
         @Result(column="SkuStatus", property="skuStatus", jdbcType=JdbcType.TINYINT),
         @Result(column="ProductPic", property="productPic", jdbcType=JdbcType.VARCHAR),
-        @Result(column="ShowPrice", property="showPrice", jdbcType=JdbcType.REAL)
+        @Result(column="ShowPrice", property="showPrice", jdbcType=JdbcType.REAL),
+        @Result(column="ShowPrice", property="showPriceStr", jdbcType=JdbcType.REAL)
     })
     IntegralExchange selectByPrimaryKey(Long id);
 

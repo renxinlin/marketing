@@ -5,9 +5,9 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 import com.jgw.supercodeplatform.marketing.service.integral.UnsaleProductService;
 import com.jgw.supercodeplatform.pojo.cache.OrganizationCache;
@@ -29,14 +29,15 @@ import java.util.Map;
 @RequestMapping("/marketing/exchange")
 @Api(tags = "积分兑换")
 public class IntegralExchangeController extends CommonUtil {
-    private static final String UN_SALE_TYPE="0";
-    private static final String SALE_TYPE="1";
+    private static final Byte UN_SALE_TYPE=(byte) 0;
+    private static final Byte SALE_TYPE= (byte) 1;
     // TODO h5商城url
     @Value("https://www.baidu.com?organizationId=")
     private String H5_IMPERIAL_GRADEN_URL ;
     @Autowired
     private IntegralExchangeService integralExchangeService;
-
+    @Autowired
+    private UnsaleProductService unsaleProductService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -133,28 +134,22 @@ public class IntegralExchangeController extends CommonUtil {
 
 
 
-// 抽取到基础信息
 
-//    @RequestMapping(value = "/getProduct",method = RequestMethod.GET)
-//    @ApiOperation(value = "获取自卖产品|非自卖产品,调用基础信息平台", notes = "")
-//    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
-//            @ApiImplicitParam(paramType="type",value = "0非自卖1自卖产品",name="super-token")})
-//    public RestResult<List<Map<String,Object>>> getProduct(@RequestParam("type") String type) throws Exception {
-//        String organizationId = getOrganizationId();
-//        if(SALE_TYPE.equals(type)){
-//            // 查询基础平台
-//
-//            List<Map<String,Object>> saleProducts = null;
-////            unsaleProductService.selectPruduct(organizationId);
-//            return RestResult.success("success",saleProducts);
-//        }else if(UN_SALE_TYPE.equals(type)){
-//           List<Map<String,Object>> unsaleProducts = null;
-////           unsaleProductService.selectUnsale(organizationId);
-//            return RestResult.success("success",unsaleProducts);
-//        }
-//        return RestResult.error(null);
-//
-//    }
+    @RequestMapping(value = "/getProduct",method = RequestMethod.GET)
+    @ApiOperation(value = "获取自卖产品|非自卖产品,调用基础信息平台", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
+            @ApiImplicitParam(paramType="type",value = "0非自卖1自卖产品",name="super-token")})
+    public RestResult getProductList(ProductPageParam pageParam) throws Exception {
+        String organizationId = getOrganizationId();
+        if(SALE_TYPE.intValue() == pageParam.getType().intValue()){
+            // 查询基础信息自卖产品
+            return  unsaleProductService.selectSalePruduct(organizationId, pageParam);
+        }else if(UN_SALE_TYPE.intValue() == pageParam.getType().intValue()){
+            // 查询基础信息非自卖产品
+            return unsaleProductService.selectUnSalePruduct(organizationId, pageParam);
+        }
+        return RestResult.error("兑换产品资源类型不存在");
+    }
 
     @RequestMapping(value = "/promotion",method = RequestMethod.GET)
     @ApiOperation(value = "积分商城推广", notes = "")
@@ -181,30 +176,6 @@ public class IntegralExchangeController extends CommonUtil {
 
 
 
-
-    /**
-     * 由定时任务实现，待产品确认
-     * 或许需要自动下架的兑换数据
-     * @param changingStatusList
-     * @return
-     */
-//    private List<IntegralExchange> updateIntegralExchangeWhichNeedChangeStatus(List<IntegralExchange> changingStatusList) {
-//        List<IntegralExchange> needChangeList = new ArrayList<IntegralExchange>();
-//        List<IntegralExchange> toWebList = new ArrayList<IntegralExchange>();
-//
-//        for(IntegralExchange integralExchange : changingStatusList){
-//            // 自动下架设置0库存为0，1时间范围
-//            Byte status = integralExchange.getUndercarriageSetWay();
-//            // 库存为零下架
-//            if(0 == status && integralExchange.getHaveStock() == 0){
-//                // 注意: 这里库存不要求数据一致性，可以存在差错
-//                needChangeList.add(integralExchange);
-//            }
-//            // 由定时任务实现，待产品确认
-//
-//        }
-//        return  toWebList;
-//    }
 
 
 

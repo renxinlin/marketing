@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, CommonSql {
@@ -22,7 +23,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " ExchangeIntegral exchangeIntegral, ExchangeStock exchangeStock, HaveStock haveStock, CustomerLimitNum customerLimitNum, " +
             " Status status, PayWay payWay, UndercarriageSetWay undercarriageSetWay, UnderCarriage underCarriage, StockWarning stockWarning, " +
             " StockWarningNum stockWarningNum, OrganizationId organizationId, OrganizationName organizationName, ProductId productId, ProductName productName, " +
-            " SkuName skuName, SkuUrl skuUrl, SkuStatus skuStatus, ProductPic productPic, ShowPrice showPrice ";
+            " SkuId skuId, SkuName skuName, SkuUrl skuUrl, SkuStatus skuStatus, ProductPic productPic, ShowPrice showPrice ";
     static String whereSearch =
             "<where>" +
                     "<choose>" +
@@ -64,7 +65,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
              + endScript)
     int count(IntegralExchange searchParams);
 
-    @Delete(startScript + "delete from marketing_integral_exchange ie where Id =  #{id} and OrganizationId = #{organizationId} " + endScript)
+    @Delete(startScript + "delete from marketing_integral_exchange where Id =  #{id} and OrganizationId = #{organizationId} " + endScript)
     int deleteByOrganizationId(@Param("id")Long id, @Param("organizationId")String organizationId);
 
      @Update(startScript +" update marketing_integral_exchange ie set Status = #{status} where Id =  #{id} and OrganizationId = #{organizationId} " +
@@ -75,7 +76,11 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " and Status = 0 "+ endScript)
     int updateStatusLowwer(IntegralExchange updateStatus);
 
-
+    /**
+     * 获取组织的兑换产品，产品不可重复
+     * @param organizationId
+     * @return
+     */
     @Select(startScript
             + " select ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral, ShowPrice showPriceStr from marketing_integral_exchange ie  where OrganizationId = #{organizationId} and Status = 0 "
             + " group by ProductId,ProductName, ProductPic, ExchangeIntegral, ShowPrice"
@@ -121,11 +126,13 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     @Update(" update marketing_integral_exchange ie set HaveStock = HaveStock - #{exchangeNum} where HaveStock- #{exchangeNum} > 0 ")
     int reduceStock(ExchangeProductParam exchangeProductParam);
 
-    @Insert(" insert into marketing_integral_exchange (MemberType,ExchangeResource,ExchangeIntegral,ExchangeStock, " +
+    @Insert(startScript +
+            " insert into marketing_integral_exchange (MemberType,ExchangeResource,ExchangeIntegral,ExchangeStock, " +
             " HaveStock,CustomerLimitNum,Status,PayWay,UndercarriageSetWay,UnderCarriage,StockWarning,StockWarningNum, " +
-            " OrganizationId,OrganizationName,ProductId,ProductName,SkuName,SkuUrl,SkuStatus,ProductPic,ShowPrice) values " +
-            "<foreach collection='list' item='item' index='index' separator=','> " +
-            " (#{item.memberType}, " +
+            " OrganizationId,OrganizationName,ProductId,ProductName,SkuId,SkuName,SkuUrl,SkuStatus,ProductPic,ShowPrice) values " +
+            " <foreach collection='list' item='item' index='index' separator=','> " +
+            " (" +
+            " #{item.memberType}, " +
             " #{item.exchangeResource}, " +
             " #{item.exchangeIntegral}, " +
             " #{item.exchangeStock}," +
@@ -142,12 +149,15 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " #{item.productId}, " +
             " #{item.productName}, " +
             " #{item.skuName}, " +
+            " #{item.skuId}, " +
             " #{item.skuUrl}, " +
             " #{item.skuStatus}, " +
             " #{item.productPic}, " +
-            " #{item.showPrice}) " +
-            " </foreach> ")
-    int insertBatch(List<IntegralExchange> integralExchanges);
+            " #{item.showPrice}" +
+            " ) " +
+            " </foreach> "+
+            endScript)
+    int insertBatch(@Param("list") List<IntegralExchange> list);
 
 
 
@@ -164,6 +174,18 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             ") ")
     int undercarriage(List<IntegralExchange> readingToDb);
 
-
-
+    /**
+     * 查询自卖产品;0非自卖1自卖产品
+     * @param organizationId
+     * @return
+     */
+    @Select(" select ProductId from marketing_integral_exchange ie where ie.OrganizationId=#{organizationId} and ie.ExchangeResource = 1 ")
+    Set<String> selectSalePruduct(@Param("organizationId") String organizationId);
+    /**
+     * 查询非自卖产品;0非自卖1自卖产品
+     * @param organizationId
+     * @return
+     */
+    @Select(" select ProductId from marketing_integral_exchange ie where ie.OrganizationId=#{organizationId} and ie.ExchangeResource = 0 ")
+    Set<String> selectUnSalePruduct(@Param("organizationId") String organizationId);
 }
