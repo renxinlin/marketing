@@ -98,6 +98,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Set<String> excludeProductIds = integralExchangeMapper.selectSalePruduct(organizationId);
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
+        // 已存在兑换产品由基础信息过滤
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
         RestResult restResult = getProductFromBaseService(queryCondition,true);
         if(restResult.getState() == 200){
@@ -119,15 +120,13 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
 
            // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,map, header);
-            Object parse = JSONObject.parse(response.getBody());
-            return modelMapper.map(parse, RestResult.class);
+            return JSONObject.parseObject(response.getBody(), RestResult.class);
         }else{
             // 非自卖产品
             String s = JSONObject.toJSONString(queryCondition);
             Map map = modelMapper.map(JSONObject.parse(s), HashMap.class);
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL,map, header);
-            Object parse = JSONObject.parse(response.getBody());
-            return modelMapper.map(parse, RestResult.class);
+            return JSONObject.parseObject(response.getBody(), RestResult.class);
         }
     }
 
