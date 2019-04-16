@@ -65,7 +65,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
              + endScript)
     int count(IntegralExchange searchParams);
 
-    @Delete(startScript + "delete from marketing_integral_exchange ie where Id =  #{id} and OrganizationId = #{organizationId} " + endScript)
+    @Delete(startScript + "delete from marketing_integral_exchange where Id =  #{id} and OrganizationId = #{organizationId} " + endScript)
     int deleteByOrganizationId(@Param("id")Long id, @Param("organizationId")String organizationId);
 
      @Update(startScript +" update marketing_integral_exchange ie set Status = #{status} where Id =  #{id} and OrganizationId = #{organizationId} " +
@@ -128,7 +128,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
     @Insert(startScript +
             " insert into marketing_integral_exchange (MemberType,ExchangeResource,ExchangeIntegral,ExchangeStock, " +
-            " HaveStock,CustomerLimitNum,Status,PayWay,UndercarriageSetWay,Undercarriage,StockWarning,StockWarningNum, " +
+            " HaveStock,CustomerLimitNum,Status,PayWay,UndercarriageSetWay,UnderCarriage,StockWarning,StockWarningNum, " +
             " OrganizationId,OrganizationName,ProductId,ProductName,SkuId,SkuName,SkuUrl,SkuStatus,ProductPic,ShowPrice) values " +
             " <foreach collection='list' item='item' index='index' separator=','> " +
             " (" +
@@ -141,7 +141,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " #{item.status}, " +
             " #{item.payWay}, " +
             " #{item.undercarriageSetWay}, " +
-            " #{item.undercarriage}, " +
+            " #{item.underCarriage}, " +
             " #{item.stockWarning}, " +
             " #{item.stockWarningNum}, " +
             " #{item.organizationId}, " +
