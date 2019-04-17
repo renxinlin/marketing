@@ -54,10 +54,6 @@ public class GlobalRamCache {
 		}
 		String json =(String) redisUtil.hmGet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
 		ScanCodeInfoMO scanCodeInfoMO=JSONObject.parseObject(json, ScanCodeInfoMO.class);
-		if (null==scanCodeInfoMO) {
-			throw new SuperCodeException("根据wxsate="+wxsate+"无法获取扫码缓存信息请重新扫码", 500);
-		}
-		
 		return scanCodeInfoMO;
 	}
 
