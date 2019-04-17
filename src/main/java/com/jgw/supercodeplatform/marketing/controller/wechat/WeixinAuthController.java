@@ -66,8 +66,8 @@ public class WeixinAuthController {
     	Integer statecode=null;
     	if (state.contains("_")) {
     		String[] statearr=state.split("_");
-    		statevalue=statearr[0];
-    		statecode=Integer.valueOf(statearr[1]);
+    		statecode=Integer.valueOf(statearr[0]);
+    		statevalue=statearr[1];
 		}else {
 			statevalue=state;
 		}
@@ -82,14 +82,12 @@ public class WeixinAuthController {
     		StringBuffer h5BUf=new StringBuffer();
     		h5BUf.append(integralH5Pages.split(",")[statecode]).append("&openId="+openid);
     		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
-    		if (null==members) {
-    			h5BUf.append("&memberId=null");
-			}else {
-				h5BUf.append("&memberId="+members.getId());
-			}
+    		if (null!=members) {
+    			h5BUf.append("&memberId="+members.getId());
+    		}
 			nickName=userInfo.getString("nickname");
     		redirectUrl=h5BUf.toString();
-    		organizationId=statevalue.split("\\?")[1];
+    		organizationId=statevalue.split("_")[0];
 		}else {
 			userInfo=getUserInfo(code, scanCodeInfoMO.getOrganizationId());
 			openid=userInfo.getString("openid");
@@ -126,7 +124,7 @@ public class WeixinAuthController {
     }
 
     public static void main(String[] args) {
-		String dd="ddd_ff";
+		String dd="ddff";
 		System.out.println(dd.split("_")[0]);
 	}
     public JSONObject getUserInfo(String code,String organizationId) throws Exception {
