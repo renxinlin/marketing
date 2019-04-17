@@ -22,7 +22,6 @@ import java.util.List;
 public class DeliveryAddressController extends CommonUtil {
 
 
-    // 列表5个地址，详情，添加，更新，删除
     @Autowired
     private DeliveryAddressService deliveryAddressService;
 
