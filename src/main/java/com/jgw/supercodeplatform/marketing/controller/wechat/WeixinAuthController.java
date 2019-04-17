@@ -77,7 +77,8 @@ public class WeixinAuthController {
     	
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
-    		userInfo=getUserInfo(code, state);
+    		organizationId=statevalue.split("_")[0];
+    		userInfo=getUserInfo(code, organizationId);
     		openid=userInfo.getString("openid");
     		StringBuffer h5BUf=new StringBuffer();
     		h5BUf.append(integralH5Pages.split(",")[statecode]).append("&openId="+openid);
@@ -87,7 +88,6 @@ public class WeixinAuthController {
     		}
 			nickName=userInfo.getString("nickname");
     		redirectUrl=h5BUf.toString();
-    		organizationId=statevalue.split("_")[0];
 		}else {
 			userInfo=getUserInfo(code, scanCodeInfoMO.getOrganizationId());
 			openid=userInfo.getString("openid");
@@ -124,8 +124,8 @@ public class WeixinAuthController {
     }
 
     public static void main(String[] args) {
-		String dd="ddff";
-		System.out.println(dd.split("_")[0]);
+		String dd="0_c2bfeee050f84bd8913e753070bd8859";
+		System.out.println(dd.contains("_"));
 	}
     public JSONObject getUserInfo(String code,String organizationId) throws Exception {
 		MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(organizationId);
