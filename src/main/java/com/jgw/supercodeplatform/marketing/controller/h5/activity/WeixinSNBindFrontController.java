@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.h5;
+package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

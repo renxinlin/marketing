@@ -74,18 +74,29 @@ public class Swagger2Config {
                 .enable(enable);
     }
 
-    @Bean("营销h5模块")
-    public Docket h5Apis() {
+    @Bean("营积分h5模块")
+    public Docket integralh5Apis() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("h5模块")
+                .groupName("营积分h5模块")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.h5"))
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.h5.integral"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo())
                 .enable(enable);
     }
 
+    @Bean("活动h5模块")
+    public Docket activityh5Apis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("活动h5模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.h5.activity"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
 
     @Bean("积分模块")
     public Docket integralApis() {
