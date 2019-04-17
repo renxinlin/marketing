@@ -73,6 +73,7 @@ public class WeixinAuthController {
 		}
     	
     	ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(statevalue);
+    	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
     	
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
@@ -120,7 +121,8 @@ public class WeixinAuthController {
     		}
     	}
 //        String redirectUrl="redirect:http://192.168.10.78:7081/?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId()+"&organizationId="+scInfoMO.getOrganizationId();
-        return  redirectUrl;
+    	logger.info("最终跳转路径："+redirectUrl);
+    	return  redirectUrl;
     }
 
     public static void main(String[] args) {
