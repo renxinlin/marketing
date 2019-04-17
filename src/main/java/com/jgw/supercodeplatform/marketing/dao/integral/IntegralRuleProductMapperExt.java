@@ -43,7 +43,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
     	       +endWhere
     	       +endScript
     	    )
-	int count(DaoSearch searchParams);
+	int count(DaoSearchWithOrganizationIdParam searchParams);
 
     @Delete(startScript
     		+ "delete from marketing_integral_rule_product where ProductId in"

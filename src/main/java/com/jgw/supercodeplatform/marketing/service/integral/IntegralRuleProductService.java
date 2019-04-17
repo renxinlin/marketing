@@ -76,7 +76,10 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 
 	@Override
 	protected int count(DaoSearch searchParams) throws Exception {
-		return dao.count(searchParams);
+		String organizationId=commonUtil.getOrganizationId();
+		DaoSearchWithOrganizationIdParam searchParamsDTO = modelMapper.map(searchParams, DaoSearchWithOrganizationIdParam.class);
+		searchParamsDTO.setOrganizationId(organizationId);
+		return dao.count(searchParamsDTO);
 	}
 
 	public void deleteByProductIds(List<String> productIds) throws SuperCodeException {
