@@ -82,9 +82,9 @@ public class WeixinAuthController {
     		h5BUf.append(integralH5Pages.split(",")[statecode]).append("&openId="+openid);
     		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
     		if (null==members) {
-    			h5BUf.append("&needLogin=1");
+    			h5BUf.append("&memberId=null");
 			}else {
-				h5BUf.append("&needLogin=0");
+				h5BUf.append("&memberId="+members.getId());
 			}
 			nickName=userInfo.getString("nickname");
     		redirectUrl=h5BUf.toString();

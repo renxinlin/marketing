@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +44,7 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
+import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
@@ -442,7 +442,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			return restResult;
 		}
 		H5LoginVO h5LoginVO =null;
-		if (StringUtils.isBlank(wxstate)) {
+		if (StringUtils.isNotBlank(wxstate)) {
 			 h5LoginVO = loginWithWxstate(mobile, wxstate);
 			restResult.setResults(h5LoginVO);
 		}else {
@@ -470,11 +470,16 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					marketingMembersByOpenId.setMobile(mobile);
 					marketingMembersByOpenId.setState((byte)1);
 					marketingMembersMapper.update(marketingMembersByOpenId);
+					h5LoginVO.setWechatHeadImgUrl(marketingMembersByOpenId.getWechatHeadImgUrl());
 					h5LoginVO.setMemberId(marketingMembersByOpenId.getId());
+					h5LoginVO.setHaveIntegral(marketingMembersByOpenId.getHaveIntegral()==null?0:marketingMembersByOpenId.getHaveIntegral());
 				}
 			}else {
+				Long userIdByPhone=marketingMembersByPhone.getId();
+				h5LoginVO.setHaveIntegral(marketingMembersByPhone.getHaveIntegral()==null?0:marketingMembersByPhone.getHaveIntegral());
+				h5LoginVO.setMemberId(userIdByPhone);
+				h5LoginVO.setWechatHeadImgUrl(marketingMembersByPhone.getWechatHeadImgUrl());
 				if (null!=marketingMembersByOpenId) {
-					Long userIdByPhone=marketingMembersByPhone.getId();
 					Long userIdByOpenId=marketingMembersByOpenId.getId();
 					if (!userIdByOpenId.equals(userIdByPhone)) {
 						String openIdByPhone=marketingMembersByPhone.getOpenid();
@@ -492,9 +497,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 						members.setWechatHeadImgUrl(marketingMembersByOpenId.getWechatHeadImgUrl());
 						members.setState((byte)1);
 						marketingMembersMapper.update(members);
-						h5LoginVO.setHaveIntegral(members.getHaveIntegral());
-						h5LoginVO.setMemberId(userIdByPhone);
-						h5LoginVO.setRegistered(1);
 						
 						//删除openid查出的用户
 						marketingMembersMapper.deleteById(userIdByOpenId);
@@ -502,7 +504,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				}
 			}
 		}
-		
+		restResult.setResults(h5LoginVO);
 		restResult.setState(200);
 		restResult.setMsg("登录成功...");
 		return restResult;

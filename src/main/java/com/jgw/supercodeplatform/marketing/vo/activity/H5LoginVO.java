@@ -11,7 +11,17 @@ public class H5LoginVO {
     
     private String mobile;//手机
     
+    private String wechatHeadImgUrl;
     
+    
+	public String getWechatHeadImgUrl() {
+		return wechatHeadImgUrl;
+	}
+
+	public void setWechatHeadImgUrl(String wechatHeadImgUrl) {
+		this.wechatHeadImgUrl = wechatHeadImgUrl;
+	}
+
 	public Long getMemberId() {
 		return memberId;
 	}

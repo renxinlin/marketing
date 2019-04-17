@@ -26,15 +26,12 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("/marketing/integral/rule")
-@Api(tags = "通用积分规则")
+@Api(tags = "通用积分规则设置")
 public class IntegralRuleController {
 
   @Autowired
   private IntegralRuleService service;
   
-    // 获取产品价格，基础信息
-    // 获取基础信息产品列表：调用基础信息接口
-
 
   /**
    *  获取积分规则
@@ -54,13 +51,6 @@ public class IntegralRuleController {
       return  result;
   }
 
-    @RequestMapping(value = "/setted-product/page",method = RequestMethod.POST)
-    @ApiOperation(value = "获取已设置产品列表", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<IntegralRuleProduct>>> listUnsale(@RequestBody IntegralRuleProduct integralRuleProduct) throws Exception {
-        RestResult<AbstractPageService.PageResults<List<IntegralRuleProduct>>> restResult=new RestResult<AbstractPageService.PageResults<List<IntegralRuleProduct>>>();
-        return restResult;
-    }
 
 
     @RequestMapping(value = "/edit",method = RequestMethod.POST)
@@ -70,14 +60,6 @@ public class IntegralRuleController {
     	RestResult<String>  restResult=new RestResult<String>();
     	service.edit(integralRule);
     	restResult.setState(200);
-        return restResult;
-    }
-
-    @RequestMapping(value = "/update",method = RequestMethod.POST)
-    @ApiOperation(value = "更新通用积分规则产品", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult updateProduct(@RequestBody IntegralRuleProduct integralRuleProduct) throws Exception {
-        RestResult  restResult=new RestResult();
         return restResult;
     }
 
