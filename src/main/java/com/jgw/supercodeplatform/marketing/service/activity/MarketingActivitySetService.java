@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -421,16 +422,19 @@ public class MarketingActivitySetService  {
 			JSONObject obj=JSONObject.parseObject(body);
 			int state=obj.getInteger("state");
 			if (200==state) {
-				List<Map<String, Object>> params=commonService.getUrlToBatchParam(obj, marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,1);
-				String batchBody=commonService.bindUrlToBatch(params, superToken);
-				JSONObject batchobj=JSONObject.parseObject(batchBody);
-				Integer batchstate=batchobj.getInteger("state");
+				JSONArray arr=obj.getJSONArray("results");
+				List<Map<String, Object>> params=commonService.getUrlToBatchParam(arr, marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,5);
+				//绑定生码批次到url
+				String bindbatchBody=commonService.bindUrlToBatch(params, superToken);
+				JSONObject bindBatchobj=JSONObject.parseObject(bindbatchBody);
+				Integer batchstate=bindBatchobj.getInteger("state");
 				if (null!=batchstate && batchstate.intValue()==200) {
-					for (Map<String, Object> map : params) {
-						String productId=String.valueOf(map.get("productId"));
-						String productBatchId=String.valueOf(map.get("productBatchId"));
-						Long codeTotal=Long.valueOf(String.valueOf(map.get("codeTotal")));
-						String codeBatch=String.valueOf(map.get("codeBatch"));
+					for (int i=0;i<arr.size();i++) {
+						JSONObject batchobj=arr.getJSONObject(i);
+						String productId=batchobj.getString("productId");
+						String productBatchId=batchobj.getString("productBatchId");
+						Long codeTotal=batchobj.getLong("codeTotal");
+						String codeBatch=batchobj.getString("codeBatch");
 						MarketingActivityProduct mActivityProduct=activityProductMap.get(productId+productBatchId);
 						if (null!=mActivityProduct) {
 							mActivityProduct.setCodeTotalAmount(codeTotal);
@@ -441,7 +445,7 @@ public class MarketingActivitySetService  {
 					}
 					mProductMapper.activityProductInsert(mList);
 				}else {
-					throw new SuperCodeException("请求码管理生码批次和url错误："+batchobj, 500);
+					throw new SuperCodeException("请求码管理生码批次和url错误："+bindbatchBody, 500);
 				}
 			}else {
 				throw new SuperCodeException("通过产品及产品批次获取码信息错误："+body, 500);

@@ -1,23 +1,12 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.dao.integral.*;
-import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.ExchangeStatisticsMapper;
-import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
-import com.jgw.supercodeplatform.marketing.dto.integral.*;
-import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.pojo.integral.*;
-import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -28,9 +17,35 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.ExchangeStatisticsMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralOrderMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
+import com.jgw.supercodeplatform.marketing.dto.integral.ExchangeProductParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeAddParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeDetailParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeSkuDetailAndAddress;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductAddParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
+import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
+import com.jgw.supercodeplatform.marketing.pojo.integral.ExchangeStatistics;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 
 /**
  * 积分兑换
@@ -223,7 +238,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         return integralExchangeDetailParam;
     }
     // 选择线程池还是信号灯
-    @HystrixCommand(fallbackMethod = "getDetailByhystrix") //断路器命令
+//    @HystrixCommand(fallbackMethod = "getDetailByhystrix") //断路器命令
     public RestResult  getDetail( IntegralExchangeDetailParam integralExchangeDetailParam,Byte exchangeResource) throws SuperCodeException{
         // 查询参数
         Map<String, String> header = new HashMap<>();

@@ -1,20 +1,13 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
-import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -26,7 +19,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
+import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
 
 @Service
 public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
@@ -108,7 +114,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         }
     }
 
-    @HystrixCommand(fallbackMethod = "getProductFromBaseServiceHystrix")
+//    @HystrixCommand(fallbackMethod = "getProductFromBaseServiceHystrix")
     public RestResult getProductFromBaseService(ProductPageFromBaseServiceParam queryCondition,boolean isSale)throws SuperCodeException{
         Map<String, String> header = new HashMap<>();
         header.put("super-token",commonUtil.getSuperToken());

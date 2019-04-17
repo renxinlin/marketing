@@ -78,7 +78,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
             + " from  marketing_integral_record ir "
             +startWhere
             +  " <if test='memberId != null '>ir.MemberId=#{memberId} </if>"
-             +  " <if test='integralReasonCode != null '>ir.IntegralReasonCode=#{integralReasonCode} </if>"
+             +  " <if test='integralReasonCode != null '>and ir.IntegralReasonCode=#{integralReasonCode} </if>"
             +endWhere
             +endScript)
 	List<IntegralRecord> selectByMemberIdAndIntegralReasonCode(Long memberId, Integer integralReasonCode);

@@ -16,8 +16,10 @@ public class GlobalRamCache {
 	//扫码时保存产品和码信息到内存，待授权后根据授权state值获取
 	private String  MARKETING_GLOBAL_SCAN_CODE_INFO="marketing:cache:scanCodeInfo";
 	private String  MARKETING_GLOBAL_CACHE ="marketing:cache:wxMerchants";
+	
 	@Autowired
 	private MarketingWxMerchantsMapper mWxMerchantsMapper;
+	
 	@Autowired
 	private RedisUtil redisUtil;
 
@@ -52,10 +54,6 @@ public class GlobalRamCache {
 		}
 		String json =(String) redisUtil.hmGet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
 		ScanCodeInfoMO scanCodeInfoMO=JSONObject.parseObject(json, ScanCodeInfoMO.class);
-		if (null==scanCodeInfoMO) {
-			throw new SuperCodeException("根据wxsate="+wxsate+"无法获取扫码缓存信息请重新扫码", 500);
-		}
-		
 		return scanCodeInfoMO;
 	}
 
@@ -69,6 +67,9 @@ public class GlobalRamCache {
 			// 多节点后可以重复拉取该数据
 			if (null==mWxMerchants) {
 				mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
+				if (null==mWxMerchants) {
+					mWxMerchants=mWxMerchantsMapper.selectDefault();
+				}
 				redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));
 			}
 		}else {

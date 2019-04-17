@@ -34,6 +34,8 @@ public class IntegralRuleService  extends AbstractPageService<IntegralRecord > {
     	   if (null!=eRule) {
     		   throw new SuperCodeException("当前企业已经设置积分通用规则id不能为空", 500);
 		   }
+    	   integralRule.setOrganizationId(organizationId);
+    	   integralRule.setOrganizationName(commonUtil.getOrganizationName());
     	  dao.insert(integralRule); 
 	   }else {
 		   dao.updateByPrimaryKeySelective(integralRule);

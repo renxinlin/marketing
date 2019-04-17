@@ -55,6 +55,9 @@ private RestTemplateUtil restTemplateUtil;
 @Autowired
 private CommonUtil commonUtil;
 
+@Value("${marketing.integral.h5page.urls}")
+private String integrals;
+
 
 @Autowired
 private RedisUtil redisUtil;
@@ -228,7 +231,7 @@ public  void main() throws UnsupportedEncodingException, SuperCodeException {
 	
 	@Test
 	public void test2() throws IOException {
-
+      System.out.println(integrals);
 		
 	}
 }

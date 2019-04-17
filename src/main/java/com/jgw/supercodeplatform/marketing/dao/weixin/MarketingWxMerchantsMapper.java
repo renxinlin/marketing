@@ -42,6 +42,9 @@ public interface MarketingWxMerchantsMapper {
 	@Select("select "+allFields+" from marketing_wx_merchants where OrganizationId=#{organizationId}")
 	MarketingWxMerchants selectByOrganizationId(@Param("organizationId")String organizationId);
 
+	@Select("select "+allFields+" from marketing_wx_merchants where MerchantName='甲骨文'")
+	MarketingWxMerchants selectDefault();
+
 
 
 }

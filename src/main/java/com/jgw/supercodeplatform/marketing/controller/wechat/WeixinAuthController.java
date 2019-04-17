@@ -41,6 +41,9 @@ public class WeixinAuthController {
     @Value("${marketing.activity.h5page.url}")
     private String h5pageUrl;
     
+    @Value("${marketing.integral.h5page.urls}")
+    private String integralH5Pages;
+    
     /**
      * 微信授权回调方法
      * @param code
@@ -57,34 +60,59 @@ public class WeixinAuthController {
     	String redirectUrl=null;
     	String nickName=null;
     	String openid=null;
+    	String organizationId=null;
     	JSONObject userInfo=null;
+    	String statevalue=null;
+    	Integer statecode=null;
+    	if (state.contains("_")) {
+    		String[] statearr=state.split("_");
+    		statecode=Integer.valueOf(statearr[0]);
+    		statevalue=statearr[1];
+		}else {
+			statevalue=state;
+		}
     	
-    	ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(state);
+    	ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(statevalue);
+    	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
     	
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
-			userInfo=getUserInfo(code, state);
+    		organizationId=statevalue.split("_")[0];
+    		userInfo=getUserInfo(code, organizationId);
+    		openid=userInfo.getString("openid");
+    		StringBuffer h5BUf=new StringBuffer();
+    		h5BUf.append("redirect:");
+    		h5BUf.append(integralH5Pages.split(",")[statecode]).append("&openId="+openid);
+    		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+    		if (null!=members) {
+    			h5BUf.append("&memberId="+members.getId());
+    		}
 			nickName=userInfo.getString("nickname");
-    		redirectUrl="";
+    		redirectUrl=h5BUf.toString();
 		}else {
-			//表示是从扫码产品防伪码入口进入
 			userInfo=getUserInfo(code, scanCodeInfoMO.getOrganizationId());
+			openid=userInfo.getString("openid");
+			organizationId=scanCodeInfoMO.getOrganizationId();
+			//表示是从扫码产品防伪码入口进入
 			nickName=userInfo.getString("nickname");
-			
 			scanCodeInfoMO.setOpenId(userInfo.getString("openid"));
 			//更新扫码信息
 			globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
-			redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+scanCodeInfoMO.getOrganizationId();
+			redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+organizationId;
 		}
     	
     	synchronized (this) {
     		//判断是否需要保存用户
-    		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, scanCodeInfoMO.getOrganizationId());
+    		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
     		if (null==members) {
     			members=new MarketingMembers();
     			members.setOpenid(openid);
     			members.setWxName(nickName);
-    			members.setOrganizationId(scanCodeInfoMO.getOrganizationId());
+    			members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
+    			members.setOrganizationId(organizationId);
+    			if (null!=statecode) {
+    				members.setState((byte)0);
+    			}
     			marketingMembersService.addMember(members);
     		}else {
     			members.setWxName(nickName);
@@ -92,10 +120,14 @@ public class WeixinAuthController {
     		}
     	}
 //        String redirectUrl="redirect:http://192.168.10.78:7081/?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId()+"&organizationId="+scInfoMO.getOrganizationId();
-        return  redirectUrl;
+    	logger.info("最终跳转路径："+redirectUrl);
+    	return  redirectUrl;
     }
 
-    
+    public static void main(String[] args) {
+		String dd="0_c2bfeee050f84bd8913e753070bd8859";
+		System.out.println(dd.contains("_"));
+	}
     public JSONObject getUserInfo(String code,String organizationId) throws Exception {
 		MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(organizationId);
 		String appId=mWxMerchants.getMchAppid().trim();

@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.h5;
+package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

@@ -87,6 +87,18 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
         " where  OrganizationId=#{organizationId}"
     })
 	List<String> selectProductIdsByOrgId(@Param("organizationId")String organizationId);
+
+    @Select(startScript
+         +" select"
+         +" Id, IntegralRuleId, ProductId, ProductName, ProductPrice, MemberType, RewardRule, "
+         +" PerConsume, RewardIntegral, OrganizationId"
+         +" from marketing_integral_rule_product"
+         +" where ProductId in"
+         +" <foreach item='item' collection='productIds' open='(' separator=',' close=')'>" 
+         + "   #{item,jdbcType=VARCHAR}" 
+         + "</foreach>"
+         +endScript)
+	List<IntegralRuleProduct> selectByProductIdsAndOrgId(@Param("productIds")List<String> productIds, @Param("organizationId")String organizationId);
     
     
     
