@@ -386,7 +386,6 @@ public class MarketingActivitySetService  {
 	 * @throws SuperCodeException
 	 */
 	private Long saveProductBatchs(List<MarketingActivityProductParam> maProductParams, Long activitySetId) throws SuperCodeException {
-		List<MarketingActivityProduct> mList=new ArrayList<MarketingActivityProduct>();
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs=new ArrayList<ProductAndBatchGetCodeMO>();
 		Map<String, MarketingActivityProduct> activityProductMap=new HashMap<String, MarketingActivityProduct>();
 
@@ -429,6 +428,7 @@ public class MarketingActivitySetService  {
 				JSONObject bindBatchobj=JSONObject.parseObject(bindbatchBody);
 				Integer batchstate=bindBatchobj.getInteger("state");
 				if (null!=batchstate && batchstate.intValue()==200) {
+					List<MarketingActivityProduct> mList=new ArrayList<MarketingActivityProduct>();
 					for (int i=0;i<arr.size();i++) {
 						JSONObject batchobj=arr.getJSONObject(i);
 						String productId=batchobj.getString("productId");
