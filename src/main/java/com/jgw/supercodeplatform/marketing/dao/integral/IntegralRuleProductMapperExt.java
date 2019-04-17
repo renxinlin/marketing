@@ -30,7 +30,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
        +page
        +endScript
     )
-	List<IntegralRuleProduct> list(DaoSearch searchParams, String organizationId);
+	List<IntegralRuleProduct> list(DaoSearch searchParams, @Param("organizationId") String organizationId);
 
     @Select(startScript
     	       + "select"
