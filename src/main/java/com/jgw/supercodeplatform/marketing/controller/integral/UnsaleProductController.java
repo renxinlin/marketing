@@ -1,34 +1,34 @@
 package com.jgw.supercodeplatform.marketing.controller.integral;
 
+//
+//import com.alibaba.fastjson.JSONArray;
+//import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+//import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+//import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+//import com.jgw.supercodeplatform.marketing.dto.integral.ProductUnsaleAddUpdateParam;
+//import com.jgw.supercodeplatform.marketing.dto.integral.ProductUnsaleParam;
+//import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
+//import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
+//import com.jgw.supercodeplatform.marketing.service.integral.UnsaleProductService;
+//import io.swagger.annotations.Api;
+//import io.swagger.annotations.ApiImplicitParam;
+//import io.swagger.annotations.ApiOperation;
+//import org.modelmapper.ModelMapper;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.web.bind.annotation.*;
+//
+//import java.util.ArrayList;
+//import java.util.List;
 
-import com.alibaba.fastjson.JSONArray;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductUnsaleAddUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductUnsaleParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
-import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
-import com.jgw.supercodeplatform.marketing.service.integral.UnsaleProductService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
-
-@RestController
-@RequestMapping("/marketing/unsale-product")
-@Api(tags = "非自卖产品|调用基础信息")
-public class UnsaleProductController extends CommonUtil {
-    // 列表，详情，添加，更新，删除
-    @Autowired
-    private UnsaleProductService unsaleProductService;
-    @Autowired
-    private ModelMapper modelmapper;
+//@RestController
+//@RequestMapping("/marketing/unsale-product")
+//@Api(tags = "非自卖产品|调用基础信息")
+//public class UnsaleProductController extends CommonUtil {
+//    // 列表，详情，添加，更新，删除
+//    @Autowired
+//    private UnsaleProductService unsaleProductService;
+//    @Autowired
+//    private ModelMapper modelmapper;
     /**
      *  积分记录列表
      * @param
@@ -117,4 +117,4 @@ public class UnsaleProductController extends CommonUtil {
 //        return RestResult.success();
 //    }
 
-}
+//}

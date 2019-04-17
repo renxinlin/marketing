@@ -10,6 +10,8 @@ import java.util.List;
 public class ProductPageFromBaseServiceParam extends DaoSearch {
     @ApiModelProperty("已选产品列表")
     private List<String> excludeProductIds;
+    @ApiModelProperty("已选产品SKU列表")
+    private List<String> excludeSkuIds;
 
     public List<String> getExcludeProductIds() {
         return excludeProductIds;
@@ -17,5 +19,13 @@ public class ProductPageFromBaseServiceParam extends DaoSearch {
 
     public void setExcludeProductIds(List<String> excludeProductIds) {
         this.excludeProductIds = excludeProductIds;
+    }
+
+    public List<String> getExcludeSkuIds() {
+        return excludeSkuIds;
+    }
+
+    public void setExcludeSkuIds(List<String> excludeSkuIds) {
+        this.excludeSkuIds = excludeSkuIds;
     }
 }

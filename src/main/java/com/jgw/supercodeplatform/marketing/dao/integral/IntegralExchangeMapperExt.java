@@ -179,13 +179,13 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
      * @param organizationId
      * @return
      */
-    @Select(" select ProductId from marketing_integral_exchange ie where ie.OrganizationId=#{organizationId} and ie.ExchangeResource = 1 ")
-    Set<String> selectSalePruduct(@Param("organizationId") String organizationId);
+    @Select(" select ProductId,SkuId  from marketing_integral_exchange ie where ie.OrganizationId=#{organizationId} and ie.ExchangeResource = 1 ")
+    Set<IntegralExchange> selectSalePruduct(@Param("organizationId") String organizationId);
     /**
      * 查询非自卖产品;0非自卖1自卖产品
      * @param organizationId
      * @return
      */
-    @Select(" select ProductId from marketing_integral_exchange ie where ie.OrganizationId=#{organizationId} and ie.ExchangeResource = 0 ")
-    Set<String> selectUnSalePruduct(@Param("organizationId") String organizationId);
+    @Select(" select ProductId ,SkuId from marketing_integral_exchange ie where ie.OrganizationId=#{organizationId} and ie.ExchangeResource = 0 ")
+    Set<IntegralExchange> selectUnSalePruduct(@Param("organizationId") String organizationId);
 }

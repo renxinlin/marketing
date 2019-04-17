@@ -1,13 +1,20 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
+import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -19,20 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
-import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
+import java.util.*;
 
 @Service
 public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
@@ -76,10 +70,20 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         }
 
         // 获取组织已经添加的自卖产品集合
-        Set<String> excludeProductIds = integralExchangeMapper.selectUnSalePruduct(organizationId);
+        Set<IntegralExchange> excludeProducts = integralExchangeMapper.selectUnSalePruduct(organizationId);
+        // 选择的产品Id
+        Set<String> excludeProductIds = new HashSet<>();
+        // 选择的产品skuId
+        Set<String> excludeSkuIds = new HashSet<>();
+        // 生成传递基础数据的参数
+        for(IntegralExchange excludeProduct:excludeProducts){
+            excludeProductIds.add(excludeProduct.getProductId());
+            excludeSkuIds.add(excludeProduct.getSkuId());
+        }
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
+        queryCondition.setExcludeSkuIds(new ArrayList(excludeSkuIds));
         RestResult restResult = getProductFromBaseService(queryCondition,false);
         if(restResult.getState() == 200){
             return  restResult;
@@ -101,14 +105,24 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         }
 
         // 获取组织已经添加的自卖产品集合
-        Set<String> excludeProductIds = integralExchangeMapper.selectSalePruduct(organizationId);
+        Set<IntegralExchange> excludeProducts = integralExchangeMapper.selectSalePruduct(organizationId);
+        // 选择的产品Id
+        Set<String> excludeProductIds = new HashSet<>();
+        // 选择的产品skuId
+        Set<String> excludeSkuIds = new HashSet<>();
+        // 生成传递基础数据的参数
+        for(IntegralExchange excludeProduct:excludeProducts){
+            excludeProductIds.add(excludeProduct.getProductId());
+            excludeSkuIds.add(excludeProduct.getSkuId());
+        }
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
         // 已存在兑换产品由基础信息过滤
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
+        queryCondition.setExcludeSkuIds(new ArrayList(excludeSkuIds));
         RestResult restResult = getProductFromBaseService(queryCondition,true);
         if(restResult.getState() == 200){
-           return  restResult;
+            return  restResult;
         }else{
             return RestResult.error("基础信息异常...");
         }
@@ -118,20 +132,17 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
     public RestResult getProductFromBaseService(ProductPageFromBaseServiceParam queryCondition,boolean isSale)throws SuperCodeException{
         Map<String, String> header = new HashMap<>();
         header.put("super-token",commonUtil.getSuperToken());
+        // 走下json解决反射问题
+        String queryConditionStr = JSONObject.toJSONString(queryCondition);
+        Map queryConditionMap = modelMapper.map(JSONObject.parse(queryConditionStr), HashMap.class);
         if(isSale){
             // 自卖产品
-            // 走下json解决反射问题
-            String s = JSONObject.toJSONString(queryCondition);
-            Map map = modelMapper.map(JSONObject.parse(s), HashMap.class);
-
-           // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
-            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,map, header);
+            // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,queryConditionMap, header);
             return JSONObject.parseObject(response.getBody(), RestResult.class);
         }else{
             // 非自卖产品
-            String s = JSONObject.toJSONString(queryCondition);
-            Map map = modelMapper.map(JSONObject.parse(s), HashMap.class);
-            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL,map, header);
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL,queryConditionMap, header);
             return JSONObject.parseObject(response.getBody(), RestResult.class);
         }
     }
