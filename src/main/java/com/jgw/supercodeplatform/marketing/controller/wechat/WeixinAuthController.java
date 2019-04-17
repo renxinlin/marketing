@@ -81,6 +81,7 @@ public class WeixinAuthController {
     		userInfo=getUserInfo(code, organizationId);
     		openid=userInfo.getString("openid");
     		StringBuffer h5BUf=new StringBuffer();
+    		h5BUf.append("redirect:");
     		h5BUf.append(integralH5Pages.split(",")[statecode]).append("&openId="+openid);
     		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
     		if (null!=members) {
