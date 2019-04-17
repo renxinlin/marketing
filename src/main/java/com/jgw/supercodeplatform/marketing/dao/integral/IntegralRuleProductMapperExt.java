@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.dao.integral;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralRuleProductMapper;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
        +page
        +endScript
     )
-	List<IntegralRuleProduct> list(DaoSearch searchParams, @Param("organizationId") String organizationId);
+	List<IntegralRuleProduct> list(DaoSearchWithOrganizationIdParam searchParams);
 
     @Select(startScript
     	       + "select"
