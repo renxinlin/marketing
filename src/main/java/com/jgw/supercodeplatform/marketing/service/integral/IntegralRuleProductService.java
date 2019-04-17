@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,11 +62,15 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 
 	@Value("${marketing.domain.url}")
 	private String marketingDomain;
-	
+
+	@Autowired
+	private ModelMapper modelMapper;
 	@Override
 	protected List<IntegralRuleProduct> searchResult(DaoSearch searchParams) throws Exception {
 		String organizationId=commonUtil.getOrganizationId();
-		List<IntegralRuleProduct> list=dao.list(searchParams,organizationId);
+		DaoSearchWithOrganizationIdParam searchParamsDTO = modelMapper.map(searchParams, DaoSearchWithOrganizationIdParam.class);
+		searchParamsDTO.setOrganizationId(organizationId);
+		List<IntegralRuleProduct> list=dao.list(searchParamsDTO);
 		return super.searchResult(searchParams);
 	}
 
