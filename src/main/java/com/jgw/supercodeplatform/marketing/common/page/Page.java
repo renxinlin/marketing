@@ -88,5 +88,7 @@ public class Page implements Serializable{
     		this.totalPage = totalPage;
     	}
     }
+	public Page() {
+	}
     
 }

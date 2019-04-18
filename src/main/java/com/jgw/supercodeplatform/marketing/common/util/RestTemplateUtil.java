@@ -42,6 +42,7 @@ public class RestTemplateUtil {
 		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		if (null!=headerMap && !headerMap.isEmpty()) {
 			for(String key:headerMap.keySet()) {
 				headers.add(key, headerMap.get(key));

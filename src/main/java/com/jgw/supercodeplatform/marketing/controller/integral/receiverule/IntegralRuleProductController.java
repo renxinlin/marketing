@@ -51,9 +51,8 @@ public class IntegralRuleProductController {
   @RequestMapping(value = "/unSelectPage",method = RequestMethod.GET)
   @ApiOperation(value = "未选的产品积分记录列表", notes = "")
   @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-  public JSONObject unSelectPage(DaoSearch daoSearch) throws Exception {
-      JSONObject jsonObject=service.unSelectPage(daoSearch);
-      return jsonObject;
+  public RestResult<PageResults<List<IntegralRuleProduct>>> unSelectPage(DaoSearch daoSearch) throws Exception {
+      return service.unSelectPage(daoSearch);
   }
 
   @RequestMapping(value = "/emptyRule",method = RequestMethod.POST)

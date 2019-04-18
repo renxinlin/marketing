@@ -150,11 +150,20 @@ public class CommonService {
      */
 	public JSONArray requestPriductBatchIds(List<String> productIds, String superToken)
 			throws SuperCodeException {
+		
+		if (null==productIds || productIds.isEmpty()) {
+			throw new SuperCodeException("根据产品集合获取产品批次集合出错产品id集合不能为空", 500);
+		}
 		Map<String,String>headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
 		
 		Map<String, Object>params=new HashMap<String, Object>();
-		params.put("productIds", productIds);
+		StringBuffer buf=new StringBuffer();
+		for (String productId : productIds) {
+			buf.append(productId).append(",");
+		}
+		
+		params.put("productIds", buf.substring(0, buf.length()-1).toString());
 		ResponseEntity<String> response=restTemplateUtil.getRequestAndReturnJosn(restUserUrl, params, headerMap);
 		logger.info("根据产品集合请求基础平台批次数据收到响应："+response.toString());
 		String body=response.getBody();

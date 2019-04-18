@@ -230,8 +230,16 @@ public  void main() throws UnsupportedEncodingException, SuperCodeException {
 	}
 	
 	@Test
-	public void test2() throws IOException {
+	public void test2() throws IOException, SuperCodeException {
       System.out.println(integrals);
-		
+      Map<String, String> headerMap = new HashMap<>();
+      headerMap.put("super-token", "d2c0617286dd4db0a25b315f413ac0b5");
+      Map<String, Object> paramMap = new HashMap<String, Object>();
+      List<String> list=new ArrayList<String>();
+      list.add("d572ee82753f48bb84b2242284dad52e");
+      paramMap.put("productIds", "d572ee82753f48bb84b2242284dad52e");
+      
+  	  ResponseEntity<String> response= restTemplateUtil.getRequestAndReturnJosn(restUserUrl+"/product-batch/array/batch/list", paramMap, headerMap);
+      System.out.println(response);
 	}
 }

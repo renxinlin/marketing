@@ -30,7 +30,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
        +page
        +endScript
     )
-	List<IntegralRuleProduct> list(DaoSearch searchParams, String organizationId);
+	List<IntegralRuleProduct> list(DaoSearch searchParams, @Param("organizationId")String organizationId);
 
     @Select(startScript
     	       + "select"
@@ -42,7 +42,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
     	       +endWhere
     	       +endScript
     	    )
-	int count(DaoSearch searchParams);
+	int count(DaoSearch searchParams, @Param("organizationId")String organizationId);
 
     @Delete(startScript
     		+ "delete from marketing_integral_rule_product where ProductId in"

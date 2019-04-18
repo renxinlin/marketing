@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
@@ -65,12 +66,13 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 	protected List<IntegralRuleProduct> searchResult(DaoSearch searchParams) throws Exception {
 		String organizationId=commonUtil.getOrganizationId();
 		List<IntegralRuleProduct> list=dao.list(searchParams,organizationId);
-		return super.searchResult(searchParams);
+		return list;
 	}
 
 	@Override
 	protected int count(DaoSearch searchParams) throws Exception {
-		return dao.count(searchParams);
+		String organizationId=commonUtil.getOrganizationId();
+		return dao.count(searchParams,organizationId);
 	}
 
 	public void deleteByProductIds(List<String> productIds) throws SuperCodeException {
@@ -222,7 +224,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		}
 	}
 
-	public JSONObject unSelectPage(DaoSearch daoSearch) throws SuperCodeException {
+	public RestResult<AbstractPageService.PageResults<List<IntegralRuleProduct>>>  unSelectPage(DaoSearch daoSearch) throws SuperCodeException {
+		
+		 RestResult<AbstractPageService.PageResults<List<IntegralRuleProduct>>> restResult=new RestResult<AbstractPageService.PageResults<List<IntegralRuleProduct>>>();
 		Map<String, Object>params=new HashMap<String, Object>();
 		Integer current=daoSearch.getCurrent();
 		Integer pagesize=daoSearch.getPageSize();
@@ -241,7 +245,26 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		logger.info("接收到码管理进行过码关联的产品信息："+body);
 		
 		JSONObject json=JSONObject.parseObject(body);
-		return json;
+		int state=json.getInteger("state");
+		List<IntegralRuleProduct> ruleproductList=new ArrayList<IntegralRuleProduct>();
+		if (state==200) {
+			restResult.setState(200);
+			JSONArray arry=json.getJSONObject("results").getJSONArray("list");
+			for (int i=0 ;i<arry.size();i++) {
+				JSONObject ruleProduct=arry.getJSONObject(i);
+				IntegralRuleProduct product=new IntegralRuleProduct();
+				product.setProductId(ruleProduct.getString("objectId"));
+				product.setProductName(ruleProduct.getString("objectName"));
+				ruleproductList.add(product);
+			}
+			String pagination_str=json.getJSONObject("results").getString("pagination");
+			com.jgw.supercodeplatform.marketing.common.page.Page page=JSONObject.parseObject(pagination_str, com.jgw.supercodeplatform.marketing.common.page.Page.class);
+			AbstractPageService.PageResults<List<IntegralRuleProduct>> pageResults=new PageResults<List<IntegralRuleProduct>>(ruleproductList, page);
+		    restResult.setResults(pageResults);
+		}else {
+			throw new SuperCodeException("请求码管理产品出错", 500);
+		}
+		return restResult;
 	}
 
 	public IntegralRuleProduct selectByProductIdAndOrgId(String productId, String organizationId) {
