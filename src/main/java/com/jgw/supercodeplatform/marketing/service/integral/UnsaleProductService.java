@@ -143,8 +143,6 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             // 自卖产品
             // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,queryConditionMap, header);
-            //      TODO 基础信息无法接收参数
-
             return JSONObject.parseObject(response.getBody(), RestResult.class);
         }else{
             // 非自卖产品

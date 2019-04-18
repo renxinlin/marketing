@@ -65,9 +65,6 @@ public class RestTemplateUtil {
                         Iterator iterator = ((Collection) value).iterator();
                         if(iterator.hasNext()){
                             Object next = iterator.next();
-                            boolean s = next != null; //false
-                            boolean s1= !"".equals(next);
-                            org.springframework.util.StringUtils.isEmpty("");
                             if(!(next == null || "".equals(next))){
                                 newList.add(next);
                             }
