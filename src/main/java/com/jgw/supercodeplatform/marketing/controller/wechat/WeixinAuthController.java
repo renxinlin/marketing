@@ -84,7 +84,7 @@ public class WeixinAuthController {
     		StringBuffer h5BUf=new StringBuffer();
     		h5BUf.append("redirect:");
     		h5BUf.append(integralH5Pages.split(",")[statecode]);
-    		h5BUf.append("&openid="+openid);
+    		h5BUf.append("?openid="+openid);
     		if (null!=statecode && 0==statecode) {
     			h5BUf.append("&uuid="+statearr[2]);
 			}
