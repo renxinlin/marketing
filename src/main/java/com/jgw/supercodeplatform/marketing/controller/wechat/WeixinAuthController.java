@@ -64,10 +64,10 @@ public class WeixinAuthController {
     	JSONObject userInfo=null;
     	String statevalue=null;
     	Integer statecode=null;
+    	String[] statearr=null;
     	if (state.contains("_")) {
-    		String[] statearr=state.split("_");
+    		statearr=state.split("_");
     		statecode=Integer.valueOf(statearr[0]);
-    		statevalue=statearr[1];
 		}else {
 			statevalue=state;
 		}
@@ -77,13 +77,16 @@ public class WeixinAuthController {
     	
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
-    		organizationId=statevalue.split("_")[0];
+    		organizationId=statearr[1];
     		userInfo=getUserInfo(code, organizationId);
     		openid=userInfo.getString("openid");
     		StringBuffer h5BUf=new StringBuffer();
     		h5BUf.append("redirect:");
     		h5BUf.append(integralH5Pages.split(",")[statecode]);
     		h5BUf.append("&openid="+openid);
+    		if (null!=statecode && 0==statecode) {
+    			h5BUf.append("&uuid="+statearr[2]);
+			}
     		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
     		if (null!=members) {
     			h5BUf.append("&memberId="+members.getId());
@@ -102,24 +105,22 @@ public class WeixinAuthController {
 			redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+organizationId;
 		}
     	
-    	synchronized (this) {
-    		//判断是否需要保存用户
-    		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
-    		if (null==members) {
-    			members=new MarketingMembers();
-    			members.setOpenid(openid);
-    			members.setWxName(nickName);
-    			members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
-    			members.setOrganizationId(organizationId);
-    			if (null!=statecode) {
-    				members.setState((byte)0);
-    			}
-    			marketingMembersService.addMember(members);
-    		}else {
-    			members.setWxName(nickName);
-    			marketingMembersService.update(members);
-    		}
-    	}
+		//判断是否需要保存用户
+		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+		if (null==members) {
+			members=new MarketingMembers();
+			members.setOpenid(openid);
+			members.setWxName(nickName);
+			members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
+			members.setOrganizationId(organizationId);
+			if (null!=statecode) {
+				members.setState((byte)0);
+			}
+			marketingMembersService.addMember(members);
+		}else {
+			members.setWxName(nickName);
+			marketingMembersService.update(members);
+		}
 //        String redirectUrl="redirect:http://192.168.10.78:7081/?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId()+"&organizationId="+scInfoMO.getOrganizationId();
     	logger.info("最终跳转路径："+redirectUrl);
     	return  redirectUrl;
