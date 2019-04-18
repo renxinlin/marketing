@@ -83,7 +83,7 @@ public class WeixinAuthController {
     		StringBuffer h5BUf=new StringBuffer();
     		h5BUf.append("redirect:");
     		h5BUf.append(integralH5Pages.split(",")[statecode]);
-    		h5BUf.append("&openId="+openid);
+    		h5BUf.append("&openid="+openid);
     		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
     		if (null!=members) {
     			h5BUf.append("&memberId="+members.getId());
@@ -125,10 +125,6 @@ public class WeixinAuthController {
     	return  redirectUrl;
     }
 
-    public static void main(String[] args) {
-		String dd="0_c2bfeee050f84bd8913e753070bd8859";
-		System.out.println(dd.contains("_"));
-	}
     public JSONObject getUserInfo(String code,String organizationId) throws Exception {
 		MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(organizationId);
 		String appId=mWxMerchants.getMchAppid().trim();
@@ -144,20 +140,33 @@ public class WeixinAuthController {
 		
 		JSONObject accessTokenObj=JSONObject.parseObject(tokenContent);
 		String openid=accessTokenObj.getString("openid");
-		String access_token=accessTokenObj.getString("access_token");
-		Long expires_in=accessTokenObj.getLong("expires_in");
-		String refresh_token=accessTokenObj.getString("refresh_token");
-		String scope=accessTokenObj.getString("scope");
 		
-		String userInfoParams="?access_token="+access_token+"&openid="+openid+"&lang=zh_CN";
-		HttpClientResult userinfohttpResult=HttpRequestUtil.doGet(WechatConstants.USER_INFO_URL+userInfoParams);
-		String userinfoContent=userinfohttpResult.getContent();
-		logger.info("调用获取基础用户信息接口后返回内容："+userinfoContent);
-		if (userinfoContent.contains("errcode")) {
-			throw new SuperCodeException(tokenContent, 500);
-		}
+		
 		logger.info("--------------------授权成功--------------------------------");
-		JSONObject userinfoObj=JSONObject.parseObject(userinfoContent);
-		return userinfoObj;
+		HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(WechatConstants.ACCESS_TOKEN_URL+"&appid="+appId+"&secret="+secret);
+	    String body=reHttpClientResult.getContent();
+	    logger.info("请求获取用户信息token返回;"+body);
+	    if (body.contains("access_token")) {
+			JSONObject tokenObj=JSONObject.parseObject(body);
+			String token=tokenObj.getString("access_token");
+			HttpClientResult userInfoResult=HttpRequestUtil.doGet(WechatConstants.WECHAT_USER_INFO+"?access_token="+token+"&openid="+openid+"&lang=zh_CN");
+			String userInfoBody=userInfoResult.getContent();
+			logger.info("判断是否关注过公众号方法获取用户基本信息`返回结果="+userInfoBody);
+			if (userInfoBody.contains("subscribe")) {
+				JSONObject userObj=JSONObject.parseObject(userInfoBody);
+                return userObj;
+			}
+		}
+//		String access_token=accessTokenObj.getString("access_token");
+//		
+//		String userInfoParams="?access_token="+access_token+"&openid="+openid+"&lang=zh_CN";
+//		HttpClientResult userinfohttpResult=HttpRequestUtil.doGet(WechatConstants.USER_INFO_URL+userInfoParams);
+//		String userinfoContent=userinfohttpResult.getContent();
+//		logger.info("调用获取基础用户信息接口后返回内容："+userinfoContent);
+//		if (userinfoContent.contains("errcode")) {
+//			throw new SuperCodeException(tokenContent, 500);
+//		}
+//		JSONObject userinfoObj=JSONObject.parseObject(userinfoContent);
+		return null;
     }
 }
