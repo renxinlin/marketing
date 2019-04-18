@@ -86,9 +86,8 @@ public class IntegralExchangeController extends CommonUtil {
     @ApiOperation(value = "上下架设置", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
             @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id"),
-            @ApiImplicitParam(paramType="query",value = "【兑换活动状态0上架1手动下架2自动下架】",name="status")})
+            @ApiImplicitParam(paramType="query",value = "【兑换活动状态3上架1手动下架2自动下架】",name="status")})
     public RestResult upperOrlower(@RequestParam("id") Long id,@RequestParam("status") Byte status) throws Exception {
-        RestResult  restResult=new RestResult();
         String organizationId = getOrganizationId();
         integralExchangeService.updateStatus(id,organizationId,status);
         return RestResult.success();

@@ -155,9 +155,9 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         updateStatus.setId(id);
         updateStatus.setOrganizationId(organizationId);
         updateStatus.setStatus(status);
-        // 兑换活动状态0上架1手动下架2自动下架
+        // 兑换活动状态3上架1手动下架2自动下架
         int i = 0;
-        if(status == (byte) 0){
+        if(status == (byte) 3){
             // 准备上架
             i =  mapper.updateStatusUp(updateStatus);
             if(i != 1){
@@ -458,7 +458,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             logger.error(" {兑换信息不存在"+ JSONObject.toJSONString(exchangeProductParam) +"} ");
             throw new SuperCodeException("兑换信息不存在");
         }
-        if(exists.getStatus() != 0){
+        if(exists.getStatus() != 3){
             throw new SuperCodeException("兑换商品已经下架");
         }
         if(exists.getHaveStock() <= 0){
@@ -657,8 +657,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(integralExchange.getCustomerLimitNum() <= 0){
             throw new SuperCodeException("每人限兑为正整数");
         }
-        // 目前默认上架
-        integralExchange.setStatus((byte)0);
+        // 默认上架
+        integralExchange.setStatus((byte)3);
         if(integralExchange.getPayWay() == null || integralExchange.getPayWay() != 0){
             throw new SuperCodeException("支付手段目前只有积分");
         }
@@ -877,7 +877,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("组织id不存在",500);
         }
 
-        if(status.intValue() != 0 && status.intValue() != 1){
+        if(status.intValue() != 3 && status.intValue() != 1){
             throw new SuperCodeException("状态不在合法范围",500);
 
         }

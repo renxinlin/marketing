@@ -69,11 +69,11 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     int deleteByOrganizationId(@Param("id")Long id, @Param("organizationId")String organizationId);
 
      @Update(startScript +" update marketing_integral_exchange ie set Status = #{status} where Id =  #{id} and OrganizationId = #{organizationId} " +
-            " and Status != 0 "+ endScript)
+            " and Status != 3 "+ endScript)
     int updateStatusUp(IntegralExchange updateStatus);
 
     @Update(startScript +" update marketing_integral_exchange ie set Status = #{status} where Id =  #{id} and OrganizationId = #{organizationId} " +
-            " and Status = 0 "+ endScript)
+            " and Status = 3 "+ endScript)
     int updateStatusLowwer(IntegralExchange updateStatus);
 
     /**
@@ -82,7 +82,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
      * @return
      */
     @Select(startScript
-            + " select ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral, ShowPrice showPriceStr from marketing_integral_exchange ie  where OrganizationId = #{organizationId} and Status = 0 "
+            + " select ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral, ShowPrice showPriceStr from marketing_integral_exchange ie  where OrganizationId = #{organizationId} and Status = 3 "
             + " group by ProductId,ProductName, ProductPic, ExchangeIntegral, ShowPrice"
             + endScript)
     List<IntegralExchangeParam> getOrganizationExchange(@Param("organizationId") String organizationId);
@@ -165,7 +165,11 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " in <foreach collection='array' item='productId' index='index' open='(' close=')' separator=','> #{productId} </foreach>" +endScript)
     List<IntegralExchange> having(String[] productIds);
 
-    @Select("select " + allFileds + " from marketing_integral_exchange ie where ie.Status = 0 and ie.HaveStock = 0 and  DATE_FORMAT(UnderCarriage , '%Y-%m-%d') =  DATE_FORMAT(now(), '%Y-%m-%d') ")
+    /**
+     * 获取需要下架
+     * @return
+     */
+    @Select("select " + allFileds + " from marketing_integral_exchange ie where ie.Status = 3 and ie.HaveStock = 0 and  DATE_FORMAT(UnderCarriage , '%Y-%m-%d') =  DATE_FORMAT(now(), '%Y-%m-%d') ")
     List<IntegralExchange>  getNeedOffExchange();
 
    // 自动下架
