@@ -62,10 +62,11 @@ public class WeixinAuthController {
     	String openid=null;
     	String organizationId=null;
     	JSONObject userInfo=null;
-    	String statevalue=null;
+    	String statevalue="";
     	Integer statecode=null;
     	String[] statearr=null;
     	if (state.contains("_")) {
+    		statevalue=state;
     		statearr=state.split("_");
     		statecode=Integer.valueOf(statearr[0]);
 		}else {
