@@ -113,12 +113,9 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         // 生成传递基础数据的参数
         if(!excludeProducts.isEmpty()){
             for(IntegralExchange excludeProduct:excludeProducts){
-                if(excludeProduct.getProductId() != null){
                 excludeProductIds.add(excludeProduct.getProductId());
-                }
-                if(excludeProduct.getSkuId() != null){
                 excludeSkuIds.add(excludeProduct.getSkuId());
-                }
+
             }
         }
 

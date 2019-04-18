@@ -5,10 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -36,7 +33,7 @@ public class RestTemplateUtil {
 	/**
 	 * 发送get请求返回json数据
 	 * @param url
-	 * @param params
+	 * @param params 可以传递value为list的情况;会剔除null的相关情况
 	 * @param headerMap
 	 * @return
 	 * @throws SuperCodeException
@@ -57,12 +54,36 @@ public class RestTemplateUtil {
 		if (null!=params && !params.isEmpty()) {
 			for(String key:params.keySet()) {
 				Object value=params.get(key);
-				if(value instanceof List || value instanceof Set){
+				if(value instanceof List || value instanceof Set ){
 					// 如果list没数据，GET请求直接过滤掉这个参数
 					if(CollectionUtils.isEmpty((Collection) value)){
 						continue;
 					}
-					value = JSONObject.toJSONString(value);
+                    try {
+                        Collection newList = (Collection) value.getClass().newInstance();
+                        Iterator iterator = ((Collection) value).iterator();
+                        if(iterator.hasNext()){
+                            Object next = iterator.next();
+                            boolean s = next != null; //false
+                            boolean s1= !"".equals(next);
+                            org.springframework.util.StringUtils.isEmpty("");
+                            if(!(next == null || "".equals(next))){
+                                newList.add(next);
+                            }
+                        }
+                        if(CollectionUtils.isEmpty( newList)){
+                            continue;
+                        }
+                        // 转换参数替换原参数，去除null等情况
+                        value = JSONObject.toJSONString(newList);
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                        throw new SuperCodeException("GET参数转换异常");
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                        throw new SuperCodeException("GET参数转换异常");
+                    }
+
 				}
 				builder.queryParam(key,  value);
 			}
@@ -99,6 +120,7 @@ public class RestTemplateUtil {
 				HttpMethod.POST, requestEntity, String.class);
 		return result;
 	}
+
 
 	/**
 	 * 解决短信发送JSON String乱码问题
