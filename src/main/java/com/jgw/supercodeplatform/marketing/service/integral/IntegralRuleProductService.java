@@ -30,7 +30,7 @@ import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleProductMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam.Product;
+import com.jgw.supercodeplatform.marketing.dto.integral.Product;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;

@@ -45,9 +45,7 @@ public class IntegralRuleProductController {
       RestResult<AbstractPageService.PageResults<List<IntegralRuleProduct>>> restResult=new RestResult<AbstractPageService.PageResults<List<IntegralRuleProduct>>>();
       PageResults<List<IntegralRuleProduct>> pageResults=service.listSearchViewLike(daoSearch);
       restResult.setState(200);
-      if(!CollectionUtils.isEmpty(pageResults.getList())){
-          restResult.setResults(pageResults);
-      }
+      restResult.setResults(pageResults);
       return restResult;
   }
   
