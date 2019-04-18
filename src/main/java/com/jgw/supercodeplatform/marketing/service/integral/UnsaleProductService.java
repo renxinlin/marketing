@@ -111,10 +111,14 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         // 选择的产品skuId
         Set<String> excludeSkuIds = new HashSet<>();
         // 生成传递基础数据的参数
-        for(IntegralExchange excludeProduct:excludeProducts){
-            excludeProductIds.add(excludeProduct.getProductId());
-            excludeSkuIds.add(excludeProduct.getSkuId());
+        if(!excludeProducts.isEmpty()){
+            for(IntegralExchange excludeProduct:excludeProducts){
+                excludeProductIds.add(excludeProduct.getProductId());
+                excludeSkuIds.add(excludeProduct.getSkuId());
+
+            }
         }
+
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
         // 已存在兑换产品由基础信息过滤
@@ -139,6 +143,8 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             // 自卖产品
             // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,queryConditionMap, header);
+            //      TODO 基础信息无法接收参数
+
             return JSONObject.parseObject(response.getBody(), RestResult.class);
         }else{
             // 非自卖产品

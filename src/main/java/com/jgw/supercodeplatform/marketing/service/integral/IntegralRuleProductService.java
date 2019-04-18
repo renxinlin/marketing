@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleProductMapperExt;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam.Product;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
@@ -61,18 +63,24 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 
 	@Value("${marketing.domain.url}")
 	private String marketingDomain;
-	
+
+	@Autowired
+	private ModelMapper modelMapper;
 	@Override
 	protected List<IntegralRuleProduct> searchResult(DaoSearch searchParams) throws Exception {
 		String organizationId=commonUtil.getOrganizationId();
-		List<IntegralRuleProduct> list=dao.list(searchParams,organizationId);
+		DaoSearchWithOrganizationIdParam searchParamsDTO = modelMapper.map(searchParams, DaoSearchWithOrganizationIdParam.class);
+		searchParamsDTO.setOrganizationId(organizationId);
+		List<IntegralRuleProduct> list=dao.list(searchParamsDTO);
 		return list;
 	}
 
 	@Override
 	protected int count(DaoSearch searchParams) throws Exception {
 		String organizationId=commonUtil.getOrganizationId();
-		return dao.count(searchParams,organizationId);
+		DaoSearchWithOrganizationIdParam searchParamsDTO = modelMapper.map(searchParams, DaoSearchWithOrganizationIdParam.class);
+		searchParamsDTO.setOrganizationId(organizationId);
+		return dao.count(searchParamsDTO);
 	}
 
 	public void deleteByProductIds(List<String> productIds) throws SuperCodeException {

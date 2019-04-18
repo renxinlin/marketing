@@ -1,10 +1,5 @@
 package com.jgw.supercodeplatform.marketing.dao.integral;
 
-import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
-import com.jgw.supercodeplatform.marketing.dao.CommonSql;
-import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralRuleProductMapper;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
-
 import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
@@ -12,6 +7,11 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
+import com.jgw.supercodeplatform.marketing.dao.CommonSql;
+import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralRuleProductMapper;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 
 @Mapper
 public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper,CommonSql {
@@ -30,7 +30,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
        +page
        +endScript
     )
-	List<IntegralRuleProduct> list(DaoSearch searchParams, @Param("organizationId")String organizationId);
+	List<IntegralRuleProduct> list(DaoSearchWithOrganizationIdParam searchParams);
 
     @Select(startScript
     	       + "select"
@@ -42,7 +42,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
     	       +endWhere
     	       +endScript
     	    )
-	int count(DaoSearch searchParams, @Param("organizationId")String organizationId);
+	int count(DaoSearchWithOrganizationIdParam searchParams);
 
     @Delete(startScript
     		+ "delete from marketing_integral_rule_product where ProductId in"
