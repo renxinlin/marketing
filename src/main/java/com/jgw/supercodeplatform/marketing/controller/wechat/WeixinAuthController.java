@@ -79,7 +79,7 @@ public class WeixinAuthController {
     	
     	ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(statevalue);
     	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
-    	
+    	boolean needWriteJwtToken=false;
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
     		organizationId=statearr[1];
@@ -95,10 +95,15 @@ public class WeixinAuthController {
     		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
     		if (null!=members) {
     			h5BUf.append("&memberId="+members.getId());
+    		}else {
+    			needWriteJwtToken=true;
     		}
 			nickName=userInfo.getString("nickname");
     		redirectUrl=h5BUf.toString();
 		}else {
+			//如果是活动扫码默认也写jwttoken
+			needWriteJwtToken=true;
+			
 			userInfo=getUserInfo(code, scanCodeInfoMO.getOrganizationId());
 			openid=userInfo.getString("openid");
 			organizationId=scanCodeInfoMO.getOrganizationId();
@@ -126,6 +131,16 @@ public class WeixinAuthController {
 			members.setWxName(nickName);
 			marketingMembersService.update(members);
 		}
+		//如果需要写jwttoken
+		if (needWriteJwtToken) {
+			writeJwtToken(response, members);
+		}
+//        String redirectUrl="redirect:http://192.168.10.78:7081/?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId()+"&organizationId="+scInfoMO.getOrganizationId();
+    	logger.info("最终跳转路径："+redirectUrl);
+    	return  redirectUrl;
+    }
+
+	private void writeJwtToken(HttpServletResponse response, MarketingMembers members) {
 		try {
 			H5LoginVO h5LoginVO=new H5LoginVO();
 			h5LoginVO.setHaveIntegral(members.getHaveIntegral());
@@ -138,10 +153,7 @@ public class WeixinAuthController {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-//        String redirectUrl="redirect:http://192.168.10.78:7081/?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId()+"&organizationId="+scInfoMO.getOrganizationId();
-    	logger.info("最终跳转路径："+redirectUrl);
-    	return  redirectUrl;
-    }
+	}
 
     public JSONObject getUserInfo(String code,String organizationId) throws Exception {
 		MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(organizationId);
