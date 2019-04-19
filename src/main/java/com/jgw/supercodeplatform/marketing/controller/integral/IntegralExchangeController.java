@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/marketing/exchange")
 @Api(tags = "积分兑换")
@@ -124,7 +126,7 @@ public class IntegralExchangeController extends CommonUtil {
     @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "兑换|【新增】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
-    public RestResult add(@RequestBody IntegralExchangeAddParam integralExchange) throws Exception {
+    public RestResult add(@Valid @RequestBody IntegralExchangeAddParam integralExchange) throws Exception {
         String organizationId = getOrganizationId();
         String organizationName = getOrganizationName();
         integralExchangeService.add(integralExchange, organizationId, organizationName);
