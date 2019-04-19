@@ -5,9 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Map;
 
-import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -33,7 +31,7 @@ public class RestTemplateUtil {
 	/**
 	 * 发送get请求返回json数据
 	 * @param url
-	 * @param params 可以传递value为list的情况;会剔除null的相关情况
+	 * @param params
 	 * @param headerMap
 	 * @return
 	 * @throws SuperCodeException
@@ -50,47 +48,19 @@ public class RestTemplateUtil {
 				headers.add(key, headerMap.get(key));
 			}
 		}
-        UriComponentsBuilder builder = UriComponentsBuilder
-                .fromUriString(url);
+		UriComponentsBuilder builder = UriComponentsBuilder
+				.fromUriString(url);
 		if (null!=params && !params.isEmpty()) {
 			for(String key:params.keySet()) {
 				Object value=params.get(key);
-				if(value instanceof List || value instanceof Set ){
-					// 如果list没数据，GET请求直接过滤掉这个参数
-					if(CollectionUtils.isEmpty((Collection) value)){
-						continue;
-					}
-                    try {
-                        Collection newList = (Collection) value.getClass().newInstance();
-                        Iterator iterator = ((Collection) value).iterator();
-                        if(iterator.hasNext()){
-                            Object next = iterator.next();
-                            if(!(next == null || "".equals(next))){
-                                newList.add(next);
-                            }
-                        }
-                        if(CollectionUtils.isEmpty( newList)){
-                            continue;
-                        }
-                        // 转换参数替换原参数，去除null等情况
-                        value = JSONObject.toJSONString(newList);
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                        throw new SuperCodeException("GET参数转换异常");
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                        throw new SuperCodeException("GET参数转换异常");
-                    }
-
-				}
 				builder.queryParam(key,  value);
 			}
 		}
 
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> result = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, entity, String.class);
-        return result;
-    }
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		ResponseEntity<String> result = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, entity, String.class);
+		return result;
+	}
 
 
 	/**
@@ -119,7 +89,6 @@ public class RestTemplateUtil {
 		return result;
 	}
 
-
 	/**
 	 * 解决短信发送JSON String乱码问题
 	 * @param url
@@ -137,15 +106,15 @@ public class RestTemplateUtil {
 	}
 
 
-    /**
-     * 上传文件
-     * @param url
-     * @param fileParamName
-     * @param params
-     * @param headerMap
-     * @return
-     * @throws SuperCodeException
-     */
+	/**
+	 * 上传文件
+	 * @param url
+	 * @param fileParamName
+	 * @param params
+	 * @param headerMap
+	 * @return
+	 * @throws SuperCodeException
+	 */
 	public ResponseEntity<String> uploadFile(String url,String fileParamName,Map<String, Object> params,Map<String, String> headerMap) throws SuperCodeException {
 		if (StringUtils.isBlank(url)) {
 			throw new SuperCodeException("postJsonDataAndReturnJosn参数url不能为空", 500);
@@ -178,8 +147,8 @@ public class RestTemplateUtil {
 
 		ResponseEntity<String> responseEntity = restTemplate.exchange(url,
 				HttpMethod.POST, httpEntity, String.class);
-        return responseEntity;
-    }
+		return responseEntity;
+	}
 
 	public ResponseEntity<String> uploadInputtream(String url,InputStream inputStream,String name,Map<String, String> headerMap) throws FileNotFoundException, IOException {
 		MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<>();
@@ -188,10 +157,10 @@ public class RestTemplateUtil {
 		inputStream.close();
 
 		ByteArrayResource contentsAsResource = new ByteArrayResource(bytesArray) {
-		    @Override
-		    public String getFilename() {
-		        return "img";
-		    }
+			@Override
+			public String getFilename() {
+				return "img";
+			}
 		};
 		paramMap.add("file", contentsAsResource);
 		paramMap.add("name", name);
@@ -203,9 +172,9 @@ public class RestTemplateUtil {
 				headers.set(key, headerMap.get(key));
 			}
 		}
-        HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(paramMap, headers);
+		HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<MultiValueMap<String, Object>>(paramMap, headers);
 		ResponseEntity<String> data=restTemplate.exchange(url,
 				HttpMethod.POST, entity, String.class);
-		 return data;
+		return data;
 	}
 }
