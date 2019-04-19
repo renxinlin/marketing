@@ -50,4 +50,7 @@ public interface MarketingActivityProductMapper {
 			+ " </where>"
 			+ " </script>")
 	void updateCodeTotalAmount(@Param("codeTotalAmount")Long sum, @Param("id")Long id);
+
+	@Select("SELECT  ap.ProductBatchId FROM marketing_activity_product ap left join marketing_activity_set aset on ap.ActivitySetId=aset.Id WHERE aset.OrganizationId = #{organizationId} ")
+	List<String> usedProductBatchIds(@Param("organizationId")String organizationId);
 }

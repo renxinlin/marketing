@@ -6,9 +6,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
@@ -23,6 +26,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -77,45 +81,6 @@ private String codeManagerUrl="http://PLATFORM-CODEMANAGER-SUPERCODE-ZC";
 private String userServiceUrl;
 
 
-//扫码时保存产品和码信息到内存，待授权后根据授权state值获取
-private String  MARKETING_GLOBAL_SCAN_CODE_INFO="marketing:cache:scanCodeInfo";
-private String  MARKETING_GLOBAL_CACHE ="marketing:cache:wxMerchants";
-
-
-public void putScanCodeInfoMO(String wxsate, ScanCodeInfoMO scanCodeInfoMO) throws SuperCodeException {
-	if (StringUtils.isBlank(wxsate)) {
-		throw new SuperCodeException("wxstae为空", 500);
-	}
-	if(scanCodeInfoMO == null){
-		throw new SuperCodeException("扫码信息为空", 500);
-	}
-    
-	redisUtil.hmSet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate,JSONObject.toJSONString(scanCodeInfoMO));
-}
-
-
-public Long deleteScanCodeInfoMO(String wxsate) throws SuperCodeException {
-	if (StringUtils.isBlank(wxsate)) {
-		throw new SuperCodeException("wxstae为空", 500);
-	}
-	return redisUtil.deleteHmKey(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
-
-}
-
-
-
-public  ScanCodeInfoMO getScanCodeInfoMO(String wxsate) throws SuperCodeException {
-	if (StringUtils.isBlank(wxsate)) {
-		throw new SuperCodeException("获取扫码缓存信息时参数wxsate不能为空", 500);
-	}
-	String json =(String) redisUtil.hmGet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
-	ScanCodeInfoMO scanCodeInfoMO=JSONObject.parseObject(json, ScanCodeInfoMO.class);
-	if (null==scanCodeInfoMO) {
-		throw new SuperCodeException("根据wxsate="+wxsate+"无法获取扫码缓存信息请重新扫码", 500);
-	}
-	
-	return scanCodeInfoMO;
-}
 @Test
 public void unSelectPage() throws SuperCodeException {
 	Map<String, Object>params=new HashMap<String, Object>();
@@ -141,12 +106,47 @@ public void unSelectPage() throws SuperCodeException {
 }
 @Test
 public  void test1() throws UnsupportedEncodingException, SuperCodeException {
-	ScanCodeInfoMO scanCodeInfoMO=new ScanCodeInfoMO();
-	scanCodeInfoMO.setCodeId("22655");
-	putScanCodeInfoMO("1", scanCodeInfoMO);
+	Map<String, Object>params=new HashMap<String, Object>();
+	String organizationId="3d096f49448e4444b97d9a79aaa21f13";
+	params.put("organizationId",organizationId );
+	params.put("productBatchIds","e46604d24aa54f9091e054adaae020dd,e46604d24aa54f9091e054adaae020dd");
 	
-	ScanCodeInfoMO scanCodeInfoMO2=getScanCodeInfoMO("1");
-	System.out.println(scanCodeInfoMO2);
+	ResponseEntity<String>responseEntity=getRequestAndReturnJosn(codeManagerUrl+CommonConstants.RELATION_PRODUCT_PRODUCT_BATCH, params, null);
+    System.out.println(responseEntity.toString());
+}
+
+/**
+ * 发送get请求返回json数据
+ * @param url
+ * @param params 可以传递value为list的情况;会剔除null的相关情况
+ * @param headerMap
+ * @return
+ * @throws SuperCodeException
+ */
+public ResponseEntity<String> getRequestAndReturnJosn(String url,Map<String, Object> params,Map<String, String> headerMap) throws SuperCodeException {
+	if (StringUtils.isBlank(url)) {
+		throw new SuperCodeException("sendGetRequestAndReturnJosn参数url不能为空", 500);
+	}
+	HttpHeaders headers = new HttpHeaders();
+	headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+	headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+	if (null!=headerMap && !headerMap.isEmpty()) {
+		for(String key:headerMap.keySet()) {
+			headers.add(key, headerMap.get(key));
+		}
+	}
+    UriComponentsBuilder builder = UriComponentsBuilder
+            .fromUriString(url);
+	if (null!=params && !params.isEmpty()) {
+		for(String key:params.keySet()) {
+			Object value=params.get(key);
+			builder.queryParam(key,  value);
+		}
+	}
+
+    HttpEntity<?> entity = new HttpEntity<>(headers);
+    ResponseEntity<String> result = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, entity, String.class);
+    return result;
 }
 @Test
 public  void main() throws UnsupportedEncodingException, SuperCodeException {

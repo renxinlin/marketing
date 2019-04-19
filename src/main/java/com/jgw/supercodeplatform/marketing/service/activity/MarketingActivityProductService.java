@@ -1,22 +1,46 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class MarketingActivityProductService {
-
+	protected static Logger logger = LoggerFactory.getLogger(MarketingActivityProductService.class);
     @Autowired
     private MarketingActivityProductMapper mapper;
 
+    @Autowired
+    private RestTemplateUtil restTemplateUtil;
+    
+    @Autowired
+    private CommonUtil commonUtil;
+    
+    
+	@Value("${rest.codemanager.url}")
+	private String codeManagerUrl;
+	
     public RestResult<HashSet<MarketingActivityProductParam>> getActivityProductInfoByeditPage(Long activitySetId) {
         RestResult restResult = new RestResult();
         // 校验
@@ -62,4 +86,23 @@ public class MarketingActivityProductService {
         restResult.setResults(transferDatas);
         return  restResult;
     }
+
+	public JSONObject relationActProds() throws SuperCodeException {
+		String organizationId=commonUtil.getOrganizationId();
+		List<String> productBatchIds=mapper.usedProductBatchIds(organizationId);
+		Map<String, Object>params=new HashMap<String, Object>();
+		if (null!=productBatchIds && !productBatchIds.isEmpty()) {
+			StringBuffer buf=new StringBuffer();
+			for (String productBatchId : productBatchIds) {
+				buf.append(productBatchId).append(",");
+			}
+			params.put("productBatchIds",buf.substring(0, buf.length()-1));
+		}
+		params.put("organizationId",organizationId );
+		params.put("relationType",3 );
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.RELATION_PRODUCT_PRODUCT_BATCH, params, null);
+		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
+		String body=responseEntity.getBody();
+		return JSONObject.parseObject(body);
+	}
 }
