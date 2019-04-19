@@ -17,7 +17,7 @@ public class ProductAndSkuVo {
     private String pruductName;
     @ApiModelProperty("产品图片")
     private String pruductPic;
-    @ApiModelProperty("产品售价字符串")
+    @ApiModelProperty("产品售价字符串|为nullH5不展示")
     private String showPriceStr;
     @ApiModelProperty("产品SKU")
     private List<SkuInfo> skuInfo;

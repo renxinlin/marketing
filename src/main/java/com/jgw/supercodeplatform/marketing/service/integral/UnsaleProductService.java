@@ -11,8 +11,7 @@ import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.baseservice.product.PageResults;
-import com.jgw.supercodeplatform.marketing.dto.baseservice.product.UnSaleProductPageResults;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.UnSaleProductPageResults;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductMarketingSearchView;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductMarketingSkuSingleView;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductView;
@@ -173,8 +172,8 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,queryConditionMap, header);
             RestResult restResult = JSONObject.parseObject(response.getBody(), RestResult.class);
-            com.jgw.supercodeplatform.marketing.dto.baseservice.product.PageResults results =  modelMapper.map(restResult.getResults(),
-                    com.jgw.supercodeplatform.marketing.dto.baseservice.product.PageResults .class);
+            com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults results =  modelMapper.map(restResult.getResults(),
+                    com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults.class);
             List<ProductView> list = modelMapper.map(results.getList(),List.class);
             // 转换为前端所需【产品ID,名称图片，展示价】【SKUID,名称图片】
              return changeBaseServiceDtoToVo(results,list);
@@ -212,7 +211,8 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             if(baseServicePrudoctDto.getViewPrice() != null){
                 productVO.setShowPriceStr(baseServicePrudoctDto.getViewPrice().toString());
             }else {
-                productVO.setShowPriceStr("0.00");
+                // 前端不展示
+                productVO.setShowPriceStr(null);
             }
             // 产品VOsku集合
             List<SkuInfo> listSkuVO = new ArrayList<>();
@@ -246,45 +246,54 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
      * @param list
      * @return
      */
-    private RestResult<AbstractPageService.PageResults<List<ProductAndSkuVo>>> changeBaseServiceDtoToVo(com.jgw.supercodeplatform.marketing.dto.baseservice.product.PageResults results, List<ProductView> list) {
+    private RestResult<AbstractPageService.PageResults<List<ProductAndSkuVo>>> changeBaseServiceDtoToVo(com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults results, List<ProductView> list) {
         // 产品集合
         List<ProductAndSkuVo> listVO = new ArrayList<ProductAndSkuVo>();
         for(ProductView baseserviceProductDto :list){
             ProductAndSkuVo towebProductVo = new ProductAndSkuVo();
             ProductMarketingSearchView productMarketing = baseserviceProductDto.getProductMarketing();
             // 产品ID
-            String productId = productMarketing.getProductId();
-            // 展示价
-            BigDecimal viewPrice = productMarketing.getViewPrice();
-            // 产品名称
-            String productName = baseserviceProductDto.getProductName();
-            // 产品图片
-            String productUrl = baseserviceProductDto.getProductUrl();
-            // 产品sku信息skuDTO
-            List<ProductMarketingSkuSingleView> productMarketingSkus = productMarketing.getProductMarketingSkus();
-            // 产品skuVO
-            List<SkuInfo> listSkuVO = new ArrayList<>();
-            for(ProductMarketingSkuSingleView skuDto : productMarketingSkus){
-                SkuInfo skuVO = new SkuInfo();
-                // 基础数据格式，数值型;营销String[基础数据最初定的交互格式是String,后改成数值型，造成格式不一定]
-                // skuID
-                skuVO.setSkuId(skuDto.getId() + "");
-                // sku名称
-                skuVO.setSkuName(skuDto.getSku());
-                // sku图片
-                skuVO.setSkuUrl(skuDto.getPic());
-                // 产品sku集合
-                listSkuVO.add(skuVO);
-            }
-
+            String productId = baseserviceProductDto.getProductId();
             towebProductVo.setPruductId(productId);
-            towebProductVo.setPruductName(productName);
-            towebProductVo.setPruductPic(productUrl);
-            if(viewPrice != null){
-                towebProductVo.setShowPriceStr(viewPrice.toString());
+            // 展示价
+
+            if(productMarketing.getViewPrice() != null){
+                towebProductVo.setShowPriceStr(productMarketing.getViewPrice().toString());
             }else {
+                // 前端不展示
                 towebProductVo.setShowPriceStr("0.00");
             }
+            // 产品名称
+            String productName = baseserviceProductDto.getProductName();
+            towebProductVo.setPruductName(productName);
+
+            // 产品图片
+            String productUrl = baseserviceProductDto.getProductUrl();
+            towebProductVo.setPruductPic(productUrl);
+
+            // SKU信息
+            if(productMarketing != null){
+                // 产品sku信息skuDTO
+                List<ProductMarketingSkuSingleView> productMarketingSkus = productMarketing.getProductMarketingSkus();
+                // 产品skuVO
+                List<SkuInfo> listSkuVO = new ArrayList<>();
+                for(ProductMarketingSkuSingleView skuDto : productMarketingSkus){
+                    SkuInfo skuVO = new SkuInfo();
+                    // 基础数据格式，数值型;营销String[基础数据最初定的交互格式是String,后改成数值型，造成格式不一定]
+                    // skuID
+                    towebProductVo.setShowPriceStr("0.00");
+                    // sku名称
+                    skuVO.setSkuName(skuDto.getSku());
+                    // sku图片
+                    skuVO.setSkuUrl(skuDto.getPic());
+                    // 产品sku集合
+                    listSkuVO.add(skuVO);
+                }
+                towebProductVo.setSkuInfo(listSkuVO);
+
+            }
+
+
             listVO.add(towebProductVo);
         }
         // 转换完成
