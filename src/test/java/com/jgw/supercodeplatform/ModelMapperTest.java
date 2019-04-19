@@ -26,7 +26,7 @@ public class ModelMapperTest {
         SkuInfo skuinfo = new SkuInfo();
         skuinfo.setSkuName("name");
         skuinfos.add(skuinfo);
-        p.setSkuinfos(skuinfos);
+        p.setSkuInfo(skuinfos);
         ps.add(p);
         integralExchange.setProducts(ps);
         IntegralExchangeAddParam integralExchangeAddParam = modelMapper.map(integralExchange, IntegralExchangeAddParam.class);
