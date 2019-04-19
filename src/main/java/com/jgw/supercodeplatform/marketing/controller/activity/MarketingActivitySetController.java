@@ -114,10 +114,12 @@ public class MarketingActivitySetController {
 
     @RequestMapping(value = "/relationActProds",method = RequestMethod.GET)
     @ApiOperation(value = "获取活动做过码关联的产品及产品批次数据", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "组织id",name="organizationId")
+    @ApiImplicitParams(value= {
+    		 @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     		})
-    public JSONObject relationActProds(@RequestParam(required=false) String organizationId) throws Exception {
-        return maProductService.relationActProds(organizationId);
+    public JSONObject relationActProds() throws Exception {
+    	
+        return maProductService.relationActProds();
     }
 
 
