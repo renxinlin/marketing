@@ -282,7 +282,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
      * @param productId
      * @return
      */
-    public IntegralExchangeSkuDetailAndAddress detailSkuByMember(Long productId, Long memberId) throws SuperCodeException{
+    public IntegralExchangeSkuDetailAndAddress detailSkuByMember(String productId, Long memberId) throws SuperCodeException{
         // 初始化返回
         IntegralExchangeSkuDetailAndAddress result = new IntegralExchangeSkuDetailAndAddress();
 
@@ -316,8 +316,12 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     break;
                 }
             }
+            //  优先默认地址; 否则地址为空 现在时间字段删除了【所有跟ID走】
+            if(deliveryAddress == null){
+                deliveryAddress = deliveryAddresses.get(deliveryAddresses.size()-1);
+            }
         }
-        //  优先默认地址; 否则地址为空
+
         result.setDeliveryAddress(deliveryAddress);
         return result;
 
