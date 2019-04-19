@@ -686,7 +686,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         }
         if(integralExchange.getStockWarningNum() == null){
             // TODO 报异常             integralExchange.setStockWarningNum(Integer.MAX_VALUE);
-            integralExchange.setStockWarningNum(100000);
+            integralExchange.setStockWarningNum(100);
         }
         if(integralExchange.getStockWarningNum() <= 0 ){
             throw new SuperCodeException("库存预警为正整数且大于0");
