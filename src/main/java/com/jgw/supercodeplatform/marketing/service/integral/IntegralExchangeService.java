@@ -316,8 +316,12 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     break;
                 }
             }
+            //  优先默认地址; 否则地址为空 现在时间字段删除了【所有跟ID走】
+            if(deliveryAddress == null){
+                deliveryAddress = deliveryAddresses.get(deliveryAddresses.size()-1);
+            }
         }
-        //  优先默认地址; 否则地址为空
+
         result.setDeliveryAddress(deliveryAddress);
         return result;
 
