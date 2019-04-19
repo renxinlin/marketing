@@ -6,6 +6,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.modelmapper.ModelMapper;
+
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -15,8 +17,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
-import org.modelmapper.ModelMapper;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
 /**
  * JWT安全授权,暂时专用于用户
@@ -27,7 +28,7 @@ public class JWTUtil {
 	 * @param jwtUser
 	 * @return
 	 */
-	public static String createTokenWithClaim(JwtUser jwtUser) throws SuperCodeException{
+	public static String createTokenWithClaim(H5LoginVO jwtUser) throws SuperCodeException{
 
 		try {
 			Algorithm algorithm = Algorithm.HMAC256("secret");
@@ -101,7 +102,7 @@ public class JWTUtil {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public static JwtUser verifyToken(String token) throws SuperCodeException{
+	public static H5LoginVO verifyToken(String token) throws SuperCodeException{
 		try {
 			Algorithm algorithm = Algorithm.HMAC256("secret");
 			JWTVerifier verifier = JWT.require(algorithm)
@@ -112,7 +113,7 @@ public class JWTUtil {
 			// 直接json转对象由于反射对非空属性没处理会报错
 			Map jwtU = (Map) JSONObject.parse(claims.get("jwtUser").asString());
 			ModelMapper mm = new ModelMapper();
-			JwtUser userInfo = mm.map(jwtU, JwtUser.class);
+			H5LoginVO userInfo = mm.map(jwtU, H5LoginVO.class);
 			return userInfo;
 		} catch (TokenExpiredException ex){
 			throw new SuperCodeException("jwt-token已过期",403);

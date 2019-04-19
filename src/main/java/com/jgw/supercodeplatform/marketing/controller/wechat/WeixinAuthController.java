@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.controller.wechat;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +17,12 @@ import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
 import io.swagger.annotations.Api;
 /**
@@ -52,7 +56,7 @@ public class WeixinAuthController {
      * @throws Exception
      */
     @RequestMapping(value = "/code",method=RequestMethod.GET)
-    public String getWXCode(String code ,String state) throws Exception {
+    public String getWXCode(String code ,String state,HttpServletResponse response) throws Exception {
     	logger.info("微信授权回调获取code="+code+",state="+state);
     	if (StringUtils.isBlank(state)) {
     		throw new SuperCodeException("state不能为空", 500);
@@ -121,6 +125,18 @@ public class WeixinAuthController {
 		}else {
 			members.setWxName(nickName);
 			marketingMembersService.update(members);
+		}
+		try {
+			H5LoginVO h5LoginVO=new H5LoginVO();
+			h5LoginVO.setHaveIntegral(members.getHaveIntegral());
+			h5LoginVO.setMemberId(members.getId());
+			h5LoginVO.setMobile(members.getMobile());
+			h5LoginVO.setWechatHeadImgUrl(members.getWechatHeadImgUrl());
+			h5LoginVO.setMemberName(members.getUserName()==null?members.getWxName():members.getUserName());
+			String jwtToken=JWTUtil.createTokenWithClaim(h5LoginVO);
+			response.addHeader("jwt-token", jwtToken);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 //        String redirectUrl="redirect:http://192.168.10.78:7081/?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId()+"&organizationId="+scInfoMO.getOrganizationId();
     	logger.info("最终跳转路径："+redirectUrl);

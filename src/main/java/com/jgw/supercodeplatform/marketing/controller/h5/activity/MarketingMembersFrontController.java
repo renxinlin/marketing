@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,8 @@ public class MarketingMembersFrontController extends CommonUtil {
     		@ApiImplicitParam(paramType="query",value = "用户中心登录时才需要传",name="organizationId"),
     		@ApiImplicitParam(paramType="query",value = "手机验证码",name="verificationCode")
     		})
-    public RestResult<H5LoginVO> login(@RequestParam String mobile,@RequestParam(required=false) String wxstate,@RequestParam String verificationCode,@RequestParam(required=false) String openid,@RequestParam(required=false) String organizationId) throws Exception {
-        return marketingMembersService.login(mobile,wxstate,verificationCode,openid,organizationId);
+    public RestResult<H5LoginVO> login(@RequestParam String mobile,@RequestParam(required=false) String wxstate,@RequestParam String verificationCode,@RequestParam(required=false) String openid,@RequestParam(required=false) String organizationId,HttpServletResponse response) throws Exception {
+        return marketingMembersService.login(mobile,wxstate,verificationCode,openid,organizationId,response);
     }
 
     @RequestMapping(value = "/register",method = RequestMethod.POST)

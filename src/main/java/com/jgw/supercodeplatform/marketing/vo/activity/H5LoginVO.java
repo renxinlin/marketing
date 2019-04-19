@@ -3,6 +3,8 @@ package com.jgw.supercodeplatform.marketing.vo.activity;
 public class H5LoginVO {
 	private Long memberId;//返回用户表主键id
 
+	private String memberName;//用户姓名
+	
 	private int registered;//1已注册不需要再去完善信息 0需要去完善信息
 	
 	private String organizationName;
@@ -13,7 +15,14 @@ public class H5LoginVO {
     
     private String wechatHeadImgUrl;
     
-    
+	public String getMemberName() {
+		return memberName;
+	}
+
+	public void setMemberName(String memberName) {
+		this.memberName = memberName;
+	}
+
 	public String getWechatHeadImgUrl() {
 		return wechatHeadImgUrl;
 	}

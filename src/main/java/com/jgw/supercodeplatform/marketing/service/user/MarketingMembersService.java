@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeT
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
@@ -414,6 +417,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @param verificationCode
 	 * @param openid 
 	 * @param organizationId 
+	 * @param response 
 	 * @return
 	 * @throws SuperCodeException
 	 *
@@ -426,7 +430,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	 */
 
-	public RestResult<H5LoginVO> login(String mobile, String wxstate, String verificationCode, String openid, String organizationId) throws SuperCodeException {
+	public RestResult<H5LoginVO> login(String mobile, String wxstate, String verificationCode, String openid, String organizationId, HttpServletResponse response) throws SuperCodeException {
 		RestResult<H5LoginVO> restResult=new RestResult<H5LoginVO>();
 		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(verificationCode)) {
 			restResult.setState(500);
@@ -508,6 +512,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					}
 				}
 			}
+		}
+		try {
+			String jwtToken=JWTUtil.createTokenWithClaim(h5LoginVO);
+			response.addHeader("jwt-token", jwtToken);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		restResult.setResults(h5LoginVO);
 		restResult.setState(200);

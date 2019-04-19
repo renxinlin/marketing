@@ -4,6 +4,8 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
@@ -42,7 +44,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
      * @throws Exception
      */
     @Override
-    public JwtUser resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws SuperCodeException {
+    public H5LoginVO resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws SuperCodeException {
         String token = null;
         try {
             HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
@@ -51,7 +53,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
             if (token == null) {
                 throw new SuperCodeException("用户获取失败...");
             }
-            JwtUser jwtUser = JWTUtil.verifyToken(token);
+            H5LoginVO jwtUser = JWTUtil.verifyToken(token);
             if (jwtUser == null || jwtUser.getMemberId() == null) {
                 logger.error("jwt信息不全" + jwtUser);
                 throw new SuperCodeException("用户信息不存在...");

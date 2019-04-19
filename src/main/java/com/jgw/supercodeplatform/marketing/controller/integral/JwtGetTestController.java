@@ -1,20 +1,21 @@
 package com.jgw.supercodeplatform.marketing.controller.integral;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
-import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+
+import io.swagger.annotations.Api;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * 测试时获取jwt-token
@@ -25,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 public class JwtGetTestController {
 
     @RequestMapping(value = "/test",method = RequestMethod.POST)
-     public RestResult jwt(@ApiIgnore HttpServletResponse response, @ApiIgnore HttpServletRequest request, @RequestBody JwtUser user) throws SuperCodeException {
+     public RestResult jwt(@ApiIgnore HttpServletResponse response, @ApiIgnore HttpServletRequest request, @RequestBody H5LoginVO user) throws SuperCodeException {
         String tokenWithClaim = JWTUtil.createTokenWithClaim(user);
         response.setHeader("jwt-token",tokenWithClaim);
         // 方便调试
