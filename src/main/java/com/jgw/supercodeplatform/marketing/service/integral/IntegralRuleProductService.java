@@ -258,9 +258,16 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		if (state==200) {
 			restResult.setState(200);
 			JSONArray arry=json.getJSONObject("results").getJSONArray("list");
+			int j = 0;
+			// TODO ID 前端都要，先写死。明天看
 			for (int i=0 ;i<arry.size();i++) {
+				j++;
 				JSONObject ruleProduct=arry.getJSONObject(i);
 				IntegralRuleProduct product=new IntegralRuleProduct();
+				if(j == 1){
+					product.setId(1L);
+
+				}
 				product.setProductId(ruleProduct.getString("objectId"));
 				product.setProductName(ruleProduct.getString("objectName"));
 				ruleproductList.add(product);
