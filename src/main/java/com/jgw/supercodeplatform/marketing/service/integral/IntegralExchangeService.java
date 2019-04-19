@@ -691,10 +691,10 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     throw new SuperCodeException("产品名称不存在");
                 }
                 if(StringUtils.isBlank(productAddParam.getProductPic())){
-                    throw new SuperCodeException("产品图片不存在");
+                    productAddParam.setProductPic("");
                 }
                 if(StringUtils.isBlank(productAddParam.getShowPriceStr())){
-                    throw new SuperCodeException("产品展示价不存在");
+                    productAddParam.setShowPriceStr("0.00");
                 }
                 if(productAddParam.getProductId() == null){
                     throw new SuperCodeException("产品id不存在");
