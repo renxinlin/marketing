@@ -62,7 +62,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
         +"RewardIntegral, OrganizationId)"
         +"values"
         +"<foreach collection='list' item='item' index='index' separator=','>"  
-	        +"(#{item.productId,jdbcType=VARCHAR}, #{item.productName,jdbcType=VARCHAR}, "
+	        +"(#{item.integralRuleId,jdbcType=INTEGER},#{item.productId,jdbcType=VARCHAR}, #{item.productName,jdbcType=VARCHAR}, "
 	        +"#{item.productPrice,jdbcType=REAL}, #{item.memberType,jdbcType=BIT}, "
 	        +"#{item.rewardRule,jdbcType=BIT}, #{item.perConsume,jdbcType=REAL}, "
 	        +"#{item.rewardIntegral,jdbcType=INTEGER}, #{item.organizationId,jdbcType=VARCHAR})"
