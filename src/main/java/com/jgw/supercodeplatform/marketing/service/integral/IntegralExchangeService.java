@@ -282,7 +282,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
      * @param productId
      * @return
      */
-    public IntegralExchangeSkuDetailAndAddress detailSkuByMember(Long productId, Long memberId) throws SuperCodeException{
+    public IntegralExchangeSkuDetailAndAddress detailSkuByMember(String productId, Long memberId) throws SuperCodeException{
         // 初始化返回
         IntegralExchangeSkuDetailAndAddress result = new IntegralExchangeSkuDetailAndAddress();
 

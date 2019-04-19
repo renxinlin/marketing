@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.vo.ProductAndSkuVo;
 import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.*;
@@ -46,13 +47,14 @@ public class IntegralExchangeController extends CommonUtil {
     @RequestMapping(value = "/page",method = RequestMethod.GET)
     @ApiOperation(value = "积分兑换设置列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<IntegralExchangeWebParam>>> list(IntegralExchange integralExchange) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<IntegralExchangeWebParam>>> list(DaoSearchWithOrganizationIdParam integralExchange) throws Exception {
         String organizationId = getOrganizationId();
         if(StringUtils.isBlank(organizationId)){
             throw new SuperCodeException("获取组织信息失败",500);
         }
-        integralExchange.setOrganizationId(organizationId);
-        AbstractPageService.PageResults<List<IntegralExchange>> objectPageResults = integralExchangeService.listSearchViewLike(integralExchange);
+        IntegralExchange integralExchangeParam = new IntegralExchange();
+        integralExchangeParam.setOrganizationId(organizationId);
+        AbstractPageService.PageResults<List<IntegralExchange>> objectPageResults = integralExchangeService.listSearchViewLike(integralExchangeParam);
 
         // 转换成VO
         List<IntegralExchange> list = objectPageResults.getList();
