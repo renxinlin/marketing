@@ -100,7 +100,7 @@ public class MarketingActivityProductService {
 		}
 		params.put("organizationId",organizationId );
 		params.put("relationType",3 );
-		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.RELATION_PRODUCT_PRODUCT_BATCH, params, null);
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
 		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
 		String body=responseEntity.getBody();
 		return JSONObject.parseObject(body);

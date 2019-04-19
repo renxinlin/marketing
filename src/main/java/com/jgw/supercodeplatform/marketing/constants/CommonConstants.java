@@ -13,13 +13,18 @@ public class CommonConstants {
     /**
      * 请求码管理进行码关联过的产品路径
      */
-    public static final String RELATION_PRODUCT_URL = "/code/relation/list/relation/productRecord";
+    public static final String CODEMANAGER_RELATION_PRODUCT_URL = "/code/relation/list/relation/productRecord";
 
     
     /**
      * 请求码管理进行码关联过的产品和产品批次
      */
-    public static final String RELATION_PRODUCT_PRODUCT_BATCH = "/code/relation/list/product/forRelation";
+    public static final String CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH = "/code/relation/list/product/forRelation";
+    
+    /**
+     * 请求基础平台，通过产品id集合获取批次集合
+     */
+    public static final String USER_REQUEST_PRODUCT_BATCH = "/product-batch/array/batch";
     
     
     /**

@@ -22,6 +22,7 @@ import com.jgw.supercodeplatform.marketing.common.properties.NormalProperties;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 
@@ -164,7 +165,7 @@ public class CommonService {
 		}
 		
 		params.put("productIds", buf.substring(0, buf.length()-1).toString());
-		ResponseEntity<String> response=restTemplateUtil.getRequestAndReturnJosn(restUserUrl, params, headerMap);
+		ResponseEntity<String> response=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_PRODUCT_BATCH, params, headerMap);
 		logger.info("根据产品集合请求基础平台批次数据收到响应："+response.toString());
 		String body=response.getBody();
 		JSONObject jsonObject=JSONObject.parseObject(body);
