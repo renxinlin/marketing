@@ -69,7 +69,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
      * @param organizationId
      * @return
      */
-    public RestResult selectUnSalePruduct(String organizationId, ProductPageParam pageParam) throws SuperCodeException{
+    public RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > selectUnSalePruduct(String organizationId, ProductPageParam pageParam) throws SuperCodeException{
         if(StringUtils.isBlank(organizationId)){
             throw  new SuperCodeException("组织id获取失败");
         }
@@ -86,7 +86,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Set<String> excludeSkuIds = new HashSet<>();
         // 生成传递基础数据的参数
         for(IntegralExchange excludeProduct:excludeProducts){
-            if(!StringUtils.isBlank(excludeProduct.getProductId())){
+            if(!StringUtils.isBlank(excludeProduct.getProductId()) && excludeProduct.getSkuStatus() == 0){
                 excludeProductIds.add(excludeProduct.getProductId());
             }
             if(!StringUtils.isBlank(excludeProduct.getSkuId())){
@@ -97,11 +97,11 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
         queryCondition.setExcludeSkuIds(new ArrayList(excludeSkuIds));
-        RestResult restResult = getProductFromBaseService(queryCondition,false);
+        RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > restResult = getProductFromBaseService(queryCondition,false);
         if(restResult.getState() == 200){
             return  restResult;
         }else{
-            return RestResult.error("基础信息异常...");
+            return RestResult.error(null);
         }
     }
 
@@ -111,7 +111,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
      * @param organizationId
      * @return
      */
-    public RestResult selectSalePruduct(String organizationId, ProductPageParam pageParam) throws SuperCodeException{
+    public RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > selectSalePruduct(String organizationId, ProductPageParam pageParam) throws SuperCodeException{
         // 基础校验
         if(StringUtils.isBlank(organizationId)){
             throw new SuperCodeException("获取组织ID信息失败");
@@ -123,10 +123,10 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Set<String> excludeProductIds = new HashSet<>();
         // 选择的产品skuId
         Set<String> excludeSkuIds = new HashSet<>();
-        // 生成传递基础数据的参数
+        // 生成传递基础数据的参数 有skuid,则不要传递关联的productid
         if(!excludeProducts.isEmpty()){
             for(IntegralExchange excludeProduct:excludeProducts){
-                if(!StringUtils.isBlank(excludeProduct.getProductId())){
+                if(!StringUtils.isBlank(excludeProduct.getProductId()) && excludeProduct.getSkuStatus() == 0){
                     excludeProductIds.add(excludeProduct.getProductId());
                 }
                 if(!StringUtils.isBlank(excludeProduct.getSkuId())){
@@ -142,16 +142,16 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
         queryCondition.setExcludeSkuIds(new ArrayList(excludeSkuIds));
         // 查询自卖
-        RestResult restResult = getProductFromBaseService(queryCondition,true);
+        RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > restResult = getProductFromBaseService(queryCondition,true);
         if(restResult.getState() == 200){
             return  restResult;
         }else{
-            return RestResult.error("基础信息异常...");
+            return RestResult.error(null);
         }
     }
 
 //    @HystrixCommand(fallbackMethod = "getProductFromBaseServiceHystrix")
-    public RestResult getProductFromBaseService(ProductPageFromBaseServiceParam queryCondition,boolean isSale)throws SuperCodeException{
+    public RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > getProductFromBaseService(ProductPageFromBaseServiceParam queryCondition,boolean isSale)throws SuperCodeException{
         Map<String, String> header = new HashMap<>();
         header.put("super-token",commonUtil.getSuperToken());
         // 走下json解决反射问题
@@ -167,19 +167,28 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         if(!CollectionUtils.isEmpty(excludeSkuIds)){
             queryConditionMap.put("excludeSkuIds",JSONObject.toJSONString(excludeSkuIds));
         }
+        long startTime = System.currentTimeMillis();
         if(isSale){
             // 自卖产品
             // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
+
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,queryConditionMap, header);
+            if(logger.isInfoEnabled()){
+                logger.info("{调用基础信息耗时}"+(System.currentTimeMillis()-startTime));
+            }
             RestResult restResult = JSONObject.parseObject(response.getBody(), RestResult.class);
             com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults results =  modelMapper.map(restResult.getResults(),
                     com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults.class);
             List<ProductView> list = modelMapper.map(results.getList(),List.class);
             // 转换为前端所需【产品ID,名称图片，展示价】【SKUID,名称图片】
-             return changeBaseServiceDtoToVo(results,list);
+            RestResult<PageResults<List<ProductAndSkuVo>>> pageResultsRestResult = changeBaseServiceDtoToVo(results, list);
+            return pageResultsRestResult;
         }else{
             // 非自卖产品
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL,queryConditionMap, header);
+            if(logger.isInfoEnabled()){
+                logger.info("{调用基础信息耗时}"+(System.currentTimeMillis()-startTime));
+            }
             RestResult restResult = JSONObject.parseObject(response.getBody(), RestResult.class);
 
             UnSaleProductPageResults results =   modelMapper.map(restResult.getResults(),UnSaleProductPageResults.class);
@@ -194,7 +203,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
      * @param list
      * @return
      */
-    private RestResult changeUnSaleBaseServiceDtoToVo(UnSaleProductPageResults results, List<NonSelfSellingProductMarketingSearchView> list) {
+    private RestResult<AbstractPageService.PageResults<List<ProductAndSkuVo>> > changeUnSaleBaseServiceDtoToVo(UnSaleProductPageResults results, List<NonSelfSellingProductMarketingSearchView> list) {
         // 前端网页产品VO集合
         List<ProductAndSkuVo> listVO = new ArrayList<ProductAndSkuVo>();
         // 数据转换
@@ -302,7 +311,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Page page = modelMapper.map(results.getPagination(),Page.class);
         AbstractPageService.PageResults<List<ProductAndSkuVo>> pageVO = new AbstractPageService.PageResults( listVO,page);
         pageVO.setOther(results.getOther());
-         return  RestResult.success("",pageVO);
+        return  RestResult.success("",pageVO);
     }
 
     /**

@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.vo.ProductAndSkuVo;
 import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
@@ -138,7 +139,7 @@ public class IntegralExchangeController extends CommonUtil {
     @ApiOperation(value = "获取自卖产品|非自卖产品,调用基础信息平台", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
             @ApiImplicitParam(paramType="type",value = "0非自卖1自卖产品",name="super-token")})
-    public RestResult getProductList(ProductPageParam pageParam) throws Exception {
+    public RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > getProductList(ProductPageParam pageParam) throws Exception {
         String organizationId = getOrganizationId();
         if(SALE_TYPE.intValue() == pageParam.getType().intValue()){
             // 查询基础信息自卖产品
@@ -147,7 +148,7 @@ public class IntegralExchangeController extends CommonUtil {
             // 查询基础信息非自卖产品
             return unsaleProductService.selectUnSalePruduct(organizationId, pageParam);
         }
-        return RestResult.error("兑换产品资源类型不存在");
+        return RestResult.error(null);
     }
 
     @RequestMapping(value = "/promotion",method = RequestMethod.GET)
