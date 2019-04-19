@@ -4,6 +4,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
+import com.jgw.supercodeplatform.marketing.exception.UserExpireException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
 import org.slf4j.Logger;
@@ -44,25 +45,25 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
      * @throws Exception
      */
     @Override
-    public H5LoginVO resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws SuperCodeException {
+    public H5LoginVO resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws UserExpireException {
         String token = null;
         try {
             HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
             HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
             token = request.getHeader(CommonConstants.JWT_TOKEN);
             if (token == null) {
-                throw new SuperCodeException("用户获取失败...");
+                throw new UserExpireException("用户不存在...");
             }
             H5LoginVO jwtUser = JWTUtil.verifyToken(token);
             if (jwtUser == null || jwtUser.getMemberId() == null) {
                 logger.error("jwt信息不全" + jwtUser);
-                throw new SuperCodeException("用户信息不存在...");
+                throw new UserExpireException("用户信息不存在...");
             }
             return jwtUser;
         } catch (Exception e) {
             logger.error("解析jwt异常" + token);
             e.printStackTrace();
-            throw new SuperCodeException("用户信息解析异常...");
+            throw new UserExpireException("用户信息获取失败...");
         }
     }
 }

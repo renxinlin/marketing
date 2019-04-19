@@ -7,6 +7,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -41,7 +42,7 @@ public class H5IntegralRecordController   {
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "积分类型|null所有,0奖励,1消耗",name="integralType"),
             @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult<AbstractPageService.PageResults<List<IntegralRecord>>> memberList(@RequestParam("integralType") Integer integralType, @ApiIgnore JwtUser jwtuser) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<IntegralRecord>>> memberList(@RequestParam("integralType") Integer integralType, @ApiIgnore H5LoginVO jwtuser) throws Exception {
         RestResult<AbstractPageService.PageResults<List<IntegralRecord>>> restResult=new RestResult<AbstractPageService.PageResults<List<IntegralRecord>>>();
         if( integralType != null && integralType > 1 && integralType < 0){
             throw new SuperCodeException("积分记录类型错误",500);

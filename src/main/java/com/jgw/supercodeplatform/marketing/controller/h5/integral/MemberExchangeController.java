@@ -4,6 +4,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -52,7 +53,7 @@ public class MemberExchangeController {
     @ApiOperation(value = "兑换详情SKU+地址信息|【h5会员】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token"),
             @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id")})
-    public RestResult<IntegralExchangeSkuDetailAndAddress> detailSkuByMember(@RequestParam("productId") String productId, @ApiIgnore JwtUser jwtUser) throws Exception {
+    public RestResult<IntegralExchangeSkuDetailAndAddress> detailSkuByMember(@RequestParam("productId") String productId, @ApiIgnore H5LoginVO jwtUser) throws Exception {
         return RestResult.success("success",integralExchangeService.detailSkuByMember(productId,jwtUser.getMemberId()));
     }
 
@@ -60,7 +61,7 @@ public class MemberExchangeController {
     @RequestMapping(value = "exchanging",method = RequestMethod.POST)
     @ApiOperation(value = "商品兑换", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
-    public RestResult<IntegralExchangeSkuDetailAndAddress> exchanging(@RequestBody ExchangeProductParam exchangeProductParam, @ApiIgnore JwtUser jwtUser) throws Exception {
+    public RestResult<IntegralExchangeSkuDetailAndAddress> exchanging(@RequestBody ExchangeProductParam exchangeProductParam, @ApiIgnore H5LoginVO jwtUser) throws Exception {
         integralExchangeService.exchanging(exchangeProductParam);
         return RestResult.success("success",null);
     }

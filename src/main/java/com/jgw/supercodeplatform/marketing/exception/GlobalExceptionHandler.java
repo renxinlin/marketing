@@ -211,4 +211,18 @@ public class GlobalExceptionHandler {
         RestResult RestResult = new RestResult(e.getStatus() == 0 ? HttpStatus.INTERNAL_SERVER_ERROR.value() : e.getStatus(), e.getMessage(), null);
         return RestResult;
     }
+
+
+    /**
+     * 401 - 业务401
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(UserExpireException.class)
+    public RestResult handleMissingUserExpireException(UserExpireException e) {
+        // 未登录异常
+        RestResult RestResult = new RestResult();
+        RestResult.setState(401);
+        RestResult.setMsg(e.getCause().getLocalizedMessage() == null ? e.getMessage() : e.getCause().getLocalizedMessage());
+        return RestResult;
+    }
 }
