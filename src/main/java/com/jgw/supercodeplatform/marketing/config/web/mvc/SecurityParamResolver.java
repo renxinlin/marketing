@@ -32,7 +32,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
     public boolean supportsParameter(MethodParameter methodParameter) {
         Class<?> clazz=methodParameter.getParameterType();
         // 指定什么样的对象需要被解析
-        return clazz== JwtUser.class;
+        return clazz== H5LoginVO.class;
     }
 
     /**
