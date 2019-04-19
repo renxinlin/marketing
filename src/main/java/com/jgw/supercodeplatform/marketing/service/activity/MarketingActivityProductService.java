@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
@@ -32,6 +33,10 @@ public class MarketingActivityProductService {
 
     @Autowired
     private RestTemplateUtil restTemplateUtil;
+    
+    @Autowired
+    private CommonUtil commonUtil;
+    
     
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
@@ -82,7 +87,8 @@ public class MarketingActivityProductService {
         return  restResult;
     }
 
-	public JSONObject relationActProds(String organizationId) throws SuperCodeException {
+	public JSONObject relationActProds() throws SuperCodeException {
+		String organizationId=commonUtil.getOrganizationId();
 		List<String> productBatchIds=mapper.usedProductBatchIds(organizationId);
 		Map<String, Object>params=new HashMap<String, Object>();
 		if (null!=productBatchIds && !productBatchIds.isEmpty()) {
