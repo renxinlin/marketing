@@ -710,7 +710,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                 if(productAddParam.getProductId() == null){
                     throw new SuperCodeException("产品id不存在");
                 }else {
-                    List<SkuInfo> skuinfos = productAddParam.getSkuinfos();
+                    List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
                      // sku可以不存在;存在则进行非空校验
                     if(!CollectionUtils.isEmpty(skuinfos)){
                         for(SkuInfo skuinfo:skuinfos ){
@@ -756,7 +756,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     }
                     // 有sku
                     if(have.getProductId().equals(productAddParam.getProductId()) && have.getSkuStatus() == 1){
-                        List<SkuInfo> skuinfos = productAddParam.getSkuinfos();
+                        List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
                         for(SkuInfo skuinfo: skuinfos){
                             if(skuinfo.getSkuId().equals(have.getSkuId())){
                                 throw new SuperCodeException("产品SKU已经添加");
@@ -781,7 +781,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 0非自卖1自卖产品
         Byte exchangeResource = integralExchange.getExchangeResource();
         for(ProductAddParam productAddParam : products){{
-            List<SkuInfo> skuinfos = productAddParam.getSkuinfos();
+            List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
             if(CollectionUtils.isEmpty(skuinfos)){
                 // 添加产品记录
                 IntegralExchange exchangeDo = modelMapper.map(integralExchange, IntegralExchange.class);

@@ -221,7 +221,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 productVO.setShowPriceStr(baseServicePrudoctDto.getViewPrice().toString());
             }else {
                 // 前端不展示
-                productVO.setShowPriceStr(null);
+                productVO.setShowPriceStr("0.00");
             }
             // 产品VOsku集合
             List<SkuInfo> listSkuVO = new ArrayList<>();
