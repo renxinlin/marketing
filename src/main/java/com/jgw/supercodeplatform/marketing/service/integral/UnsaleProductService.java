@@ -86,7 +86,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Set<String> excludeSkuIds = new HashSet<>();
         // 生成传递基础数据的参数
         for(IntegralExchange excludeProduct:excludeProducts){
-            if(!StringUtils.isBlank(excludeProduct.getProductId())){
+            if(!StringUtils.isBlank(excludeProduct.getProductId()) && excludeProduct.getSkuStatus() == 0){
                 excludeProductIds.add(excludeProduct.getProductId());
             }
             if(!StringUtils.isBlank(excludeProduct.getSkuId())){
@@ -123,10 +123,10 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Set<String> excludeProductIds = new HashSet<>();
         // 选择的产品skuId
         Set<String> excludeSkuIds = new HashSet<>();
-        // 生成传递基础数据的参数
+        // 生成传递基础数据的参数 有skuid,则不要传递关联的productid
         if(!excludeProducts.isEmpty()){
             for(IntegralExchange excludeProduct:excludeProducts){
-                if(!StringUtils.isBlank(excludeProduct.getProductId())){
+                if(!StringUtils.isBlank(excludeProduct.getProductId()) && excludeProduct.getSkuStatus() == 0){
                     excludeProductIds.add(excludeProduct.getProductId());
                 }
                 if(!StringUtils.isBlank(excludeProduct.getSkuId())){
@@ -302,7 +302,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Page page = modelMapper.map(results.getPagination(),Page.class);
         AbstractPageService.PageResults<List<ProductAndSkuVo>> pageVO = new AbstractPageService.PageResults( listVO,page);
         pageVO.setOther(results.getOther());
-         return  RestResult.success("",pageVO);
+        return  RestResult.success("",pageVO);
     }
 
     /**
