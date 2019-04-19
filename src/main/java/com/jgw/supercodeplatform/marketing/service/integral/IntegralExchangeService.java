@@ -226,14 +226,11 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 //        }
         // 查询详情
         RestResult datailFromBaseServiceResult = getDetail(integralExchangeDetailParam,integralExchangeDetailParams.get(0).getExchangeResource());
-        if(datailFromBaseServiceResult.getState() != 200){
-            throw new SuperCodeException("商品详情查询失败");
+        if(datailFromBaseServiceResult.getState() == 200){
+            integralExchangeDetailParam.setDetail((String) datailFromBaseServiceResult.getResults());
         }
-        Map map = modelMapper.map(datailFromBaseServiceResult.getResults(), Map.class);
-        String productDetails =(String) map.get("productDetails");
-        integralExchangeDetailParam.setDetail(productDetails);
         if(integralExchangeDetailParam.getDetail() == null){
-            throw new SuperCodeException("商品详情信息不存在");
+            logger.info("详情数据不存在");
         }
         return integralExchangeDetailParam;
     }
@@ -241,21 +238,31 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 //    @HystrixCommand(fallbackMethod = "getDetailByhystrix") //断路器命令
     public RestResult  getDetail( IntegralExchangeDetailParam integralExchangeDetailParam,Byte exchangeResource) throws SuperCodeException{
         // 查询参数
-        Map<String, String> header = new HashMap<>();
-        header.put("super-token",commonUtil.getSuperToken());
-        Map productId = new HashMap();
+          Map productId = new HashMap();
         productId.put("productId",integralExchangeDetailParam.getProductId());
        //兑换资源0非自卖1自卖产品
-        if(0== exchangeResource.intValue()){
+        if(1== exchangeResource.intValue()){
             // 查询基础信息自卖产品
-            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(BASE_SERVICE_NAME + CommonConstants.SALE_PRODUCT_DETAIL_URL,productId, header);
-            Object parse = JSONObject.parse(response.getBody());
-            return modelMapper.map(parse, RestResult.class);
-        }else if(1==exchangeResource.intValue()){
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(BASE_SERVICE_NAME + CommonConstants.SALE_PRODUCT_DETAIL_URL,productId, null);
+            JSONObject parse = JSONObject.parseObject(response.getBody());
+            if( parse.getInteger("state") == 200){
+                String detail = parse.getJSONObject("results").getString("productDetails");
+                return RestResult.success("success",detail);
+            }else {
+                logger.error("商品详情查询失败的返回数据"+response.getBody());
+                return RestResult.error(null);
+            }
+
+        }else if(0==exchangeResource.intValue()){
             // 查询基础信息非自卖产品
-            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(BASE_SERVICE_NAME + CommonConstants.UN_SALE_PRODUCT_DETAIL_URL, productId, header);
-            Object parse = JSONObject.parse(response.getBody());
-            return modelMapper.map(parse, RestResult.class);
+            ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(BASE_SERVICE_NAME + CommonConstants.UN_SALE_PRODUCT_DETAIL_URL, productId, null);
+            JSONObject parse = JSONObject.parseObject(response.getBody());
+            if( parse.getInteger("state") == 200){
+                String detail = parse.getJSONObject("results").getString("productDetails");
+                return RestResult.success("success",detail);
+            }else {
+                return RestResult.error(null);
+            }
         }
         return RestResult.error("");
 

@@ -28,7 +28,7 @@ public class IntegralExchangeUpdateParam {
     private Byte status;
     @ApiModelProperty("支付手段：0积分")
     private Byte payWay;
-    @ApiModelProperty("自动下架方式自动下架设置0库存为0，1时间范围")
+    @ApiModelProperty("自动下架方式0库存为零，1时间范围")
     private Byte UndercarriageSetWay;
     @ApiModelProperty("下架时间：精确度：年月日")
     private Date underCarriage;
