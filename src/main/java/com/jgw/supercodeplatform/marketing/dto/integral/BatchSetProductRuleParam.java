@@ -8,25 +8,25 @@ import io.swagger.annotations.ApiModelProperty;
 
 public class BatchSetProductRuleParam {
     /** 产品价格 */
-    @ApiModelProperty(value = "产品价格")
+    @ApiModelProperty(value = "产品价格",example="10")
     private Float productPrice;
 
     /** 奖励对象0会员 */
-    @ApiModelProperty(value = "奖励对象0会员")
+    @ApiModelProperty(value = "奖励对象0会员",example="0")
     private Byte memberType;
 
     /** 0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分） */
     @NotNull
-    @ApiModelProperty(value = "0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分）")
+    @ApiModelProperty(value = "0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分）",example="0")
     private Byte rewardRule;
 
     /** 每消费多少元 */
-    @ApiModelProperty(value = "每消费多少元")
+    @ApiModelProperty(value = "每消费多少元",example="10")
     private Float perConsume;
 
     /** 奖励积分 */
     @NotNull
-    @ApiModelProperty(value = "奖励积分")
+    @ApiModelProperty(value = "奖励积分",example="10")
     private Integer rewardIntegral;
     
     @ApiModelProperty(value = "设置的产品集合")

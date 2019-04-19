@@ -99,7 +99,7 @@ public void unSelectPage() throws SuperCodeException {
 	productIds.add("6ddcdfa718314dbeba04e297ba064bd2");
 	productIds.add("afcf7384963e4b5c914296e15113c500");
 	params.put("excludeProductIds",productIds);
-	ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.RELATION_PRODUCT_URL, params, null);
+	ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, null);
 	String body=responseEntity.getBody();
 	JSONObject json=JSONObject.parseObject(body);
 	System.out.println(json);
@@ -111,7 +111,7 @@ public  void test1() throws UnsupportedEncodingException, SuperCodeException {
 	params.put("organizationId",organizationId );
 	params.put("productBatchIds","e46604d24aa54f9091e054adaae020dd,e46604d24aa54f9091e054adaae020dd");
 	
-	ResponseEntity<String>responseEntity=getRequestAndReturnJosn(codeManagerUrl+CommonConstants.RELATION_PRODUCT_PRODUCT_BATCH, params, null);
+	ResponseEntity<String>responseEntity=getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
     System.out.println(responseEntity.toString());
 }
 

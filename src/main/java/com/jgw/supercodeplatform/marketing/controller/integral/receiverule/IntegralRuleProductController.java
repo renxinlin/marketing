@@ -5,14 +5,12 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
@@ -82,7 +80,7 @@ public class IntegralRuleProductController {
   }
   
   @RequestMapping(value = "/singleSetRule",method = RequestMethod.POST)
-  @ApiOperation(value = "单个设置产品规则", notes = "")
+  @ApiOperation(value = "单个设置已设置过产品规则的产品", notes = "")
   @ApiImplicitParams(value= {
           @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
   })
