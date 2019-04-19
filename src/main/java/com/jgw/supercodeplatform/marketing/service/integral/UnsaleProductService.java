@@ -255,14 +255,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             // 产品ID
             String productId = baseserviceProductDto.getProductId();
             towebProductVo.setPruductId(productId);
-            // 展示价
 
-            if(productMarketing.getViewPrice() != null){
-                towebProductVo.setShowPriceStr(productMarketing.getViewPrice().toString());
-            }else {
-                // 前端不展示
-                towebProductVo.setShowPriceStr("0.00");
-            }
             // 产品名称
             String productName = baseserviceProductDto.getProductName();
             towebProductVo.setPruductName(productName);
@@ -271,8 +264,17 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             String productUrl = baseserviceProductDto.getProductUrl();
             towebProductVo.setPruductPic(productUrl);
 
-            // SKU信息
+            // SKU信息 以及展示价
             if(productMarketing != null){
+                // 展示价
+
+                if(productMarketing.getViewPrice() != null){
+                    towebProductVo.setShowPriceStr(productMarketing.getViewPrice().toString());
+                }else {
+                    // 前端不展示
+                    towebProductVo.setShowPriceStr("0.00");
+                }
+
                 // 产品sku信息skuDTO
                 List<ProductMarketingSkuSingleView> productMarketingSkus = productMarketing.getProductMarketingSkus();
                 // 产品skuVO
