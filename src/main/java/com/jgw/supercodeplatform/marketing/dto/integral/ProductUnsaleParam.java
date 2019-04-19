@@ -27,13 +27,13 @@ public class ProductUnsaleParam {
     private String unsaleProductPic;
 
 
-        /** 图片 */
-        @ApiModelProperty(value = "sku鼠标悬浮")
-        private String skuNames;
+    /** 图片 */
+    @ApiModelProperty(value = "sku鼠标悬浮")
+    private String skuNames;
 
-        /** 图片 */
-        @ApiModelProperty(value = "sku")
-        private String skuNameFirst;
+    /** 图片 */
+    @ApiModelProperty(value = "sku")
+    private String skuNameFirst;
 
 
     /**  */

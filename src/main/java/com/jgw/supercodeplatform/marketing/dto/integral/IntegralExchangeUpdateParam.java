@@ -29,7 +29,7 @@ public class IntegralExchangeUpdateParam {
     @ApiModelProperty("支付手段：0积分")
     private Byte payWay;
     @ApiModelProperty("自动下架方式0库存为零，1时间范围")
-    private Byte UndercarriageSetWay;
+    private Byte undercarriageSetWay;
     @ApiModelProperty("下架时间：精确度：年月日")
     private Date underCarriage;
     @ApiModelProperty("库存预警数量")
@@ -99,11 +99,11 @@ public class IntegralExchangeUpdateParam {
     }
 
     public Byte getUndercarriageSetWay() {
-        return UndercarriageSetWay;
+        return undercarriageSetWay;
     }
 
     public void setUndercarriageSetWay(Byte undercarriageSetWay) {
-        UndercarriageSetWay = undercarriageSetWay;
+        this.undercarriageSetWay = undercarriageSetWay;
     }
 
     public Date getUnderCarriage() {
