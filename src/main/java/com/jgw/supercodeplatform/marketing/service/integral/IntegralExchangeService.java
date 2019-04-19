@@ -662,7 +662,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             // throw new SuperCodeException("兑换库存为正整数");
         }
 
-        if(integralExchange.getExchangeStock()  == null || integralExchange.getCustomerLimitNum() <= 0){
+        if(integralExchange.getCustomerLimitNum()  == null || integralExchange.getCustomerLimitNum() <= 0){
             // 不传，则认为无上限给999999
             integralExchange.setCustomerLimitNum(999999);
             //throw new SuperCodeException("每人限兑为正整数");
