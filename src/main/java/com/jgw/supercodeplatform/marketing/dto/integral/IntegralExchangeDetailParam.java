@@ -8,9 +8,9 @@ public class IntegralExchangeDetailParam {
     @ApiModelProperty("商品ID")
     private String productId;
     @ApiModelProperty("商品名称")
-    private String  ProductName;
+    private String  productName;
     @ApiModelProperty("商品图片")
-    private String ProductPic;
+    private String productPic;
     @ApiModelProperty("商品价格")
     private Integer exchangeIntegral;
     @ApiModelProperty("商品展示价")
@@ -43,19 +43,19 @@ public class IntegralExchangeDetailParam {
     }
 
     public String getProductName() {
-        return ProductName;
+        return productName;
     }
 
     public void setProductName(String productName) {
-        ProductName = productName;
+        this.productName = productName;
     }
 
     public String getProductPic() {
-        return ProductPic;
+        return productPic;
     }
 
     public void setProductPic(String productPic) {
-        ProductPic = productPic;
+        this.productPic = productPic;
     }
 
     public Integer getExchangeIntegral() {
