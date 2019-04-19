@@ -209,7 +209,11 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             // 产品图片
             productVO.setPruductPic(baseServicePrudoctDto.getProductUrl());
             // 展示价
-            productVO.setShowPriceStr(baseServicePrudoctDto.getViewPrice().toString());
+            if(baseServicePrudoctDto.getViewPrice() != null){
+                productVO.setShowPriceStr(baseServicePrudoctDto.getViewPrice().toString());
+            }else {
+                productVO.setShowPriceStr("0.00");
+            }
             // 产品VOsku集合
             List<SkuInfo> listSkuVO = new ArrayList<>();
             for(NonSelfSellingProductMarketingSkuSingleView skuDto : baseServicePrudoctDto.getProductMarketingSkus()) {
@@ -276,7 +280,11 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             towebProductVo.setPruductId(productId);
             towebProductVo.setPruductName(productName);
             towebProductVo.setPruductPic(productUrl);
-            towebProductVo.setShowPriceStr(viewPrice.toString());
+            if(viewPrice != null){
+                towebProductVo.setShowPriceStr(viewPrice.toString());
+            }else {
+                towebProductVo.setShowPriceStr("0.00");
+            }
             listVO.add(towebProductVo);
         }
         // 转换完成
