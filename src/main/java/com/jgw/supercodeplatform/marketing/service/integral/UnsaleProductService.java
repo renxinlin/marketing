@@ -4,17 +4,26 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.PageResults;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.UnSaleProductPageResults;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductMarketingSearchView;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductMarketingSkuSingleView;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductView;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.NonSelfSellingProductMarketingSearchView;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.NonSelfSellingProductMarketingSkuSingleView;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.vo.ProductAndSkuVo;
 import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -26,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -77,8 +87,12 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Set<String> excludeSkuIds = new HashSet<>();
         // 生成传递基础数据的参数
         for(IntegralExchange excludeProduct:excludeProducts){
-            excludeProductIds.add(excludeProduct.getProductId());
-            excludeSkuIds.add(excludeProduct.getSkuId());
+            if(!StringUtils.isBlank(excludeProduct.getProductId())){
+                excludeProductIds.add(excludeProduct.getProductId());
+            }
+            if(!StringUtils.isBlank(excludeProduct.getSkuId())){
+                excludeSkuIds.add(excludeProduct.getSkuId());
+            }
         }
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
@@ -113,8 +127,12 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         // 生成传递基础数据的参数
         if(!excludeProducts.isEmpty()){
             for(IntegralExchange excludeProduct:excludeProducts){
-                excludeProductIds.add(excludeProduct.getProductId());
-                excludeSkuIds.add(excludeProduct.getSkuId());
+                if(!StringUtils.isBlank(excludeProduct.getProductId())){
+                    excludeProductIds.add(excludeProduct.getProductId());
+                }
+                if(!StringUtils.isBlank(excludeProduct.getSkuId())){
+                    excludeSkuIds.add(excludeProduct.getSkuId());
+                }
 
             }
         }
@@ -124,6 +142,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         // 已存在兑换产品由基础信息过滤
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
         queryCondition.setExcludeSkuIds(new ArrayList(excludeSkuIds));
+        // 查询自卖
         RestResult restResult = getProductFromBaseService(queryCondition,true);
         if(restResult.getState() == 200){
             return  restResult;
@@ -138,17 +157,141 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         header.put("super-token",commonUtil.getSuperToken());
         // 走下json解决反射问题
         String queryConditionStr = JSONObject.toJSONString(queryCondition);
+
         Map queryConditionMap = modelMapper.map(JSONObject.parse(queryConditionStr), HashMap.class);
+        // 转换成基础信息所需格式
+        List<String> excludeProductIds = (List<String>) queryConditionMap.get("excludeProductIds");
+        List<String> excludeSkuIds = (List<String>) queryConditionMap.get("excludeSkuIds");
+        if(!CollectionUtils.isEmpty(excludeProductIds)){
+            queryConditionMap.put("excludeProductIds",JSONObject.toJSONString(excludeProductIds));
+        }
+        if(!CollectionUtils.isEmpty(excludeSkuIds)){
+            queryConditionMap.put("excludeSkuIds",JSONObject.toJSONString(excludeSkuIds));
+        }
         if(isSale){
             // 自卖产品
             // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,queryConditionMap, header);
-            return JSONObject.parseObject(response.getBody(), RestResult.class);
+            RestResult restResult = JSONObject.parseObject(response.getBody(), RestResult.class);
+            com.jgw.supercodeplatform.marketing.dto.baseservice.product.PageResults results =  modelMapper.map(restResult.getResults(),
+                    com.jgw.supercodeplatform.marketing.dto.baseservice.product.PageResults .class);
+            List<ProductView> list = modelMapper.map(results.getList(),List.class);
+            // 转换为前端所需【产品ID,名称图片，展示价】【SKUID,名称图片】
+             return changeBaseServiceDtoToVo(results,list);
         }else{
             // 非自卖产品
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL,queryConditionMap, header);
-            return JSONObject.parseObject(response.getBody(), RestResult.class);
+            RestResult restResult = JSONObject.parseObject(response.getBody(), RestResult.class);
+
+            UnSaleProductPageResults results =   modelMapper.map(restResult.getResults(),UnSaleProductPageResults.class);
+            List<NonSelfSellingProductMarketingSearchView> list = modelMapper.map(results.getList(),List.class);
+            return changeUnSaleBaseServiceDtoToVo(results,list);
         }
+    }
+
+    /**
+     * 非自卖产品转换到前端VO
+     * @param results
+     * @param list
+     * @return
+     */
+    private RestResult changeUnSaleBaseServiceDtoToVo(UnSaleProductPageResults results, List<NonSelfSellingProductMarketingSearchView> list) {
+        // 前端网页产品VO集合
+        List<ProductAndSkuVo> listVO = new ArrayList<ProductAndSkuVo>();
+        // 数据转换
+        for(NonSelfSellingProductMarketingSearchView baseServicePrudoctDto: list) {
+            // 产品VO
+            ProductAndSkuVo productVO = new ProductAndSkuVo();
+            // 产品ID
+            productVO.setPruductId(baseServicePrudoctDto.getProductId());
+            // 产品名称
+            productVO.setPruductName(baseServicePrudoctDto.getProductName());
+            // 产品图片
+            productVO.setPruductPic(baseServicePrudoctDto.getProductUrl());
+            // 展示价
+            if(baseServicePrudoctDto.getViewPrice() != null){
+                productVO.setShowPriceStr(baseServicePrudoctDto.getViewPrice().toString());
+            }else {
+                productVO.setShowPriceStr("0.00");
+            }
+            // 产品VOsku集合
+            List<SkuInfo> listSkuVO = new ArrayList<>();
+            for(NonSelfSellingProductMarketingSkuSingleView skuDto : baseServicePrudoctDto.getProductMarketingSkus()) {
+                // skuVO信息
+                SkuInfo skuVO = new SkuInfo();
+                // skuID
+                skuVO.setSkuId(skuDto.getId()+"");
+                // SKU名称
+                skuVO.setSkuName(skuDto.getSku());
+                // sku图片
+                skuVO.setSkuUrl(skuDto.getPic());
+                listSkuVO.add(skuVO);
+
+            }
+            productVO.setSkuInfo(listSkuVO);
+            listVO.add(productVO);
+
+        }
+
+        // 转换完成
+        Page page = modelMapper.map(results.getPagination(),Page.class);
+        AbstractPageService.PageResults<List<ProductAndSkuVo>> pageVO = new AbstractPageService.PageResults( listVO,page);
+        pageVO.setOther(results.getOther());
+        return  RestResult.success("",pageVO);
+    }
+
+    /**
+     * 自卖产品转前端VO
+     * @param results
+     * @param list
+     * @return
+     */
+    private RestResult<AbstractPageService.PageResults<List<ProductAndSkuVo>>> changeBaseServiceDtoToVo(com.jgw.supercodeplatform.marketing.dto.baseservice.product.PageResults results, List<ProductView> list) {
+        // 产品集合
+        List<ProductAndSkuVo> listVO = new ArrayList<ProductAndSkuVo>();
+        for(ProductView baseserviceProductDto :list){
+            ProductAndSkuVo towebProductVo = new ProductAndSkuVo();
+            ProductMarketingSearchView productMarketing = baseserviceProductDto.getProductMarketing();
+            // 产品ID
+            String productId = productMarketing.getProductId();
+            // 展示价
+            BigDecimal viewPrice = productMarketing.getViewPrice();
+            // 产品名称
+            String productName = baseserviceProductDto.getProductName();
+            // 产品图片
+            String productUrl = baseserviceProductDto.getProductUrl();
+            // 产品sku信息skuDTO
+            List<ProductMarketingSkuSingleView> productMarketingSkus = productMarketing.getProductMarketingSkus();
+            // 产品skuVO
+            List<SkuInfo> listSkuVO = new ArrayList<>();
+            for(ProductMarketingSkuSingleView skuDto : productMarketingSkus){
+                SkuInfo skuVO = new SkuInfo();
+                // 基础数据格式，数值型;营销String[基础数据最初定的交互格式是String,后改成数值型，造成格式不一定]
+                // skuID
+                skuVO.setSkuId(skuDto.getId() + "");
+                // sku名称
+                skuVO.setSkuName(skuDto.getSku());
+                // sku图片
+                skuVO.setSkuUrl(skuDto.getPic());
+                // 产品sku集合
+                listSkuVO.add(skuVO);
+            }
+
+            towebProductVo.setPruductId(productId);
+            towebProductVo.setPruductName(productName);
+            towebProductVo.setPruductPic(productUrl);
+            if(viewPrice != null){
+                towebProductVo.setShowPriceStr(viewPrice.toString());
+            }else {
+                towebProductVo.setShowPriceStr("0.00");
+            }
+            listVO.add(towebProductVo);
+        }
+        // 转换完成
+        Page page = modelMapper.map(results.getPagination(),Page.class);
+        AbstractPageService.PageResults<List<ProductAndSkuVo>> pageVO = new AbstractPageService.PageResults( listVO,page);
+        pageVO.setOther(results.getOther());
+         return  RestResult.success("",pageVO);
     }
 
     /**
