@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -56,6 +58,7 @@ import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
@@ -111,7 +114,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	private CodeEsService codeEsService;
 
 	@Autowired
-	private RestTemplateUtil restTemplateUtil;
+	private RestTemplate restTemplate;
 
 	@Autowired
 	private OrganizationPortraitService organizationPortraitService;
@@ -299,7 +302,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			Map msgData = new HashMap();
 			msgData.put("mobileId",mobile);
 			msgData.put("sendContent",msg);
-			RestResult restResult = restTemplateUtil.postJsonDataAndReturnJosnObject(userServiceUrl + WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, null);
+			// 发送短信
+			restTemplate.postForEntity(userServiceUrl + WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, RestResult.class);
+
 		} catch (Exception e) {
 			if(logger.isInfoEnabled()){
 				logger.info("注册用户的短信欢迎信息发送失败"+e.getMessage());
