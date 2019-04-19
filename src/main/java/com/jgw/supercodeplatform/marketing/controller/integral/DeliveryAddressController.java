@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 import com.jgw.supercodeplatform.marketing.service.integral.DeliveryAddressService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -29,7 +30,7 @@ public class DeliveryAddressController extends CommonUtil {
     @ApiOperation(value = "列表5个地址", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息")
     })
-    public RestResult getAll(@ApiIgnore JwtUser jwtUser) throws Exception {
+    public RestResult getAll(@ApiIgnore H5LoginVO jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
         List<DeliveryAddress> deliveryAddresses = deliveryAddressService.selectByUser(memberId);
         return RestResult.success("success",deliveryAddresses);
@@ -40,7 +41,7 @@ public class DeliveryAddressController extends CommonUtil {
     @ApiOperation(value = "获取地址详情", notes = "")
     @ApiImplicitParams(value= {  @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult get(@RequestParam("id") Long id, @ApiIgnore JwtUser jwtUser) throws Exception {
+    public RestResult get(@RequestParam("id") Long id, @ApiIgnore H5LoginVO jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
         DeliveryAddress deliveryAddress = deliveryAddressService.selectById(id, memberId);
         return RestResult.success("success",deliveryAddress);
@@ -52,7 +53,7 @@ public class DeliveryAddressController extends CommonUtil {
     @ApiOperation(value = "新增地址不超过5个", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult add(@RequestBody DeliveryAddress deliveryAddress, @ApiIgnore JwtUser jwtUser) throws Exception {
+    public RestResult add(@RequestBody DeliveryAddress deliveryAddress, @ApiIgnore H5LoginVO jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
         deliveryAddress.setMemberId(memberId);
         int i =  deliveryAddressService.add(deliveryAddress);
@@ -65,7 +66,7 @@ public class DeliveryAddressController extends CommonUtil {
     @ApiOperation(value = "编辑地址|与设置默认地址", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult update(@RequestBody  DeliveryAddress deliveryAddress, @ApiIgnore JwtUser jwtUser) throws Exception {
+    public RestResult update(@RequestBody  DeliveryAddress deliveryAddress, @ApiIgnore H5LoginVO jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
         deliveryAddress.setMemberId(memberId);
         int i = deliveryAddressService.update(deliveryAddress);
@@ -78,7 +79,7 @@ public class DeliveryAddressController extends CommonUtil {
     @ApiOperation(value = "删除地址", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult deleteProduct(@RequestParam("id") Long id, @ApiIgnore JwtUser jwtUser) throws Exception {
+    public RestResult deleteProduct(@RequestParam("id") Long id, @ApiIgnore H5LoginVO jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
         int i = deliveryAddressService.delete(id,memberId);
         return RestResult.success();
