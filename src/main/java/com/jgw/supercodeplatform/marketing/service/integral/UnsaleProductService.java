@@ -12,9 +12,12 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.PageResults;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.UnSaleProductPageResults;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductMarketingSearchView;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductMarketingSkuSingleView;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductView;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.NonSelfSellingProductMarketingSearchView;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.NonSelfSellingProductMarketingSkuSingleView;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.vo.ProductAndSkuVo;
 import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
@@ -178,8 +181,59 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         }else{
             // 非自卖产品
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL,queryConditionMap, header);
-            return JSONObject.parseObject(response.getBody(), RestResult.class);
+            RestResult restResult = JSONObject.parseObject(response.getBody(), RestResult.class);
+
+            UnSaleProductPageResults results =   modelMapper.map(restResult.getResults(),UnSaleProductPageResults.class);
+            List<NonSelfSellingProductMarketingSearchView> list = modelMapper.map(results.getList(),List.class);
+            return changeUnSaleBaseServiceDtoToVo(results,list);
         }
+    }
+
+    /**
+     * 非自卖产品转换到前端VO
+     * @param results
+     * @param list
+     * @return
+     */
+    private RestResult changeUnSaleBaseServiceDtoToVo(UnSaleProductPageResults results, List<NonSelfSellingProductMarketingSearchView> list) {
+        // 前端网页产品VO集合
+        List<ProductAndSkuVo> listVO = new ArrayList<ProductAndSkuVo>();
+        // 数据转换
+        for(NonSelfSellingProductMarketingSearchView baseServicePrudoctDto: list) {
+            // 产品VO
+            ProductAndSkuVo productVO = new ProductAndSkuVo();
+            // 产品ID
+            productVO.setPruductId(baseServicePrudoctDto.getProductId());
+            // 产品名称
+            productVO.setPruductName(baseServicePrudoctDto.getProductName());
+            // 产品图片
+            productVO.setPruductPic(baseServicePrudoctDto.getProductUrl());
+            // 展示价
+            productVO.setShowPriceStr(baseServicePrudoctDto.getViewPrice().toString());
+            // 产品VOsku集合
+            List<SkuInfo> listSkuVO = new ArrayList<>();
+            for(NonSelfSellingProductMarketingSkuSingleView skuDto : baseServicePrudoctDto.getProductMarketingSkus()) {
+                // skuVO信息
+                SkuInfo skuVO = new SkuInfo();
+                // skuID
+                skuVO.setSkuId(skuDto.getId()+"");
+                // SKU名称
+                skuVO.setSkuName(skuDto.getSku());
+                // sku图片
+                skuVO.setSkuUrl(skuDto.getPic());
+                listSkuVO.add(skuVO);
+
+            }
+            productVO.setSkuInfo(listSkuVO);
+            listVO.add(productVO);
+
+        }
+
+        // 转换完成
+        Page page = modelMapper.map(results.getPagination(),Page.class);
+        AbstractPageService.PageResults<List<ProductAndSkuVo>> pageVO = new AbstractPageService.PageResults( listVO,page);
+        pageVO.setOther(results.getOther());
+        return  RestResult.success("",pageVO);
     }
 
     /**
