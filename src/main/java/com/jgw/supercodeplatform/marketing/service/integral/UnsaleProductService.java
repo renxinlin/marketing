@@ -302,6 +302,11 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 }
                 towebProductVo.setSkuInfo(listSkuVO);
 
+            }else {
+                // 前端要求不要传null
+                List<SkuInfo> listSkuVO = new ArrayList<>();
+                towebProductVo.setSkuInfo(listSkuVO);
+
             }
 
 
