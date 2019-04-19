@@ -164,7 +164,7 @@ public class CommonService {
 			buf.append(productId).append(",");
 		}
 		
-		params.put("productIds", buf.substring(0, buf.length()-1).toString());
+		params.put("productIds",String.join(",", productIds));
 		ResponseEntity<String> response=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_PRODUCT_BATCH, params, headerMap);
 		logger.info("根据产品集合请求基础平台批次数据收到响应："+response.toString());
 		String body=response.getBody();
