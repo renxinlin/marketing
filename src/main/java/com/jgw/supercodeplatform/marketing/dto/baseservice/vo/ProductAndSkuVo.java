@@ -12,39 +12,39 @@ import java.util.List;
 @ApiModel("自卖非自卖产品VO")
 public class ProductAndSkuVo {
     @ApiModelProperty("产品ID")
-    private String pruductId;
+    private String productId;
     @ApiModelProperty("产品名称")
-    private String pruductName;
+    private String productName;
     @ApiModelProperty("产品图片")
-    private String pruductPic;
+    private String productPic;
     @ApiModelProperty("产品售价字符串|为nullH5不展示")
     private String showPriceStr;
     @ApiModelProperty("产品SKU")
     private List<SkuInfo> skuInfo;
 
 
-    public String getPruductId() {
-        return pruductId;
+    public String getProductId() {
+        return productId;
     }
 
-    public void setPruductId(String pruductId) {
-        this.pruductId = pruductId;
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
-    public String getPruductName() {
-        return pruductName;
+    public String getProductName() {
+        return productName;
     }
 
-    public void setPruductName(String pruductName) {
-        this.pruductName = pruductName;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
-    public String getPruductPic() {
-        return pruductPic;
+    public String getProductPic() {
+        return productPic;
     }
 
-    public void setPruductPic(String pruductPic) {
-        this.pruductPic = pruductPic;
+    public void setProductPic(String productPic) {
+        this.productPic = productPic;
     }
 
     public String getShowPriceStr() {
