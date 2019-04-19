@@ -657,21 +657,23 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(integralExchange.getExchangeIntegral() <= 0){
             throw new SuperCodeException("兑换积分为正整数");
         }
-        if(integralExchange.getExchangeStock() <= 0){
-            throw new SuperCodeException("兑换库存为正整数");
+        if(  integralExchange.getExchangeStock()  == null || integralExchange.getExchangeStock() <= 0 ){
+            integralExchange.setExchangeStock(0);
+            // throw new SuperCodeException("兑换库存为正整数");
         }
 
-        if(integralExchange.getCustomerLimitNum() <= 0){
-            throw new SuperCodeException("每人限兑为正整数");
+        if(integralExchange.getExchangeStock()  == null || integralExchange.getCustomerLimitNum() <= 0){
+            // 不传，则认为无上限给999999
+            integralExchange.setCustomerLimitNum(999999);
+            //throw new SuperCodeException("每人限兑为正整数");
         }
 
-        if(integralExchange.getCustomerLimitNum() <= 0){
-            throw new SuperCodeException("每人限兑为正整数");
-        }
+
         // 默认上架
         integralExchange.setStatus((byte)3);
         if(integralExchange.getPayWay() == null || integralExchange.getPayWay() != 0){
-            throw new SuperCodeException("支付手段目前只有积分");
+            integralExchange.setPayWay((byte)0);
+//            throw new SuperCodeException("支付手段目前只有积分");
         }
         if(integralExchange.getUndercarriageSetWay() == null ){
             throw new SuperCodeException("请设置自动下架方式");
