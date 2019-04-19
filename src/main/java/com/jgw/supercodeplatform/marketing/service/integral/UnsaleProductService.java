@@ -267,7 +267,6 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             // SKU信息 以及展示价
             if(productMarketing != null){
                 // 展示价
-
                 if(productMarketing.getViewPrice() != null){
                     towebProductVo.setShowPriceStr(productMarketing.getViewPrice().toString());
                 }else {
@@ -283,7 +282,8 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                     SkuInfo skuVO = new SkuInfo();
                     // 基础数据格式，数值型;营销String[基础数据最初定的交互格式是String,后改成数值型，造成格式不一定]
                     // skuID
-                    towebProductVo.setShowPriceStr("0.00");
+                    skuVO.setSkuId(skuDto.getId()+"");
+
                     // sku名称
                     skuVO.setSkuName(skuDto.getSku());
                     // sku图片
