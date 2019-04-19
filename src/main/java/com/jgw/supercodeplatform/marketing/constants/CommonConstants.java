@@ -15,6 +15,13 @@ public class CommonConstants {
      */
     public static final String RELATION_PRODUCT_URL = "/code/relation/list/relation/productRecord";
 
+    
+    /**
+     * 请求码管理进行码关联过的产品和产品批次
+     */
+    public static final String RELATION_PRODUCT_PRODUCT_BATCH = "/code/relation/list/product/forRelation";
+    
+    
     /**
      * 请获取未做活动的非自卖产品以及对应的营销信息
      */
