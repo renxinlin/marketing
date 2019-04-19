@@ -54,7 +54,7 @@ public class IntegralExchangeController extends CommonUtil {
         if(StringUtils.isBlank(organizationId)){
             throw new SuperCodeException("获取组织信息失败",500);
         }
-        IntegralExchange integralExchangeParam = new IntegralExchange();
+        IntegralExchange integralExchangeParam =modelMapper.map(integralExchange,IntegralExchange.class);
         integralExchangeParam.setOrganizationId(organizationId);
         AbstractPageService.PageResults<List<IntegralExchange>> objectPageResults = integralExchangeService.listSearchViewLike(integralExchangeParam);
 

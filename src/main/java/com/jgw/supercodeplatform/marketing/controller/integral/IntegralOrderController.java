@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralOrderService;
@@ -13,6 +14,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,9 @@ public class IntegralOrderController extends CommonUtil {
     @Value("{\"orderId\":\"订单号\",\"userName\":\"会员姓名\",\"wxName\":\"会员微信昵称\", \"openId\":\"会员微信ID\",\"mobile\":\"会员手机\",\"prizeTypeName\":\"中奖奖次\", \"winningAmount\":\"中奖金额\",\"winningCode\":\"中奖码\",\"productName\":\"中奖产品\",\"customerName\":\"活动门店\"}")
     private String MARKET_Integral_EXCEL_FIELD_MAP;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     /**
      * 积分记录列表
      *
@@ -44,10 +49,11 @@ public class IntegralOrderController extends CommonUtil {
     @RequestMapping(value = "/page", method = RequestMethod.GET)
     @ApiOperation(value = "兑换订单记录列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<IntegralOrderPageParam>>> list(IntegralOrder integralOrder) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<IntegralOrderPageParam>>> list(DaoSearchWithOrganizationIdParam integralOrder) throws Exception {
         String organizationId = getOrganizationId();
-        integralOrder.setOrganizationId(organizationId);
-        AbstractPageService.PageResults pageResults = integralOrderService.listSearchViewLike(integralOrder);
+        IntegralOrder order = modelMapper.map(integralOrder,IntegralOrder.class);
+        order.setOrganizationId(organizationId);
+        AbstractPageService.PageResults pageResults = integralOrderService.listSearchViewLike(order);
         return RestResult.success("", pageResults);
     }
 
