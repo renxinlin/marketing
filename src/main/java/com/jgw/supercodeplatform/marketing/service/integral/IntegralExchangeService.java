@@ -651,7 +651,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("会员类型不存在");
         }
 
-        if(integralExchange.getExchangeResource() != 0 && integralExchange.getExchangeResource() != 0){
+        if(integralExchange.getExchangeResource() != 1 && integralExchange.getExchangeResource() != 0){
             throw new SuperCodeException("兑换资源类型不存在");
         }
         if(integralExchange.getExchangeIntegral() <= 0){
