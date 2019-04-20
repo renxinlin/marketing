@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.integral;
+package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
