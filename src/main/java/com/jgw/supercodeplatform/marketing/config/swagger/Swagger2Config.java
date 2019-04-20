@@ -111,12 +111,12 @@ public class Swagger2Config {
     }
 
 
-    @Bean("H5会员模块")
+    @Bean("会员H5模块")
     public Docket memberApis() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("H5会员模块")
+                .groupName("会员H5模块")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.member"))
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.h5.member"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo())
