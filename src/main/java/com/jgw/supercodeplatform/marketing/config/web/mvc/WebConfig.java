@@ -31,7 +31,7 @@ public class WebConfig  extends WebMvcConfigurerAdapter{
     public ModelMapper getModelMapper(){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration()
-                // 由默认的LOOSE松散策略策略改成STRICT策略，从而前缀匹配改成严格匹配
+//                // 由默认的LOOSE松散策略策略改成STRICT策略，从而前缀匹配改成严格匹配
                 .setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
     }

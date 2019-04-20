@@ -93,6 +93,21 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 excludeSkuIds.add(excludeProduct.getSkuId());
             }
         }
+
+        // 如果是编辑，可以查看自己的相关数据;所以要可查询相关skuid，和productId
+        if(pageParam.getId() !=null  ){
+            IntegralExchange integralExchange = integralExchangeMapper.selectByPrimaryKey(pageParam.getId());
+            if(integralExchange == null){
+                throw new SuperCodeException("兑换记录不存在...");
+            }
+            if(!StringUtils.isBlank(integralExchange.getProductId()) && integralExchange.getSkuStatus() == 0){
+                excludeProductIds.remove(integralExchange.getProductId());
+            }
+            if(!StringUtils.isBlank(integralExchange.getSkuId())){
+                excludeSkuIds.remove(integralExchange.getSkuId());
+            }
+        }
+
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
@@ -135,7 +150,19 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
 
             }
         }
-
+        // 如果是编辑，可以查看自己的相关数据;所以要可查询相关skuid，和productId
+        if(pageParam.getId() !=null  ){
+            IntegralExchange integralExchange = integralExchangeMapper.selectByPrimaryKey(pageParam.getId());
+            if(integralExchange == null){
+                throw new SuperCodeException("兑换记录不存在...");
+            }
+            if(!StringUtils.isBlank(integralExchange.getProductId()) && integralExchange.getSkuStatus() == 0){
+                excludeProductIds.remove(integralExchange.getProductId());
+            }
+            if(!StringUtils.isBlank(integralExchange.getSkuId())){
+                excludeSkuIds.remove(integralExchange.getSkuId());
+            }
+        }
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
         // 已存在兑换产品由基础信息过滤

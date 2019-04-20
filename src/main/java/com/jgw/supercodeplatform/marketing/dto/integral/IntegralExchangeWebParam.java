@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
+import java.util.List;
 
 @ApiModel("WEB详情页")
 public class IntegralExchangeWebParam {
@@ -77,6 +78,11 @@ public class IntegralExchangeWebParam {
     /** 产品图片 */
     @ApiModelProperty(value = "产品图片")
     private String productPic;
+
+    /** 图片 */
+    @ApiModelProperty(value = "skuId")
+    private String skuId;
+
     /** sku信息 */
     @ApiModelProperty(value = "sku信息")
     private String skuName;
@@ -95,6 +101,26 @@ public class IntegralExchangeWebParam {
     /** 展示价Str */
     @ApiModelProperty(value = "展示价")
     private String showPriceStr;
+
+    @ApiModelProperty(value = "兑换详情:web数据格式【'productid1','sku1id','skuid2','skuid3','productid2','productid3'】")
+    private List<String> productAndSkuWebTree;
+
+
+    public String getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
+    }
+
+    public List<String> getProductAndSkuWebTree() {
+        return productAndSkuWebTree;
+    }
+
+    public void setProductAndSkuWebTree(List<String> productAndSkuWebTree) {
+        this.productAndSkuWebTree = productAndSkuWebTree;
+    }
 
     public Long getId() {
         return id;
