@@ -83,6 +83,45 @@ public class IntegralOrder extends DaoSearch {
     /** 组织名称 */
     @ApiModelProperty(value = "组织名称")
     private String organizationName;
+    /** 展示价 */
+    @ApiModelProperty(value = "展示价")
+    private Float showPrice;
+
+    /** 展示价 */
+    @ApiModelProperty(value = "showPriceStr，展示价前端交互")
+    private String showPriceStr;
+
+    /** 图片 */
+    @ApiModelProperty(value = "产品图片")
+    private String productPic;
+
+    /** skuid */
+    @ApiModelProperty(value = "skuId")
+    private String skuId;
+
+    public Float getShowPrice() {
+        return showPrice;
+    }
+
+    public void setShowPrice(Float showPrice) {
+        this.showPrice = showPrice;
+    }
+
+    public String getProductPic() {
+        return productPic;
+    }
+
+    public void setProductPic(String productPic) {
+        this.productPic = productPic;
+    }
+
+    public String getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
+    }
 
     public Long getId() {
         return id;
@@ -234,5 +273,14 @@ public class IntegralOrder extends DaoSearch {
 
     public void setOrganizationName(String organizationName) {
         this.organizationName = organizationName;
+    }
+
+
+    public String getShowPriceStr() {
+        return showPriceStr;
+    }
+
+    public void setShowPriceStr(String showPriceStr) {
+        this.showPriceStr = showPriceStr;
     }
 }

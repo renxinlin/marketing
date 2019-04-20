@@ -98,8 +98,9 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
 
 
-    @Select(startScript + " select " + allFileds + " from marketing_integral_exchange ie where ie.ProductId = #{productId} " +  endScript)
-    List<IntegralExchange> selectByProductId(@Param("productId") String productId);
+    @Select(startScript + " select " + allFileds + " from marketing_integral_exchange ie where ie.ProductId = #{productId} " +
+            " <if test='skuId != null and skuId != &apos;&apos;'> and skuId = #{skuId} </if>  " +  endScript)
+    List<IntegralExchange> selectByProductId(@Param("productId") String productId,@Param("skuId") String skuId);
 
 
 

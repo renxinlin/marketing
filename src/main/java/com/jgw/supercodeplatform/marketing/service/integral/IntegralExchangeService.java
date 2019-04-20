@@ -391,7 +391,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
     private IntegralOrder getOrderDo(ExchangeProductParam exchangeProductParam) {
         //
         IntegralOrder order = modelMapper.map(exchangeProductParam, IntegralOrder.class);
-        List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId());
+        List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId(),exchangeProductParam.getSkuId());
         // 订单号
         order.setOrderId(UUID.randomUUID().toString().replaceAll("-",""));
         // 订单地址
@@ -407,6 +407,16 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         order.setDeliveryDate(null);
         // 组织名称
         order.setOrganizationName(integralExchanges.get(0).getOrganizationName());
+
+        // 产品信息
+        order.setProductId(integralExchanges.get(0).getProductId());
+        order.setProductPic(integralExchanges.get(0).getProductPic());
+        order.setProductName(integralExchanges.get(0).getProductName());
+        order.setSkuId(integralExchanges.get(0).getSkuId());
+        order.setSkuName(integralExchanges.get(0).getSkuName());
+        order.setSkuUrl(integralExchanges.get(0).getSkuUrl());
+        // 展示价
+        order.setShowPrice(integralExchanges.get(0).getShowPrice());
         return order;
     }
 
@@ -427,7 +437,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         record.setIntegralReasonCode(IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReasonCode());
         record.setIntegralReason(IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason());
 
-        List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId());
+        List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId(),null);
         record.setProductName(integralExchanges.get(0).getProductName());
 //        if(integralExchanges.get(0).getExchangeResource() == 1){
             // 关于自卖产品的码信息
@@ -524,13 +534,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(StringUtils.isEmpty(exchangeProductParam.getProductId())){
             throw new SuperCodeException("兑换信息不全000007");
         }
-        if(StringUtils.isEmpty(exchangeProductParam.getSkuName()) && !StringUtils.isEmpty(exchangeProductParam.getSkuUrl())){
-            throw new SuperCodeException("兑换信息错误000008");
-        }
-        // SKU全无或全有才可
-        if(!StringUtils.isEmpty(exchangeProductParam.getSkuName()) && StringUtils.isEmpty(exchangeProductParam.getSkuUrl())){
-            throw new SuperCodeException("兑换信息错误000009");
-        }
+
 
         if(exchangeProductParam.getExchangeNum() == null || exchangeProductParam.getExchangeNum() <= 0){
             throw new SuperCodeException("兑换信息不全000010");

@@ -84,6 +84,32 @@ public class IntegralOrderPageParam {
     private String organizationName;
 
 
+
+    /** 展示价 */
+    @ApiModelProperty(value = "showPriceStr，展示价前端交互")
+    private String showPriceStr;
+
+    /** 图片 */
+    @ApiModelProperty(value = "产品图片")
+    private String productPic;
+
+
+    public String getShowPriceStr() {
+        return showPriceStr;
+    }
+
+    public void setShowPriceStr(String showPriceStr) {
+        this.showPriceStr = showPriceStr;
+    }
+
+    public String getProductPic() {
+        return productPic;
+    }
+
+    public void setProductPic(String productPic) {
+        this.productPic = productPic;
+    }
+
     public Long getId() {
         return id;
     }
