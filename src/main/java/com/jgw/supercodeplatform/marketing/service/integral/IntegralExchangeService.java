@@ -685,8 +685,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("请设置自动下架为未来时间");
         }
         if(integralExchange.getStockWarningNum() == null){
-            // TODO 报异常             integralExchange.setStockWarningNum(Integer.MAX_VALUE);
-            integralExchange.setStockWarningNum(100);
+            // 负数;则不进行预警
+            integralExchange.setStockWarningNum(-1);
         }
         if(integralExchange.getStockWarningNum() <= 0 ){
             throw new SuperCodeException("库存预警为正整数且大于0");
