@@ -111,6 +111,18 @@ public class Swagger2Config {
     }
 
 
+    @Bean("H5会员模块")
+    public Docket memberApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("H5会员模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.member"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+
 
     @Bean("公共接口模块")
     public Docket commonApis() {
