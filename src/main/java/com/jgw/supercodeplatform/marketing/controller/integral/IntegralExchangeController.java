@@ -120,7 +120,7 @@ public class IntegralExchangeController extends CommonUtil {
             // sku可有可无
             webTree.add(skuId);
         }
-        integralExchangeVO.setProductAndSkuWebTree(webTree);
+        integralExchangeVO.setProducts(webTree);
         return RestResult.success("success",integralExchangeVO);
     }
 

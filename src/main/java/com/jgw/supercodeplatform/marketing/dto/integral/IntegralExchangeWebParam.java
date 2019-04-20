@@ -103,7 +103,7 @@ public class IntegralExchangeWebParam {
     private String showPriceStr;
 
     @ApiModelProperty(value = "兑换详情:web数据格式【'productid1','sku1id','skuid2','skuid3','productid2','productid3'】")
-    private List<String> productAndSkuWebTree;
+    private List<String> products;
 
 
     public String getSkuId() {
@@ -114,12 +114,12 @@ public class IntegralExchangeWebParam {
         this.skuId = skuId;
     }
 
-    public List<String> getProductAndSkuWebTree() {
-        return productAndSkuWebTree;
+    public List<String> getProducts() {
+        return products;
     }
 
-    public void setProductAndSkuWebTree(List<String> productAndSkuWebTree) {
-        this.productAndSkuWebTree = productAndSkuWebTree;
+    public void setProducts(List<String> products) {
+        this.products = products;
     }
 
     public Long getId() {
