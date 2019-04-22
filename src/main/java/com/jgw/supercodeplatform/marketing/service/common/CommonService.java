@@ -182,7 +182,7 @@ public class CommonService {
 	 * @return
 	 * @throws SuperCodeException 
 	 */
-	public JSONArray getOrgNameByOrgIds(List<String> orgIds) throws SuperCodeException {
+	public JSONArray getOrgsInfoByOrgIds(List<String> orgIds) throws SuperCodeException {
 		Map<String, Object> params=new HashMap<String, Object>();
 		params.put("organizationIds", JSONObject.toJSONString(orgIds));
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, null);
@@ -196,4 +196,17 @@ public class CommonService {
 		}
 		return jsonBody.getJSONArray("results");
 	}
+	
+	
+    /**
+     * 根据组织id获取组织名称
+     * @param organizationId
+     * @return
+     * @throws SuperCodeException
+     */
+	public String getOrgNameByOrgId(String organizationId) throws SuperCodeException {
+		
+		return null;
+	}
+	
 }
