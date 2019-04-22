@@ -391,7 +391,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
     private IntegralOrder getOrderDo(ExchangeProductParam exchangeProductParam) {
         //
         IntegralOrder order = modelMapper.map(exchangeProductParam, IntegralOrder.class);
-        List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId());
+        List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId(),exchangeProductParam.getSkuId());
         // 订单号
         order.setOrderId(UUID.randomUUID().toString().replaceAll("-",""));
         // 订单地址
@@ -407,6 +407,16 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         order.setDeliveryDate(null);
         // 组织名称
         order.setOrganizationName(integralExchanges.get(0).getOrganizationName());
+
+        // 产品信息
+        order.setProductId(integralExchanges.get(0).getProductId());
+        order.setProductPic(integralExchanges.get(0).getProductPic());
+        order.setProductName(integralExchanges.get(0).getProductName());
+        order.setSkuId(integralExchanges.get(0).getSkuId());
+        order.setSkuName(integralExchanges.get(0).getSkuName());
+        order.setSkuUrl(integralExchanges.get(0).getSkuUrl());
+        // 展示价
+        order.setShowPrice(integralExchanges.get(0).getShowPrice());
         return order;
     }
 
@@ -427,7 +437,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         record.setIntegralReasonCode(IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReasonCode());
         record.setIntegralReason(IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason());
 
-        List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId());
+        List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId(),null);
         record.setProductName(integralExchanges.get(0).getProductName());
 //        if(integralExchanges.get(0).getExchangeResource() == 1){
             // 关于自卖产品的码信息
@@ -524,13 +534,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(StringUtils.isEmpty(exchangeProductParam.getProductId())){
             throw new SuperCodeException("兑换信息不全000007");
         }
-        if(StringUtils.isEmpty(exchangeProductParam.getSkuName()) && !StringUtils.isEmpty(exchangeProductParam.getSkuUrl())){
-            throw new SuperCodeException("兑换信息错误000008");
-        }
-        // SKU全无或全有才可
-        if(!StringUtils.isEmpty(exchangeProductParam.getSkuName()) && StringUtils.isEmpty(exchangeProductParam.getSkuUrl())){
-            throw new SuperCodeException("兑换信息错误000009");
-        }
+
 
         if(exchangeProductParam.getExchangeNum() == null || exchangeProductParam.getExchangeNum() <= 0){
             throw new SuperCodeException("兑换信息不全000010");
@@ -651,27 +655,29 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("会员类型不存在");
         }
 
-        if(integralExchange.getExchangeResource() != 0 && integralExchange.getExchangeResource() != 0){
+        if(integralExchange.getExchangeResource() != 1 && integralExchange.getExchangeResource() != 0){
             throw new SuperCodeException("兑换资源类型不存在");
         }
         if(integralExchange.getExchangeIntegral() <= 0){
             throw new SuperCodeException("兑换积分为正整数");
         }
-        if(integralExchange.getExchangeStock() <= 0){
-            throw new SuperCodeException("兑换库存为正整数");
+        if(  integralExchange.getExchangeStock()  == null || integralExchange.getExchangeStock() <= 0 ){
+            integralExchange.setExchangeStock(0);
+            // throw new SuperCodeException("兑换库存为正整数");
         }
 
-        if(integralExchange.getCustomerLimitNum() <= 0){
-            throw new SuperCodeException("每人限兑为正整数");
+        if(integralExchange.getCustomerLimitNum()  == null || integralExchange.getCustomerLimitNum() <= 0){
+            // 不传，则认为无上限给999999
+            integralExchange.setCustomerLimitNum(999999);
+            //throw new SuperCodeException("每人限兑为正整数");
         }
 
-        if(integralExchange.getCustomerLimitNum() <= 0){
-            throw new SuperCodeException("每人限兑为正整数");
-        }
+
         // 默认上架
         integralExchange.setStatus((byte)3);
         if(integralExchange.getPayWay() == null || integralExchange.getPayWay() != 0){
-            throw new SuperCodeException("支付手段目前只有积分");
+            integralExchange.setPayWay((byte)0);
+//            throw new SuperCodeException("支付手段目前只有积分");
         }
         if(integralExchange.getUndercarriageSetWay() == null ){
             throw new SuperCodeException("请设置自动下架方式");
@@ -683,7 +689,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("请设置自动下架为未来时间");
         }
         if(integralExchange.getStockWarningNum() == null){
-            integralExchange.setStockWarningNum(Integer.MAX_VALUE);
+            // 负数;则不进行预警
+            integralExchange.setStockWarningNum(-1);
         }
         if(integralExchange.getStockWarningNum() <= 0 ){
             throw new SuperCodeException("库存预警为正整数且大于0");
@@ -710,7 +717,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                 if(productAddParam.getProductId() == null){
                     throw new SuperCodeException("产品id不存在");
                 }else {
-                    List<SkuInfo> skuinfos = productAddParam.getSkuinfos();
+                    List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
                      // sku可以不存在;存在则进行非空校验
                     if(!CollectionUtils.isEmpty(skuinfos)){
                         for(SkuInfo skuinfo:skuinfos ){
@@ -756,7 +763,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     }
                     // 有sku
                     if(have.getProductId().equals(productAddParam.getProductId()) && have.getSkuStatus() == 1){
-                        List<SkuInfo> skuinfos = productAddParam.getSkuinfos();
+                        List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
                         for(SkuInfo skuinfo: skuinfos){
                             if(skuinfo.getSkuId().equals(have.getSkuId())){
                                 throw new SuperCodeException("产品SKU已经添加");
@@ -781,7 +788,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 0非自卖1自卖产品
         Byte exchangeResource = integralExchange.getExchangeResource();
         for(ProductAddParam productAddParam : products){{
-            List<SkuInfo> skuinfos = productAddParam.getSkuinfos();
+            List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
             if(CollectionUtils.isEmpty(skuinfos)){
                 // 添加产品记录
                 IntegralExchange exchangeDo = modelMapper.map(integralExchange, IntegralExchange.class);

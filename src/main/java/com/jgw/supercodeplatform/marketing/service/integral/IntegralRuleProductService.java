@@ -287,7 +287,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		params.put("organizationId",organizationId );
 		params.put("search", daoSearch.getSearch());
 		List<String> productIds=dao.selectProductIdsByOrgId(organizationId);
-		params.put("excludeProductIds",productIds);
+		params.put("excludeProductIds",JSONObject.toJSONString(productIds));
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, null);
 		String body=responseEntity.getBody();
 		logger.info("接收到码管理进行过码关联的产品信息："+body);
@@ -298,10 +298,11 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		if (state==200) {
 			restResult.setState(200);
 			JSONArray arry=json.getJSONObject("results").getJSONArray("list");
-			for (int i=0 ;i<arry.size();i++) {
-				JSONObject ruleProduct=arry.getJSONObject(i);
+  			for (int i=0 ;i<arry.size();i++) {
+ 				JSONObject ruleProduct=arry.getJSONObject(i);
 				IntegralRuleProduct product=new IntegralRuleProduct();
-				product.setProductId(ruleProduct.getString("objectId"));
+ 				product.setId(ruleProduct.getLong("id"));
+ 				product.setProductId(ruleProduct.getString("objectId"));
 				product.setProductName(ruleProduct.getString("objectName"));
 				ruleproductList.add(product);
 			}

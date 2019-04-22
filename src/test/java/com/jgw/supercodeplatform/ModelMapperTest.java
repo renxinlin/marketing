@@ -5,7 +5,11 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import org.junit.Test;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
+import org.modelmapper.convention.MatchingStrategies;
+import org.modelmapper.spi.MappingContext;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +30,7 @@ public class ModelMapperTest {
         SkuInfo skuinfo = new SkuInfo();
         skuinfo.setSkuName("name");
         skuinfos.add(skuinfo);
-        p.setSkuinfos(skuinfos);
+        p.setSkuInfo(skuinfos);
         ps.add(p);
         integralExchange.setProducts(ps);
         IntegralExchangeAddParam integralExchangeAddParam = modelMapper.map(integralExchange, IntegralExchangeAddParam.class);
@@ -97,6 +101,22 @@ public class ModelMapperTest {
         ModelMapper modelMapper = new ModelMapper();
         RestResult restResult = JSONObject.parseObject(response, RestResult.class);
         System.out.println("---");
+
+    }
+
+
+    @Test
+    public void testModelMapper6() {
+        // 测试发现modelmapper有坑！！！！！！！！！！！！！！！！！！！！！！！！！！
+        // 源码追踪后发现
+        ModelMapper modelMapper = new ModelMapper();
+        // 默认策略是前缀匹配，需要严格匹配
+        modelMapper.getConfiguration()
+                /**  LOOSE松散策略 */
+                .setMatchingStrategy(MatchingStrategies.STRICT);
+        IntegralExchangeAddParam integralExchange = new IntegralExchangeAddParam();
+        integralExchange.setStockWarningNum(111111);
+        IntegralExchange map = modelMapper.map(integralExchange, IntegralExchange.class);
 
     }
 

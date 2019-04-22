@@ -54,7 +54,7 @@ public class IntegralOrderController extends CommonUtil {
         IntegralOrder order = modelMapper.map(integralOrder,IntegralOrder.class);
         order.setOrganizationId(organizationId);
         AbstractPageService.PageResults pageResults = integralOrderService.listSearchViewLike(order);
-        return RestResult.success("", pageResults);
+        return RestResult.success("success", pageResults);
     }
 
 

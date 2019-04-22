@@ -37,6 +37,7 @@ public class JWTUtil {
 			Date expireDate = getAfterDate(nowDate,0,0,0,2,0,0);//2小过期
 			map.put("alg", "HS256");
 			map.put("typ", "JWT");
+
 			String token = JWT.create()
 					/*设置头部信息 Header*/
 					.withHeader(map)
@@ -109,6 +110,7 @@ public class JWTUtil {
 					.withIssuer("JGW CJM COMPANY")
 					.build(); //Reusable verifier instance
 			DecodedJWT jwt = verifier.verify(token);
+
 			Map<String, Claim> claims = jwt.getClaims();
 			// 直接json转对象由于反射对非空属性没处理会报错
 			Map jwtU = (Map) JSONObject.parse(claims.get("jwtUser").asString());

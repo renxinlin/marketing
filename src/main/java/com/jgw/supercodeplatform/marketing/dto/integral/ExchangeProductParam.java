@@ -18,17 +18,26 @@ public class ExchangeProductParam {
     private String name;
     @ApiModelProperty("手机号")
     private String mobile;
-    @ApiModelProperty("sku名称")
+
+    @ApiModelProperty("skuId")
+    private String skuId;
+
+    @ApiModelProperty("sku名称，兑换时不传")
     private String skuName;
-    @ApiModelProperty("sku图片")
+    @ApiModelProperty("sku图片，兑换时不传")
     private String skuUrl;
     @ApiModelProperty("兑换数量")
     private Integer exchangeNum;
     @ApiModelProperty("地址")
     private String address;
 
+    public String getSkuId() {
+        return skuId;
+    }
 
-
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
+    }
 
     public Long getMemberId() {
         return memberId;

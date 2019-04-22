@@ -11,6 +11,9 @@ public class IntegralExchange extends DaoSearch {
     @ApiModelProperty(value = "主键")
     private Long id;
 
+    /** 库存预警0不发出警告1发出警告 */
+    @ApiModelProperty(value = "库存预警0不发出警告1发出警告")
+    private Byte stockWarning;
     /** 兑换对象0会员 */
     @ApiModelProperty(value = "兑换对象0会员")
     private Byte memberType;
@@ -51,9 +54,6 @@ public class IntegralExchange extends DaoSearch {
     @ApiModelProperty(value = "自动下架时间")
     private Date underCarriage;
 
-    /** 库存预警0不发出警告1发出警告 */
-    @ApiModelProperty(value = "库存预警0不发出警告1发出警告")
-    private Byte stockWarning;
 
     /** 库存预警数量 */
     @ApiModelProperty(value = "库存预警数量")

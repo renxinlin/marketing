@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.config.web.mvc;
 
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,11 @@ public class WebConfig  extends WebMvcConfigurerAdapter{
     // 添加对象转换器
     @Bean
     public ModelMapper getModelMapper(){
-        return new ModelMapper();
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration()
+//                // 由默认的LOOSE松散策略策略改成STRICT策略，从而前缀匹配改成严格匹配
+                .setMatchingStrategy(MatchingStrategies.STRICT);
+        return modelMapper;
     }
 
 }

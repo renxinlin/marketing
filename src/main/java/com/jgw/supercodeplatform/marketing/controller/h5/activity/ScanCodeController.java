@@ -33,26 +33,26 @@ public class ScanCodeController {
 	protected static Logger logger = LoggerFactory.getLogger(ScanCodeController.class);
     @Autowired
     private CommonUtil commonUtil;
-    
+
     @Autowired
     private MarketingActivitySetService mActivitySetService;
-    
+
     @Autowired
     private MarketingWxMerchantsService mWxMerchantsService;
-    
+
     @Value("${marketing.domain.url}")
     private String wxauthRedirectUri;
-    
-    
+
+
     @Value("${marketing.activity.h5page.url}")
     private String h5pageUrl;
-    
+
     @Value("${rest.user.url}")
     private String restUserUrl;
 
     @Autowired
     private GlobalRamCache globalRamCache;
-    
+
     /**
      * 客户扫码码平台跳转到营销系统地址接口
      * @param codeId
@@ -60,18 +60,18 @@ public class ScanCodeController {
      * @param productId
      * @param productBatchId
      * @return
-     * @throws UnsupportedEncodingException 
-     * @throws ParseException 
+     * @throws UnsupportedEncodingException
+     * @throws ParseException
      * @throws Exception
      */
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
     	String	wxstate=commonUtil.getUUID();
-    	
+
     	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate);
-    	
-    	
+
+
         return "redirect:"+url;
     }
 
@@ -81,7 +81,7 @@ public class ScanCodeController {
     		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
     		 return "redirect:"+h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
 		}
-    	
+
     	ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
     	//在校验产品及产品批次时可以从活动设置表中获取组织id
         String organizationId=sCodeInfoMO.getOrganizationId();
@@ -92,12 +92,12 @@ public class ScanCodeController {
         sCodeInfoMO.setOrganizationId(organizationId);
         globalRamCache.putScanCodeInfoMO(wxstate,sCodeInfoMO);
         logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
-        
+
     	//微信授权需要对redirect_uri进行urlencode
         String wholeUrl=wxauthRedirectUri+"/marketing/front/auth/code";
     	String encoderedirectUri=URLEncoder.encode(wholeUrl, "utf-8");
         logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid()+",h5pageUrl="+h5pageUrl);
-        String url=h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1";
+        String url=h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1"+"&organizationId="+organizationId;
         return url;
     }
 }

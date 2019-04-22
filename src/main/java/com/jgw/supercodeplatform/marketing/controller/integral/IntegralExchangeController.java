@@ -102,7 +102,7 @@ public class IntegralExchangeController extends CommonUtil {
 
 
     @RequestMapping(value = "/detail",method = RequestMethod.GET)
-    @ApiOperation(value = "兑换详情|【设置】", notes = "")
+    @ApiOperation(value = "兑换|【详情】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
             @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id")})
     public RestResult<IntegralExchangeWebParam> detail(@RequestParam("id") Long id) throws Exception {
@@ -110,6 +110,17 @@ public class IntegralExchangeController extends CommonUtil {
         IntegralExchange integralExchange = integralExchangeService.selectById(id,organizationId);
         // 上下架组织下的兑换对象
         IntegralExchangeWebParam integralExchangeVO = modelMapper.map(integralExchange, IntegralExchangeWebParam.class);
+        String productId = integralExchangeVO.getProductId();
+        String skuId = integralExchangeVO.getSkuId();
+
+        // 前端数据格式
+        List<String> webTree = new ArrayList<>();
+        webTree.add(productId);
+        if(!StringUtils.isBlank(skuId)){
+            // sku可有可无
+            webTree.add(skuId);
+        }
+        integralExchangeVO.setProducts(webTree);
         return RestResult.success("success",integralExchangeVO);
     }
 
@@ -140,7 +151,7 @@ public class IntegralExchangeController extends CommonUtil {
 
 
     @RequestMapping(value = "/getProduct",method = RequestMethod.GET)
-    @ApiOperation(value = "获取自卖产品|非自卖产品,调用基础信息平台", notes = "")
+    @ApiOperation(value = "获取自卖产品|非自卖产品,调用基础信息平台，根据是否传递兑换记录id判断是新增还是编辑", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
             @ApiImplicitParam(paramType="type",value = "0非自卖1自卖产品",name="super-token")})
     public RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > getProductList(ProductPageParam pageParam) throws Exception {
