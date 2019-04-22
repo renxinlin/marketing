@@ -17,7 +17,7 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
             " ProductId productId, ProductName productName,  " +
             " SkuName skuName, SkuUrl skuUrl, ExchangeIntegralNum exchangeIntegralNum, " +
             " ExchangeNum exchangeNum, Name name, Mobile mobile, Address address, Status status, MemberId memberId, MemberName memberName, " +
-            " CreateDate createDate, DeliveryDate deliveryDate, OrganizationId organizationId, OrganizationName organizationName " +
+            " CreateDate createDate, DeliveryDate deliveryDate, OrganizationId organizationId, OrganizationName organizationName ," +
             " SkuId skuId, ShowPrice showPrice, ShowPrice showPriceStr, ProductPic productPic";
     static String whereSearch =
             "<where>" +
