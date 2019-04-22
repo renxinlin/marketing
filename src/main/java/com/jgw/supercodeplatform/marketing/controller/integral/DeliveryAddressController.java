@@ -1,21 +1,26 @@
 package com.jgw.supercodeplatform.marketing.controller.integral;
 
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 import com.jgw.supercodeplatform.marketing.service.integral.DeliveryAddressService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/marketing/address")

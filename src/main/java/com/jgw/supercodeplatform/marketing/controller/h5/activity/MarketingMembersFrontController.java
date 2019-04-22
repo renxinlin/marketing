@@ -14,6 +14,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
@@ -21,6 +22,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/marketing/front/members")
@@ -62,5 +64,43 @@ public class MarketingMembersFrontController extends CommonUtil {
     @ApiOperation(value = "用户点击领奖方法", notes = "")
     public RestResult<String> lottery(String wxstate) throws Exception {
         return marketingMembersService.lottery(wxstate);
+    }
+    
+    @RequestMapping(value = "/userInfo",method = RequestMethod.POST)
+    @ApiOperation(value = "根据主键获取用户信息", notes = "")
+    @ApiImplicitParams(value= {
+    		@ApiImplicitParam(paramType="query",value = "用户主键",name="id"),
+    		@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息")
+    })
+    public RestResult<H5LoginVO> userInfo(@RequestParam Long id,@ApiIgnore H5LoginVO h5LoginVO) throws Exception {
+    	RestResult<H5LoginVO> restResult=new RestResult<H5LoginVO>();
+    	try {
+    		Long memberId=h5LoginVO.getMemberId();
+			if (id.intValue()!=memberId.intValue()) {
+				restResult.setState(500);
+				restResult.setMsg("登录用户与参数id不符合不是同一个用户");
+				return restResult;
+			}
+			
+			MarketingMembers marketingMembers=marketingMembersService.selectById(id);
+			if (null==marketingMembers) {
+				restResult.setState(500);
+				restResult.setMsg("根据id="+id+"无法查找到用户");
+				return restResult;
+			}
+			
+			H5LoginVO hVo=new H5LoginVO();
+			hVo.setMemberId(id);
+			String userName=marketingMembers.getUserName();
+			hVo.setMemberName(userName==null?marketingMembers.getWxName():userName);
+			hVo.setMobile(hVo.getMobile());
+			hVo.setRegistered(1);
+			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
+			restResult.setResults(hVo);
+		} catch (Exception e) {
+			restResult.setState(500);
+			restResult.setMsg("请求用户详情报错："+e.getMessage());
+		}
+        return restResult;
     }
 }

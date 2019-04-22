@@ -131,7 +131,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
 		//构建请求生码批次参数
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+		List<Map<String, Object>> updateProductList=new ArrayList<Map<String,Object>>();
 		for (Product product : products) {
+			String productId=product.getProductId();
 			IntegralRuleProduct ruleProduct=new IntegralRuleProduct();
 			ruleProduct.setIntegralRuleId(integralRule.getId());
 			ruleProduct.setMemberType(memberType);
@@ -140,15 +142,76 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			ruleProduct.setProductPrice(productPrice);
 			ruleProduct.setRewardIntegral(rewardIntegral);
 			ruleProduct.setRewardRule(rewardRule);
-			ruleProduct.setProductId(product.getProductId());
+			ruleProduct.setProductId(productId);
 			ruleProduct.setProductName(product.getProductName());
 			ruleProducts.add(ruleProduct);
+			
+			Map<String, Object> updateProductMap=new HashMap<String, Object>();
+			updateProductMap.put("price", productPrice);
+			updateProductMap.put("productId", productId);
+			updateProductList.add(updateProductMap);
 		}
 		dao.batchInsert(ruleProducts);
 		//请求生码批次及积分url绑定批次
 		integralUrlBindBatch(1,superToken, productAndBatchGetCodeMOs);
+		//更新产品营销信息
+		updateBaseProductPrice(updateProductList,superToken);
+		
 	}
+    
+    
+	@Transactional
+	public void singleSetRuleProduct( IntegralRuleProduct inRuleProduct) throws SuperCodeException {
+		if (null==inRuleProduct.getId()) {
+			
+			String organizationId=commonUtil.getOrganizationId();
+			IntegralRuleProduct eruleProduct=dao.selectByProductIdAndOrgId(inRuleProduct.getProductId(),organizationId);
+			if (null!=eruleProduct) {
+				throw new SuperCodeException("已存在该产品规则请带上主键id", 500);
+			}
+			dao.insertSelective(inRuleProduct);
+			String superToken=commonUtil.getSuperToken();
+			
+			List<String> productIds=new ArrayList<String>();
+			String productId=inRuleProduct.getProductId();
+			productIds.add(productId);
+			//根据产品id集合去基础平台请求对应的产品批次
+			JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
+			//构建请求生码批次参数
+			List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+			integralUrlBindBatch(1,superToken, productAndBatchGetCodeMOs);
+			
+			//更新产品营销信息
+			List<Map<String, Object>> updateProductList=new ArrayList<Map<String,Object>>();
+			Map<String, Object> updateProductMap=new HashMap<String, Object>();
+			updateProductMap.put("price", inRuleProduct.getProductPrice());
+			updateProductMap.put("productId", productId);
+			updateProductList.add(updateProductMap);
+			updateBaseProductPrice(updateProductList,superToken);
+		}else {
+			dao.updateByPrimaryKeySelective(inRuleProduct);
+		}
+	}
+	
     /**
+     * 请求基础平台更新营销产品信息
+     * @param updateProductList
+     * @throws SuperCodeException 
+     */
+    private void updateBaseProductPrice(List<Map<String, Object>> updateProductList,String superToken) throws SuperCodeException {
+    	String json=JSONObject.toJSONString(updateProductList);
+    	Map<String,String> headerMap=new HashMap<String, String>();
+    	headerMap.put("super-token", superToken);
+    	ResponseEntity<String> resopEntity=restTemplateUtil.postJsonDataAndReturnJosn(restUserUrl+CommonConstants.USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO, json, headerMap);
+    	String body=resopEntity.getBody();
+    	JSONObject bodyJosn=JSONObject.parseObject(body);
+    	Integer state=bodyJosn.getInteger("state");
+    	if (null==state || state.intValue()!=200) {
+			throw new SuperCodeException("请求基础平台批量更新产品营销信息出错："+bodyJosn.getString("results"), 500);
+		}
+    }
+
+	/**
      * 通过产品及产品批次对象集合封装通过产品及产品批次请求生码批次的参数
      * @param jsonArray
      * @return
@@ -206,29 +269,6 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			if (200!=bindBatchstate) {
 				throw new SuperCodeException("积分设置时根据生码批次绑定url失败："+bindBatchBody, 500);
 			}
-		}
-	}
-
-	@Transactional
-	public void singleSetRuleProduct( IntegralRuleProduct inRuleProduct) throws SuperCodeException {
-		if (null==inRuleProduct.getId()) {
-			String organizationId=commonUtil.getOrganizationId();
-			IntegralRuleProduct eruleProduct=dao.selectByProductIdAndOrgId(inRuleProduct.getProductId(),organizationId);
-			if (null!=eruleProduct) {
-				throw new SuperCodeException("已存在该产品规则请带上主键id", 500);
-			}
-			dao.insertSelective(inRuleProduct);
-			String superToken=commonUtil.getSuperToken();
-			
-			List<String> productIds=new ArrayList<String>();
-			productIds.add(inRuleProduct.getProductId());
-			//根据产品id集合去基础平台请求对应的产品批次
-			JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
-			//构建请求生码批次参数
-			List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
-			integralUrlBindBatch(1,superToken, productAndBatchGetCodeMOs);
-		}else {
-			dao.updateByPrimaryKeySelective(inRuleProduct);
 		}
 	}
 

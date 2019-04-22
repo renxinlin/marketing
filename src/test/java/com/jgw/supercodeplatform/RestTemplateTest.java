@@ -115,6 +115,18 @@ public  void test1() throws UnsupportedEncodingException, SuperCodeException {
     System.out.println(responseEntity.toString());
 }
 
+
+@Test
+public  void requestOrgName() throws UnsupportedEncodingException, SuperCodeException {
+	List<String>productIds=new ArrayList<String>();
+	productIds.add("86ff1c47b5204e88918cb89bbd739f12");
+	
+	Map<String, Object> params=new HashMap<String, Object>();
+	params.put("organizationIds", JSONObject.toJSONString(productIds));
+	ResponseEntity<String>responseEntity=getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, null);
+    System.out.println(responseEntity.toString());
+}
+
 /**
  * 发送get请求返回json数据
  * @param url

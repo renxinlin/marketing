@@ -92,6 +92,7 @@ public class WeixinAuthController {
     		if (null!=statecode && 0==statecode) {
     			h5BUf.append("&uuid="+statearr[2]);
 			}
+    		h5BUf.append("&organizationId="+organizationId);
     		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
     		if (null!=members) {
     			h5BUf.append("&memberId="+members.getId());
@@ -131,7 +132,7 @@ public class WeixinAuthController {
 			members.setWxName(nickName);
 			marketingMembersService.update(members);
 		}
-		//如果需要写jwttoken
+		//如果需要写jwttoken，在积分授权时只有不需要手机号登录时才写token否则手机号登录那里会写
 		if (needWriteJwtToken) {
 			writeJwtToken(response, members);
 		}

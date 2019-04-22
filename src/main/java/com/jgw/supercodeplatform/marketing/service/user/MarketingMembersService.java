@@ -856,6 +856,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		marketingMembersMapper.update(members);
 	}
 
+	public MarketingMembers selectById(Long id) {
+		return marketingMembersMapper.getMemberById(id);
+	}
+
 }
 
 

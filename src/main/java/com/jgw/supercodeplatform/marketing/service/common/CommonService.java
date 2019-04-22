@@ -170,9 +170,30 @@ public class CommonService {
 		String body=response.getBody();
 		JSONObject jsonObject=JSONObject.parseObject(body);
 		Integer state=jsonObject.getInteger("state");
-		if (null!=state && state.intValue()==1) {
+		if (null==state || state.intValue()!=200) {
 			throw new SuperCodeException("根据产品集合获取产品批次集合出错:"+body, 500);
 		}
 		return jsonObject.getJSONArray("results");
+	}
+	
+	
+	/**
+	 * 请求基础平台批量获取组织信息
+	 * @return
+	 * @throws SuperCodeException 
+	 */
+	public JSONArray getOrgNameByOrgIds(List<String> orgIds) throws SuperCodeException {
+		Map<String, Object> params=new HashMap<String, Object>();
+		params.put("organizationIds", JSONObject.toJSONString(orgIds));
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, null);
+		String body=responseEntity.getBody();
+		logger.info("请求基础平台批量获取组织信息接口返回信息："+body);
+		
+		JSONObject jsonBody=JSONObject.parseObject(body);
+		Integer state=jsonBody.getInteger("state");
+		if (null==state || state.intValue()!=200) {
+			throw new SuperCodeException("请求基础平台批量获取组织信息出错:"+body, 500);
+		}
+		return jsonBody.getJSONArray("results");
 	}
 }

@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "积分通用规则产品")
@@ -10,6 +12,7 @@ public class IntegralRuleProduct {
 
     /** 产品id */
     @ApiModelProperty(value = "产品id")
+    @NotNull
     private String productId;
 
     /** 产品名称|注意基础信息可以发生改变 */
@@ -18,6 +21,7 @@ public class IntegralRuleProduct {
 
     /** 产品价格 */
     @ApiModelProperty(value = "产品价格")
+    @NotNull
     private Float productPrice;
 
     /** 奖励对象0会员 */

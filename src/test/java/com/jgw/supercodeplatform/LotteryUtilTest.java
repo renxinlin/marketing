@@ -1,12 +1,8 @@
 package com.jgw.supercodeplatform;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -14,27 +10,23 @@ import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeDetailParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
-import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.context.request.ServletWebRequest;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
+import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeDetailParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 @RunWith(SpringJUnit4ClassRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
 @SpringBootTest(classes = SuperCodeMarketingApplication.class) // 指定我们SpringBoot工程的Application启动类
 public class LotteryUtilTest {
@@ -106,9 +98,7 @@ public class LotteryUtilTest {
 @Autowired
 	RedisLockUtil lock;
 	@Test
-	public void testlock(){
-		lock.lock("ssss",500000,5,200);
-		lock.releaseLock("ssss");
+	public void testlock(ServletWebRequest request){
 	}
 	public static void main(String[] args) throws SuperCodeException, NoSuchAlgorithmException, CertificateException, IOException, KeyStoreException {
 		InputStream certStream=new FileInputStream("H:\\test\\cert\\113a2c2ef0cb438a84a69114c35b9a00\\CEEED.p12");

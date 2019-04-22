@@ -32,7 +32,7 @@ public class DaoSearch {
     @ApiModelProperty(name = "current", value = "第几页", example = "1")
     private Integer current;
     
-    @ApiModelProperty(name = "commonSearchXml", value = "普通搜索xml", example = "")
+    @ApiModelProperty(name = "commonSearchXml", value = "普通搜索xml", example = "",hidden=true)
     private String commonSearchXml;
     
     public String getCommonSearchXml() {

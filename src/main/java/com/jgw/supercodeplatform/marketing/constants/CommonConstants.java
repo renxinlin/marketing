@@ -26,6 +26,15 @@ public class CommonConstants {
      */
     public static final String USER_REQUEST_PRODUCT_BATCH = "/product-batch/array/batch";
     
+    /**
+     * 请求基础平台，通过组织id数据请求组织信息集合
+     */
+    public static final String USER_REQUEST_ORGANIZATION_BATCH = "/org/ids";
+    
+    /**
+     * 请求基础平台，批量更新产品营销信息接口
+     */
+    public static final String USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO = "/product/market/synchronize";
     
     /**
      * 请获取未做活动的非自卖产品以及对应的营销信息
