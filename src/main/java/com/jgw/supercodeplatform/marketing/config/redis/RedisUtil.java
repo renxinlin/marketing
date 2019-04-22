@@ -271,5 +271,27 @@ public class RedisUtil {
         counter.expire(timeOut, TimeUnit.SECONDS);
         return counter.addAndGet(increment);
     }
+    /**
+     * 设置key过期时间
+     * @param key
+     * @param timeout
+     * @param unit，默认为妙
+     * @return
+     */
+    public Boolean expire(String key, long timeout, TimeUnit unit) {
+    	if (null==unit) {
+    		unit=TimeUnit.SECONDS;
+		}
+    	return stringRedisTemplate.expire(key, timeout, unit);
+    }
     
+    /**
+     * 获取剩余过期时间
+     * @param key
+     * @return
+     */
+    public Long leftExpireSeconds(String key) {
+    	return  stringRedisTemplate.getExpire(key);
+    }
+   
 }

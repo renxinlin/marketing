@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -194,7 +195,11 @@ public class CommonService {
 		if (null==state || state.intValue()!=200) {
 			throw new SuperCodeException("请求基础平台批量获取组织信息出错:"+body, 500);
 		}
-		return jsonBody.getJSONArray("results");
+		JSONArray arr=jsonBody.getJSONArray("results");
+		if (null==arr || arr.size()==0) {
+			throw new SuperCodeException("根据组织id集合请求基础平台批量获取组织信息为空:", 500);
+		}
+		return arr;
 	}
 	
 	
@@ -205,8 +210,24 @@ public class CommonService {
      * @throws SuperCodeException
      */
 	public String getOrgNameByOrgId(String organizationId) throws SuperCodeException {
-		
-		return null;
+		if (StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeException("根据组织id请求组织名称时组织id不能为空", 500);
+		}
+		String organizationName= (String) redisUtil.hmGet(RedisKey.organizationId_prefix, organizationId);
+		if (null==organizationName) {
+			List<String> orgIds=new ArrayList<String>();
+			orgIds.add(organizationId);
+			JSONArray arr=getOrgsInfoByOrgIds(orgIds);
+			organizationName=arr.getJSONObject(0).getString("organizationFullName");
+			redisUtil.hmSet(RedisKey.organizationId_prefix, organizationId, organizationName);
+			
+			Long seconds=redisUtil.leftExpireSeconds(RedisKey.organizationId_prefix);
+			
+			if (null==seconds) {
+				redisUtil.expire(RedisKey.organizationId_prefix, 7200, TimeUnit.SECONDS);
+			}
+		}
+		return organizationName;
 	}
 	
 }
