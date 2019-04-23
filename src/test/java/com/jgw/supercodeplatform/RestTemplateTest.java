@@ -1,19 +1,14 @@
 package com.jgw.supercodeplatform;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
+import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,32 +16,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.constants.RedisKey;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
-import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
 @SpringBootTest(classes = SuperCodeMarketingApplication.class) // 指定我们SpringBoot工程的Application启动类

@@ -1,14 +1,13 @@
 package com.jgw.supercodeplatform.mapper;
 
+import com.jgw.supercodeplatform.SuperCodeMarketingApplication;
+import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt;
+import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.jgw.supercodeplatform.SuperCodeMarketingApplication;
-import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt;
-import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 
 /**
  * 积分测试

@@ -1,17 +1,16 @@
 package com.jgw.supercodeplatform.mapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.jgw.supercodeplatform.SuperCodeMarketingApplication;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleProductMapperExt;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.jgw.supercodeplatform.SuperCodeMarketingApplication;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleProductMapperExt;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
 @SpringBootTest(classes = SuperCodeMarketingApplication.class) // 指定我们SpringBoot工程的Application启动类

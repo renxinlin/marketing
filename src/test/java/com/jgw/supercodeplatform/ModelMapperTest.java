@@ -5,11 +5,8 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import org.junit.Test;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MappingContext;
 
 import java.util.ArrayList;
 import java.util.Date;
