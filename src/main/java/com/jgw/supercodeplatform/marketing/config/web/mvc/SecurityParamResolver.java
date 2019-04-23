@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.config.web.mvc;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,9 +47,15 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
     public H5LoginVO resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws UserExpireException {
         String token = null;
         try {
-            HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
+            // HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
             HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
-            token = request.getHeader(CommonConstants.JWT_TOKEN);
+           // token = request.getHeader(CommonConstants.JWT_TOKEN);
+            Cookie[] cookies = request.getCookies();
+            for(Cookie cookie : cookies){
+                if(CommonConstants.JWT_TOKEN.equals(cookie.getName())){
+                    token = cookie.getValue();
+                }
+            }
             if (token == null) {
                 throw new UserExpireException("用户不存在...");
             }

@@ -1,7 +1,9 @@
 package com.jgw.supercodeplatform.marketing.controller.wechat;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +152,13 @@ public class WeixinAuthController {
 			h5LoginVO.setWechatHeadImgUrl(members.getWechatHeadImgUrl());
 			h5LoginVO.setMemberName(members.getUserName()==null?members.getWxName():members.getUserName());
 			String jwtToken=JWTUtil.createTokenWithClaim(h5LoginVO);
-			response.addHeader("jwt-token", jwtToken);
+			Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
+			// jwt有效期为2小时，保持一致
+			jwtTokenCookie.setMaxAge(60*60*2);
+			// 待补充： 其他参数基于传递状况
+			// jwtTokenCookie.setPath();
+			response.addCookie(jwtTokenCookie);
+//			response.addHeader("jwt-token", jwtToken);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
