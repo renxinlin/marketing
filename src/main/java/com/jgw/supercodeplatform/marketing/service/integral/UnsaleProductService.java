@@ -33,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
+import springfox.documentation.spring.web.json.Json;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -174,8 +175,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
 
         RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > restResult = getProductFromBaseService(queryCondition,true);
         if(restResult.getState() == 200){
-            logger.info("{自卖产品耗时4}"+(System.currentTimeMillis()-startTime));
-            return  restResult;
+             return  restResult;
         }else{
             return RestResult.error(null);
         }
@@ -207,15 +207,69 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             if(logger.isInfoEnabled()){
                 logger.info("{调用基础信息耗时}"+(System.currentTimeMillis()-startTime));
             }
-            RestResult restResult = JSONObject.parseObject(response.getBody(), RestResult.class);
-            com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults results =  modelMapper.map(restResult.getResults(),
-                    com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults.class);
-            List<ProductView> list = modelMapper.map(results.getList(),List.class);
+            // 待优化区间 start 耗时严重  取消序列化工具提高性能
+
+            JSONObject restResultJson = JSONObject.parseObject(response.getBody());
+
+            JSONObject pageResults = (JSONObject) restResultJson.get("results");
+            Page pagination = modelMapper.map(pageResults.get("pagination"), Page.class);
+//            Object other = modelMapper.map(pageResults.get("other"), Object.class);
+            JSONArray list1 = pageResults.getJSONArray("list");
             logger.info("{基础信息转换耗时1}"+(System.currentTimeMillis()-startTime));
 
-            // 转换为前端所需【产品ID,名称图片，展示价】【SKUID,名称图片】
-            RestResult<PageResults<List<ProductAndSkuVo>>> pageResultsRestResult = changeBaseServiceDtoToVo(results, list);
+            List<ProductView> listBySelf = new ArrayList<>();
+            for(int i=0; i<list1.size(); i++){
+                // 产品信息
+                ProductView pDTO = new ProductView();
+                JSONObject productView = (JSONObject)list1.get(i);
+
+                String productId = productView.getString("productId");
+                String productName = productView.getString("productName");
+                String productUrl = productView.getString("productUrl");
+                // 产品营销信息
+                JSONObject productMarketingJson = (JSONObject) productView.get("productMarketing");
+                ProductMarketingSearchView productMarketing = null;
+                if(productMarketingJson != null){
+                    productMarketing = new ProductMarketingSearchView();
+                // 设置营销信息属性:展示价
+                    productMarketing.setViewPrice(productMarketingJson.getBigDecimal("viewPrice"));
+
+                }
+
+                // 产品营销信息-sku信息
+                if(productMarketing !=null){
+                    List<ProductMarketingSkuSingleView> skuInfos = new ArrayList<>();
+                    JSONArray productMarketingSkusJson = productMarketingJson.getJSONArray("productMarketingSkus");
+
+                    // sku信息：skuid,name,url
+                    for(int j=0;j<productMarketingSkusJson.size();j++){
+                        ProductMarketingSkuSingleView sku = new ProductMarketingSkuSingleView();
+                        JSONObject skuJson = productMarketingSkusJson.getJSONObject(j);
+                        Long skuId = skuJson.getLong("id");
+                        String skuName = skuJson.getString("sku");
+                        String skuUrl = skuJson.getString("pic");
+                        sku.setId(skuId);
+                        sku.setSku(skuName);
+                        sku.setPic(skuUrl);
+                        skuInfos.add(sku);
+
+                    }
+
+                    productMarketing.setProductMarketingSkus(skuInfos);
+                }
+
+                pDTO.setProductId(productId);
+                pDTO.setProductName(productName);
+                pDTO.setProductUrl(productUrl);
+                pDTO.setProductMarketing(productMarketing);
+                listBySelf.add(pDTO);
+            }
+
+            // 待优化区间 end
             logger.info("{基础信息转换耗时2}"+(System.currentTimeMillis()-startTime));
+
+            // 转换为前端所需【产品ID,名称图片，展示价】【SKUID,名称图片】
+            RestResult<PageResults<List<ProductAndSkuVo>>> pageResultsRestResult = changeBaseServiceDtoToVo(null, listBySelf,pagination,null);
 
             return pageResultsRestResult;
         }else{
@@ -238,7 +292,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
      * @param list
      * @return
      */
-    private RestResult<AbstractPageService.PageResults<List<ProductAndSkuVo>> > changeUnSaleBaseServiceDtoToVo(UnSaleProductPageResults results, List<NonSelfSellingProductMarketingSearchView> list) {
+    private RestResult<AbstractPageService.PageResults<List<ProductAndSkuVo>>> changeUnSaleBaseServiceDtoToVo(UnSaleProductPageResults results, List<NonSelfSellingProductMarketingSearchView> list) {
         // 前端网页产品VO集合
         List<ProductAndSkuVo> listVO = new ArrayList<ProductAndSkuVo>();
         // 数据转换
@@ -290,7 +344,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
      * @param list
      * @return
      */
-    private RestResult<AbstractPageService.PageResults<List<ProductAndSkuVo>>> changeBaseServiceDtoToVo(com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults results, List<ProductView> list) {
+    private RestResult<AbstractPageService.PageResults<List<ProductAndSkuVo>>> changeBaseServiceDtoToVo(com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults results, List<ProductView> list, Page page ,Object other) {
         // 产品集合
         long startTime = System.currentTimeMillis();
         List<ProductAndSkuVo> listVO = new ArrayList<ProductAndSkuVo>();
@@ -352,9 +406,8 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         logger.info("{基础信息具体转换耗时1}"+(System.currentTimeMillis()-startTime));
 
         // 转换完成
-        Page page = modelMapper.map(results.getPagination(),Page.class);
         AbstractPageService.PageResults<List<ProductAndSkuVo>> pageVO = new AbstractPageService.PageResults( listVO,page);
-        pageVO.setOther(results.getOther());
+        pageVO.setOther(other);
         logger.info("{基础信息具体转换耗时2}"+(System.currentTimeMillis()-startTime));
 
         return  RestResult.success("",pageVO);
