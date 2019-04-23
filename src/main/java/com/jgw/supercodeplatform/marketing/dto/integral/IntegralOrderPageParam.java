@@ -58,6 +58,11 @@ public class IntegralOrderPageParam {
     @ApiModelProperty(value = "物流状态0待发货1已发货")
     private Byte status;
 
+    @ApiModelProperty(value = "excel使用物流状态0待发货1已发货",hidden = true)
+    private String statusName;
+
+
+
     /** 会员id */
     @ApiModelProperty(value = "会员id")
     private Long memberId;
@@ -69,6 +74,10 @@ public class IntegralOrderPageParam {
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间")
     private Date createDate;
+
+    /** excel 日期格式携带时区信息问题*/
+    @ApiModelProperty(value = "创建时间str",hidden = true)
+    private String createDateStr;
 
     /** 发货时间 */
     @ApiModelProperty(value = "发货时间")
@@ -93,6 +102,13 @@ public class IntegralOrderPageParam {
     @ApiModelProperty(value = "产品图片")
     private String productPic;
 
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
 
     public String getShowPriceStr() {
         return showPriceStr;
@@ -108,6 +124,14 @@ public class IntegralOrderPageParam {
 
     public void setProductPic(String productPic) {
         this.productPic = productPic;
+    }
+
+    public String getCreateDateStr() {
+        return createDateStr;
+    }
+
+    public void setCreateDateStr(String createDateStr) {
+        this.createDateStr = createDateStr;
     }
 
     public Long getId() {

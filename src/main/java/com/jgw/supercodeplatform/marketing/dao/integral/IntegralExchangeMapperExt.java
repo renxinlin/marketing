@@ -149,8 +149,8 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
             " #{item.organizationName}, " +
             " #{item.productId}, " +
             " #{item.productName}, " +
-            " #{item.skuName}, " +
             " #{item.skuId}, " +
+            " #{item.skuName}, " +
             " #{item.skuUrl}, " +
             " #{item.skuStatus}, " +
             " #{item.productPic}, " +

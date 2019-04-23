@@ -71,6 +71,32 @@ public class DeliveryAddress {
     /** 是否默认0是，1不是 */
     private Byte defaultUsing;
 
+
+
+    @ApiModelProperty(value = "前端省市区字段")
+    private String pcccode;
+
+
+    @ApiModelProperty(value = "前端详情地址信息")
+    private String detailAll;
+
+
+    public String getDetailAll() {
+        return detailAll;
+    }
+
+    public void setDetailAll(String detailAll) {
+        this.detailAll = detailAll;
+    }
+
+    public String getPcccode() {
+        return pcccode;
+    }
+
+    public void setPcccode(String pcccode) {
+        this.pcccode = pcccode;
+    }
+
     public Byte getDefaultUsing() {
         return defaultUsing;
     }
