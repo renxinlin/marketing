@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -26,12 +27,19 @@ import java.util.List;
 @Service
 public class DeliveryAddressService {
     private Logger logger = LoggerFactory.getLogger(DeliveryAddressService.class);
+    /**
+     * 前端组件传递时携带的areaCode key
+     */
+    private static final String areaCode="areaCode";
+    /**
+     * 前端组件传递时携带的areaName key
+     */
+    private static final String areaName="areaName";
+
+
     @Autowired
     private DeliveryAddressMapperExt mapper;
 
-
-    @Autowired
-    private AdminstrativeCodeMapper adminstrativeCodeMapper;
     /**
      * 查询用户5个地址
      * @return
@@ -112,7 +120,7 @@ public class DeliveryAddressService {
             }
 
         }
-        int i =  mapper.updateByPrimaryKeySelective(deliveryAddress);
+        int i =  mapper.updateByPrimaryKeySelective(changeDtoToDo(deliveryAddress));
         if(i != 1){
             throw new SuperCodeException("未成功更新收货地址");
         }
@@ -155,30 +163,45 @@ public class DeliveryAddressService {
         deliveryAddress.setDefaultUsing((byte)1);
 
         // 补充省市区名称
-        List areaCodes = new ArrayList();
-        areaCodes.add(deliveryAddress.getProvinceCode());
-        areaCodes.add(deliveryAddress.getCityCode());
-        areaCodes.add(deliveryAddress.getCountryCode());
-        areaCodes.add(deliveryAddress.getStreetCode());
-        List<MarketingAdministrativeCode> codesNames = adminstrativeCodeMapper.getCodesName(areaCodes);
-        if(CollectionUtils.isEmpty(codesNames) || codesNames.size() != 4){
-            logger.error("查询行政编码异常:"+ JSONObject.toJSONString( deliveryAddress) +"结果" + JSONObject.toJSONString(codesNames));
-            throw new SuperCodeException("系统行政信息异常");
-        }
-        for (MarketingAdministrativeCode codesName: codesNames){
-            if(deliveryAddress.getProvinceCode().equals(codesName.getAreaCode())){
-                deliveryAddress.setProvince(codesName.getCityName());
-            }
-            if(deliveryAddress.getCityCode().equals(codesName.getAreaCode())){
-                deliveryAddress.setCity(codesName.getCityName());
-            }
-            if(deliveryAddress.getCountryCode().equals(codesName.getAreaCode())){
-                deliveryAddress.setCountryCode(codesName.getCityName());
-            }
-            if(deliveryAddress.getStreetCode().equals(codesName.getAreaCode())){
-                deliveryAddress.setStreet(codesName.getCityName());
-            }
-        }
+        String pcccode = deliveryAddress.getPcccode();
+        List<JSONObject> objects = JSONObject.parseArray(pcccode,JSONObject.class);
+        JSONObject province = objects.get(0);
+        JSONObject city = objects.get(1);
+        JSONObject country = objects.get(2);
+        // 省市区编码
+        deliveryAddress.setProvinceCode(province.getString(areaCode));
+        deliveryAddress.setCityCode(city.getString(areaCode));
+        deliveryAddress.setCountryCode(country.getString(areaCode));
+        // 省市区
+        deliveryAddress.setProvince(province.getString(areaName));
+        deliveryAddress.setCity(city.getString(areaName));
+        deliveryAddress.setCountry(country.getString(areaName));
+
+        // 目前街道没有编码，系统不支持4级编码信息
+
+//        areaCodes.add(deliveryAddress.getProvinceCode());
+//        areaCodes.add(deliveryAddress.getCityCode());
+//        areaCodes.add(deliveryAddress.getCountryCode());
+//        areaCodes.add(deliveryAddress.getStreetCode());
+//        List<MarketingAdministrativeCode> codesNames = adminstrativeCodeMapper.getCodesName(areaCodes);
+//        if(CollectionUtils.isEmpty(codesNames) || codesNames.size() != 4){
+//            logger.error("查询行政编码异常:"+ JSONObject.toJSONString( deliveryAddress) +"结果" + JSONObject.toJSONString(codesNames));
+//            throw new SuperCodeException("系统行政信息异常");
+//        }
+//        for (MarketingAdministrativeCode codesName: codesNames){
+//            if(deliveryAddress.getProvinceCode().equals(codesName.getAreaCode())){
+//                deliveryAddress.setProvince(codesName.getCityName());
+//            }
+//            if(deliveryAddress.getCityCode().equals(codesName.getAreaCode())){
+//                deliveryAddress.setCity(codesName.getCityName());
+//            }
+//            if(deliveryAddress.getCountryCode().equals(codesName.getAreaCode())){
+//                deliveryAddress.setCountryCode(codesName.getCityName());
+//            }
+//            if(deliveryAddress.getStreetCode().equals(codesName.getAreaCode())){
+//                deliveryAddress.setStreet(codesName.getCityName());
+//            }
+//        }
         return deliveryAddress;
     }
 
@@ -211,23 +234,27 @@ public class DeliveryAddressService {
             throw new SuperCodeException("获取会员信息失败");
         }
 
-        if(StringUtils.isBlank(deliveryAddress.getProvinceCode())){
-            throw new SuperCodeException("获取省编码失败");
+//        if(StringUtils.isBlank(deliveryAddress.getProvinceCode())){
+//            throw new SuperCodeException("获取省编码失败");
+//        }
+//
+//
+//        if(StringUtils.isBlank(deliveryAddress.getCityCode())){
+//            throw new SuperCodeException("获取市编码失败");
+//        }
+//
+//
+//        if(StringUtils.isBlank(deliveryAddress.getCountryCode())){
+//            throw new SuperCodeException("获取区县编码失败");
+//        }
+//
+//
+        if(StringUtils.isBlank(deliveryAddress.getStreet())){
+            throw new SuperCodeException("获取街道失败");
         }
 
-
-        if(StringUtils.isBlank(deliveryAddress.getCityCode())){
-            throw new SuperCodeException("获取市编码失败");
-        }
-
-
-        if(StringUtils.isBlank(deliveryAddress.getCountryCode())){
-            throw new SuperCodeException("获取区县编码失败");
-        }
-
-
-        if(StringUtils.isBlank(deliveryAddress.getStreetCode())){
-            throw new SuperCodeException("获取街道编码失败");
+        if(StringUtils.isBlank(deliveryAddress.getPcccode())){
+            throw new SuperCodeException("获取省市区信息失败");
         }
 
         if(StringUtils.isBlank(deliveryAddress.getDetail())){

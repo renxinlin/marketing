@@ -131,9 +131,11 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         if(StringUtils.isBlank(organizationId)){
             throw new SuperCodeException("获取组织ID信息失败");
         }
-
+        long startTime = System.currentTimeMillis();
         // 获取组织已经添加的自卖产品集合
         Set<IntegralExchange> excludeProducts = integralExchangeMapper.selectSalePruduct(organizationId);
+        logger.info("{自卖产品耗时1}"+(System.currentTimeMillis()-startTime));
+
         // 选择的产品Id
         Set<String> excludeProductIds = new HashSet<>();
         // 选择的产品skuId
@@ -163,14 +165,19 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 excludeSkuIds.remove(integralExchange.getSkuId());
             }
         }
+        logger.info("{自卖产品耗时2}"+(System.currentTimeMillis()-startTime));
+
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
         // 已存在兑换产品由基础信息过滤
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
         queryCondition.setExcludeSkuIds(new ArrayList(excludeSkuIds));
         // 查询自卖
+        logger.info("{自卖产品耗时3}"+(System.currentTimeMillis()-startTime));
+
         RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > restResult = getProductFromBaseService(queryCondition,true);
         if(restResult.getState() == 200){
+            logger.info("{自卖产品耗时4}"+(System.currentTimeMillis()-startTime));
             return  restResult;
         }else{
             return RestResult.error(null);

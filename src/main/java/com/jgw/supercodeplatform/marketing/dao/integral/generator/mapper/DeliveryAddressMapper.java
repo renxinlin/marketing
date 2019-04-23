@@ -45,7 +45,7 @@ public interface DeliveryAddressMapper {
     @Select({
         "select",
         "Id, MemberId, MemberName, Name, Mobile, Province, City, Country, Street, ProvinceCode, ",
-        "CityCode, CountryCode, StreetCode, Detail, Postcode, DefaultUsing",
+        "CityCode, CountryCode, StreetCode, Detail, Postcode, DefaultUsing, CONCAT(Province,City,Country,Street,Detail) detailAll ",
         "from marketing_delivery_address",
         "where Id = #{id,jdbcType=BIGINT}"
     })
@@ -65,7 +65,8 @@ public interface DeliveryAddressMapper {
         @Result(column="StreetCode", property="streetCode", jdbcType=JdbcType.VARCHAR),
         @Result(column="Detail", property="detail", jdbcType=JdbcType.VARCHAR),
         @Result(column="Postcode", property="postcode", jdbcType=JdbcType.VARCHAR),
-        @Result(column="DefaultUsing", property="defaultUsing", jdbcType=JdbcType.TINYINT)
+        @Result(column="DefaultUsing", property="defaultUsing", jdbcType=JdbcType.TINYINT),
+        @Result(column="detailAll", property="detailAll", jdbcType=JdbcType.VARCHAR)
     })
     DeliveryAddress selectByPrimaryKey(Long id);
 
