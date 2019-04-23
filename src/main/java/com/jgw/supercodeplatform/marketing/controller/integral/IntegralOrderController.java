@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
+import com.jgw.supercodeplatform.marketing.service.integral.IntegralOrderExcelService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -32,8 +33,10 @@ import java.util.Map;
 public class IntegralOrderController extends CommonUtil {
     @Autowired
     private IntegralOrderService integralOrderService;
+    @Autowired
+    private IntegralOrderExcelService  integralOrderExcelService;
 
-    @Value("{\"orderId\":\"订单号\",\"productName\":\"产品\",\"skuName\":\"sku\", \"exchangeNum\":\"兑换数量\",\"exchangeIntegralNum\":\"兑换积分\",\"name\":\"收货姓名\", \"mobile\":\"收货手机\",\"address\":\"收货地址\",\"createDate\":\"兑换时间\",\"status\":\"状态\"}")
+    @Value("{\"orderId\":\"订单号\",\"productName\":\"产品\",\"skuName\":\"sku\", \"exchangeNum\":\"兑换数量\",\"exchangeIntegralNum\":\"兑换积分\",\"name\":\"收货姓名\", \"mobile\":\"收货手机\",\"address\":\"收货地址\",\"createDateStr\":\"兑换时间\",\"status\":\"状态\"}")
     private String MARKET_Integral_EXCEL_FIELD_MAP;
 
     @Autowired
@@ -71,7 +74,7 @@ public class IntegralOrderController extends CommonUtil {
         searchParams.setStartNumber(1);
         searchParams.setPageSize(Integer.MAX_VALUE);
         // step-2: 获取结果
-        AbstractPageService.PageResults<List<IntegralOrderPageParam>> pageResults = integralOrderService.listSearchViewLike(searchParams);
+        AbstractPageService.PageResults<List<IntegralOrderPageParam>> pageResults = integralOrderExcelService.listSearchViewLike(searchParams);
         List<IntegralOrderPageParam> list = pageResults.getList();
         // step-3:处理excel字段映射 转换excel {filedMap:[ {key:英文} ,  {value:中文} ]} 有序
         Map filedMap = null;

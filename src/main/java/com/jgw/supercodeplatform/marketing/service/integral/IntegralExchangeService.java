@@ -673,7 +673,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         }
 
 
-        // 默认上架
+        // 默认上架:应前端要求将0改成3
         integralExchange.setStatus((byte)3);
         if(integralExchange.getPayWay() == null || integralExchange.getPayWay() != 0){
             integralExchange.setPayWay((byte)0);
@@ -692,13 +692,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             // 负数;则不进行预警
             integralExchange.setStockWarningNum(-1);
         }
-        if(integralExchange.getStockWarningNum() <= 0 ){
-//            throw new SuperCodeException("库存预警为正整数且大于0");
-        }
-
-
         if(CollectionUtils.isEmpty(integralExchange.getProducts())){
-
             throw new SuperCodeException("兑换产品信息不存在");
         }else{
             // start 产品抽离到基础信息，直接网页传递所有基础信息数据

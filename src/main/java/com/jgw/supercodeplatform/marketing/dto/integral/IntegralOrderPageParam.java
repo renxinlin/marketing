@@ -70,6 +70,10 @@ public class IntegralOrderPageParam {
     @ApiModelProperty(value = "创建时间")
     private Date createDate;
 
+    /** excel 日期格式携带时区信息问题*/
+    @ApiModelProperty(value = "创建时间str",hidden = true)
+    private String createDateStr;
+
     /** 发货时间 */
     @ApiModelProperty(value = "发货时间")
     private Date deliveryDate;
@@ -108,6 +112,14 @@ public class IntegralOrderPageParam {
 
     public void setProductPic(String productPic) {
         this.productPic = productPic;
+    }
+
+    public String getCreateDateStr() {
+        return createDateStr;
+    }
+
+    public void setCreateDateStr(String createDateStr) {
+        this.createDateStr = createDateStr;
     }
 
     public Long getId() {

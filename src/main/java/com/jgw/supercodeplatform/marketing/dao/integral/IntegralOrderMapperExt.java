@@ -19,6 +19,18 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
             " ExchangeNum exchangeNum, Name name, Mobile mobile, Address address, Status status, MemberId memberId, MemberName memberName, " +
             " CreateDate createDate, DeliveryDate deliveryDate, OrganizationId organizationId, OrganizationName organizationName ," +
             " SkuId skuId, ShowPrice showPrice, ShowPrice showPriceStr, ProductPic productPic";
+
+    static String excelFileds=" Id id, OrderId orderId, ExchangeResource exchangeResource, " +
+            " ProductId productId, ProductName productName,  " +
+            " SkuName skuName, SkuUrl skuUrl, ExchangeIntegralNum exchangeIntegralNum, " +
+            " ExchangeNum exchangeNum, Name name, Mobile mobile, Address address, " +
+            // 获取状态位增加改为case wher
+            " if (Status=0, '待发货','已发货' ) as status, " +
+            " MemberId memberId, MemberName memberName, " +
+            // 处理日期问题
+            " date_format(CreateDate, '%Y-%m-%d %H:%i:%S') createDateStr, CreateDate createDate, " +
+            "DeliveryDate deliveryDate, OrganizationId organizationId, OrganizationName organizationName ," +
+            " SkuId skuId, ShowPrice showPrice, ShowPrice showPriceStr, ProductPic productPic";
     static String whereSearch =
             "<where>" +
                     "<choose>" +
@@ -63,4 +75,12 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
             + endScript)
     List<IntegralOrderPageParam> list(IntegralOrder searchParams);
+
+    @Select(startScript
+            + " select " +excelFileds + " from  marketing_order ir "
+            + whereSearch
+            + " ORDER BY CreateDate DESC"
+            + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
+            + endScript)
+    List<IntegralOrderPageParam>  listWithExcel(IntegralOrder searchParams);
 }
