@@ -51,8 +51,7 @@ public class MemberExchangeController {
 
     @RequestMapping(value = "detailSkuByMember",method = RequestMethod.GET)
     @ApiOperation(value = "兑换详情SKU+地址信息|【h5会员】", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token"),
-            @ApiImplicitParam(paramType="query",value = "兑换对象id",name="id")})
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<IntegralExchangeSkuDetailAndAddress> detailSkuByMember(@RequestParam("productId") String productId, @ApiIgnore H5LoginVO jwtUser) throws Exception {
         return RestResult.success("success",integralExchangeService.detailSkuByMember(productId,jwtUser.getMemberId()));
     }
