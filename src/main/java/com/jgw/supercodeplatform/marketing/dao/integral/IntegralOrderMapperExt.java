@@ -44,7 +44,9 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
                     "</if>" +
                     "</otherwise>" +
                     "</choose>" +
+                    // 组织订单
                     " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
+                    // H5订单
                     " <if test=' memberId !=null '> and MemberId = #{memberId} </if>"+
                     "</where>";
 

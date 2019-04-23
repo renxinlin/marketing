@@ -33,7 +33,7 @@ public class IntegralOrderController extends CommonUtil {
     @Autowired
     private IntegralOrderService integralOrderService;
 
-    @Value("{\"orderId\":\"订单号\",\"userName\":\"会员姓名\",\"wxName\":\"会员微信昵称\", \"openId\":\"会员微信ID\",\"mobile\":\"会员手机\",\"prizeTypeName\":\"中奖奖次\", \"winningAmount\":\"中奖金额\",\"winningCode\":\"中奖码\",\"productName\":\"中奖产品\",\"customerName\":\"活动门店\"}")
+    @Value("{\"orderId\":\"订单号\",\"productName\":\"产品\",\"skuName\":\"sku\", \"exchangeNum\":\"兑换数量\",\"exchangeIntegralNum\":\"兑换积分\",\"name\":\"收货姓名\", \"mobile\":\"收货手机\",\"address\":\"收货地址\",\"createDate\":\"兑换时间\",\"status\":\"状态\"}")
     private String MARKET_Integral_EXCEL_FIELD_MAP;
 
     @Autowired
@@ -63,7 +63,7 @@ public class IntegralOrderController extends CommonUtil {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(paramType = "header", value = "新平台token--开发联调使用", name = "super-token")
     })
-    public void excelWithOrganization() throws SuperCodeException, UnsupportedEncodingException, Exception {
+    public void excelWithOrganization() throws Exception {
         //        // step-1: 参数设置
         IntegralOrder searchParams = new IntegralOrder();
         String organizationId = getOrganizationId();
@@ -71,8 +71,8 @@ public class IntegralOrderController extends CommonUtil {
         searchParams.setStartNumber(1);
         searchParams.setPageSize(Integer.MAX_VALUE);
         // step-2: 获取结果
-        AbstractPageService.PageResults<List<IntegralOrder>> pageResults = integralOrderService.listSearchViewLike(searchParams);
-        List<IntegralOrder> list = pageResults.getList();
+        AbstractPageService.PageResults<List<IntegralOrderPageParam>> pageResults = integralOrderService.listSearchViewLike(searchParams);
+        List<IntegralOrderPageParam> list = pageResults.getList();
         // step-3:处理excel字段映射 转换excel {filedMap:[ {key:英文} ,  {value:中文} ]} 有序
         Map filedMap = null;
         try {
