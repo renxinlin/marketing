@@ -134,7 +134,6 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         long startTime = System.currentTimeMillis();
         // 获取组织已经添加的自卖产品集合
         Set<IntegralExchange> excludeProducts = integralExchangeMapper.selectSalePruduct(organizationId);
-        logger.info("{自卖产品耗时1}"+(System.currentTimeMillis()-startTime));
 
         // 选择的产品Id
         Set<String> excludeProductIds = new HashSet<>();
@@ -165,7 +164,6 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 excludeSkuIds.remove(integralExchange.getSkuId());
             }
         }
-        logger.info("{自卖产品耗时2}"+(System.currentTimeMillis()-startTime));
 
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
@@ -173,7 +171,6 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
         queryCondition.setExcludeSkuIds(new ArrayList(excludeSkuIds));
         // 查询自卖
-        logger.info("{自卖产品耗时3}"+(System.currentTimeMillis()-startTime));
 
         RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > restResult = getProductFromBaseService(queryCondition,true);
         if(restResult.getState() == 200){
@@ -214,8 +211,12 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults results =  modelMapper.map(restResult.getResults(),
                     com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults.class);
             List<ProductView> list = modelMapper.map(results.getList(),List.class);
+            logger.info("{基础信息转换耗时1}"+(System.currentTimeMillis()-startTime));
+
             // 转换为前端所需【产品ID,名称图片，展示价】【SKUID,名称图片】
             RestResult<PageResults<List<ProductAndSkuVo>>> pageResultsRestResult = changeBaseServiceDtoToVo(results, list);
+            logger.info("{基础信息转换耗时2}"+(System.currentTimeMillis()-startTime));
+
             return pageResultsRestResult;
         }else{
             // 非自卖产品
@@ -291,7 +292,9 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
      */
     private RestResult<AbstractPageService.PageResults<List<ProductAndSkuVo>>> changeBaseServiceDtoToVo(com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.PageResults results, List<ProductView> list) {
         // 产品集合
+        long startTime = System.currentTimeMillis();
         List<ProductAndSkuVo> listVO = new ArrayList<ProductAndSkuVo>();
+
         for(ProductView baseserviceProductDto :list){
             ProductAndSkuVo towebProductVo = new ProductAndSkuVo();
             ProductMarketingSearchView productMarketing = baseserviceProductDto.getProductMarketing();
@@ -346,10 +349,14 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
 
             listVO.add(towebProductVo);
         }
+        logger.info("{基础信息具体转换耗时1}"+(System.currentTimeMillis()-startTime));
+
         // 转换完成
         Page page = modelMapper.map(results.getPagination(),Page.class);
         AbstractPageService.PageResults<List<ProductAndSkuVo>> pageVO = new AbstractPageService.PageResults( listVO,page);
         pageVO.setOther(results.getOther());
+        logger.info("{基础信息具体转换耗时2}"+(System.currentTimeMillis()-startTime));
+
         return  RestResult.success("",pageVO);
     }
 
