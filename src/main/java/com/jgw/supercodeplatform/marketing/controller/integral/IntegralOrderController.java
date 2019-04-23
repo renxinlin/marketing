@@ -64,7 +64,8 @@ public class IntegralOrderController extends CommonUtil {
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     @ApiOperation(value = "导出订单记录", notes = "")
     @ApiImplicitParams(value = {
-            @ApiImplicitParam(paramType = "header", value = "新平台token--开发联调使用", name = "super-token")
+            @ApiImplicitParam(paramType = "header", value = "新平台token--开发联调使用", name = "super-token"),
+            @ApiImplicitParam(paramType = "query", value = "查询参数", name = "search")
     })
     public void excelWithOrganization(@RequestParam("search") String search) throws Exception {
         //        // step-1: 参数设置
