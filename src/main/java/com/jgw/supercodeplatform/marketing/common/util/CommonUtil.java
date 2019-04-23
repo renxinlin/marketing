@@ -1,19 +1,5 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.common.pojo.common.ReturnParamsMap;
@@ -22,6 +8,13 @@ import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.common.properties.NormalProperties;
 import com.jgw.supercodeplatform.user.UserInfoUtil;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 基础工具类

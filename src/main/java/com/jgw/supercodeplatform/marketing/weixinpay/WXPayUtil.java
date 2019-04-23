@@ -1,15 +1,10 @@
 package com.jgw.supercodeplatform.marketing.weixinpay;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.security.MessageDigest;
-import java.security.SecureRandom;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -19,13 +14,12 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
-import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.*;
 
 
 public class WXPayUtil {

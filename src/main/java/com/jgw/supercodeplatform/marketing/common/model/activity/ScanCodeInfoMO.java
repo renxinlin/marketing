@@ -1,8 +1,8 @@
 package com.jgw.supercodeplatform.marketing.common.model.activity;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import java.io.Serializable;
 
 public class ScanCodeInfoMO implements Serializable{
 	private static final long serialVersionUID = 1L;

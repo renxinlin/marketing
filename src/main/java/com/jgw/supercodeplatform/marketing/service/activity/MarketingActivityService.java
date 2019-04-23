@@ -1,16 +1,15 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
-import java.util.List;
-
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MarketingActivityService extends AbstractPageService<MarketingActivityListParam>{

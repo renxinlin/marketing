@@ -1,9 +1,19 @@
 package com.jgw.supercodeplatform.marketing.controller.wechat;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
+import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,20 +23,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
-import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
-import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
-import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
-import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-
-import io.swagger.annotations.Api;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 /**
  * 微信授权等
  * @author czm

@@ -1,12 +1,11 @@
 package com.jgw.supercodeplatform.marketing.common.page;
 
-import java.util.Map;
-
 import com.jgw.supercodeplatform.marketing.common.util.BeanPropertyUtil;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.Map;
 
 /**
  * 功能描述：分页查询的抽象类

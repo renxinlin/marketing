@@ -1,9 +1,9 @@
 package com.jgw.supercodeplatform.marketing.weixinpay;
 
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
 
 public class WXPay {
 

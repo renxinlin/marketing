@@ -4,7 +4,8 @@ import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 

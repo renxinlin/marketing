@@ -2,7 +2,6 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingPrizeTypeService;
 import io.swagger.annotations.Api;

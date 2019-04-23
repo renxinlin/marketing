@@ -1,12 +1,11 @@
 package com.jgw.supercodeplatform.marketing.common.page;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 功能描述：

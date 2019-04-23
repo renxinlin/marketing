@@ -1,13 +1,13 @@
 package com.jgw.supercodeplatform.marketing.weixinpay;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class WXPayMarketingConfig extends WXPayConfig{
 	protected static Logger logger = LoggerFactory.getLogger(WXPayMarketingConfig.class);

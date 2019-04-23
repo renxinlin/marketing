@@ -1,14 +1,13 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
-import java.util.List;
-
+import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
+import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
-import com.jgw.supercodeplatform.marketing.dao.CommonSql;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
+import java.util.List;
 
 @Mapper
 public interface MarketingActivityMapper extends CommonSql{

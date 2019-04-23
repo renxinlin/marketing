@@ -1,12 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 

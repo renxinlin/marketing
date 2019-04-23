@@ -3,8 +3,6 @@ package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;

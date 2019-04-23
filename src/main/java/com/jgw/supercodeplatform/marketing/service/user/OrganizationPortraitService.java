@@ -1,21 +1,23 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
-import java.util.*;
-
-import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingOrganizationPortraitParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
+import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class OrganizationPortraitService extends CommonUtil {

@@ -1,15 +1,14 @@
 package com.jgw.supercodeplatform.marketing.mq.sender;
 
 
-import java.util.List;
-import java.util.Map;
-
+import com.jgw.supercodeplatform.marketing.constants.RabbitMqQueueName;
 import org.apache.log4j.Logger;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.jgw.supercodeplatform.marketing.constants.RabbitMqQueueName;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class RabbitMqSender {

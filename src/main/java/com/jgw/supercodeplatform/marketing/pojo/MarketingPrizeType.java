@@ -1,8 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-
 import io.swagger.annotations.ApiModelProperty;
+import org.apache.commons.lang.builder.EqualsBuilder;
 
 /**
  * 活动中奖奖次设置实体

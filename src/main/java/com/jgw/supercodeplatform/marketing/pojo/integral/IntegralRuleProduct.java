@@ -1,9 +1,9 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
-import javax.validation.constraints.NotNull;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import javax.validation.constraints.NotNull;
 @ApiModel(value = "积分通用规则产品")
 public class IntegralRuleProduct {
 	 /** 主键 */

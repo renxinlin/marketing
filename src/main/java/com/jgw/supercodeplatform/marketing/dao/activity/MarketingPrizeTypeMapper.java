@@ -1,10 +1,9 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
-import java.util.List;
-
+import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import org.apache.ibatis.annotations.*;
 
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+import java.util.List;
 
 @Mapper
 public interface MarketingPrizeTypeMapper {

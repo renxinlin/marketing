@@ -1,20 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -34,6 +19,20 @@ import com.jgw.supercodeplatform.marketing.dto.integral.Product;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @Service
 public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{

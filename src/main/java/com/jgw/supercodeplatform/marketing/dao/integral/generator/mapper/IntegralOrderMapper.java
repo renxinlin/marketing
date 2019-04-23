@@ -2,14 +2,7 @@ package com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper;
 
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.provider.IntegralOrderSqlProvider;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.InsertProvider;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-import org.apache.ibatis.annotations.UpdateProvider;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 
 public interface IntegralOrderMapper {

@@ -1,18 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.weixin;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.asyntask.WXPayAsynTask;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
@@ -23,6 +10,18 @@ import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayMarketingConfig;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
 import com.jgw.supercodeplatform.marketing.weixinpay.requestparam.OrganizationPayRequestParam;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class WXPayService {

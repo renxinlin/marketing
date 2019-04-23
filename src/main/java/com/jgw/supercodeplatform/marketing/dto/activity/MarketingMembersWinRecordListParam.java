@@ -2,7 +2,6 @@ package com.jgw.supercodeplatform.marketing.dto.activity;
 
 
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "中奖纪录列表model")

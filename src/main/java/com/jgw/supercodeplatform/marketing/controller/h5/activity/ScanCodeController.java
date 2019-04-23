@@ -1,9 +1,15 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.ParseException;
-
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,17 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
-import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.ParseException;
 
 @Controller
 @RequestMapping("/marketing/front/scan")

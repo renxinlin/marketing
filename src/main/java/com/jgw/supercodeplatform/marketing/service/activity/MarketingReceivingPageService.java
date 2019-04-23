@@ -1,10 +1,9 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MarketingReceivingPageService {

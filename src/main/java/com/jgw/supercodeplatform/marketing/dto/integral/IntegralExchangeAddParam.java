@@ -1,14 +1,12 @@
 package com.jgw.supercodeplatform.marketing.dto.integral;
 
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 新增的兑换参数

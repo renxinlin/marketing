@@ -1,16 +1,6 @@
 package com.jgw.supercodeplatform.marketing.weixinpay;
 
-import static com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.USER_AGENT;
-
-import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.security.KeyStore;
-import java.security.SecureRandom;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -27,7 +17,15 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import java.io.InputStream;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+
+import static com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.USER_AGENT;
 
 public class WXPayRequest {
     private WXPayConfig config;

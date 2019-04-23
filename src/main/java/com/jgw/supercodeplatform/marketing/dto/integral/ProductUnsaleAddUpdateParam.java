@@ -1,6 +1,5 @@
 package com.jgw.supercodeplatform.marketing.dto.integral;
 
-import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

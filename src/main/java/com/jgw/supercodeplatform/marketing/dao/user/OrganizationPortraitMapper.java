@@ -8,7 +8,6 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * 会员画像类

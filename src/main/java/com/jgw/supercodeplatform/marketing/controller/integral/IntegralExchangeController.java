@@ -1,41 +1,30 @@
 package com.jgw.supercodeplatform.marketing.controller.integral;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.validation.Valid;
-
-import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.vo.ProductAndSkuVo;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeAddParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeWebParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.PromotionParam;
+import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralExchangeService;
 import com.jgw.supercodeplatform.marketing.service.integral.UnsaleProductService;
 import com.jgw.supercodeplatform.pojo.cache.OrganizationCache;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/marketing/exchange")

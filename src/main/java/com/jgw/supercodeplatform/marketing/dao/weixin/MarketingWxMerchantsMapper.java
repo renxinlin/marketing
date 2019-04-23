@@ -1,9 +1,8 @@
 package com.jgw.supercodeplatform.marketing.dao.weixin;
 
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsParam;
-import org.apache.ibatis.annotations.*;
-
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface MarketingWxMerchantsMapper {

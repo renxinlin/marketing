@@ -5,15 +5,13 @@ package com.jgw.supercodeplatform.marketing.common.util;
  *
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class LotteryUtil {
 

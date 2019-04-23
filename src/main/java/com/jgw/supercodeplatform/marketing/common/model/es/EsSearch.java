@@ -1,13 +1,12 @@
 package com.jgw.supercodeplatform.marketing.common.model.es;
 
-import java.util.List;
-import java.util.Map;
-
+import com.jgw.supercodeplatform.marketing.enums.EsIndex;
+import com.jgw.supercodeplatform.marketing.enums.EsType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 
-import com.jgw.supercodeplatform.marketing.enums.EsIndex;
-import com.jgw.supercodeplatform.marketing.enums.EsType;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Created by jgw136 on 2018/04/27.

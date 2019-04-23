@@ -1,24 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -29,31 +10,24 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPageUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWinningPageParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
+import com.jgw.supercodeplatform.marketing.dao.activity.*;
+import com.jgw.supercodeplatform.marketing.dto.activity.*;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class MarketingActivitySetService  {

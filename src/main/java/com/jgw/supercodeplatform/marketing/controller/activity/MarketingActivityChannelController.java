@@ -2,10 +2,8 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityProductService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashSet;
 import java.util.List;
 
 /**

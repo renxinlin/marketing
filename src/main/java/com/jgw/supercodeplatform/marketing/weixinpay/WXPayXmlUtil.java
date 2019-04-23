@@ -1,11 +1,11 @@
 package com.jgw.supercodeplatform.marketing.weixinpay;
 
+import org.w3c.dom.Document;
+
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
 
 /**
  * 2018/7/3

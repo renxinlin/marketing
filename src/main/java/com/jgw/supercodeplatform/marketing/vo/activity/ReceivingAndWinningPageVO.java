@@ -2,7 +2,6 @@ package com.jgw.supercodeplatform.marketing.vo.activity;
 
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

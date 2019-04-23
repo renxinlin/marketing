@@ -1,9 +1,9 @@
 package com.jgw.supercodeplatform.marketing.dto.activity;
 
-import java.util.List;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.util.List;
 
 @ApiModel(value = "整个活动创建model")
 public class MarketingActivityCreateParam {

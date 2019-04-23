@@ -1,16 +1,15 @@
 package com.jgw.supercodeplatform.marketing.asyntask;
 
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 /**
  * 异步发送微信零钱任务
  * @author czm

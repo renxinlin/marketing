@@ -1,10 +1,9 @@
 package com.jgw.supercodeplatform.marketing.dto.integral;
 
-import java.util.List;
+import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotNull;
-
-import io.swagger.annotations.ApiModelProperty;
+import java.util.List;
 
 public class BatchSetProductRuleParam {
     /** 产品价格 */

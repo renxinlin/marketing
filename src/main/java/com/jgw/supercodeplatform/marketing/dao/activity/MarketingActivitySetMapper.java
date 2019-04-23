@@ -1,9 +1,8 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
-import org.apache.ibatis.annotations.*;
-
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface MarketingActivitySetMapper {

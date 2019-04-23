@@ -1,9 +1,9 @@
 package com.jgw.supercodeplatform.marketing.common.model.activity;
 
-import java.util.List;
-
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
+
+import java.util.List;
 
 public class MarketingActivityListMO {
 	private Long id;

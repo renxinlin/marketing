@@ -1,24 +1,21 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
-import java.util.List;
-
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityService;
-
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import java.util.List;
 
 @RestController
 @RequestMapping("/marketing/activity")

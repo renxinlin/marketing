@@ -1,10 +1,10 @@
 package com.jgw.supercodeplatform.marketing.ms;
 
 
-import java.util.Map;
-
 import com.jgw.supercodeplatform.marketing.enums.ms.RabbitBusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.ms.RabbitTopicEnum;
+
+import java.util.Map;
 
 /** 发送消息公共参数实体类
  * @author Created by jgw136 on 2018/01/27.

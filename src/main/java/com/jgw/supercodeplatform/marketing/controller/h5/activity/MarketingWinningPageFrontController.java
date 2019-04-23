@@ -1,12 +1,5 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -15,11 +8,16 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingWinningPageService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.service.user.OrganizationPortraitService;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 中奖页controller

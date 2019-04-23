@@ -1,8 +1,6 @@
 package com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale;
 
 import com.jgw.supercodeplatform.marketing.common.page.Page;
-import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductView;
-import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.NonSelfSellingProductMarketingSearchView;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 

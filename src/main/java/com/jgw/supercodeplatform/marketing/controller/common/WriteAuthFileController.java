@@ -1,15 +1,13 @@
 package com.jgw.supercodeplatform.marketing.controller.common;
 
-import java.io.InputStream;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 
 @Controller
 @Api(tags = "公共接口")

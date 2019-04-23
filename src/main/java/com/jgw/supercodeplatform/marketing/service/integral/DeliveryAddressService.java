@@ -1,15 +1,10 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
 import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt;
-import com.jgw.supercodeplatform.marketing.pojo.admincode.MarketingAdministrativeCode;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
-import net.bytebuddy.implementation.bind.annotation.Super;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

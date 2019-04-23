@@ -1,10 +1,10 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralOrderMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

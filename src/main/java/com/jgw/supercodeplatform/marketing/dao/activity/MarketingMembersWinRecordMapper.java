@@ -1,17 +1,12 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
-import java.util.List;
-
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 @Mapper
 public interface MarketingMembersWinRecordMapper extends CommonSql{

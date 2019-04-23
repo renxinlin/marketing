@@ -1,10 +1,9 @@
 package com.jgw.supercodeplatform.marketing.mq.config;
 
+import com.jgw.supercodeplatform.marketing.constants.RabbitMqQueueName;
 import org.springframework.amqp.core.Queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.jgw.supercodeplatform.marketing.constants.RabbitMqQueueName;
 
 
 /**

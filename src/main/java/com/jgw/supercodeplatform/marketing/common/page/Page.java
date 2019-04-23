@@ -1,11 +1,10 @@
 package com.jgw.supercodeplatform.marketing.common.page;
 
-import java.io.Serializable;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+
+import java.io.Serializable;
 
 /**
  * 分页实体类

@@ -11,12 +11,12 @@ import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.ProductUnsaleMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.UnSaleProductPageResults;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductMarketingSearchView;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductMarketingSkuSingleView;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.sale.ProductView;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.NonSelfSellingProductMarketingSearchView;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.NonSelfSellingProductMarketingSkuSingleView;
+import com.jgw.supercodeplatform.marketing.dto.baseservice.product.unsale.UnSaleProductPageResults;
 import com.jgw.supercodeplatform.marketing.dto.baseservice.vo.ProductAndSkuVo;
 import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageFromBaseServiceParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
@@ -33,9 +33,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
-import springfox.documentation.spring.web.json.Json;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Service

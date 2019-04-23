@@ -4,7 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;
- import java.util.List;
+import java.util.List;
  @ApiModel("自卖产品:产品营销信息")
 public class ProductMarketingSearchView {
     @ApiModelProperty("自增唯一id")

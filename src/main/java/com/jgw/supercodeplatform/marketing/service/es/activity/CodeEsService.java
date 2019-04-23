@@ -1,21 +1,20 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
+import com.jgw.supercodeplatform.marketing.enums.EsIndex;
+import com.jgw.supercodeplatform.marketing.enums.EsType;
+import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
-import com.jgw.supercodeplatform.marketing.enums.EsIndex;
-import com.jgw.supercodeplatform.marketing.enums.EsType;
-import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class CodeEsService extends AbstractEsSearch {

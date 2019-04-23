@@ -1,7 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralOrderMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;

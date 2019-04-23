@@ -1,19 +1,13 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -1,15 +1,14 @@
 package com.jgw.supercodeplatform.marketing.mq.receiver;
 
-import java.util.List;
-import java.util.Map;
-
+import com.jgw.supercodeplatform.marketing.constants.RabbitMqQueueName;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import org.apache.log4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.jgw.supercodeplatform.marketing.constants.RabbitMqQueueName;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import java.util.List;
+import java.util.Map;
 
 /**
  *

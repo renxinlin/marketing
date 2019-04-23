@@ -2,7 +2,6 @@ package com.jgw.supercodeplatform.marketing.dao.integral;
 
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralRuleMapper;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

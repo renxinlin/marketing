@@ -1,22 +1,16 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
-import com.jgw.supercodeplatform.marketing.exception.base.ExcelException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Service
 public class MarketingMembersWinRecordService extends AbstractPageService<MarketingMembersWinRecordListParam> {

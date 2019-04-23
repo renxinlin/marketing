@@ -1,15 +1,18 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingMembersWinRecordService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,20 +20,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingMembersWinRecordService;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/marketing/winRecord")

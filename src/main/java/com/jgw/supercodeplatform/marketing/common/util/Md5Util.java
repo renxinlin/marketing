@@ -4,11 +4,11 @@ package com.jgw.supercodeplatform.marketing.common.util;
  * Created by corbett on 2018/9/17.
  */
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import com.jgw.supercodeplatform.exception.SuperCodeException;
 
 
 /**

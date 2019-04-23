@@ -1,7 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
- import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
- import io.swagger.annotations.ApiModel;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;

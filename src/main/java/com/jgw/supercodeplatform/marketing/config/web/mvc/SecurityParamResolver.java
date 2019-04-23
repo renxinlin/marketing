@@ -1,9 +1,9 @@
 package com.jgw.supercodeplatform.marketing.config.web.mvc;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.exception.UserExpireException;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
@@ -13,10 +13,8 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.exception.UserExpireException;
-import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * mvc参数额外解析：JwtUser.class

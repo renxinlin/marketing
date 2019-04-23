@@ -3,7 +3,6 @@ package com.jgw.supercodeplatform.marketing.dao.admincode;
 
 import com.jgw.supercodeplatform.marketing.pojo.admincode.MarketingAdministrativeCode;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
