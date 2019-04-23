@@ -79,7 +79,7 @@ public class ScanCodeController {
     	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId);
     	if (restResult.getState()==500) {
     		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
-    		 return "redirect:"+h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
+    		 return h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
 		}
 
     	ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
