@@ -1,7 +1,9 @@
 package com.jgw.supercodeplatform.marketing.dto.integral;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -31,6 +33,8 @@ public class IntegralExchangeUpdateParam {
     @ApiModelProperty("自动下架方式0库存为零，1时间范围")
     private Byte undercarriageSetWay;
     @ApiModelProperty("下架时间：精确度：年月日")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date underCarriage;
     @ApiModelProperty("库存预警数量")
     private Integer stockWarningNum;
