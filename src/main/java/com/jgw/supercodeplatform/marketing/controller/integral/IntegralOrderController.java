@@ -66,13 +66,14 @@ public class IntegralOrderController extends CommonUtil {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(paramType = "header", value = "新平台token--开发联调使用", name = "super-token")
     })
-    public void excelWithOrganization(DaoSearchWithOrganizationIdParam integralOrder) throws Exception {
+    public void excelWithOrganization(@RequestParam("search") String search) throws Exception {
         //        // step-1: 参数设置
-        IntegralOrder searchParams = modelMapper.map(integralOrder,IntegralOrder.class);
+        IntegralOrder searchParams =  new  IntegralOrder();
         String organizationId = getOrganizationId();
         searchParams.setOrganizationId(organizationId);
         searchParams.setStartNumber(1);
         searchParams.setPageSize(Integer.MAX_VALUE);
+        searchParams.setSearch(search);
         // step-2: 获取结果
         AbstractPageService.PageResults<List<IntegralOrderPageParam>> pageResults = integralOrderExcelService.listSearchViewLike(searchParams);
         List<IntegralOrderPageParam> list = pageResults.getList();
