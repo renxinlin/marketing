@@ -212,8 +212,6 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             JSONObject pageResults = (JSONObject) restResultJson.get("results");
             Page pagination = modelMapper.map(pageResults.get("pagination"), Page.class);
             JSONArray list1 = pageResults.getJSONArray("list");
-            logger.info("{基础信息转换耗时1}"+(System.currentTimeMillis()-startTime));
-
             List<ProductView> listBySelf = new ArrayList<>();
             for(int i=0; i<list1.size(); i++){
                 // 产品信息
@@ -262,7 +260,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 listBySelf.add(pDTO);
             }
             // 待优化区间 end
-            logger.info("{基础信息转换耗时2}"+(System.currentTimeMillis()-startTime));
+            logger.info("{基础信息转换耗时}"+(System.currentTimeMillis()-startTime));
 
             // 转换为前端所需【产品ID,名称图片，展示价】【SKUID,名称图片】
             RestResult<PageResults<List<ProductAndSkuVo>>> pageResultsRestResult = changeBaseServiceDtoToVo(null, listBySelf,pagination,null);
