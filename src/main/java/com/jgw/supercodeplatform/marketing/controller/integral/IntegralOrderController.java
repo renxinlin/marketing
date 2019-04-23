@@ -67,7 +67,7 @@ public class IntegralOrderController extends CommonUtil {
             @ApiImplicitParam(paramType = "header", value = "新平台token--开发联调使用", name = "super-token"),
             @ApiImplicitParam(paramType = "query", value = "查询参数", name = "search")
     })
-    public void excelWithOrganization(@RequestParam("search") String search) throws Exception {
+    public void excelWithOrganization(String search) throws Exception {
         //        // step-1: 参数设置
         IntegralOrder searchParams =  new  IntegralOrder();
         String organizationId = getOrganizationId();
