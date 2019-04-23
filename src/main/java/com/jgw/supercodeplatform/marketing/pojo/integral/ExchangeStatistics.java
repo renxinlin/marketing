@@ -1,19 +1,14 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
 public class ExchangeStatistics {
-    /**  */
     private Long id;
 
-    /**  */
     private String organizationId;
 
-    /** 组织id */
     private String productId;
 
-    /** 产品id */
     private Long memberId;
 
-    /** 用户id */
     private Integer exchangeNum;
 
     public Long getId() {
