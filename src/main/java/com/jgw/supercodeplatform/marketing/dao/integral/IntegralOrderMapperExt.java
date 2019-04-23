@@ -25,7 +25,7 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
             " SkuName skuName, SkuUrl skuUrl, ExchangeIntegralNum exchangeIntegralNum, " +
             " ExchangeNum exchangeNum, Name name, Mobile mobile, Address address, " +
             // 获取状态位增加改为case wher
-            " if (Status=0, '待发货','已发货' ) as status, " +
+            " if (Status=0, '待发货','已发货' ) as statusName, " +
             " MemberId memberId, MemberName memberName, " +
             // 处理日期问题
             " date_format(CreateDate, '%Y-%m-%d %H:%i:%S') createDateStr, CreateDate createDate, " +

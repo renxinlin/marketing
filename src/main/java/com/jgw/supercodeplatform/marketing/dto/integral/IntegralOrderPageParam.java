@@ -58,6 +58,11 @@ public class IntegralOrderPageParam {
     @ApiModelProperty(value = "物流状态0待发货1已发货")
     private Byte status;
 
+    @ApiModelProperty(value = "excel使用物流状态0待发货1已发货",hidden = true)
+    private String statusName;
+
+
+
     /** 会员id */
     @ApiModelProperty(value = "会员id")
     private Long memberId;
@@ -97,6 +102,13 @@ public class IntegralOrderPageParam {
     @ApiModelProperty(value = "产品图片")
     private String productPic;
 
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
 
     public String getShowPriceStr() {
         return showPriceStr;
