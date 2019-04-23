@@ -36,7 +36,7 @@ public class IntegralOrderController extends CommonUtil {
     @Autowired
     private IntegralOrderExcelService  integralOrderExcelService;
 
-    @Value("{\"orderId\":\"订单号\",\"productName\":\"产品\",\"skuName\":\"sku\", \"exchangeNum\":\"兑换数量\",\"exchangeIntegralNum\":\"兑换积分\",\"name\":\"收货姓名\", \"mobile\":\"收货手机\",\"address\":\"收货地址\",\"createDateStr\":\"兑换时间\",\"status\":\"状态\"}")
+    @Value("{\"orderId\":\"订单号\",\"productName\":\"产品\",\"skuName\":\"sku\", \"exchangeNum\":\"兑换数量\",\"exchangeIntegralNum\":\"兑换积分\",\"name\":\"收货姓名\", \"mobile\":\"收货手机\",\"address\":\"收货地址\",\"createDateStr\":\"兑换时间\",\"statusName\":\"状态\"}")
     private String MARKET_Integral_EXCEL_FIELD_MAP;
 
     @Autowired
