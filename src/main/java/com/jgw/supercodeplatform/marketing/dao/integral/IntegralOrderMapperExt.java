@@ -50,6 +50,7 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
                     " OR ir.Name LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.Mobile LIKE CONCAT('%',#{search},'%') " +
                     " OR ir.Address LIKE CONCAT('%',#{search},'%') " +
+                    " OR ir.CreateDate LIKE binary CONCAT('%',#{search},'%') " +
                     " OR ir.Status LIKE CONCAT('%',#{search},'%') " +
 
                     ")" +
