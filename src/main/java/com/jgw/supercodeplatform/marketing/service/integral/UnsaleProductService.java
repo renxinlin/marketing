@@ -208,12 +208,9 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 logger.info("{调用基础信息耗时}"+(System.currentTimeMillis()-startTime));
             }
             // 待优化区间 start 耗时严重  取消序列化工具提高性能
-
             JSONObject restResultJson = JSONObject.parseObject(response.getBody());
-
             JSONObject pageResults = (JSONObject) restResultJson.get("results");
             Page pagination = modelMapper.map(pageResults.get("pagination"), Page.class);
-//            Object other = modelMapper.map(pageResults.get("other"), Object.class);
             JSONArray list1 = pageResults.getJSONArray("list");
             logger.info("{基础信息转换耗时1}"+(System.currentTimeMillis()-startTime));
 
@@ -264,7 +261,6 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 pDTO.setProductMarketing(productMarketing);
                 listBySelf.add(pDTO);
             }
-
             // 待优化区间 end
             logger.info("{基础信息转换耗时2}"+(System.currentTimeMillis()-startTime));
 
