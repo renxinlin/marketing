@@ -927,4 +927,47 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
     }
 
+
+    /**
+     * 基于前端要求增加地址选择的接口
+     * @param productId
+     * @param addressId
+     * @param memberId
+     * @return
+     * @throws SuperCodeException
+     */
+    public IntegralExchangeSkuDetailAndAddress detailSkuByMemberWithSelect(String productId,Long addressId,Long memberId) throws SuperCodeException{
+        // 初始化返回
+        IntegralExchangeSkuDetailAndAddress result = new IntegralExchangeSkuDetailAndAddress();
+
+        // 查询兑换信息
+        List<IntegralExchange> integralExchanges = mapper.selectH5ByIdFirst(productId);
+        if(CollectionUtils.isEmpty(integralExchanges)){
+            throw new SuperCodeException("产品不存在");
+        }
+
+        if(integralExchanges.get(0).getSkuStatus() == 0){
+            // 无sku,产品不可重复添加，所以数据只有1条| 补充product信息
+            modelMapper.map(integralExchanges.get(0),result);
+        }else{
+            List<SkuInfo> skuInfos = new ArrayList<>();
+            for(IntegralExchange integralExchange : integralExchanges){
+                // 注意此时库存页面和库可以不一致
+                SkuInfo skuInfo = modelMapper.map(integralExchange, SkuInfo.class);
+                skuInfos.add(skuInfo);
+            }
+            // 添加sku信息
+            result.setSkuInfos(skuInfos);
+            result.setProductId(integralExchanges.get(0).getProductId());
+        }
+
+        // 指定地址
+        DeliveryAddress deliveryAddress = deliveryAddressMapper.selectByPrimaryKey(addressId);
+        if(deliveryAddress == null){
+            throw new SuperCodeException("地址信息不存在");
+        }
+        result.setDeliveryAddress(deliveryAddress);
+        return result;
+
+    }
 }
