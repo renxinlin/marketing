@@ -14,6 +14,17 @@ public class SkuInfo {
     @ApiModelProperty(value = "SKU库存|新增兑换时候不用传递")
     private String haveStock;
 
+    /** 兑换积分 */
+    @ApiModelProperty(value = "每个产品兑换积分")
+    private Integer exchangeIntegral;
+
+    public Integer getExchangeIntegral() {
+        return exchangeIntegral;
+    }
+
+    public void setExchangeIntegral(Integer exchangeIntegral) {
+        this.exchangeIntegral = exchangeIntegral;
+    }
 
     public String getSkuId() {
         return skuId;
