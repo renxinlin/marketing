@@ -218,11 +218,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserExpireException.class)
     public RestResult handleMissingUserExpireException(UserExpireException e) {
         // 未登录异常
-        logger.error("会员未登录异常{}"+e.getMessage());
-        RestResult RestResult = new RestResult();
-        RestResult.setState(401);
-        RestResult.setMsg(e.getCause().getLocalizedMessage() == null ? e.getMessage() : e.getCause().getLocalizedMessage());
-        RestResult.setResults(null);
-        return RestResult;
+        logger.error("会员未登录异常{}",e.getMessage());
+        RestResult restResult = new RestResult();
+        restResult.setState(401);
+        restResult.setMsg(e.getMessage());
+        restResult.setResults(null);
+        return restResult;
     }
 }
