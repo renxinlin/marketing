@@ -14,7 +14,7 @@ import java.util.List;
 public interface DeliveryAddressMapperExt extends DeliveryAddressMapper, CommonSql {
     static String allFeilds = " Id id, MemberId memberId, MemberName memberName, Name name, Mobile mobile, Province province, City city, Country country, " +
             " Street street, ProvinceCode provinceCode, CityCode cityCode, CountryCode countryCode, StreetCode streetCode, Detail detail, Postcode postcode, DefaultUsing defaultUsing, " +
-            " CONCAT(Province,City,Country,Street,Detail)  detailAll ";
+            " CONCAT(Province,City,Country,Detail)  detailAll ";
 
 
 

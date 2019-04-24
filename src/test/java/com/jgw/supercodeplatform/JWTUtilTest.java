@@ -113,13 +113,13 @@ public class JWTUtilTest {
 	public static void main(String[] args) throws Exception {
 		JWTUtilTest demo = new JWTUtilTest();
 		//String createToken = demo.createToken();
-		JwtUser j = new JwtUser();
-		j.setMemberId(1L);
-		j.setMobile("13211111111");
-		String createTokenWithClaim = demo.createTokenWithClaim(j);
-		System.out.println(createTokenWithClaim);
-		Thread.sleep(2000);
-		JwtUser jwtUser = demo.verifyToken(createTokenWithClaim);
+//		JwtUser j = new JwtUser();
+//		j.setMemberId(1L);
+//		j.setMobile("13211111111");
+//		String createTokenWithClaim = demo.createTokenWithClaim(j);
+//		System.out.println(createTokenWithClaim);
+//		Thread.sleep(2000);
+		JwtUser jwtUser = demo.verifyToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJINSBTRUNVQ0lUWSIsImF1ZCI6IkFQUCIsImp3dFVzZXIiOiJ7XCJoYXZlSW50ZWdyYWxcIjowLFwibWVtYmVySWRcIjoxMyxcIm1lbWJlck5hbWVcIjpcIlwiLFwibW9iaWxlXCI6XCJcIixcIm9yZ2FuaXphdGlvbk5hbWVcIjpcIlwiLFwicmVnaXN0ZXJlZFwiOjAsXCJ3ZWNoYXRIZWFkSW1nVXJsXCI6XCJcIn0iLCJpc3MiOiJKR1cgQ0pNIENPTVBBTlkiLCJleHAiOjE1NTYxMDE3NTEsImlhdCI6MTU1NjA5NDU1MX0.GmIgFpoYqR-ASflGOr63nZXwVC3AckIvGTVcxg5Ug0s");
 
 		System.out.println(jwtUser);
 	}

@@ -244,7 +244,7 @@ public class DeliveryAddressService {
 //
 //
         if(StringUtils.isBlank(deliveryAddress.getStreet())){
-            throw new SuperCodeException("获取街道失败");
+            deliveryAddress.setStreet("");
         }
 
         if(StringUtils.isBlank(deliveryAddress.getPcccode())){
