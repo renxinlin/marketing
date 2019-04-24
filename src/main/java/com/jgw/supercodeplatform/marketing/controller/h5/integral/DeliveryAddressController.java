@@ -4,6 +4,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dto.integral.DeliveryAddressDetailParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.DeliveryAddressParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
@@ -30,6 +31,9 @@ public class DeliveryAddressController extends CommonUtil {
     private DeliveryAddressService deliveryAddressService;
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private MarketingMembersMapper membersMapper;
 
     @RequestMapping(value = "/getAll",method = RequestMethod.GET)
     @ApiOperation(value = "列表5个地址", notes = "")
@@ -111,6 +115,7 @@ public class DeliveryAddressController extends CommonUtil {
         }
         Long memberId = jwtUser.getMemberId();
         deliveryAddressDto.setMemberId(memberId);
+        deliveryAddressDto.setMemberName(membersMapper.getMemberById(memberId).getUserName());
         int i =  deliveryAddressService.add(deliveryAddressDto);
         return RestResult.success();
     }

@@ -17,9 +17,6 @@ public class DeliveryAddressDetailParam {
     @ApiModelProperty(value = "会员id")
     private Long memberId;
 
-    /** 会员名称 */
-    @ApiModelProperty(value = "会员名称")
-    private String memberName;
 
     /** 收货名称 */
     @ApiModelProperty(value = "收货人")
@@ -78,13 +75,6 @@ public class DeliveryAddressDetailParam {
         this.memberId = memberId;
     }
 
-    public String getMemberName() {
-        return memberName;
-    }
-
-    public void setMemberName(String memberName) {
-        this.memberName = memberName;
-    }
 
     public String getName() {
         return name;
