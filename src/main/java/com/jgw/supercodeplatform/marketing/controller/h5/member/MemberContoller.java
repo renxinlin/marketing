@@ -44,7 +44,7 @@ public class MemberContoller {
 
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
-    @ApiOperation(value = "获取会员详情|获取会员积分", notes = "")
+    @ApiOperation(value = "更新会员信息|获取会员积分", notes = "")
     @ApiImplicitParams(value= {  @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
     public RestResult update(@RequestBody MarketingMembers member, @ApiIgnore H5LoginVO jwtUser ) throws Exception {
