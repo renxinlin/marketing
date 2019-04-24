@@ -55,4 +55,9 @@ public class CommonConstants {
      * 单一产品信息
      */
     public static final String UN_SALE_PRODUCT_DETAIL_URL ="/non-self-selling/product/market/no-filter" ;
+
+    /**
+     * 非登录下基于组织获取组织信息
+     */
+    public static final String ORGANIZATION_NAME ="/getByOrganizationId"  ;
 }

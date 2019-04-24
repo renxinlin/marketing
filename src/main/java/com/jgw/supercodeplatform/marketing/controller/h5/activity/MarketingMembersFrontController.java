@@ -1,7 +1,11 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
@@ -11,23 +15,39 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/marketing/front/members")
 @Api(tags = "h5用户注册登录信息完善点击领奖")
 public class MarketingMembersFrontController extends CommonUtil {
+	private static Logger logger = LoggerFactory.getLogger(MarketingMembersFrontController.class);
+	@Autowired
+	private MarketingMembersService marketingMembersService;
 
-    @Autowired
-    private MarketingMembersService marketingMembersService;
+	@Autowired
+	private RestTemplateUtil restTemplateUtil;
 
 
-    @RequestMapping(value = "/login",method = RequestMethod.GET)
+	/**
+	 * 用户服务地址
+	 */
+	@Value("${rest.user.url}")
+	private String USER_SERVICE;
+
+
+	@RequestMapping(value = "/login",method = RequestMethod.GET)
     @ApiOperation(value = "h5登录", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "手机号",name="mobile"),
     		@ApiImplicitParam(paramType="query",value = "扫产品标签码时才需要传，由前端保存",name="wxstate"),
@@ -89,10 +109,25 @@ public class MarketingMembersFrontController extends CommonUtil {
 			hVo.setMemberName(userName==null?marketingMembers.getWxName():userName);
 			hVo.setMobile(marketingMembers.getMobile());
 			hVo.setRegistered(1);
-			// 非登录状态下获取组织名称
-			String organizationId = marketingMembers.getOrganizationId();
 
-			hVo.setOrganizationName(organizationId);
+			// todo 非登录状态下基于组织ID获取组织名称
+			// TODO 此方式是否合适？如果合适，需要开接口
+			String organizationId = marketingMembers.getOrganizationId();
+			Map<String, Object> organizationIdMap = new HashMap<>();
+			organizationIdMap.put("organizationId",organizationId);
+			try {
+				ResponseEntity<String> requestAndReturnJosn = restTemplateUtil.getRequestAndReturnJosn(USER_SERVICE+ CommonConstants.ORGANIZATION_NAME, organizationIdMap, null);
+				if(JSONObject.parseObject(requestAndReturnJosn.getBody()).getInteger("state") == 200){
+					hVo.setOrganizationName(JSONObject.parseObject(requestAndReturnJosn.getBody()).getJSONObject("results").getString("organizationName"));
+				}
+			} catch (SuperCodeException e) {
+				e.printStackTrace();
+				logger.error("{基于组织id获取组织信息失败}"+organizationId);
+				// xx企业欢迎你回来！
+				hVo.setOrganizationName("");
+			}
+
+
 			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
 			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());
 			restResult.setResults(hVo);
