@@ -87,9 +87,14 @@ public class MarketingMembersFrontController extends CommonUtil {
 			hVo.setMemberId(id);
 			String userName=marketingMembers.getUserName();
 			hVo.setMemberName(userName==null?marketingMembers.getWxName():userName);
-			hVo.setMobile(hVo.getMobile());
+			hVo.setMobile(marketingMembers.getMobile());
 			hVo.setRegistered(1);
+			// 非登录状态下获取组织名称
+			String organizationId = marketingMembers.getOrganizationId();
+
+			hVo.setOrganizationName(organizationId);
 			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
+			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());
 			restResult.setResults(hVo);
 		} catch (Exception e) {
 			restResult.setState(500);
