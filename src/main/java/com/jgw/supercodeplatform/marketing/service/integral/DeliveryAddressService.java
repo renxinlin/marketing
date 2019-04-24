@@ -206,7 +206,7 @@ public class DeliveryAddressService {
      */
     private void validateBizWithAdd(DeliveryAddress deliveryAddress) throws SuperCodeException{
         List<DeliveryAddress> deliveryAddresses =  mapper.selectByMemberId(deliveryAddress.getMemberId());
-        if(!CollectionUtils.isEmpty(deliveryAddresses) || deliveryAddresses.size() >= 5){
+        if(!CollectionUtils.isEmpty(deliveryAddresses) && deliveryAddresses.size() >= 5){
             throw new SuperCodeException("地址数量超过上限，请先删除");
         }
         // 从使用经验上看，新增地址无需设置为默认地址
