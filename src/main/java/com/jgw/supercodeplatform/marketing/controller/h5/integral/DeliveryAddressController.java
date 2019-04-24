@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.integral.DeliveryAddressParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 import com.jgw.supercodeplatform.marketing.service.integral.DeliveryAddressService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -10,6 +11,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -24,6 +26,8 @@ public class DeliveryAddressController extends CommonUtil {
 
     @Autowired
     private DeliveryAddressService deliveryAddressService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @RequestMapping(value = "/getAll",method = RequestMethod.GET)
     @ApiOperation(value = "列表5个地址", notes = "")
@@ -52,10 +56,19 @@ public class DeliveryAddressController extends CommonUtil {
     @ApiOperation(value = "新增地址不超过5个", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult add(@RequestBody DeliveryAddress deliveryAddress, @ApiIgnore H5LoginVO jwtUser) throws Exception {
+    public RestResult add(@RequestBody DeliveryAddressParam deliveryAddress, @ApiIgnore H5LoginVO jwtUser) throws Exception {
+        // 前端格式转换
+        DeliveryAddress deliveryAddressDto = modelMapper.map(deliveryAddress, DeliveryAddress.class);
+        if(deliveryAddress.getDefaultUsingWeb()){
+            deliveryAddressDto.setDefaultUsing((byte)0);
+        }else{
+            // 不是默认
+            deliveryAddressDto.setDefaultUsing((byte)1);
+
+        }
         Long memberId = jwtUser.getMemberId();
-        deliveryAddress.setMemberId(memberId);
-        int i =  deliveryAddressService.add(deliveryAddress);
+        deliveryAddressDto.setMemberId(memberId);
+        int i =  deliveryAddressService.add(deliveryAddressDto);
         return RestResult.success();
     }
 
@@ -65,10 +78,19 @@ public class DeliveryAddressController extends CommonUtil {
     @ApiOperation(value = "编辑地址|与设置默认地址", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult update(@RequestBody  DeliveryAddress deliveryAddress, @ApiIgnore H5LoginVO jwtUser) throws Exception {
+    public RestResult update(@RequestBody  DeliveryAddressParam deliveryAddress, @ApiIgnore H5LoginVO jwtUser) throws Exception {
+        // 前端格式转换
+        DeliveryAddress deliveryAddressDto = modelMapper.map(deliveryAddress, DeliveryAddress.class);
+        if(deliveryAddress.getDefaultUsingWeb()){
+            deliveryAddressDto.setDefaultUsing((byte)0);
+        }else{
+            // 不是默认
+            deliveryAddressDto.setDefaultUsing((byte)1);
+
+        }
         Long memberId = jwtUser.getMemberId();
-        deliveryAddress.setMemberId(memberId);
-        int i = deliveryAddressService.update(deliveryAddress);
+        deliveryAddressDto.setMemberId(memberId);
+        int i = deliveryAddressService.update(deliveryAddressDto);
         return RestResult.success();
     }
 
