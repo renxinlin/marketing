@@ -122,7 +122,7 @@ public class MarketingMembersFrontController extends CommonUtil {
 				}
 			} catch (SuperCodeException e) {
 				e.printStackTrace();
-				logger.error("{基于组织id获取组织信息失败}"+organizationId);
+				logger.error("[基于组织id{}获取组织信息失败]",organizationId);
 				// xx企业欢迎你回来！
 				hVo.setOrganizationName("");
 			}
@@ -130,6 +130,7 @@ public class MarketingMembersFrontController extends CommonUtil {
 
 			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
 			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());
+			restResult.setState(200);
 			restResult.setResults(hVo);
 		} catch (Exception e) {
 			restResult.setState(500);
