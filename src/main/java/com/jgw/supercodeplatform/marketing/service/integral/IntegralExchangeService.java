@@ -718,6 +718,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
      */
     private void validateBizWhenAdd(IntegralExchangeAddParam integralExchange) throws  SuperCodeException{
         // 已经存在的产品[SKU]不可以再次添加
+        // 由于H5的展示,现在要求产品和sku只能两者选1[已经存在的产品兑换信息,给产品加sku,不可基于这条产品dku添加兑换][已经存在sku,删除产品sku,不可基于产品加sku]
+        // 用来保证h5正常展示
         List<ProductAddParam> products = integralExchange.getProducts();
         String[] productIds =new String[products.size()];
         for(int i=0;i<products.size();i++){
@@ -725,18 +727,31 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         }
         // 一次查出所有,有些没有sku[比较productID],有些有sku[比较skuName]
         List<IntegralExchange> having = mapper.having(productIds);
+
+        // 添加数据有sku   [数据库有sku  sku相同不可添加   |无sku不可添加]
+        // 无sku [数据库有productID],不可添加
         if(!CollectionUtils.isEmpty(having)){
             for(ProductAddParam productAddParam : products){
                 for(IntegralExchange have: having){
                     if(!productAddParam.getProductId().equals(have.getProductId())){
                         continue;
                     }
-                    // 没有sku
-                    if(have.getProductId().equals(productAddParam.getProductId()) && have.getSkuStatus() == 0){
+                    // 新增数据没有sku|数据库有无sku都不可添加
+                    if(have.getProductId().equals(productAddParam.getProductId()) && CollectionUtils.isEmpty(productAddParam.getSkuInfo())){
                         throw new SuperCodeException("产品已经添加");
                     }
-                    // 有sku
-                    if(have.getProductId().equals(productAddParam.getProductId()) && have.getSkuStatus() == 1){
+                    // 0无sku,1有sku
+                    // 新增数据有sku || 数据库无SKU
+                    if(have.getProductId().equals(productAddParam.getProductId()) && !CollectionUtils.isEmpty(productAddParam.getSkuInfo()) && have.getSkuStatus() == 0){
+                        // 确保产品和sku只能二选一,保证H5展示正常
+                        throw new SuperCodeException("存在无sku产品兑换,不可在添加含sku信息产品兑换");
+                    }
+
+
+                    // 0无sku,1有sku
+                    // 新增数据有sku || 数据库有SKU
+                    // sku相同不可添加
+                    if(have.getProductId().equals(productAddParam.getProductId()) && !CollectionUtils.isEmpty(productAddParam.getSkuInfo()) && have.getSkuStatus() == 1){
                         List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
                         for(SkuInfo skuinfo: skuinfos){
                             if(skuinfo.getSkuId().equals(have.getSkuId())){
