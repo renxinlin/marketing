@@ -283,6 +283,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             }
             // 添加sku信息
             result.setSkuInfos(skuInfos);
+            result.setProductId(integralExchanges.get(0).getProductId());
         }
 
         // 补充地址
