@@ -43,16 +43,18 @@ public class H5IntegralRecordController   {
     })
     public RestResult<AbstractPageService.PageResults<List<IntegralRecord>>> memberList(@RequestParam("integralType") String integralType, @ApiIgnore H5LoginVO jwtuser) throws Exception {
         RestResult<AbstractPageService.PageResults<List<IntegralRecord>>> restResult=new RestResult<AbstractPageService.PageResults<List<IntegralRecord>>>();
-        // 转换前端格式
-        if( integralType != null || !"0".equals(integralType) || !"1".equals(integralType)){
-            throw new SuperCodeException("积分记录类型错误",500);
-        }
 
         Integer integralTypeInt = null;
-        if(integralType != null){
-            integralTypeInt = Integer.parseInt(integralType);
-        }
 
+        if("null".equals(integralType)){
+            // 前端格式
+        }else if ("0".equals(integralType)){
+            integralTypeInt = Integer.parseInt(integralType);
+        }else if ("1".equals(integralType)){
+            integralTypeInt = Integer.parseInt(integralType);
+        }else{
+            throw new SuperCodeException("积分记录类型错误",500);
+        }
         IntegralRecord integralRecord = new  IntegralRecord();
         Long memberId = jwtuser.getMemberId();
         integralRecord.setMemberId(memberId);
