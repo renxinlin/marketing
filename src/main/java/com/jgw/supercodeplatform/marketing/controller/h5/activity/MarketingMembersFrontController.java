@@ -60,7 +60,7 @@ public class MarketingMembersFrontController extends CommonUtil {
         return marketingMembersService.lottery(wxstate);
     }
     
-    @RequestMapping(value = "/userInfo",method = RequestMethod.POST)
+    @RequestMapping(value = "/userInfo",method = RequestMethod.GET)
     @ApiOperation(value = "根据主键获取用户信息", notes = "")
     @ApiImplicitParams(value= {
     		@ApiImplicitParam(paramType="query",value = "用户主键",name="id"),

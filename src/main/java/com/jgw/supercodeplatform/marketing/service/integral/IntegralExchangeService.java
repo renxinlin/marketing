@@ -209,7 +209,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             integralExchangeDetailParam.setDetail((String) datailFromBaseServiceResult.getResults());
         }
         if(integralExchangeDetailParam.getDetail() == null){
-            logger.info("详情数据不存在");
+            logger.info("详情数据不存在,产品ID"+ integralExchangeDetailParam.getProductId());
         }
         return integralExchangeDetailParam;
     }
@@ -698,6 +698,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                                 throw new SuperCodeException("sku名称不存在");
                             }
                             if(StringUtils.isBlank(skuinfo.getSkuUrl())){
+//                                null == skuinfo.getSkuUrl()
                                 throw new SuperCodeException("sku 图片不存在");
                             }
                             if(StringUtils.isBlank(skuinfo.getSkuId())){
