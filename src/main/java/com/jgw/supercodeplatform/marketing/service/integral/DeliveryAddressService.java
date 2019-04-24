@@ -154,7 +154,12 @@ public class DeliveryAddressService {
     private DeliveryAddress changeDtoToDo(DeliveryAddress deliveryAddress) throws SuperCodeException{
         // 新增设置为非默认地址
         // 使用习惯上，新增的地址无需为默认地址
-        deliveryAddress.setDefaultUsing((byte)1);
+        if(deliveryAddress.getDefaultUsing() == null){
+            deliveryAddress.setDefaultUsing((byte)1);
+        }
+
+
+
 
         // 补充省市区名称
         String pcccode = deliveryAddress.getPcccode();
