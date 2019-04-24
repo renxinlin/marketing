@@ -41,8 +41,7 @@ public class H5OrderRecordController {
      */
     @RequestMapping(value = "/memberList",method = RequestMethod.GET)
     @ApiOperation(value = "会员订单记录列表", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "积分类型|null所有,0奖励,1消耗",name="integralType"),
-            @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
+    @ApiImplicitParams(value= { @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
     public RestResult<AbstractPageService.PageResults<List<IntegralOrderPageParam>>> memberList(DaoSearchWithOrganizationIdParam search, @ApiIgnore H5LoginVO jwtuser) throws Exception {
         // 查询参数
