@@ -46,7 +46,7 @@ public class DeliveryAddressController extends CommonUtil {
 
 
         // 转换VO
-        List<DeliveryAddressParam> deliveryAddressesVO = new ArrayList<>();
+        List<DeliveryAddressParam> deliveryAddressesVO = new LinkedList<>();
         for( DeliveryAddress deliveryAddress: deliveryAddresses){
             // 转换VO
             DeliveryAddressParam deliveryAddressVO = modelMapper.map(deliveryAddress, DeliveryAddressParam.class);

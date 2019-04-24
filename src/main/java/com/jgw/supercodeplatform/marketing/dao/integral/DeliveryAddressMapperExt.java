@@ -18,7 +18,7 @@ public interface DeliveryAddressMapperExt extends DeliveryAddressMapper, CommonS
 
 
 
-    @Select(startScript + " select " + allFeilds+ " from marketing_delivery_address where MemberId = #{memberId}" + endScript)
+    @Select(startScript + " select " + allFeilds+ " from marketing_delivery_address where MemberId = #{memberId} order by DefaultUsing asc  " + endScript)
     List<DeliveryAddress> selectByMemberId(@Param("memberId") Long memberId);
 
     @Select(startScript + " select " + allFeilds+ " from marketing_delivery_address where MemberId = #{memberId} and DefaultUsing = 0 " + endScript)
