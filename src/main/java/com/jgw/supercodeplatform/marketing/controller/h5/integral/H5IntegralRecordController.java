@@ -47,7 +47,11 @@ public class H5IntegralRecordController   {
         if( integralType != null || !"0".equals(integralType) || !"1".equals(integralType)){
             throw new SuperCodeException("积分记录类型错误",500);
         }
-        Integer integralTypeInt = Integer.parseInt(integralType);
+
+        Integer integralTypeInt = null;
+        if(integralType != null){
+            integralTypeInt = Integer.parseInt(integralType);
+        }
 
         IntegralRecord integralRecord = new  IntegralRecord();
         Long memberId = jwtuser.getMemberId();
