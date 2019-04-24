@@ -110,7 +110,7 @@ public class DeliveryAddressService {
             if(havingUsing != null ){
                 // 如果存在默认地址，则将原来的默认地址设置成非默认
                 havingUsing.setDefaultUsing((byte)1);
-                mapper.insertSelective(havingUsing);
+                mapper.updateByPrimaryKeySelective(havingUsing);
             }
 
         }

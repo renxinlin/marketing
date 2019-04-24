@@ -1,8 +1,10 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.integral.DeliveryAddressDetailParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.DeliveryAddressParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 import com.jgw.supercodeplatform.marketing.service.integral.DeliveryAddressService;
@@ -16,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/marketing/address")
@@ -36,7 +38,22 @@ public class DeliveryAddressController extends CommonUtil {
     public RestResult getAll(@ApiIgnore H5LoginVO jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
         List<DeliveryAddress> deliveryAddresses = deliveryAddressService.selectByUser(memberId);
-        return RestResult.success("success",deliveryAddresses);
+
+
+
+        // 转换VO
+        List<DeliveryAddressParam> deliveryAddressesVO = new ArrayList<>();
+        for( DeliveryAddress deliveryAddress: deliveryAddresses){
+            // 转换VO
+            DeliveryAddressParam deliveryAddressVO = modelMapper.map(deliveryAddress, DeliveryAddressParam.class);
+            if(deliveryAddressVO.getDefaultUsing() == (byte)1){
+                deliveryAddressVO.setDefaultUsingWeb(false);
+            }else {
+                deliveryAddressVO.setDefaultUsingWeb(true);
+            }
+            deliveryAddressesVO.add(deliveryAddressVO);
+        }
+        return RestResult.success("success",deliveryAddressesVO);
     }
 
 
@@ -47,7 +64,34 @@ public class DeliveryAddressController extends CommonUtil {
     public RestResult get(@RequestParam("id") Long id, @ApiIgnore H5LoginVO jwtUser) throws Exception {
         Long memberId = jwtUser.getMemberId();
         DeliveryAddress deliveryAddress = deliveryAddressService.selectById(id, memberId);
-        return RestResult.success("success",deliveryAddress);
+
+
+        // 转换VO
+        DeliveryAddressParam deliveryAddressVO = modelMapper.map(deliveryAddress, DeliveryAddressParam.class);
+        if(deliveryAddressVO.getDefaultUsing() == (byte)1){
+            deliveryAddressVO.setDefaultUsingWeb(false);
+        }else {
+            deliveryAddressVO.setDefaultUsingWeb(true);
+        }
+
+        // 转换结构
+        List pcccodes = new LinkedList();
+        Map pcccode = new HashMap<>();
+        pcccode.put("areaCode",deliveryAddressVO.getProvinceCode());
+        pcccode.put("areaName",deliveryAddressVO.getProvince());
+        pcccodes.add(pcccode);
+        Map pcccode1 = new HashMap<>();
+        pcccode1.put("areaCode",deliveryAddressVO.getProvinceCode());
+        pcccode1.put("areaName",deliveryAddressVO.getProvince());
+        pcccodes.add(pcccode1);
+        Map pcccode2 = new HashMap<>();
+        pcccode2.put("areaCode",deliveryAddressVO.getProvinceCode());
+        pcccode2.put("areaName",deliveryAddressVO.getProvince());
+        pcccodes.add(pcccode2);
+        deliveryAddressVO.setPcccode(JSONObject.toJSONString(pcccodes));
+
+
+        return RestResult.success("success",modelMapper.map(deliveryAddressVO, DeliveryAddressDetailParam.class));
     }
 
 
@@ -64,7 +108,6 @@ public class DeliveryAddressController extends CommonUtil {
         }else{
             // 不是默认
             deliveryAddressDto.setDefaultUsing((byte)1);
-
         }
         Long memberId = jwtUser.getMemberId();
         deliveryAddressDto.setMemberId(memberId);
