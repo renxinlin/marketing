@@ -62,13 +62,16 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
                     " <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
                     // H5订单
                     " <if test=' memberId !=null '> and MemberId = #{memberId} </if>"+
-                    "</where>";
+                     "</where>";
 
     @Select(startScript
             + " select " + count + " from  marketing_order ir "
             + whereSearch
             + endScript)
     int count(IntegralOrder searchParams);
+
+
+
 
     @Select(startScript
             + " select " +allFileds + " from  marketing_order ir "
@@ -78,6 +81,11 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
             + endScript)
     List<IntegralOrderPageParam> list(IntegralOrder searchParams);
 
+    /**
+     * excel分页,状态位改数据展示
+     * @param searchParams
+     * @return
+     */
     @Select(startScript
             + " select " +excelFileds + " from  marketing_order ir "
             + whereSearch
