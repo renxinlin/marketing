@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,16 +41,19 @@ public class H5IntegralRecordController   {
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "积分类型|null所有,0奖励,1消耗",name="integralType"),
             @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult<AbstractPageService.PageResults<List<IntegralRecord>>> memberList(@RequestParam("integralType") Integer integralType, @ApiIgnore H5LoginVO jwtuser) throws Exception {
+    public RestResult<AbstractPageService.PageResults<List<IntegralRecord>>> memberList(@RequestParam("integralType") String integralType, @ApiIgnore H5LoginVO jwtuser) throws Exception {
         RestResult<AbstractPageService.PageResults<List<IntegralRecord>>> restResult=new RestResult<AbstractPageService.PageResults<List<IntegralRecord>>>();
-        if( integralType != null && integralType > 1 && integralType < 0){
+        // 转换前端格式
+        if( integralType != null || !"0".equals(integralType) || !"1".equals(integralType)){
             throw new SuperCodeException("积分记录类型错误",500);
         }
+        Integer integralTypeInt = Integer.parseInt(integralType);
+
         IntegralRecord integralRecord = new  IntegralRecord();
         Long memberId = jwtuser.getMemberId();
         integralRecord.setMemberId(memberId);
         integralRecord.setOrganizationId(null);
-        integralRecord.setIntegralType(integralType);
+        integralRecord.setIntegralType(integralTypeInt);
         // 获取积分记录分页结果
         AbstractPageService.PageResults<List<IntegralRecord>> pages = integralRecordService.listSearchViewLike(integralRecord);
         restResult.setState(200);
