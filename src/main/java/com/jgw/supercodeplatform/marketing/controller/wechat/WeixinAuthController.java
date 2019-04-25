@@ -169,7 +169,7 @@ public class WeixinAuthController {
 			jwtTokenCookie.setMaxAge(60*60*2);
 			// 待补充： 其他参数基于传递状况
 			jwtTokenCookie.setPath("/");
-			jwtTokenCookie.setDomain(cookieDomain);
+			jwtTokenCookie.setDomain("192.168.10.89");
 			response.addCookie(jwtTokenCookie);
             logger.info("微信授权写jwt-token成功");
 		} catch (Exception e) {
