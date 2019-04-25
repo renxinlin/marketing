@@ -8,11 +8,11 @@ import javax.validation.constraints.NotNull;
 public class IntegralRuleProduct {
 	 /** 主键 */
     @ApiModelProperty(value = "主键")
+    @NotNull
     private Long id;
 
     /** 产品id */
     @ApiModelProperty(value = "产品id")
-    @NotNull
     private String productId;
 
     /** 产品名称|注意基础信息可以发生改变 */
@@ -21,7 +21,6 @@ public class IntegralRuleProduct {
 
     /** 产品价格 */
     @ApiModelProperty(value = "产品价格")
-    @NotNull
     private Float productPrice;
 
     /** 奖励对象0会员 */
