@@ -171,6 +171,9 @@ public class WeixinAuthController {
 			jwtTokenCookie.setPath("/");
 			jwtTokenCookie.setDomain(cookieDomain);
 			response.addCookie(jwtTokenCookie);
+			response.addHeader("Access-Control-Allow-Origin", "");
+			response.addHeader("Access-Control-Allow-Credentials", "true");
+			response.addHeader("Access-Control-Allow-Headers", "Content-Type, Set-Cookie, *");
             logger.info("微信授权写jwt-token成功");
 		} catch (Exception e) {
 			e.printStackTrace();
