@@ -1,8 +1,14 @@
-package com.jgw.supercodeplatform.marketing.controller.h5.activity;
+package com.jgw.supercodeplatform.marketing.controller.h5.member;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.RedisKey;
+import com.jgw.supercodeplatform.marketing.dto.members.H5MembersInfoParam;
+import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +56,52 @@ public class MarketingMembersFrontController extends CommonUtil {
 	private String USER_SERVICE;
 
 
+
+
+
+	@Autowired
+	private ModelMapper modelMapper;
+
+	@Autowired
+	private RedisUtil redisUtil;
+
+
+
+
+
+	@RequestMapping(value = "/getMemberId",method = RequestMethod.GET)
+	@ApiOperation(value = "获取会员详情|获取会员积分", notes = "")
+	@ApiImplicitParams(value= {  @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
+	})
+	public RestResult<H5MembersInfoParam> get(@ApiIgnore H5LoginVO jwtUser) throws Exception {
+		MarketingMembers memberById = marketingMembersService.getMemberById(jwtUser.getMemberId());
+		H5MembersInfoParam memberVO = modelMapper.map(memberById, H5MembersInfoParam.class);
+		return RestResult.success("success", memberVO);
+
+	}
+
+
+	@RequestMapping(value = "/update",method = RequestMethod.POST)
+	@ApiOperation(value = "更新会员信息|获取会员积分", notes = "")
+	@ApiImplicitParams(value= {  @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
+	})
+	public RestResult update(@RequestBody MarketingMembersUpdateParam member, @ApiIgnore H5LoginVO jwtUser ) throws Exception {
+		// 通过jwt-token + H5LoginVO保证接口安全
+		// 验证码处理: 目前验证码维度为手机维度,不同业务共用KEY,不影响功能
+		// 如出现验证码覆盖情况则重新发送验证码
+		String verificationCode = redisUtil.get(RedisKey.phone_code_prefix + member.getMobile());
+		if(StringUtils.isBlank(verificationCode)){
+			throw new SuperCodeException("验证码不存在");
+		}
+		if (member.getVerificationCode() == null || !verificationCode.equals(member.getVerificationCode())){
+			// 可能是业务覆盖
+			throw new SuperCodeException("验证码错误,请重新发送");
+		}
+		MarketingMembers memberDto = modelMapper.map(member, MarketingMembers.class);
+		marketingMembersService.update(memberDto);
+		return RestResult.success("success",null);
+
+	}
 	@RequestMapping(value = "/login",method = RequestMethod.GET)
     @ApiOperation(value = "h5登录", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "手机号",name="mobile"),
