@@ -198,15 +198,21 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
      * @throws SuperCodeException 
      */
     private void updateBaseProductPrice(List<Map<String, Object>> updateProductList,String superToken) throws SuperCodeException {
-    	String json=JSONObject.toJSONString(updateProductList);
-    	Map<String,String> headerMap=new HashMap<String, String>();
-    	headerMap.put("super-token", superToken);
-    	ResponseEntity<String> resopEntity=restTemplateUtil.postJsonDataAndReturnJosn(restUserUrl+CommonConstants.USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO, json, headerMap);
-    	String body=resopEntity.getBody();
-    	JSONObject bodyJosn=JSONObject.parseObject(body);
-    	Integer state=bodyJosn.getInteger("state");
-    	if (null==state || state.intValue()!=200) {
-			throw new SuperCodeException("请求基础平台批量更新产品营销信息出错："+bodyJosn.getString("results"), 500);
+    	try {
+    		String json=JSONObject.toJSONString(updateProductList);
+    		Map<String,String> headerMap=new HashMap<String, String>();
+    		headerMap.put("super-token", superToken);
+    		ResponseEntity<String> resopEntity=restTemplateUtil.postJsonDataAndReturnJosn(restUserUrl+CommonConstants.USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO, json, headerMap);
+    		logger.info("更新基础平台营销数据返回信息："+resopEntity.toString());
+    		String body=resopEntity.getBody();
+    		JSONObject bodyJosn=JSONObject.parseObject(body);
+    		Integer state=bodyJosn.getInteger("state");
+    		if (null==state || state.intValue()!=200) {
+    			throw new SuperCodeException("请求基础平台批量更新产品营销信息出错："+bodyJosn.getString("msg"), 500);
+    		}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
     }
 
