@@ -61,7 +61,7 @@ public class MemberContoller {
         // 如出现验证码覆盖情况则重新发送验证码
         String verificationCode = redisUtil.get(RedisKey.phone_code_prefix + member.getMobile());
         if(StringUtils.isBlank(verificationCode)){
-            throw new SuperCodeException("验证码已经过期");
+            throw new SuperCodeException("验证码不存在");
         }
         if (member.getVerificationCode() == null || !verificationCode.equals(member.getVerificationCode())){
             // 可能是业务覆盖
