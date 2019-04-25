@@ -45,6 +45,8 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
     public H5LoginVO resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws UserExpireException {
         String token = null;
         try {
+        	String methodName=methodParameter.getMethod().getName();
+        	logger.info("开始解析方法："+methodName+"jwtToken");
             // HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
             HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
            // token = request.getHeader(CommonConstants.JWT_TOKEN);
