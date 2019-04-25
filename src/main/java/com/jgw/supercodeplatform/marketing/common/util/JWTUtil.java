@@ -43,7 +43,7 @@ public class JWTUtil {
 					//.withNotBefore(new Date())//定义在什么时间之前，该jwt都是不可用的.
 					.withAudience("APP")//签名的观众 也可以理解谁接受签名的
 					.withIssuedAt(nowDate) //生成签名的时间
-					.withExpiresAt(expireDate)//签名过期的时间
+//					.withExpiresAt(expireDate)//签名过期的时间
 					/*签名 Signature */
 					.sign(algorithm);
 			return token;
