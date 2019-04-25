@@ -1,32 +1,33 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
-import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @RequestMapping("/marketing/front/members")
@@ -39,6 +40,8 @@ public class MarketingMembersFrontController extends CommonUtil {
 	@Autowired
 	private RestTemplateUtil restTemplateUtil;
 
+	@Autowired
+	private CommonService commonService;
 
 	/**
 	 * 用户服务地址
@@ -109,25 +112,13 @@ public class MarketingMembersFrontController extends CommonUtil {
 			hVo.setMemberName(userName==null?marketingMembers.getWxName():userName);
 			hVo.setMobile(marketingMembers.getMobile());
 			hVo.setRegistered(1);
-
-			// todo 非登录状态下基于组织ID获取组织名称
-			// TODO 此方式是否合适？如果合适，需要开接口
-			String organizationId = marketingMembers.getOrganizationId();
-			Map<String, Object> organizationIdMap = new HashMap<>();
-			organizationIdMap.put("organizationId",organizationId);
+			String orgnazationName="";
 			try {
-				ResponseEntity<String> requestAndReturnJosn = restTemplateUtil.getRequestAndReturnJosn(USER_SERVICE+ CommonConstants.ORGANIZATION_NAME, organizationIdMap, null);
-				if(JSONObject.parseObject(requestAndReturnJosn.getBody()).getInteger("state") == 200){
-					hVo.setOrganizationName(JSONObject.parseObject(requestAndReturnJosn.getBody()).getJSONObject("results").getString("organizationName"));
-				}
-			} catch (SuperCodeException e) {
+				orgnazationName=commonService.getOrgNameByOrgId(marketingMembers.getOrganizationId());
+			} catch (Exception e) {
 				e.printStackTrace();
-				logger.error("[基于组织id{}获取组织信息失败]",organizationId);
-				// xx企业欢迎你回来！
-				hVo.setOrganizationName("");
 			}
-
-
+			hVo.setOrganizationName(orgnazationName);
 			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
 			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());
 			restResult.setState(200);

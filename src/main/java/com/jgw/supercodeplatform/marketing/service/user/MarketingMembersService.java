@@ -30,6 +30,7 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPort
 import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -110,6 +111,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	@Autowired
 	private OrganizationPortraitService organizationPortraitService;
 
+	@Autowired
+	private CommonService commonService;
 
 	@Autowired
 	private GlobalRamCache globalRamCache;
@@ -443,6 +446,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			 h5LoginVO = loginWithWxstate(mobile, wxstate);
 			restResult.setResults(h5LoginVO);
 		}else {
+			if (StringUtils.isBlank(organizationId)) {
+				restResult.setState(500);
+				restResult.setMsg("积分领取登录时组织id必传");
+				return restResult;
+			}
+			
 			h5LoginVO=new H5LoginVO();
 			h5LoginVO.setMobile(mobile);			//积分登录openid不一定存在
 			h5LoginVO.setRegistered(1);
@@ -476,6 +485,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				h5LoginVO.setHaveIntegral(marketingMembersByPhone.getHaveIntegral()==null?0:marketingMembersByPhone.getHaveIntegral());
 				h5LoginVO.setMemberId(userIdByPhone);
 				h5LoginVO.setWechatHeadImgUrl(marketingMembersByPhone.getWechatHeadImgUrl());
+				
 				if (null!=marketingMembersByOpenId) {
 					Long userIdByOpenId=marketingMembersByOpenId.getId();
 					if (!userIdByOpenId.equals(userIdByPhone)) {
@@ -500,8 +510,17 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					}
 				}
 			}
+			String orgnazationName="";
+			try {
+				orgnazationName=commonService.getOrgNameByOrgId(organizationId);
+				h5LoginVO.setOrganizationName(orgnazationName);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		try {
+			
+			
 			String jwtToken=JWTUtil.createTokenWithClaim(h5LoginVO);
 			Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
 			// jwt有效期为2小时，保持一致
