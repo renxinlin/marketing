@@ -1,64 +1,96 @@
 package com.jgw.supercodeplatform.marketing.dto.members;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
-@ApiModel(value = "会员编辑")
+import java.util.Date;
+
 public class MarketingMembersUpdateParam {
-    @ApiModelProperty(value = "id",required=true)
-    private Long id;//用户Id
-    
-    @ApiModelProperty(value = "手机")
-    private String mobile;//手机
 
-    @ApiModelProperty(value = "用户Id",required=true)
-    private String userId;//用户Id
 
-    @ApiModelProperty(value = "用户姓名")
-    private String userName;//用户姓名
-
-    @ApiModelProperty(value = "性别")
-    private String sex;//性别
-
-    @ApiModelProperty(value = "生日")
-    private String birthday;//生日
-    
-    @ApiModelProperty(value = "省市区及编码字段")
-    private String pCCcode;
-
-    @ApiModelProperty(value = "状态(1、 表示正常，0 表示下线)")
-    private Byte state;//状态(1、 表示正常，0 表示下线)
-
-    @ApiModelProperty(value = "组织Id")
-    private String organizationId;//组织Id
-
-    @ApiModelProperty(value = "门店名称")
-    private String customerName;//门店名称
-
-    @ApiModelProperty(value = "门店编码")
-    private String customerId;//门店编码
-
-    @ApiModelProperty(value = "宝宝生日")
-    private String babyBirthday;//宝宝生日
-
-    @ApiModelProperty(value = "是否已注册(1、表示已注册，0 表示未注册)")
-    private Byte isRegistered;//是否已注册(1、表示已注册，0 表示未注册)
-
-    @ApiModelProperty(value = "微信id号")
+    private String verificationCode;
+    private Long id;//序号
     private String openid;//微信id号
+    private String wxName;//微信id号
+    private String mobile;//手机
+    private String userId;//用户Id
+    private String userName;//用户姓名
+    private String sex;//性别
+    private String birthday;//生日
+    private String registDate;//注册时间
+    private Byte state;//状态(1、 表示正常，0 表示下线)
+    private String organizationId;//组织Id
+    private String newRegisterFlag;//是否新注册的标志(1  表示是，0 表示不是)
+    private String createDate;//建立日期
+    private String updateDate;//修改日期
+    private String customerName;//门店名称
+    private String customerId;//门店编码
+    private String babyBirthday;//宝宝生日
+    private Byte isRegistered;// 是否已完善(1、表示已完善，0 表示未完善)
+    private String pCCcode;
+    private Integer haveIntegral; //  会员积分
+    private Byte memberType; // 会员类型默认0
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    private Date integralReceiveDate; // 最新一次积分领取时间
+    private String wechatHeadImgUrl;
 
-    @ApiModelProperty(value = "微信昵称")
-    private String wxName;//微信昵称
-    
-    public MarketingMembersUpdateParam() {
+
+    public String getVerificationCode() {
+        return verificationCode;
     }
 
-    public String getUserId() {
-        return userId;
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public Date getIntegralReceiveDate() {
+        return integralReceiveDate;
+    }
+
+    public String getWechatHeadImgUrl() {
+		return wechatHeadImgUrl;
+	}
+
+	public void setWechatHeadImgUrl(String wechatHeadImgUrl) {
+		this.wechatHeadImgUrl = wechatHeadImgUrl;
+	}
+
+
+
+	public void setIntegralReceiveDate(Date integralReceiveDate) {
+        this.integralReceiveDate = integralReceiveDate;
+    }
+
+    public Byte getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(Byte memberType) {
+        this.memberType = memberType;
+    }
+
+    public Integer getHaveIntegral() {
+        return haveIntegral;
+    }
+
+    public void setHaveIntegral(Integer haveIntegral) {
+        this.haveIntegral = haveIntegral;
+    }
+
+    public String getpCCcode() {
+		return pCCcode;
+	}
+
+	public void setpCCcode(String pCCcode) {
+		this.pCCcode = pCCcode;
+	}
+	public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getUserName() {
@@ -86,6 +118,102 @@ public class MarketingMembersUpdateParam {
     }
 
 
+    public String getRegistDate() {
+        return registDate;
+    }
+
+    public void setRegistDate(String registDate) {
+        this.registDate = registDate;
+    }
+
+    public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Byte getState() {
+		return state;
+	}
+
+	public void setState(Byte state) {
+		this.state = state;
+	}
+
+    public Byte getIsRegistered() {
+        return isRegistered;
+    }
+
+    public void setIsRegistered(Byte isRegistered) {
+        this.isRegistered = isRegistered;
+    }
+
+    public String getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public String getNewRegisterFlag() {
+        return newRegisterFlag;
+    }
+
+    public void setNewRegisterFlag(String newRegisterFlag) {
+        this.newRegisterFlag = newRegisterFlag;
+    }
+
+    public String getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(String updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public String getWxName() {
+        return wxName;
+    }
+
+    public void setWxName(String wxName) {
+        this.wxName = wxName;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getBabyBirthday() {
+        return babyBirthday;
+    }
+
+    public void setBabyBirthday(String babyBirthday) {
+        this.babyBirthday = babyBirthday;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
     public String getCustomerName() {
         return customerName;
     }
@@ -102,77 +230,5 @@ public class MarketingMembersUpdateParam {
         this.customerId = customerId;
     }
 
-    public String getBabyBirthday() {
-        return babyBirthday;
-    }
 
-    public void setBabyBirthday(String babyBirthday) {
-        this.babyBirthday = babyBirthday;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public Byte getState() {
-        return state;
-    }
-
-    public void setState(Byte state) {
-        this.state = state;
-    }
-
-    public Byte getIsRegistered() {
-        return isRegistered;
-    }
-
-    public void setIsRegistered(Byte isRegistered) {
-        this.isRegistered = isRegistered;
-    }
-
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getOrganizationId() {
-		return organizationId;
-	}
-
-	public void setOrganizationId(String organizationId) {
-		this.organizationId = organizationId;
-	}
-
-	public String getOpenid() {
-		return openid;
-	}
-
-	public void setOpenid(String openid) {
-		this.openid = openid;
-	}
-
-	public String getWxName() {
-		return wxName;
-	}
-
-	public void setWxName(String wxName) {
-		this.wxName = wxName;
-	}
-
-	public String getpCCcode() {
-		return pCCcode;
-	}
-
-	public void setpCCcode(String pCCcode) {
-		this.pCCcode = pCCcode;
-	}
-    
 }

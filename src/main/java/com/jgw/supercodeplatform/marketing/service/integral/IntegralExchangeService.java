@@ -471,7 +471,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             exchangeStatistics = new ExchangeStatistics();
             exchangeStatistics.setExchangeNum(0);
         }
-        if(exists.getCustomerLimitNum() <= exchangeStatistics.getExchangeNum() + exchangeProductParam.getExchangeNum()){
+        if(exists.getCustomerLimitNum() < exchangeStatistics.getExchangeNum() + exchangeProductParam.getExchangeNum()){
             throw new SuperCodeException("兑换数量超过上限");
 
         }

@@ -9,8 +9,7 @@ import java.util.Date;
 public class H5MembersInfoParam {
     @ApiModelProperty("会员ID")
     private Long id;//序号
-    @ApiModelProperty("微信id号")
-    private String openid;//微信id号
+
     @ApiModelProperty("手机")
     private String mobile;//手机
     @ApiModelProperty("用户Id")
@@ -33,30 +32,6 @@ public class H5MembersInfoParam {
     private String customerName;//门店名称
     @ApiModelProperty("门店编码")
     private String customerId;//门店编码
-
-    @ApiModelProperty("最新一次积分领取时间")
-    private Date integralReceiveDate; // 最新一次积分领取时间
-    @ApiModelProperty("wechatHeadImgUrl")
-    private String wechatHeadImgUrl;
-    
-    public Date getIntegralReceiveDate() {
-        return integralReceiveDate;
-    }
-
-    public String getWechatHeadImgUrl() {
-		return wechatHeadImgUrl;
-	}
-
-	public void setWechatHeadImgUrl(String wechatHeadImgUrl) {
-		this.wechatHeadImgUrl = wechatHeadImgUrl;
-	}
-
-
-
-	public void setIntegralReceiveDate(Date integralReceiveDate) {
-        this.integralReceiveDate = integralReceiveDate;
-    }
-
 
 
  	public String getMobile() {
@@ -140,14 +115,6 @@ public class H5MembersInfoParam {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getOpenid() {
-        return openid;
-    }
-
-    public void setOpenid(String openid) {
-        this.openid = openid;
     }
 
     public String getCustomerName() {
