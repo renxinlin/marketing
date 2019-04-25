@@ -34,7 +34,7 @@ public class CommonConstants {
     /**
      * 请求基础平台，批量更新产品营销信息接口
      */
-    public static final String USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO = "/product/market/synchronize";
+    public static final String USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO = "/product/market/synchronize/batch";
     
     /**
      * 请获取未做活动的非自卖产品以及对应的营销信息
