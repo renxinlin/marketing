@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -13,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
@@ -38,11 +42,10 @@ public class MarketingMembersFrontController extends CommonUtil {
 	private MarketingMembersService marketingMembersService;
 
 	@Autowired
-	private RestTemplateUtil restTemplateUtil;
-
-	@Autowired
 	private CommonService commonService;
 
+	@Value("${cookie.domain}")
+	private String cookieDomain;
 	/**
 	 * 用户服务地址
 	 */
@@ -81,6 +84,47 @@ public class MarketingMembersFrontController extends CommonUtil {
     @ApiOperation(value = "用户点击领奖方法", notes = "")
     public RestResult<String> lottery(String wxstate) throws Exception {
         return marketingMembersService.lottery(wxstate);
+    }
+    
+    @RequestMapping(value = "/getJwtToken",method = RequestMethod.GET)
+    @ApiOperation(value = "获取jwt-token", notes = "")
+    @ApiImplicitParams(value= {
+    		@ApiImplicitParam(name = "memberId", paramType = "query", defaultValue = "1", value = "会员id")
+    })
+    public void getJwtToken(@RequestParam Long memberId) throws Exception {
+    	try {
+			
+			MarketingMembers marketingMembers=marketingMembersService.selectById(memberId);
+			if (null==marketingMembers) {
+				throw new SuperCodeException("无此用户", 500);
+			}
+			H5LoginVO hVo=new H5LoginVO();
+			hVo.setMemberId(memberId);
+			String userName=marketingMembers.getUserName();
+			hVo.setMemberName(userName==null?marketingMembers.getWxName():userName);
+			hVo.setMobile(marketingMembers.getMobile());
+			hVo.setRegistered(1);
+			String orgnazationName="";
+			try {
+				orgnazationName=commonService.getOrgNameByOrgId(marketingMembers.getOrganizationId());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			hVo.setOrganizationName(orgnazationName);
+			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
+			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());
+			
+			String jwtToken=JWTUtil.createTokenWithClaim(hVo);
+			Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
+			// jwt有效期为2小时，保持一致
+			jwtTokenCookie.setMaxAge(60*60*2);
+			// 待补充： 其他参数基于传递状况
+			jwtTokenCookie.setPath("/");
+			jwtTokenCookie.setDomain(cookieDomain);
+			response.addCookie(jwtTokenCookie);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
     }
     
     @RequestMapping(value = "/userInfo",method = RequestMethod.GET)
