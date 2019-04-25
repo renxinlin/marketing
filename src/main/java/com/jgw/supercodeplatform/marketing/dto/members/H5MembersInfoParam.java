@@ -11,8 +11,6 @@ public class H5MembersInfoParam {
     private Long id;//序号
     @ApiModelProperty("微信id号")
     private String openid;//微信id号
-    @ApiModelProperty("微信id号")
-    private String wxName;//微信id号
     @ApiModelProperty("手机")
     private String mobile;//手机
     @ApiModelProperty("用户Id")
@@ -35,11 +33,6 @@ public class H5MembersInfoParam {
     private String customerName;//门店名称
     @ApiModelProperty("门店编码")
     private String customerId;//门店编码
-    @ApiModelProperty("宝宝生日")
-    private String babyBirthday;//宝宝生日
-
-    @ApiModelProperty("可用积分")
-    private Integer haveIntegral; //  会员积分
 
     @ApiModelProperty("最新一次积分领取时间")
     private Date integralReceiveDate; // 最新一次积分领取时间
@@ -64,15 +57,6 @@ public class H5MembersInfoParam {
         this.integralReceiveDate = integralReceiveDate;
     }
 
-
-
-    public Integer getHaveIntegral() {
-        return haveIntegral;
-    }
-
-    public void setHaveIntegral(Integer haveIntegral) {
-        this.haveIntegral = haveIntegral;
-    }
 
 
  	public String getMobile() {
@@ -149,13 +133,6 @@ public class H5MembersInfoParam {
         this.updateDate = updateDate;
     }
 
-    public String getWxName() {
-        return wxName;
-    }
-
-    public void setWxName(String wxName) {
-        this.wxName = wxName;
-    }
 
     public String getUserId() {
         return userId;
@@ -163,14 +140,6 @@ public class H5MembersInfoParam {
 
     public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getBabyBirthday() {
-        return babyBirthday;
-    }
-
-    public void setBabyBirthday(String babyBirthday) {
-        this.babyBirthday = babyBirthday;
     }
 
     public String getOpenid() {
