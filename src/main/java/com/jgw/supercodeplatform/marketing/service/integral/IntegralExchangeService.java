@@ -347,7 +347,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("库存不足");
         }else{
             // 会员减少积分
-            membersMapper.deleteIntegral((Integer) exchangeNumKey.get("ingetralNum"));
+            membersMapper.deleteIntegral((Integer) exchangeNumKey.get("ingetralNum"),exchangeProductParam.getMemberId());
             // 创建订单记录
             orderMapper.insertSelective(getOrderDo(exchangeProductParam));
             // 创建积分记录

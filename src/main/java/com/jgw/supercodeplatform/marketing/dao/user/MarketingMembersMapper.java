@@ -188,5 +188,5 @@ public interface MarketingMembersMapper {
     @Update("update marketing_members set State = #{state} where Id=#{id}")
 	int updateMembersStatus(@Param("id")Long id, @Param("state")int state);
     @Update("update marketing_members set  HaveIntegral = HaveIntegral - #{ingetralNum} where Id=#{id} ")
-    int deleteIntegral(@Param("ingetralNum") Integer ingetralNum);
+    int deleteIntegral(@Param("ingetralNum") Integer ingetralNum,@Param("id")Long id);
 }
