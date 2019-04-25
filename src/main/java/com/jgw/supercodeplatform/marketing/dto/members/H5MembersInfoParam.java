@@ -12,8 +12,6 @@ public class H5MembersInfoParam {
 
     @ApiModelProperty("手机")
     private String mobile;//手机
-    @ApiModelProperty("用户Id")
-    private String userId;//用户Id
     @ApiModelProperty("用户姓名")
     private String userName;//用户姓名
     @ApiModelProperty("性别")
@@ -109,13 +107,6 @@ public class H5MembersInfoParam {
     }
 
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
 
     public String getCustomerName() {
         return customerName;
