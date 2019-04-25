@@ -11,6 +11,7 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
@@ -38,6 +39,9 @@ public class WeixinAuthController {
 
 	@Autowired
 	private MarketingMembersService marketingMembersService;
+	
+	@Autowired
+	private CommonService commonService;
 	
 	@Autowired
 	private GlobalRamCache globalRamCache;
@@ -96,8 +100,9 @@ public class WeixinAuthController {
     		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
     		if (null!=members) {
     			h5BUf.append("&memberId="+members.getId());
-    		}else {
     			needWriteJwtToken=true;
+    		}else {
+    			h5BUf.append("&memberId=-1");
     		}
 			nickName=userInfo.getString("nickname");
     		redirectUrl=h5BUf.toString();
@@ -142,13 +147,20 @@ public class WeixinAuthController {
     }
 
 	private void writeJwtToken(HttpServletResponse response, MarketingMembers members) {
+		String orgnazationName="";
+		H5LoginVO h5LoginVO=new H5LoginVO();
+		h5LoginVO.setHaveIntegral(members.getHaveIntegral());
+		h5LoginVO.setMemberId(members.getId());
+		h5LoginVO.setMobile(members.getMobile());
+		h5LoginVO.setWechatHeadImgUrl(members.getWechatHeadImgUrl());
+		h5LoginVO.setMemberName(members.getUserName()==null?members.getWxName():members.getUserName());
 		try {
-			H5LoginVO h5LoginVO=new H5LoginVO();
-			h5LoginVO.setHaveIntegral(members.getHaveIntegral());
-			h5LoginVO.setMemberId(members.getId());
-			h5LoginVO.setMobile(members.getMobile());
-			h5LoginVO.setWechatHeadImgUrl(members.getWechatHeadImgUrl());
-			h5LoginVO.setMemberName(members.getUserName()==null?members.getWxName():members.getUserName());
+			orgnazationName=commonService.getOrgNameByOrgId(members.getOrganizationId());
+			h5LoginVO.setOrganizationName(orgnazationName);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
 			String jwtToken=JWTUtil.createTokenWithClaim(h5LoginVO);
 			Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
 			// jwt有效期为2小时，保持一致
@@ -156,7 +168,7 @@ public class WeixinAuthController {
 			// 待补充： 其他参数基于传递状况
 			// jwtTokenCookie.setPath();
 			response.addCookie(jwtTokenCookie);
-//			response.addHeader("jwt-token", jwtToken);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
