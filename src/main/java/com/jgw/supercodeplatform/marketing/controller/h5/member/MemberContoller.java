@@ -1,7 +1,11 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.member;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.dto.members.H5MembersInfoParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -9,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +35,9 @@ public class MemberContoller {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
 
     @RequestMapping(value = "/getMemberId",method = RequestMethod.GET)
     @ApiOperation(value = "获取会员详情|获取会员积分", notes = "")
@@ -47,9 +55,18 @@ public class MemberContoller {
     @ApiOperation(value = "更新会员信息|获取会员积分", notes = "")
     @ApiImplicitParams(value= {  @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult update(@RequestBody MarketingMembers member, @ApiIgnore H5LoginVO jwtUser ) throws Exception {
+    public RestResult update(@RequestBody MarketingMembersUpdateParam member, @ApiIgnore H5LoginVO jwtUser ) throws Exception {
         // 通过jwt-token + H5LoginVO保证接口安全
-        service.update(member);
+        // 验证码处理
+        String verificationCode = redisUtil.get(RedisKey.phone_code_prefix + member.getMobile());
+        if(StringUtils.isBlank(verificationCode)){
+            throw new SuperCodeException("验证码已经过期");
+        }
+        if (member.getVerificationCode() == null || !verificationCode.equals(member.getVerificationCode())){
+            throw new SuperCodeException("验证码错误");
+        }
+        MarketingMembers memberDto = modelMapper.map(member, MarketingMembers.class);
+        service.update(memberDto);
         return RestResult.success("success",null);
 
     }
