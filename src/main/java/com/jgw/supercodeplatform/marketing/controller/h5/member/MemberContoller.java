@@ -57,13 +57,15 @@ public class MemberContoller {
     })
     public RestResult update(@RequestBody MarketingMembersUpdateParam member, @ApiIgnore H5LoginVO jwtUser ) throws Exception {
         // 通过jwt-token + H5LoginVO保证接口安全
-        // 验证码处理
+        // 验证码处理: 目前验证码维度为手机维度,不同业务共用KEY,不影响功能
+        // 如出现验证码覆盖情况则重新发送验证码
         String verificationCode = redisUtil.get(RedisKey.phone_code_prefix + member.getMobile());
         if(StringUtils.isBlank(verificationCode)){
             throw new SuperCodeException("验证码已经过期");
         }
         if (member.getVerificationCode() == null || !verificationCode.equals(member.getVerificationCode())){
-            throw new SuperCodeException("验证码错误");
+            // 可能是业务覆盖
+            throw new SuperCodeException("验证码错误,请重新发送");
         }
         MarketingMembers memberDto = modelMapper.map(member, MarketingMembers.class);
         service.update(memberDto);

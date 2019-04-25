@@ -1,5 +1,8 @@
 package com.jgw.supercodeplatform.marketing.dto.members;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.util.Date;
 
 public class MarketingMembersUpdateParam {
@@ -27,6 +30,8 @@ public class MarketingMembersUpdateParam {
     private String pCCcode;
     private Integer haveIntegral; //  会员积分
     private Byte memberType; // 会员类型默认0
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date integralReceiveDate; // 最新一次积分领取时间
     private String wechatHeadImgUrl;
 
@@ -224,4 +229,6 @@ public class MarketingMembersUpdateParam {
     public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
+
+
 }
