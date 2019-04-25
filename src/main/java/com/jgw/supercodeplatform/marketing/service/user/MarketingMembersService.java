@@ -55,10 +55,10 @@ import java.util.*;
 @Service
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
 	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersService.class);
-
+	@Value("${cookie.domain}")
+	private String cookieDomain;
 	//	@Value( "${注册短信模板外部配置key}")
 	@Value( "亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
-
 	private  String registerMsgContent ;
 	@Value("${rest.user.url}")
 	private String userServiceUrl;
@@ -527,6 +527,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			jwtTokenCookie.setMaxAge(60*60*2);
 			// 待补充： 其他参数基于传递状况
 			// jwtTokenCookie.setPath();
+			jwtTokenCookie.setPath("/");
+			jwtTokenCookie.setDomain(cookieDomain);
 			response.addCookie(jwtTokenCookie);
 //			response.addHeader("jwt-token", jwtToken);
 		} catch (Exception e) {
