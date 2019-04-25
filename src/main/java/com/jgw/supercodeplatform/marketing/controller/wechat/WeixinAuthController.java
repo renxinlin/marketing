@@ -52,6 +52,8 @@ public class WeixinAuthController {
     @Value("${marketing.integral.h5page.urls}")
     private String integralH5Pages;
     
+	@Value("${cookie.domain}")
+	private String cookieDomain;
     /**
      * 微信授权回调方法
      * @param code
@@ -166,7 +168,8 @@ public class WeixinAuthController {
 			// jwt有效期为2小时，保持一致
 			jwtTokenCookie.setMaxAge(60*60*2);
 			// 待补充： 其他参数基于传递状况
-			// jwtTokenCookie.setPath();
+			jwtTokenCookie.setPath("/");
+			jwtTokenCookie.setDomain(cookieDomain);
 			response.addCookie(jwtTokenCookie);
             logger.info("微信授权写jwt-token成功");
 		} catch (Exception e) {
