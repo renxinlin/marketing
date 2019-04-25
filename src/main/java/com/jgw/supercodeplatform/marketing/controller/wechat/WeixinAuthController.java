@@ -93,7 +93,7 @@ public class WeixinAuthController {
     		h5BUf.append("redirect:");
     		h5BUf.append(integralH5Pages.split(",")[statecode]);
     		h5BUf.append("?openid="+openid);
-    		if (null!=statecode && 0==statecode) {
+    		if (null!=statecode && 0==statecode.intValue()) {
     			h5BUf.append("&uuid="+statearr[2]);
 			}
     		h5BUf.append("&organizationId="+organizationId);
@@ -168,7 +168,7 @@ public class WeixinAuthController {
 			// 待补充： 其他参数基于传递状况
 			// jwtTokenCookie.setPath();
 			response.addCookie(jwtTokenCookie);
-
+            logger.info("微信授权写jwt-token成功");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
