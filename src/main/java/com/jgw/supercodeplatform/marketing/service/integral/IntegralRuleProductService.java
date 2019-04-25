@@ -144,11 +144,12 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			ruleProduct.setProductId(productId);
 			ruleProduct.setProductName(product.getProductName());
 			ruleProducts.add(ruleProduct);
-			
-			Map<String, Object> updateProductMap=new HashMap<String, Object>();
-			updateProductMap.put("price", productPrice);
-			updateProductMap.put("productId", productId);
-			updateProductList.add(updateProductMap);
+			if (null!=productPrice) {
+				Map<String, Object> updateProductMap=new HashMap<String, Object>();
+				updateProductMap.put("price", productPrice);
+				updateProductMap.put("productId", productId);
+				updateProductList.add(updateProductMap);
+			}
 		}
 		dao.batchInsert(ruleProducts);
 		//请求生码批次及积分url绑定批次
@@ -182,11 +183,14 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			
 			//更新产品营销信息
 			List<Map<String, Object>> updateProductList=new ArrayList<Map<String,Object>>();
-			Map<String, Object> updateProductMap=new HashMap<String, Object>();
-			updateProductMap.put("price", inRuleProduct.getProductPrice());
-			updateProductMap.put("productId", productId);
-			updateProductList.add(updateProductMap);
-			updateBaseProductPrice(updateProductList,superToken);
+			Float price=inRuleProduct.getProductPrice();
+			if (null!=price) {
+				Map<String, Object> updateProductMap=new HashMap<String, Object>();
+				updateProductMap.put("price", price);
+				updateProductMap.put("productId", productId);
+				updateProductList.add(updateProductMap);
+				updateBaseProductPrice(updateProductList,superToken);
+			}
 		}else {
 			dao.updateByPrimaryKeySelective(inRuleProduct);
 		}
@@ -198,11 +202,11 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
      * @throws SuperCodeException 
      */
     private void updateBaseProductPrice(List<Map<String, Object>> updateProductList,String superToken) throws SuperCodeException {
-    	try {
+    	if (null!=updateProductList && !updateProductList.isEmpty()) {
     		String json=JSONObject.toJSONString(updateProductList);
     		Map<String,String> headerMap=new HashMap<String, String>();
     		headerMap.put("super-token", superToken);
-    		ResponseEntity<String> resopEntity=restTemplateUtil.postJsonDataAndReturnJosn(restUserUrl+CommonConstants.USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO, json, headerMap);
+    		ResponseEntity<String> resopEntity=restTemplateUtil.putJsonDataAndReturnJosn(restUserUrl+CommonConstants.USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO, json, headerMap);
     		logger.info("更新基础平台营销数据返回信息："+resopEntity.toString());
     		String body=resopEntity.getBody();
     		JSONObject bodyJosn=JSONObject.parseObject(body);
@@ -210,9 +214,6 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
     		if (null==state || state.intValue()!=200) {
     			throw new SuperCodeException("请求基础平台批量更新产品营销信息出错："+bodyJosn.getString("msg"), 500);
     		}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
     }
 
@@ -292,7 +293,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		params.put("organizationId",organizationId );
 		params.put("search", daoSearch.getSearch());
 		List<String> productIds=dao.selectProductIdsByOrgId(organizationId);
-		params.put("excludeProductIds",JSONObject.toJSONString(productIds));
+		if (null!=productIds && !productIds.isEmpty()) {
+			params.put("excludeProductIds",String.join(",", productIds));
+		}
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, null);
 		String body=responseEntity.getBody();
 		logger.info("接收到码管理进行过码关联的产品信息："+body);
