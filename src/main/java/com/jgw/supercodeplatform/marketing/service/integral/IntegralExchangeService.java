@@ -454,7 +454,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("您已被管理员禁用...");
         }
         // 查看组织id - productID-sku-是否存在 开启锁，强制阻塞
-        IntegralExchange exists = mapper.exists(exchangeProductParam.getOrganizationId(), exchangeProductParam.getProductId(), exchangeProductParam.getSkuName());
+        IntegralExchange exists = mapper.exists(exchangeProductParam.getOrganizationId(), exchangeProductParam.getProductId(), exchangeProductParam.getSkuId());
         if(exists == null){
             logger.error(" {兑换信息不存在"+ JSONObject.toJSONString(exchangeProductParam) +"} ");
             throw new SuperCodeException("兑换信息不存在");

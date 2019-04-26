@@ -113,8 +113,8 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
     @Select(startScript + " select " + allFileds + " from marketing_integral_exchange ie where OrganizationId = #{organizationId} " +
             " and ProductId = #{productId} " +
-            " <if test='skuName != null and skuName != &apos;&apos;'> and SkuName = #{skuName} </if>  for update" +endScript )
-    IntegralExchange exists(@Param("organizationId") String organizationId, @Param("productId") String productId,@Param("skuName") String skuName);
+            " <if test='skuName != null and skuName != &apos;&apos;'> and skuId = #{skuId} </if>  for update" +endScript )
+    IntegralExchange exists(@Param("organizationId") String organizationId, @Param("productId") String productId,@Param("skuId") String skuId);
 
 
 
