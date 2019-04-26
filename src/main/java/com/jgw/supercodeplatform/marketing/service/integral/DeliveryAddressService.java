@@ -71,6 +71,17 @@ public class DeliveryAddressService {
         validateBizWithAdd(deliveryAddress);
         // 补充相关数据
         deliveryAddress = changeDtoToDo(deliveryAddress);
+        Byte defaultUsing = deliveryAddress.getDefaultUsing();
+        if(defaultUsing == 0 ){
+            // 去除原来的默认
+            DeliveryAddress oldDefaultDeliveryAddress = mapper.havingUsing(deliveryAddress.getMemberId());
+            if(oldDefaultDeliveryAddress != null){
+                // 由默认变成非默认
+                oldDefaultDeliveryAddress.setDefaultUsing((byte)1);
+                mapper.updateByPrimaryKeySelective(oldDefaultDeliveryAddress);
+            }
+
+        }
         int i = mapper.insertSelective(deliveryAddress);
         if(i != 1){
             throw new SuperCodeException("保存地址信息失败");
@@ -107,7 +118,7 @@ public class DeliveryAddressService {
         if(deliveryAddress.getDefaultUsing() == 0){
             // 默认地址只有一个
             DeliveryAddress havingUsing= mapper.havingUsing(deliveryAddress.getMemberId());
-            if(havingUsing != null ){
+            if(havingUsing != null && havingUsing.getId().intValue() != deliveryAddress.getId().intValue()){
                 // 如果存在默认地址，则将原来的默认地址设置成非默认
                 havingUsing.setDefaultUsing((byte)1);
                 mapper.updateByPrimaryKeySelective(havingUsing);
