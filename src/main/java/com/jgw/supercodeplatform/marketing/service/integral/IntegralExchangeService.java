@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +49,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
     @Autowired
     private CommonUtil commonUtil;
-
+    @Autowired
+    private TaskExecutor taskExecutor;
     // 对象转换器
     @Autowired
     private ModelMapper modelMapper;
@@ -328,6 +330,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 创建订单记录
         // 添加限兑数量
         // 额外数据补充
+        // TODO 库存为0,下架
         doexchanging(exchangeProductParam,userExchangenum);
 
     }
@@ -352,14 +355,46 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             orderMapper.insertSelective(getOrderDo(exchangeProductParam));
             // 创建积分记录
             recordMapper.insertSelective(getRecordDo(exchangeProductParam));
-            // 添加限兑数量
+            // 添加组织下用户限兑数量
             ExchangeStatistics exchangeStatistics = new ExchangeStatistics();
             exchangeStatistics.setOrganizationId(exchangeProductParam.getOrganizationId());
             exchangeStatistics.setProductId(exchangeProductParam.getProductId());
             exchangeStatistics.setMemberId(exchangeProductParam.getMemberId());
             exchangeStatistics.setExchangeNum((Integer) exchangeNumKey.get("count"));
             int j = exchangeStatisticsMapper.updateCount(exchangeStatistics);
+            // 方式指定为库存为0;允许操作失败
+            boolean shouldUnder = (boolean) exchangeNumKey.get("shouldUnder");
+            taskExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    // 由上层事务通知是否下架
+                     if(shouldUnder){
+                         IntegralExchange shouldUndercarriageDO = new IntegralExchange();
+                         try {
+                             // 下架方式为库存为0
+                             // 能走到这里说明需要下架的时候，必然是下架方式需要库存为0，且兑换数量等于剩余库存数
+                             // 新建对象减少非必要字段解析
+                             shouldUndercarriageDO.setId((Long) exchangeNumKey.get("exchangeId"));
+                             // 自动下架
+                             shouldUndercarriageDO.setStatus((byte)2);
+                             mapper.updateByPrimaryKeySelective(shouldUndercarriageDO);
+                         }catch (Exception e){
+                             if(logger.isErrorEnabled()){
+                                 logger.error("[自动下架失败]");
+                                 logger.error("[start desc========================================================");
+                                 e.printStackTrace();
+                                 logger.error("[exception =>{}",e.getMessage());
+                                 logger.error("[row record id{}]",JSONObject.toJSONString(shouldUndercarriageDO));
+                                 logger.error("[user exchange param VO{}]",JSONObject.toJSONString(exchangeProductParam));
+                                 logger.error("[biz transfer param for doexchanging{}]",JSONObject.toJSONString(exchangeNumKey));
+                                 logger.error("[end desc========================================================");
+                             }
+                         }
 
+                    }
+
+                }
+            });
         }
     }
 
@@ -478,11 +513,23 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(member.getHaveIntegral() < exchangeProductParam.getExchangeNum() * exists.getExchangeIntegral()){
             throw new SuperCodeException("积分不足");
         }
-        Map userExchangenum = new HashMap(2);// 2次方:4个容量
+        Map userExchangenum = new HashMap(3);// 3次方:8个容量 用于doexchanging方法
         // 需要被更新的兑换数
         userExchangenum.put("count",exchangeStatistics.getExchangeNum() + exchangeProductParam.getExchangeNum());
         // 兑换积分数
         userExchangenum.put("ingetralNum",exchangeProductParam.getExchangeNum() * exists.getExchangeIntegral());
+
+        // 在这里决定子线程是否下架;已经被行锁锁住
+        if (exists.getHaveStock().intValue() == exchangeProductParam.getExchangeNum().intValue()
+                && exists.getUndercarriageSetWay()!=null && exists.getUndercarriageSetWay().intValue() == 0) {
+            userExchangenum.put("shouldUnder",true);
+        } else {
+            userExchangenum.put("shouldUnder",false);
+        }
+        // 库存为0的子线程使用
+        userExchangenum.put("exchangeId",exists.getId());
+        // log使用
+        userExchangenum.put("dbrecord",exists);
         return userExchangenum;
 
     }
