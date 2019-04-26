@@ -73,6 +73,7 @@ public class MemberExchangeController {
     @ApiOperation(value = "商品兑换", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<IntegralExchangeSkuDetailAndAddress> exchanging(@RequestBody ExchangeProductParam exchangeProductParam, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException {
+        exchangeProductParam.setMemberId(jwtUser.getMemberId());
         integralExchangeService.exchanging(exchangeProductParam);
         return RestResult.success("success",null);
     }

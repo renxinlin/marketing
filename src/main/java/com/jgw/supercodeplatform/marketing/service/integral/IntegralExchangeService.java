@@ -496,7 +496,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(exchangeProductParam == null){
             throw new SuperCodeException("兑换信息不全000001");
         }
-        if(exchangeProductParam.getMemberId() == null && exchangeProductParam.getMemberId() <= 0){
+        logger.info("[兑换参数{}]",JSONObject.toJSONString(exchangeProductParam));
+        if(exchangeProductParam.getMemberId() == null || exchangeProductParam.getMemberId() <= 0){
             throw new SuperCodeException("兑换信息不全000002");
         }
         if(StringUtils.isEmpty(exchangeProductParam.getAddress())){
