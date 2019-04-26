@@ -104,7 +104,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
 
 
-    @Select(startScript + "select " + allFileds + " from marketing_integral_exchange ie where ie.ProductId = #{productId} " + endScript)
+    @Select(startScript + "select " + allFileds + " from marketing_integral_exchange ie where ie.ProductId = #{productId}  and ie.Status = 3" + endScript)
     List<IntegralExchange> selectH5ByIdFirst(@Param("productId") String productId);
 
 
