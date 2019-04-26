@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.common.util.SerialNumberGenerator;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.*;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
@@ -13,6 +14,7 @@ import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.*;
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -24,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import sun.security.x509.SerialNumber;
 
 import java.util.*;
 
@@ -398,6 +401,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             });
         }
     }
+    
 
     /**
      * 创建订单信息
@@ -409,7 +413,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         IntegralOrder order = modelMapper.map(exchangeProductParam, IntegralOrder.class);
         List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId(),exchangeProductParam.getSkuId());
         // 订单号
-        order.setOrderId(UUID.randomUUID().toString().replaceAll("-",""));
+        order.setOrderId(SerialNumberGenerator.generatorDateAndFifteenNumber());
         // 订单地址
          order.setExchangeIntegralNum(exchangeProductParam.getExchangeNum() * integralExchanges.get(0).getExchangeIntegral());
          // 待发货
