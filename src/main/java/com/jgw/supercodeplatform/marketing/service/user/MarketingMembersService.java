@@ -120,7 +120,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	@Value("${marketing.server.ip}")
 	private String serverIp;
 
-
+	@Autowired
+	private WXPayTradeNoGenerator wXPayTradeNoGenerator ;
 
 
 	private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
@@ -837,7 +838,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
 
 			//生成订单号
-			String partner_trade_no=WXPayTradeNoGenerator.tradeNo();
+			String partner_trade_no=wXPayTradeNoGenerator.tradeNo();
 			//保存订单
 			SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			WXPayTradeOrder tradeOrder=new WXPayTradeOrder();
