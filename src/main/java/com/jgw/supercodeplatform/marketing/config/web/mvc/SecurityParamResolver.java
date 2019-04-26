@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.exception.UserExpireException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * mvc参数额外解析：JwtUser.class
@@ -24,7 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 public class SecurityParamResolver implements HandlerMethodArgumentResolver {
     private static Logger logger = LoggerFactory.getLogger(SecurityParamResolver.class);
 
-
+    @Value("${cookie.domain}")
+    private String domain;
     @Override
     public boolean supportsParameter(MethodParameter methodParameter) {
         Class<?> clazz=methodParameter.getParameterType();
@@ -65,6 +68,14 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
                 // 重新登录的异常信息
                 throw new UserExpireException("用户信息不存在...");
             }
+            HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
+
+            String jwtToken=JWTUtil.createTokenWithClaim(jwtUser);
+            Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
+            jwtTokenCookie.setMaxAge(60*60*2);
+            jwtTokenCookie.setPath("/");
+            jwtTokenCookie.setDomain(domain);
+            response.addCookie(jwtTokenCookie);
             return jwtUser;
         } catch (Exception e) {
             logger.error("解析jwt异常" + token);
