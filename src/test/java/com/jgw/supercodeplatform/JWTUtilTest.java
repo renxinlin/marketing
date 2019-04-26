@@ -119,8 +119,22 @@ public class JWTUtilTest {
 //		String createTokenWithClaim = demo.createTokenWithClaim(j);
 //		System.out.println(createTokenWithClaim);
 //		Thread.sleep(2000);
-		JwtUser jwtUser = demo.verifyToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJINSBTRUNVQ0lUWSIsImF1ZCI6IkFQUCIsImp3dFVzZXIiOiJ7XCJoYXZlSW50ZWdyYWxcIjowLFwibWVtYmVySWRcIjoxMyxcIm1lbWJlck5hbWVcIjpcIlwiLFwibW9iaWxlXCI6XCJcIixcIm9yZ2FuaXphdGlvbk5hbWVcIjpcIlwiLFwicmVnaXN0ZXJlZFwiOjAsXCJ3ZWNoYXRIZWFkSW1nVXJsXCI6XCJcIn0iLCJpc3MiOiJKR1cgQ0pNIENPTVBBTlkiLCJleHAiOjE1NTYxMDE3NTEsImlhdCI6MTU1NjA5NDU1MX0.GmIgFpoYqR-ASflGOr63nZXwVC3AckIvGTVcxg5Ug0s");
+		JwtUser jwtUser = demo.verifyToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJINSBTRUNVQ0lUWSIsImF1ZCI6IkFQUCIsImp3dFVzZXIiOiJ7XCJoYXZlSW50ZWdyYWxcIjowLFwibWVtYmVySWRcIjoxMyxcIm1lbWJlck5hbWVcIjpcIjEzXCIsXCJtb2JpbGVcIjpcIlwiLFwib3JnYW5pemF0aW9uTmFtZVwiOlwiXCIsXCJyZWdpc3RlcmVkXCI6MCxcIndlY2hhdEhlYWRJbWdVcmxcIjpcIlwifSIsImlzcyI6IkpHVyBDSk0gQ09NUEFOWSIsImV4cCI6MTU1NjE4MTA1MywiaWF0IjoxNTU2MTczODUzfQ.CFNJn5L7FWWFYblw6T7StaO9wpFBDEQnUGPOhJUZh9I");
 
 		System.out.println(jwtUser);
+//
+//		List l = new ArrayList();
+//		l.add("1");
+//		l.add("11");
+//		l.add("12");
+//		l.remove(new String("12"));
+//		System.out.println(JSONObject.toJSONString(l));
+
+	}
+	class test{
+			String i ;
+			public  test (String i){
+				this.i =i;
+			}
 	}
 }
