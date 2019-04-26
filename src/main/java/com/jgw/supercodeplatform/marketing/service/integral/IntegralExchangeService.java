@@ -358,7 +358,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             // 添加组织下用户限兑数量
             ExchangeStatistics exchangeStatistics = new ExchangeStatistics();
             exchangeStatistics.setOrganizationId(exchangeProductParam.getOrganizationId());
-            exchangeStatistics.setProductId(exchangeProductParam.getProductId());
+            // PEODUCTID + SKUID
+            exchangeStatistics.setProductId(exchangeProductParam.getProductId()+exchangeProductParam.getSkuId());
             exchangeStatistics.setMemberId(exchangeProductParam.getMemberId());
             exchangeStatistics.setExchangeNum((Integer) exchangeNumKey.get("count"));
             int j = exchangeStatisticsMapper.updateCount(exchangeStatistics);
@@ -501,7 +502,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("库存不足");
         }
 
-        ExchangeStatistics exchangeStatistics = exchangeStatisticsMapper.selectCount(exchangeProductParam.getOrganizationId(), exchangeProductParam.getProductId(), exchangeProductParam.getMemberId());
+        ExchangeStatistics exchangeStatistics = exchangeStatisticsMapper.selectCount(exchangeProductParam.getOrganizationId(), exchangeProductParam.getProductId()+exchangeProductParam.getSkuId(), exchangeProductParam.getMemberId());
         if (exchangeStatistics == null){
             exchangeStatistics = new ExchangeStatistics();
             exchangeStatistics.setExchangeNum(0);
