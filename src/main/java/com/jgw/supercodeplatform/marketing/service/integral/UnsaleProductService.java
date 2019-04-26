@@ -83,13 +83,21 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Set<String> excludeProductIds = new HashSet<>();
         // 选择的产品skuId
         Set<String> excludeSkuIds = new HashSet<>();
+        Map<String,List<String>> newExcludeSkuIds = new HashMap<>();
+
         // 生成传递基础数据的参数
         for(IntegralExchange excludeProduct:excludeProducts){
             if(!StringUtils.isBlank(excludeProduct.getProductId()) && excludeProduct.getSkuStatus() == 0){
                 excludeProductIds.add(excludeProduct.getProductId());
             }
             if(!StringUtils.isBlank(excludeProduct.getSkuId())){
-                excludeSkuIds.add(excludeProduct.getSkuId());
+//                excludeSkuIds.add(excludeProduct.getSkuId());
+                List<String> skuIds = newExcludeSkuIds.get(excludeProduct.getProductId());
+                if(skuIds == null){
+                    skuIds = new ArrayList<String>();
+                }
+                skuIds.add(excludeProduct.getSkuId());
+                newExcludeSkuIds.put(excludeProduct.getProductId(),skuIds);
             }
         }
 
@@ -103,14 +111,27 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 excludeProductIds.remove(integralExchange.getProductId());
             }
             if(!StringUtils.isBlank(integralExchange.getSkuId())){
-                excludeSkuIds.remove(integralExchange.getSkuId());
+//                excludeSkuIds.remove(integralExchange.getSkuId());
+                List<String> skuIds = newExcludeSkuIds.get(integralExchange.getProductId());
+                if(skuIds != null){
+                    skuIds.remove(integralExchange.getSkuId());
+                }
+                if(CollectionUtils.isEmpty(skuIds)){
+                    newExcludeSkuIds.remove(integralExchange.getProductId());
+
+                }
             }
         }
+        // sku
+        // productID_[SKU]
+        // 产品无sku,直接过滤,产品有sku,过滤sku
+        // PRODUCT_id
+        // 直接过滤产品
 
         // 查询基础平台
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
-        queryCondition.setExcludeSkuIds(new ArrayList(excludeSkuIds));
+        queryCondition.setExcludeSkuIds(newExcludeSkuIds);
         RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > restResult = getProductFromBaseService(queryCondition,false);
         if(restResult.getState() == 200){
             return  restResult;
@@ -138,14 +159,22 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Set<String> excludeProductIds = new HashSet<>();
         // 选择的产品skuId
         Set<String> excludeSkuIds = new HashSet<>();
+        Map<String,List<String>> newExcludeSkuIds = new HashMap<>();
         // 生成传递基础数据的参数 有skuid,则不要传递关联的productid
         if(!excludeProducts.isEmpty()){
             for(IntegralExchange excludeProduct:excludeProducts){
                 if(!StringUtils.isBlank(excludeProduct.getProductId()) && excludeProduct.getSkuStatus() == 0){
                     excludeProductIds.add(excludeProduct.getProductId());
                 }
-                if(!StringUtils.isBlank(excludeProduct.getSkuId())){
-                    excludeSkuIds.add(excludeProduct.getSkuId());
+                // 有skuid
+                if(!StringUtils.isBlank(excludeProduct.getSkuId()) && excludeProduct.getSkuStatus() == 1){
+//                    excludeSkuIds.add(excludeProduct.getSkuId());
+                    List<String> skuIds = newExcludeSkuIds.get(excludeProduct.getProductId());
+                    if(skuIds == null){
+                        skuIds = new ArrayList<String>();
+                    }
+                    skuIds.add(excludeProduct.getSkuId());
+                    newExcludeSkuIds.put(excludeProduct.getProductId(),skuIds);
                 }
 
             }
@@ -160,7 +189,16 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 excludeProductIds.remove(integralExchange.getProductId());
             }
             if(!StringUtils.isBlank(integralExchange.getSkuId())){
-                excludeSkuIds.remove(integralExchange.getSkuId());
+               // excludeSkuIds.remove(integralExchange.getSkuId());
+                List<String> skuIds = newExcludeSkuIds.get(integralExchange.getProductId());
+                if(skuIds != null){
+                    skuIds.remove(integralExchange.getSkuId());
+                }
+                if(CollectionUtils.isEmpty(skuIds)){
+                    newExcludeSkuIds.remove(integralExchange.getProductId());
+
+                }
+
             }
         }
 
@@ -168,7 +206,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         ProductPageFromBaseServiceParam queryCondition = modelMapper.map(pageParam, ProductPageFromBaseServiceParam.class);
         // 已存在兑换产品由基础信息过滤
         queryCondition.setExcludeProductIds(new ArrayList(excludeProductIds));
-        queryCondition.setExcludeSkuIds(new ArrayList(excludeSkuIds));
+        queryCondition.setExcludeSkuIds(newExcludeSkuIds);
         // 查询自卖
 
         RestResult< AbstractPageService.PageResults<List<ProductAndSkuVo>> > restResult = getProductFromBaseService(queryCondition,true);
@@ -189,7 +227,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         Map queryConditionMap = modelMapper.map(JSONObject.parse(queryConditionStr), HashMap.class);
         // 转换成基础信息所需格式
         List<String> excludeProductIds = (List<String>) queryConditionMap.get("excludeProductIds");
-        List<String> excludeSkuIds = (List<String>) queryConditionMap.get("excludeSkuIds");
+        Map<String,List<String>> excludeSkuIds = (Map<String,List<String>>) queryConditionMap.get("excludeSkuIds");
         if(!CollectionUtils.isEmpty(excludeProductIds)){
             queryConditionMap.put("excludeProductIds",JSONObject.toJSONString(excludeProductIds));
         }
@@ -217,6 +255,12 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 JSONObject productView = (JSONObject)list1.get(i);
 
                 String productId = productView.getString("productId");
+
+                // 基础信息产品sku增删改查后,双方无法感知,但兑换规则是sku和产品只能二选一
+                // 由于基础数据查出的数据不满足sku和产品二选一的业务规则
+                // 所以在做一层过滤
+                // 规则原因:h5的产品设计如果不是二选一会直接存在设计逻辑bug,[例如产品和sku都存在库存等等]
+
                 String productName = productView.getString("productName");
                 String productUrl = productView.getString("productUrl");
                 // 产品营销信息
@@ -258,8 +302,6 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
                 listBySelf.add(pDTO);
             }
             // 待优化区间 end
-            logger.info("{基础信息转换耗时}"+(System.currentTimeMillis()-startTime));
-
             // 转换为前端所需【产品ID,名称图片，展示价】【SKUID,名称图片】
             RestResult<PageResults<List<ProductAndSkuVo>>> pageResultsRestResult = changeBaseServiceDtoToVo(null, listBySelf,pagination,null);
 

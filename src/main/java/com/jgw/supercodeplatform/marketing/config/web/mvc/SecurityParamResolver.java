@@ -69,13 +69,17 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
                 throw new UserExpireException("用户信息不存在...");
             }
             HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
-
-            String jwtToken=JWTUtil.createTokenWithClaim(jwtUser);
-            Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
-            jwtTokenCookie.setMaxAge(60*60*2);
-            jwtTokenCookie.setPath("/");
-            jwtTokenCookie.setDomain(domain);
-            response.addCookie(jwtTokenCookie);
+            try {
+                String jwtToken=JWTUtil.createTokenWithClaim(jwtUser);
+                Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
+                // 两小时登录信息
+                jwtTokenCookie.setMaxAge(60*60*2);
+                jwtTokenCookie.setPath("/");
+                jwtTokenCookie.setDomain(domain);
+                response.addCookie(jwtTokenCookie);
+             }catch (Exception e){
+                e.printStackTrace();
+            }
             return jwtUser;
         } catch (Exception e) {
             logger.error("解析jwt异常" + token);
