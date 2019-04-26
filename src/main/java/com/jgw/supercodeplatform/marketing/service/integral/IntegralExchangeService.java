@@ -330,7 +330,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 创建订单记录
         // 添加限兑数量
         // 额外数据补充
-        // TODO 库存为0,下架
+        // 库存为0,异步下架
         doexchanging(exchangeProductParam,userExchangenum);
 
     }
