@@ -65,7 +65,7 @@ public class DeliveryAddressService {
      * @param deliveryAddress
      * @return
      */
-    public int add(DeliveryAddress deliveryAddress) throws SuperCodeException{
+    public DeliveryAddress add(DeliveryAddress deliveryAddress) throws SuperCodeException{
         // 先基础校验，后业务校验
         validateBasicWithAdd(deliveryAddress);
         validateBizWithAdd(deliveryAddress);
@@ -87,7 +87,7 @@ public class DeliveryAddressService {
             throw new SuperCodeException("保存地址信息失败");
 
         }
-        return i;
+        return deliveryAddress;
     }
     /**
      * 更新地址信息
