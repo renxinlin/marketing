@@ -124,7 +124,10 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
 
     // 保证数据一致性
-    @Update(" update marketing_integral_exchange ie set HaveStock = HaveStock - #{exchangeNum} where HaveStock- #{exchangeNum} > 0 ")
+    @Update(startScript +
+            " update marketing_integral_exchange ie set HaveStock = HaveStock - #{exchangeNum} where HaveStock- #{exchangeNum} > 0 and " +
+            " productId = #{productId} " +
+            " <if test='skuId != null and skuId != &apos;&apos;'> and skuId = #{skuId} </if> " +endScript )
     int reduceStock(ExchangeProductParam exchangeProductParam);
 
     @Insert(startScript +
