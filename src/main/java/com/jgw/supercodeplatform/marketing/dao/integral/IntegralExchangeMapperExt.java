@@ -90,7 +90,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     // 没有匹配的详情信息去基础数据查询
     @Select(startScript +
             " select  ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral,ShowPrice showPriceStr, " +
-            " ExchangeResource exchangeResource, PayWay payWay, SkuStatus skuStatus " +
+            " ExchangeResource exchangeResource, PayWay payWay, SkuStatus skuStatus, HaveStock haveStock  " +
             " from marketing_integral_exchange ie " +
             " where ie.ProductId = #{productId} " +
             endScript)

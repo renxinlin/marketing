@@ -289,6 +289,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             // 添加sku信息
             result.setSkuInfos(skuInfos);
             result.setProductId(integralExchanges.get(0).getProductId());
+            result.setProductName(integralExchanges.get(0).getProductName());
         }
 
         // 补充地址
@@ -350,7 +351,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         int i = mapper.reduceStock(exchangeProductParam);
         // 在同一个事务中，此库存减少可见
         if(i == 0){
-            throw new SuperCodeException("库存不足");
+            throw new SuperCodeException("库存已抢光...");
         }else{
             // 会员减少积分
             membersMapper.deleteIntegral((Integer) exchangeNumKey.get("ingetralNum"),exchangeProductParam.getMemberId());
@@ -401,7 +402,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             });
         }
     }
-    
+
 
     /**
      * 创建订单信息
