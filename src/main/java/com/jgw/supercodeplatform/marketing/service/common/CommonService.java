@@ -3,10 +3,12 @@ package com.jgw.supercodeplatform.marketing.service.common;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.properties.NormalProperties;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
@@ -228,5 +230,37 @@ public class CommonService {
 		}
 		return organizationName;
 	}
+	
+	
+    /**
+     * 获取access_token
+     * @param organizationId
+     * @return
+     * @throws Exception 
+     */
+	public String getAccessTokenByOrgId(String appId,String secret,String organizationId) throws Exception {
+		if (StringUtils.isBlank(appId) || StringUtils.isBlank(secret)|| StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeException("获取access_tokens的参数不能为空", 500);
+		}
+		String key=RedisKey.ACCESS_TOKEN_prefix+organizationId;
+		String accesstoken=redisUtil.get(key);
+		if (StringUtils.isNotBlank(accesstoken)) {
+			return accesstoken;
+		}else {
+			HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(WechatConstants.ACCESS_TOKEN_URL+"&appid="+appId+"&secret="+secret);
+			String body=reHttpClientResult.getContent();
+			logger.info("请求获取用户信息token返回;"+body);
+			if (body.contains("access_token")) {
+				JSONObject tokenObj=JSONObject.parseObject(body);
+				String token=tokenObj.getString("access_token");
+				redisUtil.set(key, token);
+				redisUtil.expire(key, 5400, TimeUnit.SECONDS);
+				return token;
+			}
+			throw new SuperCodeException("获取微信access_toke失败："+body, 500);
+		}
+	}
+
+	
 	
 }

@@ -159,9 +159,10 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 				updateProductList.add(updateProductMap);
 			}
 		}
-		dao.batchInsert(ruleProducts);
 		//请求生码批次及积分url绑定批次
 		integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
+		
+		dao.batchInsert(ruleProducts);
 		//更新产品营销信息
 		updateBaseProductPrice(updateProductList,superToken);
 		
@@ -247,7 +248,8 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		for(int i=0;i<jsonArray.size();i++) {
 			JSONObject prodObject=jsonArray.getJSONObject(i);
 			String productId=prodObject.getString("productId");
-			String productBatchId=prodObject.getString("batchId");
+			//TODO 到时候要换成基础平台的批次
+			String productBatchId=prodObject.getString("traceBatchInfoId");
 			
 			ProductAndBatchGetCodeMO  productAndBatchGetCodeMO=productMap.get(productId);
 			if (null==productAndBatchGetCodeMO) {

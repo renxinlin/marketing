@@ -1,5 +1,22 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
+import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.common.pojo.common.ReturnParamsMap;
@@ -7,14 +24,9 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.common.properties.NormalProperties;
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants;
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
 import com.jgw.supercodeplatform.user.UserInfoUtil;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 基础工具类
@@ -273,5 +285,73 @@ public class CommonUtil extends UserInfoUtil {
 		String xml=commonSearchToXml(daoSearch.getSearch(), fields);
 		daoSearch.setCommonSearchXml(xml);
 	}
+	
+    public static String generateSignature(final Map<String, String> data, SignType signType) throws Exception {
+        Set<String> keySet = data.keySet();
+        String[] keyArray = keySet.toArray(new String[keySet.size()]);
+        Arrays.sort(keyArray);
+        StringBuilder sb = new StringBuilder();
+        for (String k : keyArray) {
+            if (k.equals(WXPayConstants.FIELD_SIGN)) {
+                continue;
+            }
+            if (data.get(k).trim().length() > 0) // 参数值为空，则不参与签名
+                sb.append(k).append("=").append(data.get(k).trim()).append("&");
+        }
+        if (SignType.MD5.equals(signType)) {
+            return MD5(sb.toString()).toUpperCase();
+        }
+        else if (SignType.SHA1.equals(signType)) {
+            return sha1Encrypt(sb.toString());
+        }
+        else {
+            throw new Exception(String.format("Invalid sign_type: %s", signType));
+        }
+    }
     
+    /**
+     * 使用SHA1算法对字符串进行加密
+     * @param str
+     * @return
+     */
+    public static String sha1Encrypt(String str) {
+        if (str == null || str.length() == 0) {
+            return null;
+        }
+        char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+                'a', 'b', 'c', 'd', 'e', 'f' };
+        try {
+            MessageDigest mdTemp = MessageDigest.getInstance("SHA1");
+            mdTemp.update(str.getBytes("UTF-8"));
+
+            byte[] md = mdTemp.digest();
+            int j = md.length;
+            char buf[] = new char[j * 2];
+            int k = 0;
+            for (int i = 0; i < j; i++) {
+                byte byte0 = md[i];
+                buf[k++] = hexDigits[byte0 >>> 4 & 0xf];
+                buf[k++] = hexDigits[byte0 & 0xf];
+            }
+            return new String(buf);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    /**
+     * 生成 MD5
+     *
+     * @param data 待处理数据
+     * @return MD5结果
+     */
+    public static String MD5(String data) throws Exception {
+        java.security.MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] array = md.digest(data.getBytes("UTF-8"));
+        StringBuilder sb = new StringBuilder();
+        for (byte item : array) {
+            sb.append(Integer.toHexString((item & 0xFF) | 0x100).substring(1, 3));
+        }
+        return sb.toString().toUpperCase();
+    }
 }

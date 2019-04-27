@@ -8,7 +8,7 @@ import org.apache.http.client.HttpClient;
 public class WXPayConstants {
 
     public enum SignType {
-        MD5, HMACSHA256
+        MD5, HMACSHA256,SHA1
     }
 
     public static final String DOMAIN_API = "api.mch.weixin.qq.com";
@@ -21,7 +21,8 @@ public class WXPayConstants {
     public static final String SUCCESS  = "SUCCESS";
     public static final String HMACSHA256 = "HMAC-SHA256";
     public static final String MD5 = "MD5";
-
+    public static final String SHA1 = "SHA1";
+    
     public static final String FIELD_SIGN = "sign";
     public static final String FIELD_SIGN_TYPE = "sign_type";
 

@@ -1,40 +1,57 @@
 package com.jgw.supercodeplatform.marketing.controller.common;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.service.common.CommonService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Hashtable;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
+import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/marketing/common")
 @Api(tags = "公共接口")
 public class CommonController extends CommonUtil {
-
+	protected static Logger logger = LoggerFactory.getLogger(CommonController.class);
     @Autowired
     private CommonService service;
 
-
+    @Autowired
+    private MarketingWxMerchantsService marketingWxMerchantsService;
+    
     @RequestMapping(value = "/sendPhoneCode",method = RequestMethod.GET)
     @ApiOperation(value = "发送手机验证码", notes = "")
     @ApiImplicitParam(name = "mobile", paramType = "query", defaultValue = "13925121452", value = "手机号", required = true)
@@ -82,7 +99,44 @@ public class CommonController extends CommonUtil {
         }
         return ImageIO.write(image, "JPEG", response.getOutputStream());
     }
-
     
-    
+    @RequestMapping(value = "/getJssdkInfo",method = RequestMethod.GET)
+    @ApiOperation(value = "获取jssdk权限认证信息", notes = "")
+    @ApiImplicitParams({
+    	@ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "组织id", required = true),
+        @ApiImplicitParam(name = "url", paramType = "query", defaultValue = "http://www.baidu.com", value = "签名页面url", required = true)
+   })
+    public RestResult<Map<String, String>> get(@RequestParam("organizationId")String organizationId,@RequestParam("url")String url) throws Exception {
+    	logger.info("签名信息,organizationId="+organizationId+",url="+url);
+    	MarketingWxMerchants mWxMerchants=marketingWxMerchantsService.selectByOrganizationId(organizationId);
+    	if (null==mWxMerchants) {
+           throw new SuperCodeException("无法获取商户公众号信息", 500);
+		}
+    	String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), organizationId);
+    	HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
+    	String tickContent=result.getContent();
+    	logger.info("获取到tick的数据："+tickContent);
+    	
+    	String noncestr=WXPayUtil.generateNonceStr();
+    	long timestamp=WXPayUtil.getCurrentTimestampMs();
+    	Map<String, String>sinMap=new HashMap<String, String>();
+    	sinMap.put("noncestr", noncestr);
+    	sinMap.put("jsapi_ticket", noncestr);
+    	sinMap.put("timestamp", timestamp+"");
+    	sinMap.put("url", url);
+    	
+    	String signature=CommonUtil.generateSignature(sinMap,SignType.SHA1);
+    	
+    	RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
+    	restResult.setState(200);
+    	Map<String, String> data=new HashMap<String, String>();
+    	data.put("noncestr", noncestr);
+    	data.put("timestamp", timestamp+"");
+    	data.put("appId", mWxMerchants.getMchAppid());
+    	data.put("signature", signature);
+    	restResult.setResults(data);
+    	restResult.setState(200);
+    	
+        return restResult;
+    }
 }
