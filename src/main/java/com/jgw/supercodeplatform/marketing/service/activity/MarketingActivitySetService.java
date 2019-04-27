@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dto.activity.*;
@@ -391,12 +392,12 @@ public class MarketingActivitySetService  {
 			}
 		}
 			String superToken=commonUtil.getSuperToken();
-			String body=commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken);
+			String body=commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
 			JSONObject obj=JSONObject.parseObject(body);
 			int state=obj.getInteger("state");
 			if (200==state) {
 				JSONArray arr=obj.getJSONArray("results");
-				List<Map<String, Object>> params=commonService.getUrlToBatchParam(arr, marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,5);
+				List<Map<String, Object>> params=commonService.getUrlToBatchParam(arr, marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
 				//绑定生码批次到url
 				String bindbatchBody=commonService.bindUrlToBatch(params, superToken);
 				JSONObject bindBatchobj=JSONObject.parseObject(bindbatchBody);
@@ -720,7 +721,7 @@ public class MarketingActivitySetService  {
 
 					Map<String, Object> batchMap=new HashMap<String, Object>();
 					batchMap.put("batchId", codeBatch);
-					batchMap.put("businessType", 1);
+					batchMap.put("businessType", BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
 					batchMap.put("url", marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL);
 					bindBatchList.add(batchMap);
 				}
