@@ -119,7 +119,7 @@ public class CommonController extends CommonUtil {
     	logger.info("获取到tick的数据："+tickContent);
     	
     	String noncestr=WXPayUtil.generateNonceStr();
-    	long timestamp=WXPayUtil.getCurrentTimestampMs();
+    	long timestamp=WXPayUtil.getCurrentTimestamp();
     	Map<String, String>sinMap=new HashMap<String, String>();
     	sinMap.put("noncestr", noncestr);
     	sinMap.put("jsapi_ticket", noncestr);
