@@ -78,7 +78,7 @@ public class MarketingMembersFrontController extends CommonUtil {
 	})
 	public RestResult<H5MembersInfoParam> get(@ApiIgnore H5LoginVO jwtUser) throws Exception {
 		MarketingMembers memberById = marketingMembersService.getMemberById(jwtUser.getMemberId());
-		H5MembersInfoParam memberVO = modelMapper.map(memberById, H5MembersInfoParam.class);
+ 		H5MembersInfoParam memberVO = modelMapper.map(memberById, H5MembersInfoParam.class);
 		return RestResult.success("success", memberVO);
 
 	}
