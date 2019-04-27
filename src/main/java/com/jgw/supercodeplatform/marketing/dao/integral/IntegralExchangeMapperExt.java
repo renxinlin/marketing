@@ -83,7 +83,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
      */
     @Select(startScript
             + " select ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral, ShowPrice showPriceStr from marketing_integral_exchange ie  where OrganizationId = #{organizationId} and Status = 3 "
-            + " group by ProductId,ProductName, ProductPic, ExchangeIntegral, ShowPrice"
+            + " group by ProductId,ProductName, ProductPic, ExchangeIntegral, ShowPrice order by id desc "
             + endScript)
     List<IntegralExchangeParam> getOrganizationExchange(@Param("organizationId") String organizationId);
 
