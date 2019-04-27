@@ -133,8 +133,8 @@ public class CommonController extends CommonUtil {
         String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
     	String signature=CommonUtil.sha1Encrypt(sha1String1);
         logger.error("==================start log=====================");
-    	logger.error("sha1String1");
-        logger.error("signature");
+    	logger.error(sha1String1);
+        logger.error(signature);
     	
     	RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
     	restResult.setState(200);
