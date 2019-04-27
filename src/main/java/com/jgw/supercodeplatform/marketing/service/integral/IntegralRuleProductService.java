@@ -1,5 +1,21 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -20,20 +36,6 @@ import com.jgw.supercodeplatform.marketing.dto.integral.Product;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 @Service
 public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
@@ -99,6 +101,11 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		List<Product> products=bProductRuleParam.getProducts();	
 		if (null==products || products.isEmpty()) {
 			throw new SuperCodeException("产品不能为空", 500);
+		}
+		for (Product product : products) {
+			if (StringUtils.isBlank(product.getProductId())) {
+				throw new SuperCodeException("productId不能为空", 500);
+			}
 		}
 		String organizationId=commonUtil.getOrganizationId();
 		IntegralRule integralRule=inRuleMapperExt.selectByOrgId(organizationId);
@@ -175,6 +182,10 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			
 			List<String> productIds=new ArrayList<String>();
 			String productId=inRuleProduct.getProductId();
+			if (StringUtils.isBlank(productId)) {
+				throw new SuperCodeException("productId不能为空", 500);
+			}
+			
 			productIds.add(productId);
 			//根据产品id集合去基础平台请求对应的产品批次
 			JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
@@ -193,6 +204,14 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 				updateBaseProductPrice(updateProductList,superToken);
 			}
 		}else {
+			if (StringUtils.isBlank(inRuleProduct.getProductId())) {
+				inRuleProduct.setProductId(null);
+			}
+			
+			if (StringUtils.isBlank(inRuleProduct.getProductName())) {
+				inRuleProduct.setProductName(null);
+			}
+			
 			dao.updateByPrimaryKeySelective(inRuleProduct);
 		}
 	}
@@ -290,10 +309,8 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		Integer current=daoSearch.getCurrent();
 		Integer pagesize=daoSearch.getPageSize();
 		
-		if (null!=current && null!=pagesize) {
-			params.put("startNumber", (current-1)*pagesize);
-			params.put("pageSize", daoSearch.getPageSize());
-		}
+		params.put("current", current);
+		params.put("pageSize", pagesize);
 		String organizationId=commonUtil.getOrganizationId();
 		params.put("organizationId",organizationId );
 		params.put("search", daoSearch.getSearch());
