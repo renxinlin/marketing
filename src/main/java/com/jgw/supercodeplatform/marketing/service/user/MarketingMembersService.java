@@ -36,6 +36,7 @@ import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,10 +118,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	@Autowired
 	private GlobalRamCache globalRamCache;
 
+	@Autowired
+	private ModelMapper modelMapper;
+
 	@Value("${marketing.server.ip}")
 	private String serverIp;
 
-
+	@Autowired
+	private WXPayTradeNoGenerator wXPayTradeNoGenerator ;
 
 
 	private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
@@ -273,7 +278,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		marketingMembersAddParam.setUserId(userId);
 		marketingMembersAddParam.setState(1);
 
-		int result = marketingMembersMapper.addMembers(marketingMembersAddParam);
+		int result = marketingMembersMapper.addMembers(modelMapper.map(marketingMembersAddParam,MarketingMembers.class));
 		// 调用用户模块发送短信
 		if(1 == result){
 			String msg = msgTimplate(marketingMembersAddParam.getUserName(),selectedPortrait.get(0).getOrganizationFullName());
@@ -837,7 +842,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
 
 			//生成订单号
-			String partner_trade_no=WXPayTradeNoGenerator.tradeNo();
+			String partner_trade_no=wXPayTradeNoGenerator.tradeNo();
 			//保存订单
 			SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			WXPayTradeOrder tradeOrder=new WXPayTradeOrder();

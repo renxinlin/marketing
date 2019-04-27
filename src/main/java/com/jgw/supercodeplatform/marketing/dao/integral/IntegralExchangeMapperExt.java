@@ -90,7 +90,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     // 没有匹配的详情信息去基础数据查询
     @Select(startScript +
             " select  ProductId productId, ProductName productName, ProductPic productPic, ExchangeIntegral exchangeIntegral,ShowPrice showPriceStr, " +
-            " ExchangeResource exchangeResource, PayWay payWay, SkuStatus skuStatus " +
+            " ExchangeResource exchangeResource, PayWay payWay, SkuStatus skuStatus, HaveStock haveStock  " +
             " from marketing_integral_exchange ie " +
             " where ie.ProductId = #{productId} " +
             endScript)
@@ -104,7 +104,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
 
 
-    @Select(startScript + "select " + allFileds + " from marketing_integral_exchange ie where ie.ProductId = #{productId} " + endScript)
+    @Select(startScript + "select " + allFileds + " from marketing_integral_exchange ie where ie.ProductId = #{productId}  and ie.Status = 3" + endScript)
     List<IntegralExchange> selectH5ByIdFirst(@Param("productId") String productId);
 
 
@@ -113,8 +113,8 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
     @Select(startScript + " select " + allFileds + " from marketing_integral_exchange ie where OrganizationId = #{organizationId} " +
             " and ProductId = #{productId} " +
-            " <if test='skuName != null and skuName != &apos;&apos;'> and SkuName = #{skuName} </if>  for update" +endScript )
-    IntegralExchange exists(@Param("organizationId") String organizationId, @Param("productId") String productId,@Param("skuName") String skuName);
+            " <if test='skuId != null and skuId != &apos;&apos;'> and skuId = #{skuId} </if>  for update" +endScript )
+    IntegralExchange exists(@Param("organizationId") String organizationId, @Param("productId") String productId,@Param("skuId") String skuId);
 
 
 
@@ -124,7 +124,10 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
 
     // 保证数据一致性
-    @Update(" update marketing_integral_exchange ie set HaveStock = HaveStock - #{exchangeNum} where HaveStock- #{exchangeNum} > 0 ")
+    @Update(startScript +
+            " update marketing_integral_exchange ie set HaveStock = HaveStock - #{exchangeNum} where HaveStock- #{exchangeNum} >= 0 and " +
+            " productId = #{productId} " +
+            " <if test='skuId != null and skuId != &apos;&apos;'> and skuId = #{skuId} </if> " +endScript )
     int reduceStock(ExchangeProductParam exchangeProductParam);
 
     @Insert(startScript +

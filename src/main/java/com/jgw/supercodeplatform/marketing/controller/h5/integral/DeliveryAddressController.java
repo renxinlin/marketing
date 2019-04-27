@@ -104,7 +104,7 @@ public class DeliveryAddressController extends CommonUtil {
     @ApiOperation(value = "新增地址不超过5个", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "ldpfbsujjknla;s.lasufuafpioquw949gyobrljaugf89iweubjkrlnkqsufi.awi2f7ygihuoquiu", value = "jwt-token信息", required = true)
     })
-    public RestResult add(@RequestBody DeliveryAddressParam deliveryAddress, @ApiIgnore H5LoginVO jwtUser) throws Exception {
+    public RestResult<DeliveryAddress> add(@RequestBody DeliveryAddressParam deliveryAddress, @ApiIgnore H5LoginVO jwtUser) throws Exception {
         // 前端格式转换
         DeliveryAddress deliveryAddressDto = modelMapper.map(deliveryAddress, DeliveryAddress.class);
         if(deliveryAddress.getDefaultUsingWeb()){
@@ -116,8 +116,10 @@ public class DeliveryAddressController extends CommonUtil {
         Long memberId = jwtUser.getMemberId();
         deliveryAddressDto.setMemberId(memberId);
         deliveryAddressDto.setMemberName(membersMapper.getMemberById(memberId).getUserName());
-        int i =  deliveryAddressService.add(deliveryAddressDto);
-        return RestResult.success();
+        DeliveryAddress toWeb = deliveryAddressService.add(deliveryAddressDto);
+        // TODO 优化
+        toWeb.setDetailAll(toWeb.getProvince()+toWeb.getCity()+toWeb.getCountry()+toWeb.getDetail());
+        return RestResult.success("success",toWeb);
     }
 
 
