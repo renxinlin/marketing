@@ -9,7 +9,7 @@ public class CommonConstants {
      */
     public static final String JWT_TOKEN = "jwt-token";
 
-
+    
     /**
      * 请求码管理进行码关联过的产品路径
      */

@@ -37,8 +37,19 @@ public class IntegralRuleService  extends AbstractPageService<IntegralRecord > {
     	   integralRule.setOrganizationName(commonUtil.getOrganizationName());
     	  dao.insert(integralRule); 
 	   }else {
-		   dao.updateByPrimaryKeySelective(integralRule);
+           checkStatusAndValue(integralRule.getIntegralByBirthdayStatus(),integralRule.getIntegralByBirthday());
+           checkStatusAndValue(integralRule.getIntegralByFirstTimeStatus(),integralRule.getIntegralByFirstTime());
+           checkStatusAndValue(integralRule.getIntegralByRegisterStatus(),integralRule.getIntegralByRegister());
+		   dao.updateByPrimaryKey(integralRule);
 	   }
+	}
+
+	private void checkStatusAndValue(Byte status, Integer value) throws SuperCodeException {
+      if (null!=status && status.intValue()==1) {
+		if (null==value) {
+			throw new SuperCodeException("请检查状态值为1时，value不能为空", 500);
+		}
+	  } 		
 	}
 
 	public IntegralRule getCurrOrgRule() throws SuperCodeException {

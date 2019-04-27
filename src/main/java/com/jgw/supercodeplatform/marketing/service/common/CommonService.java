@@ -87,11 +87,11 @@ public class CommonService {
 	}
 	
 	
-	public String getBatchInfo(List<ProductAndBatchGetCodeMO>productAndBatchGetCodeMOs,String superToken) throws SuperCodeException {
+	public String getBatchInfo(List<ProductAndBatchGetCodeMO>productAndBatchGetCodeMOs,String superToken,String url) throws SuperCodeException {
 		String jsonData=JSONObject.toJSONString(productAndBatchGetCodeMOs);
 		Map<String,String> headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
-		ResponseEntity<String>  response=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL, jsonData, headerMap);
+		ResponseEntity<String>  response=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+url, jsonData, headerMap);
 		logger.info("请求码管理批次信息返回数据:"+response.toString());
 		String body=response.getBody();
 		return body;

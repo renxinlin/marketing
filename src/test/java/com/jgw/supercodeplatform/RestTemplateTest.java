@@ -72,10 +72,10 @@ private String userServiceUrl;
 public void unSelectPage() throws SuperCodeException {
 	Map<String, Object>params=new HashMap<String, Object>();
 	Integer current=1;
-	Integer pagesize=10;
+	Integer pagesize=15;
 	
 	if (null!=current && null!=pagesize) {
-		params.put("startNumber", (current-1)*pagesize);
+		params.put("current", 1);
 		params.put("pageSize", pagesize);
 	}
 	String organizationId="86ff1c47b5204e88918cb89bbd739f12";
@@ -85,7 +85,10 @@ public void unSelectPage() throws SuperCodeException {
 	List<String>productIds=new ArrayList<String>();
 	productIds.add("6ddcdfa718314dbeba04e297ba064bd2");
 	productIds.add("afcf7384963e4b5c914296e15113c500");
-	params.put("excludeProductIds",productIds);
+	
+	if (null!=productIds && !productIds.isEmpty()) {
+		params.put("excludeProductIds",String.join(",", productIds));
+	}
 	ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, null);
 	String body=responseEntity.getBody();
 	JSONObject json=JSONObject.parseObject(body);

@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
@@ -153,7 +154,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		}
 		dao.batchInsert(ruleProducts);
 		//请求生码批次及积分url绑定批次
-		integralUrlBindBatch(1,superToken, productAndBatchGetCodeMOs);
+		integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
 		//更新产品营销信息
 		updateBaseProductPrice(updateProductList,superToken);
 		
@@ -179,7 +180,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
 			//构建请求生码批次参数
 			List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
-			integralUrlBindBatch(1,superToken, productAndBatchGetCodeMOs);
+			integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
 			
 			//更新产品营销信息
 			List<Map<String, Object>> updateProductList=new ArrayList<Map<String,Object>>();
@@ -227,7 +228,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		for(int i=0;i<jsonArray.size();i++) {
 			JSONObject prodObject=jsonArray.getJSONObject(i);
 			String productId=prodObject.getString("productId");
-			String productBatchId=prodObject.getString("productBatchId");
+			String productBatchId=prodObject.getString("batchId");
 			
 			ProductAndBatchGetCodeMO  productAndBatchGetCodeMO=productMap.get(productId);
 			if (null==productAndBatchGetCodeMO) {
@@ -262,11 +263,15 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 	private void integralUrlBindBatch(int businessType, String superToken, List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs)
 			throws SuperCodeException {
 		if (null!=productAndBatchGetCodeMOs && !productAndBatchGetCodeMOs.isEmpty()) {
-			String batchInfoBody=commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken);
+			String batchInfoBody=commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
 			JSONObject obj=JSONObject.parseObject(batchInfoBody);
 			int batchInfostate=obj.getInteger("state");
 			if (200!=batchInfostate) {
 				throw new SuperCodeException("积分设置时根据产品及批次获取码管理生码批次失败："+batchInfoBody, 500);
+			}
+			JSONArray batchArray=obj.getJSONArray("results");
+			if (null==batchArray || batchArray.isEmpty()) {
+				throw new SuperCodeException("该产品的批次未查到码关联信息，前检查是否已做过码关联的批次被删除", 500);
 			}
 			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
 			String bindBatchBody=commonService.bindUrlToBatch(batchInfoparams, superToken);
