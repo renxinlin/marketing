@@ -35,7 +35,7 @@ public interface MarketingMembersMapper {
             + " #{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday}"
             + " ,NOW(),#{organizationId},"
             + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state},1,#{wechatHeadImgUrl})")
-    int addMembers(MarketingMembersAddParam marketingMembersAddParam);
+    int addMembers(MarketingMembers marketingMembers);
 
 
     /**
