@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -45,9 +46,19 @@ public class H5OrderRecordController {
     })
     public RestResult<AbstractPageService.PageResults<List<IntegralOrderPageParam>>> memberList(DaoSearchWithOrganizationIdParam search, @ApiIgnore H5LoginVO jwtuser) throws Exception {
         // 查询参数
+        // TODO 撤销，前端需求
+        search.setPageSize(11);
         IntegralOrder searchParams = modelMapper.map(search,IntegralOrder.class);
         searchParams.setMemberId(jwtuser.getMemberId());
         AbstractPageService.PageResults< List<IntegralOrderPageParam>> objectPageResults = service.listSearchViewLike(searchParams);
+
+        // 转成前端排序格式 倒排序,这样
+        List<IntegralOrderPageParam> list = objectPageResults.getList();
+        List<IntegralOrderPageParam> listVO = new LinkedList<>();
+        for(int i=list.size()-1; i>=0;i--){
+            listVO.add(list.get(i));
+        }
+        objectPageResults.setList(listVO);
         return RestResult.success("success",objectPageResults);
     }
 }
