@@ -122,7 +122,7 @@ public class CommonController extends CommonUtil {
     	long timestamp=WXPayUtil.getCurrentTimestamp();
     	Map<String, String>sinMap=new HashMap<String, String>();
     	sinMap.put("noncestr", noncestr);
-    	sinMap.put("jsapi_ticket", noncestr);
+    	sinMap.put("jsapi_ticket", tickContent);
     	sinMap.put("timestamp", timestamp+"");
     	sinMap.put("url", url);
     	
