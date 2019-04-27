@@ -8,7 +8,9 @@ package com.jgw.supercodeplatform.marketing.constants;
  */
 public class RedisKey {
 	
-	 public static String phone_code_prefix="marketing:h5_phone_code_";
+	 public static String phone_code_prefix="marketing:h5_phone_code:";
 	 
-	 public static String organizationId_prefix="marketing:organizationId";
+	 public static String organizationId_prefix="marketing:organizationId:";
+	 
+	 public static String ACCESS_TOKEN_prefix="marketing:access_token:";
 }
