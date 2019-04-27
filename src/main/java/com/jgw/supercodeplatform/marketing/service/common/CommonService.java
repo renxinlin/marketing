@@ -254,8 +254,9 @@ public class CommonService {
 			if (body.contains("access_token")) {
 				JSONObject tokenObj=JSONObject.parseObject(body);
 				String token=tokenObj.getString("access_token");
-				redisUtil.set(key, token);
-				redisUtil.expire(key, 5400, TimeUnit.SECONDS);
+				// TODO 影响调试
+//				redisUtil.set(key, token);
+//				redisUtil.expire(key, 5400, TimeUnit.SECONDS);
 				return token;
 			}
 			throw new SuperCodeException("获取微信access_toke失败："+body, 500);

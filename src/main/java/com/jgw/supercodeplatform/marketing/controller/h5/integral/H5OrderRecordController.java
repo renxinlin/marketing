@@ -46,8 +46,6 @@ public class H5OrderRecordController {
     })
     public RestResult<AbstractPageService.PageResults<List<IntegralOrderPageParam>>> memberList(DaoSearchWithOrganizationIdParam search, @ApiIgnore H5LoginVO jwtuser) throws Exception {
         // 查询参数
-        // TODO 撤销，前端需求
-        search.setPageSize(11);
         IntegralOrder searchParams = modelMapper.map(search,IntegralOrder.class);
         searchParams.setMemberId(jwtuser.getMemberId());
         AbstractPageService.PageResults< List<IntegralOrderPageParam>> objectPageResults = service.listSearchViewLike(searchParams);
