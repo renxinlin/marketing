@@ -30,9 +30,18 @@ public class H5MembersInfoParam {
     private String customerName;//门店名称
     @ApiModelProperty("门店编码")
     private String customerId;//门店编码
+    @ApiModelProperty("省市区编码")
+    private String pCCcode;
 
+    public String getpCCcode() {
+        return pCCcode;
+    }
 
- 	public String getMobile() {
+    public void setpCCcode(String pCCcode) {
+        this.pCCcode = pCCcode;
+    }
+
+    public String getMobile() {
         return mobile;
     }
 

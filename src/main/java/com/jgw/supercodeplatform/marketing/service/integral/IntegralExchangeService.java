@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.SerialNumberGenerator;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
@@ -415,7 +416,9 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         List<IntegralExchange> integralExchanges = mapper.selectByProductId(exchangeProductParam.getProductId(),exchangeProductParam.getSkuId());
         // 订单号
         order.setOrderId(SerialNumberGenerator.generatorDateAndFifteenNumber());
-        // 订单地址
+        // 兑换类型
+        order.setExchangeResource(integralExchanges.get(0).getExchangeResource());
+        // 订单积分
          order.setExchangeIntegralNum(exchangeProductParam.getExchangeNum() * integralExchanges.get(0).getExchangeIntegral());
          // 待发货
         order.setStatus((byte)0);
@@ -705,17 +708,29 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             integralExchange.setCustomerLimitNum(999999);
             //throw new SuperCodeException("每人限兑为正整数");
         }
-
+        if(integralExchange.getUndercarriageSetWay() == null ){
+            throw new SuperCodeException("请设置自动下架方式");
+        }
 
         // 默认上架:应前端要求将0改成3
         integralExchange.setStatus((byte)3);
+        if(integralExchange.getUndercarriageSetWay() == 0 && integralExchange.getExchangeStock() == 0){
+            // 库存为0 自动下架
+            integralExchange.setStatus((byte)2);
+        }
+        // 时间下架
+        if(integralExchange.getUndercarriageSetWay() == 1
+                && DateUtil.DateFormat(new Date(),"yyyy-MM-dd")
+                .compareTo(DateUtil.DateFormat( integralExchange.getUnderCarriage(),"yyyy-MM-dd")) >= 0) {
+            // 库存为0 自动下架
+            integralExchange.setStatus((byte)2);
+
+        }
         if(integralExchange.getPayWay() == null || integralExchange.getPayWay() != 0){
             integralExchange.setPayWay((byte)0);
 //            throw new SuperCodeException("支付手段目前只有积分");
         }
-        if(integralExchange.getUndercarriageSetWay() == null ){
-            throw new SuperCodeException("请设置自动下架方式");
-        }
+
         if(integralExchange.getUndercarriageSetWay() == 1 && (integralExchange.getUnderCarriage() == null )){
             throw new SuperCodeException("请设置自动下架时间");
         }
@@ -764,6 +779,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                 }
              }
         }
+
     }
 
     /**
