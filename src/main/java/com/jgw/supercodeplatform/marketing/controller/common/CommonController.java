@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,12 +118,12 @@ public class CommonController extends CommonUtil {
     	HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
     	String tickContent=result.getContent();
     	logger.info("获取到tick的数据："+tickContent);
-    	
+        String ticket = JSONObject.parseObject(tickContent).getString("ticket");
     	String noncestr=WXPayUtil.generateNonceStr();
     	long timestamp=WXPayUtil.getCurrentTimestamp();
     	Map<String, String>sinMap=new HashMap<String, String>();
     	sinMap.put("noncestr", noncestr);
-    	sinMap.put("jsapi_ticket", tickContent);
+    	sinMap.put("jsapi_ticket", ticket);
     	sinMap.put("timestamp", timestamp+"");
     	sinMap.put("url", url);
     	
