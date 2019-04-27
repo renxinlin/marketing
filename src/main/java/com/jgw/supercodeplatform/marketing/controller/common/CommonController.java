@@ -112,10 +112,9 @@ public class CommonController extends CommonUtil {
     	if (null==mWxMerchants) {
            throw new SuperCodeException("无法获取商户公众号信息", 500);
 		}
-//    	String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), organizationId);
+    	String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), organizationId);
         // TODO 测试
-    	String access_token ="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+mWxMerchants.getMchAppid()+"&secret="+mWxMerchants.getMerchantSecret();
-    	HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+access_token+"&type=jsapi");
+    	HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
     	String tickContent=result.getContent();
     	logger.info("获取到tick的数据："+tickContent);
     	

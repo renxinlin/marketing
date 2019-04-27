@@ -247,7 +247,8 @@ public class CommonService {
 		if (StringUtils.isNotBlank(accesstoken)) {
 			return accesstoken;
 		}else {
-			HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(WechatConstants.ACCESS_TOKEN_URL+"&appid="+appId+"&secret="+secret);
+			String access_token_url ="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appId+"&secret="+secret;
+			HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(access_token_url);
 			String body=reHttpClientResult.getContent();
 			logger.info("请求获取用户信息token返回;"+body);
 			if (body.contains("access_token")) {
