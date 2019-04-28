@@ -3,6 +3,8 @@ package com.jgw.supercodeplatform.marketing.dao.integral;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralRecordMapper;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
+
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -82,4 +84,30 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
             +endWhere
             +endScript)
 	List<IntegralRecord> selectByMemberIdAndIntegralReasonCode(Long memberId, Integer integralReasonCode);
+
+    @Insert({startScript,
+    	        "insert into marketing_integral_record (MemberType, ",
+    	        "MemberId, MemberName, ",
+    	        "Mobile, IntegralReasonCode, ",
+    	        "IntegralReason, ProductId, ",
+    	        "ProductName, OuterCodeId, ",
+    	        "CodeTypeId, CustomerName, ",
+    	        "CustomerId, CreateDate, ",
+    	        "OrganizationId, OrganizationName, ",
+    	        "IntegralNum)",
+    	        "values ",
+    	        " <foreach collection='list' item='item' index='index' separator=','>",
+	    	        "( #{item.memberType,jdbcType=TINYINT}, ",
+	    	        "#{item.memberId,jdbcType=BIGINT}, #{item.memberName,jdbcType=VARCHAR}, ",
+	    	        "#{item.mobile,jdbcType=VARCHAR}, #{item.integralReasonCode,jdbcType=INTEGER}, ",
+	    	        "#{item.integralReason,jdbcType=VARCHAR}, #{item.productId,jdbcType=VARCHAR}, ",
+	    	        "#{item.productName,jdbcType=VARCHAR}, #{item.outerCodeId,jdbcType=VARCHAR}, ",
+	    	        "#{item.codeTypeId,jdbcType=VARCHAR}, #{item.customerName,jdbcType=VARCHAR}, ",
+	    	        "#{item.customerId,jdbcType=VARCHAR}, #{item.createDate,jdbcType=TIMESTAMP}, ",
+	    	        "#{item.organizationId,jdbcType=VARCHAR}, #{item.organizationName,jdbcType=VARCHAR}, ",
+	    	        "#{item.integralNum,jdbcType=INTEGER})",
+    	       " </foreach>",
+    		endScript
+    })
+	void batchInsert(List<IntegralRecord> inRecords);
 }

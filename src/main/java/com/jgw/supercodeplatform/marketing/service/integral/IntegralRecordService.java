@@ -39,7 +39,7 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
 
 
 	public void batchInsert(List<IntegralRecord> inRecords) {
-		
+		recordMapper.batchInsert(inRecords);
 	}
 
 
