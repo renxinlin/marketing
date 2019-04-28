@@ -105,7 +105,9 @@ public class WeixinAuthController {
     			if (null!=memberState && memberState.intValue()==1) {
     				h5BUf.append("&memberId="+members.getId());
     				needWriteJwtToken=true;
-				}
+				}else {
+	    			h5BUf.append("&memberId=-1");
+	    		}
     		}else {
     			h5BUf.append("&memberId=-1");
     		}
