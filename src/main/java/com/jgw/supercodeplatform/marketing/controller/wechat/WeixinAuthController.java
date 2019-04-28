@@ -100,9 +100,12 @@ public class WeixinAuthController {
 			}
     		h5BUf.append("&organizationId="+organizationId);
     		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
-    		if (null!=members) {
-    			h5BUf.append("&memberId="+members.getId());
-    			needWriteJwtToken=true;
+    		if (null!=members ) {
+    			Byte memberState=members.getState();
+    			if (null!=memberState && memberState.intValue()==1) {
+    				h5BUf.append("&memberId="+members.getId());
+    				needWriteJwtToken=true;
+				}
     		}else {
     			h5BUf.append("&memberId=-1");
     		}
