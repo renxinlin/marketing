@@ -40,15 +40,15 @@ public class IntegralRule {
     private Integer integralByFirstTime;
 
     /** 额外送注册状态：0勾选有效1无效 */
-    @ApiModelProperty(value = "额外送注册状态：0勾选有效1无效")
+    @ApiModelProperty(value = "额外送注册状态：1勾选有效0无效")
     private Byte integralByRegisterStatus;
 
     /** 额外送生日状态：0勾选有效1无效 */
-    @ApiModelProperty(value = "额外送生日状态：0勾选有效1无效")
+    @ApiModelProperty(value = "额外送生日状态：1勾选有效0无效")
     private Byte integralByBirthdayStatus;
 
     /** 额外历史首次送状态：0勾选有效1无效 */
-    @ApiModelProperty(value = "额外历史首次送状态：0勾选有效1无效")
+    @ApiModelProperty(value = "额外历史首次送状态：1勾选有效0无效")
     private Byte integralByFirstTimeStatus;
 
     /** 组织id */

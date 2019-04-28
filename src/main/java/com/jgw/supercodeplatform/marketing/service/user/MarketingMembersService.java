@@ -1,5 +1,28 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
+import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
+
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -19,6 +42,7 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapp
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
@@ -28,30 +52,19 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
-import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
-import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Service
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
@@ -91,6 +104,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	@Autowired
 	private WXPayTradeOrderMapper wXPayTradeOrderMapper;
 
+	@Autowired
+	private IntegralRuleMapperExt integralRuleDao;
+	
 	@Autowired
 	RedisLockUtil lock;
 
@@ -277,10 +293,18 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String userId = getUUID();
 		marketingMembersAddParam.setUserId(userId);
 		marketingMembersAddParam.setState(1);
-
-		int result = marketingMembersMapper.addMembers(modelMapper.map(marketingMembersAddParam,MarketingMembers.class));
+		MarketingMembers members=modelMapper.map(marketingMembersAddParam,MarketingMembers.class);
+		int result = marketingMembersMapper.insert(members);
 		// 调用用户模块发送短信
 		if(1 == result){
+			IntegralRule rule=integralRuleDao.selectByOrgId(organizationId);
+			if (null!=rule) {
+				Byte registerState=rule.getIntegralByRegisterStatus();
+				if (null!=registerState && registerState.intValue()==1) {
+					members.setHaveIntegral(rule.getIntegralByRegister());
+					marketingMembersMapper.update(members);
+				}
+			}
 			String msg = msgTimplate(marketingMembersAddParam.getUserName(),selectedPortrait.get(0).getOrganizationFullName());
 			sendRegisterMessage(mobile,msg);
 
@@ -389,9 +413,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return marketingMembersMapper.updateMembersStatus(id,status);
 	}
 
-	public void addMember(MarketingMembers members) {
-		marketingMembersMapper.insert(members);
-	}
 	/**
 	 * 获取单个会员信息
 	 * @param map
@@ -878,6 +899,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	public MarketingMembers selectById(Long id) {
 		return marketingMembersMapper.getMemberById(id);
+	}
+
+	public void insert(MarketingMembers members) {
+		marketingMembersMapper.insert(members);
 	}
 
 }
