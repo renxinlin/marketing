@@ -85,12 +85,12 @@ public class DeliveryAddressController extends CommonUtil {
         pcccode.put("areaName",deliveryAddressVO.getProvince());
         pcccodes.add(pcccode);
         Map pcccode1 = new HashMap<>();
-        pcccode1.put("areaCode",deliveryAddressVO.getProvinceCode());
-        pcccode1.put("areaName",deliveryAddressVO.getProvince());
+        pcccode1.put("areaCode",deliveryAddressVO.getCityCode());
+        pcccode1.put("areaName",deliveryAddressVO.getCity());
         pcccodes.add(pcccode1);
         Map pcccode2 = new HashMap<>();
-        pcccode2.put("areaCode",deliveryAddressVO.getProvinceCode());
-        pcccode2.put("areaName",deliveryAddressVO.getProvince());
+        pcccode2.put("areaCode",deliveryAddressVO.getCountryCode());
+        pcccode2.put("areaName",deliveryAddressVO.getCountry());
         pcccodes.add(pcccode2);
         deliveryAddressVO.setPcccode(JSONObject.toJSONString(pcccodes));
 
