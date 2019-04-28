@@ -121,7 +121,7 @@ public class CommonController extends CommonUtil {
         String ticket = JSONObject.parseObject(tickContent).getString("ticket");
         logger.info("获取到tick的数据："+ticket);
         // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
-        String noncestr=WXPayUtil.generateNonceStr();
+        String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
     	long timestamp=WXPayUtil.getCurrentTimestamp();
     	Map<String, String>sinMap=new HashMap<String, String>();
     	sinMap.put("noncestr", noncestr);
@@ -131,7 +131,7 @@ public class CommonController extends CommonUtil {
     	sinMap.put("url", url);
     	//
         String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
-    	String signature=CommonUtil.sha1Encrypt(sha1String1.toLowerCase());
+    	String signature=CommonUtil.sha1Encrypt(sha1String1);
         logger.error("==================start log=====================");
     	logger.error(sha1String1);
         logger.error(signature);
