@@ -137,7 +137,7 @@ public class WeixinAuthController {
 			if (null!=statecode) {
 				members.setState((byte)0);
 			}
-			marketingMembersService.addMember(members);
+			marketingMembersService.insert(members);
 		}else {
 			members.setWxName(nickName);
 			marketingMembersService.update(members);

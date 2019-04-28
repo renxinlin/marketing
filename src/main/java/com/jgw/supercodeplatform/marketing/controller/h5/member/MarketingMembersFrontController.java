@@ -48,6 +48,14 @@ public class MarketingMembersFrontController extends CommonUtil {
 	@Autowired
 	private CommonService commonService;
 
+	
+	@Autowired
+	private ModelMapper modelMapper;
+
+	@Autowired
+	private RedisUtil redisUtil;
+	
+	
 	@Value("${cookie.domain}")
 	private String cookieDomain;
 	/**
@@ -55,19 +63,6 @@ public class MarketingMembersFrontController extends CommonUtil {
 	 */
 	@Value("${rest.user.url}")
 	private String USER_SERVICE;
-
-
-
-
-
-	@Autowired
-	private ModelMapper modelMapper;
-
-	@Autowired
-	private RedisUtil redisUtil;
-
-
-
 
 
 	@RequestMapping(value = "/getMemberId",method = RequestMethod.GET)

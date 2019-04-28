@@ -29,13 +29,14 @@ public interface MarketingMembersMapper {
      * @param map
      * @return
      */
+    @Options(useGeneratedKeys=true, keyProperty="id", keyColumn="Id")
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
             + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday,PCCcode,State,IsRegistered,WechatHeadImgUrl)"
             + " VALUES("
             + " #{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday}"
             + " ,NOW(),#{organizationId},"
             + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state},1,#{wechatHeadImgUrl})")
-    int addMembers(MarketingMembers marketingMembers);
+    int insert(MarketingMembers marketingMembers);
 
 
     /**
@@ -140,14 +141,6 @@ public interface MarketingMembersMapper {
     @Delete("delete from marketing_members where Id=#{id}")
 	void deleteById(@Param("id")Long id);
     
-    @Options(useGeneratedKeys=true, keyProperty="id", keyColumn="Id")
-    @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
-            + " Sex,Birthday,"
-            + " PCCcode,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday)"
-            + " VALUES(#{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday},#{pCCcode}"
-            + ",NOW(),#{organizationId},"
-            + " #{customerName},#{customerId},#{babyBirthday} )")
-	void insert(MarketingMembers members);
 
     @Select("${sql}")
 	List<Map<String, Object>> dynamicList(@Param("sql")String listSQl);
