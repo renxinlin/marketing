@@ -93,10 +93,35 @@ public class MarketingMembersFrontController extends CommonUtil {
 			// 可能是业务覆盖
 			throw new SuperCodeException("验证码错误,请重新发送");
 		}
+		Long id=member.getId();
+		if (null==id) {
+			// 可能是业务覆盖
+			throw new SuperCodeException("主键id不能为空");
+		}
+		MarketingMembers memberById = marketingMembersService.getMemberById(id);
+		if (null==memberById) {
+			// 可能是业务覆盖
+			throw new SuperCodeException("不存在该主键id的对象");
+		}
+		
+		String organizationId=memberById.getOrganizationId();
+		//前端参数手机号
+		String mobile=member.getMobile();
+		//如果传的手机号不为空则判断手机号是否被其它用户注册过
+		if (StringUtils.isNotBlank(mobile)) {
+			String existMobile=memberById.getMobile();
+			//如果参数手机和和已有的手机号不同则校验参数的手机号是否已被注册
+			if (StringUtils.isNotBlank(existMobile) && !existMobile.equals(mobile)) {
+				MarketingMembers memberByPhone =marketingMembersService.selectByPhoneAndOrgId(mobile,organizationId);
+				if (null!=memberByPhone) {
+					// 可能是业务覆盖
+					throw new SuperCodeException("该手机号已注册过");
+				}
+			}
+		}
 		MarketingMembers memberDto = modelMapper.map(member, MarketingMembers.class);
 		
-		String mobile=member.getMobile();
-		String organizationId=member.getMobile();
+		
 		marketingMembersService.update(memberDto);
 		return RestResult.success("success",null);
 

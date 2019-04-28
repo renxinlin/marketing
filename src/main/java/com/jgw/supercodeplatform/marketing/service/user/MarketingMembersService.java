@@ -905,6 +905,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		marketingMembersMapper.insert(members);
 	}
 
+	public MarketingMembers selectByPhoneAndOrgId(String mobile, String organizationId) {
+		return marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
+	}
+
 }
 
 
