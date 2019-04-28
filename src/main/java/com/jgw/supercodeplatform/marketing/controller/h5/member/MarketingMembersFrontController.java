@@ -94,6 +94,9 @@ public class MarketingMembersFrontController extends CommonUtil {
 			throw new SuperCodeException("验证码错误,请重新发送");
 		}
 		MarketingMembers memberDto = modelMapper.map(member, MarketingMembers.class);
+		
+		String mobile=member.getMobile();
+		String organizationId=member.getMobile();
 		marketingMembersService.update(memberDto);
 		return RestResult.success("success",null);
 
