@@ -1,7 +1,9 @@
 package com.jgw.supercodeplatform.marketing.dto.members;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -17,6 +19,8 @@ public class H5MembersInfoParam {
     @ApiModelProperty("性别")
     private String sex;//性别
     @ApiModelProperty("生日")
+    @DateTimeFormat(pattern="yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private String birthday;//生日
     @ApiModelProperty("注册时间")
     private String registDate;//注册时间
