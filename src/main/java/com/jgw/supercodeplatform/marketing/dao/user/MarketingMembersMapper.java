@@ -1,11 +1,17 @@
 package com.jgw.supercodeplatform.marketing.dao.user;
 
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import org.apache.ibatis.annotations.*;
-
 import java.util.List;
 import java.util.Map;
+
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 
 /**
  * 会员类
@@ -159,8 +165,9 @@ public interface MarketingMembersMapper {
             + " <if test='userName !=null and userName != &apos;&apos; '> UserName = #{userName} ,</if> "
             + " <if test='sex !=null and sex != &apos;&apos; '> Sex = #{sex} ,</if> "
             + " <if test='birthday !=null and birthday != &apos;&apos; '> Birthday = #{birthday} ,</if> "
-            + " <if test='newRegisterFlag !=null and newRegisterFlag != &apos;&apos; '> NewRegisterFlag = #{newRegisterFlag} ,</if> "
-            + " <if test='state !=null and state != &apos;&apos; '> State = #{state} ,</if> "
+            + " <if test='newRegisterFlag !=null'> NewRegisterFlag = #{newRegisterFlag} ,</if> "
+            + " <if test='state !=null'> State = #{state} ,</if> "
+            + " <if test='haveIntegral !=null '> HaveIntegral = #{haveIntegral} ,</if> "
             + " <if test='customerName !=null and customerName != &apos;&apos; '> CustomerName = #{customerName} ,</if> "
             + " <if test='customerId !=null and customerId != &apos;&apos; '> CustomerId = #{customerId} ,</if> "
             + " <if test='babyBirthday !=null and babyBirthday != &apos;&apos; '> BabyBirthday = #{babyBirthday} ,</if> "
@@ -169,7 +176,7 @@ public interface MarketingMembersMapper {
             + " <if test='wxName !=null and wxName != &apos;&apos; '> WxName = #{wxName} ,</if> "
             + " <if test='openid !=null and openid != &apos;&apos; '> Openid = #{openid} ,</if> "
             + " <if test='wechatHeadImgUrl !=null and wechatHeadImgUrl != &apos;&apos; '> WechatHeadImgUrl = #{wechatHeadImgUrl} ,</if> "
-            + " <if test=' isRegistered !=null and isRegistered != &apos;&apos; '> IsRegistered = #{isRegistered} ,</if> "
+            + " <if test=' isRegistered !=null'> IsRegistered = #{isRegistered} ,</if> "
             + " UpdateDate = NOW() ,"
             + " </set>"
             + " <where> "
