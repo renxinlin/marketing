@@ -167,14 +167,29 @@ public class IntegralFrontController {
 	  		dataList.add("恭喜领取+"+productIntegral+"积分,");
 	  		 inRecords.add(integralRecord);
 		 }
-         
+
          String birthDay=members.getBirthday();
          Byte birthdayStatus =integralRule.getIntegralByBirthdayStatus();		 
          Byte firstTimeStatus =integralRule.getIntegralByFirstTimeStatus();
          if (null!=birthdayStatus && birthdayStatus.intValue()==1) {
 			if (nowTime.equals(birthDay)) {
-				dataList.add("生日快乐，额外献上+"+integralRule.getIntegralByBirthday()+"积分,");
-				integralSum+=integralRule.getIntegralByBirthday();
+		         Date scanCodeTime=null;
+		         synchronized (this) {
+		        	 try {
+						scanCodeTime= staticESSafeFormat.parse(nowTime);
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+				 }
+				Long num=esService.countIntegralByUserIdAndDate(members.getId(), scanCodeTime);
+				if (null==num || num.intValue()==0) {
+					Integer integralByBirthday=integralRule.getIntegralByBirthday();
+					 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
+		     					organizationId,integralByBirthday,IntegralReasonEnum.BIRTHDAY.getIntegralReasonCode(),IntegralReasonEnum.BIRTHDAY.getIntegralReason(), members);
+					dataList.add("生日快乐，额外献上+"+integralByBirthday+"积分,");
+					integralSum+=integralByBirthday;
+					inRecords.add(integralRecord);
+				}
 			}
 		 }
          
@@ -184,9 +199,7 @@ public class IntegralFrontController {
         		 Integer firstReceiveNum=integralRule.getIntegralByFirstTime();
         		 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
      					organizationId,firstReceiveNum,IntegralReasonEnum.FIRST_INTEGRAL.getIntegralReasonCode(),IntegralReasonEnum.FIRST_INTEGRAL.getIntegralReason(), members);
-        		 
         		 inRecords.add(integralRecord);
-        		 
         		 dataList.add("首次领取，额外献上+"+firstReceiveNum+"积分,");
         		 //总分加上
 				integralSum+=integralRule.getIntegralByFirstTime();

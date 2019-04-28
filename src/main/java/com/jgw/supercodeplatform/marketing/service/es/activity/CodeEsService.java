@@ -191,4 +191,25 @@ public class CodeEsService extends AbstractEsSearch {
 		eSearch.setParam(addParam);
 		return getCount(eSearch);
 	}
+	
+    /**
+     * 
+     * @param userId
+     * @param scanCodeTime
+     * @return
+     */
+	public Long countIntegralByUserIdAndDate(Long userId, Date scanCodeTime) {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		if (null!=userId) {
+			addParam.put("userId", userId);
+		}
+		if (null!=scanCodeTime) {
+			addParam.put("scanCodeTime", scanCodeTime);
+		}
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.INTEGRAL);
+		eSearch.setType(EsType.INFO);
+		eSearch.setParam(addParam);
+		return getCount(eSearch);
+	}
 }
