@@ -14,13 +14,13 @@ import java.util.Map;
 public interface MarketingMembersMapper {
     String selectSql = " a.Id as id, a.WxName as wxName,a.Openid as openid,a.Mobile as mobile,"
             + " a.UserId as userId,a.UserName as userName,"
-            + " a.Sex as sex,a.Birthday as birthday,a.PCCcode as pCCcode,"
+            + " a.Sex as sex,DATE_FORMAT(a.Birthday ,'%Y-%m-%d') as birthday,a.PCCcode as pCCcode,"
             + " DATE_FORMAT(a.RegistDate,'%Y-%m-%d') as registDate,"
             + " a.State as state,a.OrganizationId as organizationId,"
             + " a.NewRegisterFlag as newRegisterFlag ,"
             + " DATE_FORMAT(a.CreateDate,'%Y-%m-%d') as createDate,DATE_FORMAT(a.UpdateDate,'%Y-%m-%d') as updateDate,"
-            + "a.CustomerName as customerName,a.CustomerId as customerId,"
-            + " a.BabyBirthday as babyBirthday,  a.IsRegistered as isRegistered , "
+            + " a.CustomerName as customerName,a.CustomerId as customerId,"
+            + " DATE_FORMAT(a.BabyBirthday ,'%Y-%m-%d') as babyBirthday,  a.IsRegistered as isRegistered , "
             + " a.HaveIntegral as haveIntegral , MemberType memberType, a.IntegralReceiveDate as integralReceiveDate, "
             +" a.WechatHeadImgUrl as wechatHeadImgUrl";
 
