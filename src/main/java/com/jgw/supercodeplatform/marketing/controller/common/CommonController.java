@@ -131,7 +131,7 @@ public class CommonController extends CommonUtil {
     	sinMap.put("url", url);
     	//
         String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
-    	String signature=CommonUtil.sha1Encrypt(sha1String1);
+    	String signature=CommonUtil.sha1Encrypt(sha1String1.toLowerCase());
         logger.error("==================start log=====================");
     	logger.error(sha1String1);
         logger.error(signature);

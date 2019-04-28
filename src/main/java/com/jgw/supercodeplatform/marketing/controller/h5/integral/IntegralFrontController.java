@@ -77,13 +77,13 @@ public class IntegralFrontController {
 			@ApiImplicitParam(paramType = "query", value = "产品批次id", name = "productBatchId",required=true),
 			@ApiImplicitParam(paramType = "query", value = "产品批次id", name = "memberId",required=true)
 		})
-	public RestResult<String> receive(@RequestParam(name = "outerCodeId") String outerCodeId,
+	public RestResult<List<String>> receive(@RequestParam(name = "outerCodeId") String outerCodeId,
 			@RequestParam(name = "codeTypeId") String codeTypeId,
 			@RequestParam(name = "productId") String productId,
 			@RequestParam(name = "productBatchId") String productBatchId,
 			@RequestParam(name = "memberId", required = true) Long memberId)
 			throws SuperCodeException, ParseException {
-		RestResult<String> result = new RestResult<String>();
+		RestResult<List<String>> result = new RestResult<List<String>>();
 		// 1.如果openid不为空那根据openid和组织id查用户，否则肯定是进行了手机登录那就必须传手机号验证码和用户主键id
 		MarketingMembers members = memberService.getMemberById(memberId);
 		if (null==members) {
@@ -109,8 +109,9 @@ public class IntegralFrontController {
 		synchronized (this) {
 			nowTime=staticESSafeFormat.format(new Date());
 		}
-		StringBuilder msgBuilder=new StringBuilder();
-		Map<String, Object> data=calculateReceiveIntegral(outerCodeId,codeTypeId,productId,null,organizationId,members, integralRule, nowTime,inRuleProduct,msgBuilder);
+		
+		List<String> dataList=new ArrayList<String>();
+		Map<String, Object> data=calculateReceiveIntegral(outerCodeId,codeTypeId,productId,null,organizationId,members, integralRule, nowTime,inRuleProduct,dataList);
 		
 		Integer haveIntegral=members.getHaveIntegral()==null?0:members.getHaveIntegral();
 		boolean acquireLock = lockUtil.lock("intrgral:" + outerCodeId + ":" + codeTypeId,5000,5,200);
@@ -135,12 +136,12 @@ public class IntegralFrontController {
 	    if (null!=inRecords && !inRecords.isEmpty()) {
 		  integralRecordService.batchInsert(inRecords);
 	    }
-	    result.setMsg(msgBuilder.substring(0, msgBuilder.length()-1));
+	    result.setResults(dataList);
 		result.setState(200);
 		return result;
 	}
    
-	private Map<String, Object> calculateReceiveIntegral(String outerCodeId,String codeTypeId,String productId,String productName,String organizationId,MarketingMembers members, IntegralRule integralRule, String nowTime, IntegralRuleProduct inRuleProduct, StringBuilder msgBuilder ) {
+	private Map<String, Object> calculateReceiveIntegral(String outerCodeId,String codeTypeId,String productId,String productName,String organizationId,MarketingMembers members, IntegralRule integralRule, String nowTime, IntegralRuleProduct inRuleProduct, List<String> dataList ) {
 		 int integralSum=0;
 		 Map<String, Object> data=new HashMap<String, Object>();
 		 
@@ -153,7 +154,7 @@ public class IntegralFrontController {
     		 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
 					organizationId,rewardIntegral,IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReasonCode(),IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason(), members);
     		 inRecords.add(integralRecord);
-    		 msgBuilder.append("扫码获取产品奖励+"+rewardIntegral+"积分,");
+    		 dataList.add("扫码获取产品奖励+"+rewardIntegral+"积分,");
         	 integralSum+=inRuleProduct.getRewardIntegral();
          //如果按照
 		 }else if(rewardRule.intValue()==1) {
@@ -163,7 +164,7 @@ public class IntegralFrontController {
 	  		 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
 						organizationId,productIntegral,IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReasonCode(),IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason(), members);
 	    		
-	  		 msgBuilder.append("恭喜领取+"+productIntegral+"积分,");
+	  		dataList.add("恭喜领取+"+productIntegral+"积分,");
 	  		 inRecords.add(integralRecord);
 		 }
          
@@ -172,7 +173,7 @@ public class IntegralFrontController {
          Byte firstTimeStatus =integralRule.getIntegralByFirstTimeStatus();
          if (null!=birthdayStatus && birthdayStatus.intValue()==1) {
 			if (nowTime.equals(birthDay)) {
-				 msgBuilder.append("生日快乐，额外献上+"+integralRule.getIntegralByBirthday()+"积分,");
+				dataList.add("生日快乐，额外献上+"+integralRule.getIntegralByBirthday()+"积分,");
 				integralSum+=integralRule.getIntegralByBirthday();
 			}
 		 }
@@ -186,7 +187,7 @@ public class IntegralFrontController {
         		 
         		 inRecords.add(integralRecord);
         		 
-        		 msgBuilder.append("首次领取，额外献上+"+firstReceiveNum+"积分,");
+        		 dataList.add("首次领取，额外献上+"+firstReceiveNum+"积分,");
         		 //总分加上
 				integralSum+=integralRule.getIntegralByFirstTime();
 			 }
