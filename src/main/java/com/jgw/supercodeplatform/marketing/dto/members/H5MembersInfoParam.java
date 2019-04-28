@@ -19,9 +19,7 @@ public class H5MembersInfoParam {
     @ApiModelProperty("性别")
     private String sex;//性别
     @ApiModelProperty("生日")
-    @DateTimeFormat(pattern="yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
-    private String birthday;//生日
+      private String birthday;//生日
     @ApiModelProperty("注册时间")
     private String registDate;//注册时间
     @ApiModelProperty("注册时间")
