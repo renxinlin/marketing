@@ -77,7 +77,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             throw new SuperCodeException("获取组织ID信息失败");
         }
 
-        // 获取组织已经添加的自卖产品集合
+        // 获取组织已经添加的非自卖产品集合
         Set<IntegralExchange> excludeProducts = integralExchangeMapper.selectUnSalePruduct(organizationId);
         // 选择的产品Id
         Set<String> excludeProductIds = new HashSet<>();
