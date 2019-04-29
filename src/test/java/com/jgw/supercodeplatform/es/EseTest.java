@@ -29,8 +29,9 @@ public class EseTest {
 //		cService.addScanCodeRecord("oeVn5sq-wk7_MH4jN2BUQ_fSRv-A", "0067a46e580e4b6cbc79b8c55576f617", "38fc70f6ed984c24b090a2421ba72375", "codeId", "codeTypeId", 2l, "2019-03-11");
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
 		String time=format.format(new Date());
-		Date d=format.parse("2019-04-27"); 
-		Long count=cService.countIntegralByUserIdAndDate(57l, null);
+		Date d=format.parse(time); 
+		long scantime=d.getTime();
+		Long count=cService.countIntegralByUserIdAndDate(83l, scantime,"86ff1c47b5204e88918cb89bbd739f12");
 		System.out.println(count);
 	}
 	

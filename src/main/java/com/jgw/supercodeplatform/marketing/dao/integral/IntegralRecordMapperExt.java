@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -81,9 +82,10 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
             +startWhere
             +  " <if test='memberId != null '>ir.MemberId=#{memberId} </if>"
              +  " <if test='integralReasonCode != null '>and ir.IntegralReasonCode=#{integralReasonCode} </if>"
+             +  " <if test='organizationId != null and organizationId != &apos;&apos; '>and ir.OrganizationId=#{organizationId} </if>"
             +endWhere
             +endScript)
-	List<IntegralRecord> selectByMemberIdAndIntegralReasonCode(Long memberId, Integer integralReasonCode);
+	List<IntegralRecord> selectByMemberIdAndIntegralReasonCode(@Param("memberId")Long memberId, @Param("integralReasonCode")Integer integralReasonCode, @Param("organizationId")String organizationId);
 
     @Insert({startScript,
     	        "insert into marketing_integral_record (MemberType, ",
