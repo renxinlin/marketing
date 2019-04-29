@@ -191,11 +191,25 @@ public class IntegralExchangeController extends CommonUtil {
 
 
 
-    @RequestMapping(value = "/deleteBybase",method = RequestMethod.GET)
-    @ApiOperation(value = "兑换删除【基础平台删除产品】", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
-    public RestResult delete() throws Exception {
+    @RequestMapping(value = "/deleteProduct",method = RequestMethod.GET)
+    @ApiOperation(value = "兑换删除产品【基础平台删除产品】", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
+             @ApiImplicitParam(paramType="query",value = "productId",name="productId")})
+    public RestResult delete(String productId) throws SuperCodeException {
+        String organizationId = getOrganizationId();
+        integralExchangeService.deleteByBaseService(organizationId,productId,null,false);
+        // 上下架组织下的兑换对象
+        return RestResult.success("success",null);
+    }
 
+    @RequestMapping(value = "/deleteSkuBybase",method = RequestMethod.GET)
+    @ApiOperation(value = "兑换删除sku【基础平台删除产品】", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),
+            @ApiImplicitParam(paramType="query",value = "productId",name="productId"),
+            @ApiImplicitParam(paramType="query",value = "skuId 字符串类型",name="skuId")})
+    public RestResult delete(String productId,String skuId) throws SuperCodeException {
+        String organizationId = getOrganizationId();
+        integralExchangeService.deleteByBaseService(organizationId,productId,skuId,true);
         // 上下架组织下的兑换对象
         return RestResult.success("success",null);
     }

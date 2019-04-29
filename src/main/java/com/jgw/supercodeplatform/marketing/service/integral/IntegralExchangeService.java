@@ -1233,4 +1233,21 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         return result;
 
     }
+
+    /**
+     * 基础服务调用
+     * @param organizationId
+     * @param productId
+     * @param skuId
+     */
+    public void deleteByBaseService(String organizationId, String productId, String skuId,boolean withSkuId) throws SuperCodeException{
+        if(StringUtils.isBlank(organizationId)||  StringUtils.isBlank(productId)){
+            throw new SuperCodeException("参数不全");
+        }
+        if(withSkuId && StringUtils.isBlank(skuId)){
+            throw new SuperCodeException("sku参数不存在");
+
+        }
+        mapper.deleteProductEvenSkuByOrganizationId(organizationId,productId,skuId);
+    }
 }
