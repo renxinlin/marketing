@@ -117,8 +117,9 @@ public class MarketingMembersFrontController extends CommonUtil {
 			}
 		}
 		MarketingMembers memberDto = modelMapper.map(member, MarketingMembers.class);
-		
-		
+		// 生日不可改影响生日当天首次领积分,修改需走特殊流程
+		memberDto.setBabyBirthday(null);
+		memberDto.setBirthday(null);
 		marketingMembersService.update(memberDto);
 		return RestResult.success("success",null);
 
