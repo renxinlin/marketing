@@ -58,7 +58,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
             + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, "
             + " ir.MemberName memberName,ir.Mobile mobile,ir.IntegralReasonCode integralReasonCode,ir.IntegralReason integralReason, "
             + " ir.ProductId productId,ir.ProductName productName,ir.OuterCodeId outerCodeId,ir.CodeTypeId codeTypeId,ir.CustomerName customerName, "
-            + " ir.CustomerId customerId,ir.CreateDate createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
+            + " ir.CustomerId customerId,DATE_FORMAT(ir.CreateDate,'%Y-%m-%d %H:%i:%s') createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
             + " from  marketing_integral_record ir "
 
             +whereSearch
@@ -77,7 +77,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
             + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, "
             + " ir.MemberName memberName,ir.Mobile mobile,ir.IntegralReasonCode integralReasonCode,ir.IntegralReason integralReason, "
             + " ir.ProductId productId,ir.ProductName productName,ir.OuterCodeId outerCodeId,ir.CodeTypeId codeTypeId,ir.CustomerName customerName, "
-            + " ir.CustomerId customerId,ir.CreateDate createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
+            + " ir.CustomerId customerId,DATE_FORMAT(ir.CreateDate,'%Y-%m-%d %H:%i:%s') createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
             + " from  marketing_integral_record ir "
             +startWhere
             +  " <if test='memberId != null '>ir.MemberId=#{memberId} </if>"
@@ -105,7 +105,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	    	        "#{item.integralReason,jdbcType=VARCHAR}, #{item.productId,jdbcType=VARCHAR}, ",
 	    	        "#{item.productName,jdbcType=VARCHAR}, #{item.outerCodeId,jdbcType=VARCHAR}, ",
 	    	        "#{item.codeTypeId,jdbcType=VARCHAR}, #{item.customerName,jdbcType=VARCHAR}, ",
-	    	        "#{item.customerId,jdbcType=VARCHAR}, #{item.createDate,jdbcType=TIMESTAMP}, ",
+	    	        "#{item.customerId,jdbcType=VARCHAR}, now(), ",
 	    	        "#{item.organizationId,jdbcType=VARCHAR}, #{item.organizationName,jdbcType=VARCHAR}, ",
 	    	        "#{item.integralNum,jdbcType=INTEGER})",
     	       " </foreach>",
