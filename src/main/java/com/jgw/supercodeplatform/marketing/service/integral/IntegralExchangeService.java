@@ -1058,7 +1058,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     exchangeDo.setSkuStatus((byte)1);
                     exchangeDo.setOrganizationId(organizationId);
                     exchangeDo.setOrganizationName(organizationName);
-                    exchangeDo.setHaveStock(integralExchange.getExchangeStock());
+                    exchangeDo.setHaveStock(integralExchange.getHaveStock());
                     // 基础信息全部由网页传递
                     // 产品id
                     exchangeDo.setProductId(productAddParam.getProductId());
