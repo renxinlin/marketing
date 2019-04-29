@@ -189,4 +189,7 @@ public interface MarketingMembersMapper {
 	int updateMembersStatus(@Param("id")Long id, @Param("state")int state);
     @Update("update marketing_members set  HaveIntegral = HaveIntegral - #{ingetralNum} where Id=#{id} ")
     int deleteIntegral(@Param("ingetralNum") Integer ingetralNum,@Param("id")Long id);
+
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} and Id !=#{id} ")
+	MarketingMembers selectByPhoneAndOrgIdExcludeId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId, @Param("id")Long id);
 }

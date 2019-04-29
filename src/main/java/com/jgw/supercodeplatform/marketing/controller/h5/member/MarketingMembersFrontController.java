@@ -115,7 +115,7 @@ public class MarketingMembersFrontController extends CommonUtil {
 		//如果传的手机号不为空则判断手机号是否被其它用户注册过
 		if (StringUtils.isNotBlank(mobile)) {
 			//如果参数手机和和已有的手机号不同则校验参数的手机号是否已被注册
-			MarketingMembers memberByPhone =marketingMembersService.selectByPhoneAndOrgId(mobile,organizationId);
+			MarketingMembers memberByPhone =marketingMembersService.selectByPhoneAndOrgIdExcludeId(mobile,organizationId,id);
 			if (null!=memberByPhone ) {
 				if (memberByPhone.getId().intValue()!=memberById.getId().intValue() ) {
 					if (StringUtils.isNotBlank(memberByPhone.getOpenid())) {

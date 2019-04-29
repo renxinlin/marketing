@@ -54,13 +54,18 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
             HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
            // token = request.getHeader(CommonConstants.JWT_TOKEN);
             Cookie[] cookies = request.getCookies();
-            for(Cookie cookie : cookies){
-                if(CommonConstants.JWT_TOKEN.equals(cookie.getName())){
-                    token = cookie.getValue();
-                }
-            }
+            if (null!=cookies) {
+            	for(Cookie cookie : cookies){
+            		if(CommonConstants.JWT_TOKEN.equals(cookie.getName())){
+            			token = cookie.getValue();
+            		}
+            	}
+			}
             if (token == null) {
-                throw new UserExpireException("用户不存在...");
+            	token=request.getHeader("jwt-token");
+            	if (token == null) {
+            		throw new UserExpireException("用户不存在...");
+				}
             }
             H5LoginVO jwtUser = JWTUtil.verifyToken(token);
             if (jwtUser == null || jwtUser.getMemberId() == null) {

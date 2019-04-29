@@ -943,6 +943,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		marketingMembersMapper.deleteById(id);		
 	}
 
+	public MarketingMembers selectByPhoneAndOrgIdExcludeId(String mobile, String organizationId, Long id) {
+		return marketingMembersMapper.selectByPhoneAndOrgIdExcludeId(mobile,organizationId,id);
+	}
+
 }
 
 
