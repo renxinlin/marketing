@@ -21,6 +21,11 @@ public class IntegralExchangeAddParam {
     private Integer exchangeIntegral;
     @ApiModelProperty("兑换库存")
     private Integer exchangeStock;
+
+    @ApiModelProperty("兑换库存")
+    private Integer haveStock;
+
+
     @ApiModelProperty("每人限兑")
     private Integer customerLimitNum;
     @ApiModelProperty("兑换活动状态0上架1手动下架2自动下架")
@@ -38,6 +43,13 @@ public class IntegralExchangeAddParam {
     @ApiModelProperty("兑换产品")
     private List<ProductAddParam> products;
 
+    public Integer getHaveStock() {
+        return haveStock;
+    }
+
+    public void setHaveStock(Integer haveStock) {
+        this.haveStock = haveStock;
+    }
 
     public Byte getMemberType() {
         return memberType;
