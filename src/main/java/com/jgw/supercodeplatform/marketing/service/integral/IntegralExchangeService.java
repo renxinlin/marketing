@@ -108,19 +108,21 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
      * @return
      * @throws SuperCodeException
      */
-    public int deleteByOrganizationId(Long id, String organizationId) throws SuperCodeException {
+    public IntegralExchange deleteByOrganizationId(Long id, String organizationId) throws SuperCodeException {
         if(StringUtils.isBlank(organizationId)){
             throw new SuperCodeException("获取组织信息失败",500);
         }
         if(id != null && id <= 0){
             throw new SuperCodeException("id不合法",500);
         }
+        IntegralExchange integralExchange = mapper.selectByPrimaryKey(id);
         int i = mapper.deleteByOrganizationId(id, organizationId);
         if(i != 1){
             logger.error("{组织" + organizationId + "删除积分兑换记录记录" + id + " 共"+i+"条}" );
             throw new SuperCodeException("兑换记录不存在",500);
         }
-        return i;
+        // 更新时，先删除后更新；取出旧的数据用于赋值新的数据原始属性，属于业务需求
+        return integralExchange;
     }
 
     /**
@@ -336,6 +338,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 添加限兑数量
         // 额外数据补充
         // 库存为0,异步下架
+        // 是否预警
         doexchanging(exchangeProductParam,userExchangenum);
 
     }
@@ -370,6 +373,11 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             int j = exchangeStatisticsMapper.updateCount(exchangeStatistics);
             // 方式指定为库存为0;允许操作失败
             boolean shouldUnder = (boolean) exchangeNumKey.get("shouldUnder");
+
+           // 兑换前的状态
+            IntegralExchange beforeEchangeStatus = (IntegralExchange) exchangeNumKey.get("dbrecord");
+            // 兑换后的库存
+            long afterExchangeStock = beforeEchangeStatus.getHaveStock() - exchangeProductParam.getExchangeNum() ;
             taskExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -377,13 +385,20 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                      if(shouldUnder){
                          IntegralExchange shouldUndercarriageDO = new IntegralExchange();
                          try {
+
                              // 下架方式为库存为0
                              // 能走到这里说明需要下架的时候，必然是下架方式需要库存为0，且兑换数量等于剩余库存数
                              // 新建对象减少非必要字段解析
                              shouldUndercarriageDO.setId((Long) exchangeNumKey.get("exchangeId"));
                              // 自动下架
                              shouldUndercarriageDO.setStatus((byte)2);
+                            // 开启预警
+                             if( beforeEchangeStatus.getStockWarningNum() != null && afterExchangeStock <=  beforeEchangeStatus.getStockWarningNum()){
+                                 // 发出库存预警
+                                 shouldUndercarriageDO.setStockWarning((byte)1);
+                             }
                              mapper.updateByPrimaryKeySelective(shouldUndercarriageDO);
+
                          }catch (Exception e){
                              if(logger.isErrorEnabled()){
                                  logger.error("[自动下架失败]");
@@ -596,76 +611,34 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(StringUtils.isBlank(organizationId) || StringUtils.isBlank(organizationName) ){
             throw new SuperCodeException("组织信息丢失");
         }
+        if(integralExchange.getHaveStock() == null || integralExchange.getHaveStock() <0){
+            throw new SuperCodeException("剩余库存填写错误");
+
+        }
 
         IntegralExchangeAddParam integralExchangeAddParam = modelMapper.map(integralExchange, IntegralExchangeAddParam.class);
-        int i = deleteByOrganizationId(integralExchange.getId(), organizationId);
-        if (i!= 1){
-            throw new SuperCodeException("更新编辑信息失败");
-        }
-        // 调用新增方法
-        add(integralExchangeAddParam,organizationId,organizationName);
-//        // 校验
-//        Long id = integralExchange.getId();
-//        validateUpdateByOrganizationId(id,organizationId,integralExchange);
-//        integralExchange  =addFieldWhenUpdate(integralExchange);
-//        IntegralExchange result = mapper.selectByPrimaryKey(id);
-//        validateBizWithUpdate(integralExchange,result);
-//        if(organizationId.equals(organizationId)){
-//            int i = mapper.updateByPrimaryKeySelective(integralExchange);
-//            if(i != 1){
-//                logger.error("{组织" + organizationId + "标记积分兑换记录" + id + " 共"+i+"条}" );
-//                throw new SuperCodeException("编辑积分记录失败",500);
-//            }
-//        }else {
-//            logger.error("组织"+organizationId+"发生数据越权,数据id"+ id);
-//            throw new SuperCodeException("组织" + organizationId + "无法查看" + id +"数据");
-//        }
+        // 取出已经删除的数据用来处理库存变更等逻辑
+        IntegralExchange oldIntegralExchange = deleteByOrganizationId(integralExchange.getId(), organizationId);
+        // 调用更新方法
+        integralUpdate(integralExchangeAddParam,organizationId,organizationName, oldIntegralExchange);
     }
-
-//    /**
-//     * 更新的业务校验
-//     * @param integralExchangeVO
-//     * @param integralExchangeDO
-//     */
-//    private void validateBizWithUpdate(IntegralExchange integralExchangeVO, IntegralExchange integralExchangeDO) throws SuperCodeException{
-//        // 兑换的资源类型不可以修改
-//        if(integralExchangeDO.getExchangeResource().intValue() != integralExchangeVO.getExchangeResource().intValue()){
-//            throw new SuperCodeException("兑换的资源类型不可以修改");
-//        }
-//
-//        // 兑换库存只能增不能减少
-//        if(integralExchangeDO.getExchangeStock() > integralExchangeVO.getExchangeStock()){
-//            throw new SuperCodeException("兑换库存只能增加不可以减少");
-//        }
-//        // 兑换库存处理
-//        if(integralExchangeDO.getExchangeStock() < integralExchangeVO.getExchangeStock()){
-//            integralExchangeVO.setHaveStock( integralExchangeDO.getHaveStock() + integralExchangeVO.getExchangeStock() - integralExchangeDO.getExchangeStock() );
-//        }
-//        // 每人限兑只能增不能减
-//        if(integralExchangeDO.getCustomerLimitNum() > integralExchangeVO.getCustomerLimitNum()){
-//            throw new SuperCodeException("兑换库存只能增加不可以减少");
-//        }
-//        // 兑换的产品不可以修改
-//        if( integralExchangeDO.getProductId().equals(integralExchangeVO.getProductId())){
-//            throw new SuperCodeException("兑换的产品不可以修改");
-//        }
-//        if(integralExchangeDO.getSkuName() != null && !integralExchangeDO.getSkuName().equals(integralExchangeVO.getSkuName())){
-//            throw new SuperCodeException("兑换的sku不可以修改");
-//        }
-//
-//
-//    }
 
 
     /**
-     * 新增兑换
-     * @param integralExchange
+     *
+     * @param integralExchange 更新VO参数
+     * @param organizationId 组织ID
+     * @param organizationName 组织名称
+     * @param oldIntegralExchange 用来赋值已存在被删除后新增的数据的相关原始属性
+     * @throws SuperCodeException
      */
-    public void add(IntegralExchangeAddParam integralExchange,String organizationId,String organizationName) throws SuperCodeException{
-        validateBasicWhenAdd(integralExchange, organizationId, organizationName);
+    public void integralUpdate(IntegralExchangeAddParam integralExchange,String organizationId,String organizationName,IntegralExchange oldIntegralExchange) throws SuperCodeException{
+
+        validateBasicWhenUpdate(integralExchange, organizationId, organizationName);
+        // 先删后增
         validateBizWhenAdd(integralExchange);
         // 根据业务补充数据
-        List<IntegralExchange> integralExchanges = addFeildByBuzWhenAdd(integralExchange,organizationId,organizationName);
+        List<IntegralExchange> integralExchanges = addFeildByBuzWhenUpdate(integralExchange,organizationId,organizationName,oldIntegralExchange);
         int i = mapper.insertBatch(integralExchanges);
         if(1 > i){
             throw new SuperCodeException("插入兑换记录失败",500);
@@ -673,11 +646,13 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
     }
 
+
+
     /**
      * 新增对象基础校验
      * @param integralExchange
      */
-    private void validateBasicWhenAdd(IntegralExchangeAddParam integralExchange,String organizationId,String organizationName) throws SuperCodeException{
+    private void validateBasicWhenUpdate(IntegralExchangeAddParam integralExchange,String organizationId,String organizationName) throws SuperCodeException{
         if(integralExchange == null){
             throw new SuperCodeException("兑换信息不存在");
         }
@@ -698,23 +673,31 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(integralExchange.getExchangeIntegral() <= 0){
             throw new SuperCodeException("兑换积分为正整数");
         }
-        if(  integralExchange.getExchangeStock()  == null || integralExchange.getExchangeStock() <= 0 ){
-            integralExchange.setExchangeStock(0);
-            // throw new SuperCodeException("兑换库存为正整数");
+
+
+        if(  integralExchange.getHaveStock()  == null || integralExchange.getHaveStock() < 0 ){
+            throw new SuperCodeException("编辑剩余库存为正整数");
         }
 
-        if(integralExchange.getCustomerLimitNum()  == null || integralExchange.getCustomerLimitNum() <= 0){
+
+
+        if(integralExchange.getCustomerLimitNum()  == null || integralExchange.getCustomerLimitNum() < 0){
             // 不传，则认为无上限给999999
             integralExchange.setCustomerLimitNum(999999);
             //throw new SuperCodeException("每人限兑为正整数");
+        }
+        if( integralExchange.getCustomerLimitNum() == 0){
+            throw new SuperCodeException("每人限兑至少为1");
         }
         if(integralExchange.getUndercarriageSetWay() == null ){
             throw new SuperCodeException("请设置自动下架方式");
         }
 
+
+
         // 默认上架:应前端要求将0改成3
         integralExchange.setStatus((byte)3);
-        if(integralExchange.getUndercarriageSetWay() == 0 && integralExchange.getExchangeStock() == 0){
+        if(integralExchange.getUndercarriageSetWay() == 0 && integralExchange.getHaveStock() == 0){
             // 库存为0 自动下架
             integralExchange.setStatus((byte)2);
         }
@@ -761,7 +744,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     throw new SuperCodeException("产品id不存在");
                 }else {
                     List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
-                     // sku可以不存在;存在则进行非空校验
+                    // sku可以不存在;存在则进行非空校验
                     if(!CollectionUtils.isEmpty(skuinfos)){
                         for(SkuInfo skuinfo:skuinfos ){
                             if(StringUtils.isBlank(skuinfo.getSkuName())){
@@ -777,7 +760,138 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                         }
                     }
                 }
-             }
+            }
+        }
+
+    }
+
+    /**
+     * 新增兑换
+     * @param integralExchange
+     */
+    public void add(IntegralExchangeAddParam integralExchange,String organizationId,String organizationName) throws SuperCodeException{
+        validateBasicWhenAdd(integralExchange, organizationId, organizationName);
+        validateBizWhenAdd(integralExchange);
+        // 根据业务补充数据
+        List<IntegralExchange> integralExchanges = addFeildByBuzWhenAdd(integralExchange,organizationId,organizationName);
+        int i = mapper.insertBatch(integralExchanges);
+        if(1 > i){
+            throw new SuperCodeException("插入兑换记录失败",500);
+        }
+
+    }
+
+    /**
+     * 新增对象基础校验
+     * @param integralExchange
+     */
+    private void validateBasicWhenAdd(IntegralExchangeAddParam integralExchange,String organizationId,String organizationName) throws SuperCodeException{
+        if(integralExchange == null){
+            throw new SuperCodeException("兑换信息不存在");
+        }
+        if(organizationId == null){
+            throw new SuperCodeException("组织id不存在");
+        }
+        if(organizationName == null){
+            throw new SuperCodeException("组织名称不存在");
+        }
+        // 目前写死，只有会员 upgrade
+        if(integralExchange.getMemberType() != 0){
+            throw new SuperCodeException("会员类型不存在");
+        }
+
+        if(integralExchange.getExchangeResource() != 1 && integralExchange.getExchangeResource() != 0){
+            throw new SuperCodeException("兑换资源类型不存在");
+        }
+        if(integralExchange.getExchangeIntegral() <= 0){
+            throw new SuperCodeException("兑换积分为正整数");
+        }
+        if(  integralExchange.getHaveStock()  == null || integralExchange.getHaveStock() <= 0 ){
+            integralExchange.setHaveStock(0);
+            // throw new SuperCodeException("兑换库存为正整数");
+        }
+        // 新增时，总库存为剩余库存
+        integralExchange.setExchangeStock(integralExchange.getHaveStock() );
+
+        if(integralExchange.getCustomerLimitNum()  == null || integralExchange.getCustomerLimitNum() < 0){
+            // 不传，则认为无上限给999999
+            integralExchange.setCustomerLimitNum(999999);
+            //throw new SuperCodeException("每人限兑为正整数");
+        }
+        if( integralExchange.getCustomerLimitNum() == 0){
+            throw new SuperCodeException("每人限兑至少为1");
+        }
+
+        if(integralExchange.getUndercarriageSetWay() == null ){
+            throw new SuperCodeException("请设置自动下架方式");
+        }
+
+        // 默认上架:应前端要求将0改成3
+        integralExchange.setStatus((byte)3);
+        if(integralExchange.getUndercarriageSetWay() == 0 && integralExchange.getHaveStock() == 0){
+            // 库存为0 自动下架
+            integralExchange.setStatus((byte)2);
+        }
+        // 时间下架
+        if(integralExchange.getUndercarriageSetWay() == 1
+                && DateUtil.DateFormat(new Date(),"yyyy-MM-dd")
+                .compareTo(DateUtil.DateFormat( integralExchange.getUnderCarriage(),"yyyy-MM-dd")) >= 0) {
+            // 库存为0 自动下架
+            integralExchange.setStatus((byte)2);
+
+        }
+        if(integralExchange.getPayWay() == null || integralExchange.getPayWay() != 0){
+            integralExchange.setPayWay((byte)0);
+//            throw new SuperCodeException("支付手段目前只有积分");
+        }
+
+        if(integralExchange.getUndercarriageSetWay() == 1 && (integralExchange.getUnderCarriage() == null )){
+            throw new SuperCodeException("请设置自动下架时间");
+        }
+        if (integralExchange.getUndercarriageSetWay() == 1 &&  new Date().after(integralExchange.getUnderCarriage()) ){
+            throw new SuperCodeException("请设置自动下架为未来时间");
+        }
+        if(integralExchange.getStockWarningNum() == null){
+            // 负数;则不进行预警
+            integralExchange.setStockWarningNum(-1);
+        }
+        if(CollectionUtils.isEmpty(integralExchange.getProducts())){
+            throw new SuperCodeException("兑换产品信息不存在");
+        }else{
+            // start 产品抽离到基础信息，直接网页传递所有基础信息数据
+            // end
+            List<ProductAddParam> products = integralExchange.getProducts();
+            for(ProductAddParam productAddParam : products){
+                if(StringUtils.isBlank(productAddParam.getProductName())){
+                    throw new SuperCodeException("产品名称不存在");
+                }
+                if(StringUtils.isBlank(productAddParam.getProductPic())){
+                    productAddParam.setProductPic("");
+                }
+                if(StringUtils.isBlank(productAddParam.getShowPriceStr())){
+                    productAddParam.setShowPriceStr("0.00");
+                }
+                if(productAddParam.getProductId() == null){
+                    throw new SuperCodeException("产品id不存在");
+                }else {
+                    List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
+                    // sku可以不存在;存在则进行非空校验
+                    if(!CollectionUtils.isEmpty(skuinfos)){
+                        for(SkuInfo skuinfo:skuinfos ){
+                            if(StringUtils.isBlank(skuinfo.getSkuName())){
+                                throw new SuperCodeException("sku名称不存在");
+                            }
+                            if(StringUtils.isBlank(skuinfo.getSkuUrl())){
+//                                null == skuinfo.getSkuUrl()
+                                throw new SuperCodeException("sku 图片不存在");
+                            }
+                            if(StringUtils.isBlank(skuinfo.getSkuId())){
+                                throw new SuperCodeException("sku id不存在");
+                            }
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -918,11 +1032,90 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
      * @param integralExchange
      * @return
      */
-//    private IntegralExchange addFieldWhenUpdate(IntegralExchange integralExchange) {
-//        //  编辑兑换记录的属性转换与添加
-//        return  integralExchange;
-//    }
 
+    private List<IntegralExchange> addFeildByBuzWhenUpdate(IntegralExchangeAddParam integralExchange,String organizationId,String organizationName, IntegralExchange oldIntegralExchange) {
+        List<IntegralExchange> list = new ArrayList<>();
+        List<ProductAddParam> products = integralExchange.getProducts();
+        // 0非自卖1自卖产品
+        Byte exchangeResource = integralExchange.getExchangeResource();
+        for(ProductAddParam productAddParam : products){{
+            List<SkuInfo> skuinfos = productAddParam.getSkuInfo();
+            if(CollectionUtils.isEmpty(skuinfos)){
+                // 添加产品记录
+                IntegralExchange exchangeDo = modelMapper.map(integralExchange, IntegralExchange.class);
+                // 无sku
+                exchangeDo.setSkuStatus((byte)0);
+                exchangeDo.setOrganizationId(organizationId);
+                exchangeDo.setOrganizationName(organizationName);
+                exchangeDo.setHaveStock(integralExchange.getHaveStock());
+                if(exchangeDo.getHaveStock() >= exchangeDo.getStockWarningNum() ){
+                    // 不发出警告
+                    exchangeDo.setStockWarning((byte)(0));
+                }else{
+                    exchangeDo.setStockWarning((byte)(1));
+                }
+                // 基础信息全部由网页传递
+                // 产品id
+                exchangeDo.setProductId(productAddParam.getProductId());
+                // 产品图片
+                exchangeDo.setProductPic(productAddParam.getProductPic());
+                // 产品名称
+                exchangeDo.setProductName(productAddParam.getProductName());
+                // 展示价格
+                exchangeDo.setShowPrice(Float.parseFloat(productAddParam.getShowPriceStr()));
+                list.add(exchangeDo);
+            }else {
+                // 添加sku记录
+                for(SkuInfo skuinfo : skuinfos){
+                    // 添加产品记录
+                    IntegralExchange exchangeDo = modelMapper.map(integralExchange, IntegralExchange.class);
+                    // 有sku
+                    exchangeDo.setSkuStatus((byte)1);
+                    exchangeDo.setOrganizationId(organizationId);
+                    exchangeDo.setOrganizationName(organizationName);
+                    exchangeDo.setHaveStock(integralExchange.getHaveStock());
+                    // 基础信息全部由网页传递
+                    // 产品id
+                    exchangeDo.setProductId(productAddParam.getProductId());
+                    // 产品图片
+                    exchangeDo.setProductPic(productAddParam.getProductPic());
+                    // 产品名称
+                    exchangeDo.setProductName(productAddParam.getProductName());
+                    // 展示价格
+                    exchangeDo.setShowPrice(Float.parseFloat(productAddParam.getShowPriceStr()));
+                    // sku id
+                    exchangeDo.setSkuId(skuinfo.getSkuId());
+                    // sku 图片
+                    exchangeDo.setSkuUrl(skuinfo.getSkuUrl());
+                    // sku 名称
+                    exchangeDo.setSkuName(skuinfo.getSkuName());
+                    if(exchangeDo.getHaveStock() >= exchangeDo.getStockWarningNum() ){
+                        // 不发出警告
+                        exchangeDo.setStockWarning((byte)(0));
+                    }else{
+                        exchangeDo.setStockWarning((byte)(1));
+                    }
+                    list.add(exchangeDo);
+                }
+            }
+        }
+        }
+
+        // 库存处理
+        String oldDoUniqueFlag=  oldIntegralExchange.getProductId()+oldIntegralExchange.getSkuId();
+        for (IntegralExchange newDO :list){
+            String newVoUniqueFlag =  newDO.getProductId()+newDO.getSkuId();
+
+            if (oldDoUniqueFlag.equals(newVoUniqueFlag)){
+                // 处理库存:新的总库存是原来总库存+（新的剩余库存-原来剩余）
+                newDO.setExchangeStock(oldIntegralExchange.getExchangeStock()+(newDO.getHaveStock()- oldIntegralExchange.getHaveStock()));
+             }else{
+                // 编辑携带新的产品信息，设置总库存为兑换库存
+                newDO.setExchangeStock(newDO.getHaveStock());
+            }
+        }
+        return list;
+    }
 
 
 
@@ -1039,5 +1232,23 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         result.setDeliveryAddress(deliveryAddress);
         return result;
 
+    }
+
+    /**
+     * 基础服务调用
+     * @param organizationId
+     * @param productId
+     * @param skuId
+     */
+    public void deleteByBaseService(String organizationId, String productId, String skuId,boolean withSkuId) throws SuperCodeException{
+        if(StringUtils.isBlank(organizationId)||  StringUtils.isBlank(productId)){
+            throw new SuperCodeException("参数不全");
+        }
+        if(withSkuId && StringUtils.isBlank(skuId)){
+            throw new SuperCodeException("sku参数不存在");
+
+        }
+        mapper.deleteProductEvenSkuByOrganizationId(organizationId,productId,skuId);
+        exchangeStatisticsMapper.deleteWhernBaseServiceDelete(productId+skuId);
     }
 }
