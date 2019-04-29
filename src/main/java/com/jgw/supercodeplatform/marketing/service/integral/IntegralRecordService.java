@@ -33,8 +33,8 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
     }
 
 
-	public List<IntegralRecord> selectByMemberIdAndIntegralReasonCode(Long memberId, Integer integralReasonCode) {
-		return recordMapper.selectByMemberIdAndIntegralReasonCode(memberId,integralReasonCode);
+	public List<IntegralRecord> selectByMemberIdAndIntegralReasonCode(Long memberId, Integer integralReasonCode, String organizationId) {
+		return recordMapper.selectByMemberIdAndIntegralReasonCode(memberId,integralReasonCode,organizationId);
 	}
 
 

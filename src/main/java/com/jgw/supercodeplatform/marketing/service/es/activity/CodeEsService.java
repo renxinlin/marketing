@@ -1,20 +1,20 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
-import com.jgw.supercodeplatform.marketing.enums.EsIndex;
-import com.jgw.supercodeplatform.marketing.enums.EsType;
-import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
+import com.jgw.supercodeplatform.marketing.enums.EsIndex;
+import com.jgw.supercodeplatform.marketing.enums.EsType;
+import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
 
 @Service
 public class CodeEsService extends AbstractEsSearch {
@@ -196,15 +196,19 @@ public class CodeEsService extends AbstractEsSearch {
      * 
      * @param userId
      * @param scanCodeTime
+     * @param organizationId 
      * @return
      */
-	public Long countIntegralByUserIdAndDate(Long userId, Long scanCodeTime) {
+	public Long countIntegralByUserIdAndDate(Long userId, Long scanCodeTime, String organizationId) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		if (null!=userId) {
 			addParam.put("userId", userId);
 		}
 		if (null!=scanCodeTime) {
 			addParam.put("scanCodeTime", scanCodeTime);
+		}
+		if (StringUtils.isNotBlank(organizationId)) {
+			addParam.put("organizationId.keyword", organizationId);
 		}
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.INTEGRAL);

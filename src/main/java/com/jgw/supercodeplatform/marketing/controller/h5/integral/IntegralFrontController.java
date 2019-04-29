@@ -1,9 +1,24 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
-import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
@@ -14,19 +29,11 @@ import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordServic
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleProductService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * 积分记录controller
@@ -36,7 +43,7 @@ import java.util.*;
 @RequestMapping("/marketing/front/integral")
 @Api(tags = "积分h5")
 public class IntegralFrontController {
-	
+	protected static Logger logger = LoggerFactory.getLogger(IntegralFrontController.class);
 	//需加锁
 	private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
 	@Autowired
@@ -54,9 +61,6 @@ public class IntegralFrontController {
 	@Autowired
 	private CodeEsService esService;
 	
-	@Autowired
-	private RedisUtil redisUtil;
-
 	@Autowired
 	private RedisLockUtil lockUtil;
 	/**
@@ -85,6 +89,7 @@ public class IntegralFrontController {
 			throws SuperCodeException, ParseException {
 		RestResult<List<String>> result = new RestResult<List<String>>();
 		// 1.如果openid不为空那根据openid和组织id查用户，否则肯定是进行了手机登录那就必须传手机号验证码和用户主键id
+		logger.info("领取积分获取到参数codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+",memberId="+memberId);
 		MarketingMembers members = memberService.getMemberById(memberId);
 		if (null==members) {
 			throw new SuperCodeException("用户不存在", 500);
@@ -106,12 +111,14 @@ public class IntegralFrontController {
 		}
 		// 5.查询ES中当前码和码制的积分是否被领取
 		String nowTime=null;
+		long scanCodeLongTime=0l;
 		synchronized (this) {
 			nowTime=staticESSafeFormat.format(new Date());
+			scanCodeLongTime=staticESSafeFormat.parse(nowTime).getTime();
 		}
 		
 		List<String> dataList=new ArrayList<String>();
-		Map<String, Object> data=calculateReceiveIntegral(outerCodeId,codeTypeId,productId,null,organizationId,members, integralRule, nowTime,inRuleProduct,dataList);
+		Map<String, Object> data=calculateReceiveIntegral(outerCodeId,codeTypeId,productId,null,organizationId,members, integralRule, nowTime,inRuleProduct,scanCodeLongTime,dataList);
 		
 		Integer haveIntegral=members.getHaveIntegral()==null?0:members.getHaveIntegral();
 		boolean acquireLock = lockUtil.lock("intrgral:" + outerCodeId + ":" + codeTypeId,5000,5,200);
@@ -142,11 +149,9 @@ public class IntegralFrontController {
 		return result;
 	}
    
-	private Map<String, Object> calculateReceiveIntegral(String outerCodeId,String codeTypeId,String productId,String productName,String organizationId,MarketingMembers members, IntegralRule integralRule, String nowTime, IntegralRuleProduct inRuleProduct, List<String> dataList ) {
+	private Map<String, Object> calculateReceiveIntegral(String outerCodeId,String codeTypeId,String productId,String productName,String organizationId,MarketingMembers members, IntegralRule integralRule, String nowTime, IntegralRuleProduct inRuleProduct,  long scanCodeTimeLong,List<String> dataList ) {
 		 int integralSum=0;
 		 Map<String, Object> data=new HashMap<String, Object>();
-		 
-
          Byte rewardRule=inRuleProduct.getRewardRule();
          List<IntegralRecord> inRecords=new ArrayList<IntegralRecord>();
          //如果直接按产品
@@ -155,7 +160,7 @@ public class IntegralFrontController {
     		 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
 					organizationId,rewardIntegral,IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReasonCode(),IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason(), members);
     		 inRecords.add(integralRecord);
-    		 dataList.add("扫码获取产品奖励+"+rewardIntegral+"积分,");
+    		 dataList.add("扫码获取产品奖励+"+rewardIntegral+"积分");
         	 integralSum+=inRuleProduct.getRewardIntegral();
          //如果按照
 		 }else if(rewardRule.intValue()==1) {
@@ -165,7 +170,7 @@ public class IntegralFrontController {
 	  		 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
 						organizationId,productIntegral,IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReasonCode(),IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason(), members);
 	    		
-	  		dataList.add("恭喜领取+"+productIntegral+"积分,");
+	  		dataList.add("恭喜领取+"+productIntegral+"积分");
 	  		 inRecords.add(integralRecord);
 		 }
 
@@ -174,20 +179,13 @@ public class IntegralFrontController {
          Byte firstTimeStatus =integralRule.getIntegralByFirstTimeStatus();
          if (null!=birthdayStatus && birthdayStatus.intValue()==1) {
 			if (nowTime.equals(birthDay)) {
-		         Date scanCodeTime=null;
-		         synchronized (this) {
-		        	 try {
-						scanCodeTime= staticESSafeFormat.parse(nowTime);
-					} catch (ParseException e) {
-						e.printStackTrace();
-					}
-				 }
-				Long num=esService.countIntegralByUserIdAndDate(members.getId(), scanCodeTime.getTime());
+		         logger.info("查询历史首次scanCodeTimeLong="+scanCodeTimeLong);
+				Long num=esService.countIntegralByUserIdAndDate(members.getId(), scanCodeTimeLong,organizationId);
 				if (null==num || num.intValue()==0) {
 					Integer integralByBirthday=integralRule.getIntegralByBirthday();
 					 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
 		     					organizationId,integralByBirthday,IntegralReasonEnum.BIRTHDAY.getIntegralReasonCode(),IntegralReasonEnum.BIRTHDAY.getIntegralReason(), members);
-					dataList.add("生日快乐，额外献上+"+integralByBirthday+"积分,");
+					dataList.add("生日快乐，额外献上+"+integralByBirthday+"积分");
 					integralSum+=integralByBirthday;
 					inRecords.add(integralRecord);
 				}
@@ -195,13 +193,13 @@ public class IntegralFrontController {
 		 }
          
          if (null!=firstTimeStatus && firstTimeStatus.intValue()==1) {
-        	 List<IntegralRecord> integralRecords=integralRecordService.selectByMemberIdAndIntegralReasonCode(members.getId(),IntegralReasonEnum.FIRST_INTEGRAL.getIntegralReasonCode());
+        	 List<IntegralRecord> integralRecords=integralRecordService.selectByMemberIdAndIntegralReasonCode(members.getId(),IntegralReasonEnum.FIRST_INTEGRAL.getIntegralReasonCode(),organizationId);
         	 if (null==integralRecords || integralRecords.isEmpty()) {
         		 Integer firstReceiveNum=integralRule.getIntegralByFirstTime();
         		 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
      					organizationId,firstReceiveNum,IntegralReasonEnum.FIRST_INTEGRAL.getIntegralReasonCode(),IntegralReasonEnum.FIRST_INTEGRAL.getIntegralReason(), members);
         		 inRecords.add(integralRecord);
-        		 dataList.add("首次领取，额外献上+"+firstReceiveNum+"积分,");
+        		 dataList.add("首次领取，额外献上+"+firstReceiveNum+"积分");
         		 //总分加上
 				integralSum+=integralRule.getIntegralByFirstTime();
 			 }
