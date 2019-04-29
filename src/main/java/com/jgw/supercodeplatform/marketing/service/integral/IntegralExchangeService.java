@@ -1032,7 +1032,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                 exchangeDo.setSkuStatus((byte)0);
                 exchangeDo.setOrganizationId(organizationId);
                 exchangeDo.setOrganizationName(organizationName);
-                exchangeDo.setHaveStock(integralExchange.getExchangeStock());
+                exchangeDo.setHaveStock(integralExchange.getHaveStock());
                 if(exchangeDo.getHaveStock() >= exchangeDo.getStockWarningNum() ){
                     // 不发出警告
                     exchangeDo.setStockWarning((byte)(0));
