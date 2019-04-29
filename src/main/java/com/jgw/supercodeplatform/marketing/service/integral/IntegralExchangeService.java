@@ -1249,5 +1249,6 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
         }
         mapper.deleteProductEvenSkuByOrganizationId(organizationId,productId,skuId);
+        exchangeStatisticsMapper.deleteWhernBaseServiceDelete(productId+skuId);
     }
 }

@@ -2,9 +2,7 @@ package com.jgw.supercodeplatform.marketing.dao.integral;
 
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.ExchangeStatisticsMapper;
 import com.jgw.supercodeplatform.marketing.pojo.integral.ExchangeStatistics;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 @Mapper
 public interface ExchangeStatisticsMapperExt extends ExchangeStatisticsMapper {
@@ -18,4 +16,6 @@ public interface ExchangeStatisticsMapperExt extends ExchangeStatisticsMapper {
     int updateCount(ExchangeStatistics exchangeStatistics);
     @Select(" select " + allFeilds + " from marketing_member_exchange_statistics mmes where mmes.OrganizationId = #{organizationId} and  mmes.MemberId = #{memberId} and  mmes.ProductId = #{productId} ")
     ExchangeStatistics selectCount(String organizationId, String productId, Long memberId);
+    @Delete(" delete from  marketing_member_exchange_statistics mmes where mmes.ProductId = #{productId} ")
+    int deleteWhernBaseServiceDelete(@Param("productId") String productId);
 }
