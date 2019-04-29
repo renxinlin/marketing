@@ -40,18 +40,25 @@ public class IntegralMapperExtTest {
     
     @Test
     public void test2() {
-    	 List<IntegralRecord> inRecords=new ArrayList<IntegralRecord>();
-    	 IntegralRecord i1=new IntegralRecord();
-    	 i1.setCodeTypeId("dd");
+//    	 List<IntegralRecord> inRecords=new ArrayList<IntegralRecord>();
+//    	 IntegralRecord i1=new IntegralRecord();
+//    	 i1.setCodeTypeId("dd");
+//    	 
+//      	 IntegralRecord i21=new IntegralRecord();
+//    	 i21.setCodeTypeId("dd");
+//    	 
+//    	 inRecords.add(i1);
+//    	 inRecords.add(i21);
+//    	 
+//    	 integralRecordDao.batchInsert(inRecords);
+//    	 
+//      	 IntegralRecord i3=new IntegralRecord();
+//    	 i3.setCodeTypeId("dd");
+//    	 integralRecordDao.insert(i3);
     	 
-      	 IntegralRecord i21=new IntegralRecord();
-    	 i21.setCodeTypeId("dd");
-    	 
-    	 inRecords.add(i1);
-    	 inRecords.add(i21);
-    	 
-    	 integralRecordDao.batchInsert(inRecords);
-    	 
+    	List<IntegralRecord>list= integralRecordDao.list(null);
+    	System.out.println(list);
     }
-    
+    public static void main(String[] args) {
+	}
 }

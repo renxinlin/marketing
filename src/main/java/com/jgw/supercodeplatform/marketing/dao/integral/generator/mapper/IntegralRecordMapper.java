@@ -28,7 +28,7 @@ public interface IntegralRecordMapper {
         "#{integralReason,jdbcType=VARCHAR}, #{productId,jdbcType=VARCHAR}, ",
         "#{productName,jdbcType=VARCHAR}, #{outerCodeId,jdbcType=VARCHAR}, ",
         "#{codeTypeId,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR}, ",
-        "#{customerId,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, ",
+        "#{customerId,jdbcType=VARCHAR}, now(), ",
         "#{organizationId,jdbcType=VARCHAR}, #{organizationName,jdbcType=VARCHAR}, ",
         "#{integralNum,jdbcType=INTEGER})"
     })
@@ -83,7 +83,6 @@ public interface IntegralRecordMapper {
           "CodeTypeId = #{codeTypeId,jdbcType=VARCHAR},",
           "CustomerName = #{customerName,jdbcType=VARCHAR},",
           "CustomerId = #{customerId,jdbcType=VARCHAR},",
-          "CreateDate = #{createDate,jdbcType=TIMESTAMP},",
           "OrganizationId = #{organizationId,jdbcType=VARCHAR},",
           "OrganizationName = #{organizationName,jdbcType=VARCHAR},",
           "IntegralNum = #{integralNum,jdbcType=INTEGER}",
