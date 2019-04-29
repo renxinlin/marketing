@@ -42,6 +42,7 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapp
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
@@ -51,6 +52,7 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
+import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
@@ -58,6 +60,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
@@ -136,13 +139,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	@Autowired
 	private ModelMapper modelMapper;
+	
+	@Autowired
+	private IntegralRecordMapperExt integralRecordDao;
 
 	@Value("${marketing.server.ip}")
 	private String serverIp;
 
 	@Autowired
 	private WXPayTradeNoGenerator wXPayTradeNoGenerator ;
-
 
 	private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
 
@@ -303,6 +308,19 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				if (null!=registerState && registerState.intValue()==1) {
 					members.setHaveIntegral(rule.getIntegralByRegister());
 					marketingMembersMapper.update(members);
+					 IntegralRecord integralRecord=new IntegralRecord();
+					 integralRecord.setIntegralNum(rule.getIntegralByRegister());
+					 integralRecord.setIntegralReasonCode(IntegralReasonEnum.REGISTER_MEMBER.getIntegralReasonCode());
+					 integralRecord.setIntegralReason(IntegralReasonEnum.REGISTER_MEMBER.getIntegralReason());
+					 integralRecord.setCustomerId(members.getCustomerId());
+					 integralRecord.setCustomerName(members.getCustomerName());
+					 integralRecord.setMemberId(members.getId());
+					 integralRecord.setMemberName(members.getUserName());
+					 integralRecord.setMemberType(members.getMemberType());
+					 integralRecord.setMobile(members.getMobile());
+					 integralRecord.setOrganizationId(organizationId);
+					 integralRecord.setIntegralType(0);
+					 integralRecordDao.insert(integralRecord);
 				}
 			}
 			String msg = msgTimplate(marketingMembersAddParam.getUserName(),selectedPortrait.get(0).getOrganizationFullName());
