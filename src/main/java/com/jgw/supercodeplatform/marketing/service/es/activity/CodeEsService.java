@@ -152,9 +152,9 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @throws SuperCodeException
 	 */
 	public void addCodeIntegral(Long userId, String outerCodeId, String codeTypeId, String productId, String productBatchId,
-			String organizationId, Date parse) throws SuperCodeException {
+			String organizationId, Long scanCodeTime) throws SuperCodeException {
 		if (null==userId  || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
-				|| StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(codeTypeId) || StringUtils.isBlank(organizationId)|| null== parse) {
+				|| StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(codeTypeId) || StringUtils.isBlank(organizationId)|| null== scanCodeTime) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
 		
@@ -166,7 +166,7 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("codeTypeId", codeTypeId);
 		addParam.put("organizationId", organizationId);
 		addParam.put("userId", userId);
-		addParam.put("scanCodeTime", parse);
+		addParam.put("scanCodeTime", scanCodeTime);
 
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.INTEGRAL);
@@ -198,7 +198,7 @@ public class CodeEsService extends AbstractEsSearch {
      * @param scanCodeTime
      * @return
      */
-	public Long countIntegralByUserIdAndDate(Long userId, Date scanCodeTime) {
+	public Long countIntegralByUserIdAndDate(Long userId, Long scanCodeTime) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		if (null!=userId) {
 			addParam.put("userId", userId);

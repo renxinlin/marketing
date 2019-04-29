@@ -122,21 +122,22 @@ public class IntegralFrontController {
 				result.setMsg("该码积分已被领取");
 				return result;
 			}
+			Integer sum=(Integer)data.get("integralSum");
+		    members.setHaveIntegral(haveIntegral+sum);
+		    memberService.update(members);
+		    List<IntegralRecord> inRecords= (List<IntegralRecord>) data.get("integralRecords");
+		    if (null!=inRecords && !inRecords.isEmpty()) {
+			  integralRecordService.batchInsert(inRecords);
+		    }
+		    result.setResults(dataList);
 			// 7.把当前码存入积分ES。注意6,7是一个事务保证一致性且需在redis的同步锁里以防多个用户同时操作
-			esService.addCodeIntegral(members.getId(), outerCodeId, codeTypeId, productId, productBatchId, organizationId, staticESSafeFormat.parse(nowTime));
+			esService.addCodeIntegral(members.getId(), outerCodeId, codeTypeId, productId, productBatchId, organizationId, staticESSafeFormat.parse(nowTime).getTime());
 		}else {
 			result.setState(500);
 			result.setMsg("扫码人数过多请稍后再试");
 			return result;
 		}
-		Integer sum=(Integer)data.get("integralSum");
-	    members.setHaveIntegral(haveIntegral+sum);
-	    memberService.update(members);
-	    List<IntegralRecord> inRecords= (List<IntegralRecord>) data.get("integralRecords");
-	    if (null!=inRecords && !inRecords.isEmpty()) {
-		  integralRecordService.batchInsert(inRecords);
-	    }
-	    result.setResults(dataList);
+
 		result.setState(200);
 		return result;
 	}
@@ -181,7 +182,7 @@ public class IntegralFrontController {
 						e.printStackTrace();
 					}
 				 }
-				Long num=esService.countIntegralByUserIdAndDate(members.getId(), scanCodeTime);
+				Long num=esService.countIntegralByUserIdAndDate(members.getId(), scanCodeTime.getTime());
 				if (null==num || num.intValue()==0) {
 					Integer integralByBirthday=integralRule.getIntegralByBirthday();
 					 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
@@ -194,7 +195,7 @@ public class IntegralFrontController {
 		 }
          
          if (null!=firstTimeStatus && firstTimeStatus.intValue()==1) {
-        	 List<IntegralRecord> integralRecords=integralRecordService.selectByMemberIdAndIntegralReasonCode(members.getId(),1);
+        	 List<IntegralRecord> integralRecords=integralRecordService.selectByMemberIdAndIntegralReasonCode(members.getId(),IntegralReasonEnum.FIRST_INTEGRAL.getIntegralReasonCode());
         	 if (null==integralRecords || integralRecords.isEmpty()) {
         		 Integer firstReceiveNum=integralRule.getIntegralByFirstTime();
         		 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,

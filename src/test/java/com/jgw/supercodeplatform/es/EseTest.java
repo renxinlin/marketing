@@ -25,15 +25,25 @@ public class EseTest {
 	private CodeEsService cService;
 	
 	@Test
-	public void add() throws SuperCodeException {
+	public void add() throws SuperCodeException, ParseException {
 //		cService.addScanCodeRecord("oeVn5sq-wk7_MH4jN2BUQ_fSRv-A", "0067a46e580e4b6cbc79b8c55576f617", "38fc70f6ed984c24b090a2421ba72375", "codeId", "codeTypeId", 2l, "2019-03-11");
-	    
-		Long count=cService.countByCode("20268969617396421", "12");
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+		String time=format.format(new Date());
+		Date d=format.parse("2019-04-27"); 
+		Long count=cService.countIntegralByUserIdAndDate(57l, null);
 		System.out.println(count);
 	}
 	
 	@Test
 	public void test2() throws SuperCodeException {
+	}
+	
+	public static void main(String[] args) throws ParseException {
+		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
+		Date d=format.parse("2019-04-27"); 
+		
+		long time=d.getTime();
+		System.out.println(time);
 	}
 	
 	@Test
