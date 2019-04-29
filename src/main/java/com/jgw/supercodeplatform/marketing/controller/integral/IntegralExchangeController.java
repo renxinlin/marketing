@@ -137,13 +137,7 @@ public class IntegralExchangeController extends CommonUtil {
     @ApiOperation(value = "兑换|【新增】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
     public RestResult add(@Valid @RequestBody IntegralExchangeAddParam integralExchange) throws Exception {
-        // 转换下|前端不愿意改，所以转换下
-        // VO转换 ： 废代码解决交互问题
-        if(integralExchange != null && integralExchange.getHaveStock()!=null){
-            integralExchange.setExchangeStock(integralExchange.getHaveStock());
-            integralExchange.setHaveStock(null);
 
-        }
 
         // 业务流程
         String organizationId = getOrganizationId();

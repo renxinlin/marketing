@@ -338,6 +338,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 添加限兑数量
         // 额外数据补充
         // 库存为0,异步下架
+        // 是否预警
         doexchanging(exchangeProductParam,userExchangenum);
 
     }
@@ -372,6 +373,11 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             int j = exchangeStatisticsMapper.updateCount(exchangeStatistics);
             // 方式指定为库存为0;允许操作失败
             boolean shouldUnder = (boolean) exchangeNumKey.get("shouldUnder");
+
+           // 兑换前的状态
+            IntegralExchange beforeEchangeStatus = (IntegralExchange) exchangeNumKey.get("dbrecord");
+            // 兑换后的库存
+            long afterExchangeStock = beforeEchangeStatus.getHaveStock() - exchangeProductParam.getExchangeNum() ;
             taskExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -379,13 +385,20 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                      if(shouldUnder){
                          IntegralExchange shouldUndercarriageDO = new IntegralExchange();
                          try {
+
                              // 下架方式为库存为0
                              // 能走到这里说明需要下架的时候，必然是下架方式需要库存为0，且兑换数量等于剩余库存数
                              // 新建对象减少非必要字段解析
                              shouldUndercarriageDO.setId((Long) exchangeNumKey.get("exchangeId"));
                              // 自动下架
                              shouldUndercarriageDO.setStatus((byte)2);
+                            // 开启预警
+                             if( beforeEchangeStatus.getStockWarningNum() != null && afterExchangeStock <=  beforeEchangeStatus.getStockWarningNum()){
+                                 // 发出库存预警
+                                 shouldUndercarriageDO.setStockWarning((byte)1);
+                             }
                              mapper.updateByPrimaryKeySelective(shouldUndercarriageDO);
+
                          }catch (Exception e){
                              if(logger.isErrorEnabled()){
                                  logger.error("[自动下架失败]");
@@ -684,7 +697,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
         // 默认上架:应前端要求将0改成3
         integralExchange.setStatus((byte)3);
-        if(integralExchange.getUndercarriageSetWay() == 0 && integralExchange.getExchangeStock() == 0){
+        if(integralExchange.getUndercarriageSetWay() == 0 && integralExchange.getHaveStock() == 0){
             // 库存为0 自动下架
             integralExchange.setStatus((byte)2);
         }
@@ -793,10 +806,12 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(integralExchange.getExchangeIntegral() <= 0){
             throw new SuperCodeException("兑换积分为正整数");
         }
-        if(  integralExchange.getExchangeStock()  == null || integralExchange.getExchangeStock() <= 0 ){
-            integralExchange.setExchangeStock(0);
+        if(  integralExchange.getHaveStock()  == null || integralExchange.getHaveStock() <= 0 ){
+            integralExchange.setHaveStock(0);
             // throw new SuperCodeException("兑换库存为正整数");
         }
+        // 新增时，总库存为剩余库存
+        integralExchange.setExchangeStock(integralExchange.getHaveStock() );
 
         if(integralExchange.getCustomerLimitNum()  == null || integralExchange.getCustomerLimitNum() < 0){
             // 不传，则认为无上限给999999
@@ -813,7 +828,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
         // 默认上架:应前端要求将0改成3
         integralExchange.setStatus((byte)3);
-        if(integralExchange.getUndercarriageSetWay() == 0 && integralExchange.getExchangeStock() == 0){
+        if(integralExchange.getUndercarriageSetWay() == 0 && integralExchange.getHaveStock() == 0){
             // 库存为0 自动下架
             integralExchange.setStatus((byte)2);
         }
@@ -1094,8 +1109,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             if (oldDoUniqueFlag.equals(newVoUniqueFlag)){
                 // 处理库存:新的总库存是原来总库存+（新的剩余库存-原来剩余）
                 newDO.setExchangeStock(oldIntegralExchange.getExchangeStock()+(newDO.getHaveStock()- oldIntegralExchange.getHaveStock()));
-                break;
-            }else{
+             }else{
                 // 编辑携带新的产品信息，设置总库存为兑换库存
                 newDO.setExchangeStock(newDO.getHaveStock());
             }
