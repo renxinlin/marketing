@@ -469,7 +469,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		RestResult<H5LoginVO> restResult=new RestResult<H5LoginVO>();
 		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(verificationCode)) {
 			restResult.setState(500);
-			restResult.setMsg("请检查参数，参数不能为空");
+			restResult.setMsg("请检查参数，手机号和验证码参数不能为空");
 			return restResult;
 		}
 
@@ -501,6 +501,17 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			h5LoginVO.setRegistered(1);
 			MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
 			MarketingMembers marketingMembersByOpenId=null;
+			
+			if (StringUtils.isNotBlank(openid)) {
+				if (null!=marketingMembersByPhone && StringUtils.isNotBlank(marketingMembersByPhone.getOpenid())) {
+					if (!openid.equals(marketingMembersByPhone.getOpenid())) {
+						restResult.setState(500);
+						restResult.setMsg("当前手机号已绑定其它微信号");
+						return restResult;
+					}
+				}
+			}
+			
 			if (StringUtils.isNotBlank(openid)) {
 			   marketingMembersByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openid, organizationId);
 			}
