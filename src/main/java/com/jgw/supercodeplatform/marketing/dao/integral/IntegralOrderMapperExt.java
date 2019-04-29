@@ -5,7 +5,9 @@ import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.Integra
 import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -93,4 +95,8 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
             + endScript)
     List<IntegralOrderPageParam>  listWithExcel(IntegralOrder searchParams);
+
+
+    @Update("update marketing_order set MemberId=#{newMemberId} where MemberId=#{oldMemberId} ")
+	void updateMemberId(@Param("oldMemberId")Long oldMemberId, @Param("newMemberId")Long newMemberId);
 }

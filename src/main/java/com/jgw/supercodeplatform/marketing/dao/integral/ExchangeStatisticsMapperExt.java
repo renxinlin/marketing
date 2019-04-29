@@ -18,4 +18,7 @@ public interface ExchangeStatisticsMapperExt extends ExchangeStatisticsMapper {
     ExchangeStatistics selectCount(String organizationId, String productId, Long memberId);
     @Delete(" delete from  marketing_member_exchange_statistics mmes where mmes.ProductId = #{productId} ")
     int deleteWhernBaseServiceDelete(@Param("productId") String productId);
+    
+    @Update("update marketing_member_exchange_statistics set MemberId=#{newMemberId} where MemberId=#{oldMemberId} ")
+	void updateMemberId(@Param("oldMemberId")Long oldMemberId, @Param("newMemberId")Long newMemberId);
 }

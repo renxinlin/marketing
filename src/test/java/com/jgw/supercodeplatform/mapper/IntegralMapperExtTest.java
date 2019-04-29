@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
+import com.jgw.supercodeplatform.marketing.service.TempService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest(classes = SuperCodeMarketingApplication.class)
 public class IntegralMapperExtTest {
 
-
+    @Autowired
+    private TempService tempService;
+    
     @Autowired
     private DeliveryAddressMapperExt mapper;
 
@@ -30,12 +33,7 @@ public class IntegralMapperExtTest {
     private IntegralRecordMapperExt integralRecordDao;
     @Test
     public void test() {
-        // 积分dao层功能测试：测试d积分dao层是否正常使用
-        DeliveryAddress pojo = new DeliveryAddress();
-        pojo.setCity("000");
-        mapper.insertSelective(pojo);
-
-//		maSetMapper.addCodeTotalNum(1L, 2L);
+    	tempService.updateMemberId(83l, 84l);
     }
     
     @Test

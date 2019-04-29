@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -112,4 +113,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
     		endScript
     })
 	void batchInsert(List<IntegralRecord> inRecords);
+
+    @Update("update marketing_integral_record set MemberId=#{newMemberId} where MemberId=#{oldMemberId} ")
+	void updateMemberId(@Param("oldMemberId")Long oldMemberId, @Param("newMemberId")Long newMemberId);
 }

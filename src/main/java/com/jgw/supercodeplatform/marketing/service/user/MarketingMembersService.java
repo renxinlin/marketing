@@ -502,6 +502,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
 			MarketingMembers marketingMembersByOpenId=null;
 			
+			//判断登录的手机号是否与openid是同一条记录
 			if (StringUtils.isNotBlank(openid)) {
 				if (null!=marketingMembersByPhone && StringUtils.isNotBlank(marketingMembersByPhone.getOpenid())) {
 					if (!openid.equals(marketingMembersByPhone.getOpenid())) {
@@ -936,6 +937,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	public MarketingMembers selectByPhoneAndOrgId(String mobile, String organizationId) {
 		return marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
+	}
+
+	public void deleteById(Long id) {
+		marketingMembersMapper.deleteById(id);		
 	}
 
 }
