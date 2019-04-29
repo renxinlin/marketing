@@ -382,8 +382,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                 @Override
                 public void run() {
                     // 由上层事务通知是否下架
-                     if(shouldUnder){
-                         IntegralExchange shouldUndercarriageDO = new IntegralExchange();
+                    IntegralExchange shouldUndercarriageDO = new IntegralExchange();
+                    if(shouldUnder){
                          try {
 
                              // 下架方式为库存为0
@@ -412,7 +412,17 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                              }
                          }
 
-                    }
+                    }else{
+                         // 库存预警
+                         shouldUndercarriageDO.setId((Long) exchangeNumKey.get("exchangeId"));
+                         // 自动下架
+                          // 开启预警
+                         if( beforeEchangeStatus.getStockWarningNum() != null && afterExchangeStock <=  beforeEchangeStatus.getStockWarningNum()){
+                             // 发出库存预警
+                             shouldUndercarriageDO.setStockWarning((byte)1);
+                         }
+                         mapper.updateByPrimaryKeySelective(shouldUndercarriageDO);
+                     }
 
                 }
             });
