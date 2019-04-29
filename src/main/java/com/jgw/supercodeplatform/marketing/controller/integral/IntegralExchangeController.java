@@ -137,6 +137,15 @@ public class IntegralExchangeController extends CommonUtil {
     @ApiOperation(value = "兑换|【新增】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
     public RestResult add(@Valid @RequestBody IntegralExchangeAddParam integralExchange) throws Exception {
+        // 转换下|前端不愿意改，所以转换下
+        // VO转换 ： 废代码解决交互问题
+        if(integralExchange != null && integralExchange.getHaveStock()!=null){
+            integralExchange.setExchangeStock(integralExchange.getHaveStock());
+            integralExchange.setHaveStock(null);
+
+        }
+
+        // 业务流程
         String organizationId = getOrganizationId();
         String organizationName = getOrganizationName();
         integralExchangeService.add(integralExchange, organizationId, organizationName);
@@ -182,6 +191,19 @@ public class IntegralExchangeController extends CommonUtil {
         promotion.setUrl(H5_IMPERIAL_GRADEN_URL + organizationId);
         // 上下架组织下的兑换对象
         return RestResult.success("success",promotion);
+    }
+
+
+
+
+
+    @RequestMapping(value = "/deleteBybase",method = RequestMethod.GET)
+    @ApiOperation(value = "兑换删除【基础平台删除产品】", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
+    public RestResult delete() throws Exception {
+
+        // 上下架组织下的兑换对象
+        return RestResult.success("success",null);
     }
 
 
