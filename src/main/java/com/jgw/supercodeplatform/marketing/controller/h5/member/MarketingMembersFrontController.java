@@ -124,6 +124,9 @@ public class MarketingMembersFrontController extends CommonUtil {
 					}
 					//如果存在手机号记录又允许绑定到当前微信号则合并用户更新数据
 					tempService.updateMemberId(memberByPhone.getId(), id);
+					Integer haveIntegral=member.getHaveIntegral()==null?0:member.getHaveIntegral();
+					Integer extralIntegral=memberByPhone.getHaveIntegral()==null?0:memberByPhone.getHaveIntegral();
+					member.setHaveIntegral(haveIntegral+extralIntegral);
 					marketingMembersService.deleteById(memberByPhone.getId());
 				}
 			}
