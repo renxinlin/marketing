@@ -1,9 +1,12 @@
 package com.jgw.supercodeplatform.marketing.config.web.mvc;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.exception.UserExpireException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,7 +70,9 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
             		throw new UserExpireException("用户不存在...");
 				}
             }
-            H5LoginVO jwtUser = JWTUtil.verifyToken(token);
+            byte[] byts=Base64.decodeBase64(token);
+            String userStr=new String(byts, "utf-8");
+            H5LoginVO jwtUser = JSONObject.parseObject(userStr, H5LoginVO.class);
             if (jwtUser == null || jwtUser.getMemberId() == null) {
                 logger.error("jwt信息不全" + jwtUser);
                 // 重新登录的异常信息

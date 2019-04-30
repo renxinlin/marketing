@@ -10,8 +10,11 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+
+import org.apache.commons.codec.binary.Base64;
 import org.modelmapper.ModelMapper;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -25,31 +28,37 @@ public class JWTUtil {
 	 */
 	public static String createTokenWithClaim(H5LoginVO jwtUser) throws SuperCodeException{
 
+//		try {
+//			Algorithm algorithm = Algorithm.HMAC256("secret");
+//			Map<String, Object> map = new HashMap<String, Object>();
+//			Date nowDate = new Date();
+//			Date expireDate = getAfterDate(nowDate,0,0,0,2,0,0);//2小过期
+//			map.put("alg", "HS256");
+//			map.put("typ", "JWT");
+//
+//			String token = JWT.create()
+//					/*设置头部信息 Header*/
+//					.withHeader(map)
+//					/*设置 载荷 Payload*/
+//					.withClaim("jwtUser", JSONObject.toJSONString(jwtUser))
+//					.withIssuer("JGW CJM COMPANY")//签名是有谁生成 例如 服务器
+//					.withSubject("H5 SECUCITY")//签名的主题
+//					//.withNotBefore(new Date())//定义在什么时间之前，该jwt都是不可用的.
+//					.withAudience("APP")//签名的观众 也可以理解谁接受签名的
+//					.withIssuedAt(nowDate) //生成签名的时间
+////					.withExpiresAt(expireDate)//签名过期的时间
+//					/*签名 Signature */
+//					.sign(algorithm);
+//			return token;
+//		} catch (JWTCreationException exception){
+//			exception.printStackTrace();
+//			throw new SuperCodeException("创建授权信息失败");
+//		}
 		try {
-			Algorithm algorithm = Algorithm.HMAC256("secret");
-			Map<String, Object> map = new HashMap<String, Object>();
-			Date nowDate = new Date();
-			Date expireDate = getAfterDate(nowDate,0,0,0,2,0,0);//2小过期
-			map.put("alg", "HS256");
-			map.put("typ", "JWT");
-
-			String token = JWT.create()
-					/*设置头部信息 Header*/
-					.withHeader(map)
-					/*设置 载荷 Payload*/
-					.withClaim("jwtUser", JSONObject.toJSONString(jwtUser))
-					.withIssuer("JGW CJM COMPANY")//签名是有谁生成 例如 服务器
-					.withSubject("H5 SECUCITY")//签名的主题
-					//.withNotBefore(new Date())//定义在什么时间之前，该jwt都是不可用的.
-					.withAudience("APP")//签名的观众 也可以理解谁接受签名的
-					.withIssuedAt(nowDate) //生成签名的时间
-//					.withExpiresAt(expireDate)//签名过期的时间
-					/*签名 Signature */
-					.sign(algorithm);
-			return token;
-		} catch (JWTCreationException exception){
-			exception.printStackTrace();
-			throw new SuperCodeException("创建授权信息失败");
+			return Base64.encodeBase64String(JSONObject.toJSONString(jwtUser).getBytes("utf-8"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			throw new SuperCodeException("解析用户对象出错", 500);
 		}
 	}
 	/**
