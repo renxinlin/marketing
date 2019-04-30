@@ -544,7 +544,9 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("兑换数量超过上限");
 
         }
-        if(member.getHaveIntegral() < exchangeProductParam.getExchangeNum() * exists.getExchangeIntegral()){
+
+        // null兼容线上历史数据
+        if(member.getHaveIntegral() == null || member.getHaveIntegral() < exchangeProductParam.getExchangeNum() * exists.getExchangeIntegral()){
             throw new SuperCodeException("积分不足");
         }
         Map userExchangenum = new HashMap(3);// 3次方:8个容量 用于doexchanging方法

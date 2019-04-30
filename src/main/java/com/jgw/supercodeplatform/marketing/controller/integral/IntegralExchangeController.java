@@ -188,8 +188,14 @@ public class IntegralExchangeController extends CommonUtil {
     }
 
 
-
-
+    /**
+     * 存在的问题，基础数据删除时，调用营销接口失败，是回滚还是要保证数据的最终一致性
+     * 基础反调上层服务是否合理
+     *
+     * @param productId
+     * @return
+     * @throws SuperCodeException
+     */
 
     @RequestMapping(value = "/deleteProduct",method = RequestMethod.GET)
     @ApiOperation(value = "兑换删除产品【基础平台删除产品】", notes = "")

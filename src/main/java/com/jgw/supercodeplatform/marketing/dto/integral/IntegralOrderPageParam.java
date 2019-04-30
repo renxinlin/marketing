@@ -102,6 +102,20 @@ public class IntegralOrderPageParam {
     @ApiModelProperty(value = "产品图片")
     private String productPic;
 
+
+
+    /** 图片 */
+    @ApiModelProperty(value = "skuid")
+    private String skuId;
+
+    public String getSkuId() {
+        return skuId;
+    }
+
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
+    }
+
     public String getStatusName() {
         return statusName;
     }

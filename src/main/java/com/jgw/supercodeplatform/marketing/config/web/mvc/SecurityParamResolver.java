@@ -62,7 +62,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
             	}
 			}
             if (token == null) {
-            	token=request.getHeader("jwt-token");
+            	token=request.getHeader(CommonConstants.JWT_TOKEN);
             	if (token == null) {
             		throw new UserExpireException("用户不存在...");
 				}
@@ -82,6 +82,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
                 jwtTokenCookie.setPath("/");
                 jwtTokenCookie.setDomain(domain);
                 response.addCookie(jwtTokenCookie);
+                response.setHeader(CommonConstants.JWT_TOKEN,jwtToken);
              }catch (Exception e){
                 e.printStackTrace();
             }
