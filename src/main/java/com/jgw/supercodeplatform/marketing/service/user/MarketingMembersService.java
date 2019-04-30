@@ -581,6 +581,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 						members.setState((byte)1);
 						marketingMembersMapper.update(members);
 						
+						h5LoginVO.setHaveIntegral(marketingMembersByPhone.getHaveIntegral()==null?0:marketingMembersByPhone.getHaveIntegral());
+						h5LoginVO.setMemberId(marketingMembersByPhone.getId());
+						h5LoginVO.setWechatHeadImgUrl(marketingMembersByPhone.getWechatHeadImgUrl());
 						//删除openid查出的用户
 						marketingMembersMapper.deleteById(userIdByOpenId);
 					}
