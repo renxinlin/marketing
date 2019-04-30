@@ -225,7 +225,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			i++;
 		}
 		String from=" from marketing_members ";
-		String where=" where OrganizationId='"+organizationId+"'";
+		String where=" where State!=2 and OrganizationId='"+organizationId+"'";
 		String sql=null;
 		if (isCount) {
 			sql=" select count(*) "+from+where;
