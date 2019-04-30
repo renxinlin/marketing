@@ -532,7 +532,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					Byte state=marketingMembersByOpenId.getState();
 					if (null==state || state.intValue()==0) {
 						restResult.setState(500);
-						restResult.setMsg("当前手机号已被禁用");
+						restResult.setMsg("当前用户已被禁用");
 						return restResult;
 					}
 					marketingMembersByOpenId.setMobile(mobile);
