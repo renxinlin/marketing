@@ -68,8 +68,10 @@ public class JWTUtil {
 			date = new Date();
 		}
 
-		Calendar cal = new GregorianCalendar ();
 
+//		Calendar cal = new GregorianCalendar ();
+		// 格林威治时间存在时间不一致问题
+		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		if(year != 0){
 			cal.add(Calendar.YEAR, year);

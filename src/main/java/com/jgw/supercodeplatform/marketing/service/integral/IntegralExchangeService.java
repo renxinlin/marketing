@@ -544,6 +544,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("兑换数量超过上限");
 
         }
+
+        // null兼容线上历史数据
         if(member.getHaveIntegral() == null || member.getHaveIntegral() < exchangeProductParam.getExchangeNum() * exists.getExchangeIntegral()){
             throw new SuperCodeException("积分不足");
         }
