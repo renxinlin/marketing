@@ -529,6 +529,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					h5LoginVO.setMemberId(member.getId());
 					h5LoginVO.setHaveIntegral(0);
 				}else {
+					Byte state=marketingMembersByOpenId.getState();
+					if (null==state || state.intValue()==0) {
+						restResult.setState(500);
+						restResult.setMsg("当前手机号已被禁用");
+						return restResult;
+					}
 					marketingMembersByOpenId.setMobile(mobile);
 					marketingMembersByOpenId.setState((byte)1);
 					marketingMembersMapper.update(marketingMembersByOpenId);
@@ -538,13 +544,27 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				}
 			}else {
 				Long userIdByPhone=marketingMembersByPhone.getId();
-				h5LoginVO.setHaveIntegral(marketingMembersByPhone.getHaveIntegral()==null?0:marketingMembersByPhone.getHaveIntegral());
-				h5LoginVO.setMemberId(userIdByPhone);
-				h5LoginVO.setWechatHeadImgUrl(marketingMembersByPhone.getWechatHeadImgUrl());
 				
 				if (null!=marketingMembersByOpenId) {
-					Long userIdByOpenId=marketingMembersByOpenId.getId();
-					if (!userIdByOpenId.equals(userIdByPhone)) {
+					Byte state=marketingMembersByOpenId.getState();
+					if (null==state || state.intValue()==0) {
+						restResult.setState(500);
+						restResult.setMsg("当前用户已被禁用");
+						return restResult;
+					}
+					String mobileByOpenid=marketingMembersByOpenId.getMobile();
+					if (StringUtils.isNotBlank(mobileByOpenid)) {
+						if (!mobileByOpenid.equals(mobile)) {
+							restResult.setState(500);
+							restResult.setMsg("当前用户手机号与登录手机号不统一");
+							return restResult;
+						}else {
+							h5LoginVO.setHaveIntegral(marketingMembersByOpenId.getHaveIntegral()==null?0:marketingMembersByOpenId.getHaveIntegral());
+							h5LoginVO.setMemberId(marketingMembersByOpenId.getId());
+							h5LoginVO.setWechatHeadImgUrl(marketingMembersByOpenId.getWechatHeadImgUrl());
+						}
+					}else {
+						Long userIdByOpenId=marketingMembersByOpenId.getId();
 						String openIdByPhone=marketingMembersByPhone.getOpenid();
 						//手机号这条记录的openid不为空，合并过openid就通过之前的openid更新中奖纪录里的openid和手机号
 						if (StringUtils.isNotBlank(openIdByPhone)) {
@@ -564,6 +584,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 						//删除openid查出的用户
 						marketingMembersMapper.deleteById(userIdByOpenId);
 					}
+				}else {
+					h5LoginVO.setHaveIntegral(marketingMembersByPhone.getHaveIntegral()==null?0:marketingMembersByPhone.getHaveIntegral());
+					h5LoginVO.setMemberId(marketingMembersByPhone.getId());
+					h5LoginVO.setWechatHeadImgUrl(marketingMembersByPhone.getWechatHeadImgUrl());
 				}
 			}
 			String orgnazationName="";
