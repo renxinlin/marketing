@@ -137,7 +137,7 @@ public class WeixinAuthController {
 			members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
 			members.setOrganizationId(organizationId);
 			if (null!=statecode) {
-				members.setState((byte)0);
+				members.setState((byte)2);
 			}
 			marketingMembersService.insert(members);
 		}else {
