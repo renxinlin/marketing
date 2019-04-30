@@ -585,6 +585,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 						marketingMembersMapper.deleteById(userIdByOpenId);
 					}
 				}else {
+					Byte state=marketingMembersByPhone.getState();
+					if (null==state || state.intValue()==0) {
+						restResult.setState(500);
+						restResult.setMsg("当前用户已被禁用");
+						return restResult;
+					}
 					h5LoginVO.setHaveIntegral(marketingMembersByPhone.getHaveIntegral()==null?0:marketingMembersByPhone.getHaveIntegral());
 					h5LoginVO.setMemberId(marketingMembersByPhone.getId());
 					h5LoginVO.setWechatHeadImgUrl(marketingMembersByPhone.getWechatHeadImgUrl());
