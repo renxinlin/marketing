@@ -10,11 +10,8 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-
-import org.apache.commons.codec.binary.Base64;
 import org.modelmapper.ModelMapper;
 
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -43,9 +40,9 @@ public class JWTUtil {
 					.withClaim("jwtUser", JSONObject.toJSONString(jwtUser))
 					.withIssuer("JGW CJM COMPANY")//签名是有谁生成 例如 服务器
 					.withSubject("H5 SECUCITY")//签名的主题
-					//.withNotBefore(new Date())//定义在什么时间之前，该jwt都是不可用的.
 					.withAudience("APP")//签名的观众 也可以理解谁接受签名的
 //					.withIssuedAt(nowDate) //生成签名的时间
+//					.withNotBefore(new Date())//定义在什么时间之前，该jwt都是不可用的.
 					.withExpiresAt(expireDate)//签名过期的时间
 					/*签名 Signature */
 					.sign(algorithm);
@@ -114,6 +111,8 @@ public class JWTUtil {
 			Algorithm algorithm = Algorithm.HMAC256("secret");
 			JWTVerifier verifier = JWT.require(algorithm)
 					.withIssuer("JGW CJM COMPANY")
+					// 时间校验容许60s误差，精度到毫秒 解决服务器不同节点时钟不同步的问题
+					.acceptLeeway(1*60)
 					.build(); //Reusable verifier instance
 			DecodedJWT jwt = verifier.verify(token);
 

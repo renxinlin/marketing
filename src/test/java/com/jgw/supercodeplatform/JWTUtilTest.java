@@ -9,6 +9,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.dto.integral.JwtUser;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.modelmapper.ModelMapper;
@@ -55,9 +56,10 @@ public class JWTUtilTest {
 					.withClaim("jwtUser", JSONObject.toJSONString(jwtUser))
 					.withIssuer("JGW CJM COMPANY")//签名是有谁生成 例如 服务器
 					.withSubject("H5 SECUCITY")//签名的主题
-					.withNotBefore(new Date())//定义在什么时间之前，该jwt都是不可用的.
 					.withAudience("APP")//签名的观众 也可以理解谁接受签名的
-					.withIssuedAt(nowDate) //生成签名的时间 签名何时启用
+
+//					.withNotBefore(new Date())//定义在什么时间之前，该jwt都是不可用的.
+//					.withIssuedAt(nowDate) //生成签名的时间 签名何时启用
 					.withExpiresAt(expireDate)//签名过期的时间
 					/*签名 Signature */
 					.sign(algorithm);
@@ -140,15 +142,15 @@ public class JWTUtilTest {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		JWTUtilTest demo = new JWTUtilTest();
- 		JwtUser j = new JwtUser();
+		JWTUtil demo = new JWTUtil();
+		H5LoginVO j = new H5LoginVO();
 		j.setMemberId(1L);
 		j.setMobile("13211111111");
 		String createTokenWithClaim = demo.createTokenWithClaim(j);
 		System.out.println(createTokenWithClaim);
 		Thread.sleep(2000);
 
-		JwtUser jwtUser = demo.verifyToken(createTokenWithClaim);
+		H5LoginVO jwtUser = demo.verifyToken(createTokenWithClaim);
 
 		System.out.println(JSONObject.toJSONString(jwtUser));
 
