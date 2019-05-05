@@ -158,7 +158,7 @@ public class IntegralFrontController {
          if (rewardRule.intValue()==0) {
         	 Integer rewardIntegral=inRuleProduct.getRewardIntegral();
     		 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
-					organizationId,rewardIntegral,IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReasonCode(),IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason(), members);
+					organizationId,rewardIntegral,IntegralReasonEnum.PRODUCT_INTEGRAL.getIntegralReasonCode(),IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason(), members);
     		 inRecords.add(integralRecord);
     		 dataList.add("扫码获取产品奖励+"+rewardIntegral+"积分");
         	 integralSum+=inRuleProduct.getRewardIntegral();
@@ -168,7 +168,7 @@ public class IntegralFrontController {
 			 integralSum+=productIntegral;
 			 
 	  		 IntegralRecord integralRecord = newIntegralRecord(outerCodeId, codeTypeId, productId, productName,
-						organizationId,productIntegral,IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReasonCode(),IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason(), members);
+						organizationId,productIntegral,IntegralReasonEnum.PRODUCT_INTEGRAL.getIntegralReasonCode(),IntegralReasonEnum.EXCHANGE_PRODUCT.getIntegralReason(), members);
 	    		
 	  		dataList.add("恭喜领取+"+productIntegral+"积分");
 	  		 inRecords.add(integralRecord);
