@@ -128,7 +128,7 @@ public class OrganizationPortraitService extends CommonUtil {
         return  organizationPortraitMapper.getSelectedLabel(organizationId,PortraitTypeEnum.LABEL.getTypeId());
     }
 
-    public List<MarketingOrganizationPortraitListParam> getUnSelectedLabel(String organizationId) throws SuperCodeException{
+    public List<MarketingUnitcode> getUnSelectedLabel(String organizationId) throws SuperCodeException{
         if (StringUtils.isBlank(organizationId)) {
             throw new SuperCodeException("获取组织信息失败...");
         }
