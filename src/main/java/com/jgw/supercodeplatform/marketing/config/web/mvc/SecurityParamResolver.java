@@ -1,12 +1,9 @@
 package com.jgw.supercodeplatform.marketing.config.web.mvc;
 
-import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.exception.UserExpireException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,28 +48,26 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
     public H5LoginVO resolveArgument(MethodParameter methodParameter, ModelAndViewContainer modelAndViewContainer, NativeWebRequest nativeWebRequest, WebDataBinderFactory webDataBinderFactory) throws UserExpireException {
         String token = null;
         try {
-        	String methodName=methodParameter.getMethod().getName();
-        	logger.info("开始解析方法："+methodName+"jwtToken");
+            String methodName=methodParameter.getMethod().getName();
+            logger.info("开始解析方法："+methodName+"jwtToken");
             // HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
             HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
-           // token = request.getHeader(CommonConstants.JWT_TOKEN);
+            // token = request.getHeader(CommonConstants.JWT_TOKEN);
             Cookie[] cookies = request.getCookies();
             if (null!=cookies) {
-            	for(Cookie cookie : cookies){
-            		if(CommonConstants.JWT_TOKEN.equals(cookie.getName())){
-            			token = cookie.getValue();
-            		}
-            	}
-			}
-            if (token == null) {
-            	token=request.getHeader(CommonConstants.JWT_TOKEN);
-            	if (token == null) {
-            		throw new UserExpireException("用户不存在...");
-				}
+                for(Cookie cookie : cookies){
+                    if(CommonConstants.JWT_TOKEN.equals(cookie.getName())){
+                        token = cookie.getValue();
+                    }
+                }
             }
-            byte[] byts=Base64.decodeBase64(token);
-            String userStr=new String(byts, "utf-8");
-            H5LoginVO jwtUser = JSONObject.parseObject(userStr, H5LoginVO.class);
+            if (token == null) {
+                token=request.getHeader(CommonConstants.JWT_TOKEN);
+                if (token == null) {
+                    throw new UserExpireException("用户不存在...");
+                }
+            }
+            H5LoginVO jwtUser = JWTUtil.verifyToken(token);
             if (jwtUser == null || jwtUser.getMemberId() == null) {
                 logger.error("jwt信息不全" + jwtUser);
                 // 重新登录的异常信息
@@ -88,7 +83,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
                 jwtTokenCookie.setDomain(domain);
                 response.addCookie(jwtTokenCookie);
                 response.setHeader(CommonConstants.JWT_TOKEN,jwtToken);
-             }catch (Exception e){
+            }catch (Exception e){
                 e.printStackTrace();
             }
             return jwtUser;
