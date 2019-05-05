@@ -111,14 +111,14 @@ public class IntegralFrontController {
 		}
 		// 5.查询ES中当前码和码制的积分是否被领取
 		String nowTime=null;
-		long scanCodeLongTime=0l;
+		long scanCodeLongTime=0L;
 		synchronized (this) {
 			nowTime=staticESSafeFormat.format(new Date());
 			scanCodeLongTime=staticESSafeFormat.parse(nowTime).getTime();
 		}
 		
 		List<String> dataList=new ArrayList<String>();
-		Map<String, Object> data=calculateReceiveIntegral(outerCodeId,codeTypeId,productId,null,organizationId,members, integralRule, nowTime,inRuleProduct,scanCodeLongTime,dataList);
+		Map<String, Object> data=calculateReceiveIntegral(outerCodeId,codeTypeId,productId,inRuleProduct.getProductName(),organizationId,members, integralRule, nowTime,inRuleProduct,scanCodeLongTime,dataList);
 		
 		Integer haveIntegral=members.getHaveIntegral()==null?0:members.getHaveIntegral();
 		boolean acquireLock = lockUtil.lock("intrgral:" + outerCodeId + ":" + codeTypeId,5000,5,200);
