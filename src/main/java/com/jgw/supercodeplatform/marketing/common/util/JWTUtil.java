@@ -41,8 +41,8 @@ public class JWTUtil {
 					.withIssuer("JGW CJM COMPANY")//签名是有谁生成 例如 服务器
 					.withSubject("H5 SECUCITY")//签名的主题
 					.withAudience("APP")//签名的观众 也可以理解谁接受签名的
+//					.withIssuedAt(nowDate) //生成签名的时间
 //					.withNotBefore(new Date())//定义在什么时间之前，该jwt都是不可用的.
-//					.withIssuedAt(nowDate) //生成签名的时间 签名何时启用
 					.withExpiresAt(expireDate)//签名过期的时间
 					/*签名 Signature */
 					.sign(algorithm);
@@ -51,6 +51,12 @@ public class JWTUtil {
 			exception.printStackTrace();
 			throw new SuperCodeException("创建授权信息失败");
 		}
+//		try {
+//			return Base64.encodeBase64String(JSONObject.toJSONString(jwtUser).getBytes("utf-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//			throw new SuperCodeException("解析用户对象出错", 500);
+//		}
 	}
 	/**
 	 * 返回一定时间后的日期

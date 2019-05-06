@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
+import com.jgw.supercodeplatform.marketing.constants.SystemLabelEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
@@ -109,6 +110,14 @@ public class IntegralFrontController {
 			result.setMsg("该产品对应的码未参与积分");
 			return result;
 		}
+		
+		Long marketingcodeTypeId=SystemLabelEnum.MARKETING.getCodeTypeId();
+		if (!marketingcodeTypeId.equals(Long.parseLong(codeTypeId))) {
+			result.setState(500);
+			result.setMsg("该码不是营销码无法参与积分");
+			return result;
+		}
+		
 		// 5.查询ES中当前码和码制的积分是否被领取
 		String nowTime=null;
 		long scanCodeLongTime=0L;
