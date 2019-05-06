@@ -112,7 +112,7 @@ public class IntegralFrontController {
 		}
 		
 		Long marketingcodeTypeId=SystemLabelEnum.MARKETING.getCodeTypeId();
-		if (!marketingcodeTypeId.equals(Long.parseLong(organizationId))) {
+		if (!marketingcodeTypeId.equals(Long.parseLong(codeTypeId))) {
 			result.setState(500);
 			result.setMsg("该码不是营销码无法参与积分");
 			return result;
