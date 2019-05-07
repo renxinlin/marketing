@@ -1,7 +1,9 @@
 package com.jgw.supercodeplatform.marketing.diagram.task.worker;
 
 import com.jgw.supercodeplatform.marketing.diagram.task.Task;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface Worker {
     /**
      * 真正工作者
