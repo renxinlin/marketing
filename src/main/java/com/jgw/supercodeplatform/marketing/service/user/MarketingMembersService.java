@@ -781,7 +781,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if(marketingMembersInfo == null){
 			throw  new SuperCodeException("会员信息不存在",500);
 		}
-		if( marketingMembersInfo.getState() == 0){
+		if( null!=marketingMembersInfo.getState() && marketingMembersInfo.getState() == 0){
 			throw  new SuperCodeException("对不起,该会员已被加入黑名单",500);
 		}
 
