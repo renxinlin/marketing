@@ -63,6 +63,10 @@ public class IntegralRecord  extends DaoSearch {
     @ApiModelProperty(value = "创建时间")
     private Date createDate;
 
+    /** 创建时间 */
+    @ApiModelProperty(value = "创建时间字符串")
+    private String createDateStr;
+
     /** 组织id */
     @ApiModelProperty(value = "组织id")
     private String organizationId;
@@ -84,6 +88,15 @@ public class IntegralRecord  extends DaoSearch {
     /** 产品价格 */
     @ApiModelProperty(value = "产品价格")
     private Float productPrice;
+
+
+    public String getCreateDateStr() {
+        return createDateStr;
+    }
+
+    public void setCreateDateStr(String createDateStr) {
+        this.createDateStr = createDateStr;
+    }
 
     public Float getProductPrice() {
         return productPrice;

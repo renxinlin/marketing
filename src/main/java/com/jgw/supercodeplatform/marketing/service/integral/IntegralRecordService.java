@@ -76,4 +76,15 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
         return recordMapper.getOrganizationTop6IntegralProduct( organizationId,  startDate,  endDate);
 
     }
+
+    public Integer getOrganizationAllIntegralProduct(String organizationId, Date startDate, Date endDate) {
+        return recordMapper.getOrganizationAllIntegralProduct( organizationId,  startDate,  endDate);
+
+    }
+
+
+    public List<IntegralRecord> getOrganizationAllSalePrice(String organizationId, Date startDate, Date endDate) {
+        return recordMapper.getOrganizationAllSalePrice( organizationId,  startDate,  endDate);
+
+    }
 }

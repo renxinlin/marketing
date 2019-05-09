@@ -30,6 +30,16 @@ public class MarketingMembers {
     private Date integralReceiveDate; // 最新一次积分领取时间
     private String wechatHeadImgUrl;
     private Byte userSource;// 注册来源1招募会员
+    private Byte deviceType;// 设备来源
+
+
+    public Byte getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(Byte deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public Byte getUserSource() {
         return userSource;

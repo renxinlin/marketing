@@ -30,7 +30,7 @@ public interface MarketingMembersMapper {
             + " DATE_FORMAT(a.BabyBirthday ,'%Y-%m-%d') as babyBirthday,  a.IsRegistered as isRegistered , "
             + " a.HaveIntegral as haveIntegral , MemberType memberType, a.IntegralReceiveDate as integralReceiveDate, "
             + " a.WechatHeadImgUrl as wechatHeadImgUrl, "
-            + " a.UserSource, a.ProvinceCode, a.ProvinceName ";
+            + " a.UserSource, a.ProvinceCode, a.ProvinceName, a.DeviceType  ";
 
     /**
      * 会员注册
