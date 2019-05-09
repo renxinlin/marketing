@@ -198,7 +198,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     Set<IntegralExchange> selectUnSalePruduct(@Param("organizationId") String organizationId);
 
     @Delete(startScript +
-            " delete from  marketing_integral_exchange ie where ie.OrganizationId=#{organizationId} and ie.ProductId = #{productId} " +
+            " delete from  marketing_integral_exchange  where OrganizationId=#{organizationId} and ProductId = #{productId} " +
             " <if test='skuId != null and skuId != &apos;&apos;'> and skuId = #{skuId} </if> " +endScript )
     int deleteProductEvenSkuByOrganizationId(@Param("organizationId") String organizationId, @Param("productId") String productId, @Param("skuId") String skuId);
 }
