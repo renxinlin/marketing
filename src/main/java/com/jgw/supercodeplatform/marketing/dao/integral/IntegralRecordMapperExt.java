@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.dao.integral;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralRecordMapper;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 
 import org.apache.ibatis.annotations.Insert;
@@ -10,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -116,4 +118,42 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 
     @Update("update marketing_integral_record set MemberId=#{newMemberId} where MemberId=#{oldMemberId} ")
 	void updateMemberId(@Param("oldMemberId")Long oldMemberId, @Param("newMemberId")Long newMemberId);
+
+	/**
+	 * 组织总发放的积分
+	 * @param organizationId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	@Select(" select sum(IntegralNum) from marketing_integral_record where OrganizationId = #{organizationId} " +
+			" IntegralNum &gt; 0  " +
+			" and CreateDate between #{startDate} and #{endDate} ")
+    Integer sumOrganizationUsingIntegralByDate(String organizationId, Date startDate, Date endDate);
+	/**
+	 * 组织总兑换金额
+	 * @param organizationId
+	 * @param date
+	 * @param date1
+	 */
+	@Select(" select sum(IntegralNum) from marketing_integral_record where OrganizationId = #{organizationId} " +
+			" IntegralNum &lt; 0  " +
+			" and CreateDate between #{startDate} and #{endDate} ")
+	Integer sumOrganizationIntegralExchangeByDate(String organizationId, Date startDate, Date endDate);
+
+	/**
+	 * 获取top6产品的积分
+	 * @param organizationId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	@Select(" select ProductId,ProductName ,COUNT(IntegralNum) IntegralNum from marketing_integral_record " +
+			" where 1=1 " +
+			" and OrganizationId = #{organizationId} " +
+			" and IntegralNum &lt; 0 " +
+			" and CreateDate between #{startDate} and #{endDate} " +
+ 			" group by ProductId,ProductName " +
+			" order by IntegralNum desc limit 0,6 ")
+    List<IntegralRecord> getOrganizationTop6IntegralProduct(String organizationId, Date startDate, Date endDate);
 }

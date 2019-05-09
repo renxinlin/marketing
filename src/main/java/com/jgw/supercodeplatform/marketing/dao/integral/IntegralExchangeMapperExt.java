@@ -110,7 +110,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
 
 
 
-
+    //  TODO  需要建立索引开启行锁
     @Select(startScript + " select " + allFileds + " from marketing_integral_exchange ie where OrganizationId = #{organizationId} " +
             " and ProductId = #{productId} " +
             " <if test='skuId != null and skuId != &apos;&apos;'> and skuId = #{skuId} </if>  for update" +endScript )

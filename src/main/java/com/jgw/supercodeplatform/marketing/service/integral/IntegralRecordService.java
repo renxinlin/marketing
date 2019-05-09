@@ -2,12 +2,14 @@ package com.jgw.supercodeplatform.marketing.service.integral;
 
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,7 +44,36 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
 		recordMapper.batchInsert(inRecords);
 	}
 
+    /**
+     * 组织积分发放金额
+     * @param organizationId
+     * @param date
+     * @param date1
+     */
+    public Integer sumOrganizationUsingIntegralByDate(String organizationId, Date startDate, Date endDate) {
+        return recordMapper.sumOrganizationUsingIntegralByDate( organizationId,  startDate,  endDate);
+    }
 
+    /**
+     * 组织金额兑换金额
+     * @param organizationId
+     * @param date
+     * @param date1
+     */
+    public Integer sumOrganizationIntegralExchangeByDate(String organizationId, Date startDate, Date endDate) {
+        return recordMapper.sumOrganizationIntegralExchangeByDate( organizationId,  startDate,  endDate);
 
+    }
 
+    /**
+     * 获取top6产品积分
+     * @param organizationId
+     * @param date
+     * @param date1
+     * @return
+     */
+    public List<IntegralRecord> getOrganizationTop6IntegralProduct(String organizationId, Date startDate, Date endDate) {
+        return recordMapper.getOrganizationTop6IntegralProduct( organizationId,  startDate,  endDate);
+
+    }
 }

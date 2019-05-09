@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -52,4 +53,15 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
 	 		+endScript)
 	List<WXPayTradeOrder> commonSearch(DaoSearch daoSearch);
 
+	/**
+	 * 获取组织交易成功的金额
+	 * @param organizationId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	@Select(" select sum(Amount) from marketing_wx_trade_order where organizationId = #{organizationId} " +
+			" TradeStatus = 1 " +
+			" and TradeDate between #{startDate} and #{endDate} ")
+	Integer getOrganizationIdAmoutByDate(String organizationId, Date startDate, Date endDate);
 }

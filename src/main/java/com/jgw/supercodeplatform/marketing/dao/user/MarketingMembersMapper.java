@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.dao.user;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,8 @@ public interface MarketingMembersMapper {
             + " a.CustomerName as customerName,a.CustomerId as customerId,"
             + " DATE_FORMAT(a.BabyBirthday ,'%Y-%m-%d') as babyBirthday,  a.IsRegistered as isRegistered , "
             + " a.HaveIntegral as haveIntegral , MemberType memberType, a.IntegralReceiveDate as integralReceiveDate, "
-            +" a.WechatHeadImgUrl as wechatHeadImgUrl";
+            + " a.WechatHeadImgUrl as wechatHeadImgUrl, "
+            + " a.UserSource, a.ProvinceCode, a.ProvinceName ";
 
     /**
      * 会员注册
@@ -192,4 +194,25 @@ public interface MarketingMembersMapper {
 
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} and Id !=#{id} ")
 	MarketingMembers selectByPhoneAndOrgIdExcludeId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId, @Param("id")Long id);
+
+
+    /**
+     * 招募会员入口注册的会员
+     * @param organizationId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.UserSource = 1 and a.CreateDate between #{startDate} and #{endDate} ")
+    List<MarketingMembers> getRegisterNum(String organizationId, Date startDate, Date endDate);
+
+    /**
+     * 会员地图
+     * @param organizationId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.CreateDate between #{startDate} and #{endDate} ")
+    List<MarketingMembers> getOrganizationAllMemberWithDate(String organizationId, Date startDate, Date endDate);
 }
