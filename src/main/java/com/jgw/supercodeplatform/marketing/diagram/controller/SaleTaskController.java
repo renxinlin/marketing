@@ -130,7 +130,7 @@ public class SaleTaskController extends CommonUtil {
      * @return
      */
     private RestResult timeIntervalMonthtask(List<IntegralRecord> organizationAllSalePrice, List<String> dateParamsString) throws SuperCodeException {
-        Map<String, SerialVo> timeVo = new HashMap<>();
+        Map<String, SerialVo> timeVo = new TreeMap<>();
         // 图表数据格式
         if(!CollectionUtils.isEmpty(organizationAllSalePrice)){
             for(String day : dateParamsString){
@@ -171,7 +171,7 @@ public class SaleTaskController extends CommonUtil {
      */
     private RestResult timeIntervalWeektask(List<IntegralRecord> organizationAllSalePrice, List<String> dateParamsString) throws SuperCodeException {
 
-        Map<String, SerialVo> timeVo = new HashMap<>();
+        Map<String, SerialVo> timeVo = new TreeMap<>();
         // 图表数据格式
         if(!CollectionUtils.isEmpty(organizationAllSalePrice)){
             for(String day : dateParamsString){
@@ -215,7 +215,7 @@ public class SaleTaskController extends CommonUtil {
      * @return
      */
     private RestResult timePointtask(List<IntegralRecord> organizationAllSalePrice, List<String> dateParamsString) {
-        Map<String, SerialVo> timeVo = new HashMap<>();
+        Map<String, SerialVo> timeVo = new TreeMap<>();
         // 图表数据格式
         if(!CollectionUtils.isEmpty(organizationAllSalePrice)){
             for(String day : dateParamsString){

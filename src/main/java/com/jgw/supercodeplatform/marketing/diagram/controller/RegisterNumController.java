@@ -145,7 +145,7 @@ public class RegisterNumController extends CommonUtil {
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
-        Map<String, SerialVo> twoWeekVo = new HashMap<>();
+        Map<String, SerialVo> twoWeekVo = new TreeMap<>();
         for(String day : twoWeekString){
             SerialVo vo = new SerialVo();
             vo.setTime(day);
@@ -177,7 +177,7 @@ public class RegisterNumController extends CommonUtil {
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
-        Map<String, SerialVo> monthVo = new HashMap<>();
+        Map<String, SerialVo> monthVo = new TreeMap<>();
         for(String day : monthString){
             SerialVo vo = new SerialVo();
             vo.setTime(day);
@@ -211,7 +211,7 @@ public class RegisterNumController extends CommonUtil {
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
-        Map<String, SerialVo> threeMonthVo = new HashMap<>();
+        Map<String, SerialVo> threeMonthVo = new TreeMap<>();
         for(String weekDayPoint : threeMonthString){
             SerialVo vo = new SerialVo();
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
@@ -254,7 +254,7 @@ public class RegisterNumController extends CommonUtil {
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
-        Map<String, SerialVo> halfYearVo = new HashMap<>();
+        Map<String, SerialVo> halfYearVo = new TreeMap<>();
         for(String weekDayPoint : halfYearString){
             SerialVo vo = new SerialVo();
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
@@ -297,7 +297,7 @@ public class RegisterNumController extends CommonUtil {
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
-        Map<String, SerialVo> yearVo = new HashMap<>();
+        Map<String, SerialVo> yearVo = new TreeMap<>();
         for(String weekDayPoint : yearString){
             SerialVo vo = new SerialVo();
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和

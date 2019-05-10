@@ -13,6 +13,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -74,7 +75,7 @@ public class TotalMemberTaskController extends CommonUtil {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = registerNumMembers.size();
+        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
 
         // 数据格式
@@ -107,7 +108,7 @@ public class TotalMemberTaskController extends CommonUtil {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = registerNumMembers.size();
+        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
 
         // 数据格式
@@ -140,7 +141,7 @@ public class TotalMemberTaskController extends CommonUtil {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = registerNumMembers.size();
+        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
 
         // 数据格式
@@ -172,7 +173,7 @@ public class TotalMemberTaskController extends CommonUtil {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = registerNumMembers.size();
+        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
 
         // 数据格式
@@ -205,7 +206,7 @@ public class TotalMemberTaskController extends CommonUtil {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = registerNumMembers.size();
+        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
 
         // 数据格式
@@ -237,7 +238,7 @@ public class TotalMemberTaskController extends CommonUtil {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = registerNumMembers.size();
+        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
 
         // 数据格式
