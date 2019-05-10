@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.diagram.worker;
+package com.jgw.supercodeplatform.marketing.diagram.tasktime;
 
 
 import com.alibaba.fastjson.JSONObject;
@@ -157,7 +157,7 @@ public class TaskTimeCalculator {
         for(int i=-30;i<0;i++){
             calendar.add(Calendar.DATE, 1);
             Date date = calendar.getTime();
-            dates.add(format.format(date));
+            dates.add(date);
         }
         return dates;
     }
