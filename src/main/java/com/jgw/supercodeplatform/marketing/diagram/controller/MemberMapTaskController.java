@@ -72,9 +72,12 @@ public class MemberMapTaskController extends CommonUtil {
     public RestResult weekTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getWeek();
-        List<String> weekString = taskTimeCalculator.getWeekString();
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        return  task(registerNumMembers);
 
+    }
+
+    private RestResult task(List<MarketingMembers> registerNumMembers) {
         // 转换成地图格式
         List<String> provincesList = Arrays.asList(provinces.split(SPLIT_LABEL));
         Map<String, MemberMapVo> map = new HashMap();
@@ -98,8 +101,13 @@ public class MemberMapTaskController extends CommonUtil {
             }
         }
 
-        //
-        return RestResult.success("",map.values() );
+        // 定义排序规则
+        if(!CollectionUtils.isEmpty(map.values())){
+            List<MemberMapVo> values = (List<MemberMapVo>) map.values();
+            Collections.sort(values);
+            return RestResult.success("",values);
+        }
+        return RestResult.success("",new ArrayList<>() );
     }
 
     /**
@@ -110,164 +118,43 @@ public class MemberMapTaskController extends CommonUtil {
     public RestResult twoWeekTask( ) throws SuperCodeException {
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getTwoWeek();
-        List<String> weekString = taskTimeCalculator.getTwoWeekString();
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        return  task(registerNumMembers);
 
-        // 转换成地图格式
-        List<String> provincesList = Arrays.asList(provinces.split(SPLIT_LABEL));
-        Map<String,MemberMapVo> map = new HashMap();
-        if(!CollectionUtils.isEmpty(registerNumMembers)){
-
-            for (String province : provincesList){
-            MemberMapVo mapVo = new MemberMapVo();
-            mapVo.setName(province);
-            map.put(province,mapVo);
-            }
-            // 求和
-            for(MarketingMembers registerNumMember : registerNumMembers){
-                // 向省份添加数据
-                for(String province : provincesList){
-                    if(registerNumMember!=null
-                            && registerNumMember.getProvinceName() !=null
-                            && registerNumMember.getProvinceName().indexOf(province) != -1){
-                        map.get(province).add(1);
-                        continue;
-                    }
-                }
-            }
-        }
-        //
-        return RestResult.success("",map.values() );
     }
 
     public RestResult monthTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getMonth();
-        List<String> weekString = taskTimeCalculator.getMonthString();
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        return  task(registerNumMembers);
 
-        // 转换成地图格式
-        List<String> provincesList = Arrays.asList(provinces.split(SPLIT_LABEL));
-        Map<String,MemberMapVo> map = new HashMap();
-        if(!CollectionUtils.isEmpty(registerNumMembers)) {
-            for (String province : provincesList) {
-                MemberMapVo mapVo = new MemberMapVo();
-                mapVo.setName(province);
-                map.put(province, mapVo);
-            }
-            // 求和
-            for (MarketingMembers registerNumMember : registerNumMembers) {
-                // 向省份添加数据
-                for (String province : provincesList) {
-                    if (registerNumMember != null
-                            && registerNumMember.getProvinceName() !=null
-                            && registerNumMember.getProvinceName().indexOf(province) != -1) {
-                        map.get(province).add(1);
-                        continue;
-                    }
-                }
-            }
-        }
-        //
-        return RestResult.success("",map.values() );
     }
 
     public RestResult threeMonthTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getThreeMonth();
-        List<String> weekString = taskTimeCalculator.getThreeMonthString();
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
-
-        // 转换成地图格式
-        List<String> provincesList = Arrays.asList(provinces.split(SPLIT_LABEL));
-        Map<String,MemberMapVo> map = new HashMap();
-        if(!CollectionUtils.isEmpty(registerNumMembers)) {
-
-            for (String province : provincesList) {
-                MemberMapVo mapVo = new MemberMapVo();
-                mapVo.setName(province);
-                map.put(province, mapVo);
-            }
-            // 求和
-            for (MarketingMembers registerNumMember : registerNumMembers) {
-                // 向省份添加数据
-                for (String province : provincesList) {
-                    if (registerNumMember != null
-                            && registerNumMember.getProvinceName() !=null
-                            && registerNumMember.getProvinceName().indexOf(province) != -1) {
-                        map.get(province).add(1);
-                        continue;
-                    }
-                }
-            }
-        }
-        //
-        return RestResult.success("",map.values() );      }
+         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        return  task(registerNumMembers);
+    }
 
     public RestResult halfYearTask( ) throws SuperCodeException{
 
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getHalfYear();
-        List<String> weekString = taskTimeCalculator.getHalfYearString();
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
-
-        // 转换成地图格式
-        List<String> provincesList = Arrays.asList(provinces.split(SPLIT_LABEL));
-        Map<String,MemberMapVo> map = new HashMap();
-        if(!CollectionUtils.isEmpty(registerNumMembers)) {
-
-            for (String province : provincesList) {
-                MemberMapVo mapVo = new MemberMapVo();
-                mapVo.setName(province);
-                map.put(province, mapVo);
-            }
-            // 求和
-            for (MarketingMembers registerNumMember : registerNumMembers) {
-                // 向省份添加数据
-                for (String province : provincesList) {
-                    if (registerNumMember != null
-                            && registerNumMember.getProvinceName() !=null
-                            && registerNumMember.getProvinceName().indexOf(province) != -1) {
-                        map.get(province).add(1);
-                        continue;
-                    }
-                }
-            }
-        }
-        //
-        return RestResult.success("",map.values() );      }
+        return  task(registerNumMembers);
+    }
 
     public RestResult yearTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getYear();
         List<String> weekString = taskTimeCalculator.getYearString();
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        return  task(registerNumMembers);
 
-        // 转换成地图格式
-        List<String> provincesList = Arrays.asList(provinces.split(SPLIT_LABEL));
-        Map<String,MemberMapVo> map = new HashMap();
-        if(!CollectionUtils.isEmpty(registerNumMembers)) {
 
-            for (String province : provincesList) {
-                MemberMapVo mapVo = new MemberMapVo();
-                mapVo.setName(province);
-                map.put(province, mapVo);
-            }
-            // 求和
-            for (MarketingMembers registerNumMember : registerNumMembers) {
-                // 向省份添加数据
-                for (String province : provincesList) {
-                    if (registerNumMember != null
-                            && registerNumMember.getProvinceName() !=null
-                            && registerNumMember.getProvinceName().indexOf(province) != -1) {
-                        map.get(province).add(1);
-                        continue;
-                    }
-                }
-            }
-        }
-        //
-        return RestResult.success("",map.values() );     }
+    }
 
     public boolean isFinished() {
         return false;
