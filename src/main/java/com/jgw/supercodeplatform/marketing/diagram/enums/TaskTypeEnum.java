@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.diagram.task.enums;
+package com.jgw.supercodeplatform.marketing.diagram.enums;
 
 import java.util.UUID;
 
@@ -6,14 +6,16 @@ import java.util.UUID;
  * 任务类型：不同的类型产生不同的数据结果
  */
 public enum TaskTypeEnum {
-
+    /**
+     * 招募会员海报注册数
+     */
     REGISTER_NUM("1","","招募会员海报注册数"),
     TOTAL_MEMBER("2","累计会员数",""),
     MEMBER_PORTRAIT("3","会员画像",""),
-    STATISTICS("4","会员地域分布",""),
-    SALE("5","活动&积分参与统计",""),
-    TOP6("6","总产品销售额趋势",""),
-    MEMBER_MAP("7","TOP6产品积分","");
+    STATISTICS("4","活动&积分参与统计",""),
+    SALE("5","总产品销售额趋势",""),
+    TOP6("6","TOP6产品积分",""),
+    MEMBER_MAP("7","会员地域分布","");
 
     /**
      * 任务类型
