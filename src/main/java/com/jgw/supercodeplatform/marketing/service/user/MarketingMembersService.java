@@ -924,6 +924,31 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return marketingMembersMapper.selectByPhoneAndOrgIdExcludeId(mobile,organizationId,id);
 	}
 
+	/**
+	 * 招募会员注册数目
+	 * @param organizationId
+	 * @param date
+	 * @param date1
+	 */
+    public List<MarketingMembers> getRegisterNum(String organizationId, Date startDate, Date endDate) throws SuperCodeException {
+   		if(StringUtils.isBlank(organizationId)){
+   			throw new SuperCodeException("组织不存在...");
+		}
+		if(startDate == null || endDate == null){
+			throw new SuperCodeException("日期未选择...");
+		}
+   		return marketingMembersMapper.getRegisterNum(organizationId,startDate,endDate);
+    }
+
+	public List<MarketingMembers> getOrganizationAllMemberWithDate(String organizationId, Date startDate, Date endDate) throws SuperCodeException {
+		if(StringUtils.isBlank(organizationId)){
+			throw new SuperCodeException("组织不存在...");
+		}
+		if(startDate == null || endDate == null){
+			throw new SuperCodeException("日期未选择...");
+		}
+		return marketingMembersMapper.getOrganizationAllMemberWithDate(organizationId,startDate,endDate);
+	}
 }
 
 

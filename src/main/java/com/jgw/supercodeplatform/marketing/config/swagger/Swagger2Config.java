@@ -135,6 +135,22 @@ public class Swagger2Config {
                 .apiInfo(apiInfo())
                 .enable(enable);
     }
+
+
+    @Bean("统计模块")
+    public Docket diagramApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("统计模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.diagram"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+
+
+
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("新超级码系统平台营销系统接口文档")

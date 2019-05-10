@@ -16,12 +16,13 @@ public class DateUtil
     String datesStr = simpleDateFormat.format(Long.valueOf(System.currentTimeMillis()));
     return datesStr;
   }
+	public static Date yyyyMMddStrToDate(String dateStr) throws ParseException {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+		simpleDateFormat.applyPattern("yyyy-MM-dd");
+		return simpleDateFormat.parse(dateStr);
+	}
   /*
-  public static String dateTimeFormat(Date date) {
-	    SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
-	    simpleDateFormat.applyPattern("MM-dd HH:mm");
-	    return simpleDateFormat.format(date);
-  }
+
   
   
   public static String yearMonthFormat(Date date) {
@@ -76,7 +77,7 @@ public class DateUtil
 	  
 	        if (cal.before(birthDay)) {  
 	            throw new IllegalArgumentException(  
-	                    "The birthDay is before Now.It's unbelievable!");  
+	                    "The birthDay is after Now.It's unbelievable!");
 	        }  
 	        int yearNow = cal.get(Calendar.YEAR);  
 	        int monthNow = cal.get(Calendar.MONTH);  

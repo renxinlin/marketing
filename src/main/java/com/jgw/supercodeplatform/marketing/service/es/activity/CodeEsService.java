@@ -1,11 +1,25 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
 import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.search.stats.SearchStats;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.metrics.stats.Stats;
+import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.sum.SumAggregationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -216,4 +230,42 @@ public class CodeEsService extends AbstractEsSearch {
 		eSearch.setParam(addParam);
 		return getCount(eSearch);
 	}
+
+
+	/**
+	 * 活动点击量聚合名称
+	 */
+	private static final String AggregationName="agg";
+	/**
+	 * 活动点击量
+	 * @param organizationId
+	 * @param date
+	 * @param date1
+	 * @return
+	 */
+	public Integer countOrganizationActivityClickNumByDate(String organizationId, String startDate, String endDate) {
+		// 聚合求和;效果同 select count from table where org = and date between a and b
+
+		// out of date
+		TransportClient eClient = SpringContextUtil.getBean("elClient");
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKETING.getIndex(), EsType.INFO.getType());
+		// 创建查询条件 >= <=
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
+		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
+		StatsAggregationBuilder aggregation =
+				AggregationBuilders
+						.stats(AggregationName)
+						// 聚和字段：码
+						.field("scanCodeTime");
+		// 添加查询条件
+		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate);
+		searchRequestBuilder.addAggregation(aggregation);
+ 		// 获取查询结果
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		// 获取count
+		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+		return  (int)aggs.getCount();
+	}
+
+
 }
