@@ -243,9 +243,8 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param date1
 	 * @return
 	 */
-	public Integer countOrganizationActivityClickNumByDate(String organizationId, Date startDate, Date endDate) {
+	public Integer countOrganizationActivityClickNumByDate(String organizationId, String startDate, String endDate) {
 		// 聚合求和;效果同 select count from table where org = and date between a and b
-		// TODO  测试下是否同sql效果
 
 		// out of date
 		TransportClient eClient = SpringContextUtil.getBean("elClient");
@@ -257,7 +256,7 @@ public class CodeEsService extends AbstractEsSearch {
 				AggregationBuilders
 						.stats(AggregationName)
 						// 聚和字段：码
-						.field("codeId");
+						.field("scanCodeTime");
 		// 添加查询条件
 		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate);
 		searchRequestBuilder.addAggregation(aggregation);
