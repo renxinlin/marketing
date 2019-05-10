@@ -80,7 +80,7 @@ public class MemberMapTaskController extends CommonUtil {
     private RestResult task(List<MarketingMembers> registerNumMembers) {
         // 转换成地图格式
         List<String> provincesList = Arrays.asList(provinces.split(SPLIT_LABEL));
-        Map<String, MemberMapVo> map = new HashMap();
+        Map<String, MemberMapVo> map = new TreeMap<>();
         if(!CollectionUtils.isEmpty(registerNumMembers)){
             for (String province : provincesList){
                 MemberMapVo mapVo = new MemberMapVo();
@@ -103,9 +103,14 @@ public class MemberMapTaskController extends CommonUtil {
 
         // 定义排序规则
         if(!CollectionUtils.isEmpty(map.values())){
-            List<MemberMapVo> values = (List<MemberMapVo>) map.values();
-            Collections.sort(values);
-            return RestResult.success("",values);
+;           List<Map.Entry<String, MemberMapVo>> list = new ArrayList<>(map.entrySet());
+            Collections.sort(list, new Comparator<Map.Entry<String, MemberMapVo>>() {
+                @Override
+                public int compare(Map.Entry<String, MemberMapVo> o1, Map.Entry<String, MemberMapVo> o2) {
+                    return o2.getValue().getValue()-o1.getValue().getValue();
+                }
+            });
+            return RestResult.success("",list);
         }
         return RestResult.success("",new ArrayList<>() );
     }

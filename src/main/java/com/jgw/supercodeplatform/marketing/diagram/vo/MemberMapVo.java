@@ -6,7 +6,7 @@ import lombok.Data;
  * 地图
  */
 @Data
-public class MemberMapVo {
+public class MemberMapVo   {
     private String name;
     private int value;
 
@@ -17,4 +17,6 @@ public class MemberMapVo {
     public void add(int i) {
         this.value = this.value+i;
     }
+
+
 }
