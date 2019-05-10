@@ -24,6 +24,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 /**
@@ -134,12 +137,10 @@ public class WeixinAuthController {
 			members=new MarketingMembers();
 			members.setOpenid(openid);
 			members.setWxName(nickName);
-			members.setState((byte)1);
+			members.setState((byte)2);
 			members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
 			members.setOrganizationId(organizationId);
-			if (null!=statecode) {
-				members.setState((byte)2);
-			}
+			members.setIsRegistered((byte)0);
 			marketingMembersService.insert(members);
 		}else {
 			members.setWxName(nickName);
@@ -230,4 +231,114 @@ public class WeixinAuthController {
 //		JSONObject userinfoObj=JSONObject.parseObject(userinfoContent);
 		return null;
     }
+
+    
+    
+    /**
+     * 微信授权回调方法
+     * @param code
+     * @param state
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/code2",method=RequestMethod.GET)
+    public String getWXCode2(String code ,String state,HttpServletResponse response) throws Exception {
+    	logger.info("微信授权回调获取code="+code+",state="+state);
+    	if (StringUtils.isBlank(state)) {
+    		throw new SuperCodeException("state不能为空", 500);
+		}
+    	
+    	
+    	String redirectUrl=null;
+    	String nickName=null;
+    	String openid=null;
+    	String organizationId=null;
+    	JSONObject userInfo=null;
+    	String statevalue="";
+    	Integer statecode=null;
+    	Map<String, String> stateMap=null;
+    	if (state.contains("_")) {
+    		stateMap=stateToMap(state);
+    		statevalue=state;
+    		statecode=Integer.valueOf(stateMap.get("code"));
+		}else {
+			statevalue=state;
+		}
+    	
+    	ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(statevalue);
+    	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
+    	boolean needWriteJwtToken=false;
+    	//表示不是从扫码产品防伪码入口进入
+    	if (null==scanCodeInfoMO) {
+    		organizationId=stateMap.get("organizationId");
+    		userInfo=getUserInfo(code, organizationId);
+    		openid=userInfo.getString("openid");
+    		StringBuffer h5BUf=new StringBuffer();
+    		h5BUf.append("redirect:");
+    		h5BUf.append(integralH5Pages.split(",")[statecode]);
+    		h5BUf.append("?openid="+openid).append("&").append(state);
+    		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+    		if (null!=members ) {
+    			Byte memberState=members.getState();
+    			if (null!=memberState && memberState.intValue()==1) {
+    				h5BUf.append("&memberId="+members.getId());
+    				needWriteJwtToken=true;
+				}else {
+	    			h5BUf.append("&memberId=-1");
+	    		}
+    		}else {
+    			h5BUf.append("&memberId=-1");
+    		}
+			nickName=userInfo.getString("nickname");
+    		redirectUrl=h5BUf.toString();
+		}else {
+			//如果是活动扫码默认也写jwttoken
+			needWriteJwtToken=true;
+			
+			userInfo=getUserInfo(code, scanCodeInfoMO.getOrganizationId());
+			openid=userInfo.getString("openid");
+			organizationId=scanCodeInfoMO.getOrganizationId();
+			//表示是从扫码产品防伪码入口进入
+			nickName=userInfo.getString("nickname");
+			scanCodeInfoMO.setOpenId(userInfo.getString("openid"));
+			//更新扫码信息
+			globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
+			redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+organizationId;
+		}
+    	
+		//判断是否需要保存用户
+		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+		if (null==members) {
+			members=new MarketingMembers();
+			members.setOpenid(openid);
+			members.setWxName(nickName);
+			members.setState((byte)1);
+			members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
+			members.setOrganizationId(organizationId);
+			if (null!=statecode) {
+				members.setState((byte)2);
+			}
+			marketingMembersService.insert(members);
+		}else {
+			members.setWxName(nickName);
+			marketingMembersService.update(members);
+		}
+		//如果需要写jwttoken，在积分授权时只有不需要手机号登录时才写token否则手机号登录那里会写
+		if (needWriteJwtToken) {
+			writeJwtToken(response, members);
+		}
+//        String redirectUrl="redirect:http://192.168.10.78:7081/?wxstate="+state+"&activitySetId="+scInfoMO.getActivitySetId()+"&organizationId="+scInfoMO.getOrganizationId();
+    	logger.info("最终跳转路径："+redirectUrl);
+    	return  redirectUrl;
+    }
+
+	private Map<String, String> stateToMap(String state) {
+		String values[]=state.split("\\&");
+		Map<String, String> stateMap=new HashMap<>();
+        for (String va : values) {
+			String[] key_va=va.split("=");
+			stateMap.put(key_va[0], key_va[1]);
+		}
+		return stateMap;
+	}
 }

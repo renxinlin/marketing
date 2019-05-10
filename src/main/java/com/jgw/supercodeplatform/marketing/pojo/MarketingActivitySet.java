@@ -42,6 +42,12 @@ public class MarketingActivitySet {
     @ApiModelProperty(name = "codeTotalNum", value = "参与该活动一共的码数", example = "11")
     private Long codeTotalNum;//参与该活动一共的码数
     
+    @ApiModelProperty(name = "consumeIntegralNum", value = "消耗积分", example = "11")
+    private Integer consumeIntegralNum;
+    
+    @ApiModelProperty(name = "activityDesc", value = "活动描述", example = "红包活动")
+    private String activityDesc;
+    
     public Long getId() {
 		return id;
 	}
@@ -168,6 +174,22 @@ public class MarketingActivitySet {
 
 	public void setAutoFetch(Integer autoFetch) {
 		this.autoFetch = autoFetch;
+	}
+
+	public Integer getConsumeIntegralNum() {
+		return consumeIntegralNum;
+	}
+
+	public void setConsumeIntegralNum(Integer consumeIntegralNum) {
+		this.consumeIntegralNum = consumeIntegralNum;
+	}
+
+	public String getActivityDesc() {
+		return activityDesc;
+	}
+
+	public void setActivityDesc(String activityDesc) {
+		this.activityDesc = activityDesc;
 	}
     
 }

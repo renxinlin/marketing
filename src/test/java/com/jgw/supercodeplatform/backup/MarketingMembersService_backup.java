@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.service.user;
+package com.jgw.supercodeplatform.backup;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
@@ -31,7 +31,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
-import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
+import com.jgw.supercodeplatform.marketing.common.util.LotteryUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
@@ -41,6 +41,7 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
+import com.jgw.supercodeplatform.marketing.dao.admincode.AdminstrativeCodeMapper;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
@@ -62,14 +63,16 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
+import com.jgw.supercodeplatform.marketing.service.user.OrganizationPortraitService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
 
 @Service
-public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
-	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersService.class);
+public class MarketingMembersService_backup extends AbstractPageService<MarketingMembersListParam> {
+	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersService_backup.class);
 	@Value("${cookie.domain}")
 	private String cookieDomain;
 	//	@Value( "${注册短信模板外部配置key}")
@@ -82,6 +85,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	@Autowired
 	private OrganizationPortraitMapper organizationPortraitMapper;
+
+	@Autowired
+	private AdminstrativeCodeMapper adminstrativeCodeMapper;
 
 	@Autowired
 	private MarketingActivitySetMapper mSetMapper;
@@ -125,6 +131,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	@Autowired
 	private OrganizationPortraitService organizationPortraitService;
+
+	@Autowired
+	private CommonService commonService;
 
 	@Autowired
 	private GlobalRamCache globalRamCache;
@@ -291,7 +300,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		marketingMembersAddParam.setUserId(userId);
 		marketingMembersAddParam.setState(1);
 		MarketingMembers members=modelMapper.map(marketingMembersAddParam,MarketingMembers.class);
-		members.setIsRegistered((byte)1);//手机号注册默认为已完善过信息
 		int result = marketingMembersMapper.insert(members);
 		// 调用用户模块发送短信
 		if(1 == result){
@@ -478,21 +486,129 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("验证码不正确");
 			return restResult;
 		}
-		
-		List<MarketingOrganizationPortraitListParam> mPortraits = organizationPortraitMapper
-				.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
-		if (null == mPortraits || mPortraits.isEmpty()) {
-			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
-		}
-		
 		H5LoginVO h5LoginVO =null;
 		if (StringUtils.isNotBlank(wxstate)) {
-			 h5LoginVO = loginWithWxstate(mobile, wxstate,mPortraits.size());
+			 h5LoginVO = loginWithWxstate(mobile, wxstate);
 			restResult.setResults(h5LoginVO);
 		}else {
-			h5LoginVO = commonLogin(mobile, openid, organizationId,mPortraits.size());
+			if (StringUtils.isBlank(organizationId)) {
+				restResult.setState(500);
+				restResult.setMsg("积分领取登录时组织id必传");
+				return restResult;
+			}
+			
+			h5LoginVO=new H5LoginVO();
+			h5LoginVO.setMobile(mobile);			//积分登录openid不一定存在
+			h5LoginVO.setRegistered(1);
+			MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
+			MarketingMembers marketingMembersByOpenId=null;
+			
+			//判断登录的手机号是否与openid是同一条记录
+			if (StringUtils.isNotBlank(openid)) {
+				if (null!=marketingMembersByPhone && StringUtils.isNotBlank(marketingMembersByPhone.getOpenid())) {
+					if (!openid.equals(marketingMembersByPhone.getOpenid())) {
+						restResult.setState(500);
+						restResult.setMsg("当前手机号已绑定其它微信号");
+						return restResult;
+					}
+				}
+				marketingMembersByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openid, organizationId);
+			}
+			
+			//如果登陆的手机号不存在则直接注册用户登录成功
+			if (null==marketingMembersByPhone) {
+				if (null==marketingMembersByOpenId) {
+					MarketingMembers member=new MarketingMembers();
+					member.setOpenid(openid);
+					member.setMobile(mobile);
+					member.setState((byte)1);
+					member.setHaveIntegral(0);
+					member.setMemberType((byte)0);
+					member.setOrganizationId(organizationId);
+					marketingMembersMapper.insert(member);
+					h5LoginVO.setMemberId(member.getId());
+					h5LoginVO.setHaveIntegral(0);
+				}else {
+					Byte state=marketingMembersByOpenId.getState();
+					if (null==state || state.intValue()==0) {
+						restResult.setState(500);
+						restResult.setMsg("当前用户已被禁用");
+						return restResult;
+					}
+					marketingMembersByOpenId.setMobile(mobile);
+					marketingMembersByOpenId.setState((byte)1);
+					marketingMembersMapper.update(marketingMembersByOpenId);
+					h5LoginVO.setWechatHeadImgUrl(marketingMembersByOpenId.getWechatHeadImgUrl());
+					h5LoginVO.setMemberId(marketingMembersByOpenId.getId());
+					h5LoginVO.setHaveIntegral(marketingMembersByOpenId.getHaveIntegral()==null?0:marketingMembersByOpenId.getHaveIntegral());
+				}
+			}else {
+				Long userIdByPhone=marketingMembersByPhone.getId();
+				
+				if (null!=marketingMembersByOpenId) {
+					Byte state=marketingMembersByOpenId.getState();
+					if (null==state || state.intValue()==0) {
+						restResult.setState(500);
+						restResult.setMsg("当前用户已被禁用");
+						return restResult;
+					}
+					String mobileByOpenid=marketingMembersByOpenId.getMobile();
+					if (StringUtils.isNotBlank(mobileByOpenid)) {
+						if (!mobileByOpenid.equals(mobile)) {
+							restResult.setState(500);
+							restResult.setMsg("当前用户手机号与登录手机号不统一");
+							return restResult;
+						}else {
+							h5LoginVO.setHaveIntegral(marketingMembersByOpenId.getHaveIntegral()==null?0:marketingMembersByOpenId.getHaveIntegral());
+							h5LoginVO.setMemberId(marketingMembersByOpenId.getId());
+							h5LoginVO.setWechatHeadImgUrl(marketingMembersByOpenId.getWechatHeadImgUrl());
+						}
+					}else {
+						Long userIdByOpenId=marketingMembersByOpenId.getId();
+						String openIdByPhone=marketingMembersByPhone.getOpenid();
+						//手机号这条记录的openid不为空，合并过openid就通过之前的openid更新中奖纪录里的openid和手机号
+						if (StringUtils.isNotBlank(openIdByPhone)) {
+							//如果之前该手机号绑定过openid则更新之前的中奖纪录，没有的话就不更新哦
+							mWinRecordMapper.updateOpenIdAndMobileByOpenIdAndOrgId(openid,mobile,organizationId,openIdByPhone);
+						}
+						//合并两条记录
+						//更新手机号对应的记录设置微信openid及昵称
+						MarketingMembers members=new MarketingMembers();
+						members.setId(userIdByPhone);
+						members.setOpenid(openid);
+						members.setWxName(marketingMembersByOpenId.getWxName());
+						members.setWechatHeadImgUrl(marketingMembersByOpenId.getWechatHeadImgUrl());
+						members.setState((byte)1);
+						marketingMembersMapper.update(members);
+						
+						h5LoginVO.setHaveIntegral(marketingMembersByPhone.getHaveIntegral()==null?0:marketingMembersByPhone.getHaveIntegral());
+						h5LoginVO.setMemberId(marketingMembersByPhone.getId());
+						h5LoginVO.setWechatHeadImgUrl(marketingMembersByPhone.getWechatHeadImgUrl());
+						//删除openid查出的用户
+						marketingMembersMapper.deleteById(userIdByOpenId);
+					}
+				}else {
+					Byte state=marketingMembersByPhone.getState();
+					if (null==state || state.intValue()==0) {
+						restResult.setState(500);
+						restResult.setMsg("当前用户已被禁用");
+						return restResult;
+					}
+					h5LoginVO.setHaveIntegral(marketingMembersByPhone.getHaveIntegral()==null?0:marketingMembersByPhone.getHaveIntegral());
+					h5LoginVO.setMemberId(marketingMembersByPhone.getId());
+					h5LoginVO.setWechatHeadImgUrl(marketingMembersByPhone.getWechatHeadImgUrl());
+				}
+			}
+			String orgnazationName="";
+			try {
+				orgnazationName=commonService.getOrgNameByOrgId(organizationId);
+				h5LoginVO.setOrganizationName(orgnazationName);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		try {
+			
 			String jwtToken=JWTUtil.createTokenWithClaim(h5LoginVO);
 			Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
 			// jwt有效期为2小时，保持一致
@@ -511,123 +627,108 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		restResult.setMsg("登录成功...");
 		return restResult;
 	}
-
-	private H5LoginVO commonLogin(String mobile, String openid, String organizationId, int portraitsSize) throws SuperCodeException {
-		H5LoginVO h5LoginVO;
-		if (StringUtils.isBlank(organizationId)) {
-			throw new SuperCodeException("积分领取登录时组织id必传", 500);
-		}
-		h5LoginVO=new H5LoginVO();
-		h5LoginVO.setMobile(mobile);			//积分登录openid不一定存在
-		MarketingMembers trueMember=null;
-		
-		if (StringUtils.isBlank(openid)) {
-			MarketingMembers memberByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
-			if (null==memberByPhone) {
-				memberByPhone=new MarketingMembers();
-				memberByPhone.setMobile(mobile);
-				memberByPhone.setState((byte)1);
-				memberByPhone.setHaveIntegral(0);
-				if (portraitsSize>1) {
-					memberByPhone.setIsRegistered((byte)0);
-				}else {
-					memberByPhone.setIsRegistered((byte)1);
-				}
-				memberByPhone.setMemberType((byte)0);
-				memberByPhone.setOrganizationId(organizationId);
-				marketingMembersMapper.insert(memberByPhone);
-				
-				trueMember=memberByPhone;
-			}
-		}else {
-			MarketingMembers memberByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openid, organizationId);
-			if (null==memberByOpenId) {
-				throw new SuperCodeException("登录失败，无此微信用户", 500);
-			}
-			
-			Byte state=memberByOpenId.getState()==null?1:memberByOpenId.getState();//如果是null可能是之前创建用户时忘记设置值的可能性更大则默认为合法用户
-			//如果当前微信用户已存在且状态为1 则判断手机号是否一致
-			if (state.byteValue()!=2) {
-				String exMobile=memberByOpenId.getMobile();
-				if (!mobile.equals(exMobile)) {
-					throw new SuperCodeException("登录的手机号与当前微信用户手机号不一致无法登录", 500);
-				}
-				if (state.byteValue()==0) {
-					throw new SuperCodeException("您已被禁用，请联系管理员", 500);
-				}
-				//设置用户
-				trueMember=memberByOpenId;
-			}else{
-				//如果state为2则表示该用户未激活刚刚授权状态
-				
-				//判断手机号用户是否存在，判断手机号用户是否已绑定微信号，判断手机号用户的微信号是否与登录微信号一直
-				MarketingMembers memberByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
-				if (null==memberByPhone) {
-					//如果手机号用户不存在，微信用户又是未激活则表明这个是彻底的新用户
-					memberByOpenId.setMobile(mobile);
-					memberByOpenId.setState((byte)1);
-					marketingMembersMapper.update(memberByOpenId);
-					
-					//设置用户
-					trueMember=memberByOpenId;
-				}else {
-					String exOpenid=memberByPhone.getOpenid();
-					if (StringUtils.isBlank(exOpenid)) {
-						//微信号用户为未激活刚注册用户且如果当前手机号用户未绑定微信号但被禁用了则不允许登录
-						if (memberByPhone.getState().byteValue()==0) {
-							throw new SuperCodeException("当前手机号用户已被禁用，请联系管理员", 500);
-						}
-						//如果已存在的手机号用户未绑定微信号则直接绑定手机号
-						memberByPhone.setOpenid(openid);
-						memberByPhone.setWxName(memberByOpenId.getWxName());
-						memberByPhone.setWechatHeadImgUrl(memberByOpenId.getWechatHeadImgUrl());
-						marketingMembersMapper.update(memberByPhone);
-					}else {
-						//如果已存在的手机号用户已绑定了微信openid且与当前登录openid不一致则不允许登录
-						if (!exOpenid.equals(openid)) {
-							throw new SuperCodeException("登录的手机号已绑定其它微信号不可以登录当前微信号", 500);
-						}
-						if (memberByPhone.getState().byteValue()==0) {
-							throw new SuperCodeException("当前手机号用户已被禁用，请联系管理员", 500);
-						}
-					}
-					
-					//设置用户
-					trueMember=memberByPhone;
-				}
-			}
-		}
-		h5LoginVO.setWechatHeadImgUrl(trueMember.getWechatHeadImgUrl());
-		h5LoginVO.setMemberId(trueMember.getId());
-		h5LoginVO.setHaveIntegral(trueMember.getHaveIntegral()==null?0:trueMember.getHaveIntegral());
-		h5LoginVO.setRegistered(trueMember.getIsRegistered().intValue());
-		return h5LoginVO;
-	}
 	
     /**
      * 扫描产品防伪码登录
      * @param mobile
      * @param wxstate
-     * @param portraitsSize 
      * @return
      * @throws SuperCodeException
      */
-	private H5LoginVO loginWithWxstate(String mobile, String wxstate, int portraitsSize) throws SuperCodeException {
-		ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
-		if (null == scanCodeInfoMO) {
+	private H5LoginVO loginWithWxstate(String mobile, String wxstate) throws SuperCodeException {
+		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
+		if (null==scanCodeInfoMO) {
 			throw new SuperCodeException("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码", 500);
 		}
 		// 登录时候保存手机信息用于后续接口获取
 		scanCodeInfoMO.setMobile(mobile);
-		globalRamCache.putScanCodeInfoMO(wxstate, scanCodeInfoMO);
-
-		Long activitySetId = scanCodeInfoMO.getActivitySetId();
-		MarketingActivitySet maActivitySet = mSetMapper.selectById(activitySetId);
-		if (null == maActivitySet) {
+		globalRamCache.putScanCodeInfoMO(wxstate,scanCodeInfoMO);
+		
+		Long activitySetId=scanCodeInfoMO.getActivitySetId();
+		MarketingActivitySet maActivitySet=mSetMapper.selectById(activitySetId);
+		if (null==maActivitySet) {
 			throw new SuperCodeException("该活动设置id不存在", 500);
 		}
-		String organizationId = maActivitySet.getOrganizationId();
-		H5LoginVO h5LoginVO = commonLogin(mobile, scanCodeInfoMO.getOpenId(), organizationId,portraitsSize);
+		String openId=scanCodeInfoMO.getOpenId();
+		String organizationId=maActivitySet.getOrganizationId();
+		//1、首先保证授权时用户是保存成功的
+		MarketingMembers marketingMembersByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openId, organizationId);
+		if (null==marketingMembersByOpenId) {
+			logger.info("登录时无法根据openId及组织id查找到用户,openId="+openId+",组织id="+organizationId);
+			throw new SuperCodeException("无法根据openId及组织id查找到用户。可能用户已被删除，请尝试重新扫码进入授权或联系商家", 500);
+		}
+		List<MarketingOrganizationPortraitListParam> mPortraits=organizationPortraitMapper.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
+		if (null==mPortraits || mPortraits.isEmpty()) {
+			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
+		}
+
+
+		H5LoginVO h5LoginVO=new H5LoginVO();
+		Long userIdByOpenId=marketingMembersByOpenId.getId();
+		//2、根据输入的手机号和组织id查询该手机号是否存在记录
+		MarketingMembers marketingMembersByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
+
+		//3、如果根据登录手机号无法查询到记录，则说明该手机号未进行过注册也为进行过绑定。可能情况：
+		//3.1该openid对应的用户之前绑定过手机号但是想换手机号了、3.2该openid用户从未绑定过手机号
+		if (null==marketingMembersByPhone) {
+			MarketingMembers members=new MarketingMembers();
+			members.setId(userIdByOpenId);
+			members.setMobile(mobile);
+			marketingMembersMapper.update(members);
+			if (mPortraits.size()==1) {
+				//如果企业画像只有一个那默认为手机号就不需要再去完善信息
+				h5LoginVO.setRegistered(1);
+			}else {
+				h5LoginVO.setRegistered(0);
+				h5LoginVO.setMemberId(userIdByOpenId);
+			}
+		}else {
+			// zhuchuang老逻辑：如果根据登录手机号能找到用户则说明之前登陆过或者注册过就不需要注册完善信息，但需要比较跟openid查出的记录是否是一条记录，不是的话要合并
+			// renxinlin 新逻辑：已经注册用户如果画像只有手机则无需完善，如果完善过一次则无需完善
+			// 默认需要完善
+
+			h5LoginVO.setRegistered(0);
+			// 只有一个画像无需完善
+			if (mPortraits.size()==1){
+				h5LoginVO.setRegistered(1);
+			}
+			// 已经完善过不完善
+			if(marketingMembersByPhone.getIsRegistered() != null && marketingMembersByPhone.getIsRegistered() == 1){
+				h5LoginVO.setRegistered(1);
+			}
+
+			Long userIdByPhone=marketingMembersByPhone.getId();
+			//4、如果分别根据openid和手机号查出两条记录且主键id不一致，则说明
+			// 4.1、这两条信息没合并过
+			// 4.2、手机号这条记录合并过openid，可用户此时想换一个微信号openid
+			if (!userIdByOpenId.equals(userIdByPhone)) {
+				String openIdByPhone=marketingMembersByPhone.getOpenid();
+				String openIdByOpendId=openId;
+				//手机号这条记录的openid不为空，合并过openid就通过之前的openid更新中奖纪录里的openid和手机号
+				if (StringUtils.isNotBlank(openIdByPhone)) {
+					//如果之前该手机号绑定过openid则更新之前的中奖纪录，没有的话就不更新哦
+					mWinRecordMapper.updateOpenIdAndMobileByOpenIdAndOrgId(openIdByOpendId,mobile,organizationId,openIdByPhone);
+				}
+				//合并两条记录
+				//更新手机号对应的记录设置微信openid及昵称
+				MarketingMembers members=new MarketingMembers();
+				members.setId(userIdByPhone);
+				members.setOpenid(openIdByOpendId);
+				members.setWxName(marketingMembersByOpenId.getWxName());
+				members.setWechatHeadImgUrl(marketingMembersByOpenId.getWechatHeadImgUrl());
+				members.setState((byte)1);
+				marketingMembersMapper.update(members);
+				//删除openid查出的用户
+				marketingMembersMapper.deleteById(userIdByOpenId);
+				
+				h5LoginVO.setMemberId(userIdByPhone);
+
+			}else{
+				// 逻辑说明: 说明已经合并过但是没有完善：此时手机号的uid同openId的用户ID
+				// 业务声明: 所有setRegistered(1)表示需要完善的都要回传用户id,用于完善接口标志身份
+				h5LoginVO.setMemberId(userIdByPhone);
+			}
+		}
 		return h5LoginVO;
 	}
 	/**
@@ -683,14 +784,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			throw  new SuperCodeException("对不起,该会员已被加入黑名单",500);
 		}
 
-		Integer consumeIntegralNum=mActivitySet.getConsumeIntegralNum();
-		Integer haveIntegral=marketingMembersInfo.getHaveIntegral();
-		if (null!=consumeIntegralNum) {
-			if (null==haveIntegral || haveIntegral.intValue()<consumeIntegralNum.intValue()) {
-				throw  new SuperCodeException("对不起,领取本活动需要消耗"+consumeIntegralNum+"积分，您的积分不够",500);
-			}
+		//获取该活动设置下的参与码总数
+		Long codeTotalNum=mActivitySet.getCodeTotalNum();
+		if (null==codeTotalNum|| codeTotalNum.intValue()<=0) {
+			restResult.setState(500);
+			restResult.setMsg("该活动参与的码数量小于等于0");
+			return restResult;
 		}
-		
 		String organizationId=mActivitySet.getOrganizationId();
 		MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
 		if (null==mWxMerchants) {
@@ -705,17 +805,33 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
 		MarketingPrizeTypeMO mPrizeTypeMO =null;
 		boolean acquireLock = false;
+		long startTime = System.currentTimeMillis();
+
  		try {
 			// 超时时间,重试次数，重试间隔
 			acquireLock = lock.lock(activitySetId + ":" + codeId + ":" + codeTypeId,5000,5,200);
 			if(acquireLock){
-				List<MarketingPrizeTypeMO> moPrizeTypes=mMarketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
-				if (null==moPrizeTypes || moPrizeTypes.isEmpty()) {
+				List<MarketingPrizeType> mPrizeTypes=mMarketingPrizeTypeMapper.selectByActivitySetIdIncludeUnreal(activitySetId);
+				if (null==mPrizeTypes || mPrizeTypes.isEmpty()) {
 					restResult.setState(500);
 					restResult.setMsg("该活动未设置中奖奖次");
 					return restResult;
 				}
-				mPrizeTypeMO=LotteryUtilWithOutCodeNum.startLottery(moPrizeTypes);
+				List<MarketingPrizeTypeMO> mTypeMOs=LotteryUtil.judge(mPrizeTypes, codeTotalNum);
+
+
+				if (null!=mTypeMOs && !mTypeMOs.isEmpty()) {
+					//执行中奖算法
+					mPrizeTypeMO = LotteryUtil.lottery(mTypeMOs);
+					logger.info("抽到中奖奖次为："+mPrizeTypeMO);
+				}else {
+					//到这里说明流程已经出现问题，因为在刚开始扫码哪部分就会判断当前扫码量有没有达到活动对应的码数量
+					restResult.setState(500);
+					restResult.setMsg("所有奖次对应的中奖码数量都已达到上限无法继续抽奖");
+					return restResult;
+				}
+
+
 				String nowTime=staticESSafeFormat.format(new Date());
 				long nowTtimeStemp=staticESSafeFormat.parse(nowTime).getTime();
 				Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
@@ -758,12 +874,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				restResult.setMsg("扫码人数过多,请稍后再试");
 				return restResult;
 			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			restResult.setState(500);
-			restResult.setMsg(e.getLocalizedMessage());
-			return restResult;
-		}finally {
+		}  finally {
 			if(acquireLock){
 				try{
 					// lua脚本
@@ -774,6 +885,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				}
 			}
 		}
+		long endTime = System.currentTimeMillis();
+		logger.error("==> 悲观锁一共耗时:"+(endTime-startTime)+"=======================");
 		logger.info("抽奖数据已保存到es");
 		//判断realprize是否为0,0表示不中奖
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
@@ -782,122 +895,64 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
 		}else if (realPrize.equals((byte)1)) {
-			Byte awardType=mPrizeTypeMO.getAwardType();
-			Float amount =null;
+			Float amount=mPrizeTypeMO.getPrizeAmount();
+			Byte randAmount=mPrizeTypeMO.getIsRrandomMoney();
+			//如果是随机金额则生成随机金额
+			if (randAmount.equals((byte)1)) {
+				float min=mPrizeTypeMO.getLowRand();
+				float max=mPrizeTypeMO.getHighRand();
+				// [ )
+//				amount=new Random().nextFloat() * (max - min)+min;
+// 保留两位小数
+				float init = new Random().nextFloat() *((max-min)) +min;
+				DecimalFormat decimalFormat=new DecimalFormat(".00");
+				String strAmount=decimalFormat.format(init);//format 返回的是字符串
+				amount = Float.valueOf(strAmount);
+			}
+			Float finalAmount = amount * 100;//金额转化为分
+			//插入中奖纪录
+			MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
+			redWinRecord.setActivityId(activity.getId());
+			redWinRecord.setActivityName(activity.getActivityName());
+			redWinRecord.setActivitySetId(activitySetId);
+			redWinRecord.setMobile(mobile);
+			redWinRecord.setOpenid(openId);
+			redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
+			redWinRecord.setWinningAmount((float)amount );
+			redWinRecord.setWinningCode(scanCodeInfoMO.getCodeId());
+			redWinRecord.setOrganizationId(organizationId);
+			mWinRecordMapper.addWinRecord(redWinRecord);
+			logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
 
+			//生成订单号
+			String partner_trade_no=wXPayTradeNoGenerator.tradeNo();
+			//保存订单
+			SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			WXPayTradeOrder tradeOrder=new WXPayTradeOrder();
+			tradeOrder.setAmount(finalAmount);
+			tradeOrder.setOpenId(openId);
+			tradeOrder.setTradeStatus((byte)0);
+			tradeOrder.setPartnerTradeNo(partner_trade_no);
+			tradeOrder.setTradeDate(format.format(new Date()));
+			tradeOrder.setOrganizationId(organizationId);
+			wXPayTradeOrderMapper.insert(tradeOrder);
+
+			String remoteAddr = request.getRemoteAddr();
+			if (StringUtils.isBlank(remoteAddr)) {
+				remoteAddr=serverIp;
+			}
 			try {
-				if (null==awardType || awardType.byteValue()==4) {
-					//如果是微信红包
-					amount = weixinpay(mobile, openId, organizationId, mPrizeTypeMO);
-					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
-				}else {
-					Integer remainingStock=null;
-					switch (awardType) {
-					case 1://实物
-						remainingStock=mPrizeTypeMO.getRemainingStock();
-						if (null!=remainingStock && remainingStock.intValue()<1) {
-							restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
-						}else {
-							restResult.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
-							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
-						}
-						
-						break;
-					case 2: //奖券
-						restResult.setResults(mPrizeTypeMO.getCardLink());
-						break;
-					case 3: //积分
-						 Integer awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum();
-						 marketingMembersInfo.setHaveIntegral((haveIntegral==null?0:haveIntegral)+awardIntegralNum);
-						 restResult.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
-						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
-						break;
-					case 9://其它
-						remainingStock=mPrizeTypeMO.getRemainingStock();
-						if (null!=remainingStock && remainingStock.intValue()<1) {
-							restResult.setState(200);
-							restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
-						}else {
-							restResult.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
-							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
-						}
-						break;
-					default:
-						break;
-					}
-				}
+				wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(),partner_trade_no, organizationId);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}finally {
 				//一切ok后清除缓存
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
 			}
-			if (null!=consumeIntegralNum) {
-				marketingMembersInfo.setHaveIntegral(marketingMembersInfo.getHaveIntegral()-consumeIntegralNum);
-			}
-			marketingMembersMapper.update(marketingMembersInfo);
 			restResult.setState(200);
 			restResult.setMsg(amount+"");
 		}
 		return restResult;
-	}
-
-	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,
-			MarketingActivity activity, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, Float amount) {
-		//插入中奖纪录
-		MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
-		redWinRecord.setActivityId(activity.getId());
-		redWinRecord.setActivityName(activity.getActivityName());
-		redWinRecord.setActivitySetId(activitySetId);
-		redWinRecord.setMobile(mobile);
-		redWinRecord.setOpenid(openId);
-		redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
-		redWinRecord.setWinningAmount((float)amount );
-		redWinRecord.setWinningCode(outCodeId);
-		redWinRecord.setPrizeName(mPrizeTypeMO.getPrizeTypeName());
-		redWinRecord.setOrganizationId(organizationId);
-		mWinRecordMapper.addWinRecord(redWinRecord);
-	}
-
-	private Float weixinpay(String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO)
-			throws SuperCodeException, Exception {
-		Float amount=mPrizeTypeMO.getPrizeAmount();
-		Byte randAmount=mPrizeTypeMO.getIsRrandomMoney();
-		//如果是随机金额则生成随机金额
-		if (randAmount.equals((byte)1)) {
-			float min=mPrizeTypeMO.getLowRand();
-			float max=mPrizeTypeMO.getHighRand();
-			// [ )
-//				amount=new Random().nextFloat() * (max - min)+min;
-// 保留两位小数
-			float init = new Random().nextFloat() *((max-min)) +min;
-			DecimalFormat decimalFormat=new DecimalFormat(".00");
-			String strAmount=decimalFormat.format(init);//format 返回的是字符串
-			amount = Float.valueOf(strAmount);
-		}
-		Float finalAmount = amount * 100;//金额转化为分
-
-		logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
-
-		//生成订单号
-		String partner_trade_no=wXPayTradeNoGenerator.tradeNo();
-		//保存订单
-		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		WXPayTradeOrder tradeOrder=new WXPayTradeOrder();
-		tradeOrder.setAmount(finalAmount);
-		tradeOrder.setOpenId(openId);
-		tradeOrder.setTradeStatus((byte)0);
-		tradeOrder.setPartnerTradeNo(partner_trade_no);
-		tradeOrder.setTradeDate(format.format(new Date()));
-		tradeOrder.setOrganizationId(organizationId);
-		wXPayTradeOrderMapper.insert(tradeOrder);
-
-		String remoteAddr = request.getRemoteAddr();
-		if (StringUtils.isBlank(remoteAddr)) {
-			remoteAddr=serverIp;
-		}
-		wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(),partner_trade_no, organizationId);
-		return amount;
 	}
 
 	public void update(MarketingMembers members) {

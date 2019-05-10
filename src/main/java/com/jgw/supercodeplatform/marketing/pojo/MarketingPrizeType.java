@@ -35,6 +35,18 @@ public class MarketingPrizeType implements Comparable<MarketingPrizeType>{
 
     private long totalNum;//测试使用--当前奖次按照中奖率计算一共该中奖的码数量
 
+    @ApiModelProperty(value = "奖项类型",name = "awardType",  example = "1实物 2奖券 3积分 9其它")
+    private Byte awardType;
+    
+    @ApiModelProperty(value = "剩余库存",name = "remainingStock",  example = "21")
+    private Integer remainingStock;
+    
+    @ApiModelProperty(value = "卡券链接",name = "cardLink",  example = "http://sdj")
+    private String cardLink;
+    
+    @ApiModelProperty(value = "奖励的积分",name = "awardIntegralNum",  example = "21")
+    private Integer awardIntegralNum;
+    
  	public long getTotalNum() {
 		return totalNum;
 	}
@@ -101,6 +113,31 @@ public class MarketingPrizeType implements Comparable<MarketingPrizeType>{
 	public void setIsRrandomMoney(Byte isRrandomMoney) {
 		this.isRrandomMoney = isRrandomMoney;
 	}
+	public Byte getAwardType() {
+		return awardType;
+	}
+	public void setAwardType(Byte awardType) {
+		this.awardType = awardType;
+	}
+	public Integer getRemainingStock() {
+		return remainingStock;
+	}
+	public void setRemainingStock(Integer remainingStock) {
+		this.remainingStock = remainingStock;
+	}
+	public String getCardLink() {
+		return cardLink;
+	}
+	public void setCardLink(String cardLink) {
+		this.cardLink = cardLink;
+	}
+	
+	public Integer getAwardIntegralNum() {
+		return awardIntegralNum;
+	}
+	public void setAwardIntegralNum(Integer awardIntegralNum) {
+		this.awardIntegralNum = awardIntegralNum;
+	}
 	@Override
 	public boolean equals(Object obj) {
 		   if (obj == null) { return false;}
@@ -118,7 +155,9 @@ public class MarketingPrizeType implements Comparable<MarketingPrizeType>{
 	}
 	@Override
 	public int compareTo(MarketingPrizeType o) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	
+	
 }

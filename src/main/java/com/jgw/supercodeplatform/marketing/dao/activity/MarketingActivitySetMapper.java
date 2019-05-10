@@ -9,7 +9,8 @@ public interface MarketingActivitySetMapper {
  static String allFields="Id id,ActivityId ActivityId,ActivityTitle ActivityTitle,ActivityStartDate ActivityStartDate,"
  		+ "ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,CreateDate createDate,UpdateDate UpdateDate,"
  		+ "ActivityStatus ActivityStatus,EachDayNumber EachDayNumber,ActivityRangeMark ActivityRangeMark,"
- 		+ "autoFetch autoFetch,CodeTotalNum codeTotalNum,OrganizationId organizationId,OrganizatioIdlName organizatioIdlName";
+ 		+ "autoFetch autoFetch,CodeTotalNum codeTotalNum,OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,"
+ 		+ "ActivityDesc activityDesc,ConsumeIntegralNum consumeIntegralNum";
 
 
 
@@ -34,10 +35,10 @@ public interface MarketingActivitySetMapper {
 
    @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle,"
            + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus,EachDayNumber,"
-           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate) "
+           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ConsumeIntegralNum,ActivityDesc) "
            + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate},"
            + "#{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.eachDayNumber},#{ma.activityRangeMark}, "
-           + "#{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW() "
+           + "#{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(),#{ma.consumeIntegralNum} ,#{ma.activityDesc}"
            + ")")
    @Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
    int insert(@Param("ma")MarketingActivitySet marketingActivitySet);
@@ -64,7 +65,6 @@ public interface MarketingActivitySetMapper {
     MarketingActivitySet selectByTitleOrgIdWithOutSelf(@Param("activityTitle")String activityTitle, @Param("organizationId")String organizationId ,@Param("id")Long activitySetid);
 
 
-
     @Update(" update marketing_activity_set " +
             "<set> "
             + " <if test='activityId !=null and activityId != &apos;&apos; '> ActivityId = #{activityId} ,</if> "
@@ -81,6 +81,8 @@ public interface MarketingActivitySetMapper {
             + " <if test='activityRangeMark !=null and activityRangeMark != &apos;&apos; '> ActivityRangeMark = #{activityRangeMark} ,</if> "
             + " <if test='autoFetch !=null and autoFetch != &apos;&apos; '> autoFetch = #{autoFetch} ,</if> "
             + " <if test='codeTotalNum !=null and codeTotalNum != &apos;&apos; '> CodeTotalNum = #{codeTotalNum} ,</if> "
+		    + " <if test='consumeIntegralNum !=null and consumeIntegralNum != &apos;&apos; '> ConsumeIntegralNum = #{consumeIntegralNum} ,</if> "
+		    + " <if test='activityDesc !=null and activityDesc != &apos;&apos; '> ActivityDesc = #{activityDesc} ,</if> "
             + " </set> "
             + " where Id = #{id}"
     )

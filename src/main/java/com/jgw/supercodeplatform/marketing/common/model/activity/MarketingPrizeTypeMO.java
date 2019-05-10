@@ -22,6 +22,11 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
     private Byte realPrize;//是否由用户创建的真实奖次
     private Float lowRand;
     private Float highRand;
+    private Byte awardType;
+    private Integer remainingStock;
+    private Integer awardIntegralNum;
+    private String cardLink;
+    
 	public long getId() {
 		return id;
 	}
@@ -90,6 +95,33 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 	}
 	public void setHighRand(Float highRand) {
 		this.highRand = highRand;
+	}
+	
+	public Byte getAwardType() {
+		return awardType;
+	}
+	public void setAwardType(Byte awardType) {
+		this.awardType = awardType;
+	}
+	public Integer getRemainingStock() {
+		return remainingStock;
+	}
+	public void setRemainingStock(Integer remainingStock) {
+		this.remainingStock = remainingStock;
+	}
+	
+	public Integer getAwardIntegralNum() {
+		return awardIntegralNum;
+	}
+	public void setAwardIntegralNum(Integer awardIntegralNum) {
+		this.awardIntegralNum = awardIntegralNum;
+	}
+	
+	public String getCardLink() {
+		return cardLink;
+	}
+	public void setCardLink(String cardLink) {
+		this.cardLink = cardLink;
 	}
 	@Override
 	public int compareTo(MarketingPrizeTypeMO o) {

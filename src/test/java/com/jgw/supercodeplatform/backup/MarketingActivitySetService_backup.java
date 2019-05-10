@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.service.activity;
+package com.jgw.supercodeplatform.backup;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -31,8 +31,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
-public class MarketingActivitySetService  {
-	protected static Logger logger = LoggerFactory.getLogger(MarketingActivitySetService.class);
+public class MarketingActivitySetService_backup  {
+	protected static Logger logger = LoggerFactory.getLogger(MarketingActivitySetService_backup.class);
 
 	@Autowired
 	private MarketingActivitySetMapper mSetMapper;
@@ -418,7 +418,6 @@ public class MarketingActivitySetService  {
 							codeSum+=codeTotal;
 						}
 					}
-					//TODO 删除已关联的活动
 					mProductMapper.activityProductInsert(mList);
 				}else {
 					throw new SuperCodeException("请求码管理生码批次和url错误："+bindbatchBody, 500);
@@ -426,6 +425,10 @@ public class MarketingActivitySetService  {
 			}else {
 				throw new SuperCodeException("通过产品及产品批次获取码信息错误："+body, 500);
 			}
+
+		if (null==codeSum || codeSum.intValue()<1) {
+			throw new SuperCodeException("添加的产品批次的码关联数量小于1无法参与活动", 500);
+		}
 		return codeSum;
 	}
 	

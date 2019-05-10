@@ -12,10 +12,10 @@ import java.util.List;
 public interface MarketingMembersWinRecordMapper extends CommonSql{
 
 	static String allFields="Id as id,ActivityId as activityId,ActivitySetId as activitySetId,ActivityName as activityName,Openid as openid,PrizeTypeId as prizeTypeId,"
-			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId ";
+			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId ,PrizeName prizeName ";
 
 	static String allWinFields="mmw.Id as id,mmw.ActivityId as activityId,mmw.ActivitySetId as activitySetId,mmw.ActivityName as activityName,mmw.Openid as openid,mmw.PrizeTypeId as prizeTypeId,"
-			+ " CAST(mmw.WinningAmount AS CHAR) as winningAmount "
+			+ " CAST(mmw.WinningAmount AS CHAR) as winningAmount,mmw.PrizeName as prizeName "
 			+ ",mmw.WinningCode as winningCode,mmw.Mobile as mobile,mmw.OrganizationId as organizationId,"
 			+ "mm.UserName as userName,mm.WxName as wxName,mm.CustomerName as customerName, "
 			+ "mpt.PrizeTypeName as prizeTypeName,map.ProductName as productName ";
@@ -47,6 +47,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 						" OR mpt.PrizeTypeName LIKE CONCAT('%',#{search},'%') " +
                         " OR mmw.WinningAmount LIKE CONCAT('%',#{search},'%') " +
                         " OR mmw.WinningCode LIKE CONCAT('%',#{search},'%') " +
+                    	" OR mmw.PrizeName LIKE CONCAT('%',#{search},'%') " +
 						" OR map.ProductName LIKE CONCAT('%',#{search},'%') " +
 						")" +
 						"</if>" +
@@ -77,9 +78,9 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	List<MarketingMembersWinRecordListReturn> list(MarketingMembersWinRecordListParam searchParams);
 
 	@Insert(" INSERT INTO marketing_members_win(ActivityId,ActivitySetId,ActivityName,Openid,"
-			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,Mobile)"
+			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,Mobile,PrizeName)"
 			+ " VALUES(#{activityId},#{activitySetId},#{activityName},#{openid},#{prizeTypeId},"
-			+ "#{winningAmount},#{winningCode},#{organizationId},#{mobile} "
+			+ "#{winningAmount},#{winningCode},#{organizationId},#{mobile},#{prizeName}"
 			+ ")")
 	int addWinRecord(MarketingMembersWinRecord winRecord);
 

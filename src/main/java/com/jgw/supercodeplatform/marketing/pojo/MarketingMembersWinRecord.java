@@ -16,6 +16,8 @@ public class MarketingMembersWinRecord {
     private String winningCode;//中奖码
     private String organizationId;//组织id
     private String mobile;//会员手机号
+    private String prizeName;//奖项名称
+    
     
     public int getId() {
         return id;
@@ -97,6 +99,14 @@ public class MarketingMembersWinRecord {
 
 	public void setActivitySetId(Long activitySetId) {
 		this.activitySetId = activitySetId;
+	}
+
+	public String getPrizeName() {
+		return prizeName;
+	}
+
+	public void setPrizeName(String prizeName) {
+		this.prizeName = prizeName;
 	}
     
 }

@@ -1,11 +1,15 @@
 package com.jgw.supercodeplatform.marketing.controller.test;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +65,33 @@ public class TestController extends CommonUtil {
 		String body=responseEntity.getBody();
 		System.out.println(body);
     }
-
+    @RequestMapping(value = "/download",method=RequestMethod.GET)
+    @ApiOperation(value = "下载", notes = "")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "filename", paramType = "query", defaultValue = "名称.txt", value = "文件名")
+    })
+    public void download(HttpServletResponse response,String filename) throws Exception {
+    	
+        try {
+        	String agent = request.getHeader("User-Agent").toUpperCase(); //获得浏览器信息并转换为大写
+        	if (agent.indexOf("MSIE") > 0 || (agent.indexOf("GECKO")>0 && agent.indexOf("RV:11")>0)) {  //IE浏览器和Edge浏览器
+        	    filename = URLEncoder.encode(filename, "UTF-8");  
+        	} else {  //其他浏览器
+        		filename = new String(filename.getBytes("UTF-8"), "iso-8859-1");  
+        	}
+        	response.setCharacterEncoding("UTF-8");
+        	byte[] datas="jay".getBytes();
+            // 设置response的Header
+            response.addHeader("Content-Disposition", "attachment;filename=" + filename);
+            response.addHeader("Content-Length", "" + datas.length);
+            response.setContentType("application/octet-stream");
+            IOUtils.copy(new ByteArrayInputStream(datas), response.getOutputStream());
+            response.flushBuffer();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new com.jgw.supercodeplatform.exception.SuperCodeException("文件下载出现错误:" + e.getMessage());
+        }
+    }
     @RequestMapping(value = "/cookie",method=RequestMethod.GET)
     @ApiOperation(value = "cookie测试", notes = "")
     @ApiImplicitParams({

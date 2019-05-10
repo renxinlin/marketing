@@ -192,4 +192,7 @@ public interface MarketingMembersMapper {
 
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} and Id !=#{id} ")
 	MarketingMembers selectByPhoneAndOrgIdExcludeId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId, @Param("id")Long id);
+
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} and State=#{state}")
+	MarketingMembers selectByStateOpenIdAndOrgId(@Param("state")Integer state,@Param("openid")String openid, @Param("organizationId")String  organizationId);
 }

@@ -69,10 +69,8 @@ public class ScanCodeController {
 
     	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate);
 
-
         return "redirect:"+url;
     }
-
     public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate) throws UnsupportedEncodingException, ParseException, SuperCodeException {
     	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId);
     	if (restResult.getState()==500) {
