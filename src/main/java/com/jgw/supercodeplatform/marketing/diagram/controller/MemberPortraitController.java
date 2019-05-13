@@ -176,6 +176,8 @@ public class MemberPortraitController extends CommonUtil {
 
         // 生日
 
+        
+        
         CricleVo age0 = new CricleVo();
         age0.setItem("0-10");
 
@@ -390,6 +392,16 @@ public class MemberPortraitController extends CommonUtil {
         result.put("device",deviceCricleVos);
         return result;
     }
-
+    
+    public static void main(String[] args) {
+        CricleVo[] agex0 = new CricleVo[10];
+        int preI=0;
+        for(int i=0;i<=100;i+=10) {
+        	 CricleVo age = new CricleVo();
+        	 age.setItem(preI+"-"+i);
+        	 agex0[i]=age;
+        }
+        System.out.println(1);
+	}
 
 }

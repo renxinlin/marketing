@@ -57,7 +57,6 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
@@ -705,26 +704,29 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
 		MarketingPrizeTypeMO mPrizeTypeMO =null;
 		boolean acquireLock = false;
+		List<MarketingPrizeTypeMO> moPrizeTypes=mMarketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
+		if (null==moPrizeTypes || moPrizeTypes.isEmpty()) {
+			restResult.setState(500);
+			restResult.setMsg("该活动未设置中奖奖次");
+			return restResult;
+		}
  		try {
 			// 超时时间,重试次数，重试间隔
 			acquireLock = lock.lock(activitySetId + ":" + codeId + ":" + codeTypeId,5000,5,200);
 			if(acquireLock){
-				List<MarketingPrizeTypeMO> moPrizeTypes=mMarketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
-				if (null==moPrizeTypes || moPrizeTypes.isEmpty()) {
-					restResult.setState(500);
-					restResult.setMsg("该活动未设置中奖奖次");
-					return restResult;
-				}
 				mPrizeTypeMO=LotteryUtilWithOutCodeNum.startLottery(moPrizeTypes);
+				
 				String nowTime=staticESSafeFormat.format(new Date());
 				long nowTtimeStemp=staticESSafeFormat.parse(nowTime).getTime();
-				Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
+				
 				String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
-				logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
+				
 				//校验码有没有被扫过
+				Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
+				logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
 				if (null==codeCount ||codeCount.intValue()<1) {
-					Integer scanLimit=mActivitySet.getEachDayNumber();
 					//校验有没有设置活动用户扫码量限制
+					Integer scanLimit=mActivitySet.getEachDayNumber();
 					if (null!=scanLimit&& scanLimit.intValue()>0) {
 						Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTtimeStemp);
 						logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum+",当前活动扫码限制次数为："+scanLimit);
@@ -733,27 +735,22 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 							restResult.setMsg("您今日扫码已超过该活动限制数量");
 							return restResult;
 						}
-
 					}
 				}else {
 					restResult.setState(200);
-					restResult.setMsg("您手速太慢，刚刚该码已被其它用户扫过");
+					restResult.setMsg("您手速太慢，该码已被其它用户领取");
 					return restResult;
 				}
-
-				//更新奖次被扫码数量
-				mPrizeTypeMO.setWiningNum(mPrizeTypeMO.getWiningNum() + 1);
-				MarketingPrizeType marketingPrizeType =new MarketingPrizeType();
-				marketingPrizeType.setId(mPrizeTypeMO.getId());
-				marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
-				mMarketingPrizeTypeMapper.update(marketingPrizeType);
 
 				codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp,organizationId);
 				logger.info("领取方法====：抽奖数据已保存到es");
 			}else {
 				logger.error("{锁获取失败:" +activitySetId + codeId +codeTypeId+ ",请检查}");
-				// 统计失败
-				redisUtil.hmSet("marketing:lock:fail",activitySetId + codeId +codeTypeId,new Date());
+				try {
+					// 统计失败
+					redisUtil.hmSet("marketing:lock:fail",activitySetId + codeId +codeTypeId,new Date());
+				} catch (Exception e) {
+				}
 				restResult.setState(500);
 				restResult.setMsg("扫码人数过多,请稍后再试");
 				return restResult;
@@ -774,20 +771,19 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				}
 			}
 		}
-		logger.info("抽奖数据已保存到es");
-		//判断realprize是否为0,0表示不中奖
+		//判断realprize是否为0,0表示为新增的虚拟不中奖奖项，为了计算中奖率设置
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
 			restResult.setState(200);
 			restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
-		}else if (realPrize.equals((byte)1)) {
+		}else{
 			Byte awardType=mPrizeTypeMO.getAwardType();
 			Float amount =null;
 
 			try {
+				//如果是微信红包奖项类型可能为空需特殊处理
 				if (null==awardType || awardType.byteValue()==4) {
-					//如果是微信红包
 					amount = weixinpay(mobile, openId, organizationId, mPrizeTypeMO);
 					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
 				}else {
@@ -805,6 +801,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 						break;
 					case 2: //奖券
 						restResult.setResults(mPrizeTypeMO.getCardLink());
+						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
 						break;
 					case 3: //积分
 						 Integer awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum();
