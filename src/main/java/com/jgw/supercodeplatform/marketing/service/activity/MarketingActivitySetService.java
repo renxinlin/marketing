@@ -127,31 +127,63 @@ public class MarketingActivitySetService  {
 		}else {
 			Set<String> set = new HashSet<String>();
 			for (MarketingPrizeTypeParam prizeTypeParam:mPrizeTypeParams){
-				Byte randomAmont=prizeTypeParam.getIsRrandomMoney();
-				if (null==randomAmont) {
-					throw new SuperCodeException("是否固定金额不能为空", 500);
-				}else if (randomAmont.equals((byte)0)) {
-					//如果固定金额则不能小于1大于5000
-					Float amount=prizeTypeParam.getPrizeAmount();
-					if (null==amount|| amount<1 ||amount>5000) {
-						throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
+				Byte awardType=prizeTypeParam.getAwardType();
+				//如果奖项类型是空则是之前的红包活动没有奖项设置的
+				if (null==awardType) {
+					Byte randomAmont=prizeTypeParam.getIsRrandomMoney();
+					if (null==randomAmont) {
+						throw new SuperCodeException("是否固定金额不能为空", 500);
+					}else if (randomAmont.equals((byte)0)) {
+						//如果固定金额则不能小于1大于5000
+						Float amount=prizeTypeParam.getPrizeAmount();
+						if (null==amount|| amount<1 ||amount>5000) {
+							throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
+						}
+						prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount());//转换为分
+					}else if (randomAmont.equals((byte)1)) {
+						//如果是随机金额则校验随机金额取值
+						Float lowrand=prizeTypeParam.getLowRand();
+						Float highrand=prizeTypeParam.getHighRand();
+						if (null==lowrand || null==highrand || lowrand >=highrand) {
+							throw new SuperCodeException("随机金额取值范围不能为空且低取值不能大于等于高取值", 500);
+						}
+						if (lowrand<1 || highrand>5000) {
+							throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在1-5000以内", 500);
+						}
 					}
-					prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount());//转换为分
-				}else if (randomAmont.equals((byte)1)) {
-					//如果是随机金额则校验随机金额取值
-					Float lowrand=prizeTypeParam.getLowRand();
-					Float highrand=prizeTypeParam.getHighRand();
-					if (null==lowrand || null==highrand || lowrand >=highrand) {
-						throw new SuperCodeException("随机金额取值范围不能为空且低取值不能大于等于高取值", 500);
+				}else {
+				   	//奖项类型不为空则为新活动
+					switch (awardType) {
+					case 1://实物
+						
+						break;
+					case 2://卡券
+						String cardLink=prizeTypeParam.getCardLink();
+						if (StringUtils.isBlank(cardLink)) {
+							throw new SuperCodeException("卡券类型奖次卡券不能为空", 500);
+						}
+						break;
+					case 3://积分
+						Integer awardIntegralNum= prizeTypeParam.getAwardIntegralNum();
+						if (null==awardIntegralNum) {
+							throw new SuperCodeException("积分类型奖次奖励积分不能为空", 500);
+						}
+						break;
+					case 9://其它
+						
+						break;
+					default:
+						break;
 					}
-					if (lowrand<1 || highrand>5000) {
-						throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在1-5000以内", 500);
-					}
+					
 				}
+				
 				Integer prizeProbability=prizeTypeParam.getPrizeProbability();
 				if (null==prizeProbability || prizeProbability<0 || prizeProbability>100) {
 					throw new SuperCodeException("概率参数非法prizeProbability="+prizeProbability, 500);
 				}
+				
+				
 				set.add(prizeTypeParam.getPrizeTypeName());
 			}
 			if (set.size()<mPrizeTypeParams.size()) {
@@ -418,7 +450,7 @@ public class MarketingActivitySetService  {
 							codeSum+=codeTotal;
 						}
 					}
-					//TODO 删除已关联的活动
+					mProductMapper.batchDeleteByProBatchs(mList);
 					mProductMapper.activityProductInsert(mList);
 				}else {
 					throw new SuperCodeException("请求码管理生码批次和url错误："+bindbatchBody, 500);
