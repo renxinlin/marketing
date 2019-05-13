@@ -488,17 +488,16 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			return restResult;
 		}
 		
-		List<MarketingOrganizationPortraitListParam> mPortraits = organizationPortraitMapper
-				.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
-		if (null == mPortraits || mPortraits.isEmpty()) {
-			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
-		}
-		
 		H5LoginVO h5LoginVO =null;
 		if (StringUtils.isNotBlank(wxstate)) {
-			 h5LoginVO = loginWithWxstate(mobile, wxstate,mPortraits.size());
+			 h5LoginVO = loginWithWxstate(mobile, wxstate);
 			restResult.setResults(h5LoginVO);
 		}else {
+			List<MarketingOrganizationPortraitListParam> mPortraits = organizationPortraitMapper
+					.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
+			if (null == mPortraits || mPortraits.isEmpty()) {
+				throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
+			}
 			h5LoginVO = commonLogin(mobile, openid, organizationId,mPortraits.size());
 		}
 		try {
@@ -621,7 +620,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * @return
      * @throws SuperCodeException
      */
-	private H5LoginVO loginWithWxstate(String mobile, String wxstate, int portraitsSize) throws SuperCodeException {
+	private H5LoginVO loginWithWxstate(String mobile, String wxstate) throws SuperCodeException {
 		ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null == scanCodeInfoMO) {
 			throw new SuperCodeException("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码", 500);
@@ -636,7 +635,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			throw new SuperCodeException("该活动设置id不存在", 500);
 		}
 		String organizationId = maActivitySet.getOrganizationId();
-		H5LoginVO h5LoginVO = commonLogin(mobile, scanCodeInfoMO.getOpenId(), organizationId,portraitsSize);
+		List<MarketingOrganizationPortraitListParam> mPortraits = organizationPortraitMapper
+				.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
+		if (null == mPortraits || mPortraits.isEmpty()) {
+			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
+		}
+		H5LoginVO h5LoginVO = commonLogin(mobile, scanCodeInfoMO.getOpenId(), organizationId,mPortraits.size());
 		return h5LoginVO;
 	}
 	/**
