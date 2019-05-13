@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 @RequestMapping("/marketing/memberPortraitTask")
@@ -30,6 +31,7 @@ public class MemberPortraitController extends CommonUtil {
      * 任务标志
      */
     private static final Enum type = TaskTypeEnum.MEMBER_PORTRAIT;
+    static final String SPLIT="-";
 
     @Autowired
     private MarketingMembersService service;
@@ -175,38 +177,20 @@ public class MemberPortraitController extends CommonUtil {
 
 
         // 生日
+        CricleVo[] agex0 = new CricleVo[10];
+        int i = 0;
+        for(int preI=0;preI<100;preI+=10) {
+            CricleVo age = new CricleVo();
+            age.setItem(preI+SPLIT+(preI+10));
+            agex0[i]=age;
+            if(preI == 100){
+                age.setItem("其他");
 
-        
-        
-        CricleVo age0 = new CricleVo();
-        age0.setItem("0-10");
+            }
+            i++;
+        }
 
-        CricleVo age10 = new CricleVo();
-        age10.setItem("10-20");
 
-        CricleVo age20 = new CricleVo();
-        age20.setItem("20-30");
-
-        CricleVo age30 = new CricleVo();
-        age30.setItem("30-40");
-
-        CricleVo age40 = new CricleVo();
-        age40.setItem("40-50");
-
-        CricleVo age50 = new CricleVo();
-        age50.setItem("50-60");
-
-        CricleVo age60 = new CricleVo();
-        age60.setItem("60-70");
-
-        CricleVo age70 = new CricleVo();
-        age70.setItem("70-80");
-
-        CricleVo age80 = new CricleVo();
-        age80.setItem("80-90");
-
-        CricleVo age90 = new CricleVo();
-        age90.setItem("90-100");
 
         // 100岁以上和0岁以下以及其他都归属其他
         CricleVo otherage = new CricleVo();
@@ -247,41 +231,28 @@ public class MemberPortraitController extends CommonUtil {
             // 年龄统计
             String birthdayStr = marketingMember.getBirthday();
             Date birthday = null;
+
+            int age = 0;
             if(!StringUtils.isBlank(birthdayStr)){
                 birthday = DateUtil.yyyyMMddStrToDate(birthdayStr);
+                age = DateUtil.getAge(birthday);
+            }
 
-            }
-            // 年龄统计，顺序不可乱！！！
-            if(birthday == null){
-                otherage.add(1);
-            }else if( DateUtil.getAge(birthday) <= 0) {
-                otherage.add(1);
-            }else if(10 - DateUtil.getAge(birthday) >= 0) {
-//                （1，10]
-                age0.add(1);
-            }else if(20 - DateUtil.getAge(birthday) >= 0) {
-                age10.add(1);
-            }else if(30 - DateUtil.getAge(birthday) >= 0) {
-                age20.add(1);
-            }else if(40 - DateUtil.getAge(birthday) >= 0) {
-                age30.add(1);
-            }else if(50 - DateUtil.getAge(birthday) >= 0) {
-                age40.add(1);
-            }else if(60 - DateUtil.getAge(birthday) >= 0) {
-                age50.add(1);
-            }else if(70 - DateUtil.getAge(birthday) >= 0) {
-                age60.add(1);
-            }else if(80 - DateUtil.getAge(birthday) >= 0) {
-                age70.add(1);
-            }else if(90 - DateUtil.getAge(birthday) >= 0) {
-//                (80,90]
-                age80.add(1);
-            }else if(100 - DateUtil.getAge(birthday) >= 0) {
-//                (91,100]
-                age90.add(1);
-            }else {
+            final int finalAge = age;
+            final AtomicBoolean notAddeed = new AtomicBoolean(true);
+            Arrays.asList(agex0).forEach(e->{
+                String[] ageRange = e.getItem().split(SPLIT);
+                int lowwer = Integer.parseInt(ageRange[0]);
+                int upper = Integer.parseInt(ageRange[1]);
+                if(finalAge > lowwer && finalAge <= upper){
+                    e.add(1);
+                    notAddeed.set(false);
+                }
+            });
+            if(notAddeed.get()){
                 otherage.add(1);
             }
+
 
         }
 
@@ -333,56 +304,18 @@ public class MemberPortraitController extends CommonUtil {
 
         // 年龄统计
         // 百分比
-        int ageNum =
-                  age0.getCount()+age10.getCount()+age20.getCount()
-                + age30.getCount()+age40.getCount()+age50.getCount()
-                + age60.getCount()+age70.getCount()+age80.getCount()
-                + age90.getCount()+otherage.getCount();
-
-        age0.setPercent(age0.getCount()*1.00/ageNum);
-        age0.setPercentStr(age0.getCount()*1.00/ageNum+"");
-
-        age10.setPercent(age10.getCount()*1.00/ageNum);
-        age10.setPercentStr(age10.getCount()*1.00/ageNum+"");
-
-        age20.setPercent(age20.getCount()*1.00/ageNum);
-        age20.setPercentStr(age20.getCount()*1.00/ageNum+"");
-
-        age30.setPercent(age30.getCount()*1.00/ageNum);
-        age30.setPercentStr(age30.getCount()*1.00/ageNum+"");
-
-        age40.setPercent(age40.getCount()*1.00/ageNum);
-        age40.setPercentStr(age40.getCount()*1.00/ageNum+"");
-
-        age50.setPercent(age50.getCount()*1.00/ageNum);
-        age50.setPercentStr(age50.getCount()*1.00/ageNum+"");
-
-        age60.setPercent(age60.getCount()*1.00/ageNum);
-        age60.setPercentStr(age60.getCount()*1.00/ageNum+"");
-
-        age70.setPercent(age70.getCount()*1.00/ageNum);
-        age70.setPercentStr(age70.getCount()*1.00/ageNum+"");
-
-        age80.setPercent(age80.getCount()*1.00/ageNum);
-        age80.setPercentStr(age80.getCount()*1.00/ageNum+"");
-
-        age90.setPercent(age90.getCount()*1.00/ageNum);
-        age90.setPercentStr(age90.getCount()*1.00/ageNum+"");
-
+        int ageNum = otherage.getCount();
+        ageNum += Arrays.stream(agex0).mapToInt(CricleVo::getCount).sum();
+        final int finalAgeNum = ageNum;
+        Arrays.asList(agex0).forEach(e ->{
+            e.setPercent(e.getCount()*1.00/ finalAgeNum);
+            e.setPercentStr(e.getCount()*1.00/ finalAgeNum +"");
+        });
         otherage.setPercent(otherage.getCount()*1.00/ageNum);
         otherage.setPercentStr(otherage.getCount()*1.00/ageNum+"");
 
 
-        ageCricleVos.add(age0);
-        ageCricleVos.add(age10);
-        ageCricleVos.add(age20);
-        ageCricleVos.add(age30);
-        ageCricleVos.add(age40);
-        ageCricleVos.add(age50);
-        ageCricleVos.add(age60);
-        ageCricleVos.add(age70);
-        ageCricleVos.add(age80);
-        ageCricleVos.add(age90);
+        ageCricleVos.addAll(Arrays.asList(agex0));
         ageCricleVos.add(otherage);
 
         // 最终格式
@@ -392,16 +325,21 @@ public class MemberPortraitController extends CommonUtil {
         result.put("device",deviceCricleVos);
         return result;
     }
-    
+
     public static void main(String[] args) {
-        CricleVo[] agex0 = new CricleVo[10];
-        int preI=0;
-        for(int i=0;i<=100;i+=10) {
-        	 CricleVo age = new CricleVo();
-        	 age.setItem(preI+"-"+i);
-        	 agex0[i]=age;
+        CricleVo[] agex0 = new CricleVo[11];
+        int i = 0;
+        for(int preI=0;preI<=100;preI+=10) {
+            CricleVo age = new CricleVo();
+            age.setItem(preI+"-"+(preI+10));
+            agex0[i]=age;
+            if(preI == 100){
+                age.setItem("其他");
+
+            }
+            i++;
         }
-        System.out.println(1);
-	}
+        Arrays.asList(agex0).forEach(e -> System.out.println(e));
+    }
 
 }
