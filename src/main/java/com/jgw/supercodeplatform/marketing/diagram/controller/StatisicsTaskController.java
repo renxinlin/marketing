@@ -90,11 +90,11 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result = new StatisicsVo();
-        result.setClickNum(clickNum);
-        result.setIntegralNum(integralNum);
-        result.setExchangeNum(exchangeNum);
-        result.setMoneyNum(momeyNum);
+        StatisicsVo result                       = new StatisicsVo();
+        result         .setClickNum(clickNum == null ? 0 : clickNum);
+        result.setIntegralNum(integralNum == null ? 0 : integralNum);
+        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
+        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
         return RestResult.success("success",result);
     }
 
@@ -112,11 +112,11 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result = new StatisicsVo();
-        result.setClickNum(clickNum);
-        result.setIntegralNum(integralNum);
-        result.setExchangeNum(exchangeNum);
-        result.setMoneyNum(momeyNum);
+        StatisicsVo result                       = new StatisicsVo();
+        result         .setClickNum(clickNum == null ? 0 : clickNum);
+        result.setIntegralNum(integralNum == null ? 0 : integralNum);
+        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
+        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
         return RestResult.success("success",result);
     }
 
@@ -134,11 +134,11 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result = new StatisicsVo();
-        result.setClickNum(clickNum);
-        result.setIntegralNum(integralNum);
-        result.setExchangeNum(exchangeNum);
-        result.setMoneyNum(momeyNum);
+        StatisicsVo result                       = new StatisicsVo();
+        result         .setClickNum(clickNum == null ? 0 : clickNum);
+        result.setIntegralNum(integralNum == null ? 0 : integralNum);
+        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
+        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
         return RestResult.success("success",result);
     }
 
@@ -156,11 +156,11 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result = new StatisicsVo();
-        result.setClickNum(clickNum);
-        result.setIntegralNum(integralNum);
-        result.setExchangeNum(exchangeNum);
-        result.setMoneyNum(momeyNum);
+        StatisicsVo result                       = new StatisicsVo();
+        result         .setClickNum(clickNum == null ? 0 : clickNum);
+        result.setIntegralNum(integralNum == null ? 0 : integralNum);
+        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
+        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
         return RestResult.success("success",result);
     }
 
@@ -179,11 +179,11 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result = new StatisicsVo();
-        result.setClickNum(clickNum);
-        result.setIntegralNum(integralNum);
-        result.setExchangeNum(exchangeNum);
-        result.setMoneyNum(momeyNum);
+        StatisicsVo result                       = new StatisicsVo();
+        result         .setClickNum(clickNum == null ? 0 : clickNum);
+        result.setIntegralNum(integralNum == null ? 0 : integralNum);
+        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
+        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
         return RestResult.success("success",result);
     }
 
@@ -200,11 +200,11 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result = new StatisicsVo();
-        result.setClickNum(clickNum);
-        result.setIntegralNum(integralNum);
-        result.setExchangeNum(exchangeNum);
-        result.setMoneyNum(momeyNum);
+        StatisicsVo result                       = new StatisicsVo();
+        result         .setClickNum(clickNum == null ? 0 : clickNum);
+        result.setIntegralNum(integralNum == null ? 0 : integralNum);
+        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
+        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
         return RestResult.success("success",result);
     }
 
