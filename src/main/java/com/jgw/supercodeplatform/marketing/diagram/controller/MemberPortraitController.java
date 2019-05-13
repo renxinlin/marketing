@@ -393,15 +393,5 @@ public class MemberPortraitController extends CommonUtil {
         return result;
     }
     
-    public static void main(String[] args) {
-        CricleVo[] agex0 = new CricleVo[10];
-        int preI=0;
-        for(int i=0;i<=100;i+=10) {
-        	 CricleVo age = new CricleVo();
-        	 age.setItem(preI+"-"+i);
-        	 agex0[i]=age;
-        }
-        System.out.println(1);
-	}
 
 }

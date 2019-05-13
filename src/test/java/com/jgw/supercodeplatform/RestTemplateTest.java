@@ -1,28 +1,5 @@
 package com.jgw.supercodeplatform;
 
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
-import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
-import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.*;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,6 +8,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
+import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 
 @RunWith(SpringJUnit4ClassRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
 @SpringBootTest(classes = SuperCodeMarketingApplication.class) // 指定我们SpringBoot工程的Application启动类
@@ -66,6 +72,8 @@ private String codeManagerUrl="http://PLATFORM-CODEMANAGER-SUPERCODE-ZC";
 
 @Value("${rest.user.url}")
 private String userServiceUrl;
+
+private String msCodeUrl="http://PLATFORM-MS-CODETEST";
 
 
 @Test
@@ -243,7 +251,17 @@ public  void main() throws UnsupportedEncodingException, SuperCodeException {
       
   	  ResponseEntity<String> response= restTemplateUtil.getRequestAndReturnJosn(restUserUrl+"/product-batch/array/batch/list", paramMap, headerMap);
       System.out.println(response);
-      
 
+	}
+	
+	
+	@Test
+	public  void checkOuterCode() throws UnsupportedEncodingException, SuperCodeException {
+		
+		Map<String, String>headerparams=new HashMap<String, String>();
+		headerparams.put("token",commonUtil.getCodePlatformToken() );
+		ResponseEntity<String>responseEntity=getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId=86580781309180006&codeTypeId=122", null, headerparams);
+	    System.out.println(responseEntity.toString());
+	    
 	}
 }
