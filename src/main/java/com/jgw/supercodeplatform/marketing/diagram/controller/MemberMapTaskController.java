@@ -112,7 +112,7 @@ public class MemberMapTaskController extends CommonUtil {
 //                }
 //            }
             // 按值降序
-            Collections.sort(list,(o1,o2)->o1.getValue().getValue()-o2.getValue().getValue());
+            Collections.sort(list,(o2,o1)->o1.getValue().getValue()-o2.getValue().getValue());
             List<MemberMapVo> listValue = new LinkedList();
             for(Map.Entry<String, MemberMapVo> vo : list ){
                 listValue.add(vo.getValue());
