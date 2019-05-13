@@ -1,21 +1,39 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
 import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.document.DocumentField;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -25,9 +43,17 @@ import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
 
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+
 @Service
 public class CodeEsService extends AbstractEsSearch {
 	protected static Logger logger = LoggerFactory.getLogger(CodeEsService.class);
+
+
+	@Autowired
+	@Qualifier("elClient")
+	private TransportClient eClient;
+
 	public void addScanCodeRecord(String userId, String productId, String productBatchId, String codeId,
 			String codeType, Long activitySetId, Long scanCodeTime, String organizationId) throws SuperCodeException {
 		if (StringUtils.isBlank(userId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
@@ -46,7 +72,7 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("userId", userId);
 		addParam.put("scanCodeTime", scanCodeTime);
 		addParam.put("organizationId", organizationId);
-		
+
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
 		eSearch.setType(EsType.INFO);
@@ -267,5 +293,92 @@ public class CodeEsService extends AbstractEsSearch {
 		return  (int)aggs.getCount();
 	}
 
+	/**
+	 * 查询用户的图表时间选择维度
+	 * @param toEsVo
+	 * @return
+	 */
+    public DiagramRemebermeVo searchDiagramRemberMeInfo(DiagramRemebermeVo toEsVo) throws SuperCodeException{
+		if(StringUtils.isBlank(toEsVo.getOrganizationId())){
+			throw new SuperCodeException("组织信息获取失败...");
+		}
+		if(StringUtils.isBlank(toEsVo.getUserId())){
+			throw new SuperCodeException("用户信息获取失败...");
 
+		}
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
+		QueryBuilder termOrgIdQuery = new TermQueryBuilder("organizationId",toEsVo.getOrganizationId());
+		QueryBuilder termUserIdQuery = new TermQueryBuilder("userId",toEsVo.getUserId());
+		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		SearchHit[] hits = searchResponse.getHits().getHits();
+		if(hits!=null && hits.length>0){
+			SearchHit hit = hits[0];
+			Map<String, Object> sourceAsMap = hit.getSourceAsMap();
+			Map<String, DocumentField> fields = hit.getFields();
+			DiagramRemebermeVo toWebVo = new DiagramRemebermeVo((String) sourceAsMap.get("organizationId")
+					,(String) sourceAsMap.get("userId"),(String) sourceAsMap.get("choose"));
+			return toWebVo;
+		}else {
+			toEsVo.setChoose("1");
+			return toEsVo;
+		}
+
+	}
+	/**
+	 * 记住用户的图表时间选择维度
+	 * @param toEsVo
+	 * @return
+	 */
+	public boolean indexDiagramRemberMeInfo(DiagramRemebermeVo toEsVo) throws SuperCodeException, IOException, ExecutionException, InterruptedException {
+		if(StringUtils.isBlank(toEsVo.getOrganizationId())){
+			throw new SuperCodeException("组织信息获取失败...");
+		}
+		if(StringUtils.isBlank(toEsVo.getUserId())){
+			throw new SuperCodeException("用户信息获取失败...");
+
+		}
+		if(StringUtils.isBlank(toEsVo.getChoose())){
+			throw new SuperCodeException("时间选择信息获取失败...");
+		}
+		if("123456".indexOf(toEsVo.getChoose())==-1){
+			throw new SuperCodeException("时间选择信息非法...");
+		}
+ 		String afterChoose = JSONObject.toJSONString(toEsVo);
+
+
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
+		QueryBuilder termOrgIdQuery = new TermQueryBuilder("organizationId",toEsVo.getOrganizationId());
+		QueryBuilder termUserIdQuery = new TermQueryBuilder("userId",toEsVo.getUserId());
+		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		SearchHits hits = searchResponse.getHits();
+		String id =null;
+		SearchHit[] hit = hits.getHits();
+		if(hit !=null && hit.length>0){
+			id = hit[0].getId();
+		}
+
+
+
+
+
+
+		if(StringUtils.isBlank(id)){
+			IndexResponse indexResponse = eClient.prepareIndex(EsIndex.MARKET_DIAGRAM_REMBER.getIndex(), EsType.INFO.getType())
+					.setSource(afterChoose,XContentType.JSON).get();
+			if(indexResponse.getVersion() != -1){
+				return true;
+			}
+		}else {
+			IndexRequest indexRequest = new IndexRequest(EsIndex.MARKET_DIAGRAM_REMBER.getIndex(), EsType.INFO.getType(),id).source(afterChoose,XContentType.JSON);
+			UpdateRequest updateRequest = new UpdateRequest(EsIndex.MARKET_DIAGRAM_REMBER.getIndex(), EsType.INFO.getType(),id).doc(afterChoose,XContentType.JSON).upsert(indexRequest);
+			UpdateResponse updateResponse = eClient.update(updateRequest).get();
+
+			if(updateResponse.getVersion()> 0 ){
+				return true;
+			}
+		}
+		return false;
+	}
 }

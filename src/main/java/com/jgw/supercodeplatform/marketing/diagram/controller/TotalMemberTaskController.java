@@ -165,8 +165,17 @@ public class TotalMemberTaskController extends CommonUtil {
         result.add(newMembers);
         result.add(oldMembers);
 
+        // web 格式
+        Map resultMap = new HashMap();
+        Map totalMap = new HashMap();
+        resultMap.put("total",total);
 
-        return RestResult.success("success",result);
+        resultMap.put("data",result);
+        resultMap.put("other",totalMap);
+
+
+
+        return RestResult.success("success",resultMap);
     }
     public boolean isFinished() {
         return false;
