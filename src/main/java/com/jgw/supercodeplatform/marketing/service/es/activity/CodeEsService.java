@@ -40,7 +40,7 @@ public class CodeEsService extends AbstractEsSearch {
 				|| null == activitySetId) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
-		
+
 		logger.info("es保存 userId="+userId+",productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
@@ -58,7 +58,7 @@ public class CodeEsService extends AbstractEsSearch {
 	}
 	/**
 	 * 根据产品id和批次id查询参与扫码的批次一共被扫了多少次
-	 * 
+	 *
 	 * @param productId
 	 * @param productBatchId
 	 * @return
@@ -77,7 +77,7 @@ public class CodeEsService extends AbstractEsSearch {
 
 	/**
 	 * 根据产品id和批次id查询参与扫码的批次一共被扫了多少次
-	 * 
+	 *
 	 * @param productId
 	 * @param productBatchId
 	 * @return
@@ -96,7 +96,7 @@ public class CodeEsService extends AbstractEsSearch {
 
 	/**
 	 * 根据码信息查询参与扫码的批次一共被扫了多少次
-	 * 
+	 *
 	 * @param productId
 	 * @param productBatchId
 	 * @return
@@ -114,7 +114,7 @@ public class CodeEsService extends AbstractEsSearch {
 
 	/**
 	 * 通过码和码制查询该码是不是被扫过
-	 * 
+	 *
 	 * @param codeId
 	 * @param codeType
 	 * @return
@@ -152,8 +152,8 @@ public class CodeEsService extends AbstractEsSearch {
 	public Long getExchangeCount(String key){
 		return 0L;
 	}
-	
-	
+
+
 	/**
 	 * 添加积分领取记录
 	 * @param userId
@@ -171,7 +171,7 @@ public class CodeEsService extends AbstractEsSearch {
 				|| StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(codeTypeId) || StringUtils.isBlank(organizationId)|| null== scanCodeTime) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
-		
+
 		logger.info("es保存 userId="+userId+",productId="+productId+",productBatchId="+productBatchId+",outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",organizationId="+organizationId);
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
@@ -186,9 +186,9 @@ public class CodeEsService extends AbstractEsSearch {
 		eSearch.setIndex(EsIndex.INTEGRAL);
 		eSearch.setType(EsType.INFO);
 		add(eSearch, addParam);
-		
+
 	}
-	
+
 	/**
 	 * 根据码和码制查询当前码的积分有没有被领取
 	 * @param outerCodeId
@@ -205,12 +205,12 @@ public class CodeEsService extends AbstractEsSearch {
 		eSearch.setParam(addParam);
 		return getCount(eSearch);
 	}
-	
+
     /**
-     * 
+     *
      * @param userId
      * @param scanCodeTime
-     * @param organizationId 
+     * @param organizationId
      * @return
      */
 	public Long countIntegralByUserIdAndDate(Long userId, Long scanCodeTime, String organizationId) {
@@ -239,8 +239,8 @@ public class CodeEsService extends AbstractEsSearch {
 	/**
 	 * 活动点击量
 	 * @param organizationId
-	 * @param date
-	 * @param date1
+	 * @param startDate yyyy-MM-dd
+	 * @param endDate yyyy-MM-dd
 	 * @return
 	 */
 	public Integer countOrganizationActivityClickNumByDate(String organizationId, String startDate, String endDate) {
@@ -248,7 +248,7 @@ public class CodeEsService extends AbstractEsSearch {
 
 		// out of date
 		TransportClient eClient = SpringContextUtil.getBean("elClient");
-		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKETING.getIndex(), EsType.INFO.getType());
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKETING.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
@@ -264,6 +264,10 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		// 获取count
 		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+        // 优化方向，其他结果如非必须可剔除
+        // 除去评分机制
+        // 采用过滤而非查询提高查询速度
+		// 取所需结果
 		return  (int)aggs.getCount();
 	}
 
