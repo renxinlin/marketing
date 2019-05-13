@@ -103,15 +103,23 @@ public class MemberMapTaskController extends CommonUtil {
 
         // 定义排序规则
         if(!CollectionUtils.isEmpty(map.values())){
+
 ;           List<Map.Entry<String, MemberMapVo>> list = new ArrayList<>(map.entrySet());
-            Collections.sort(list, new Comparator<Map.Entry<String, MemberMapVo>>() {
-                @Override
-                public int compare(Map.Entry<String, MemberMapVo> o1, Map.Entry<String, MemberMapVo> o2) {
-                    return o2.getValue().getValue()-o1.getValue().getValue();
-                }
-            });
-            return RestResult.success("",list);
+//            new Comparator<Map.Entry<String, MemberMapVo>>() {
+//                @Override
+//                public int compare(Map.Entry<String, MemberMapVo> o1, Map.Entry<String, MemberMapVo> o2) {
+//                    return o2.getValue().getValue()-o1.getValue().getValue();
+//                }
+//            }
+            // 按值降序
+            Collections.sort(list,(o1,o2)->o1.getValue().getValue()-o2.getValue().getValue());
+            List<MemberMapVo> listValue = new LinkedList();
+            for(Map.Entry<String, MemberMapVo> vo : list ){
+                listValue.add(vo.getValue());
+            }
+            return RestResult.success("success",listValue);
         }
+
         return RestResult.success("",new ArrayList<>() );
     }
 
