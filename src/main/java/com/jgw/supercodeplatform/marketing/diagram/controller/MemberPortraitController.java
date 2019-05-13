@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
 @RestController
-@RequestMapping("/memberPortraitTask")
+@RequestMapping("/marketing/memberPortraitTask")
 @Api(tags = "会员画像")
 
 public class MemberPortraitController extends CommonUtil {

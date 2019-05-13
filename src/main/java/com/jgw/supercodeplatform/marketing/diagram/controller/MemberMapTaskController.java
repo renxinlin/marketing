@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 // TODO 检查twoweek-year的代码
 @RestController
-@RequestMapping("/memberMapTask")
+@RequestMapping("/marketing/memberMapTask")
 @Api(tags = "会员地域分布")
 public class MemberMapTaskController extends CommonUtil {
     /**

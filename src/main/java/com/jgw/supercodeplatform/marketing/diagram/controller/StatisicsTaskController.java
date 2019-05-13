@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/statisicsTask")
+@RequestMapping("/marketing/statisicsTask")
 @Api(tags = "积分参与统计")
 public class StatisicsTaskController extends CommonUtil {
     /**

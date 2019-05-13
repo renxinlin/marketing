@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 
 @RestController
-@RequestMapping("/totalMemberTask")
+@RequestMapping("/marketing/totalMemberTask")
 @Api(tags = "累计会员数")
 
 public class TotalMemberTaskController extends CommonUtil {

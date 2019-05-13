@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/top6Task")
+@RequestMapping("/marketing/top6Task")
 @Api(tags = "TOP6")
 
 public class Top6TaskController extends CommonUtil {
