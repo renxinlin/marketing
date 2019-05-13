@@ -61,7 +61,7 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
 	 * @return
 	 */
 	@Select(" select sum(Amount) from marketing_wx_trade_order where organizationId = #{organizationId} " +
-			" TradeStatus = 1 " +
+			" and TradeStatus = 1 " +
 			" and TradeDate between #{startDate} and #{endDate} ")
 	Integer getOrganizationIdAmoutByDate(String organizationId, Date startDate, Date endDate);
 }
