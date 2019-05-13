@@ -19,10 +19,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -32,6 +34,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
@@ -76,6 +79,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	private  String registerMsgContent ;
 	@Value("${rest.user.url}")
 	private String userServiceUrl;
+	
+	@Value("${rest.code.url}")
+	private String msCodeUrl;
+	
 	@Autowired
 	private MarketingMembersMapper marketingMembersMapper;
 
@@ -122,6 +129,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	@Autowired
 	private RestTemplate restTemplate;
 
+	@Autowired
+	private RestTemplateUtil restTemplateUtil;
+	
 	@Autowired
 	private OrganizationPortraitService organizationPortraitService;
 
@@ -478,17 +488,16 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			return restResult;
 		}
 		
-		List<MarketingOrganizationPortraitListParam> mPortraits = organizationPortraitMapper
-				.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
-		if (null == mPortraits || mPortraits.isEmpty()) {
-			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
-		}
-		
 		H5LoginVO h5LoginVO =null;
 		if (StringUtils.isNotBlank(wxstate)) {
-			 h5LoginVO = loginWithWxstate(mobile, wxstate,mPortraits.size());
+			 h5LoginVO = loginWithWxstate(mobile, wxstate);
 			restResult.setResults(h5LoginVO);
 		}else {
+			List<MarketingOrganizationPortraitListParam> mPortraits = organizationPortraitMapper
+					.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
+			if (null == mPortraits || mPortraits.isEmpty()) {
+				throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
+			}
 			h5LoginVO = commonLogin(mobile, openid, organizationId,mPortraits.size());
 		}
 		try {
@@ -611,7 +620,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * @return
      * @throws SuperCodeException
      */
-	private H5LoginVO loginWithWxstate(String mobile, String wxstate, int portraitsSize) throws SuperCodeException {
+	private H5LoginVO loginWithWxstate(String mobile, String wxstate) throws SuperCodeException {
 		ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null == scanCodeInfoMO) {
 			throw new SuperCodeException("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码", 500);
@@ -626,7 +635,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			throw new SuperCodeException("该活动设置id不存在", 500);
 		}
 		String organizationId = maActivitySet.getOrganizationId();
-		H5LoginVO h5LoginVO = commonLogin(mobile, scanCodeInfoMO.getOpenId(), organizationId,portraitsSize);
+		List<MarketingOrganizationPortraitListParam> mPortraits = organizationPortraitMapper
+				.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
+		if (null == mPortraits || mPortraits.isEmpty()) {
+			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
+		}
+		H5LoginVO h5LoginVO = commonLogin(mobile, scanCodeInfoMO.getOpenId(), organizationId,mPortraits.size());
 		return h5LoginVO;
 	}
 	/**
@@ -701,6 +715,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String codeId=scanCodeInfoMO.getCodeId();
 		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
 
+		
+		boolean exist=checkCodeValid(codeId, codeTypeId);
+		if (!exist) {
+			throw  new SuperCodeException("对不起,该码不存在",500);
+		}
+		
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
 		MarketingPrizeTypeMO mPrizeTypeMO =null;
 		boolean acquireLock = false;
@@ -837,6 +857,26 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg(amount+"");
 		}
 		return restResult;
+	}
+    /**
+     * 校验抽奖码是否存在
+     * @param codeId
+     * @param codeTypeId
+     * @return
+     * @throws SuperCodeException
+     */
+	private boolean checkCodeValid(String codeId, String codeTypeId) throws SuperCodeException {
+		Map<String, String>headerparams=new HashMap<String, String>();
+		headerparams.put("token",commonUtil.getCodePlatformToken() );
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
+		logger.info("根据码和码制获取码平台码信息："+responseEntity.toString());
+		String codeBody=responseEntity.getBody();
+		JSONObject jsonCodeBody=JSONObject.parseObject(codeBody);
+		String sBatchId=jsonCodeBody.getJSONObject("results").getString("sBatchId");
+		if (StringUtils.isBlank(sBatchId)) {
+			return false;
+		}
+		return true;
 	}
 
 	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,
