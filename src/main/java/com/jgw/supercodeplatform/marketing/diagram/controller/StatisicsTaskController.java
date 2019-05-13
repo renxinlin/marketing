@@ -51,7 +51,7 @@ public class StatisicsTaskController extends CommonUtil {
         /**
          *
          * 活动点击量                                                 1，100,000
-         * 微信红包发放累计金额                                        ¥ 400,544
+         * 微信红包发放累计金额  数据库的单位是分
          * 积分发放累计数值                                             1，100,000
          * 积分兑换累计数值                                             1，100,000
          */
@@ -90,13 +90,20 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
+
+    }
+
+    private RestResult returnVo(Integer clickNum, Integer integralNum, Integer exchangeNum, Integer momeyNum) {
         StatisicsVo result                       = new StatisicsVo();
         result         .setClickNum(clickNum == null ? 0 : clickNum);
         result.setIntegralNum(integralNum == null ? 0 : integralNum);
         result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
-        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
+        // 分转元
+        result         .setMoneyNum(momeyNum == null ? 0F :(float)(momeyNum*1.0/100));
         return RestResult.success("success",result);
     }
+
 
     public RestResult twoWeekTask( ) throws SuperCodeException {
         String organizationId = getOrganizationId();
@@ -112,12 +119,8 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result                       = new StatisicsVo();
-        result         .setClickNum(clickNum == null ? 0 : clickNum);
-        result.setIntegralNum(integralNum == null ? 0 : integralNum);
-        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
-        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
-        return RestResult.success("success",result);
+        return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
+
     }
 
     public RestResult monthTask( ) throws SuperCodeException{
@@ -134,12 +137,8 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result                       = new StatisicsVo();
-        result         .setClickNum(clickNum == null ? 0 : clickNum);
-        result.setIntegralNum(integralNum == null ? 0 : integralNum);
-        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
-        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
-        return RestResult.success("success",result);
+        return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
+
     }
 
     public RestResult threeMonthTask( ) throws SuperCodeException{
@@ -156,12 +155,8 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result                       = new StatisicsVo();
-        result         .setClickNum(clickNum == null ? 0 : clickNum);
-        result.setIntegralNum(integralNum == null ? 0 : integralNum);
-        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
-        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
-        return RestResult.success("success",result);
+        return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
+
     }
 
     public RestResult halfYearTask( ) throws SuperCodeException{
@@ -179,12 +174,8 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result                       = new StatisicsVo();
-        result         .setClickNum(clickNum == null ? 0 : clickNum);
-        result.setIntegralNum(integralNum == null ? 0 : integralNum);
-        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
-        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
-        return RestResult.success("success",result);
+        return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
+
     }
 
     public RestResult yearTask( ) throws SuperCodeException{
@@ -200,12 +191,8 @@ public class StatisicsTaskController extends CommonUtil {
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
-        StatisicsVo result                       = new StatisicsVo();
-        result         .setClickNum(clickNum == null ? 0 : clickNum);
-        result.setIntegralNum(integralNum == null ? 0 : integralNum);
-        result.setExchangeNum(exchangeNum == null ? 0 : exchangeNum);
-        result         .setMoneyNum(momeyNum == null ? 0 : momeyNum);
-        return RestResult.success("success",result);
+        return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
+
     }
 
     public boolean isFinished() {
