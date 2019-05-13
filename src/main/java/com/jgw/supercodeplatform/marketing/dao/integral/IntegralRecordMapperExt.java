@@ -127,7 +127,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	 * @return
 	 */
 	@Select(" select sum(IntegralNum) from marketing_integral_record where OrganizationId = #{organizationId} " +
-			" IntegralNum < 0  " +
+			" and IntegralNum < 0  " +
 			" and CreateDate between #{startDate} and #{endDate} ")
     Integer sumOrganizationUsingIntegralByDate(String organizationId, Date startDate, Date endDate);
 	/**
@@ -137,7 +137,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	 * @param date1
 	 */
 	@Select(" select sum(IntegralNum) from marketing_integral_record where OrganizationId = #{organizationId} " +
-			" IntegralNum < 0  " +
+			" and IntegralNum < 0  " +
 			" and CreateDate between #{startDate} and #{endDate} ")
 	Integer sumOrganizationIntegralExchangeByDate(String organizationId, Date startDate, Date endDate);
 
