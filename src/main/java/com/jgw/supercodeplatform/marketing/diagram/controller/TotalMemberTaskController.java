@@ -67,177 +67,86 @@ public class TotalMemberTaskController extends CommonUtil {
     public RestResult weekTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getWeek();
-        List<String> weekString = taskTimeCalculator.getWeekString();
         // 查询日期内的数据
-        // TODO 优化，改成求和函数计算
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
 
-        // 数据格式
-        // data = [{item: '事例一',count: 40,percent: 0.4}, {item: '事例二',count: 21,percent: 0.21}];
-        List result = new ArrayList();
-        // 新用户
-        CricleVo newMembers = new CricleVo();
-        newMembers.setItem("新会员");
-        newMembers.setCount(newMemberTotal);
-        // 老用户
-        CricleVo oldMembers = new CricleVo();
-        oldMembers.setItem("老会员");
-        // 所有会员减去新会员
-        oldMembers.setCount(total-newMemberTotal);
-        result.add(newMembers);
-        result.add(oldMembers);
+        return task(registerNumMembers, total);
 
-
-        return RestResult.success("success",result);
     }
+
+
 
     public RestResult twoWeekTask( ) throws SuperCodeException {
         String organizationId = getOrganizationId();
-        List<Date> week = taskTimeCalculator.getTwoWeek();
-        List<String> weekString = taskTimeCalculator.getTwoWeekString();
+        List<Date> dateParams = taskTimeCalculator.getTwoWeek();
         // 查询日期内的数据
-        // TODO 优化，改成求和函数计算
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
+        return task(registerNumMembers, total);
 
-        // 数据格式
-        // data = [{item: '事例一',count: 40,percent: 0.4}, {item: '事例二',count: 21,percent: 0.21}];
-        List result = new ArrayList();
-        // 新用户
-        CricleVo newMembers = new CricleVo();
-        newMembers.setItem("新会员");
-        newMembers.setCount(newMemberTotal);
-        // 老用户
-        CricleVo oldMembers = new CricleVo();
-        oldMembers.setItem("老会员");
-        // 所有会员减去新会员
-        oldMembers.setCount(total-newMemberTotal);
-        result.add(newMembers);
-        result.add(oldMembers);
-
-
-        return RestResult.success("success",result);
     }
 
     public RestResult monthTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
-        List<Date> week = taskTimeCalculator.getMonth();
+        List<Date> dateParams = taskTimeCalculator.getMonth();
         List<String> weekString = taskTimeCalculator.getMonthString();
         // 查询日期内的数据
-        // TODO 优化，改成求和函数计算
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
-
-
-        // 数据格式
-        // data = [{item: '事例一',count: 40,percent: 0.4}, {item: '事例二',count: 21,percent: 0.21}];
-        List result = new ArrayList();
-        // 新用户
-        CricleVo newMembers = new CricleVo();
-        newMembers.setItem("新会员");
-        newMembers.setCount(newMemberTotal);
-        // 老用户
-        CricleVo oldMembers = new CricleVo();
-        oldMembers.setItem("老会员");
-        // 所有会员减去新会员
-        oldMembers.setCount(total-newMemberTotal);
-        result.add(newMembers);
-        result.add(oldMembers);
-
-
-        return RestResult.success("success",result);    }
+        return task(registerNumMembers, total);
+   }
 
     public RestResult threeMonthTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
-        List<Date> week = taskTimeCalculator.getThreeMonth();
-        List<String> weekString = taskTimeCalculator.getThreeMonthString();
-        // 查询日期内的数据
+        List<Date> dateParams = taskTimeCalculator.getThreeMonth();
+         // 查询日期内的数据
         // TODO 优化，改成求和函数计算
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
-
-        // 数据格式
-        // data = [{item: '事例一',count: 40,percent: 0.4}, {item: '事例二',count: 21,percent: 0.21}];
-        List result = new ArrayList();
-        // 新用户
-        CricleVo newMembers = new CricleVo();
-        newMembers.setItem("新会员");
-        newMembers.setCount(newMemberTotal);
-        // 老用户
-        CricleVo oldMembers = new CricleVo();
-        oldMembers.setItem("老会员");
-        // 所有会员减去新会员
-        oldMembers.setCount(total-newMemberTotal);
-        result.add(newMembers);
-        result.add(oldMembers);
-
-
-        return RestResult.success("success",result);     }
+        return task(registerNumMembers, total);
+    }
 
     public RestResult halfYearTask( ) throws SuperCodeException{
 
         String organizationId = getOrganizationId();
-        List<Date> week = taskTimeCalculator.getHalfYear();
-        List<String> weekString = taskTimeCalculator.getHalfYearString();
-        // 查询日期内的数据
-        // TODO 优化，改成求和函数计算
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        List<Date> dateParams = taskTimeCalculator.getHalfYear();
+         // 查询日期内的数据
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
-        int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
-
-
-        // 数据格式
-        // data = [{item: '事例一',count: 40,percent: 0.4}, {item: '事例二',count: 21,percent: 0.21}];
-        List result = new ArrayList();
-        // 新用户
-        CricleVo newMembers = new CricleVo();
-        newMembers.setItem("新会员");
-        newMembers.setCount(newMemberTotal);
-        // 老用户
-        CricleVo oldMembers = new CricleVo();
-        oldMembers.setItem("老会员");
-        // 所有会员减去新会员
-        oldMembers.setCount(total-newMemberTotal);
-        result.add(newMembers);
-        result.add(oldMembers);
-
-
-        return RestResult.success("success",result);     }
+        return task(registerNumMembers, total);
+    }
 
     public RestResult yearTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
-        List<Date> week = taskTimeCalculator.getYear();
-        List<String> weekString = taskTimeCalculator.getYearString();
-        // 查询日期内的数据
-        // TODO 优化，改成求和函数计算
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        List<Date> dateParams = taskTimeCalculator.getYear();
+         // 查询日期内的数据
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
         Integer total = service.getAllMarketingMembersCount(conditions);
+        return task(registerNumMembers, total);
+    }
+    private RestResult task(List<MarketingMembers> registerNumMembers, Integer total) {
         int newMemberTotal = CollectionUtils.isEmpty(registerNumMembers)  ? 0:registerNumMembers.size() ;
 
 
@@ -257,8 +166,8 @@ public class TotalMemberTaskController extends CommonUtil {
         result.add(oldMembers);
 
 
-        return RestResult.success("success",result);       }
-
+        return RestResult.success("success",result);
+    }
     public boolean isFinished() {
         return false;
     }
