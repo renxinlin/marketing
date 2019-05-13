@@ -23,7 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/top6Task")
+@RequestMapping("/marketing/top6Task")
 @Api(tags = "TOP6")
 
 public class Top6TaskController extends CommonUtil {
@@ -72,25 +72,8 @@ public class Top6TaskController extends CommonUtil {
         List<Date> date = taskTimeCalculator.getWeek();
         List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
         Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
-        List<CricleVo> cricleVos = new LinkedList();
+        return task(top6Dtos,all);
 
-        if(!CollectionUtils.isEmpty(top6Dtos)){
-            int  sum  = 0;
-            for(IntegralRecord dto : top6Dtos){
-                // vo处理
-                CricleVo vo                 = new CricleVo();
-                vo            .setItem(dto.getProductName());
-                vo           .setCount(dto.getIntegralNum());
-                double percent=dto.getIntegralNum()*1.00/all;
-                vo                      .setPercent(percent);
-                vo                .setPercentStr(percent+"");
-                sum                   +=dto.getIntegralNum();
-                cricleVos                           .add(vo);
-            }
-
-        }
-
-        return RestResult.success("success",cricleVos);
     }
 
     public RestResult twoWeekTask( ) throws SuperCodeException {
@@ -98,25 +81,8 @@ public class Top6TaskController extends CommonUtil {
         List<Date> date = taskTimeCalculator.getTwoWeek();
         List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
         Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
-        List<CricleVo> cricleVos = new LinkedList();
+        return task(top6Dtos,all);
 
-        if(!CollectionUtils.isEmpty(top6Dtos)){
-            int  sum  = 0;
-            for(IntegralRecord dto : top6Dtos){
-                // vo处理
-                CricleVo vo                 = new CricleVo();
-                vo            .setItem(dto.getProductName());
-                vo           .setCount(dto.getIntegralNum());
-                double percent=dto.getIntegralNum()*1.00/all;
-                vo                      .setPercent(percent);
-                vo                .setPercentStr(percent+"");
-                sum                   +=dto.getIntegralNum();
-                cricleVos                           .add(vo);
-            }
-
-        }
-
-        return RestResult.success("success",cricleVos);
     }
 
     public RestResult monthTask( ) throws SuperCodeException{
@@ -124,6 +90,13 @@ public class Top6TaskController extends CommonUtil {
         List<Date> date = taskTimeCalculator.getMonth();
         List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
         Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
+
+        return task(top6Dtos,all);
+
+
+    }
+
+    private RestResult task(List<IntegralRecord> top6Dtos, Integer all) {
         List<CricleVo> cricleVos = new LinkedList();
 
         if(!CollectionUtils.isEmpty(top6Dtos)){
@@ -150,25 +123,8 @@ public class Top6TaskController extends CommonUtil {
         List<Date> date = taskTimeCalculator.getThreeMonth();
         List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
         Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
-        List<CricleVo> cricleVos = new LinkedList();
+        return task(top6Dtos,all);
 
-        if(!CollectionUtils.isEmpty(top6Dtos)){
-            int  sum  = 0;
-            for(IntegralRecord dto : top6Dtos){
-                // vo处理
-                CricleVo vo                 = new CricleVo();
-                vo            .setItem(dto.getProductName());
-                vo           .setCount(dto.getIntegralNum());
-                double percent=dto.getIntegralNum()*1.00/all;
-                vo                      .setPercent(percent);
-                vo                .setPercentStr(percent+"");
-                sum                   +=dto.getIntegralNum();
-                cricleVos                           .add(vo);
-            }
-
-        }
-
-        return RestResult.success("success",cricleVos);
     }
 
     public RestResult halfYearTask( ) throws SuperCodeException{
@@ -177,25 +133,8 @@ public class Top6TaskController extends CommonUtil {
         List<Date> date = taskTimeCalculator.getHalfYear();
         List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
         Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
-        List<CricleVo> cricleVos = new LinkedList();
+        return task(top6Dtos,all);
 
-        if(!CollectionUtils.isEmpty(top6Dtos)){
-            int  sum  = 0;
-            for(IntegralRecord dto : top6Dtos){
-                // vo处理
-                CricleVo vo                 = new CricleVo();
-                vo            .setItem(dto.getProductName());
-                vo           .setCount(dto.getIntegralNum());
-                double percent=dto.getIntegralNum()*1.00/all;
-                vo                      .setPercent(percent);
-                vo                .setPercentStr(percent+"");
-                sum                   +=dto.getIntegralNum();
-                cricleVos                           .add(vo);
-            }
-
-        }
-
-        return RestResult.success("success",cricleVos);
     }
 
     public RestResult yearTask( ) throws SuperCodeException{
@@ -203,25 +142,8 @@ public class Top6TaskController extends CommonUtil {
         List<Date> date = taskTimeCalculator.getYear();
         List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
         Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
-        List<CricleVo> cricleVos = new LinkedList();
+        return task(top6Dtos,all);
 
-        if(!CollectionUtils.isEmpty(top6Dtos)){
-            int  sum  = 0;
-            for(IntegralRecord dto : top6Dtos){
-                // vo处理
-                CricleVo vo                 = new CricleVo();
-                vo            .setItem(dto.getProductName());
-                vo           .setCount(dto.getIntegralNum());
-                double percent=dto.getIntegralNum()*1.00/all;
-                vo                      .setPercent(percent);
-                vo                .setPercentStr(percent+"");
-                sum                   +=dto.getIntegralNum();
-                cricleVos                           .add(vo);
-            }
-
-        }
-
-        return RestResult.success("success",cricleVos);
     }
 
     public boolean isFinished() {

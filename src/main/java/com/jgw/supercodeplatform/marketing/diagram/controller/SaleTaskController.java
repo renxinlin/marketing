@@ -22,7 +22,7 @@ import java.text.ParseException;
 import java.util.*;
 
 @RestController
-@RequestMapping("/saleTask")
+@RequestMapping("/marketing/saleTask")
 @Api(tags = "总产品销售额趋势")
 public class SaleTaskController extends CommonUtil {
     /**
