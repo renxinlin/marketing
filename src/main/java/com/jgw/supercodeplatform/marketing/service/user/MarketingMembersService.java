@@ -872,7 +872,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		logger.info("根据码和码制获取码平台码信息："+responseEntity.toString());
 		String codeBody=responseEntity.getBody();
 		JSONObject jsonCodeBody=JSONObject.parseObject(codeBody);
-		String sBatchId=jsonCodeBody.getString("sBatchId");
+		String sBatchId=jsonCodeBody.getJSONObject("results").getString("sBatchId");
 		if (StringUtils.isBlank(sBatchId)) {
 			return false;
 		}
