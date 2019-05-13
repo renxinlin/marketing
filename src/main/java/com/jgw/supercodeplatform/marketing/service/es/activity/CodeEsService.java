@@ -1,31 +1,26 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
 import org.apache.commons.lang.StringUtils;
-import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.search.stats.SearchStats;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.sum.SumAggregationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
+import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
@@ -34,10 +29,10 @@ import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
 public class CodeEsService extends AbstractEsSearch {
 	protected static Logger logger = LoggerFactory.getLogger(CodeEsService.class);
 	public void addScanCodeRecord(String userId, String productId, String productBatchId, String codeId,
-			String codeType, Long activitySetId, Long scanCodeTime) throws SuperCodeException {
+			String codeType, Long activitySetId, Long scanCodeTime, String organizationId) throws SuperCodeException {
 		if (StringUtils.isBlank(userId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
-				|| null == activitySetId) {
+				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
 		
@@ -50,7 +45,8 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("activitySetId", activitySetId);
 		addParam.put("userId", userId);
 		addParam.put("scanCodeTime", scanCodeTime);
-
+		addParam.put("organizationId", organizationId);
+		
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
 		eSearch.setType(EsType.INFO);

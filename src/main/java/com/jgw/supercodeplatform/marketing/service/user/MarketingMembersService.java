@@ -748,7 +748,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				marketingPrizeType.setWiningNum(mPrizeTypeMO.getWiningNum());
 				mMarketingPrizeTypeMapper.update(marketingPrizeType);
 
-				codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp);
+				codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp,organizationId);
 				logger.info("领取方法====：抽奖数据已保存到es");
 			}else {
 				logger.error("{锁获取失败:" +activitySetId + codeId +codeTypeId+ ",请检查}");

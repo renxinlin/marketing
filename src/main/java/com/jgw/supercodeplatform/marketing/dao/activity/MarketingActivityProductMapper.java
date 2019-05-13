@@ -1,12 +1,13 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
+import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
-public interface MarketingActivityProductMapper {
+public interface MarketingActivityProductMapper extends CommonSql{
 
 	String selectSql = " Id as id, ActivitySetId as activitySetId,CodeType as codeType,ProductBatchId as productBatchId,"
 			+ " ProductBatchName as productBatchName,ProductId as productId,"
@@ -48,4 +49,13 @@ public interface MarketingActivityProductMapper {
 
 	@Select("SELECT  ap.ProductBatchId FROM marketing_activity_product ap left join marketing_activity_set aset on ap.ActivitySetId=aset.Id WHERE aset.OrganizationId = #{organizationId} ")
 	List<String> usedProductBatchIds(@Param("organizationId")String organizationId);
+
+    @Delete(startScript
+    		+"delete FROM marketing_activity_product where "
+    		+" <foreach item='item' collection='list' separator='or' open='(' close=')' index=''>" + 
+    		"   ProductId=#{item.productId} and ProductBatchId=#{item.productBatchId}" + 
+    		" </foreach>"
+    		+endScript
+    		)
+	void batchDeleteByProBatchs(List<MarketingActivityProduct> mList);
 }
