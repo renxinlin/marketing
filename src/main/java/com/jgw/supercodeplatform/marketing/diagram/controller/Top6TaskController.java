@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @RestController
@@ -107,9 +108,12 @@ public class Top6TaskController extends CommonUtil {
                 integralNum  += dto.getIntegralNum() == null ? 0 : dto.getIntegralNum();
                 vo            .setItem(dto.getProductName());
                 vo           .setCount(dto.getIntegralNum());
+
                 double percent=dto.getIntegralNum()*1.00/all;
-                vo                      .setPercent(percent);
-                vo                .setPercentStr(percent+"");
+                BigDecimal percentBD = new BigDecimal(percent);
+                double percentDouble = percentBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                vo                      .setPercent(percentDouble);
+                vo                .setPercentStr(percentDouble+"");
                 sum                   +=dto.getIntegralNum();
                 cricleVos                           .add(vo);
             }
