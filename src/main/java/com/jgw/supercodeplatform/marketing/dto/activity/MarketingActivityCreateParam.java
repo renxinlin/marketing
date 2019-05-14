@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
-@ApiModel(value = "整个活动创建model")
+@ApiModel(value = "整个活动创建/编辑model")
 public class MarketingActivityCreateParam {
 
     @ApiModelProperty(value = "活动基础参数")
@@ -17,8 +17,8 @@ public class MarketingActivityCreateParam {
 	@ApiModelProperty(value = "领取页参数")
     private MarketingReceivingPageParam mReceivingPageParam;
 	
-	@ApiModelProperty(value = "中奖页页参数")
-    private MarketingWinningPageParam mWinningPageParam;
+//	@ApiModelProperty(value = "中奖页页参数")
+//    private MarketingWinningPageParam mWinningPageParam;
 	
 	@ApiModelProperty(value = "活动设置产品参数")
 	private List<MarketingActivityProductParam> mProductParams;
@@ -37,13 +37,13 @@ public class MarketingActivityCreateParam {
 		this.mReceivingPageParam = mReceivingPageParam;
 	}
 
-	public MarketingWinningPageParam getmWinningPageParam() {
-		return mWinningPageParam;
-	}
-
-	public void setmWinningPageParam(MarketingWinningPageParam mWinningPageParam) {
-		this.mWinningPageParam = mWinningPageParam;
-	}
+//	public MarketingWinningPageParam getmWinningPageParam() {
+//		return mWinningPageParam;
+//	}
+//
+//	public void setmWinningPageParam(MarketingWinningPageParam mWinningPageParam) {
+//		this.mWinningPageParam = mWinningPageParam;
+//	}
 
 	public List<MarketingActivityProductParam> getmProductParams() {
 		return mProductParams;

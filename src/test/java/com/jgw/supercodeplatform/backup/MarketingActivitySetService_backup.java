@@ -104,7 +104,7 @@ public class MarketingActivitySetService_backup  {
 		//获取领取页参数
 		MarketingReceivingPageParam mReceivingPageParam=activitySetParam.getmReceivingPageParam();
 		//获取中奖页参数
-		MarketingWinningPageParam mWinningPageParam=activitySetParam.getmWinningPageParam();
+//		MarketingWinningPageParam mWinningPageParam=activitySetParam.getmWinningPageParam();
 		//获取活动实体
 		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getmActivitySetParam());
 
@@ -227,7 +227,7 @@ public class MarketingActivitySetService_backup  {
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
 
 		//保存中奖页
-		saveWinningPage(mWinningPageParam,activitySetId);
+//		saveWinningPage(mWinningPageParam,activitySetId);
 
 		//保存领取页
 		saveReceivingPage(mReceivingPageParam,activitySetId);
