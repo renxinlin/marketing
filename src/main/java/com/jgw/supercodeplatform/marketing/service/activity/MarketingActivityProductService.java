@@ -10,6 +10,8 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProduct
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
+
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +99,10 @@ public class MarketingActivityProductService {
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
 		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
 		String body=responseEntity.getBody();
-		return JSONObject.parseObject(body);
+		JSONObject json=JSONObject.parseObject(body);
+		if (null==json.getString("results")) {
+			json.put("results", new ArrayList<>());
+		}
+		return json;
 	}
 }

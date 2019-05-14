@@ -104,7 +104,7 @@ public class MarketingActivitySetService  {
 		//获取领取页参数
 		MarketingReceivingPageParam mReceivingPageParam=activitySetParam.getmReceivingPageParam();
 		//获取中奖页参数
-		MarketingWinningPageParam mWinningPageParam=activitySetParam.getmWinningPageParam();
+//		MarketingWinningPageParam mWinningPageParam=activitySetParam.getmWinningPageParam();
 		//获取活动实体
 		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getmActivitySetParam());
 
@@ -121,75 +121,11 @@ public class MarketingActivitySetService  {
 		if("".equals(mActivitySet.getActivityEndDate())){
             mActivitySet.setActivityEndDate(null);
         }
-		//校验奖次信息
-		if (null==mPrizeTypeParams || mPrizeTypeParams.isEmpty()) {
-			throw new SuperCodeException("奖次信息不能为空", 500);
-		}else {
-			Set<String> set = new HashSet<String>();
-			for (MarketingPrizeTypeParam prizeTypeParam:mPrizeTypeParams){
-				Byte awardType=prizeTypeParam.getAwardType();
-				//如果奖项类型是空则是之前的红包活动没有奖项设置的
-				if (null==awardType) {
-					Byte randomAmont=prizeTypeParam.getIsRrandomMoney();
-					if (null==randomAmont) {
-						throw new SuperCodeException("是否固定金额不能为空", 500);
-					}else if (randomAmont.equals((byte)0)) {
-						//如果固定金额则不能小于1大于5000
-						Float amount=prizeTypeParam.getPrizeAmount();
-						if (null==amount|| amount<1 ||amount>5000) {
-							throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
-						}
-						prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount());//转换为分
-					}else if (randomAmont.equals((byte)1)) {
-						//如果是随机金额则校验随机金额取值
-						Float lowrand=prizeTypeParam.getLowRand();
-						Float highrand=prizeTypeParam.getHighRand();
-						if (null==lowrand || null==highrand || lowrand >=highrand) {
-							throw new SuperCodeException("随机金额取值范围不能为空且低取值不能大于等于高取值", 500);
-						}
-						if (lowrand<1 || highrand>5000) {
-							throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在1-5000以内", 500);
-						}
-					}
-				}else {
-				   	//奖项类型不为空则为新活动
-					switch (awardType) {
-					case 1://实物
-						
-						break;
-					case 2://卡券
-						String cardLink=prizeTypeParam.getCardLink();
-						if (StringUtils.isBlank(cardLink)) {
-							throw new SuperCodeException("卡券类型奖次卡券不能为空", 500);
-						}
-						break;
-					case 3://积分
-						Integer awardIntegralNum= prizeTypeParam.getAwardIntegralNum();
-						if (null==awardIntegralNum) {
-							throw new SuperCodeException("积分类型奖次奖励积分不能为空", 500);
-						}
-						break;
-					case 9://其它
-						
-						break;
-					default:
-						break;
-					}
-					
-				}
-				
-				Integer prizeProbability=prizeTypeParam.getPrizeProbability();
-				if (null==prizeProbability || prizeProbability<0 || prizeProbability>100) {
-					throw new SuperCodeException("概率参数非法prizeProbability="+prizeProbability, 500);
-				}
-				
-				
-				set.add(prizeTypeParam.getPrizeTypeName());
-			}
-			if (set.size()<mPrizeTypeParams.size()) {
-				throw new SuperCodeException("奖项名称不能重复", 500);
-			}
-		}
+		
+		//检查奖次类型
+		prizeTypeCheck(mPrizeTypeParams);
+		
+		
 		String organizationId=commonUtil.getOrganizationId();
 		String organizationName=commonUtil.getOrganizationName();
 
@@ -259,7 +195,7 @@ public class MarketingActivitySetService  {
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
 
 		//保存中奖页
-		saveWinningPage(mWinningPageParam,activitySetId);
+//		saveWinningPage(mWinningPageParam,activitySetId);
 
 		//保存领取页
 		saveReceivingPage(mReceivingPageParam,activitySetId);
@@ -272,7 +208,98 @@ public class MarketingActivitySetService  {
 		restResult.setMsg("成功");
 		return restResult;
 	}
-
+	private void prizeTypeCheck(List<MarketingPrizeTypeParam> mPrizeTypeParams) throws SuperCodeException {
+		//校验奖次信息
+		if (null==mPrizeTypeParams || mPrizeTypeParams.isEmpty()) {
+			throw new SuperCodeException("奖次信息不能为空", 500);
+		}else {
+			Set<String> set = new HashSet<String>();
+			for (MarketingPrizeTypeParam prizeTypeParam:mPrizeTypeParams){
+				Byte awardType=prizeTypeParam.getAwardType();
+				//如果奖项类型是空则是之前的红包活动没有奖项设置的
+				if (null==awardType) {
+					Byte randomAmont=prizeTypeParam.getIsRrandomMoney();
+					if (null==randomAmont) {
+						throw new SuperCodeException("是否固定金额不能为空", 500);
+					}else if (randomAmont.equals((byte)0)) {
+						//如果固定金额则不能小于1大于5000
+						Float amount=prizeTypeParam.getPrizeAmount();
+						if (null==amount|| amount<1 ||amount>5000) {
+							throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
+						}
+						prizeTypeParam.setPrizeAmount(prizeTypeParam.getPrizeAmount());//转换为分
+					}else if (randomAmont.equals((byte)1)) {
+						//如果是随机金额则校验随机金额取值
+						Float lowrand=prizeTypeParam.getLowRand();
+						Float highrand=prizeTypeParam.getHighRand();
+						if (null==lowrand || null==highrand || lowrand >=highrand) {
+							throw new SuperCodeException("随机金额取值范围不能为空且低取值不能大于等于高取值", 500);
+						}
+						if (lowrand<1 || highrand>5000) {
+							throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在1-5000以内", 500);
+						}
+					}
+				}else {
+				   	//奖项类型不为空则为新活动
+					switch (awardType) {
+					case 1://实物
+						
+						break;
+					case 2://卡券
+						String cardLink=prizeTypeParam.getCardLink();
+						if (StringUtils.isBlank(cardLink)) {
+							throw new SuperCodeException("卡券类型奖次卡券不能为空", 500);
+						}
+						break;
+					case 3://积分
+						Integer awardIntegralNum= prizeTypeParam.getAwardIntegralNum();
+						if (null==awardIntegralNum) {
+							throw new SuperCodeException("积分类型奖次奖励积分不能为空", 500);
+						}
+						break;
+					case 9://其它
+						
+						break;
+					default:
+						break;
+					}
+				}
+				Integer prizeProbability=prizeTypeParam.getPrizeProbability();
+				if (null==prizeProbability || prizeProbability<0 || prizeProbability>100) {
+					throw new SuperCodeException("概率参数非法prizeProbability="+prizeProbability, 500);
+				}
+				set.add(prizeTypeParam.getPrizeTypeName());
+			}
+			if (set.size()<mPrizeTypeParams.size()) {
+				throw new SuperCodeException("奖项名称不能重复", 500);
+			}
+		}
+	}
+	
+	
+	/**
+	 * 编辑的规则是前端传了参数就更新 没传就不做操作
+	 * @param activitySetParam
+	 * @return
+	 * @throws SuperCodeException 
+	 */
+	public RestResult<String> update(MarketingActivityCreateParam activitySetParam) throws SuperCodeException {
+		List<MarketingChannelParam> mChannelParams=activitySetParam.getmChannelParams();
+		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
+		//获取奖次参数
+		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
+		//获取领取页参数
+		MarketingReceivingPageParam mReceivingPageParam=activitySetParam.getmReceivingPageParam();
+		//获取中奖页参数
+//		MarketingWinningPageParam mWinningPageParam=activitySetParam.getmWinningPageParam();
+		//获取活动实体
+		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getmActivitySetParam());
+		
+		return null;
+	}
+	
+	
+	
 	private MarketingActivitySet convertActivitySet(MarketingActivitySetParam activitySetParam) throws SuperCodeException {
 		String title=activitySetParam.getActivityTitle();
 		if (StringUtils.isBlank(title)) {
@@ -785,8 +812,6 @@ public class MarketingActivitySetService  {
 		}
 
 	}
-
-
 
 
 	/**
