@@ -179,18 +179,13 @@ public class MemberPortraitController extends CommonUtil {
         // 生日
         CricleVo[] agex0 = new CricleVo[10];
         int i = 0;
+        // 设置ITEM [0-10,10-20...90-100]共十个元素
         for(int preI=0;preI<100;preI+=10) {
             CricleVo age = new CricleVo();
             age.setItem(preI+SPLIT+(preI+10));
             agex0[i]=age;
-            if(preI == 100){
-                age.setItem("其他");
-
-            }
             i++;
         }
-
-
 
         // 100岁以上和0岁以下以及其他都归属其他
         CricleVo otherage = new CricleVo();

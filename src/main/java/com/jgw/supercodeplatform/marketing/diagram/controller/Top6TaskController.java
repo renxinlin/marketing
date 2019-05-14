@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/marketing/top6Task")
@@ -70,7 +68,9 @@ public class Top6TaskController extends CommonUtil {
     public RestResult weekTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> date = taskTimeCalculator.getWeek();
+        // 获取top6数据
         List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
+        // 获取所有数据
         Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
         return task(top6Dtos,all);
 
@@ -98,12 +98,13 @@ public class Top6TaskController extends CommonUtil {
 
     private RestResult task(List<IntegralRecord> top6Dtos, Integer all) {
         List<CricleVo> cricleVos = new LinkedList();
-
+        int integralNum = 0;
         if(!CollectionUtils.isEmpty(top6Dtos)){
             int  sum  = 0;
             for(IntegralRecord dto : top6Dtos){
                 // vo处理
                 CricleVo vo                 = new CricleVo();
+                integralNum  += dto.getIntegralNum() == null ? 0 : dto.getIntegralNum();
                 vo            .setItem(dto.getProductName());
                 vo           .setCount(dto.getIntegralNum());
                 double percent=dto.getIntegralNum()*1.00/all;
@@ -114,8 +115,12 @@ public class Top6TaskController extends CommonUtil {
             }
 
         }
-
-        return RestResult.success("success",cricleVos);
+        Map map = new HashMap<>();
+        Map integralNumMap = new HashMap<>();
+        integralNumMap.put("integralNum",integralNum);
+        map.put("data",cricleVos);
+        map.put("other",integralNumMap);
+        return RestResult.success("success",map);
     }
 
     public RestResult threeMonthTask( ) throws SuperCodeException{

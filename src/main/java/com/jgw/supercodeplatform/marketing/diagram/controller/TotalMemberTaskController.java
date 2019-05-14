@@ -67,12 +67,13 @@ public class TotalMemberTaskController extends CommonUtil {
     public RestResult weekTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getWeek();
-        // 查询日期内的数据
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
+        // 获取所有
         Integer total = service.getAllMarketingMembersCount(conditions);
+        // 查询日期内的数据
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
 
 
         return task(registerNumMembers, total);
@@ -165,8 +166,17 @@ public class TotalMemberTaskController extends CommonUtil {
         result.add(newMembers);
         result.add(oldMembers);
 
+        // web 格式
+        Map resultMap = new HashMap();
+        Map totalMap = new HashMap();
+        resultMap.put("total",total);
 
-        return RestResult.success("success",result);
+        resultMap.put("data",result);
+        resultMap.put("other",totalMap);
+
+
+
+        return RestResult.success("success",resultMap);
     }
     public boolean isFinished() {
         return false;

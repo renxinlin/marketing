@@ -4,7 +4,8 @@ package com.jgw.supercodeplatform.marketing.enums;
  * @author Created by jgw136 on 2018/04/27.
  */
 public enum  EsIndex {
-    MARKETING("marketing"),INTEGRAL("integral")
+    MARKETING("marketing"),INTEGRAL("integral"),MARKET_DIAGRAM_REMBER("marketdiagram");
+
     ;
 
     private String index;
