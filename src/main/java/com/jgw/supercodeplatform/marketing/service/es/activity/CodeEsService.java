@@ -320,7 +320,6 @@ public class CodeEsService extends AbstractEsSearch {
 					,(String) sourceAsMap.get("userId"),(String) sourceAsMap.get("choose"));
 			return toWebVo;
 		}else {
-			toEsVo.setChoose("1");
 			return toEsVo;
 		}
 

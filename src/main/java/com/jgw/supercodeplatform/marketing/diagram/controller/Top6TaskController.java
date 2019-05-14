@@ -68,7 +68,9 @@ public class Top6TaskController extends CommonUtil {
     public RestResult weekTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> date = taskTimeCalculator.getWeek();
+        // 获取top6数据
         List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
+        // 获取所有数据
         Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
         return task(top6Dtos,all);
 

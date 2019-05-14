@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.diagram.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.controller.common.CommonController;
 import com.jgw.supercodeplatform.marketing.diagram.enums.QueryEnum;
 import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
@@ -27,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/marketing/rememberMe")
 @Api(tags = "记住选择")
-public class RememberMeController extends CommonController {
+public class RememberMeController extends CommonUtil {
 
     @Autowired
     private CodeEsService service;
@@ -43,7 +44,7 @@ public class RememberMeController extends CommonController {
         DiagramRemebermeVo toWebVo = service.searchDiagramRemberMeInfo(toEsVo);
         if(toWebVo == null || StringUtils.isBlank(toWebVo.getChoose())){
             // 默认一周
-            toWebVo = new DiagramRemebermeVo(null,null, QueryEnum.WEEK.getStatus());
+            toWebVo.setChoose(QueryEnum.WEEK.getStatus());
         }
         return RestResult.success("success",toWebVo);
 
