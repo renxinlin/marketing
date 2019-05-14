@@ -42,8 +42,10 @@ public class RememberMeController extends CommonUtil {
         String userId = userLoginCache.getUserId();
         DiagramRemebermeVo toEsVo = new DiagramRemebermeVo(organizationId,userId,null);
         DiagramRemebermeVo toWebVo = service.searchDiagramRemberMeInfo(toEsVo);
-        if(toWebVo == null || StringUtils.isBlank(toWebVo.getChoose())){
+        if(StringUtils.isBlank(toWebVo.getChoose())){
             // 默认一周
+            toWebVo.setOrganizationId(null);
+            toWebVo.setUserId(null);
             toWebVo.setChoose(QueryEnum.WEEK.getStatus());
         }
         return RestResult.success("success",toWebVo);
