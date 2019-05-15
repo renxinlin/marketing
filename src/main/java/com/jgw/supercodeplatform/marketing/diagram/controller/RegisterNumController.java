@@ -26,7 +26,7 @@ import java.util.*;
  * 后三个是区间计算
  */
 @RestController
-@RequestMapping("/registerNumTask")
+@RequestMapping("/marketing/registerNumTask")
 @Api(tags = "招募会员海报注册数")
 public class RegisterNumController extends CommonUtil {
     /**
