@@ -24,6 +24,7 @@ import java.util.*;
 /**
  * 前三个是点计算
  * 后三个是区间计算
+ *
  */
 @RestController
 @RequestMapping("/marketing/registerNumTask")
@@ -35,7 +36,10 @@ public class RegisterNumController extends CommonUtil {
     private static final Enum type = TaskTypeEnum.REGISTER_NUM;
     @Autowired
     private TaskTimeCalculator taskTimeCalculator;
-
+    // TODO 会员角色
+    // todo 产品活动类型
+    //
+    // 优化代码
 
     @Autowired
     private MarketingMembersService service;
@@ -212,12 +216,17 @@ public class RegisterNumController extends CommonUtil {
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
         Map<String, SerialVo> threeMonthVo = new TreeMap<>();
-        for(String weekDayPoint : threeMonthString){
+
+        for(int i =0;i<threeMonthString.size();i++){
             SerialVo vo = new SerialVo();
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
             // 其中最后一个区间<=7天
-            vo.setTime(weekDayPoint);
-            threeMonthVo.put(weekDayPoint,vo);
+            try {
+                vo.setTime(threeMonthString.get(i)+threeMonthString.get(i+1));
+            } catch (Exception e) {
+                vo.setTime(threeMonthString.get(i));
+            }
+            threeMonthVo.put(threeMonthString.get(i),vo);
         }
         // 移除最后一个数据，最后一个数据的区间已经加载在i-1上
         threeMonthVo.remove(threeMonthString.get(threeMonthString.size()-1));
@@ -255,13 +264,19 @@ public class RegisterNumController extends CommonUtil {
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
         Map<String, SerialVo> halfYearVo = new TreeMap<>();
-        for(String weekDayPoint : halfYearString){
+
+        for(int i =0;i<halfYearString.size();i++){
             SerialVo vo = new SerialVo();
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
             // 其中最后一个区间<=7天
-            vo.setTime(weekDayPoint);
-            halfYearVo.put(weekDayPoint,vo);
+            try {
+                vo.setTime(halfYearString.get(i)+halfYearString.get(i+1));
+            } catch (Exception e) {
+                vo.setTime(halfYearString.get(i));
+            }
+            halfYearVo.put(halfYearString.get(i),vo);
         }
+
         // 移除最后一个数据，最后一个数据的区间已经加载在i-1上
         halfYearVo.remove(halfYearString.get(halfYearString.size()-1));
 
@@ -298,13 +313,19 @@ public class RegisterNumController extends CommonUtil {
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
         Map<String, SerialVo> yearVo = new TreeMap<>();
-        for(String weekDayPoint : yearString){
+
+        for(int i =0;i<yearString.size();i++){
             SerialVo vo = new SerialVo();
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
             // 其中最后一个区间<=7天
-            vo.setTime(weekDayPoint);
-            yearVo.put(weekDayPoint,vo);
+            try {
+                vo.setTime(yearString.get(i)+yearString.get(i+1));
+            } catch (Exception e) {
+                vo.setTime(yearString.get(i));
+            }
+            yearVo.put(yearString.get(i),vo);
         }
+
         // 移除最后一个数据，最后一个数据的区间已经加载在i-1上
         yearVo.remove(yearString.get(yearString.size()-1));
 
