@@ -729,7 +729,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				String opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
 				
 				//校验码有没有被扫过
-				Long codeCount=codeEsService.countByCode(codeId, codeTypeId);
+				Long codeCount=codeEsService.countByCode(codeId, codeTypeId,0);
 				logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
 				if (null==codeCount ||codeCount.intValue()<1) {
 					//校验有没有设置活动用户扫码量限制
@@ -749,7 +749,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					return restResult;
 				}
 
-				codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp,organizationId);
+				codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, scanCodeInfoMO.getProductId(), scanCodeInfoMO.getProductBatchId(), codeId, codeTypeId, activitySetId,nowTtimeStemp,organizationId,0);
 				logger.info("领取方法====：抽奖数据已保存到es");
 			}else {
 				logger.error("{锁获取失败:" +activitySetId + codeId +codeTypeId+ ",请检查}");
@@ -957,6 +957,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			throw new SuperCodeException("日期未选择...");
 		}
 		return marketingMembersMapper.getOrganizationAllMemberWithDate(organizationId,startDate,endDate);
+	}
+
+	public RestResult<String> guideLottery(String wxstate) {
+		return null;
 	}
 }
 
