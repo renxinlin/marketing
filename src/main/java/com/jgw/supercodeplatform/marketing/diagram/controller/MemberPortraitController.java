@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -254,12 +255,22 @@ public class MemberPortraitController extends CommonUtil {
         // 性别
         // 百分比
         int sexNum = man.getCount()+woman.getCount()+other.getCount();
-        man.setPercent(man.getCount()*1.00/sexNum);
-        man.setPercentStr(man.getCount()*1.00/sexNum+"");
-        woman.setPercent(woman.getCount()*1.00/sexNum);
-        woman.setPercentStr(woman.getCount()*1.00/sexNum+"");
-        other.setPercent(other.getCount()*1.00/sexNum);
-        other.setPercentStr(other.getCount()*1.00/sexNum+"");
+
+        BigDecimal manBD = new BigDecimal(man.getCount()*1.00/sexNum);
+        double mandouble = manBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        man.setPercent(mandouble);
+        man.setPercentStr(mandouble+"");
+
+        BigDecimal womanBD = new BigDecimal(woman.getCount()*1.00/sexNum);
+        double womandouble = womanBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        woman.setPercent(womandouble);
+        woman.setPercentStr(womandouble+"");
+
+        BigDecimal otherBD = new BigDecimal(other.getCount()*1.00/sexNum);
+        double otherdouble = otherBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        other.setPercent(otherdouble);
+        other.setPercentStr(otherdouble+"");
+
         sexCricleVos.add(man);
         sexCricleVos.add(woman);
         sexCricleVos.add(other);
@@ -269,23 +280,38 @@ public class MemberPortraitController extends CommonUtil {
         // 百分比
         int deviceNum = wxdevice.getCount()+zhifubaodevice.getCount()+appdevice.getCount()
                 +browerdevice.getCount()+qqdevice.getCount()+otherDevice.getCount();
-        wxdevice.setPercent(wxdevice.getCount()*1.00/deviceNum);
-        wxdevice.setPercentStr(wxdevice.getCount()*1.00/deviceNum+"");
 
-        zhifubaodevice.setPercent(zhifubaodevice.getCount()*1.00/deviceNum);
-        zhifubaodevice.setPercentStr(zhifubaodevice.getCount()*1.00/deviceNum+"");
+        BigDecimal wxdeviceBD = new BigDecimal(wxdevice.getCount()*1.00/deviceNum);
+        double wxdevicedouble = wxdeviceBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        wxdevice.setPercent(wxdevicedouble);
+        wxdevice.setPercentStr(wxdevicedouble+"");
 
-        appdevice.setPercent(appdevice.getCount()*1.00/deviceNum);
-        appdevice.setPercentStr(appdevice.getCount()*1.00/deviceNum+"");
+        BigDecimal zhifubaodeviceBD = new BigDecimal(zhifubaodevice.getCount()*1.00/deviceNum);
+        double zhifubaodevicedouble = zhifubaodeviceBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        zhifubaodevice.setPercent(zhifubaodevicedouble);
+        zhifubaodevice.setPercentStr(zhifubaodevicedouble+"");
 
-        browerdevice.setPercent(browerdevice.getCount()*1.00/deviceNum);
-        browerdevice.setPercentStr(browerdevice.getCount()*1.00/deviceNum+"");
+        BigDecimal appdeviceBD = new BigDecimal(appdevice.getCount()*1.00/deviceNum);
+        double appdevicedouble = appdeviceBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        appdevice.setPercent(appdevicedouble);
+        appdevice.setPercentStr(appdevicedouble+"");
 
-        qqdevice.setPercent(qqdevice.getCount()*1.00/deviceNum);
-        qqdevice.setPercentStr(qqdevice.getCount()*1.00/deviceNum+"");
+        BigDecimal browerdeviceBD = new BigDecimal(browerdevice.getCount()*1.00/deviceNum);
+        double browerdevicedouble = browerdeviceBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        browerdevice.setPercent(browerdevicedouble);
+        browerdevice.setPercentStr(browerdevicedouble+"");
 
-        otherDevice.setPercent(otherDevice.getCount()*1.00/deviceNum);
-        otherDevice.setPercentStr(otherDevice.getCount()*1.00/deviceNum+"");
+
+        BigDecimal qqdeviceBD = new BigDecimal(qqdevice.getCount()*1.00/deviceNum);
+        double qqdevicedouble = qqdeviceBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        qqdevice.setPercent(qqdevicedouble);
+        qqdevice.setPercentStr(qqdevicedouble+"");
+
+
+        BigDecimal otherDeviceBD = new BigDecimal(otherDevice.getCount()*1.00/deviceNum);
+        double otherDevicedouble = otherDeviceBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        otherDevice.setPercent(otherDevicedouble);
+        otherDevice.setPercentStr(otherDevicedouble+"");
 
 
 
@@ -303,11 +329,17 @@ public class MemberPortraitController extends CommonUtil {
         ageNum += Arrays.stream(agex0).mapToInt(CricleVo::getCount).sum();
         final int finalAgeNum = ageNum;
         Arrays.asList(agex0).forEach(e ->{
-            e.setPercent(e.getCount()*1.00/ finalAgeNum);
-            e.setPercentStr(e.getCount()*1.00/ finalAgeNum +"");
+            BigDecimal eBD = new BigDecimal(e.getCount()*1.00/finalAgeNum);
+            double edouble = eBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+            e.setPercent(edouble);
+            e.setPercentStr(edouble +"");
         });
-        otherage.setPercent(otherage.getCount()*1.00/ageNum);
-        otherage.setPercentStr(otherage.getCount()*1.00/ageNum+"");
+        BigDecimal otherageBD = new BigDecimal(otherage.getCount()*1.00/ageNum);
+        double otheragedouble = otherageBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+        otherage.setPercent(otheragedouble);
+        otherage.setPercentStr(otheragedouble+"");
 
 
         ageCricleVos.addAll(Arrays.asList(agex0));
@@ -321,20 +353,11 @@ public class MemberPortraitController extends CommonUtil {
         return result;
     }
 
+
     public static void main(String[] args) {
-        CricleVo[] agex0 = new CricleVo[11];
-        int i = 0;
-        for(int preI=0;preI<=100;preI+=10) {
-            CricleVo age = new CricleVo();
-            age.setItem(preI+"-"+(preI+10));
-            agex0[i]=age;
-            if(preI == 100){
-                age.setItem("其他");
-
-            }
-            i++;
-        }
-        Arrays.asList(agex0).forEach(e -> System.out.println(e));
+        double d = 0.14511111;
+         BigDecimal b = new BigDecimal(d);
+        d = b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+         System.out.println(d);
     }
-
 }

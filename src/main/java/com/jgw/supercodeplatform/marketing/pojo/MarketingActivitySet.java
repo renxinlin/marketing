@@ -44,10 +44,25 @@ public class MarketingActivitySet {
     
     @ApiModelProperty(name = "consumeIntegralNum", value = "消耗积分", example = "11")
     private Integer consumeIntegralNum;
-    
+
     @ApiModelProperty(name = "activityDesc", value = "活动描述", example = "红包活动")
     private String activityDesc;
-    
+
+    /**
+     * 门槛类jons字符串
+     */
+    @ApiModelProperty(name = "condition", value = "门槛", example = "红包活动")
+    private String condition;
+
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
     public Long getId() {
 		return id;
 	}

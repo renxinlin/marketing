@@ -24,6 +24,7 @@ import java.util.*;
 /**
  * 前三个是点计算
  * 后三个是区间计算
+ *
  */
 @RestController
 @RequestMapping("/marketing/registerNumTask")
@@ -35,7 +36,10 @@ public class RegisterNumController extends CommonUtil {
     private static final Enum type = TaskTypeEnum.REGISTER_NUM;
     @Autowired
     private TaskTimeCalculator taskTimeCalculator;
-
+    // TODO 会员角色
+    // todo 产品活动类型
+    //
+    // 优化代码
 
     @Autowired
     private MarketingMembersService service;
@@ -78,10 +82,6 @@ public class RegisterNumController extends CommonUtil {
         List<String> weekString = taskTimeCalculator.getWeekString();
         List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, week.get(0), week.get(week.size() - 1));
 
-        List result = new LinkedList();
-        if(CollectionUtils.isEmpty(registerNumMembers)){
-            return RestResult.success("success",result);
-        }
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
         SerialVo first = new SerialVo();
@@ -124,6 +124,7 @@ public class RegisterNumController extends CommonUtil {
                 }
             }
         }
+        List result = new LinkedList();
         result.add(first);
         result.add(two);
         result.add(three);
@@ -131,6 +132,7 @@ public class RegisterNumController extends CommonUtil {
         result.add(five);
         result.add(six);
         result.add(seven);
+
 
         return RestResult.success("success",result);
     }
@@ -145,8 +147,25 @@ public class RegisterNumController extends CommonUtil {
         List<String> twoWeekString = taskTimeCalculator.getTwoWeekString();
         List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, twoWeek.get(0), twoWeek.get(twoWeek.size() - 1));
 
-        return task(twoWeek,twoWeekString,registerNumMembers);
+        // 图表数据格式
+        //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
+        Map<String, SerialVo> twoWeekVo = new TreeMap<>();
+        for(String day : twoWeekString){
+            SerialVo vo = new SerialVo();
+            vo.setTime(day);
+            twoWeekVo.put(day,vo);
+        }
 
+        // 累加
+        for (MarketingMembers registerNumMember : registerNumMembers){
+            for( String day : twoWeekVo.keySet()){
+                if(day.equals(registerNumMember.getCreateDate())){
+                    twoWeekVo.get(day).add(1);
+                    continue;
+                }
+            }
+        }
+        return RestResult.success("success",twoWeekVo.values());
     }
 
     /**
@@ -159,8 +178,28 @@ public class RegisterNumController extends CommonUtil {
         List<Date> month = taskTimeCalculator.getMonth();
         List<String> monthString = taskTimeCalculator.getMonthString();
         List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, month.get(0), month.get(month.size() - 1));
-        return task(month,monthString,registerNumMembers);
 
+        // 图表数据格式
+        //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
+        Map<String, SerialVo> monthVo = new TreeMap<>();
+        for(String day : monthString){
+            SerialVo vo = new SerialVo();
+            vo.setTime(day);
+            monthVo.put(day,vo);
+        }
+
+        // 累加
+        for (MarketingMembers registerNumMember : registerNumMembers){
+            for( String day : monthVo.keySet()){
+                if(day.equals(registerNumMember.getCreateDate())){
+                    // 会不会有意外导致异常？
+                    // TODO monthVo.get(registerNumMember.getCreateDate()).add(1);
+                    monthVo.get(day).add(1);
+                    continue;
+                }
+            }
+        }
+        return RestResult.success("success",monthVo.values());
     }
 
     /**
@@ -173,8 +212,42 @@ public class RegisterNumController extends CommonUtil {
         List<Date> threeMonth = taskTimeCalculator.getThreeMonth();
         List<String> threeMonthString = taskTimeCalculator.getThreeMonthString();
         List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, threeMonth.get(0), threeMonth.get(threeMonth.size() - 1));
-        return task(threeMonth,threeMonthString,registerNumMembers);
 
+        // 图表数据格式
+        //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
+        Map<String, SerialVo> threeMonthVo = new TreeMap<>();
+
+        for(int i =0;i<threeMonthString.size();i++){
+            SerialVo vo = new SerialVo();
+            // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
+            // 其中最后一个区间<=7天
+            try {
+                vo.setTime(threeMonthString.get(i)+threeMonthString.get(i+1));
+            } catch (Exception e) {
+                vo.setTime(threeMonthString.get(i));
+            }
+            threeMonthVo.put(threeMonthString.get(i),vo);
+        }
+        // 移除最后一个数据，最后一个数据的区间已经加载在i-1上
+        threeMonthVo.remove(threeMonthString.get(threeMonthString.size()-1));
+
+
+        // 累加
+        for (MarketingMembers registerNumMember : registerNumMembers){
+            for( String day : threeMonthVo.keySet()){
+                // 注册时间在[day,day+7),即[day,day+6]
+                try {
+                    if(taskTimeCalculator.inOneWeek(day,registerNumMember.getCreateDate())){
+                        threeMonthVo.get(day).add(1);
+                        continue;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    throw new SuperCodeException("比较日期一周内解析异常...");
+                }
+            }
+        }
+        return RestResult.success("success",threeMonthVo.values());
     }
     /**
      * 按照月显示
@@ -187,8 +260,43 @@ public class RegisterNumController extends CommonUtil {
         List<Date> halfYear = taskTimeCalculator.getHalfYear();
         List<String> halfYearString = taskTimeCalculator.getHalfYearString();
         List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, halfYear.get(0), halfYear.get(halfYear.size() - 1));
-        return task(halfYear,halfYearString,registerNumMembers);
 
+        // 图表数据格式
+        //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
+        Map<String, SerialVo> halfYearVo = new TreeMap<>();
+
+        for(int i =0;i<halfYearString.size();i++){
+            SerialVo vo = new SerialVo();
+            // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
+            // 其中最后一个区间<=7天
+            try {
+                vo.setTime(halfYearString.get(i)+halfYearString.get(i+1));
+            } catch (Exception e) {
+                vo.setTime(halfYearString.get(i));
+            }
+            halfYearVo.put(halfYearString.get(i),vo);
+        }
+
+        // 移除最后一个数据，最后一个数据的区间已经加载在i-1上
+        halfYearVo.remove(halfYearString.get(halfYearString.size()-1));
+
+
+        // 累加
+        for (MarketingMembers registerNumMember : registerNumMembers){
+            for( String day : halfYearVo.keySet()){
+                // 注册时间在[day,day+7),即[day,day+6]
+                try {
+                    if(taskTimeCalculator.inOneMonth(day,registerNumMember.getCreateDate())){
+                        halfYearVo.get(day).add(1);
+                        continue;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    throw new SuperCodeException("比较日期一月内解析异常...");
+                }
+            }
+        }
+        return RestResult.success("success",halfYearVo.values());
     }
     /**
      * 按照月显示
@@ -201,27 +309,25 @@ public class RegisterNumController extends CommonUtil {
         List<Date> year = taskTimeCalculator.getYear();
         List<String> yearString = taskTimeCalculator.getYearString();
         List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, year.get(0), year.get(year.size() - 1));
-        return task(year,yearString,registerNumMembers);
 
-    }
-
-    private RestResult task(List<Date> date, List<String> dateString, List<MarketingMembers> registerNumMembers) throws SuperCodeException{
-        if(CollectionUtils.isEmpty(registerNumMembers)){
-            List result = new LinkedList();
-            return RestResult.success("success",result);
-        }
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
         Map<String, SerialVo> yearVo = new TreeMap<>();
-        for(String weekDayPoint : dateString){
+
+        for(int i =0;i<yearString.size();i++){
             SerialVo vo = new SerialVo();
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
             // 其中最后一个区间<=7天
-            vo.setTime(weekDayPoint);
-            yearVo.put(weekDayPoint,vo);
+            try {
+                vo.setTime(yearString.get(i)+yearString.get(i+1));
+            } catch (Exception e) {
+                vo.setTime(yearString.get(i));
+            }
+            yearVo.put(yearString.get(i),vo);
         }
+
         // 移除最后一个数据，最后一个数据的区间已经加载在i-1上
-        yearVo.remove(dateString.get(dateString.size()-1));
+        yearVo.remove(yearString.get(yearString.size()-1));
 
 
         // 累加
