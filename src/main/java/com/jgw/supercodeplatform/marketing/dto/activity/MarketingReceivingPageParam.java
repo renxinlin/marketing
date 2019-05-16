@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class MarketingReceivingPageParam {
 
     @ApiModelProperty(value = "序列Id")
-    private int id;//序号
+    private Long id;//序号
     @ApiModelProperty(value = "模板Id")
     private String templateId;//模板Id
     @ApiModelProperty(value = "是否显示领取页面(1  表示显示，0 表示不显示)")
@@ -20,16 +20,18 @@ public class MarketingReceivingPageParam {
     private Byte isQrcodeView;//公众号二维码是否显示(1  表示显示，0 表示不显示)
     @ApiModelProperty(value = "二维码Url")
     private String qrcodeUrl;//二维码Url
- 
-    public int getId() {
-        return id;
-    }
+    @ApiModelProperty(value = "翻转次数")
+    private Integer flipTimes;
+    
+    public Long getId() {
+		return id;
+	}
 
-    public void setId(int id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getTemplateId() {
+	public String getTemplateId() {
         return templateId;
     }
 
@@ -76,4 +78,13 @@ public class MarketingReceivingPageParam {
     public void setQrcodeUrl(String qrcodeUrl) {
         this.qrcodeUrl = qrcodeUrl;
     }
+
+	public Integer getFlipTimes() {
+		return flipTimes;
+	}
+
+	public void setFlipTimes(Integer flipTimes) {
+		this.flipTimes = flipTimes;
+	}
+    
 }

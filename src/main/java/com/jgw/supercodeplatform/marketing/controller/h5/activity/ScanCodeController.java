@@ -67,12 +67,36 @@ public class ScanCodeController {
     public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
     	String	wxstate=commonUtil.getUUID();
 
-    	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate);
+    	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0);
 
         return "redirect:"+url;
     }
-    public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate) throws UnsupportedEncodingException, ParseException, SuperCodeException {
-    	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId);
+    
+    
+    /**
+     * 导购扫码码平台跳转到营销系统地址接口
+     * @param codeId
+     * @param codeTypeId
+     * @param productId
+     * @param productBatchId
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws ParseException
+     * @throws Exception
+     */
+    @RequestMapping(value = "/d",method = RequestMethod.GET)
+    @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
+    public String daogou(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
+    	String	wxstate=commonUtil.getUUID();
+
+    	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)1);
+
+        return "redirect:"+url;
+    }
+    
+    
+    public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate, byte referenceRole) throws UnsupportedEncodingException, ParseException, SuperCodeException {
+    	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole);
     	if (restResult.getState()==500) {
     		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
     		 return h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");

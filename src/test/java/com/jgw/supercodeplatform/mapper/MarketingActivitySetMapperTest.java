@@ -47,7 +47,6 @@ private MarketingActivityProductMapper mProductMapper;
 		list.add(marketingActivitySet1);
 		list.add(marketingActivitySet2);
 		
-		mProductMapper.batchDeleteByProBatchs(list);
 //		maSetMapper.addCodeTotalNum(1L, 2L);
 	}
 }

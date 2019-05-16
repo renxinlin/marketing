@@ -46,6 +46,9 @@ public class CommonService {
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
 	
+	@Value("${rest.code.url}")
+	private String msCodeUrl;
+	
 	public RestResult<String> sendPhoneCode(String mobile) throws Exception {
 		RestResult<String> resuRestResult=new RestResult<String>();
 		if (StringUtils.isBlank(mobile)) {
@@ -263,6 +266,24 @@ public class CommonService {
 		}
 	}
 
-	
+    /**
+     * 校验抽奖码是否存在
+     * @param codeId
+     * @param codeTypeId
+     * @return
+     * @throws SuperCodeException
+     */
+	public void checkCodeValid(String codeId, String codeTypeId) throws SuperCodeException {
+		Map<String, String>headerparams=new HashMap<String, String>();
+		headerparams.put("token",commonUtil.getCodePlatformToken() );
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
+		logger.info("根据码和码制获取码平台码信息："+responseEntity.toString());
+		String codeBody=responseEntity.getBody();
+		JSONObject jsonCodeBody=JSONObject.parseObject(codeBody);
+		String sBatchId=jsonCodeBody.getJSONObject("results").getString("sBatchId");
+		if (StringUtils.isBlank(sBatchId)) {
+			throw  new SuperCodeException("对不起,该码不存在",500);
+		}
+	}
 	
 }

@@ -80,8 +80,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	@Value("${rest.user.url}")
 	private String userServiceUrl;
 	
-	@Value("${rest.code.url}")
-	private String msCodeUrl;
 	
 	@Autowired
 	private MarketingMembersMapper marketingMembersMapper;
@@ -682,11 +680,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 
 		MarketingActivity activity=mActivityMapper.selectById(mActivitySet.getActivityId());
-		if (null==activity) {
-			restResult.setState(500);
-			restResult.setMsg("该活动设置对应的活动不存在");
-			return restResult;
-		}
 
 		MarketingMembers marketingMembersInfo = marketingMembersMapper.selectByOpenIdAndOrgId(openId, scanCodeInfoMO.getOrganizationId());
 		if(marketingMembersInfo == null){
@@ -715,14 +708,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String codeId=scanCodeInfoMO.getCodeId();
 		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
 
-		
-		boolean exist=checkCodeValid(codeId, codeTypeId);
-		if (!exist) {
-			throw  new SuperCodeException("对不起,该码不存在",500);
-		}
-		
 		//同步代码块**很重要，要先查询该码此时是不是被其它用户已扫过，如果扫过就不能发起微信支付等操作
-		MarketingPrizeTypeMO mPrizeTypeMO =null;
 		boolean acquireLock = false;
 		List<MarketingPrizeTypeMO> moPrizeTypes=mMarketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
 		if (null==moPrizeTypes || moPrizeTypes.isEmpty()) {
@@ -730,12 +716,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("该活动未设置中奖奖次");
 			return restResult;
 		}
+		//执行抽奖逻辑 
+		MarketingPrizeTypeMO mPrizeTypeMO=LotteryUtilWithOutCodeNum.startLottery(moPrizeTypes);
+		
  		try {
 			// 超时时间,重试次数，重试间隔
 			acquireLock = lock.lock(activitySetId + ":" + codeId + ":" + codeTypeId,5000,5,200);
 			if(acquireLock){
-				mPrizeTypeMO=LotteryUtilWithOutCodeNum.startLottery(moPrizeTypes);
-				
 				String nowTime=staticESSafeFormat.format(new Date());
 				long nowTtimeStemp=staticESSafeFormat.parse(nowTime).getTime();
 				
@@ -795,56 +782,61 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
 			restResult.setState(200);
-			restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+			restResult.setResults("‘啊呀没中，一定是打开方式不对’：没中奖");
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
 		}else{
 			Byte awardType=mPrizeTypeMO.getAwardType();
-			Float amount =null;
+			
 
+			//已中奖执行奖品方法中奖纪录保存等逻辑
 			try {
 				//如果是微信红包奖项类型可能为空需特殊处理
 				if (null==awardType || awardType.byteValue()==4) {
-					amount = weixinpay(mobile, openId, organizationId, mPrizeTypeMO);
+					Float amount =mPrizeTypeMO.getPrizeAmount();
 					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
+					weixinpay(mobile, openId, organizationId, mPrizeTypeMO);
+					restResult.setResults(amount+"");
 				}else {
 					Integer remainingStock=null;
 					switch (awardType) {
 					case 1://实物
 						remainingStock=mPrizeTypeMO.getRemainingStock();
 						if (null!=remainingStock && remainingStock.intValue()<1) {
-							restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+							restResult.setResults("‘啊呀没中，一定是打开方式不对’：没中奖");
 						}else {
-							restResult.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
-							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
+							restResult.setResults("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
+							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						}
 						
 						break;
 					case 2: //奖券
 						restResult.setResults(mPrizeTypeMO.getCardLink());
-						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
+						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						break;
 					case 3: //积分
 						 Integer awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum();
 						 marketingMembersInfo.setHaveIntegral((haveIntegral==null?0:haveIntegral)+awardIntegralNum);
-						 restResult.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
-						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
+						 restResult.setResults("恭喜您，获得"+awardIntegralNum+"积分");
+						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						break;
 					case 9://其它
 						remainingStock=mPrizeTypeMO.getRemainingStock();
 						if (null!=remainingStock && remainingStock.intValue()<1) {
 							restResult.setState(200);
-							restResult.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+							restResult.setResults("‘啊呀没中，一定是打开方式不对’：没中奖");
 						}else {
-							restResult.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
-							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
+							restResult.setResults("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
+							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						}
 						break;
 					default:
 						break;
 					}
 				}
+				
+				
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new SuperCodeException(e.getLocalizedMessage(), 500);
 			}finally {
 				//一切ok后清除缓存
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
@@ -854,30 +846,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			}
 			marketingMembersMapper.update(marketingMembersInfo);
 			restResult.setState(200);
-			restResult.setMsg(amount+"");
 		}
 		return restResult;
 	}
-    /**
-     * 校验抽奖码是否存在
-     * @param codeId
-     * @param codeTypeId
-     * @return
-     * @throws SuperCodeException
-     */
-	private boolean checkCodeValid(String codeId, String codeTypeId) throws SuperCodeException {
-		Map<String, String>headerparams=new HashMap<String, String>();
-		headerparams.put("token",commonUtil.getCodePlatformToken() );
-		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
-		logger.info("根据码和码制获取码平台码信息："+responseEntity.toString());
-		String codeBody=responseEntity.getBody();
-		JSONObject jsonCodeBody=JSONObject.parseObject(codeBody);
-		String sBatchId=jsonCodeBody.getJSONObject("results").getString("sBatchId");
-		if (StringUtils.isBlank(sBatchId)) {
-			return false;
-		}
-		return true;
-	}
+
 
 	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,
 			MarketingActivity activity, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, Float amount) {
@@ -889,7 +861,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		redWinRecord.setMobile(mobile);
 		redWinRecord.setOpenid(openId);
 		redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
-		redWinRecord.setWinningAmount((float)amount );
+		redWinRecord.setWinningAmount(amount );
 		redWinRecord.setWinningCode(outCodeId);
 		redWinRecord.setPrizeName(mPrizeTypeMO.getPrizeTypeName());
 		redWinRecord.setOrganizationId(organizationId);
