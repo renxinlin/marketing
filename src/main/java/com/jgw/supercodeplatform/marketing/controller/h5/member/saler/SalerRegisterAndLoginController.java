@@ -46,15 +46,13 @@ import java.util.List;
 @RequestMapping("/marketing/front/saler")
 @Api(tags = "h5用户注册登录信息完善点击领奖")
 public class SalerRegisterAndLoginController {
-    // TODO 组织id获取问题
-    // TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题
-    // TODO 组织id获取问题
+
     private Logger logger = LoggerFactory.getLogger(SalerRegisterAndLoginController.class);
 
 //    redirect_uri域名与后台配置不一致则失败
     private final String redirctUrl              = "http://marketing.kf315.net/marketing/front/saler/register";
     // 获取code
-    private final String OAUTH2_WX_URL           = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx32ab5628a5951ecc&redirect_uri="+redirctUrl+"&response_type=code&scope=snsapi_base&state="+"[mobile]"+"#wechat_redirect";
+    private final String OAUTH2_WX_URL           = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx32ab5628a5951ecc&redirect_uri="+"[backUrl]"+"&response_type=code&scope=snsapi_base&state="+"[mobile]"+"#wechat_redirect";
     // 获取一次性access_token openid
     private final String openidandaccesstokenUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx32ab5628a5951ecc&secret=e3fb09c9126cd8bc12399e56a35162c4&code=[code]&grant_type=authorization_code";
     @Autowired
@@ -91,10 +89,12 @@ public class SalerRegisterAndLoginController {
        // 微信重定向到 保存用户信息接口
        String mobile = "15728043579";
        OAUTH2_WX_URL.replaceAll("[mobile]",mobile);
-       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
+       String encodeUrl = URLEncoder.encode(redirctUrl, "utf-8");
+       OAUTH2_WX_URL.replaceAll("[backUrl]",encodeUrl);
+//       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
        logger.error("1================================获取微信授权开始==================");
-       logger.error("2================================获取微信授权url{}==================",redirctUri);
-       return "redirct:"+ redirctUri;
+       logger.error("2================================获取微信授权url{}==================",OAUTH2_WX_URL);
+       return "redirct:"+ OAUTH2_WX_URL;
    }
 
 
