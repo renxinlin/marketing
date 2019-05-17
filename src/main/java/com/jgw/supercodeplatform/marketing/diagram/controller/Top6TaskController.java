@@ -100,9 +100,13 @@ public class Top6TaskController extends CommonUtil {
     private RestResult task(List<IntegralRecord> top6Dtos, Integer all) {
         List<CricleVo> cricleVos = new LinkedList();
         int integralNum = 0;
+        double percentDoubleSumWithLast = 0.00D;
         if(!CollectionUtils.isEmpty(top6Dtos)){
             int  sum  = 0;
+            int i = 0;
             for(IntegralRecord dto : top6Dtos){
+                i++;
+
                 // vo处理
                 CricleVo vo                 = new CricleVo();
                 integralNum  += dto.getIntegralNum() == null ? 0 : dto.getIntegralNum();
@@ -112,11 +116,15 @@ public class Top6TaskController extends CommonUtil {
                 double percent=dto.getIntegralNum()*1.00/all;
                 BigDecimal percentBD = new BigDecimal(percent);
                 double percentDouble = percentBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                if(i != top6Dtos.size()){
+                    percentDoubleSumWithLast +=percentDouble;
+                }
                 vo                      .setPercent(percentDouble);
                 vo                .setPercentStr(percentDouble+"");
                 sum                   +=dto.getIntegralNum();
                 cricleVos                           .add(vo);
             }
+            cricleVos.get(cricleVos.size()-1).setPercent(1.00D-percentDoubleSumWithLast);
 
         }
         Map map = new HashMap<>();

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/marketing/memberPortraitTask")
@@ -269,10 +270,10 @@ public class MemberPortraitController extends CommonUtil {
         woman.setPercent(womandouble);
         woman.setPercentStr(womandouble+"");
 
-        BigDecimal otherBD = new BigDecimal(other.getCount()*1.00/sexNum);
-        double otherdouble = otherBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        other.setPercent(otherdouble);
-        other.setPercentStr(otherdouble+"");
+
+        double percentSexDoubleSumWithLast = womandouble+mandouble;
+        other.setPercent(1.00D-percentSexDoubleSumWithLast);
+        other.setPercentStr(1.00D-percentSexDoubleSumWithLast+"");
         if(man.getCount()> 0 ){
 
             sexCricleVos.add(man);
@@ -319,11 +320,9 @@ public class MemberPortraitController extends CommonUtil {
         qqdevice.setPercent(qqdevicedouble);
         qqdevice.setPercentStr(qqdevicedouble+"");
 
-
-        BigDecimal otherDeviceBD = new BigDecimal(otherDevice.getCount()*1.00/deviceNum);
-        double otherDevicedouble = otherDeviceBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-        otherDevice.setPercent(otherDevicedouble);
-        otherDevice.setPercentStr(otherDevicedouble+"");
+        double percentDeviceDoubleSumWithLast = wxdevicedouble+zhifubaodevicedouble+appdevicedouble+browerdevicedouble+qqdevicedouble;
+        otherDevice.setPercent(1.00D-percentDeviceDoubleSumWithLast);
+        otherDevice.setPercentStr(1.00D-percentDeviceDoubleSumWithLast+"");
 
 
         if(wxdevice.getCount()> 0 ){
@@ -352,18 +351,17 @@ public class MemberPortraitController extends CommonUtil {
         int ageNum = otherage.getCount();
         ageNum += Arrays.stream(agex0).mapToInt(CricleVo::getCount).sum();
         final int finalAgeNum = ageNum;
+        AtomicReference<Double> percentAgeDoubleSumWithLast = new AtomicReference<>(0.00D);
         Arrays.asList(agex0).forEach(e ->{
             BigDecimal eBD = new BigDecimal(e.getCount()*1.00/finalAgeNum);
             double edouble = eBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
-
+            percentAgeDoubleSumWithLast.updateAndGet(v -> new Double((double) (v + edouble)));
             e.setPercent(edouble);
             e.setPercentStr(edouble +"");
         });
-        BigDecimal otherageBD = new BigDecimal(otherage.getCount()*1.00/ageNum);
-        double otheragedouble = otherageBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
-        otherage.setPercent(otheragedouble);
-        otherage.setPercentStr(otheragedouble+"");
+        otherage.setPercent(1.00D- percentAgeDoubleSumWithLast.get());
+        otherage.setPercentStr(1.00d- percentAgeDoubleSumWithLast.get()+"");
 
         List<CricleVo> cricleVos = Arrays.asList(agex0);
         for(CricleVo vo:cricleVos){
