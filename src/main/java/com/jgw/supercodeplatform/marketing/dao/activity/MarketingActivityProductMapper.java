@@ -10,13 +10,13 @@ import java.util.List;
 public interface MarketingActivityProductMapper extends CommonSql{
 
 	String selectSql = " Id as id, ActivitySetId as activitySetId,CodeType as codeType,ProductBatchId as productBatchId,"
-			+ " ProductBatchName as productBatchName,ProductId as productId,"
+			+ " ProductBatchName as productBatchName,ProductId as productId,ReferenceRole referenceRole,"
 			+ " ProductName as productName,CodeTotalAmount as codeTotalAmount,CreateDate createDate,UpdateDate updateDate";
 
 
 
-	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ProductBatchId = #{productBatchId}")
-	MarketingActivityProduct selectByProductAndProductBatchId(@Param("productId") String productId,@Param("productBatchId") String productBatchId);
+	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ProductBatchId = #{productBatchId} and ReferenceRole=#{referenceRole}")
+	MarketingActivityProduct selectByProductAndProductBatchIdWithReferenceRole(@Param("productId") String productId,@Param("productBatchId") String productBatchId,@Param("referenceRole") byte referenceRole);
 
 
 	@Insert({
@@ -51,11 +51,16 @@ public interface MarketingActivityProductMapper extends CommonSql{
 	List<String> usedProductBatchIds(@Param("organizationId")String organizationId);
 
     @Delete(startScript
-    		+"delete FROM marketing_activity_product where "
+    		+"delete FROM marketing_activity_product where ReferenceRole=#{referenceRole} and ("
     		+" <foreach item='item' collection='list' separator='or' open='(' close=')' index=''>" + 
     		"   ProductId=#{item.productId} and ProductBatchId=#{item.productBatchId}" + 
     		" </foreach>"
+    		+")"
     		+endScript
     		)
-	void batchDeleteByProBatchs(List<MarketingActivityProduct> mList);
+	void batchDeleteByProBatchsAndRole(List<MarketingActivityProduct> mList, @Param(value="referenceRole")int referenceRole);
+
+    @Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ProductBatchId = #{productBatchId}")
+	List<MarketingActivityProduct> selectByProductAndProductBatchId(@Param("productId") String productId,@Param("productBatchId") String productBatchId);
+
 }

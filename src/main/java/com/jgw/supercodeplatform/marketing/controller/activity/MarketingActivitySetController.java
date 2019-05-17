@@ -51,7 +51,20 @@ public class MarketingActivitySetController {
     @ApiOperation(value = "活动创建", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> create(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
-    	return service.add(activitySetParam);
+    	return service.memberActivityAdd(activitySetParam);
+    }
+    
+    /**
+     * 活动创建
+     * @param marketingActivityParam
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/guideActivityAdd",method = RequestMethod.POST)
+    @ApiOperation(value = "活动创建", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<String> guideActivityAdd(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
+    	return service.guideActivityAdd(activitySetParam);
     }
     
     

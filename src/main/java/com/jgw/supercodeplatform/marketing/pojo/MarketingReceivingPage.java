@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 public class MarketingReceivingPage {
 
     @ApiModelProperty(value = "序列Id")
-    private int id;//序号
+    private Long id;//序号
     @ApiModelProperty(value = "模板Id")
     private String templateId;//模板Id
     @ApiModelProperty(value = "活动设置主键id")
@@ -38,16 +38,16 @@ public class MarketingReceivingPage {
     private String organizatioIdlName;
     @ApiModelProperty(value = "翻转次数")
     private Integer flipTimes;
-    
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public Long getId() {
+		return id;
+	}
 
-    public String getTemplateId() {
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getTemplateId() {
         return templateId;
     }
 

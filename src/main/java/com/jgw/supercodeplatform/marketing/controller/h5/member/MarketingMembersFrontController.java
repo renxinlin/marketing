@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.member;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -175,6 +176,13 @@ public class MarketingMembersFrontController extends CommonUtil {
     public RestResult<String> lottery(String wxstate) throws Exception {
         return marketingMembersService.lottery(wxstate);
     }
+    
+    @RequestMapping(value = "/guideLottery",method = RequestMethod.POST)
+    @ApiOperation(value = "用户点击领奖方法", notes = "")
+    public RestResult<String> guideLottery(String wxstate,HttpServletRequest request) throws Exception {
+        return marketingMembersService.guideLottery(wxstate);
+    }
+    
     
     @RequestMapping(value = "/getJwtToken",method = RequestMethod.GET)
     @ApiOperation(value = "获取jwt-token", notes = "")

@@ -10,6 +10,7 @@ public class MarketingActivityProduct {
     private String productId;//活动产品Id
     private String productName;//活动产品名称
 	private Long codeTotalAmount;//该批次关联码总数
+	private Byte referenceRole;
     private String createDate;//建立日期
     private String UpdateDate;//修改日期
     
@@ -93,4 +94,13 @@ public class MarketingActivityProduct {
 	public void setCodeTotalAmount(Long codeTotalAmount) {
 		this.codeTotalAmount = codeTotalAmount;
 	}
+
+	public Byte getReferenceRole() {
+		return referenceRole;
+	}
+
+	public void setReferenceRole(Byte referenceRole) {
+		this.referenceRole = referenceRole;
+	}
+	
 }

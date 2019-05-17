@@ -8,23 +8,12 @@ public class MarketingPageUpdateParam {
 	@ApiModelProperty(value = "领取页参数")
     private MarketingReceivingPageParam mReceivingPageParam;
 	
-	@ApiModelProperty(value = "中奖页页参数")
-    private MarketingWinningPageParam mWinningPageParam;
-
 	public MarketingReceivingPageParam getmReceivingPageParam() {
 		return mReceivingPageParam;
 	}
 
 	public void setmReceivingPageParam(MarketingReceivingPageParam mReceivingPageParam) {
 		this.mReceivingPageParam = mReceivingPageParam;
-	}
-
-	public MarketingWinningPageParam getmWinningPageParam() {
-		return mWinningPageParam;
-	}
-
-	public void setmWinningPageParam(MarketingWinningPageParam mWinningPageParam) {
-		this.mWinningPageParam = mWinningPageParam;
 	}
 	
 	
