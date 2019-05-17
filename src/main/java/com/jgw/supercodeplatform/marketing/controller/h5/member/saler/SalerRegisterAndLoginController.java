@@ -83,12 +83,13 @@ public class SalerRegisterAndLoginController {
    @RequestMapping("/tempRegister")
    public String loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo) throws SuperCodeException, UnsupportedEncodingException {
        // 临时缓存用户信息;此时用户无组织信息
-       registerAsTempWaybeforeAuquireOpenId(userInfo);
-       String mobile = userInfo.getMobile();
+//       registerAsTempWaybeforeAuquireOpenId(userInfo);
+//       String mobile = userInfo.getMobile();
        // 获取微信配置信息 同时传递手机号
        // 重定向到微信授权
        // 直接请求微信静默授权
        // 微信重定向到 保存用户信息接口
+       String mobile = "15728043579";
        OAUTH2_WX_URL.replaceAll("[mobile]",mobile);
        String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
        logger.error("1================================获取微信授权开始==================");
@@ -120,16 +121,16 @@ public class SalerRegisterAndLoginController {
        String containOpenId = getOpenid(encodeUrl);
        logger.error("5================================访问结果{}==================",containOpenId);
 
-       MarketingUser marketingUser = null;
-       try {
-           String userDtoString = redisUtil.get(REGISTER_PERFIX + state);
-           marketingUser = JSONObject.parseObject(userDtoString, MarketingUser.class);
-           marketingUser.setOpenid(containOpenId);
-       } catch (Exception e) {
-           throw new SuperCodeException("获取临时用户信息失败...");
-       }
-
-       service.saveUser(marketingUser);
+//       MarketingUser marketingUser = null;
+//       try {
+//           String userDtoString = redisUtil.get(REGISTER_PERFIX + state);
+//           marketingUser = JSONObject.parseObject(userDtoString, MarketingUser.class);
+//           marketingUser.setOpenid(containOpenId);
+//       } catch (Exception e) {
+//           throw new SuperCodeException("获取临时用户信息失败...");
+//       }
+//
+//       service.saveUser(marketingUser);
 
        return RestResult.success();
 
