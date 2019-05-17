@@ -100,9 +100,13 @@ public class Top6TaskController extends CommonUtil {
     private RestResult task(List<IntegralRecord> top6Dtos, Integer all) {
         List<CricleVo> cricleVos = new LinkedList();
         int integralNum = 0;
+        double percentDoubleSumWithLast = 0.00D;
         if(!CollectionUtils.isEmpty(top6Dtos)){
             int  sum  = 0;
+            int i = 0;
             for(IntegralRecord dto : top6Dtos){
+                i++;
+
                 // vo处理
                 CricleVo vo                 = new CricleVo();
                 integralNum  += dto.getIntegralNum() == null ? 0 : dto.getIntegralNum();
@@ -112,10 +116,30 @@ public class Top6TaskController extends CommonUtil {
                 double percent=dto.getIntegralNum()*1.00/all;
                 BigDecimal percentBD = new BigDecimal(percent);
                 double percentDouble = percentBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                if(i != top6Dtos.size()){
+                    percentDoubleSumWithLast +=percentDouble;
+                }
                 vo                      .setPercent(percentDouble);
                 vo                .setPercentStr(percentDouble+"");
                 sum                   +=dto.getIntegralNum();
                 cricleVos                           .add(vo);
+            }
+
+            double percent=top6Dtos.get(top6Dtos.size()-1).getIntegralNum()*1.00/all;
+            BigDecimal percentBD = new BigDecimal(percent);
+            double percentDouble = percentBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            // 可能大于0,产品不足6
+            if(percentDoubleSumWithLast+percent>1.00D ){
+                BigDecimal percentBDLast = new BigDecimal(1.00D-percentDoubleSumWithLast);
+                double percentDoubleLast = percentBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+                cricleVos.get(cricleVos.size()-1).setPercent(percentDoubleLast);
+                cricleVos.get(cricleVos.size()-1).setPercentStr(percentDoubleLast+"");
+
+            }else {
+                // 正常总产品远远超过top6的IntegralNum
+                cricleVos.get(cricleVos.size()-1).setPercent(percentDouble);
+                cricleVos.get(cricleVos.size()-1).setPercentStr(percentDouble+"");
+
             }
 
         }

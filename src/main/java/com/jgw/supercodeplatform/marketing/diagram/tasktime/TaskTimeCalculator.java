@@ -82,7 +82,7 @@ public class TaskTimeCalculator {
 //        }
         // 按自然月
         String yyyyMMStr = startDateStr.substring(0, 7);
-        String yyyyMMStr1 = startDateStr.substring(0, 7);
+        String yyyyMMStr1 = value.substring(0, 7);
         if(yyyyMMStr.equals(yyyyMMStr1)){
             return true;
         }else {
@@ -379,6 +379,39 @@ public class TaskTimeCalculator {
         return dates;
     }
 
+
+    public  Date getYesterday(Date date){
+        String yesterday = getYesterdayStr(date);
+        Date redate = null;
+        try {
+            redate = format.parse(yesterday);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return redate;
+    }
+
+
+    public  String getYesterdayStr(Date date){
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE,   -1);
+        return format.format(calendar.getTime());
+    }
+
+    public  String getYesterdayStr(String yyyyMMddDate){
+        Date parse = null;
+        try {
+            parse = format.parse(yyyyMMddDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar   cal   =   Calendar.getInstance();
+        cal.setTime(parse);
+        cal.add(Calendar.DATE,   -1);
+        return format.format(cal.getTime());
+    }
+
+
     /**
      * 测试产品需求X轴;
      * 数据已经符合格式
@@ -393,15 +426,16 @@ public class TaskTimeCalculator {
         System.out.println(JSONObject.toJSONString(t.getHalfYearString()));
         System.out.println(JSONObject.toJSONString(t.getYearString()));
         // 是否一周内测试正常
-        System.out.println(t.inOneWeek("2019-04-25","2019-04-24"));
-        System.out.println(t.inOneWeek("2019-04-25","2019-04-25"));
-        System.out.println(t.inOneWeek("2019-04-25","2019-04-26"));
-        System.out.println(t.inOneWeek("2019-04-25","2019-04-27"));
-        System.out.println(t.inOneWeek("2019-04-25","2019-04-28"));
-        System.out.println(t.inOneWeek("2019-04-25","2019-04-29"));
-        System.out.println(t.inOneWeek("2019-04-25","2019-04-30"));
-        System.out.println(t.inOneWeek("2019-04-25","2019-05-01"));
-        System.out.println(t.inOneWeek("2019-04-25","2019-05-02"));
+        System.out.println("================inoneweek===============");
+        // ,"2019-04-27","2019-05-04",
+        System.out.println(t.inOneWeek("2019-04-27","2019-04-27"));
+        System.out.println(t.inOneWeek("2019-04-27","2019-04-28"));
+        System.out.println(t.inOneWeek("2019-04-27","2019-04-29"));
+        System.out.println(t.inOneWeek("2019-04-27","2019-04-30"));
+        System.out.println(t.inOneWeek("2019-04-27","2019-05-01"));
+        System.out.println(t.inOneWeek("2019-04-27","2019-05-02"));
+        System.out.println(t.inOneWeek("2019-04-27","2019-05-03"));
+        System.out.println(t.inOneWeek("2019-04-27","2019-05-04"));
         System.out.println("================================================");
 
         System.out.println(t.inOneMonth("2019-04-25","2019-04-24"));
@@ -446,43 +480,14 @@ public class TaskTimeCalculator {
 //        5 4 3 2 1 12 11 10  9 8 7 6
         System.out.println(JSONObject.toJSONString(t.getHalfYear()));
         System.out.println(JSONObject.toJSONString(t.getYear()));
-       String startDateStr="2019-02-25";
-        String yyyyMMStr = startDateStr.substring(0, 7);
+        String startDateStr="2019-02-25";
+        String yyyyMMStr = startDateStr.substring(2, 7);
         String yyyyMMStr1 = startDateStr.substring(0, 7);
         System.out.println(yyyyMMStr);
 
-     ;
+        ;
     }
 
 
-    public  Date getYesterday(Date date){
-        String yesterday = getYesterdayStr(date);
-        Date redate = null;
-        try {
-            date = format.parse(yesterday);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return redate;
-    }
 
-
-    public  String getYesterdayStr(Date date){
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE,   -1);
-        return format.format(calendar.getTime());
-    }
-
-    public  String getYesterdayStr(String yyyyMMddDate){
-        Date parse = null;
-        try {
-            parse = format.parse(yyyyMMddDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar   cal   =   Calendar.getInstance();
-        cal.setTime(parse);
-        cal.add(Calendar.DATE,   -1);
-        return format.format(cal.getTime());
-    }
 }
