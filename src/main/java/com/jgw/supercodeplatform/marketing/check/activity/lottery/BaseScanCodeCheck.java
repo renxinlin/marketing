@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.check.activity.scancode;
+package com.jgw.supercodeplatform.marketing.check.activity.lottery;
 
 import java.util.ArrayList;
 import java.util.HashMap;

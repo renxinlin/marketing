@@ -53,7 +53,7 @@ public class EseTest {
 		String time=format.format(new Date());
 		Date d=format.parse(time);
 		String openId="oeVn5sq-wk7_MH4jN2BUQ_fSRv-A".replaceAll("-", "").replaceAll("_", "");
-		cService.addScanCodeRecord(openId, "59547d98e7984f3da3fd157b15d7bcf4", "59547d98e7984f3da3fd157b15d7bcf4", "20268964098434485L", "12", 245L, d.getTime(), openId,0);
+//		cService.addScanCodeRecord(openId, "59547d98e7984f3da3fd157b15d7bcf4", "59547d98e7984f3da3fd157b15d7bcf4", "20268964098434485L", "12", 245L, d.getTime(), openId,0);
 		
 		 Map<String, Object> addParam=new HashMap<String, Object>();
 //		 addParam.put("userId.keyword", "oeVn5sgnslZcCSrigGXb3HE5A");

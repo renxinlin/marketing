@@ -1,7 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.member;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -28,7 +27,6 @@ import com.jgw.supercodeplatform.marketing.dto.members.H5MembersInfoParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.service.TempService;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -54,8 +52,6 @@ public class MarketingMembersFrontController extends CommonUtil {
 	@Autowired
 	private ModelMapper modelMapper;
 
-	@Autowired
-	private TempService tempService;
 	
 	
 	@Autowired
@@ -118,18 +114,7 @@ public class MarketingMembersFrontController extends CommonUtil {
 			//如果参数手机和和已有的手机号不同则校验参数的手机号是否已被注册
 			MarketingMembers memberByPhone =marketingMembersService.selectByPhoneAndOrgIdExcludeId(mobile,organizationId,id);
 			if (null!=memberByPhone ) {
-				if (memberByPhone.getId().intValue()!=memberById.getId().intValue() ) {
-					if (StringUtils.isNotBlank(memberByPhone.getOpenid())) {
-						// 可能是业务覆盖
-						throw new SuperCodeException("该手机号已注册过",500);
-					}
-					//如果存在手机号记录又允许绑定到当前微信号则合并用户更新数据
-					tempService.updateMemberId(memberByPhone.getId(), id);
-					Integer haveIntegral=member.getHaveIntegral()==null?0:member.getHaveIntegral();
-					Integer extralIntegral=memberByPhone.getHaveIntegral()==null?0:memberByPhone.getHaveIntegral();
-					member.setHaveIntegral(haveIntegral+extralIntegral);
-					marketingMembersService.deleteById(memberByPhone.getId());
-				}
+				throw new SuperCodeException("该手机号已存在");
 			}
 		}
 		MarketingMembers memberDto = modelMapper.map(member, MarketingMembers.class);
@@ -170,19 +155,6 @@ public class MarketingMembersFrontController extends CommonUtil {
     	marketingMembersService.updateMembers(marketingMembersUpdateParam);
         return new RestResult<String>(200, "成功", null);
     }
-    
-    @RequestMapping(value = "/lottery",method = RequestMethod.POST)
-    @ApiOperation(value = "用户点击领奖方法", notes = "")
-    public RestResult<String> lottery(String wxstate) throws Exception {
-        return marketingMembersService.lottery(wxstate);
-    }
-    
-    @RequestMapping(value = "/guideLottery",method = RequestMethod.POST)
-    @ApiOperation(value = "用户点击领奖方法", notes = "")
-    public RestResult<String> guideLottery(String wxstate,HttpServletRequest request) throws Exception {
-        return marketingMembersService.guideLottery(wxstate);
-    }
-    
     
     @RequestMapping(value = "/getJwtToken",method = RequestMethod.GET)
     @ApiOperation(value = "获取jwt-token", notes = "")

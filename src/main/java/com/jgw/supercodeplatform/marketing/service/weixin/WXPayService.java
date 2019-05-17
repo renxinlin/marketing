@@ -49,6 +49,9 @@ public class WXPayService {
 			throw new SuperCodeException("发起微信支付参数不能为空,openid="+openid+",spbill_create_ip="+spbill_create_ip+",partner_trade_no="+partner_trade_no+spbill_create_ip+",organizationId="+organizationId, 500);
 		}
 		MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.get(organizationId);
+		if (null==mWxMerchants) {
+			throw new SuperCodeException("当前企业"+organizationId+"未绑定公众号数据", 500);
+		}
 		String mechid=mWxMerchants.getMchid();
 		String mechappid=mWxMerchants.getMchAppid();
 		if (StringUtils.isBlank(mechid) || StringUtils.isBlank(mechappid)) {
