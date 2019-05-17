@@ -34,6 +34,7 @@ public class RegisterNumController extends CommonUtil {
      * 任务标志
      */
     private static final Enum type = TaskTypeEnum.REGISTER_NUM;
+    private static final String SPLIT ="~" ;
     @Autowired
     private TaskTimeCalculator taskTimeCalculator;
     // TODO 会员角色
@@ -223,7 +224,7 @@ public class RegisterNumController extends CommonUtil {
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
             // 其中最后一个区间<=7天
             try {
-                vo.setTime(threeMonthString.get(i)+threeMonthString.get(i+1));
+                vo.setTime(threeMonthString.get(i)+SPLIT+threeMonthString.get(i+1));
             } catch (Exception e) {
                 vo.setTime(threeMonthString.get(i));
             }
@@ -273,7 +274,7 @@ public class RegisterNumController extends CommonUtil {
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
             // 其中最后一个区间<=7天
             try {
-                vo.setTime(halfYearString.get(i)+halfYearString.get(i+1));
+                vo.setTime(halfYearString.get(i).substring(0,7));
             } catch (Exception e) {
                 vo.setTime(halfYearString.get(i));
             }
@@ -323,7 +324,7 @@ public class RegisterNumController extends CommonUtil {
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
             // 其中最后一个区间<=7天
             try {
-                vo.setTime(yearString.get(i)+yearString.get(i+1));
+                vo.setTime(yearString.get(i).substring(0,7));
             } catch (Exception e) {
                 vo.setTime(yearString.get(i));
             }

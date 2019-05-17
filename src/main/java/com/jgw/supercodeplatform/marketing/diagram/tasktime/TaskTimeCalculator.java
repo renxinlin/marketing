@@ -379,6 +379,39 @@ public class TaskTimeCalculator {
         return dates;
     }
 
+
+    public  Date getYesterday(Date date){
+        String yesterday = getYesterdayStr(date);
+        Date redate = null;
+        try {
+            redate = format.parse(yesterday);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return redate;
+    }
+
+
+    public  String getYesterdayStr(Date date){
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE,   -1);
+        return format.format(calendar.getTime());
+    }
+
+    public  String getYesterdayStr(String yyyyMMddDate){
+        Date parse = null;
+        try {
+            parse = format.parse(yyyyMMddDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar   cal   =   Calendar.getInstance();
+        cal.setTime(parse);
+        cal.add(Calendar.DATE,   -1);
+        return format.format(cal.getTime());
+    }
+
+
     /**
      * 测试产品需求X轴;
      * 数据已经符合格式
@@ -446,43 +479,14 @@ public class TaskTimeCalculator {
 //        5 4 3 2 1 12 11 10  9 8 7 6
         System.out.println(JSONObject.toJSONString(t.getHalfYear()));
         System.out.println(JSONObject.toJSONString(t.getYear()));
-       String startDateStr="2019-02-25";
-        String yyyyMMStr = startDateStr.substring(0, 7);
+        String startDateStr="2019-02-25";
+        String yyyyMMStr = startDateStr.substring(2, 7);
         String yyyyMMStr1 = startDateStr.substring(0, 7);
         System.out.println(yyyyMMStr);
 
-     ;
+        ;
     }
 
 
-    public  Date getYesterday(Date date){
-        String yesterday = getYesterdayStr(date);
-        Date redate = null;
-        try {
-            redate = format.parse(yesterday);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return redate;
-    }
 
-
-    public  String getYesterdayStr(Date date){
-        calendar.setTime(date);
-        calendar.add(Calendar.DATE,   -1);
-        return format.format(calendar.getTime());
-    }
-
-    public  String getYesterdayStr(String yyyyMMddDate){
-        Date parse = null;
-        try {
-            parse = format.parse(yyyyMMddDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar   cal   =   Calendar.getInstance();
-        cal.setTime(parse);
-        cal.add(Calendar.DATE,   -1);
-        return format.format(cal.getTime());
-    }
 }

@@ -29,6 +29,7 @@ public class SaleTaskController extends CommonUtil {
      * 任务标志
      */
     private static final Enum type = TaskTypeEnum.SALE;
+    private static final String SPLIT = "~";
     @Autowired
     private TaskTimeCalculator taskTimeCalculator;
 
@@ -137,7 +138,7 @@ public class SaleTaskController extends CommonUtil {
         if(!CollectionUtils.isEmpty(organizationAllSalePrice)){
             for(String day : dateParamsString){
                 SerialVo vo = new SerialVo();
-                vo.setTime(day);
+                vo.setTime(day.substring(0,7));
                 timeVo.put(day,vo);
             }
             // 移除最后一个数据，最后一个数据的区间已经加载在i-1上
@@ -176,10 +177,14 @@ public class SaleTaskController extends CommonUtil {
         Map<String, SerialVo> timeVo = new TreeMap<>();
         // 图表数据格式
         if(!CollectionUtils.isEmpty(organizationAllSalePrice)){
-            for(String day : dateParamsString){
+            for(int i=0;i<dateParamsString.size();i++){
                 SerialVo vo = new SerialVo();
-                vo.setTime(day);
-                timeVo.put(day,vo);
+                try {
+                    vo.setTime(dateParamsString.get(i)+SPLIT+dateParamsString.get(i+1));
+                } catch (Exception e) {
+                    vo.setTime(dateParamsString.get(i));
+                }
+                timeVo.put(dateParamsString.get(i),vo);
             }
             // 移除最后一个数据，最后一个数据的区间已经加载在i-1上
             timeVo.remove(dateParamsString.get(dateParamsString.size()-1));

@@ -273,10 +273,19 @@ public class MemberPortraitController extends CommonUtil {
         double otherdouble = otherBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         other.setPercent(otherdouble);
         other.setPercentStr(otherdouble+"");
+        if(man.getCount()> 0 ){
 
-        sexCricleVos.add(man);
-        sexCricleVos.add(woman);
-        sexCricleVos.add(other);
+            sexCricleVos.add(man);
+
+        }
+        if(woman.getCount()> 0 ){
+            sexCricleVos.add(woman);
+
+        }
+        if(other.getCount()> 0 ){
+            sexCricleVos.add(other);
+
+        }
 
 
         // 注册设备
@@ -317,13 +326,25 @@ public class MemberPortraitController extends CommonUtil {
         otherDevice.setPercentStr(otherDevicedouble+"");
 
 
+        if(wxdevice.getCount()> 0 ){
+            deviceCricleVos.add(wxdevice);
+        }
+        if(zhifubaodevice.getCount()> 0 ){
+            deviceCricleVos.add(zhifubaodevice);
+        }
+        if(appdevice.getCount()> 0 ){
+            deviceCricleVos.add(appdevice);
+        }
+        if(browerdevice.getCount()> 0 ){
+            deviceCricleVos.add(browerdevice);
+        }
+        if(qqdevice.getCount()> 0 ){
+            deviceCricleVos.add(qqdevice);
+        }
+        if(otherDevice.getCount()> 0 ){
+            deviceCricleVos.add(otherDevice);
+        }
 
-        deviceCricleVos.add(wxdevice);
-        deviceCricleVos.add(zhifubaodevice);
-        deviceCricleVos.add(appdevice);
-        deviceCricleVos.add(browerdevice);
-        deviceCricleVos.add(qqdevice);
-        deviceCricleVos.add(otherDevice);
 
 
         // 年龄统计
@@ -344,9 +365,15 @@ public class MemberPortraitController extends CommonUtil {
         otherage.setPercent(otheragedouble);
         otherage.setPercentStr(otheragedouble+"");
 
-
-        ageCricleVos.addAll(Arrays.asList(agex0));
-        ageCricleVos.add(otherage);
+        List<CricleVo> cricleVos = Arrays.asList(agex0);
+        for(CricleVo vo:cricleVos){
+            if(vo.getCount()> 0){
+                ageCricleVos.add(vo);
+            }
+        }
+        if(otherage.getCount()> 0){
+            ageCricleVos.add(otherage);
+        }
 
         // 最终格式
         Map result = new HashMap();
