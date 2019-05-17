@@ -125,10 +125,10 @@ public class SalerRegisterAndLoginController {
        // 获取openid
        String openidandaccesstokenUrlLast = openidandaccesstokenUrl.replace("[code]", code);
        String encodeUrl = URLEncoder.encode(openidandaccesstokenUrlLast, "utf-8");
-       logger.error("4================================访问httpsurl{}==================",encodeUrl);
+       logger.error("4================================访问httpsurl{}==================",openidandaccesstokenUrlLast);
 
        // 访问https
-       String containOpenId = getOpenid(encodeUrl);
+       String containOpenId = getOpenid(openidandaccesstokenUrlLast);
        logger.error("5================================访问结果{}==================",containOpenId);
 
 //       MarketingUser marketingUser = null;
