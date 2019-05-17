@@ -102,7 +102,10 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
      * @param organizationId
      * @return
      */
-    public List<IntegralExchangeParam> getOrganizationExchange(String organizationId) {
+    public List<IntegralExchangeParam> getOrganizationExchange(String organizationId) throws SuperCodeException {
+        if(StringUtils.isBlank(organizationId)){
+            throw new SuperCodeException("获取组织信息失败",500);
+        }
         return  mapper.getOrganizationExchange(organizationId);
 
     }
@@ -336,7 +339,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
 
     /**
-     * H5兑换:具有事务支持 es操作在最后
+     * H5兑换:具有事务支持
      * @param exchangeProductParam
      */
     @Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
@@ -433,7 +436,6 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                     }else{
                          // 库存预警
                          shouldUndercarriageDO.setId((Long) exchangeNumKey.get("exchangeId"));
-                         // 自动下架
                           // 开启预警
                          if( beforeEchangeStatus.getStockWarningNum() != null && afterExchangeStock <=  beforeEchangeStatus.getStockWarningNum()){
                              // 发出库存预警
@@ -540,7 +542,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(member.getState() == (byte)0){
             throw new SuperCodeException("您已被管理员禁用...");
         }
-        // 查看组织id - productID-sku-是否存在 开启锁，强制阻塞
+        // 查看组织id - productID-sku-是否存在 开启锁，强制阻塞，加索引后基于行锁阻塞
         IntegralExchange exists = mapper.exists(exchangeProductParam.getOrganizationId(), exchangeProductParam.getProductId(), exchangeProductParam.getSkuId());
         if(exists == null){
             logger.error(" {兑换信息不存在"+ JSONObject.toJSONString(exchangeProductParam) +"} ");
