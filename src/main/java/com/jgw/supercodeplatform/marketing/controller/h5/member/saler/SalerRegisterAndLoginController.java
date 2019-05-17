@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.HttpsUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.dto.CustomerInfo;
@@ -15,7 +16,14 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -23,7 +31,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.yaml.snakeyaml.util.UriEncoder;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -33,12 +45,18 @@ import java.util.List;
 @Controller
 @RequestMapping("/marketing/front/saler")
 @Api(tags = "h5用户注册登录信息完善点击领奖")
-public class SalerController {
+public class SalerRegisterAndLoginController {
     // TODO 组织id获取问题
     // TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题// TODO 组织id获取问题
     // TODO 组织id获取问题
+    private Logger logger = LoggerFactory.getLogger(SalerRegisterAndLoginController.class);
 
-
+//    redirect_uri域名与后台配置不一致则失败
+    private final String redirctUrl              = "http://marketing.kf315.net/marketing/front/saler/register";
+    // 获取code
+    private final String OAUTH2_WX_URL           = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx32ab5628a5951ecc&redirect_uri="+redirctUrl+"&response_type=code&scope=snsapi_base&state="+"[mobile]"+"#wechat_redirect";
+    // 获取一次性access_token openid
+    private final String openidandaccesstokenUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx32ab5628a5951ecc&secret=e3fb09c9126cd8bc12399e56a35162c4&code=[code]&grant_type=authorization_code";
     @Autowired
     private MarketingSaleMemberService service;
     /**
@@ -63,33 +81,50 @@ public class SalerController {
      * @return
      */
    @RequestMapping("/tempRegister")
-   public String loadingRegisterBeforeWxReturnOpenId(@RequestBody  MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
+   public String loadingRegisterBeforeWxReturnOpenId(@RequestBody  MarketingSaleMembersAddParam userInfo) throws SuperCodeException, UnsupportedEncodingException {
        // 临时缓存用户信息;此时用户无组织信息
        registerAsTempWaybeforeAuquireOpenId(userInfo);
+       String mobile = userInfo.getMobile();
        // 获取微信配置信息 同时传递手机号
        // 重定向到微信授权
        // 直接请求微信静默授权
        // 微信重定向到 保存用户信息接口
-       return "redirct:"+"";
+       OAUTH2_WX_URL.replaceAll("[mobile]",mobile);
+       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
+       logger.error("1================================获取微信授权开始==================");
+       logger.error("2================================获取微信授权url{}==================",redirctUri);
+       return "redirct:"+ redirctUri;
    }
 
 
    @ResponseBody
    @RequestMapping("register")
-   public RestResult<String> saveRegisterInfo(String openId,String mobile) throws SuperCodeException {
-       if(StringUtils.isBlank(mobile)){
-           throw new SuperCodeException("微信回调手机号失败...");
-       }
+   public RestResult<String> saveRegisterInfo(String code,String state) throws SuperCodeException, UnsupportedEncodingException {
+       logger.error("3================================获取微信授权回调参数code{},state{}==================",code,state);
 
-       if(StringUtils.isBlank(openId)){
-           throw new SuperCodeException("获取openId失败...");
+       // code说明 ： code作为换取access_token的票据，每次用户授权带上的code将不一样，code只能使用一次，5分钟未被使用自动过期。
+       if(StringUtils.isBlank(code)){
+           throw new SuperCodeException("微信回调code失败...");
+       }
+       if(StringUtils.isBlank(state)){
+           // 存储手机号
+           throw new SuperCodeException("获取手机号失败...");
 
        }
+       // 获取openid
+       openidandaccesstokenUrl.replaceAll("[code]",code);
+       String encodeUrl = URLEncoder.encode(openidandaccesstokenUrl, "utf-8");
+       logger.error("4================================访问httpsurl{}==================",encodeUrl);
+
+       // 访问https
+       String containOpenId = getOpenid(encodeUrl);
+       logger.error("4================================访问结果{}==================",containOpenId);
+
        MarketingUser marketingUser = null;
        try {
-           String userDtoString = redisUtil.get(REGISTER_PERFIX + mobile);
+           String userDtoString = redisUtil.get(REGISTER_PERFIX + state);
            marketingUser = JSONObject.parseObject(userDtoString, MarketingUser.class);
-           marketingUser.setOpenid(openId);
+           marketingUser.setOpenid(containOpenId);
        } catch (Exception e) {
            throw new SuperCodeException("获取临时用户信息失败...");
        }
@@ -100,6 +135,16 @@ public class SalerController {
 
 
    }
+
+    /**
+     * 访问微信https
+     * @param openidandaccesstokenUrl
+     * @return
+     */
+    private String getOpenid(String openidandaccesstokenUrl) {
+        String s = HttpsUtil.get(openidandaccesstokenUrl,null);
+        return  s;
+    }
 
     private void registerAsTempWaybeforeAuquireOpenId(MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
        if(userInfo == null){
