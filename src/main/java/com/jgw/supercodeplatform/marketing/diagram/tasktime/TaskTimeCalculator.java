@@ -459,7 +459,7 @@ public class TaskTimeCalculator {
         String yesterday = getYesterdayStr(date);
         Date redate = null;
         try {
-            date = format.parse(yesterday);
+            redate = format.parse(yesterday);
         } catch (ParseException e) {
             e.printStackTrace();
         }
