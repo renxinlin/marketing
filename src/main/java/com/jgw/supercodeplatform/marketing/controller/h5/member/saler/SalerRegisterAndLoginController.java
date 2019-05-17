@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.yaml.snakeyaml.util.UriEncoder;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -79,7 +80,7 @@ public class SalerRegisterAndLoginController {
      * @return
      */
    @RequestMapping("/tempRegister")
-   public String loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo) throws SuperCodeException, UnsupportedEncodingException {
+   public void loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
        // 临时缓存用户信息;此时用户无组织信息
 //       registerAsTempWaybeforeAuquireOpenId(userInfo);
 //       String mobile = userInfo.getMobile();
@@ -93,7 +94,9 @@ public class SalerRegisterAndLoginController {
 //       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
        logger.error("1================================获取微信授权开始==================");
        logger.error("2================================获取微信授权url{}==================",OAUTH2_WX_URL_LAST);
-       return "redirct:"+ OAUTH2_WX_URL_LAST;
+//       return "redirct:"+ OAUTH2_WX_URL_LAST;
+       response.sendRedirect(OAUTH2_WX_URL_LAST);
+//       return "redirct:"+ "http://www.renxl.club";
    }
 
     public static void main(String[] args) throws UnsupportedEncodingException {
