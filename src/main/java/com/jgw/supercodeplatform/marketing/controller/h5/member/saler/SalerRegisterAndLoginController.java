@@ -81,7 +81,7 @@ public class SalerRegisterAndLoginController {
      * @return
      */
    @RequestMapping("/tempRegister")
-   public String loadingRegisterBeforeWxReturnOpenId(@RequestBody  MarketingSaleMembersAddParam userInfo) throws SuperCodeException, UnsupportedEncodingException {
+   public String loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo) throws SuperCodeException, UnsupportedEncodingException {
        // 临时缓存用户信息;此时用户无组织信息
        registerAsTempWaybeforeAuquireOpenId(userInfo);
        String mobile = userInfo.getMobile();
@@ -118,7 +118,7 @@ public class SalerRegisterAndLoginController {
 
        // 访问https
        String containOpenId = getOpenid(encodeUrl);
-       logger.error("4================================访问结果{}==================",containOpenId);
+       logger.error("5================================访问结果{}==================",containOpenId);
 
        MarketingUser marketingUser = null;
        try {
