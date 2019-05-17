@@ -54,12 +54,11 @@ public class CodeEsService extends AbstractEsSearch {
 	@Autowired
 	@Qualifier("elClient")
 	private TransportClient eClient;
-
 	public void addScanCodeRecord(String userId, String productId, String productBatchId, String codeId,
-								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId) throws SuperCodeException {
+								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId,Integer memberType) throws SuperCodeException {
 		if (StringUtils.isBlank(userId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
-				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
+				|| null == activitySetId|| StringUtils.isBlank(organizationId) || null == memberType) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
 
@@ -73,7 +72,7 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("userId", userId);
 		addParam.put("scanCodeTime", scanCodeTime);
 		addParam.put("organizationId", organizationId);
-
+		addParam.put("memberType", memberType);
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
 		eSearch.setType(EsType.INFO);
@@ -124,10 +123,11 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param productBatchId
 	 * @return
 	 */
-	public Long countByCode(String codeId, String codeType) {
+	public Long countByCode(String codeId, String codeType,Integer memberType) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("codeId.keyword", codeId);
 		addParam.put("codeType.keyword", codeType);
+		addParam.put("memberType", memberType);
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
 		eSearch.setType(EsType.INFO);
@@ -142,7 +142,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param codeType
 	 * @return
 	 */
-	public List<SearchHit> selectScanCodeRecord(String codeId, String codeType) {
+	public List<SearchHit> selectScanCodeRecord(String codeId, String codeType,Integer memberType) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("codeId.keyword", codeId);
 		addParam.put("codeType.keyword", codeType);
@@ -154,6 +154,7 @@ public class CodeEsService extends AbstractEsSearch {
 
 		return get(eSearch);
 	}
+
 
 	public Long countByActivitySetId(Long activitySetId) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
