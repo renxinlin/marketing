@@ -34,9 +34,6 @@ public class MemberExchangeController {
     @RequestMapping(value = "/list",method = RequestMethod.GET)
     @ApiOperation(value = "积分兑换设置列表", notes = "")
      public RestResult<List<IntegralExchangeParam>> list(@RequestParam("organizationId") String organizationId) throws Exception {
-        if(StringUtils.isBlank(organizationId)){
-            throw new SuperCodeException("获取组织信息失败",500);
-        }
         List<IntegralExchangeParam> results = integralExchangeService.getOrganizationExchange(organizationId);
         return RestResult.success("success", results);
     }
