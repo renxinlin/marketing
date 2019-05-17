@@ -225,7 +225,7 @@ public class RegisterNumController extends CommonUtil {
             // 其中最后一个区间<=7天
             try {
                 // yy-MM-dd
-                vo.setTime(threeMonthString.get(i).substring(2,7)+SPLIT+threeMonthString.get(i+1).substring(2,7));
+                vo.setTime(threeMonthString.get(i).substring(2,10)+SPLIT+threeMonthString.get(i+1).substring(2,10));
             } catch (Exception e) {
                 vo.setTime(threeMonthString.get(i));
             }
