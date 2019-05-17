@@ -224,7 +224,8 @@ public class RegisterNumController extends CommonUtil {
             // 数据value存储的是threeMonthString[i]到threeMonthString[i+1]的和
             // 其中最后一个区间<=7天
             try {
-                vo.setTime(threeMonthString.get(i)+SPLIT+threeMonthString.get(i+1));
+                // yy-MM-dd
+                vo.setTime(threeMonthString.get(i).substring(2,7)+SPLIT+threeMonthString.get(i+1).substring(2,7));
             } catch (Exception e) {
                 vo.setTime(threeMonthString.get(i));
             }

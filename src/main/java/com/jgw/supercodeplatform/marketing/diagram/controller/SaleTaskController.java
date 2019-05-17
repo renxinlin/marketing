@@ -180,7 +180,8 @@ public class SaleTaskController extends CommonUtil {
             for(int i=0;i<dateParamsString.size();i++){
                 SerialVo vo = new SerialVo();
                 try {
-                    vo.setTime(dateParamsString.get(i)+SPLIT+dateParamsString.get(i+1));
+                    // yy-MM-dd
+                    vo.setTime(dateParamsString.get(i).substring(2,7)+SPLIT+dateParamsString.get(i+1).substring(2,7));
                 } catch (Exception e) {
                     vo.setTime(dateParamsString.get(i));
                 }
