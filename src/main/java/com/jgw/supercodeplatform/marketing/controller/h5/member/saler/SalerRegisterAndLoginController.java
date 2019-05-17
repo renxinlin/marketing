@@ -89,7 +89,7 @@ public class SalerRegisterAndLoginController {
        // 微信重定向到 保存用户信息接口
        String mobile = "15728043579";
        String encodeUrl = URLEncoder.encode(redirctUrl, "utf-8");
-       String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replaceAll("[mobile]", mobile).replaceAll("[backUrl]",encodeUrl);
+       String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", mobile).replace("[backUrl]",encodeUrl);
 //       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
        logger.error("1================================获取微信授权开始==================");
        logger.error("2================================获取微信授权url{}==================",OAUTH2_WX_URL_LAST);
@@ -100,7 +100,7 @@ public class SalerRegisterAndLoginController {
         SalerRegisterAndLoginController s= new SalerRegisterAndLoginController();
         String mobile = "15728043579";
         String encodeUrl = URLEncoder.encode(s.redirctUrl, "utf-8");
-        String OAUTH2_WX_URL_LAST = s.OAUTH2_WX_URL.replaceAll("[mobile]", mobile).replaceAll("[backUrl]",encodeUrl);
+        String OAUTH2_WX_URL_LAST = s.OAUTH2_WX_URL.replace("[mobile]", mobile).replace("[backUrl]",encodeUrl);
 //       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
         System.out.println(OAUTH2_WX_URL_LAST);
 
@@ -120,7 +120,7 @@ public class SalerRegisterAndLoginController {
 
        }
        // 获取openid
-       String openidandaccesstokenUrlLast = openidandaccesstokenUrl.replaceAll("[code]", code);
+       String openidandaccesstokenUrlLast = openidandaccesstokenUrl.replace("[code]", code);
        String encodeUrl = URLEncoder.encode(openidandaccesstokenUrlLast, "utf-8");
        logger.error("4================================访问httpsurl{}==================",encodeUrl);
 
