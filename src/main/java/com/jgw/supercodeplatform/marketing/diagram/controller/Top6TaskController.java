@@ -130,8 +130,11 @@ public class Top6TaskController extends CommonUtil {
     public RestResult threeMonthTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> date = taskTimeCalculator.getThreeMonth();
-        List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
-        Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
+        List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0)
+                ,taskTimeCalculator.getYesterday(date.get(date.size() - 1)));
+        Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0)
+                ,taskTimeCalculator.getYesterday(date.get(date.size() - 1)));
+
         return task(top6Dtos,all);
 
     }
@@ -140,8 +143,11 @@ public class Top6TaskController extends CommonUtil {
 
         String organizationId = getOrganizationId();
         List<Date> date = taskTimeCalculator.getHalfYear();
-        List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
-        Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
+
+        List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0)
+                ,taskTimeCalculator.getYesterday(date.get(date.size() - 1)));
+        Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0)
+                ,taskTimeCalculator.getYesterday(date.get(date.size() - 1)));
         return task(top6Dtos,all);
 
     }
@@ -149,8 +155,10 @@ public class Top6TaskController extends CommonUtil {
     public RestResult yearTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> date = taskTimeCalculator.getYear();
-        List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
-        Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0), date.get(date.size() - 1));
+        List<IntegralRecord> top6Dtos = service.getOrganizationTop6IntegralProduct(organizationId, date.get(0)
+                ,taskTimeCalculator.getYesterday(date.get(date.size() - 1)));
+        Integer all = service.getOrganizationAllIntegralProduct(organizationId, date.get(0)
+                ,taskTimeCalculator.getYesterday(date.get(date.size() - 1)));
         return task(top6Dtos,all);
 
     }

@@ -211,7 +211,8 @@ public class RegisterNumController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> threeMonth = taskTimeCalculator.getThreeMonth();
         List<String> threeMonthString = taskTimeCalculator.getThreeMonthString();
-        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, threeMonth.get(0), threeMonth.get(threeMonth.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, threeMonth.get(0)
+                ,taskTimeCalculator.getYesterday(threeMonth.get(threeMonth.size() - 1)));
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
@@ -259,7 +260,9 @@ public class RegisterNumController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> halfYear = taskTimeCalculator.getHalfYear();
         List<String> halfYearString = taskTimeCalculator.getHalfYearString();
-        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, halfYear.get(0), halfYear.get(halfYear.size() - 1));
+
+        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, halfYear.get(0)
+                ,taskTimeCalculator.getYesterday(halfYear.get(halfYear.size() - 1)));
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
@@ -308,8 +311,9 @@ public class RegisterNumController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> year = taskTimeCalculator.getYear();
         List<String> yearString = taskTimeCalculator.getYearString();
-        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, year.get(0), year.get(year.size() - 1));
 
+        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, year.get(0)
+                ,taskTimeCalculator.getYesterday(year.get(year.size() - 1)));
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
         Map<String, SerialVo> yearVo = new TreeMap<>();

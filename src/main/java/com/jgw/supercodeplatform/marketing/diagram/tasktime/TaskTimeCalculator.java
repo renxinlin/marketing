@@ -29,6 +29,7 @@ public class TaskTimeCalculator {
      */
     Calendar calendar = Calendar.getInstance();
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-01");
 
     /**
      * 判断是否一周内
@@ -66,18 +67,28 @@ public class TaskTimeCalculator {
         if(StringUtils.isBlank(value) || StringUtils.isBlank(startDateStr) ){
             return false;
         }
-        Date startDate = format.parse(startDateStr);
-        Date vauleDate = format.parse(value);
-
-        calendar.setTime(startDate);//把当前时间赋给日历
-        calendar.add(Calendar.MONTH, 1);  //设置为30天后
-        Date monthAfter = calendar.getTime();   //得到30天后的时间
-        if (startDate.getTime() <= vauleDate.getTime() && monthAfter.getTime() > vauleDate.getTime()) {
+        // 按30天
+//        Date startDate = format.parse(startDateStr);
+//        Date vauleDate = format.parse(value);
+//
+//        calendar.setTime(startDate);//把当前时间赋给日历
+//        calendar.add(Calendar.MONTH, 1);  //设置为30天后
+//        Date monthAfter = calendar.getTime();   //得到30天后的时间
+//        if (startDate.getTime() <= vauleDate.getTime() && monthAfter.getTime() > vauleDate.getTime()) {
+//            return true;
+//        } else {
+//            return false;
+//
+//        }
+        // 按自然月
+        String yyyyMMStr = startDateStr.substring(0, 7);
+        String yyyyMMStr1 = startDateStr.substring(0, 7);
+        if(yyyyMMStr.equals(yyyyMMStr1)){
             return true;
-        } else {
+        }else {
             return false;
-
         }
+
     }
 
     public List getWeek(){
@@ -208,10 +219,7 @@ public class TaskTimeCalculator {
             }
             dates.add(date);
         }
-        calendar.setTime(current);
-        calendar.add(Calendar.DATE, -1);
-        Date yestoday = calendar.getTime();
-        dates.add(yestoday);
+        dates.add(current);
         return dates;
     }
 
@@ -242,11 +250,7 @@ public class TaskTimeCalculator {
             }
             dates.add(format.format(date));
         }
-        calendar.setTime(current);
-        calendar.add(Calendar.DATE, -1);
-        Date yestoday = calendar.getTime();
-
-        dates.add(format.format(yestoday));
+        dates.add(format.format(current));
 
         return dates;
     }
@@ -260,34 +264,51 @@ public class TaskTimeCalculator {
      */
     public List getHalfYear(){
         List dates = new LinkedList();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, -1);
-        // 按x轴添加
-        calendar.add(Calendar.MONTH, -7);
-        for(int i=-7;i<0;i++){
-            calendar.add(Calendar.MONTH, 1);
-            Date date = calendar.getTime();
-            dates.add(date);
+        for(String date :getHalfYearString()){
+            try {
+                dates.add(format.parse(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         return dates;
+
     }
 
     /**
      * 以月份为跨度，统计月总量，6个点
      * @return
      */
-    public List getHalfYearString(){
-        List dates = new LinkedList();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, -1);
-        // 按x轴添加
-        calendar.add(Calendar.MONTH, -7);
+    public List<String> getHalfYearString(){
+//        List dates = new LinkedList();
+//        calendar.setTime(new Date());
+//        calendar.add(Calendar.DATE, -1);
+//        // 按x轴添加
+//        calendar.add(Calendar.MONTH, -7);
+//
+//        for(int i=-7;i<0;i++){
+//            calendar.add(Calendar.MONTH, 1);
+//            Date date = calendar.getTime();
+//            dates.add(format.format(date));
+//        }
+//        return dates;
 
-        for(int i=-7;i<0;i++){
+
+
+        // 自然月
+        List dates= new LinkedList();
+        Date date = new Date();
+        calendar.setTime(date);
+        //按格式输出
+        calendar.add(Calendar.MONTH, -5);
+
+        for(int i = 0 ;i<6;i++){
+            String time2 = sdf.format(calendar.getTime()); // 本月第一天
+            dates.add(time2);
             calendar.add(Calendar.MONTH, 1);
-            Date date = calendar.getTime();
-            dates.add(format.format(date));
         }
+        dates.add(format.format(date));
+
         return dates;
     }
 
@@ -298,15 +319,24 @@ public class TaskTimeCalculator {
      * @return
      */
     public List getYear(){
+//        List dates = new LinkedList();
+//        calendar.setTime(new Date());
+//        calendar.add(Calendar.DATE, -1);
+//        // 按x轴添加
+//        calendar.add(Calendar.MONTH, -13);
+//        for(int i=-13;i<0;i++) {
+//            calendar.add(Calendar.MONTH, 1);
+//            Date date = calendar.getTime();
+//            dates.add(date);
+//        }
+//        return dates;
         List dates = new LinkedList();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, -1);
-        // 按x轴添加
-        calendar.add(Calendar.MONTH, -13);
-        for(int i=-13;i<0;i++) {
-            calendar.add(Calendar.MONTH, 1);
-            Date date = calendar.getTime();
-            dates.add(date);
+        for(String date :getYearString()){
+            try {
+                dates.add(format.parse(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         return dates;
     }
@@ -316,17 +346,36 @@ public class TaskTimeCalculator {
      * 以月份为跨度，统计月总量
      * @return
      */
-    public List getYearString(){
-        List dates = new LinkedList();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, -1);
-        // 按x轴添加
-        calendar.add(Calendar.MONTH, -13);
-        for(int i=-13;i<0;i++) {
+    public List<String> getYearString(){
+//        List dates = new LinkedList();
+//        calendar.setTime(new Date());
+//        calendar.add(Calendar.DATE, -1);
+//        // 按x轴添加
+//        calendar.add(Calendar.MONTH, -13);
+//        for(int i=-13;i<0;i++) {
+//            calendar.add(Calendar.MONTH, 1);
+//            Date date = calendar.getTime();
+//            dates.add(format.format(date));
+//        }
+//        return dates;
+
+
+        // 自然月
+        //["2019-05-16","2019-05-01","2019-04-01","2019-03-01","2019-02-01",
+        // "2019-01-01","2018-12-01","2018-11-01","2018-10-01","2018-09-01","2018-08-01","2018-07-01","2018-06-01"]
+        List dates= new LinkedList();
+        Date date = new Date();
+        calendar.setTime(date);
+        //按格式输出
+        calendar.add(Calendar.MONTH, -11);
+        for(int i = 0 ;i<12;i++){
+            String time2 = sdf.format(calendar.getTime()); //上月第一天
+            dates.add(time2);
             calendar.add(Calendar.MONTH, 1);
-            Date date = calendar.getTime();
-            dates.add(format.format(date));
+
         }
+        dates.add(format.format(date));
+
         return dates;
     }
 
@@ -384,12 +433,56 @@ public class TaskTimeCalculator {
         System.out.println("================================================");
 
 
-        System.out.println(t.inOneMonth("2019-02-25","2019-02-24"));
+        System.out.println(t.inOneMonth("2019-02-28","2019-03-01"));
         System.out.println(t.inOneMonth("2019-02-25","2019-02-25"));
         System.out.println(t.inOneMonth("2019-02-25","2019-02-26"));
         System.out.println(t.inOneMonth("2019-02-25","2019-03-24"));
         System.out.println(t.inOneMonth("2019-02-25","2019-03-25"));
         System.out.println(t.inOneMonth("2019-02-25","2019-03-26"));
+
+
+
+
+//        5 4 3 2 1 12 11 10  9 8 7 6
+        System.out.println(JSONObject.toJSONString(t.getHalfYear()));
+        System.out.println(JSONObject.toJSONString(t.getYear()));
+       String startDateStr="2019-02-25";
+        String yyyyMMStr = startDateStr.substring(0, 7);
+        String yyyyMMStr1 = startDateStr.substring(0, 7);
+        System.out.println(yyyyMMStr);
+
      ;
+    }
+
+
+    public  Date getYesterday(Date date){
+        String yesterday = getYesterdayStr(date);
+        Date redate = null;
+        try {
+            date = format.parse(yesterday);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return redate;
+    }
+
+
+    public  String getYesterdayStr(Date date){
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE,   -1);
+        return format.format(calendar.getTime());
+    }
+
+    public  String getYesterdayStr(String yyyyMMddDate){
+        Date parse = null;
+        try {
+            parse = format.parse(yyyyMMddDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar   cal   =   Calendar.getInstance();
+        cal.setTime(parse);
+        cal.add(Calendar.DATE,   -1);
+        return format.format(cal.getTime());
     }
 }

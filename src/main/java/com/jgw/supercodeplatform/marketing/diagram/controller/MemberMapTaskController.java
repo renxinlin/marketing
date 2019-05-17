@@ -139,7 +139,8 @@ public class MemberMapTaskController extends CommonUtil {
     public RestResult threeMonthTask( ) throws SuperCodeException{
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getThreeMonth();
-         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0)
+                 ,taskTimeCalculator.getYesterday(week.get(week.size() - 1)));
         return  task(registerNumMembers);
     }
 
@@ -147,7 +148,8 @@ public class MemberMapTaskController extends CommonUtil {
 
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getHalfYear();
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0)
+                ,taskTimeCalculator.getYesterday(week.get(week.size() - 1)));
         return  task(registerNumMembers);
     }
 
@@ -155,7 +157,8 @@ public class MemberMapTaskController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getYear();
         List<String> weekString = taskTimeCalculator.getYearString();
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0)
+                ,taskTimeCalculator.getYesterday(week.get(week.size() - 1)));
         return  task(registerNumMembers);
 
 

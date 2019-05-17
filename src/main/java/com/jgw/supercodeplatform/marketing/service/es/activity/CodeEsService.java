@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jgw.supercodeplatform.marketing.diagram.enums.QueryEnum;
 import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.index.IndexRequest;
@@ -55,10 +56,10 @@ public class CodeEsService extends AbstractEsSearch {
 	private TransportClient eClient;
 
 	public void addScanCodeRecord(String userId, String productId, String productBatchId, String codeId,
-			String codeType, Long activitySetId, Long scanCodeTime, String organizationId,Integer memberType) throws SuperCodeException {
+								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId) throws SuperCodeException {
 		if (StringUtils.isBlank(userId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
-				|| null == activitySetId|| StringUtils.isBlank(organizationId) || null == memberType) {
+				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
 
@@ -72,7 +73,7 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("userId", userId);
 		addParam.put("scanCodeTime", scanCodeTime);
 		addParam.put("organizationId", organizationId);
-		addParam.put("memberType", memberType);
+
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
 		eSearch.setType(EsType.INFO);
@@ -123,11 +124,10 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param productBatchId
 	 * @return
 	 */
-	public Long countByCode(String codeId, String codeType,Integer memberType) {
+	public Long countByCode(String codeId, String codeType) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("codeId.keyword", codeId);
 		addParam.put("codeType.keyword", codeType);
-		addParam.put("memberType", memberType);
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
 		eSearch.setType(EsType.INFO);
@@ -142,7 +142,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param codeType
 	 * @return
 	 */
-	public List<SearchHit> selectScanCodeRecord(String codeId, String codeType,Integer memberType) {
+	public List<SearchHit> selectScanCodeRecord(String codeId, String codeType) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("codeId.keyword", codeId);
 		addParam.put("codeType.keyword", codeType);
@@ -189,7 +189,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @throws SuperCodeException
 	 */
 	public void addCodeIntegral(Long userId, String outerCodeId, String codeTypeId, String productId, String productBatchId,
-			String organizationId, Long scanCodeTime) throws SuperCodeException {
+								String organizationId, Long scanCodeTime) throws SuperCodeException {
 		if (null==userId  || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
 				|| StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(codeTypeId) || StringUtils.isBlank(organizationId)|| null== scanCodeTime) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
@@ -229,13 +229,13 @@ public class CodeEsService extends AbstractEsSearch {
 		return getCount(eSearch);
 	}
 
-    /**
-     *
-     * @param userId
-     * @param scanCodeTime
-     * @param organizationId
-     * @return
-     */
+	/**
+	 *
+	 * @param userId
+	 * @param scanCodeTime
+	 * @param organizationId
+	 * @return
+	 */
 	public Long countIntegralByUserIdAndDate(Long userId, Long scanCodeTime, String organizationId) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		if (null!=userId) {
@@ -283,13 +283,13 @@ public class CodeEsService extends AbstractEsSearch {
 		// 添加查询条件
 		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate);
 		searchRequestBuilder.addAggregation(aggregation);
- 		// 获取查询结果
+		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		// 获取count
 		Stats aggs = searchResponse.getAggregations().get(AggregationName);
-        // 优化方向，其他结果如非必须可剔除
-        // 除去评分机制
-        // 采用过滤而非查询提高查询速度
+		// 优化方向，其他结果如非必须可剔除
+		// 除去评分机制
+		// 采用过滤而非查询提高查询速度
 		// 取所需结果
 		return  (int)aggs.getCount();
 	}
@@ -299,7 +299,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param toEsVo
 	 * @return
 	 */
-    public DiagramRemebermeVo searchDiagramRemberMeInfo(DiagramRemebermeVo toEsVo) throws SuperCodeException{
+	public DiagramRemebermeVo searchDiagramRemberMeInfo(DiagramRemebermeVo toEsVo) throws SuperCodeException{
 		if(StringUtils.isBlank(toEsVo.getOrganizationId())){
 			throw new SuperCodeException("组织信息获取失败...");
 		}
@@ -341,12 +341,12 @@ public class CodeEsService extends AbstractEsSearch {
 		if(StringUtils.isBlank(toEsVo.getChoose())){
 			throw new SuperCodeException("时间选择信息获取失败...");
 		}
-		if("123456".indexOf(toEsVo.getChoose())==-1){
+		if(QueryEnum.ALL.getStatus().indexOf(toEsVo.getChoose())==-1){
 			throw new SuperCodeException("时间选择信息非法...");
 		}
- 		String afterChoose = JSONObject.toJSONString(toEsVo);
+		String afterChoose = JSONObject.toJSONString(toEsVo);
 
-
+		// 判断userId,orgId是否存在
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termOrgIdQuery = new TermQueryBuilder("organizationId",toEsVo.getOrganizationId());
 		QueryBuilder termUserIdQuery = new TermQueryBuilder("userId",toEsVo.getUserId());
@@ -360,17 +360,15 @@ public class CodeEsService extends AbstractEsSearch {
 		}
 
 
-
-
-
-
 		if(StringUtils.isBlank(id)){
+			// 插入
 			IndexResponse indexResponse = eClient.prepareIndex(EsIndex.MARKET_DIAGRAM_REMBER.getIndex(), EsType.INFO.getType())
 					.setSource(afterChoose,XContentType.JSON).get();
 			if(indexResponse.getVersion() != -1){
 				return true;
 			}
 		}else {
+			// 根据id判断插入存在则更新【需要index doc的id】
 			IndexRequest indexRequest = new IndexRequest(EsIndex.MARKET_DIAGRAM_REMBER.getIndex(), EsType.INFO.getType(),id).source(afterChoose,XContentType.JSON);
 			UpdateRequest updateRequest = new UpdateRequest(EsIndex.MARKET_DIAGRAM_REMBER.getIndex(), EsType.INFO.getType(),id).doc(afterChoose,XContentType.JSON).upsert(indexRequest);
 			UpdateResponse updateResponse = eClient.update(updateRequest).get();
