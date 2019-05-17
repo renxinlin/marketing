@@ -1,6 +1,8 @@
 package com.jgw.supercodeplatform.marketing.diagram.enums;
 
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * 任务状态
  */
@@ -26,6 +28,11 @@ public enum QueryEnum {
      * 半年
      */
     HALF_YEAR("5"),
+
+    /**
+     * 所有选择类型
+     */
+    ALL("123456"),
     /**
      * 一年
      */
