@@ -1,9 +1,9 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
 import com.alibaba.fastjson.JSONObject;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.modelmapper.ModelMapper;
 
 @Data
 public class MarketingActivitySetCondition {
@@ -46,7 +46,7 @@ public class MarketingActivitySetCondition {
 
         }
         // 加逗号
-        if(participationCondition != null || !"".equals(participationCondition)){
+        if(participationCondition != null ){
             sb.append(",\"participationCondition\":").append(participationCondition);
         }
 

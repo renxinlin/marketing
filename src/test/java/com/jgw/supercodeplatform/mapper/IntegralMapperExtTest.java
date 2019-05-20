@@ -1,13 +1,5 @@
 package com.jgw.supercodeplatform.mapper;
 
-import com.jgw.supercodeplatform.SuperCodeMarketingApplication;
-import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
-import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
-import com.jgw.supercodeplatform.marketing.service.TempService;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -16,6 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.jgw.supercodeplatform.SuperCodeMarketingApplication;
+import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
+
 /**
  * 积分测试
  */
@@ -23,8 +20,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @SpringBootTest(classes = SuperCodeMarketingApplication.class)
 public class IntegralMapperExtTest {
 
-    @Autowired
-    private TempService tempService;
     
     @Autowired
     private DeliveryAddressMapperExt mapper;
@@ -33,7 +28,6 @@ public class IntegralMapperExtTest {
     private IntegralRecordMapperExt integralRecordDao;
     @Test
     public void test() {
-    	tempService.updateMemberId(83l, 84l);
     }
     
     @Test

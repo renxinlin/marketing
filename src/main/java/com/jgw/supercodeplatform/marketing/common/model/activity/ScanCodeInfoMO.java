@@ -15,6 +15,7 @@ public class ScanCodeInfoMO implements Serializable{
     private String organizationId;//当前扫码所属企业id,跳转到营销扫码接口时获取
     private String createTime;//将用于定时任务检查清除已经长时间未用的扫码缓存 yyyy-MM-dd HH:mm:ss
     private String mobile;//登录的手机号
+    private Long userId;//用户id
 	public String getCodeId() {
 		return codeId;
 	}
@@ -85,6 +86,14 @@ public class ScanCodeInfoMO implements Serializable{
 
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 	@Override

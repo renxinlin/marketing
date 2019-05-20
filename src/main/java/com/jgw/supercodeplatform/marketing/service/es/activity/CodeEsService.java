@@ -6,11 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jgw.supercodeplatform.marketing.diagram.enums.QueryEnum;
-import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -24,27 +19,26 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
-import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
 import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
+import com.jgw.supercodeplatform.marketing.diagram.enums.QueryEnum;
+import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
-
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 @Service
 public class CodeEsService extends AbstractEsSearch {
@@ -54,25 +48,27 @@ public class CodeEsService extends AbstractEsSearch {
 	@Autowired
 	@Qualifier("elClient")
 	private TransportClient eClient;
-	public void addScanCodeRecord(String userId, String productId, String productBatchId, String codeId,
-								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId,Integer memberType) throws SuperCodeException {
-		if (StringUtils.isBlank(userId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
+	public void addScanCodeRecord(String openId, String productId, String productBatchId, String codeId,
+								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId,Integer memberType,Long  userId) throws SuperCodeException {
+		if (StringUtils.isBlank(openId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
-				|| null == activitySetId|| StringUtils.isBlank(organizationId) || null == memberType) {
+				|| null == activitySetId|| StringUtils.isBlank(organizationId) || null == memberType|| null == userId) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
 
-		logger.info("es保存 userId="+userId+",productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
+		logger.info("es保存 openId="+openId+",productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime
+				+",memberType="+memberType+",userId="+userId);
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
 		addParam.put("productBatchId", productBatchId);
 		addParam.put("codeId", codeId);
 		addParam.put("codeType", codeType);
 		addParam.put("activitySetId", activitySetId);
-		addParam.put("userId", userId);
+		addParam.put("openId", openId);
 		addParam.put("scanCodeTime", scanCodeTime);
 		addParam.put("organizationId", organizationId);
 		addParam.put("memberType", memberType);
+		addParam.put("userId", userId);
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
 		eSearch.setType(EsType.INFO);
@@ -85,9 +81,9 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param productBatchId
 	 * @return
 	 */
-	public Long countByUserAndActivityQuantum(String userId, Long activitySetId, long nowTtimeStemp) {
+	public Long countByUserAndActivityQuantum(String openId, Long activitySetId, long nowTtimeStemp) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
-		addParam.put("userId.keyword", userId);
+		addParam.put("openId.keyword", openId);
 		addParam.put("scanCodeTime", nowTtimeStemp);
 		addParam.put("activitySetId", activitySetId);
 		EsSearch eSearch = new EsSearch();
