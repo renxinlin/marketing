@@ -51,19 +51,19 @@ public class MarketingActivitySet {
     /**
      * 门槛类jons字符串
      */
-    @ApiModelProperty(name = "condition", value = "门槛", example = "红包活动")
-    private String condition;
+    @ApiModelProperty(name = "validCondition", value = "门槛", example = "红包活动")
+    private String validCondition;
 
 
-    public String getCondition() {
-        return condition;
-    }
+    public String getValidCondition() {
+		return validCondition;
+	}
 
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
+	public void setValidCondition(String validCondition) {
+		this.validCondition = validCondition;
+	}
 
-    public Long getId() {
+	public Long getId() {
 		return id;
 	}
 

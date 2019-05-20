@@ -58,7 +58,7 @@ public interface MarketingActivityProductMapper extends CommonSql{
     		+")"
     		+endScript
     		)
-	void batchDeleteByProBatchsAndRole(List<MarketingActivityProduct> mList, @Param(value="referenceRole")int referenceRole);
+	void batchDeleteByProBatchsAndRole( @Param(value="list")List<MarketingActivityProduct> mList, @Param(value="referenceRole")int referenceRole);
 
     @Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ProductBatchId = #{productBatchId}")
 	List<MarketingActivityProduct> selectByProductAndProductBatchId(@Param("productId") String productId,@Param("productBatchId") String productBatchId);

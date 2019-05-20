@@ -10,7 +10,7 @@ public interface MarketingActivitySetMapper {
  		+ "ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,CreateDate createDate,UpdateDate UpdateDate,"
  		+ "ActivityStatus ActivityStatus,EachDayNumber EachDayNumber,ActivityRangeMark ActivityRangeMark,"
  		+ "autoFetch autoFetch,CodeTotalNum codeTotalNum,OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,"
- 		+ "ActivityDesc activityDesc,ConsumeIntegralNum consumeIntegralNum, Condition condition ";
+ 		+ "ActivityDesc activityDesc,ConsumeIntegralNum consumeIntegralNum, ValidCondition validCondition ";
 
 
 
