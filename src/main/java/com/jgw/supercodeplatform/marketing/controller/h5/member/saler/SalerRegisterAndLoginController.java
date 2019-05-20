@@ -7,13 +7,17 @@ import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.HttpsUtil;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.dto.CustomerInfo;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
+import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -25,6 +29,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.yaml.snakeyaml.util.UriEncoder;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -61,6 +67,7 @@ public class SalerRegisterAndLoginController {
     /**
      * 注册的临时信息前缀
      */
+//    @Value("${redis.saler.register}")
     private static final String REGISTER_PERFIX = "saler:register:";
     @Autowired
     private CommonUtil commonUtil;
@@ -68,6 +75,32 @@ public class SalerRegisterAndLoginController {
     private RedisUtil redisUtil;
     @Autowired
     private ModelMapper modelMapper;
+    @Value("${cookie.domain}")
+    private String cookieDomain;
+    @ResponseBody
+    @RequestMapping("login")
+    public RestResult<MarketingUser> login(SalerLoginParam loginUser ,HttpServletResponse response) throws SuperCodeException{
+        MarketingUser user = service.selectBylogin(loginUser);
+        // 写jwt
+        if(user != null){
+            H5LoginVO jwtUser = new H5LoginVO();
+            jwtUser.setMobile(loginUser.getMobile());
+            jwtUser.setMemberId(user.getId());
+            jwtUser.setOrganizationId(loginUser.getOrganizationId());
+            // TODO 可能存在其他登录信息需要设置
+
+            String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);
+            Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
+            // jwt有效期为2小时，保持一致
+            jwtTokenCookie.setMaxAge(60*60*2);
+            jwtTokenCookie.setPath("/");
+            jwtTokenCookie.setDomain(cookieDomain);
+            response.addCookie(jwtTokenCookie);
+        }
+        return RestResult.success("success",user);
+    }
+
+
     /**
      *  导购员注册详解
      *      必要条件:用户注册必须携带openid
@@ -80,38 +113,49 @@ public class SalerRegisterAndLoginController {
      * @return
      */
    @RequestMapping("/tempRegister")
-   public void loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
-       // 临时缓存用户信息;此时用户无组织信息
-//       registerAsTempWaybeforeAuquireOpenId(userInfo);
-//       String mobile = userInfo.getMobile();
-       // 获取微信配置信息 同时传递手机号
-       // 重定向到微信授权
-       // 直接请求微信静默授权
-       // 微信重定向到 保存用户信息接口
-       String mobile = "15728043579";
-       String encodeUrl = URLEncoder.encode(redirctUrl, "utf-8");
-       String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", mobile).replace("[backUrl]",encodeUrl);
+   public RestResult loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
+       logger.error("0================================注册的类型=================="+userInfo.getBrowerType());
+
+       if(BrowerTypeEnum.WX.getStatus().toString().equals(userInfo.getBrowerType())){
+           // 微信客户端
+           // 临时缓存用户信息;此时用户无组织信息
+           registerAsTempWaybeforeAuquireOpenId(userInfo);
+           String mobile = userInfo.getMobile();
+           // 获取微信配置信息 同时传递手机号
+           // 重定向到微信授权
+           // 直接请求微信静默授权
+           // 微信重定向到 保存用户信息接口
+            // String mobile = "15728043579";
+           String encodeUrl = URLEncoder.encode(redirctUrl, "utf-8");
+           String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", mobile).replace("[backUrl]",encodeUrl);
 //       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
-       logger.error("1================================获取微信授权开始==================");
-       logger.error("2================================获取微信授权url{}==================",OAUTH2_WX_URL_LAST);
-//       return "redirct:"+ OAUTH2_WX_URL_LAST;
-       response.sendRedirect(OAUTH2_WX_URL_LAST);
-//       return "redirct:"+ "http://www.renxl.club";
+           logger.error("1================================获取微信授权开始==================");
+           logger.error("2================================获取微信授权url:{}==================",OAUTH2_WX_URL_LAST);
+           response.sendRedirect(OAUTH2_WX_URL_LAST);
+           return RestResult.success();
+       }else {
+           // 非微信直接保存
+           service.saveRegisterUser(userInfo);
+           return RestResult.success();
+
+       }
+
    }
 
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        SalerRegisterAndLoginController s= new SalerRegisterAndLoginController();
-        String mobile = "15728043579";
-        String encodeUrl = URLEncoder.encode(s.redirctUrl, "utf-8");
-        String OAUTH2_WX_URL_LAST = s.OAUTH2_WX_URL.replace("[mobile]", mobile).replace("[backUrl]",encodeUrl);
-//       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
-        System.out.println(OAUTH2_WX_URL_LAST);
 
-    }
+
+    /**
+     *
+     * @param code 微信授权信息
+     * @param state 保存手机号
+     * @return
+     * @throws SuperCodeException
+     * @throws UnsupportedEncodingException
+     */
    @ResponseBody
    @RequestMapping("register")
    public RestResult<String> saveRegisterInfo(String code,String state) throws SuperCodeException, UnsupportedEncodingException {
-       logger.error("3================================获取微信授权回调参数code{},state{}==================",code,state);
+       logger.error("3================================获取微信授权回调参数code:{},state:{}==================",code,state);
 
        // code说明 ： code作为换取access_token的票据，每次用户授权带上的code将不一样，code只能使用一次，5分钟未被使用自动过期。
        if(StringUtils.isBlank(code)){
@@ -125,23 +169,24 @@ public class SalerRegisterAndLoginController {
        // 获取openid
        String openidandaccesstokenUrlLast = openidandaccesstokenUrl.replace("[code]", code);
        String encodeUrl = URLEncoder.encode(openidandaccesstokenUrlLast, "utf-8");
-       logger.error("4================================访问httpsurl{}==================",openidandaccesstokenUrlLast);
+       logger.error("4================================访问httpsurl:{}==================",openidandaccesstokenUrlLast);
 
        // 访问https
        String containOpenId = getOpenid(openidandaccesstokenUrlLast);
-       logger.error("5================================访问结果{}==================",containOpenId);
+       logger.error("5================================访问静默授权结果:{}==================",containOpenId);
 
-//       MarketingUser marketingUser = null;
-//       try {
-//           String userDtoString = redisUtil.get(REGISTER_PERFIX + state);
-//           marketingUser = JSONObject.parseObject(userDtoString, MarketingUser.class);
-//           marketingUser.setOpenid(containOpenId);
-//       } catch (Exception e) {
-//           throw new SuperCodeException("获取临时用户信息失败...");
-//       }
-//
-//       service.saveUser(marketingUser);
-
+       String openid = JSONObject.parseObject(containOpenId).getString("openid");
+       logger.error("5================================openid结果:{}==================",openid);
+       MarketingUser marketingUser = null;
+       try {
+           String userDtoString = redisUtil.get(REGISTER_PERFIX + state);
+           marketingUser = JSONObject.parseObject(userDtoString, MarketingUser.class);
+           marketingUser.setOpenid(openid);
+       } catch (Exception e) {
+           throw new SuperCodeException("获取临时用户信息失败...");
+       }
+       // 微信授权的用户注册保存
+       service.saveUser(marketingUser);
        return RestResult.success();
 
 
@@ -153,8 +198,8 @@ public class SalerRegisterAndLoginController {
      * @return
      */
     private String getOpenid(String openidandaccesstokenUrl) {
-        String s = HttpsUtil.get(openidandaccesstokenUrl,null);
-        return  s;
+        String result = HttpsUtil.get(openidandaccesstokenUrl,null);
+        return  result;
     }
 
     private void registerAsTempWaybeforeAuquireOpenId(MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
@@ -229,14 +274,5 @@ public class SalerRegisterAndLoginController {
         redisUtil.set(REGISTER_PERFIX+dto.getMobile(),JSONObject.toJSONString(dto),60*5L);
     }
 
-    @ResponseBody
-    @RequestMapping("login")
-    public RestResult login(@RequestBody SalerLoginParam loginUser){
-       // TODO 组织id问题
-       MarketingUser user = service.selectBylogin(loginUser);
-        // 写jwt
-
-        return RestResult.success();
-    }
 
 }

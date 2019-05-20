@@ -2,63 +2,26 @@ package com.jgw.supercodeplatform.marketing.service.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
-import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
-import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.constants.RedisKey;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
-import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
-import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
-import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
-import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.CustomerInfo;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
-import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
-import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.*;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
-import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
-import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
-import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
-import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
@@ -78,7 +41,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(StringUtils.isBlank(searchParams.getOrganizationId())){
 			throw new SuperCodeException("发生越权...");
 		}
-		 return mapper.list(searchParams);
+		return mapper.list(searchParams);
 	}
 
 	@Override
@@ -238,14 +201,157 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	 * 此方法为注册用户微信授权获取openid专用
 	 * @param marketingUser
 	 */
-	public void saveUser(MarketingUser marketingUser) {
+	public MarketingUser saveUser(MarketingUser marketingUser) throws SuperCodeException{
+		// 业务校验: 判断用户是否存在,全局唯一，产品定义
+		MarketingUser userDto = mapper.selectByPhone(marketingUser.getMobile());
+		if(userDto != null){
+			throw new SuperCodeException("手机号已存在...");
+		}
 		mapper.insert(marketingUser);
+		return marketingUser;
 	}
 
-	public MarketingUser selectBylogin(SalerLoginParam loginUser) {
+	public MarketingUser selectBylogin(SalerLoginParam loginUser) throws SuperCodeException{
 
-		return  null;
+		if(StringUtils.isBlank(loginUser.getMobile())){
+			throw new SuperCodeException("手机不存在");
+		}
+		if(StringUtils.isBlank(loginUser.getOrganizationId())){
+			throw new SuperCodeException("组织不存在");
+		}
+		if(StringUtils.isBlank(loginUser.getVerificationCode())){
+			throw new SuperCodeException("验证码不存在");
+		}
+		boolean success = commonService.validateMobileCode(loginUser.getMobile(), loginUser.getVerificationCode());
+		if(!success){
+			throw new SuperCodeException("验证码校验失败");
+		}
+		MarketingUser marketingUser = mapper.selectByPhone(loginUser.getMobile());
+		if(!loginUser.getOrganizationId().equals(marketingUser.getOrganizationId())){
+			throw new SuperCodeException("组织校验失败");
+
+		}
+		// 手机号只能跟一个组织 产品定义
+		return  marketingUser;
 	}
+
+	/**
+	 * 无微信授权的用户注册
+	 * @param userInfo
+	 * @return
+	 * @throws SuperCodeException
+	 */
+	public MarketingUser saveRegisterUser(MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
+		// 1基础校验
+		validateBasicByRegisterUser(userInfo);
+
+		// 2.1业务校验：验证码
+		boolean success = commonService.validateMobileCode(userInfo.getMobile(), userInfo.getVerificationCode());
+		if(!success){
+			throw new SuperCodeException("验证码校验失败...");
+		}
+		// 2.1业务校验: 判断用户是否存在,全局唯一，产品定义
+		MarketingUser userDto = mapper.selectByPhone(userInfo.getMobile());
+		if(userDto != null){
+			throw new SuperCodeException("手机号已存在...");
+		}
+
+		// 3数据转换和保存
+		MarketingUser userDo =changeToDo(userInfo);
+		int i = mapper.insertSelective(userDo);
+		if(i !=1){
+			throw new SuperCodeException("保存信息失败...");
+		}
+		return userDo;
+
+	}
+
+	/**
+	 * 保存非微信授权用户基础校验
+	 * @param userInfo
+	 * @throws SuperCodeException
+	 */
+	private void validateBasicByRegisterUser(MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
+		if(userInfo == null){
+			throw new SuperCodeException("保存用户失败001...");
+		}
+		if(StringUtils.isBlank(userInfo.getOrganizationId())){
+			throw new SuperCodeException("组织信息获取失败...");
+		}
+		if(StringUtils.isBlank(userInfo.getMobile())){
+			throw new SuperCodeException("手机号不存在...");
+		}
+		if(StringUtils.isBlank(userInfo.getUserName())){
+			throw new SuperCodeException("请填入用户名...");
+		}
+		if(StringUtils.isBlank(userInfo.getVerificationCode())){
+			throw new SuperCodeException("请填入验证码...");
+		}
+		if(StringUtils.isBlank(userInfo.getPCCcode())){
+			throw new SuperCodeException("请输入所在地信息...");
+		}
+
+	}
+
+	/**
+	 * 保存用户注册信息
+	 * 	vo	to do
+	 * @param userInfo
+	 * @return
+	 */
+	private MarketingUser changeToDo(MarketingSaleMembersAddParam userInfo) throws SuperCodeException {
+		MarketingUser userDtoToDb = modelMapper.map(userInfo,MarketingUser.class);
+
+		// 门店信息转换
+		List<CustomerInfo> customers = userInfo.getCustomer();
+		if(!CollectionUtils.isEmpty(customers)){
+			StringBuffer ids = new StringBuffer();
+			StringBuffer names = new StringBuffer();
+			int i = 0;
+			for(CustomerInfo  customer:customers){
+				if(StringUtils.isEmpty(customer.getCustomerId()) || (StringUtils.isEmpty(customer.getCustomerName()))){
+					throw new SuperCodeException("门店信息不全...");
+				}
+				i++;
+				if(i == customers.size()){
+					ids.append(customer.getCustomerId());
+					names.append(customer.getCustomerName());
+				}else {
+					ids.append(customer.getCustomerId()).append(",");
+					names.append(customer.getCustomerName()).append(",");
+
+				}
+			}
+			userDtoToDb.setCustomerId(ids.toString());
+			userDtoToDb.setCustomerName(names.toString());
+		}
+
+		// pcccode转换
+		// 省市区编码
+		String pcccode = userInfo.getPCCcode();
+		List<JSONObject> objects = JSONObject.parseArray(pcccode,JSONObject.class);
+		JSONObject province = objects.get(0);
+		JSONObject city = objects.get(1);
+		JSONObject country = objects.get(2);
+		userDtoToDb.setProvinceCode(province.getString(PcccodeConstants.areaCode));
+		userDtoToDb.setCityCode(city.getString(PcccodeConstants.areaCode));
+		userDtoToDb.setCountyCode(country.getString(PcccodeConstants.areaCode));
+		userDtoToDb.setProvinceName(province.getString(PcccodeConstants.areaName));
+		userDtoToDb.setCityName(city.getString(PcccodeConstants.areaName));
+		userDtoToDb.setCountyName(country.getString(PcccodeConstants.areaName));
+		// 时间处理
+		Date date = new Date();
+		userDtoToDb.setCreateDate(date);
+		userDtoToDb.setUpdateDate(date);
+		// 导购员
+		userDtoToDb.setMemberType(MemberTypeEnums.SALER.getType());
+		// USER ID
+		userDtoToDb.setUserId(UUID.randomUUID().toString().replaceAll("-",""));
+		return userDtoToDb;
+	}
+
+	@Autowired
+	private CommonService commonService;
 }
 
 

@@ -13,6 +13,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql {
@@ -54,7 +55,10 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     " <if test='organizationId != null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
                     " <if test='memberId != null and organizationId != &apos;&apos; '> and MemberId = #{memberId} </if>"+
                     // 大于
-                    " <if test='integralType != null and integralType == 0 '> and IntegralNum &gt; 0 </if>"+
+					" <if test='integralType != null and integralType == 0 '> and IntegralNum &gt; 0 </if>"+
+					// 积分记录区分用户类别
+					// TODO 评估MEMBERTYPE是否可以去除if条件
+					" <if test='MemberType != null '> and MemberType= #{memberType}  </if>"+
                     // 小于
                     " <if test='integralType != null and integralType == 1 '> and IntegralNum &lt;  0 </if>"+
                     "</where>";
@@ -188,4 +192,12 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 			" and IntegralReasonCode =  4 " +
 			" and CreateDate between #{startDate} and #{endDate} " )
     List<IntegralRecord> getOrganizationAllSalePrice(String organizationId, Date startDate, Date endDate);
+
+
+	@Select(" select count(SalerAmount) count, sum(SalerAmount) sum marketing_integral_record where organizationId = #{organizationId}" +
+			" and memberId = #{memberId}" +
+			" and memberType = #{memberType} " +
+			" and Status = 1" +
+			" and SalerAmount is not null ")
+    Map getAcquireMoneyAndAcquireNums(Long memberId, Byte memberType, String organizationId);
 }

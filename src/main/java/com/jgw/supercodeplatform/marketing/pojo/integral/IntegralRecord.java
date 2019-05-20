@@ -94,7 +94,7 @@ public class IntegralRecord  extends DaoSearch {
     private String salerName;
 
     /** 导购Id */
-    private Integer salerId;
+    private Long salerId;
 
     /** 导购员手机 */
     private String salerMobile;
@@ -113,11 +113,11 @@ public class IntegralRecord  extends DaoSearch {
         this.salerName = salerName;
     }
 
-    public Integer getSalerId() {
+    public Long getSalerId() {
         return salerId;
     }
 
-    public void setSalerId(Integer salerId) {
+    public void setSalerId(Long salerId) {
         this.salerId = salerId;
     }
 

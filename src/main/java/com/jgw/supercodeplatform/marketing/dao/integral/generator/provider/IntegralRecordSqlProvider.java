@@ -87,7 +87,7 @@ public class IntegralRecordSqlProvider {
         }
 
         if (record.getSalerId() != null) {
-            VALUES("SalerId", "#{salerId,jdbcType=INTEGER}");
+            VALUES("SalerId", "#{salerId,jdbcType=BIGINT}");
         }
 
         if (record.getSalerMobile() != null) {
@@ -182,7 +182,7 @@ public class IntegralRecordSqlProvider {
         }
 
         if (record.getSalerId() != null) {
-            SET("SalerId = #{salerId,jdbcType=INTEGER}");
+            SET("SalerId = #{salerId,jdbcType=BIGINT}");
         }
 
         if (record.getSalerMobile() != null) {

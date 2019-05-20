@@ -285,5 +285,23 @@ public class CommonService {
 			throw  new SuperCodeException("对不起,该码不存在",500);
 		}
 	}
+
+	/**
+	 * 验证码校验
+	 * @param mobile 手机号
+	 * @param verificationCode 验证码
+	 * @return
+	 */
+	public boolean validateMobileCode(String mobile,String verificationCode){
+		String redisPhoneCode=redisUtil.get(RedisKey.phone_code_prefix+ mobile);
+		if (StringUtils.isBlank(redisPhoneCode) ) {
+			return false;
+		}
+		if (!redisPhoneCode.equals(verificationCode)) {
+			return false;
+		}
+		return true;
+
+	}
 	
 }

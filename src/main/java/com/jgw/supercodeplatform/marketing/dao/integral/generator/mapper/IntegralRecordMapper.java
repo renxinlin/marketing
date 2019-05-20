@@ -34,7 +34,7 @@ public interface IntegralRecordMapper {
             "#{customerId,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, ",
             "#{organizationId,jdbcType=VARCHAR}, #{organizationName,jdbcType=VARCHAR}, ",
             "#{integralNum,jdbcType=INTEGER}, #{productPrice,jdbcType=REAL}, ",
-            "#{salerName,jdbcType=VARCHAR}, #{salerId,jdbcType=INTEGER}, ",
+            "#{salerName,jdbcType=VARCHAR}, #{salerId,jdbcType=BIGINT}, ",
             "#{salerMobile,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, ",
             "#{salerAmount,jdbcType=REAL})"
     })
@@ -72,7 +72,7 @@ public interface IntegralRecordMapper {
             @Result(column="IntegralNum", property="integralNum", jdbcType=JdbcType.INTEGER),
             @Result(column="ProductPrice", property="productPrice", jdbcType=JdbcType.REAL),
             @Result(column="SalerName", property="salerName", jdbcType=JdbcType.VARCHAR),
-            @Result(column="SalerId", property="salerId", jdbcType=JdbcType.INTEGER),
+            @Result(column="SalerId", property="salerId", jdbcType=JdbcType.BIGINT),
             @Result(column="SalerMobile", property="salerMobile", jdbcType=JdbcType.VARCHAR),
             @Result(column="Status", property="status", jdbcType=JdbcType.VARCHAR),
             @Result(column="SalerAmount", property="salerAmount", jdbcType=JdbcType.REAL)
@@ -102,7 +102,7 @@ public interface IntegralRecordMapper {
             "IntegralNum = #{integralNum,jdbcType=INTEGER},",
             "ProductPrice = #{productPrice,jdbcType=REAL},",
             "SalerName = #{salerName,jdbcType=VARCHAR},",
-            "SalerId = #{salerId,jdbcType=INTEGER},",
+            "SalerId = #{salerId,jdbcType=BIGINT},",
             "SalerMobile = #{salerMobile,jdbcType=VARCHAR},",
             "Status = #{status,jdbcType=VARCHAR},",
             "SalerAmount = #{salerAmount,jdbcType=REAL}",
