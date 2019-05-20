@@ -19,6 +19,9 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -76,6 +79,7 @@ public class SalerRegisterAndLoginController {
     private String cookieDomain;
     @ResponseBody
     @GetMapping("login")
+    @ApiOperation(value = "登录", notes = "")
     public RestResult<MarketingUser> login(SalerLoginParam loginUser ,HttpServletResponse response) throws SuperCodeException{
         MarketingUser user = service.selectBylogin(loginUser);
         // 写jwt
@@ -110,6 +114,7 @@ public class SalerRegisterAndLoginController {
      * @return
      */
    @GetMapping("/tempRegister")
+   @ApiOperation(value = "注册", notes = "")
    public RestResult loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
        logger.error("0================================注册的类型=================="+userInfo.getBrowerType());
 
@@ -151,6 +156,7 @@ public class SalerRegisterAndLoginController {
      */
    @ResponseBody
    @RequestMapping("register")
+   @ApiOperation(value = "非前端接口", notes = "")
    public RestResult<String> saveRegisterInfo(String code,String state) throws SuperCodeException, UnsupportedEncodingException {
        logger.error("3================================获取微信授权回调参数code:{},state:{}==================",code,state);
 
