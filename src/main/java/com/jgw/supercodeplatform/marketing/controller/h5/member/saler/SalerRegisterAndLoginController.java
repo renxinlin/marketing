@@ -51,7 +51,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/marketing/front/saler")
-@Api(tags = "h5用户注册登录信息完善点击领奖")
+@Api(tags = "销售员登录注册")
 public class SalerRegisterAndLoginController {
 
     private Logger logger = LoggerFactory.getLogger(SalerRegisterAndLoginController.class);
