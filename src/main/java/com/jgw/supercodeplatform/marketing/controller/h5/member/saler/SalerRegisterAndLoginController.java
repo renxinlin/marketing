@@ -32,10 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.yaml.snakeyaml.util.UriEncoder;
 
 import javax.servlet.http.Cookie;
@@ -78,7 +75,7 @@ public class SalerRegisterAndLoginController {
     @Value("${cookie.domain}")
     private String cookieDomain;
     @ResponseBody
-    @RequestMapping("login")
+    @GetMapping("login")
     public RestResult<MarketingUser> login(SalerLoginParam loginUser ,HttpServletResponse response) throws SuperCodeException{
         MarketingUser user = service.selectBylogin(loginUser);
         // 写jwt
@@ -112,7 +109,7 @@ public class SalerRegisterAndLoginController {
      * @param userInfo
      * @return
      */
-   @RequestMapping("/tempRegister")
+   @GetMapping("/tempRegister")
    public RestResult loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
        logger.error("0================================注册的类型=================="+userInfo.getBrowerType());
 
