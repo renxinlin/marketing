@@ -19,10 +19,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.elasticsearch.monitor.os.OsStats;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Map;
@@ -77,7 +74,7 @@ public class SaleMemberController {
     }
 
 
-    @RequestMapping(value = "info")
+    @GetMapping("info")
     @ApiOperation(value = "销售员中心", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult info(@ApiIgnore H5LoginVO jwtUser, DaoSearchWithOrganizationIdParam search) throws Exception {
