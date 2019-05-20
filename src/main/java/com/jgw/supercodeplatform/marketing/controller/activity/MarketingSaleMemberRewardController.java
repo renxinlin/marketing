@@ -41,7 +41,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/marketing/saler/winRecord")
-@Api(tags = "中奖管理")
+@Api(tags = "导购记录")
 public class MarketingSaleMemberRewardController  extends CommonUtil {
     // todo 积分记录插入和查询都需要【区分会员和导购以及其他】
     protected static Logger logger = LoggerFactory.getLogger(MarketingMembersWinRecordController.class);
