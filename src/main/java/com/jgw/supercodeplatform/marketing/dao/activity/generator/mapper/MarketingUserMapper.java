@@ -42,7 +42,7 @@ public interface MarketingUserMapper {
         "#{countyName,jdbcType=VARCHAR}, #{cityName,jdbcType=VARCHAR}, ",
         "#{organizationId,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, ",
         "#{updateDate,jdbcType=TIMESTAMP}, #{customerName,jdbcType=VARCHAR}, ",
-        "#{customerId,jdbcType=VARCHAR}, #{PCCcode,jdbcType=VARCHAR}, ",
+        "#{customerId,jdbcType=VARCHAR}, #{pCCcode,jdbcType=VARCHAR}, ",
         "#{wechatHeadImgUrl,jdbcType=VARCHAR}, #{memberType,jdbcType=TINYINT}, ",
         "#{state,jdbcType=TINYINT}, #{deviceType,jdbcType=TINYINT})"
     })
@@ -79,7 +79,7 @@ public interface MarketingUserMapper {
         @Result(column="UpdateDate", property="updateDate", jdbcType=JdbcType.TIMESTAMP),
         @Result(column="CustomerName", property="customerName", jdbcType=JdbcType.VARCHAR),
         @Result(column="CustomerId", property="customerId", jdbcType=JdbcType.VARCHAR),
-        @Result(column="PCCcode", property="PCCcode", jdbcType=JdbcType.VARCHAR),
+        @Result(column="PCCcode", property="pCCcode", jdbcType=JdbcType.VARCHAR),
         @Result(column="WechatHeadImgUrl", property="wechatHeadImgUrl", jdbcType=JdbcType.VARCHAR),
         @Result(column="MemberType", property="memberType", jdbcType=JdbcType.TINYINT),
         @Result(column="State", property="state", jdbcType=JdbcType.TINYINT),
@@ -110,7 +110,7 @@ public interface MarketingUserMapper {
           "UpdateDate = #{updateDate,jdbcType=TIMESTAMP},",
           "CustomerName = #{customerName,jdbcType=VARCHAR},",
           "CustomerId = #{customerId,jdbcType=VARCHAR},",
-          "PCCcode = #{PCCcode,jdbcType=VARCHAR},",
+          "PCCcode = #{pCCcode,jdbcType=VARCHAR},",
           "WechatHeadImgUrl = #{wechatHeadImgUrl,jdbcType=VARCHAR},",
           "MemberType = #{memberType,jdbcType=TINYINT},",
           "State = #{state,jdbcType=TINYINT},",

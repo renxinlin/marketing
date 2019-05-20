@@ -93,7 +93,7 @@ public class MarketingUserSqlProvider {
         }
         
         if (record.getpCCcode() != null) {
-            VALUES("PCCcode", "#{PCCcode,jdbcType=VARCHAR}");
+            VALUES("PCCcode", "#{pCCcode,jdbcType=VARCHAR}");
         }
         
         if (record.getWechatHeadImgUrl() != null) {
@@ -192,7 +192,7 @@ public class MarketingUserSqlProvider {
         }
         
         if (record.getpCCcode() != null) {
-            SET("PCCcode = #{PCCcode,jdbcType=VARCHAR}");
+            SET("PCCcode = #{pCCcode,jdbcType=VARCHAR}");
         }
         
         if (record.getWechatHeadImgUrl() != null) {
