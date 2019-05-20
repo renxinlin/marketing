@@ -39,7 +39,6 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
@@ -119,7 +118,7 @@ public class LotteryService {
 			throw new SuperCodeException("该活动不存在", 500);
 		}
 		
-		String condition=mActivitySet.getCondition();
+		String condition=mActivitySet.getValidCondition();
 		if (StringUtils.isNotBlank(condition)) {
 			MarketingActivitySetCondition mSetCondition=JSONObject.parseObject(condition, MarketingActivitySetCondition.class);
 			mSetCondition.getConsumeIntegral();
@@ -186,7 +185,7 @@ public class LotteryService {
 			throw  new SuperCodeException("对不起,该会员已被加入黑名单",500);
 		}
 
-		String condition=mActivitySet.getCondition();
+		String condition=mActivitySet.getValidCondition();
 		MarketingActivitySetCondition mSetCondition=null;
 		if (StringUtils.isNotBlank(condition)) {
 			mSetCondition=JSONObject.parseObject(condition, MarketingActivitySetCondition.class);

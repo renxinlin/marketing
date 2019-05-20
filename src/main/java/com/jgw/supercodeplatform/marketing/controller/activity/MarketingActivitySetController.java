@@ -75,7 +75,7 @@ public class MarketingActivitySetController {
      * @throws Exception
      */
     @RequestMapping(value = "/update",method = RequestMethod.POST)
-    @ApiOperation(value = "活动创建", notes = "")
+    @ApiOperation(value = "活动更新", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> update(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
     	return service.update(activitySetParam);
