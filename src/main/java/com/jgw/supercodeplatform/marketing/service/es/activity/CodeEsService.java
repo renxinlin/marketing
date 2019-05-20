@@ -376,4 +376,33 @@ public class CodeEsService extends AbstractEsSearch {
 		}
 		return false;
 	}
+
+	/**
+	 * 获取导购员的所有扫码记录
+	 * @param memberId
+	 * @param memberType
+	 * @return
+	 */
+    public Integer searchScanInfoNum(Long memberId, Byte memberType) throws SuperCodeException{
+    	if(memberId == null || memberId<=0){
+    		throw new SuperCodeException("会员不存在...");
+		}
+    	if(memberType == null){
+			throw new SuperCodeException("会员类型获取失败...");
+		}
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
+		QueryBuilder termOrgIdQuery = new TermQueryBuilder("userId",memberId);
+		QueryBuilder termUserIdQuery = new TermQueryBuilder("memberType",memberType);
+		StatsAggregationBuilder aggregation =
+				AggregationBuilders
+						.stats(AggregationName)
+						// 聚和字段：码
+						.field("scanCodeTime");
+		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		searchRequestBuilder.addAggregation(aggregation);
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+		return  (int)aggs.getCount();
+
+    }
 }

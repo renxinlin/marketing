@@ -68,7 +68,7 @@ public interface MarketingUserMapperExt extends MarketingUserMapper {
      * @return
      */
     @Select(" <script>"
-            + " SELECT "+selectSql+" FROM marketing_user a  "
+            + " SELECT count(1) FROM marketing_user a  "
             + " <where>"
             + "  OrganizationId = #{ organizationId }  "
             + " <if test='mobile != null and mobile != &apos;&apos;'> AND Mobile like &apos;%${mobile}%&apos; </if>"
@@ -100,5 +100,6 @@ public interface MarketingUserMapperExt extends MarketingUserMapper {
             + " </where>"
             + " </script>")
     Integer count(MarketingMembersListParam searchParams);
-
+    @Select(" select " + selectSql + " from marketing_user a where a.mobile = #{mobile} ")
+    MarketingUser selectByPhone(String mobile);
 }

@@ -6,15 +6,34 @@ public class H5LoginVO {
 	private String memberName;//用户姓名
 	
 	private int registered;//1已注册不需要再去完善信息 0需要去完善信息
-	
+
+
+	private String organizationId;
 	private String organizationName;
 	
     private Integer haveIntegral; //  会员积分
     
     private String mobile;//手机
-    
-    private String wechatHeadImgUrl;
-    
+
+	private String wechatHeadImgUrl;
+	private Byte memberType;
+
+	public Byte getMemberType() {
+		return memberType;
+	}
+
+	public void setMemberType(Byte memberType) {
+		this.memberType = memberType;
+	}
+
+	public String getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
+	}
+
 	public String getMemberName() {
 		return memberName;
 	}

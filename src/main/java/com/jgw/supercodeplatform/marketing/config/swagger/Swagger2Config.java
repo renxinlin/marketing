@@ -53,7 +53,7 @@ public class Swagger2Config {
     @Bean("营销活动模块")
     public Docket actApis() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("活动模块")
+                .groupName("导购活动模块")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.activity"))
                 .paths(PathSelectors.any())

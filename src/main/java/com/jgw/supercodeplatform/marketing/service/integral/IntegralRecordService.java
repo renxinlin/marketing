@@ -1,9 +1,12 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 积分记录
@@ -24,6 +28,10 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
 
     @Override
     protected List<IntegralRecord> searchResult(IntegralRecord integralRecord) throws Exception {
+        // 0会员1导购2 其他
+        if(integralRecord.getMemberType().intValue() < 0){
+            throw new SuperCodeException("积分记录类型未区分...");
+        }
         List<IntegralRecord> list=recordMapper.list(integralRecord);
         return list;
     }
@@ -85,6 +93,29 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
 
     public List<IntegralRecord> getOrganizationAllSalePrice(String organizationId, Date startDate, Date endDate) {
         return recordMapper.getOrganizationAllSalePrice( organizationId,  startDate,  endDate);
+
+    }
+
+    /**
+     * 获取导购员中奖金额和中奖次数
+     * @param memberId
+     * @param memberType
+     * @param organizationId
+     */
+    public Map getAcquireMoneyAndAcquireNums(Long memberId, Byte memberType, String organizationId) throws SuperCodeException{
+        if(StringUtils.isBlank(organizationId)){
+            throw new SuperCodeException("获取组织信息失败...");
+        }
+        if(MemberTypeEnums.SALER.getType().intValue() != memberType){
+            throw new SuperCodeException("非导购用户");
+        }
+        if(memberId ==null || memberId<=0){
+            throw new SuperCodeException("会员不存在");
+        }
+        // key count sum
+       return recordMapper.getAcquireMoneyAndAcquireNums(memberId,memberType,organizationId);
+
+
 
     }
 }
