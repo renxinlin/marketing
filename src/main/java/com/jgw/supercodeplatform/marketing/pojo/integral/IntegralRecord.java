@@ -90,6 +90,61 @@ public class IntegralRecord  extends DaoSearch {
     private Float productPrice;
 
 
+    /** 导购员名称 */
+    private String salerName;
+
+    /** 导购Id */
+    private Integer salerId;
+
+    /** 导购员手机 */
+    private String salerMobile;
+
+    /** 扫码状态1获得2未获得 */
+    private String status;
+
+    /** 导购员红包金额 */
+    private Float salerAmount;
+
+    public String getSalerName() {
+        return salerName;
+    }
+
+    public void setSalerName(String salerName) {
+        this.salerName = salerName;
+    }
+
+    public Integer getSalerId() {
+        return salerId;
+    }
+
+    public void setSalerId(Integer salerId) {
+        this.salerId = salerId;
+    }
+
+    public String getSalerMobile() {
+        return salerMobile;
+    }
+
+    public void setSalerMobile(String salerMobile) {
+        this.salerMobile = salerMobile;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public Float getSalerAmount() {
+        return salerAmount;
+    }
+
+    public void setSalerAmount(Float salerAmount) {
+        this.salerAmount = salerAmount;
+    }
+
     public String getCreateDateStr() {
         return createDateStr;
     }
