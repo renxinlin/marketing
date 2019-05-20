@@ -19,7 +19,8 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
     static String allFileds=" Id id,MemberType memberType,MemberId memberId, " +
             " MemberName memberName,Mobile mobile,IntegralReasonCode integralReasonCode,IntegralReason integralReason, " +
             " ProductId productId,ProductName productName,OuterCodeId outerCodeId,CodeTypeId codeTypeId,CustomerName customerName, " +
-            " CustomerId customerId,CreateDate createDate,OrganizationId organizationId,OrganizationName organizationName,IntegralNum integralNum,ProductPrice productPrice  ";
+            " CustomerId customerId,CreateDate createDate,OrganizationId organizationId,OrganizationName organizationName,IntegralNum integralNum,ProductPrice productPrice," +
+			" SalerName,SalerId,SalerMobile,Status,SalerAmount ";
 
     static String whereSearch =
             "<where>" +
