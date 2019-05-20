@@ -71,7 +71,7 @@ public class MarketingSaleMemberRewardController  extends CommonUtil {
      * @throws Exception
      */
 
-    @RequestMapping(value = "/page",method = RequestMethod.POST)
+    @RequestMapping(value = "/page",method = RequestMethod.GET)
     @ApiOperation(value = "导购参与记录", notes = "")
     @ApiImplicitParams(value= { @ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token") 	})
     public RestResult<AbstractPageService.PageResults<List<SalerIntegralRecordParam>>> list(DaoSearchWithOrganizationIdParam integralRecord) throws Exception {
@@ -108,7 +108,7 @@ public class MarketingSaleMemberRewardController  extends CommonUtil {
     @ApiOperation(value = "导购参与记录导出", notes = "")
     @ApiImplicitParams(value= {
             @ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")
-            ,@ApiImplicitParam(paramType="long",value = "活动主键id",name="activitySetId")
+            ,@ApiImplicitParam(paramType="search",value = "查询条件",name="search")
     })
     public void littleWinRecordOutExcelWithOrganization(String search) throws SuperCodeException, UnsupportedEncodingException, Exception {
 
