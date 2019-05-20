@@ -155,7 +155,7 @@ public class SalerRegisterAndLoginController {
      * @throws UnsupportedEncodingException
      */
    @ResponseBody
-   @RequestMapping("register")
+   @GetMapping("register")
    @ApiOperation(value = "非前端接口", notes = "")
    public RestResult<String> saveRegisterInfo(String code,String state) throws SuperCodeException, UnsupportedEncodingException {
        logger.error("3================================获取微信授权回调参数code:{},state:{}==================",code,state);
