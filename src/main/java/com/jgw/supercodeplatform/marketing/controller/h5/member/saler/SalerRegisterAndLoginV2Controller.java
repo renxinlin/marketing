@@ -19,15 +19,8 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +29,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.*;
-import org.yaml.snakeyaml.util.UriEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -48,14 +42,14 @@ import java.util.List;
 
 /**
  * 组织信息怎么获取
- * 从公众号获取组织ID??????????
+ * 从公众号获取组织ID
  */
 @Controller
-@RequestMapping("/marketing/front/saler")
+@RequestMapping("/marketing/front/saler/v2")
 @Api(tags = "销售员登录注册")
-public class SalerRegisterAndLoginController {
+public class SalerRegisterAndLoginV2Controller {
 
-    private Logger logger = LoggerFactory.getLogger(SalerRegisterAndLoginController.class);
+    private Logger logger = LoggerFactory.getLogger(SalerRegisterAndLoginV2Controller.class);
 
 //    redirect_uri域名与后台配置不一致则失败
     private final String redirctUrl              = "http://marketing.kf315.net/marketing/front/saler/register";

@@ -1,10 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -25,4 +22,6 @@ public interface MarketingChannelMapper {
 
 	@Select("select "+allFields+" from marketing_channel where ActivitySetId=#{activitySetId}")
 	List<MarketingChannel> selectByActivitySetId(@Param("activitySetId")Long activitySetId);
+	@Delete(" delete from  marketing_channel where   ActivitySetId = #{activitySetId}")
+    int delete(Long activitySetId);
 }

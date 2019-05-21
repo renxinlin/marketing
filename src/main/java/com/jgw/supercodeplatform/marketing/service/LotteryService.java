@@ -117,7 +117,7 @@ public class LotteryService {
 		if (null==activity) {
 			throw new SuperCodeException("该活动不存在", 500);
 		}
-		
+		// 门槛
 		String condition=mActivitySet.getValidCondition();
 		if (StringUtils.isNotBlank(condition)) {
 			MarketingActivitySetCondition mSetCondition=JSONObject.parseObject(condition, MarketingActivitySetCondition.class);

@@ -57,12 +57,12 @@ public class LotteryController extends CommonUtil {
      *    1.3 中奖概率
      *    1.4 每人每天领取上限【默认200】
      *    1.5 参与条件
-     *    1.6 活动产品【码平台】
-     *    1.7 自动追加【码平台】
+     *    1.6 活动产品【码平台】 消息中心处理
+     *    1.7 自动追加【码平台】 消息中心处理
      *
      *  2 被启用
      *
-     *  3 属于该码对应组织下的销售员
+     *  3 属于该码对应组织下的销售员【不可以跨组织】
      *  4 活动码没有被扫过
      *  5 配置了活动规则
      *
@@ -82,7 +82,6 @@ public class LotteryController extends CommonUtil {
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<String> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException {
         // 不可以跨组织
-        // 谁参与哪个产品的活动
 
         // 产品 用户
 

@@ -62,5 +62,6 @@ public interface MarketingActivityProductMapper extends CommonSql{
 
     @Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ProductBatchId = #{productBatchId}")
 	List<MarketingActivityProduct> selectByProductAndProductBatchId(@Param("productId") String productId,@Param("productBatchId") String productBatchId);
-
+    @Delete(" delete from marketing_activity_product where ActivitySetId = #{activitySetId}  ")
+    int delete(Long activitySetId );
 }

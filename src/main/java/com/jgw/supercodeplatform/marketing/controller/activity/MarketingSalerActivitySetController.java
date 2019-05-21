@@ -54,6 +54,7 @@ public class MarketingSalerActivitySetController {
     @ApiOperation(value = "导购活动更新", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerUpdate(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
+        //TODO 待码平台处理完毕
         return service.salerUpdate(activitySetParam);
     }
 
@@ -66,9 +67,10 @@ public class MarketingSalerActivitySetController {
      * @throws Exception
      */
     @RequestMapping(value = "/detail",method = RequestMethod.POST)
-    @ApiOperation(value = "导购活动更新", notes = "")
+    @ApiOperation(value = "导购活动详情", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<MarketingSalerActivityCreateParam> detail(Long id) throws Exception {
+        // todo
         return service.detail(id);
     }
 

@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.utils.SpringContextUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -53,12 +55,6 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPageUpdateParam
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -218,6 +214,40 @@ public class MarketingActivitySetService  {
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
 		mSet.setEachDayNumber(activitySetParam.getEachDayNumber());
 		mSet.setId(activitySetParam.getId());
+		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
+		mSet.setActivityStatus(1);
+		mSet.setOrganizationId(organizationId);
+		mSet.setOrganizatioIdlName(organizationName);
+		mSetMapper.insert(mSet);
+		return mSet;
+	}
+
+
+	private MarketingActivitySet convertActivitySetBySaler(MarketingActivitySetParam activitySetParam, String organizationId, String organizationName) throws SuperCodeException {
+		String title=activitySetParam.getActivityTitle();
+		if (StringUtils.isBlank(title)) {
+			throw new SuperCodeException("添加的活动设置标题不能为空", 500);
+		}
+		MarketingActivitySet existmActivitySet =mSetMapper.selectByTitleOrgId(activitySetParam.getActivityTitle(),organizationId);
+		if (null!=existmActivitySet) {
+			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
+		}
+		activityTimeCheck(activitySetParam.getActivityStartDate(),activitySetParam.getActivityEndDate());
+		MarketingActivitySet mSet=new MarketingActivitySet();
+		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
+		mSet.setActivityId(activitySetParam.getActivityId());
+		mSet.setActivityRangeMark(activitySetParam.getActivityRangeMark());
+		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
+		mSet.setActivityTitle(title);
+		mSet.setAutoFetch(activitySetParam.getAutoFetch());
+		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
+		mSet.setId(activitySetParam.getId());
+		// 门槛保存红包条件和每人每天上限
+		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
+		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
+		condition.setParticipationCondition(activitySetParam.getParticipationCondition());
+		String conditinoString = condition.toJsonString();
+		mSet.setValidCondition(conditinoString);
 		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
 		mSet.setActivityStatus(1);
 		mSet.setOrganizationId(organizationId);
@@ -395,6 +425,48 @@ public class MarketingActivitySetService  {
 		}
 		//插入对应活动产品数据
 		mProductMapper.batchDeleteByProBatchsAndRole(mList, referenceRole);
+		mProductMapper.activityProductInsert(mList);
+	}
+
+
+
+
+	private void saveProductBatchsWithSaler(List<MarketingActivityProductParam> maProductParams, Long activitySetId) throws SuperCodeException {
+		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
+//		Map<String, MarketingActivityProduct> activityProductMap = new HashMap<String, MarketingActivityProduct>();
+		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
+
+		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
+			String productId = marketingActivityProductParam.getProductId();
+			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
+			if (null != batchParams && !batchParams.isEmpty()) {
+				ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+				List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+				for (ProductBatchParam prBatchParam : batchParams) {
+					String productBatchId = prBatchParam.getProductBatchId();
+					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+					mActivityProduct.setActivitySetId(activitySetId);
+					mActivityProduct.setProductBatchId(productBatchId);
+					mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
+					mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+					mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+					mActivityProduct.setReferenceRole(MemberTypeEnums.SALER.getType());
+//					activityProductMap.put(productId + productBatchId, mActivityProduct);
+					mList.add(mActivityProduct);
+					// 拼装请求码管理批次信息接口商品批次参数
+					Map<String, String> batchmap = new HashMap<String, String>();
+					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
+					productBatchList.add(batchmap);
+				}
+				// 拼装请求码管理批次信息接口商品参数
+				productAndBatchGetCodeMO.setProductBatchList(productBatchList);
+				productAndBatchGetCodeMO.setProductId(productId);
+				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
+			}
+		}
+
+		//插入对应活动产品数据
+		mProductMapper.batchDeleteByProBatchsAndRole(mList, MemberTypeEnums.SALER.getType());
 		mProductMapper.activityProductInsert(mList);
 	}
 
@@ -648,7 +720,7 @@ public class MarketingActivitySetService  {
 		// 2新增产品表信息
 		// 3新增奖次表信息
 		// 4新增渠道信息，暂无 TODO 本期无渠道，后期关联码管理的渠道
-		// 5发送至码管理相关码信息
+		// 5发送至码管理相关码信息 注意:导购不需要绑定码管理
 		// 6异步:获取消息队列处理需要自动绑定活动的码信息
 		// ******************************
 		// 实现
@@ -680,15 +752,15 @@ public class MarketingActivitySetService  {
 
 // step-3：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
-		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getMActivitySetParam(),organizationId,organizationName);
+		MarketingActivitySet mActivitySet = convertActivitySetBySaler(activitySetParam.getMActivitySetParam(),organizationId,organizationName);
 		// 插入数据库后获取
 		Long activitySetId= mActivitySet.getId();
 
 
 		//保存渠道 TODO 后期增加该逻辑
-		/*if (!CollectionUtils.isEmpty(mChannelParams)) {
+		if (!CollectionUtils.isEmpty(mChannelParams)) {
 			saveChannels(mChannelParams,activitySetId);
-		}*/
+		}
 		//保存奖次
 		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
 		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】 TODO 拆分两者业务
@@ -730,7 +802,7 @@ public class MarketingActivitySetService  {
 				initTx();
 				//==================================buziness-start===========================
 				try {
-					saveProductBatchs(maProductParams,activitySetId,1);
+					saveProductBatchsWithSaler(maProductParams,activitySetId);
 					// 计数器成功加1
 					successNum.addAndGet(1);
 				} catch (SuperCodeException e) {
@@ -790,18 +862,18 @@ public class MarketingActivitySetService  {
 		if(activitySetParam == null){
 			throw new SuperCodeException("导购活动参数丢失001");
 		}
-		if(activitySetParam == null){
-			throw new SuperCodeException("导购活动参数丢失001");
-		}
-		if(activitySetParam == null){
-			throw new SuperCodeException("导购活动参数丢失001");
-		}
-		if(activitySetParam == null){
-			throw new SuperCodeException("导购活动参数丢失001");
-		}
-		if(activitySetParam == null){
-			throw new SuperCodeException("导购活动参数丢失001");
-		}
+//		if(activitySetParam == null){
+//			throw new SuperCodeException("导购活动参数丢失001");
+//		}
+//		if(activitySetParam == null){
+//			throw new SuperCodeException("导购活动参数丢失001");
+//		}
+//		if(activitySetParam == null){
+//			throw new SuperCodeException("导购活动参数丢失001");
+//		}
+//		if(activitySetParam == null){
+//			throw new SuperCodeException("导购活动参数丢失001");
+//		}
 		// 检查奖次类型:无db检验【基础检验】
 		standActicityParamCheck.basePrizeTypeCheck(mPrizeTypeParams);
 
@@ -870,7 +942,8 @@ public class MarketingActivitySetService  {
 	 * @param activitySetParam
 	 * @return
 	 */
-	public RestResult<String> salerUpdate(MarketingSalerActivityCreateParam activitySetParam) {
+	@Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
+	public RestResult<String> salerUpdate(MarketingSalerActivityCreateParam activitySetParam) throws SuperCodeException {
 		// 业务逻辑,先删除后更新:
 		/**
 		 * 删除 产品
@@ -879,10 +952,100 @@ public class MarketingActivitySetService  {
 		 * 修改 set主表
 		 *
 		 * 新增
-		 * TODO 需要修改码管理数据，待商讨
+		 *
 		 */
+		String organizationId=commonUtil.getOrganizationId();
+		String organizationName=commonUtil.getOrganizationName();
+		// 先删后增
+		mChannelMapper.delete(activitySetParam.getMActivitySetParam().getId());
+		mPrizeTypeMapper.delete(activitySetParam.getMActivitySetParam().getId());
+		mProductMapper.delete(activitySetParam.getMActivitySetParam().getId());
+		MarketingActivitySetParam mActivitySetParam = activitySetParam.getMActivitySetParam();
+		mSetMapper.update(changeDtoToDo(mActivitySetParam,organizationId,organizationName));
 
-		return null;
+
+
+		AtomicInteger successNum = new AtomicInteger(0);
+		// 事务参与计量器
+		CyclicBarrier cb = new CyclicBarrier(TX_THREAD_NUM);
+// step-1：获取实体
+		// 获取非前端参数
+
+		// 1 产品参数
+		List<MarketingActivityProductParam> maProductParams=activitySetParam.getMProductParams();
+		// 2 获取奖次参数
+		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
+		// 3 渠道参数:TODO 本期不做校验不做保存
+		List<MarketingChannelParam> mChannelParams = activitySetParam.getMChannelParams();
+
+// step-2：校验实体
+		validateBasicBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
+		validateBizBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
+
+// step-3：转换保存实体
+		// 4 获取活动实体：校验并且保存 返回活动主键ID
+		MarketingActivitySet mActivitySet = convertActivitySetBySaler(activitySetParam.getMActivitySetParam(),organizationId,organizationName);
+		// 插入数据库后获取
+		Long activitySetId= mActivitySet.getId();
+
+
+		//保存渠道 TODO 后期增加该逻辑
+		if (!CollectionUtils.isEmpty(mChannelParams)) {
+			saveChannels(mChannelParams,activitySetId);
+		}
+		//保存奖次
+		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
+		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】 TODO 拆分两者业务
+		saveProductBatchsWithThread(maProductParams,activitySetId,
+				ActivityTypeEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+
+
+
+		// ****************************************end****************************************
+
+
+		// 保存导购活动结果
+		int finalSuccessNum = successNum.get();
+		if(finalSuccessNum == TX_THREAD_NUM){
+			return RestResult.success();
+		}else{
+			// 外层事务回滚
+			throw new SuperCodeException("保存数据失败...");
+		}
+
+
+ 	}
+
+	private MarketingActivitySet changeDtoToDo(MarketingActivitySetParam activitySetParam,String organizationId,String organizationName) throws SuperCodeException {
+		String title=activitySetParam.getActivityTitle();
+		if (StringUtils.isBlank(title)) {
+			throw new SuperCodeException("添加的活动设置标题不能为空", 500);
+		}
+		MarketingActivitySet existmActivitySet =mSetMapper.selectByTitleOrgIdWhenUpdate(activitySetParam.getActivityTitle(),activitySetParam.getId(),organizationId);
+		if (null!=existmActivitySet) {
+			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
+		}
+		activityTimeCheck(activitySetParam.getActivityStartDate(),activitySetParam.getActivityEndDate());
+		MarketingActivitySet mSet=new MarketingActivitySet();
+		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
+		mSet.setActivityId(activitySetParam.getActivityId());
+		mSet.setActivityRangeMark(activitySetParam.getActivityRangeMark());
+		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
+		mSet.setActivityTitle(title);
+		mSet.setAutoFetch(activitySetParam.getAutoFetch());
+		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
+		mSet.setId(activitySetParam.getId());
+		// 门槛保存红包条件和每人每天上限
+		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
+		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
+		condition.setParticipationCondition(activitySetParam.getParticipationCondition());
+		String conditinoString = condition.toJsonString();
+		mSet.setValidCondition(conditinoString);
+		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
+		mSet.setActivityStatus(1);
+		mSet.setOrganizationId(organizationId);
+		mSet.setOrganizatioIdlName(organizationName);
+		return mSet;
 	}
 
 	public RestResult<MarketingSalerActivityCreateParam> detail(Long id) throws SuperCodeException {

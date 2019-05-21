@@ -85,11 +85,11 @@ public class WeixinAuthController {
 		}else {
 			statevalue=state;
 		}
-    	
+
     	ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(statevalue);
     	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
     	boolean needWriteJwtToken=false;
-    	
+
     	MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
     	String memberParam="";
 		if (null!=members ) {
@@ -103,8 +103,8 @@ public class WeixinAuthController {
 		}else {
 			memberParam="&memberId=-1";
 		}
-		
-		
+
+
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
     		organizationId=statearr[1];
@@ -154,7 +154,7 @@ public class WeixinAuthController {
 			members.setWxName(nickName);
 			marketingMembersService.update(members);
 		}
-		
+
 		//如果需要写jwttoken，在积分授权时只有不需要手机号登录时才写token否则手机号登录那里会写
 		if (needWriteJwtToken) {
 			writeJwtToken(response, members);

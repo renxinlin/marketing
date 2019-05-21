@@ -53,12 +53,16 @@ public interface MarketingActivitySetMapper {
            + " </where>"
            + " </script>")
    void updateCodeTotalNum(@Param("id")Long id,@Param("codeTotalNum") Long codeSum);
-   
-   
-   @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId}")
-   MarketingActivitySet selectByTitleOrgId(@Param("activityTitle")String activityTitle, @Param("organizationId")String organizationId);
-  
-   @Update("update marketing_activity_set set CodeTotalNum =CodeTotalNum+#{codeTotalNum} where Id = #{id}")
+
+
+    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId}")
+    MarketingActivitySet selectByTitleOrgId(@Param("activityTitle")String activityTitle, @Param("organizationId")String organizationId);
+
+
+    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId} and id != #{id} ")
+    MarketingActivitySet selectByTitleOrgIdWhenUpdate(@Param("activityTitle")String activityTitle,@Param("id")Long activitySetid, @Param("organizationId")String organizationId);
+
+    @Update("update marketing_activity_set set CodeTotalNum =CodeTotalNum+#{codeTotalNum} where Id = #{id}")
    void addCodeTotalNum(@Param("codeTotalNum")Long codeNum, @Param("id")Long activitySetid);
 
     @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId} and Id != #{id}")

@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
@@ -48,6 +49,14 @@ public class ScanCodeController {
     @Value("${rest.user.url}")
     private String restUserUrl;
 
+    /**
+     * 导购前端领奖页
+     */
+    @Value("${rest.user.url}")
+    private String SALER_LOTTERY_URL;
+
+
+
     @Autowired
     private GlobalRamCache globalRamCache;
 
@@ -71,8 +80,8 @@ public class ScanCodeController {
 
         return "redirect:"+url;
     }
-    
-    
+
+
     /**
      * 导购扫码码平台跳转到营销系统地址接口
      * @param codeId
@@ -84,17 +93,64 @@ public class ScanCodeController {
      * @throws ParseException
      * @throws Exception
      */
-    @RequestMapping(value = "/d",method = RequestMethod.GET)
-    @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
+    @RequestMapping(value = "/saler",method = RequestMethod.GET)
+    @ApiOperation(value = "码平台跳转营销系统导购路径", notes = "")
     public String daogou(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
     	String	wxstate=commonUtil.getUUID();
 
-    	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)1);
-
-        return "redirect:"+url;
+    	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId, wxstate,ActivityTypeEnum.ACTIVITY_SALER.getType());
+        // 领取按钮对应的前端URL
+        return "redirect:"+SALER_LOTTERY_URL+"?wxstate="+wxstate;
     }
-    
-    
+
+    /**
+     * 携带wxstate 并返回前端
+     * @param outerCodeId
+     * @param codeTypeId
+     * @param productId
+     * @param productBatchId
+     * @param wxstate
+     * @param referenceRole
+     * @return
+     * @throws SuperCodeException
+     * @throws UnsupportedEncodingException
+     * @throws ParseException
+     */
+    private String activityJudegeBySaler(String outerCodeId, String codeTypeId, String productId, String productBatchId, String wxstate, byte referenceRole) throws SuperCodeException, UnsupportedEncodingException, ParseException {
+
+        RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole);
+        if (restResult.getState()==500) {
+            logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
+            return SALER_LOTTERY_URL+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
+        }
+
+        ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
+
+        //在校验产品及产品批次时可以从活动设置表中获取组织id
+        String organizationId=sCodeInfoMO.getOrganizationId();
+        sCodeInfoMO.setOrganizationId(organizationId);
+        globalRamCache.putScanCodeInfoMO(wxstate,sCodeInfoMO);
+
+        logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
+        String url=SALER_LOTTERY_URL+"?wxstate="+wxstate;
+        return url;
+
+
+    }
+
+    /**
+     * 活动过期/产品批次是否参与活动
+     * @param outerCodeId
+     * @param codeTypeId
+     * @param productId
+     * @param productBatchId
+     * @param wxstate
+     * @param referenceRole
+     * @return
+     * @throws UnsupportedEncodingException
+     * @throws ParseException
+     * @throws SuperCodeException
+     */
     public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate, byte referenceRole) throws UnsupportedEncodingException, ParseException, SuperCodeException {
     	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole);
     	if (restResult.getState()==500) {
