@@ -257,7 +257,7 @@ public class WeixinAuthController {
     	String statevalue="";
     	Integer statecode=null;
     	Map<String, String> stateMap=null;
-    	if (state.contains("_")) {
+    	if (state.contains("&")) {
     		stateMap=stateToMap(state);
     		statevalue=state;
     		statecode=Integer.valueOf(stateMap.get("code"));
