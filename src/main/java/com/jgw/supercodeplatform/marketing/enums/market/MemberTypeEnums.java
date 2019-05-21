@@ -24,6 +24,7 @@ public enum  MemberTypeEnums {
     private String desc;
 
     MemberTypeEnums(Byte type, String desc){
-
+        this.type=type;
+        this.desc=desc;
     }
 }

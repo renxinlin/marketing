@@ -22,6 +22,8 @@ public enum ParticipationConditionEnum {
     private String desc;
 
     ParticipationConditionEnum( Byte condition,String desc){
+        this.condition=condition;
+        this.desc=desc;
 
     }
 
