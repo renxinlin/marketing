@@ -146,15 +146,16 @@ public class SalerRegisterAndLoginController {
        logger.error("0================================注册的类型=================="+userInfo.getBrowerType());
 
        if(BrowerTypeEnum.WX.getStatus().toString().equals(userInfo.getBrowerType())){
+//           if(1==1){
            // 微信客户端
            // 临时缓存用户信息;此时用户无组织信息
-           registerAsTempWaybeforeAuquireOpenId(userInfo);
-           String mobile = userInfo.getMobile();
+//           registerAsTempWaybeforeAuquireOpenId(userInfo);
+//           String mobile = userInfo.getMobile();
            // 获取微信配置信息 同时传递手机号
            // 重定向到微信授权
            // 直接请求微信静默授权
            // 微信重定向到 保存用户信息接口
-            // String mobile = "15728043579";
+             String mobile = "15728043579";
            String encodeUrl = URLEncoder.encode(redirctUrl, "utf-8");
            String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", mobile).replace("[backUrl]",encodeUrl);
 //       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
@@ -208,16 +209,18 @@ public class SalerRegisterAndLoginController {
 
         String openid = JSONObject.parseObject(containOpenId).getString("openid");
         logger.error("5================================openid结果:{}==================",openid);
+
         MarketingUser marketingUser = null;
         try {
             String userDtoString = redisUtil.get(REGISTER_PERFIX + state);
             marketingUser = JSONObject.parseObject(userDtoString, MarketingUser.class);
             marketingUser.setOpenid(openid);
+            // 微信授权的用户注册保存
+            service.saveUser(marketingUser);
         } catch (Exception e) {
             throw new SuperCodeException("获取临时用户信息失败...");
         }
-        // 微信授权的用户注册保存
-        service.saveUser(marketingUser);
+
         return RestResult.success();
 
 
@@ -264,6 +267,9 @@ public class SalerRegisterAndLoginController {
         marketingUserDo.setId(marketingUser.getId());
         marketingUser.setOpenid(openid);
         service.updateUserOpenId(marketingUserDo);
+
+        // TODO 重定向到业务页面
+
         return RestResult.success();
 
 
