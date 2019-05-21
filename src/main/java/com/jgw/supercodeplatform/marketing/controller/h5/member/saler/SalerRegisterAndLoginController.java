@@ -66,6 +66,9 @@ public class SalerRegisterAndLoginController {
     private final String openidandaccesstokenUrl = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=wx32ab5628a5951ecc&secret=e3fb09c9126cd8bc12399e56a35162c4&code=[code]&grant_type=authorization_code";
     @Autowired
     private MarketingSaleMemberService service;
+    // TODO 前端销售员中心
+    @Value("https://www.baidu.com")
+    private String WEB_URL ;
     /**
      * 注册的临时信息前缀
      */
@@ -115,6 +118,7 @@ public class SalerRegisterAndLoginController {
                             String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", loginUser.getMobile()).replace("[backUrl]",encodeUrl);
                             logger.error("1================================获取微信授权开始==================");
                             logger.error("2================================获取微信授权url:{}==================",OAUTH2_WX_URL_LAST);
+                            // TODO  测试:socket句柄是否与线程无关
                             response.sendRedirect(OAUTH2_WX_URL_LAST);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -140,6 +144,7 @@ public class SalerRegisterAndLoginController {
      * @param userInfo
      * @return
      */
+
    @GetMapping("/tempRegister")
    @ApiOperation(value = "saoma ", notes = "")
    public RestResult loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
@@ -149,19 +154,20 @@ public class SalerRegisterAndLoginController {
 //           if(1==1){
            // 微信客户端
            // 临时缓存用户信息;此时用户无组织信息
-//           registerAsTempWaybeforeAuquireOpenId(userInfo);
-//           String mobile = userInfo.getMobile();
+           registerAsTempWaybeforeAuquireOpenId(userInfo);
+           String mobile = userInfo.getMobile();
            // 获取微信配置信息 同时传递手机号
            // 重定向到微信授权
            // 直接请求微信静默授权
            // 微信重定向到 保存用户信息接口
-             String mobile = "15728043579";
+
+//         String mobile = "15728043579";
            String encodeUrl = URLEncoder.encode(redirctUrl, "utf-8");
            String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", mobile).replace("[backUrl]",encodeUrl);
-//       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
            logger.error("1================================获取微信授权开始==================");
            logger.error("2================================获取微信授权url:{}==================",OAUTH2_WX_URL_LAST);
            response.sendRedirect(OAUTH2_WX_URL_LAST);
+           // 注意: http协议重定向后不会返回rest result
            return RestResult.success();
        }else {
            // 非微信直接保存
@@ -186,7 +192,7 @@ public class SalerRegisterAndLoginController {
     @ResponseBody
     @GetMapping("register")
     @ApiOperation(value = "非前端接口", notes = "")
-    public RestResult<String> saveRegisterInfo(String code,String state) throws SuperCodeException, UnsupportedEncodingException {
+    public RestResult<String> saveRegisterInfo(String code,String state,HttpServletResponse response) throws SuperCodeException, IOException {
         logger.error("3================================获取微信授权回调参数code:{},state:{}==================",code,state);
 
         // code说明 ： code作为换取access_token的票据，每次用户授权带上的code将不一样，code只能使用一次，5分钟未被使用自动过期。
@@ -213,14 +219,19 @@ public class SalerRegisterAndLoginController {
         MarketingUser marketingUser = null;
         try {
             String userDtoString = redisUtil.get(REGISTER_PERFIX + state);
+            logger.error("[获取redis的临时用户信息{}]",userDtoString);
             marketingUser = JSONObject.parseObject(userDtoString, MarketingUser.class);
-            marketingUser.setOpenid(openid);
             // 微信授权的用户注册保存
-            service.saveUser(marketingUser);
+            marketingUser.setOpenid(openid);
+
         } catch (Exception e) {
             throw new SuperCodeException("获取临时用户信息失败...");
         }
 
+        //toDO 注册失败处理【保存失败，redis不正常】
+        service.saveUser(marketingUser);
+        // 前端页面URL
+        response.sendRedirect(WEB_URL);
         return RestResult.success();
 
 
@@ -238,7 +249,7 @@ public class SalerRegisterAndLoginController {
     @ResponseBody
     @GetMapping("update")
     @ApiOperation(value = "非前端接口", notes = "")
-    public RestResult<String> updateOpenId(String code,String state) throws SuperCodeException, UnsupportedEncodingException {
+    public RestResult<String> updateOpenId(String code,String state,HttpServletResponse response) throws SuperCodeException, IOException {
         logger.error("3================================获取微信授权回调参数code:{},state:{}==================",code,state);
 
         // code说明 ： code作为换取access_token的票据，每次用户授权带上的code将不一样，code只能使用一次，5分钟未被使用自动过期。
@@ -268,8 +279,8 @@ public class SalerRegisterAndLoginController {
         marketingUser.setOpenid(openid);
         service.updateUserOpenId(marketingUserDo);
 
-        // TODO 重定向到业务页面
-
+        // 前端页面URL
+        response.sendRedirect(WEB_URL);
         return RestResult.success();
 
 
