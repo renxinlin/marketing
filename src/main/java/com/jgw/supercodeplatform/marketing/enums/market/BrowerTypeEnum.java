@@ -12,8 +12,11 @@ public enum BrowerTypeEnum {
      * 无条件
      */
     WX((byte)1,"微信"),
+
     OTHER((byte)2,"其他"),
+
     QQ((byte)3,"qq"),
+
     ZFBAO((byte)4,"支付宝"),
 
 
@@ -30,7 +33,8 @@ public enum BrowerTypeEnum {
     private String desc;
 
     BrowerTypeEnum(Byte status, String desc){
-
+        this.status = status;
+        this.desc = desc;
     }
 
 }

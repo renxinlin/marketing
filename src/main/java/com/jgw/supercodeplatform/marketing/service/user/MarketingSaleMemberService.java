@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -34,6 +35,10 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 	@Autowired
 	private ModelMapper modelMapper;
+
+
+	@Autowired
+	private CommonService commonService;
 
 
 	@Override
@@ -350,8 +355,25 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		return userDtoToDb;
 	}
 
-	@Autowired
-	private CommonService commonService;
+	public MarketingUser selectByMobile(String state) {
+		return mapper.selectByPhone(state);
+	}
+
+	public void updateUserOpenId(MarketingUser marketingUserDo) throws SuperCodeException{
+		if(marketingUserDo == null){
+			throw new SuperCodeException("参数获取失败");
+		}
+		if(marketingUserDo.getId() == null || marketingUserDo.getId() <= 0){
+			throw new SuperCodeException("用户获取失败");
+
+		}
+
+		if(StringUtils.isEmpty(marketingUserDo.getOpenid())){
+			throw new SuperCodeException("OPEN_ID获取失败");
+
+		}
+		mapper.updateByPrimaryKeySelective(marketingUserDo);
+	}
 }
 
 

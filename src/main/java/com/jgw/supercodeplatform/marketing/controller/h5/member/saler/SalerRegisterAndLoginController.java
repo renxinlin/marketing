@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +59,7 @@ public class SalerRegisterAndLoginController {
 
 //    redirect_uri域名与后台配置不一致则失败
     private final String redirctUrl              = "http://marketing.kf315.net/marketing/front/saler/register";
+    private final String loginRedirctUrl              = "http://marketing.kf315.net/marketing/front/saler/update";
     // 获取code
     private final String OAUTH2_WX_URL           = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx32ab5628a5951ecc&redirect_uri="+"[backUrl]"+"&response_type=code&scope=snsapi_base&state="+"[mobile]"+"#wechat_redirect";
     // 获取一次性access_token openid
@@ -77,9 +79,12 @@ public class SalerRegisterAndLoginController {
     private ModelMapper modelMapper;
     @Value("${cookie.domain}")
     private String cookieDomain;
+
+    @Autowired
+    private TaskExecutor taskExecutor;
     @ResponseBody
     @GetMapping("login")
-    @ApiOperation(value = "登录", notes = "")
+    @ApiOperation(value = "手机号登录", notes = "")
     public RestResult<MarketingUser> login(SalerLoginParam loginUser ,HttpServletResponse response) throws SuperCodeException{
         MarketingUser user = service.selectBylogin(loginUser);
         // 写jwt
@@ -97,7 +102,29 @@ public class SalerRegisterAndLoginController {
             jwtTokenCookie.setPath("/");
             jwtTokenCookie.setDomain(cookieDomain);
             response.addCookie(jwtTokenCookie);
+
+            //
+            String openid = user.getOpenid();
+            if(StringUtils.isBlank(openid)|| BrowerTypeEnum.WX.getStatus().intValue() == loginUser.getBrowerType()){
+                taskExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        //
+                        try {
+                            String encodeUrl = URLEncoder.encode(loginRedirctUrl, "utf-8");
+                            String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", loginUser.getMobile()).replace("[backUrl]",encodeUrl);
+                            logger.error("1================================获取微信授权开始==================");
+                            logger.error("2================================获取微信授权url:{}==================",OAUTH2_WX_URL_LAST);
+                            response.sendRedirect(OAUTH2_WX_URL_LAST);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
         }
+
+        // 异步授权openid
         return RestResult.success("success",user);
     }
 
@@ -114,20 +141,21 @@ public class SalerRegisterAndLoginController {
      * @return
      */
    @GetMapping("/tempRegister")
-   @ApiOperation(value = "注册", notes = "")
+   @ApiOperation(value = "saoma ", notes = "")
    public RestResult loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
        logger.error("0================================注册的类型=================="+userInfo.getBrowerType());
 
        if(BrowerTypeEnum.WX.getStatus().toString().equals(userInfo.getBrowerType())){
+//           if(1==1){
            // 微信客户端
            // 临时缓存用户信息;此时用户无组织信息
-           registerAsTempWaybeforeAuquireOpenId(userInfo);
-           String mobile = userInfo.getMobile();
+//           registerAsTempWaybeforeAuquireOpenId(userInfo);
+//           String mobile = userInfo.getMobile();
            // 获取微信配置信息 同时传递手机号
            // 重定向到微信授权
            // 直接请求微信静默授权
            // 微信重定向到 保存用户信息接口
-            // String mobile = "15728043579";
+             String mobile = "15728043579";
            String encodeUrl = URLEncoder.encode(redirctUrl, "utf-8");
            String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", mobile).replace("[backUrl]",encodeUrl);
 //       String redirctUri = URLEncoder.encode(OAUTH2_WX_URL, "utf-8");
@@ -146,6 +174,7 @@ public class SalerRegisterAndLoginController {
 
 
 
+
     /**
      *
      * @param code 微信授权信息
@@ -154,46 +183,97 @@ public class SalerRegisterAndLoginController {
      * @throws SuperCodeException
      * @throws UnsupportedEncodingException
      */
-   @ResponseBody
-   @GetMapping("register")
-   @ApiOperation(value = "非前端接口", notes = "")
-   public RestResult<String> saveRegisterInfo(String code,String state) throws SuperCodeException, UnsupportedEncodingException {
-       logger.error("3================================获取微信授权回调参数code:{},state:{}==================",code,state);
+    @ResponseBody
+    @GetMapping("register")
+    @ApiOperation(value = "非前端接口", notes = "")
+    public RestResult<String> saveRegisterInfo(String code,String state) throws SuperCodeException, UnsupportedEncodingException {
+        logger.error("3================================获取微信授权回调参数code:{},state:{}==================",code,state);
 
-       // code说明 ： code作为换取access_token的票据，每次用户授权带上的code将不一样，code只能使用一次，5分钟未被使用自动过期。
-       if(StringUtils.isBlank(code)){
-           throw new SuperCodeException("微信回调code失败...");
-       }
-       if(StringUtils.isBlank(state)){
-           // 存储手机号
-           throw new SuperCodeException("获取手机号失败...");
+        // code说明 ： code作为换取access_token的票据，每次用户授权带上的code将不一样，code只能使用一次，5分钟未被使用自动过期。
+        if(StringUtils.isBlank(code)){
+            throw new SuperCodeException("微信回调code失败...");
+        }
+        if(StringUtils.isBlank(state)){
+            // 存储手机号
+            throw new SuperCodeException("获取手机号失败...");
 
-       }
-       // 获取openid
-       String openidandaccesstokenUrlLast = openidandaccesstokenUrl.replace("[code]", code);
-       String encodeUrl = URLEncoder.encode(openidandaccesstokenUrlLast, "utf-8");
-       logger.error("4================================访问httpsurl:{}==================",openidandaccesstokenUrlLast);
+        }
+        // 获取openid
+        String openidandaccesstokenUrlLast = openidandaccesstokenUrl.replace("[code]", code);
+        String encodeUrl = URLEncoder.encode(openidandaccesstokenUrlLast, "utf-8");
+        logger.error("4================================访问httpsurl:{}==================",openidandaccesstokenUrlLast);
 
-       // 访问https
-       String containOpenId = getOpenid(openidandaccesstokenUrlLast);
-       logger.error("5================================访问静默授权结果:{}==================",containOpenId);
+        // 访问https
+        String containOpenId = getOpenid(openidandaccesstokenUrlLast);
+        logger.error("5================================访问静默授权结果:{}==================",containOpenId);
 
-       String openid = JSONObject.parseObject(containOpenId).getString("openid");
-       logger.error("5================================openid结果:{}==================",openid);
-       MarketingUser marketingUser = null;
-       try {
-           String userDtoString = redisUtil.get(REGISTER_PERFIX + state);
-           marketingUser = JSONObject.parseObject(userDtoString, MarketingUser.class);
-           marketingUser.setOpenid(openid);
-       } catch (Exception e) {
-           throw new SuperCodeException("获取临时用户信息失败...");
-       }
-       // 微信授权的用户注册保存
-       service.saveUser(marketingUser);
-       return RestResult.success();
+        String openid = JSONObject.parseObject(containOpenId).getString("openid");
+        logger.error("5================================openid结果:{}==================",openid);
+
+        MarketingUser marketingUser = null;
+        try {
+            String userDtoString = redisUtil.get(REGISTER_PERFIX + state);
+            marketingUser = JSONObject.parseObject(userDtoString, MarketingUser.class);
+            marketingUser.setOpenid(openid);
+            // 微信授权的用户注册保存
+            service.saveUser(marketingUser);
+        } catch (Exception e) {
+            throw new SuperCodeException("获取临时用户信息失败...");
+        }
+
+        return RestResult.success();
 
 
-   }
+    }
+
+
+    /**
+     *
+     * @param code 微信授权信息
+     * @param state 登录更新手机号
+     * @return
+     * @throws SuperCodeException
+     * @throws UnsupportedEncodingException
+     */
+    @ResponseBody
+    @GetMapping("update")
+    @ApiOperation(value = "非前端接口", notes = "")
+    public RestResult<String> updateOpenId(String code,String state) throws SuperCodeException, UnsupportedEncodingException {
+        logger.error("3================================获取微信授权回调参数code:{},state:{}==================",code,state);
+
+        // code说明 ： code作为换取access_token的票据，每次用户授权带上的code将不一样，code只能使用一次，5分钟未被使用自动过期。
+        if(StringUtils.isBlank(code)){
+            throw new SuperCodeException("微信回调code失败...");
+        }
+        if(StringUtils.isBlank(state)){
+            // 存储手机号
+            throw new SuperCodeException("获取手机号失败...");
+
+        }
+        // 获取openid
+        String openidandaccesstokenUrlLast = openidandaccesstokenUrl.replace("[code]", code);
+        String encodeUrl = URLEncoder.encode(openidandaccesstokenUrlLast, "utf-8");
+        logger.error("4================================访问httpsurl:{}==================",openidandaccesstokenUrlLast);
+
+        // 访问https
+        String containOpenId = getOpenid(openidandaccesstokenUrlLast);
+        logger.error("5================================访问静默授权结果:{}==================",containOpenId);
+
+        String openid = JSONObject.parseObject(containOpenId).getString("openid");
+        logger.error("5================================openid结果:{}==================",openid);
+        MarketingUser marketingUser = service.selectByMobile(state);
+        // 微信授权的用户注册保存
+        MarketingUser marketingUserDo = new MarketingUser();
+        marketingUserDo.setId(marketingUser.getId());
+        marketingUser.setOpenid(openid);
+        service.updateUserOpenId(marketingUserDo);
+
+        // TODO 重定向到业务页面
+
+        return RestResult.success();
+
+
+    }
 
     /**
      * 访问微信https

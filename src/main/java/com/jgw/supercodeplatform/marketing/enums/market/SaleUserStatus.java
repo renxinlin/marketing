@@ -25,8 +25,9 @@ public enum SaleUserStatus {
     @Setter
     private String desc;
 
-    SaleUserStatus(Byte condition, String desc){
-
+    SaleUserStatus(Byte status, String desc){
+        this.status=status;
+        this.desc=desc;
     }
 
 }

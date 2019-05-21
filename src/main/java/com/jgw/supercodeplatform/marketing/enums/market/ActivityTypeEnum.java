@@ -3,12 +3,12 @@ package com.jgw.supercodeplatform.marketing.enums.market;
 import lombok.Getter;
 import lombok.Setter;
 
-public enum  MemberTypeEnums {
+public enum ActivityTypeEnum {
     /**
-     * 无条件
+     * 同marketing_activity 表的ActivityType值
      */
-    VIP((byte)0,"会员"),
-    SALER((byte)1,"导购员"),
+    ACTIVITY_MEMBER((byte)0,"会员活动"),
+    ACTIVITY_SALER((byte)1,"导购活动"),
 
 
     Min((byte)1,""),
@@ -23,8 +23,9 @@ public enum  MemberTypeEnums {
     @Setter
     private String desc;
 
-    MemberTypeEnums(Byte type, String desc){
+    ActivityTypeEnum(Byte type, String desc){
         this.type=type;
         this.desc=desc;
     }
+
 }
