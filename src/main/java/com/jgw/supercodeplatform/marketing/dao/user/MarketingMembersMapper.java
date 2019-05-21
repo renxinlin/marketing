@@ -209,7 +209,7 @@ public interface MarketingMembersMapper {
     List<MarketingMembers> getRegisterNum(String organizationId, Date startDate, Date endDate);
 
     /**
-     * 会员地图
+      * 会员地图
      * @param organizationId
      * @param startDate
      * @param endDate
