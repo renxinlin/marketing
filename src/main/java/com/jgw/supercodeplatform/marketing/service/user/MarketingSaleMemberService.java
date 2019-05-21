@@ -374,6 +374,15 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		}
 		mapper.updateByPrimaryKeySelective(marketingUserDo);
 	}
+
+	public MarketingUser selectByOpenid(String openid) throws SuperCodeException {
+		if(openid == null){
+			throw new SuperCodeException("参数获取失败");
+		}
+		return mapper.selectByOpenid(openid);
+
+
+	}
 }
 
 

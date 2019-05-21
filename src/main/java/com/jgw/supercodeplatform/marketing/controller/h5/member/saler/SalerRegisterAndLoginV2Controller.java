@@ -79,20 +79,33 @@ public class SalerRegisterAndLoginV2Controller {
 
     @Autowired
     private TaskExecutor taskExecutor;
+
+    /**
+     * 登录
+     * @param loginUser
+     * @param response
+     * @return
+     * @throws SuperCodeException
+     */
     @ResponseBody
     @GetMapping("login")
     @ApiOperation(value = "手机号登录", notes = "")
     public RestResult<MarketingUser> login(SalerLoginParam loginUser ,HttpServletResponse response) throws SuperCodeException{
-        if(BrowerTypeEnum.WX.getStatus().toString().equals(loginUser.getBrowerType().toString())){
-            // 微信登录
-
-
-
-        }else{
+            // 或者 微信回调携带openid登录
             // 手机登录
+            // TODO  验证码
             MarketingUser user = service.selectBylogin(loginUser);
             // 写jwt
             if(user != null){
+                if(loginUser.getOpenid()!= null){
+                    // 说明微信登录失败,但用户存在
+                    // 说明没绑定openid
+                    Long id = user.getId();
+                    user = new MarketingUser();
+                    user.setId(id);
+                    user.setOpenid(loginUser.getOpenid());
+                    service.updateUserOpenId(user);
+                }
                 H5LoginVO jwtUser = new H5LoginVO();
                 jwtUser.setMobile(loginUser.getMobile());
                 jwtUser.setMemberId(user.getId());
@@ -106,43 +119,17 @@ public class SalerRegisterAndLoginV2Controller {
                 jwtTokenCookie.setPath("/");
                 jwtTokenCookie.setDomain(cookieDomain);
                 response.addCookie(jwtTokenCookie);
+            }else{
+                // 说明用户不存在
+                return RestResult.error("请前往注册后登录",null,401);
 
-                //
-                String openid = user.getOpenid();
-                if(StringUtils.isBlank(openid)|| BrowerTypeEnum.WX.getStatus().intValue() == loginUser.getBrowerType()){
-                    taskExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            //
-                            try {
-                                String encodeUrl = URLEncoder.encode(loginRedirctUrl, "utf-8");
-                                String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", loginUser.getMobile()).replace("[backUrl]",encodeUrl);
-                                logger.error("1================================获取微信授权开始==================");
-                                logger.error("2================================获取微信授权url:{}==================",OAUTH2_WX_URL_LAST);
-                                // TODO  测试:socket句柄是否与线程无关
-                                response.sendRedirect(OAUTH2_WX_URL_LAST);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                }
             }
-        }
 
 
         // 异步授权openid
         return RestResult.success("success",null);
     }
 
-    private void redirctToWx(  HttpServletResponse response,String stateValue) throws IOException {
-        String encodeUrl = URLEncoder.encode(loginRedirctUrl, "utf-8");
-        String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", "loginMobile").replace("[backUrl]",encodeUrl);
-        logger.error("1================================获取微信授权开始==================");
-        logger.error("2================================获取微信授权url:{}==================",OAUTH2_WX_URL_LAST);
-        // TODO  测试:socket句柄是否与线程无关
-        response.sendRedirect(OAUTH2_WX_URL_LAST);
-    }
 
 
     /**
@@ -159,7 +146,7 @@ public class SalerRegisterAndLoginV2Controller {
 
    @GetMapping("/tempRegister")
    @ResponseBody
-   @ApiOperation(value = "saoma ", notes = "")
+   @ApiOperation(value = "临时注册 ", notes = "")
    public void loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
        logger.error("0================================注册的类型=================="+userInfo.getBrowerType());
 

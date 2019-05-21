@@ -107,6 +107,15 @@ public class RestResult <T>{
 
 	}
 
+	public static <T> RestResult<T> error(String msg, T data,int state){
+		RestResult<T> result = new RestResult();
+		result.state = state;
+		result.msg = msg;
+		result.results = data;
+		return  result;
+
+	}
+
 	public void setResults(T results) {
 		this.results = results;
 	}
