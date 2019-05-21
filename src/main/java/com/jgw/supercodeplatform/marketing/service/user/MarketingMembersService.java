@@ -478,9 +478,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				memberByPhone.setMemberType((byte)0);
 				memberByPhone.setOrganizationId(organizationId);
 				marketingMembersMapper.insert(memberByPhone);
-				
-				trueMember=memberByPhone;
 			}
+			if (memberByPhone.getState().intValue()==0) {
+				throw new SuperCodeException("您已被禁用，请联系管理员", 500);
+			}
+			trueMember=memberByPhone;
 		}else {
 			MarketingMembers memberByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openid, organizationId);
 			if (null==memberByOpenId) {
@@ -522,8 +524,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 						//如果已存在的手机号用户未绑定微信号则直接绑定手机号
 						memberByPhone.setOpenid(openid);
 						memberByPhone.setWxName(memberByOpenId.getWxName());
-						memberByPhone.setWechatHeadImgUrl(memberByOpenId.getWechatHeadImgUrl());
+						if (StringUtils.isNotBlank(memberByOpenId.getWechatHeadImgUrl())) {
+							memberByPhone.setWechatHeadImgUrl(memberByOpenId.getWechatHeadImgUrl());
+						}
 						marketingMembersMapper.update(memberByPhone);
+						
+						marketingMembersMapper.deleteById(memberByOpenId.getId());
+						
 					}else {
 						//如果已存在的手机号用户已绑定了微信openid且与当前登录openid不一致则不允许登录
 						if (!exOpenid.equals(openid)) {
@@ -533,12 +540,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 							throw new SuperCodeException("当前手机号用户已被禁用，请联系管理员", 500);
 						}
 					}
-					
 					//设置用户
 					trueMember=memberByPhone;
 				}
 			}
 		}
+		
 		h5LoginVO.setWechatHeadImgUrl(trueMember.getWechatHeadImgUrl());
 		h5LoginVO.setMemberId(trueMember.getId());
 		h5LoginVO.setHaveIntegral(trueMember.getHaveIntegral()==null?0:trueMember.getHaveIntegral());

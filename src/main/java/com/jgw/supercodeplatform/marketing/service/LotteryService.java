@@ -217,7 +217,9 @@ public class LotteryService {
 		String productBatchId=scanCodeInfoMO.getProductBatchId();
 		String mobile=scanCodeInfoMO.getMobile();
  		holdLockJudgeES(restResult,marketingMembersInfo.getId(),marketingMembersInfo.getMemberType().intValue(), openId,productId,productBatchId, activitySetId, mActivitySet, organizationId, codeId, codeTypeId);
- 		
+ 		if (restResult.getState().intValue()==500) {
+			return restResult;
+		}
 		//判断realprize是否为0,0表示为新增的虚拟不中奖奖项，为了计算中奖率设置
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
