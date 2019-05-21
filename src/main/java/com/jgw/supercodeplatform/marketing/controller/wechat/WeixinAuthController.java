@@ -89,6 +89,22 @@ public class WeixinAuthController {
     	ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(statevalue);
     	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
     	boolean needWriteJwtToken=false;
+    	
+    	MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+    	String memberParam="";
+		if (null!=members ) {
+			Byte memberState=members.getState();
+			if (null!=memberState && memberState.intValue()==1) {
+				memberParam="&memberId="+members.getId();
+				needWriteJwtToken=true;
+			}else {
+				memberParam="&memberId=-1";
+    		}
+		}else {
+			memberParam="&memberId=-1";
+		}
+		
+		
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
     		organizationId=statearr[1];
@@ -102,24 +118,12 @@ public class WeixinAuthController {
     			h5BUf.append("&uuid="+statearr[2]);
 			}
     		h5BUf.append("&organizationId="+organizationId);
-    		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
-    		if (null!=members ) {
-    			Byte memberState=members.getState();
-    			if (null!=memberState && memberState.intValue()==1) {
-    				h5BUf.append("&memberId="+members.getId());
-    				needWriteJwtToken=true;
-				}else {
-	    			h5BUf.append("&memberId=-1");
-	    		}
-    		}else {
-    			h5BUf.append("&memberId=-1");
-    		}
+    		h5BUf.append(memberParam);
 			nickName=userInfo.getString("nickname");
     		redirectUrl=h5BUf.toString();
 		}else {
 			//如果是活动扫码默认也写jwttoken
 			needWriteJwtToken=true;
-			
 			userInfo=getUserInfo(code, scanCodeInfoMO.getOrganizationId());
 			openid=userInfo.getString("openid");
 			organizationId=scanCodeInfoMO.getOrganizationId();
@@ -128,11 +132,9 @@ public class WeixinAuthController {
 			scanCodeInfoMO.setOpenId(userInfo.getString("openid"));
 			//更新扫码信息
 			globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
-			redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+organizationId;
+			redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+organizationId+memberParam;
 		}
-    	
 		//判断是否需要保存用户
-		MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
 		if (null==members) {
 			members=new MarketingMembers();
 			members.setOpenid(openid);
@@ -143,9 +145,16 @@ public class WeixinAuthController {
 			members.setIsRegistered((byte)0);
 			marketingMembersService.insert(members);
 		}else {
+			if (null!=scanCodeInfoMO) {
+				scanCodeInfoMO.setUserId(members.getId());
+				globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
+			}
+			//更新扫码信息
+			globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
 			members.setWxName(nickName);
 			marketingMembersService.update(members);
 		}
+		
 		//如果需要写jwttoken，在积分授权时只有不需要手机号登录时才写token否则手机号登录那里会写
 		if (needWriteJwtToken) {
 			writeJwtToken(response, members);
