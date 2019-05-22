@@ -84,7 +84,7 @@ public class MarketingSaleMembersController extends CommonUtil {
 
 
     @RequestMapping(value = "/update/status", method = RequestMethod.POST)
-    @ApiOperation(value = "修改导购员状态", notes = "修改导购员状态")
+    @ApiOperation(value = "修改导购员状态1待审核2停用3启用", notes = "修改导购员状态")
     @ApiImplicitParams({
         @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
 })
