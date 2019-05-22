@@ -818,7 +818,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		//保存奖次
 		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
-		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】 TODO 拆分两者业务
+		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】
 		saveProductBatchsWithThread(maProductParams,activitySetId,
 				ActivityTypeEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
 
