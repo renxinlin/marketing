@@ -211,8 +211,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 //				customerNames.append(",").append(customer.getCustomerName());
 //			}
 //			// 移除第一个逗号
-			dto.setCustomerId(marketingUser.getCustomerId());
-			dto.setCustomerName(marketingUser.getCustomerName());
+
 //		}
 
 		// 行政信息处理
@@ -231,8 +230,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		dto.setCityName(city.getString(areaName));
 		dto.setCountyName(country.getString(areaName));
 		dto.setpCCcode(pcccode);
-
-
+		dto.setCustomerId(marketingMembersUpdateParam.getCustomerId());
+		dto.setCustomerName(marketingMembersUpdateParam.getCustomerName());
 		// 更新操作
 		int i = mapper.updateByPrimaryKeySelective(dto);
 		if(i!=1){
