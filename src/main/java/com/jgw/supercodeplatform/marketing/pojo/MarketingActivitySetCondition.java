@@ -23,7 +23,7 @@ public class MarketingActivitySetCondition {
      *  1 协助领红包
      *  2 协助领积分
      */
-    @ApiModelProperty(name = "participationCondition", value = "参与红包条件", example = "1")
+    @ApiModelProperty(name = "participationCondition", value = "0无条件 1协助领红包 2协助领积分", example = "1")
     private Byte participationCondition;
 
     /**

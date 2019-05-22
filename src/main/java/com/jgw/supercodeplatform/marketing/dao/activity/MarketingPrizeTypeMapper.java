@@ -60,4 +60,6 @@ public interface MarketingPrizeTypeMapper {
 	@Select("select "+allFields+" from marketing_prize_type where ActivitySetId=#{activitySetId}")
 	List<MarketingPrizeTypeMO> selectMOByActivitySetIdIncludeUnreal(Long activitySetId);
 
+	@Delete(" delete from marketing_prize_type where  ActivitySetId=#{activitySetId} ")
+	void deleteByActivitySetId(Long id);
 }

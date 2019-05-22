@@ -24,12 +24,28 @@ public class MarketingActivitySetParam {
 	
 	@ApiModelProperty(name = "activityRangeMark", value = "活动范围标志(1、表示部分产品有效 2、表示全部产品有效 ", example = "1")
     private Integer activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 )
-	
+
 	@ApiModelProperty(name = "autoFetch", value = "是否自动获取(1、自动获取 2、仅此一次 ) ", example = "1")
-    private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
+	private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
+
+	@ApiModelProperty(name = "participationCondition", value = "0无条件 1协助领红包 2协助领积分", example = "1")
+	private Byte participationCondition;
 	
+    @ApiModelProperty(name = "consumeIntegralNum", value = "消耗积分", example = "11")
+    private Integer consumeIntegralNum;
+
+    @ApiModelProperty(name = "activityDesc", value = "活动描述", example = "红包活动")
+    private String activityDesc;
     
-    public Long getId() {
+	public Byte getParticipationCondition() {
+		return participationCondition;
+	}
+
+	public void setParticipationCondition(Byte participationCondition) {
+		this.participationCondition = participationCondition;
+	}
+
+	public Long getId() {
 		return id;
 	}
 
@@ -90,6 +106,22 @@ public class MarketingActivitySetParam {
 
 	public void setActivityEndDate(String activityEndDate) {
 		this.activityEndDate = activityEndDate;
+	}
+
+	public Integer getConsumeIntegralNum() {
+		return consumeIntegralNum;
+	}
+
+	public void setConsumeIntegralNum(Integer consumeIntegralNum) {
+		this.consumeIntegralNum = consumeIntegralNum;
+	}
+
+	public String getActivityDesc() {
+		return activityDesc;
+	}
+
+	public void setActivityDesc(String activityDesc) {
+		this.activityDesc = activityDesc;
 	}
     
 }

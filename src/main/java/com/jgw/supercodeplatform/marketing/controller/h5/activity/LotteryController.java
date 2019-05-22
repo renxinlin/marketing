@@ -1,11 +1,7 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
-import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +10,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
-
-import java.text.ParseException;
 
 @RestController
 @RequestMapping("/marketing/front/lottery")
@@ -46,8 +44,6 @@ public class LotteryController extends CommonUtil {
         return service.lottery(wxstate, request);
     }
     
-
-
     /**
      * 扫码条件:
      *  1 活动规则
@@ -57,12 +53,12 @@ public class LotteryController extends CommonUtil {
      *    1.3 中奖概率
      *    1.4 每人每天领取上限【默认200】
      *    1.5 参与条件
-     *    1.6 活动产品【码平台】
-     *    1.7 自动追加【码平台】
+     *    1.6 活动产品【码平台】 消息中心处理
+     *    1.7 自动追加【码平台】 消息中心处理
      *
      *  2 被启用
      *
-     *  3 属于该码对应组织下的销售员
+     *  3 属于该码对应组织下的销售员【不可以跨组织】
      *  4 活动码没有被扫过
      *  5 配置了活动规则
      *
@@ -79,10 +75,10 @@ public class LotteryController extends CommonUtil {
      */
     @RequestMapping(value = "salerLottery",method = RequestMethod.POST)
     @ApiOperation(value = "salerLottery", notes = "导购活动领取")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")}
+                       )
     public RestResult<String> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException {
         // 不可以跨组织
-        // 谁参与哪个产品的活动
 
         // 产品 用户
 
