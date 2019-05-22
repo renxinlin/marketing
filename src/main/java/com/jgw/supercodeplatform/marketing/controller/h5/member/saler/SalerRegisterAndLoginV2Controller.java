@@ -41,8 +41,8 @@ import java.net.URLEncoder;
 import java.util.List;
 
 /**
- * 组织信息怎么获取
- * 从公众号获取组织ID
+ * 废弃V1的后台处理微信授权问题,交给前端处理
+ *
  */
 @Controller
 @RequestMapping("/marketing/front/saler/v2")
@@ -146,34 +146,10 @@ public class SalerRegisterAndLoginV2Controller {
 
    @GetMapping("/tempRegister")
    @ResponseBody
-   @ApiOperation(value = "临时注册 ", notes = "")
+   @ApiOperation(value = "临时注册 此版本为前端授权后调用的注册接口", notes = "")
    public void loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
-       logger.error("0================================注册的类型=================="+userInfo.getBrowerType());
-
-       if(BrowerTypeEnum.WX.getStatus().toString().equals(userInfo.getBrowerType())){
-//           if(1==1){
-           // 微信客户端
-           // 临时缓存用户信息;此时用户无组织信息
-           registerAsTempWaybeforeAuquireOpenId(userInfo);
-           String mobile = userInfo.getMobile();
-           // 获取微信配置信息 同时传递手机号
-           // 重定向到微信授权
-           // 直接请求微信静默授权
-           // 微信重定向到 保存用户信息接口
-
-//         String mobile = "15728043579";
-           String encodeUrl = URLEncoder.encode(redirctUrl, "utf-8");
-           String OAUTH2_WX_URL_LAST = OAUTH2_WX_URL.replace("[mobile]", mobile).replace("[backUrl]",encodeUrl);
-           logger.error("1================================获取微信授权开始==================");
-           logger.error("2================================获取微信授权url:{}==================",OAUTH2_WX_URL_LAST);
-           response.sendRedirect(OAUTH2_WX_URL_LAST);
-           // 注意: http协议重定向后不会返回rest result
-       }else {
-           // 非微信直接保存
+           // 直接保存 有微信用户时携带openiD访问该接口
            service.saveRegisterUser(userInfo);
-
-       }
-
    }
 
 
@@ -305,9 +281,9 @@ public class SalerRegisterAndLoginV2Controller {
             throw new SuperCodeException("地址信息必填...");
         }
         // 校验机构信息
-        if(CollectionUtils.isEmpty(userInfo.getCustomer())){
-            throw new SuperCodeException("机构信息必填...");
-        }
+//        if(CollectionUtils.isEmpty(userInfo.getCustomer())){
+//            throw new SuperCodeException("机构信息必填...");
+//        }
         if(StringUtils.isBlank(userInfo.getMobile())){
             throw new SuperCodeException("手机号必填...");
 
@@ -344,22 +320,23 @@ public class SalerRegisterAndLoginV2Controller {
         dto.setCountyName(country.getString(PcccodeConstants.areaName));
         dto.setpCCcode(pcccode);
         // 机构信息
-        List<CustomerInfo> customers = userInfo.getCustomer();
-        if(!CollectionUtils.isEmpty(customers)){
-            StringBuffer customerIds =new StringBuffer("");
-            StringBuffer customerNames =new StringBuffer("");
-            for(CustomerInfo customer: customers){
-                if(StringUtils.isEmpty(customer.getCustomerId()) || (StringUtils.isEmpty(customer.getCustomerName()))){
-                    throw new SuperCodeException("门店信息不全...");
-                }
-                customerIds.append(",").append(customer.getCustomerId());
-                customerNames.append(",").append(customer.getCustomerName());
-            }
-            // 移除第一个逗号
-            dto.setCustomerId(customerIds.toString().substring(0));
-            dto.setCustomerName(customerNames.toString().substring(0));
-        }
-
+//        List<CustomerInfo> customers = userInfo.getCustomer();
+//        if(!CollectionUtils.isEmpty(customers)){
+//            StringBuffer customerIds =new StringBuffer("");
+//            StringBuffer customerNames =new StringBuffer("");
+//            for(CustomerInfo customer: customers){
+//                if(StringUtils.isEmpty(customer.getCustomerId()) || (StringUtils.isEmpty(customer.getCustomerName()))){
+//                    throw new SuperCodeException("门店信息不全...");
+//                }
+//                customerIds.append(",").append(customer.getCustomerId());
+//                customerNames.append(",").append(customer.getCustomerName());
+//            }
+//            // 移除第一个逗号
+//            dto.setCustomerId(customerIds.toString().substring(0));
+//            dto.setCustomerName(customerNames.toString().substring(0));
+//        }
+        dto.setCustomerId(userInfo.getCustomerId());
+        dto.setCustomerName(userInfo.getCustomerName());
 
         // 缓存注册信息 5 MINUTES
         redisUtil.set(REGISTER_PERFIX+dto.getMobile(),JSONObject.toJSONString(dto),60*5L);

@@ -4,6 +4,7 @@ import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.Marketi
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -107,4 +108,13 @@ public interface MarketingUserMapperExt extends MarketingUserMapper {
     MarketingUser selectByPhone(String mobile);
     @Select(" select " + selectSql + " from marketing_user a where a.Openid = #{openid} ")
     MarketingUser selectByOpenid(String openid);
+
+    /**
+     * 查询组织是否存在该用户
+     * @param openid
+     * @param organizationId
+     * @return
+     */
+    @Select(" select " + selectSql + " from marketing_user a where a.Openid = #{openid} and OrganizationId = #{organizationId}")
+    MarketingUser selectByOpenidAndOrgId(@Param("openid") String openid, @Param("organizationId") String organizationId);
 }
