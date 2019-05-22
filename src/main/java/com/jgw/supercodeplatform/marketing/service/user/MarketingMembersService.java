@@ -568,8 +568,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 		// 登录时候保存手机信息用于后续接口获取
 		scanCodeInfoMO.setMobile(mobile);
-		globalRamCache.putScanCodeInfoMO(wxstate, scanCodeInfoMO);
-
 		Long activitySetId = scanCodeInfoMO.getActivitySetId();
 		MarketingActivitySet maActivitySet = mSetMapper.selectById(activitySetId);
 		if (null == maActivitySet) {
@@ -582,6 +580,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
 		}
 		H5LoginVO h5LoginVO = commonLogin(mobile, scanCodeInfoMO.getOpenId(), organizationId,mPortraits.size());
+		scanCodeInfoMO.setUserId(h5LoginVO.getMemberId());
+		globalRamCache.putScanCodeInfoMO(wxstate, scanCodeInfoMO);
 		return h5LoginVO;
 	}
 	

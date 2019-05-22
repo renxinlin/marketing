@@ -40,7 +40,7 @@ public class LotteryController extends CommonUtil {
     }
     
     @RequestMapping(value = "/guideLottery",method = RequestMethod.POST)
-    @ApiOperation(value = "用户点击领奖方法", notes = "")
+    @ApiOperation(value = "导购点击领奖方法", notes = "")
     public RestResult<String> guideLottery(String wxstate,HttpServletRequest request) throws Exception {
         return service.guideLottery(wxstate);
     }
