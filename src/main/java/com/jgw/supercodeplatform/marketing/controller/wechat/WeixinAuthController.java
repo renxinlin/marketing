@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.enums.market.AccessProtocol;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
@@ -19,6 +20,7 @@ import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberServi
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,12 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/marketing/front/auth")
 @Api(tags = "微信授权回调地址")
 public class WeixinAuthController {
+	@Value("${marketing.activity.h5page.url}")
+	private   String SALER_LOGIN_URL  ;
+	@Value("${marketing.activity.h5page.url}")
+	private String SALER_CENTER_URL ;
+	@Autowired
+	private ModelMapper modelMapper;
 	protected static Logger logger = LoggerFactory.getLogger(WeixinAuthController.class);
 
 	@Autowired
@@ -98,7 +106,13 @@ public class WeixinAuthController {
     	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
     	boolean needWriteJwtToken=false;
 
-   
+		// step: 导购微信授权
+		// 2表示导购
+		if(AccessProtocol.ACTIVITY_SALER.getType().equals(statecode)){
+			redirectUrl =doBizBySaler(statearr,state,code,userInfo,redirectUrl,response);
+			return redirectUrl;
+		}
+
     	MarketingMembers members=null;
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
@@ -411,5 +425,58 @@ public class WeixinAuthController {
 			stateMap.put(key_va[0], key_va[1]);
 		}
 		return stateMap;
+	}
+
+
+
+	private String doBizBySaler(String[] statearr, String state,String code,JSONObject userInfo,String redirectUrl,HttpServletResponse response) throws Exception {
+		if(statearr == null || statearr.length<=1){
+			if(logger.isErrorEnabled()){
+				logger.error("[前端授权导购信息异常=>state:{}]",state);
+				throw new SuperCodeException("系统授权信息异常");
+			}
+		}
+
+// 导购step-1: 微信授权
+		String organizationId=statearr[1];
+		userInfo=getUserInfo(code, organizationId);
+		String openid=userInfo.getString("openid");
+
+
+// 导购step-2: 刷新头像
+		// 需要返回前端组织Id和用户id[id或者-1]以及openid
+		// TODO 异步
+		// 始终刷新微信用户头像,用于同步微信信息
+		MarketingUser marketingUserDo = new MarketingUser();
+		MarketingUser marketingUser = marketingSaleMemberService.selectByOpenidAndOrgId(openid,organizationId);
+		marketingUserDo.setId(marketingUser.getId());
+		marketingUserDo.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
+		marketingSaleMemberService.saveUser(marketingUser);
+
+// 导购step-3: 业务处理
+		if(marketingUser != null){
+			// 说明用户存在,需要自动登录
+			// 返回销售员中心页面
+			// TODO 用户是否禁用等校验
+			StringBuffer sb = new StringBuffer("");
+			sb.append("?").append("memberId=-1").append("openid=").append(openid)
+					.append("organizationId=").append(organizationId);
+			redirectUrl = SALER_CENTER_URL+sb.toString();
+			MarketingMembers user = new MarketingMembers();
+			MarketingMembers userVo = modelMapper.map(marketingUser, MarketingMembers.class);
+			user.setId(user.getId());
+			writeJwtToken(response,userVo);
+
+		}else{
+			// 前端需要的信息
+			// 推荐前端缓存该信息
+			// 组织Id等关键信息不适合url上携带
+			StringBuffer sb = new StringBuffer("");
+			sb.append("?").append("memberId=-1").append("openid=").append(openid)
+					.append("organizationId=").append(organizationId);
+			redirectUrl = SALER_LOGIN_URL+sb.toString();
+
+		}
+		return  redirectUrl;
 	}
 }
