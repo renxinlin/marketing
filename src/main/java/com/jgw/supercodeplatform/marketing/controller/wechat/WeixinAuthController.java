@@ -449,16 +449,18 @@ public class WeixinAuthController {
 
 // 导购step-2: 刷新头像
 		// 需要返回前端组织Id和用户id[id或者-1]以及openid
-		// TODO 异步
-		// 始终刷新微信用户头像,用于同步微信信息
-		MarketingUser marketingUserDo = new MarketingUser();
+
 		MarketingUser marketingUser = marketingSaleMemberService.selectByOpenidAndOrgId(openid,organizationId);
-		marketingUserDo.setId(marketingUser.getId());
-		marketingUserDo.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
-		marketingSaleMemberService.saveUser(marketingUser);
+
 
 // 导购step-3: 业务处理
 		if(marketingUser != null){
+			// TODO 异步
+			// 始终刷新微信用户头像,用于同步微信信息
+			MarketingUser marketingUserDo = new MarketingUser();
+			marketingUserDo.setId(marketingUser.getId());
+			marketingUserDo.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
+			marketingSaleMemberService.saveUser(marketingUser);
 			// 说明用户存在,需要自动登录
 			// 返回销售员中心页面
 			if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
