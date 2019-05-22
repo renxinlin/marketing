@@ -32,9 +32,19 @@ public class MarketingSalerActivitySetMO {
     private String activityEndDate;
 
     /**
+     * 更新的用户id
+     */
+    private String updateUserId;
+
+    /**
      * 更新的用户名称
      */
     private String updateUserName;
+
+    /**
+     * 更新时间
+     */
+    private String updateDate;
 
     /**
      * 组织名称

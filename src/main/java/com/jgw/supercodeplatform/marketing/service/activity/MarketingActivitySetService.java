@@ -2,11 +2,7 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -17,7 +13,6 @@ import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.pojo.cache.AccountCache;
-import com.jgw.supercodeplatform.user.UserInfoUtil;
 import com.jgw.supercodeplatform.utils.SpringContextUtil;
 
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
@@ -103,6 +98,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
 	@Autowired
 	private CommonService commonService;
+
+	@Autowired
+	private MarketingActivityChannelService channelService;
 
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
@@ -1143,22 +1141,24 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 
     /**
-    * 获取营销活动列表
-    */
-    public RestResult<List<MarketingSalerActivitySetMO>> list(DaoSearchWithOrganizationIdParam param) {
-        RestResult<List<MarketingSalerActivitySetMO>> restResult = new RestResult();
-        // 查询满足条件的营销活动集合
-        List<MarketingSalerActivitySetMO> list = mSetMapper.list(param);
-        // 返回
-        restResult.setState(200);
-        restResult.setMsg("success");
-        restResult.setResults(list);
-        return restResult;
-    }
-
+	 * 获取营销活动列表
+	 */
     @Override
     protected List<MarketingSalerActivitySetMO> searchResult(DaoSearchWithOrganizationIdParam searchParams) throws Exception {
-        return mSetMapper.list(searchParams);
+        // 查询满足条件的营销活动集合
+        List<MarketingSalerActivitySetMO> list = mSetMapper.list(searchParams);
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.EMPTY_LIST;
+        }
+        // 获取渠道信息的树形结构
+        list.forEach(mo -> {
+            List<MarketingChannel> marketingChannels = mChannelMapper.selectByActivitySetId(mo.getId());
+            // 转换渠道为树结构： 1先获取所有根节点，2在获取所有当前父节点以及子节点，3将子节点添加到父节点
+            // 渠道父级编码可以不存在，但渠道编码必须存在
+            List<MarketingChannel> treeMarketingChannels = channelService.getTree(marketingChannels);
+            mo.setMarketingChannels(treeMarketingChannels);
+        });
+        return list;
     }
 
     @Override
