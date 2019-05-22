@@ -46,17 +46,37 @@ public class MarketingSalerActivitySetController {
 
     /**
      * 导购更新
+     * 复制与编辑的区别在与,编辑是修改主表,复制是新增主表活动
      * @param marketingActivityParam
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/update",method = RequestMethod.POST)
-    @ApiOperation(value = "导购活动更新", notes = "")
+    @ApiOperation(value = "导购活动更新,需要携带产品productId,删除原来的信息", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerUpdate(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
         //TODO 待码平台处理完毕
         return service.salerUpdate(activitySetParam);
     }
+
+
+
+    /**
+     * 导购复制
+     * 复制与编辑的区别在与,编辑是修改主表,复制是新增主表活动
+     * @param marketingActivityParam
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/copy",method = RequestMethod.POST)
+    @ApiOperation(value = "导购活动复制", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<String> salerCopy(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
+        //TODO 待码平台处理完毕
+        return service.salerCopy(activitySetParam);
+    }
+
+
 
 
 

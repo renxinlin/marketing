@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import org.apache.ibatis.annotations.*;
 
@@ -65,4 +66,15 @@ public interface MarketingActivityProductMapper extends CommonSql{
 
     @Delete(" delete from marketing_activity_product where ActivitySetId = #{activitySetId}  ")
 	void deleteByActivitySetId(Long id);
+
+	/**
+	 * 删除导购产品
+	 * @param maProductParams
+	 * @return
+	 */
+	@Delete( startScript +
+			 " delete from marketing_activity_product where ReferenceRole = 1 and ProductId in " +
+			 " <foreach collection='maProductParams' item='item' index='index' open='(' separator=',' close=')'> #{item}</foreach> "+
+			 endScript )
+    int deleteOldProducts(@Param("list") List<MarketingActivityProductParam> maProductParams);
 }

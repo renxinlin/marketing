@@ -269,11 +269,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	}
 
 	/**
-	 * 发送短信
+	 * 发送短信 	todo,转移到公共类
 	 * @param mobile 手机号
 	 * @param msg 短信内容
 	 */
-	public void sendRegisterMessage(String mobile, String msg) throws UnsupportedEncodingException {
+	public void sendRegisterMessage(String mobile, String msg)  {
 
 		try {
 			Map msgData = new HashMap();
@@ -283,8 +283,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restTemplate.postForEntity(userServiceUrl + WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, RestResult.class);
 
 		} catch (Exception e) {
+			// 公共方法提示交给调用方
 			if(logger.isInfoEnabled()){
-				logger.info("注册用户的短信欢迎信息发送失败"+e.getMessage());
+				logger.info("短信发送失败"+e.getMessage());
 			}
 			e.printStackTrace();
 		}
