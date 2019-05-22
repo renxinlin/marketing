@@ -981,11 +981,11 @@ public class MarketingActivitySetService  {
 		validateBasicBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
 		validateBizBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
 
-		// todo 判断新选择的产品是否存在,存在则删除
+		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
 		if(!CollectionUtils.isEmpty(maProductParams)){
 			for( MarketingActivityProductParam vo:maProductParams ){
-				if(vo.getId() == null){
-					throw new SuperCodeException("编辑需要传入id主键");
+				if(vo.getProductId() == null){
+					throw new SuperCodeException("编辑需要传入productId");
 				}
 			}
 			// 删除[导购]存在的原活动产品
