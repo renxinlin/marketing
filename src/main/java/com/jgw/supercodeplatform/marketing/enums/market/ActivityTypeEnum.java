@@ -3,6 +3,9 @@ package com.jgw.supercodeplatform.marketing.enums.market;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * 对应产品表 refrencerole
+ */
 public enum ActivityTypeEnum {
     /**
      * 同marketing_activity 表的ActivityType值
