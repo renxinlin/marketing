@@ -113,16 +113,16 @@ public class MarketingSaleMembersController extends CommonUtil {
 
 
     @RequestMapping(value = "/judge/status", method = RequestMethod.GET)
-    @ApiOperation(value = "审核", notes = "审核通过")
+    @ApiOperation(value = "审核", notes = "审核通过(启用)|不通过(停用)")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "id", paramType = "query", defaultValue = "1", value = "用户Id,必需", required = true),
     })
-    public RestResult<String> judge(Long id ) throws Exception {
+    public RestResult<String> judge(Long id ,Integer state) throws Exception {
         if (null==id) {
             throw new SuperCodeException("id不能为空", 500);
         }
-//        marketingMembersService.updateMembersStatus(id,0);
+        service.updateMembersStatus(id,state,getOrganizationId());
         return new RestResult(200, "success", null);
     }
 
