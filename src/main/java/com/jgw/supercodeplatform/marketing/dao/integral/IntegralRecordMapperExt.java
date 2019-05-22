@@ -58,7 +58,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 					" <if test='integralType != null and integralType == 0 '> and IntegralNum &gt; 0 </if>"+
 					// 积分记录区分用户类别
 					// TODO 评估MEMBERTYPE是否可以去除if条件
-					" <if test='MemberType != null '> and MemberType= #{memberType}  </if>"+
+					" <if test='memberType != null '> and MemberType= #{memberType}  </if>"+
                     // 小于
                     " <if test='integralType != null and integralType == 1 '> and IntegralNum &lt;  0 </if>"+
                     "</where>";
