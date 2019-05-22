@@ -1349,14 +1349,13 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				MarketingActivityProductParam marketingActivityProductParam = mActivityProductParamMap.get(productId);
 				if(marketingActivityProductParam == null) {
 					marketingActivityProductParam = new MarketingActivityProductParam();
-					MarketingActivityProductParam MarketingActivityProductParam = new MarketingActivityProductParam();
-					MarketingActivityProductParam.setProductId(product.getProductId());
-					MarketingActivityProductParam.setProductName(product.getProductBatchName());
+					marketingActivityProductParam.setProductId(product.getProductId());
+					marketingActivityProductParam.setProductName(product.getProductBatchName());
 					//添加批次
 					ProductBatchParam productBatchParam = new ProductBatchParam();
 					productBatchParam.setProductBatchId(product.getProductBatchId());
 					productBatchParam.setProductBatchName(product.getProductBatchName());
-					MarketingActivityProductParam.setProductBatchParams(Collections.singletonList(productBatchParam));
+					marketingActivityProductParam.setProductBatchParams(Collections.singletonList(productBatchParam));
 					mActivityProductParamMap.put(productId, marketingActivityProductParam);
 				} else {
 					ProductBatchParam productBatchParam = new ProductBatchParam();
