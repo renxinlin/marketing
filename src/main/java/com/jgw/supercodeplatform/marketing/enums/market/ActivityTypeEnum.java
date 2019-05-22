@@ -7,13 +7,13 @@ public enum ActivityTypeEnum {
     /**
      * 同marketing_activity 表的ActivityType值
      */
-    ACTIVITY_MEMBER((byte)0,"会员活动"),
+    ACTIVITY_MEMBER((byte)0,"活动"),
     ACTIVITY_SALER((byte)1,"导购活动"),
 
 
-    Min((byte)1,""),
+    Min((byte)0,""),
 
-    Max((byte)4,"");
+    Max((byte)1,"");
 
     @Getter
     @Setter

@@ -44,7 +44,7 @@ public class MarketingActivityController extends CommonUtil {
     }
     
     /**
-     *  获取所有活动
+     *  获取所有活动 activityType为1
      * @return
      * @throws Exception
      */
