@@ -1,0 +1,32 @@
+package com.jgw.supercodeplatform.marketing.enums.market;
+
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * 前后台微信授授权协议定义
+ */
+public enum AccessProtocol {
+    /**
+     * 同marketing_activity 表的ActivityType值
+     */
+    ACTIVITY_MEMBER("0","活动"),
+    ACTIVITY_SALER("2","导购业务");
+    /**
+     * 业务类型
+     */
+    @Getter
+    @Setter
+    private String type;
+    /**
+     * 业务描述
+     */
+    @Getter
+    @Setter
+    private String desc;
+
+    AccessProtocol(String type, String desc){
+        this.type=type;
+        this.desc=desc;
+    }
+}
