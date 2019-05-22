@@ -105,4 +105,6 @@ public interface MarketingUserMapperExt extends MarketingUserMapper {
     Integer count(MarketingMembersListParam searchParams);
     @Select(" select " + selectSql + " from marketing_user a where a.mobile = #{mobile} ")
     MarketingUser selectByPhone(String mobile);
+    @Select(" select " + selectSql + " from marketing_user a where a.Openid = #{openid} ")
+    MarketingUser selectByOpenid(String openid);
 }

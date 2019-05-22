@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.dto.activity;
 
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -24,12 +25,22 @@ public class MarketingActivitySetParam {
 	
 	@ApiModelProperty(name = "activityRangeMark", value = "活动范围标志(1、表示部分产品有效 2、表示全部产品有效 ", example = "1")
     private Integer activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 )
-	
+
 	@ApiModelProperty(name = "autoFetch", value = "是否自动获取(1、自动获取 2、仅此一次 ) ", example = "1")
-    private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
-	
-    
-    public Long getId() {
+	private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
+
+	@ApiModelProperty(name = "participationCondition", value = "0无条件 1协助领红包 2协助领积分", example = "1")
+	private Byte participationCondition;
+
+	public Byte getParticipationCondition() {
+		return participationCondition;
+	}
+
+	public void setParticipationCondition(Byte participationCondition) {
+		this.participationCondition = participationCondition;
+	}
+
+	public Long getId() {
 		return id;
 	}
 

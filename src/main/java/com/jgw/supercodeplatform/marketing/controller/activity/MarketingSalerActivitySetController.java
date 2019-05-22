@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "导购活动设置管理")
 public class MarketingSalerActivitySetController {
 
-    // todo  复制  更新 新增
+    // todo  复制  更新
     // todo 扫码领红包
     //
     // 停用 列表
@@ -34,14 +34,45 @@ public class MarketingSalerActivitySetController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/guideActivityAdd",method = RequestMethod.POST)
+    @RequestMapping(value = "/add",method = RequestMethod.POST)
     @ApiOperation(value = "导购活动创建", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> guideActivityAdd(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
-//        return service.salerAdd(activitySetParam);
-        return null;
+    public RestResult<String> salerAdd(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
+        return service.salerAdd(activitySetParam);
     }
 
+
+
+
+    /**
+     * 导购更新
+     * @param marketingActivityParam
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/update",method = RequestMethod.POST)
+    @ApiOperation(value = "导购活动更新", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<String> salerUpdate(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
+        //TODO 待码平台处理完毕
+        return service.salerUpdate(activitySetParam);
+    }
+
+
+
+    /**
+     * 导购更新
+     * @param marketingActivityParam
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/detail",method = RequestMethod.POST)
+    @ApiOperation(value = "导购活动详情", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<MarketingSalerActivityCreateParam> detail(Long id) throws Exception {
+        // todo
+        return service.detail(id);
+    }
 
 
 

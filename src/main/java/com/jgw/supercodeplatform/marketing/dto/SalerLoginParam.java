@@ -16,6 +16,10 @@ public class SalerLoginParam {
     private String mobile;
     @ApiModelProperty(value = "验证码",required=true)
     private String verificationCode;
-    @ApiModelProperty(value = "客户端类型，字符串格式1表示微信2表示非微信")
-    private Byte browerType ;
+
+    @ApiModelProperty(value = "openid",required=true)
+    private String openid;
+
+//    @ApiModelProperty(value = "客户端类型，字符串格式1表示微信2表示非微信")
+//    private Byte browerType ;
 }
