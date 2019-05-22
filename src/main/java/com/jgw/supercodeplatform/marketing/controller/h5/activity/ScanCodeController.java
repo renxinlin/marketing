@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,7 +33,8 @@ public class ScanCodeController {
 	protected static Logger logger = LoggerFactory.getLogger(ScanCodeController.class);
     @Autowired
     private CommonUtil commonUtil;
-
+    @Autowired
+    private CodeEsService codeEsService;
     @Autowired
     private MarketingActivitySetService mActivitySetService;
 
@@ -159,8 +161,12 @@ public class ScanCodeController {
 		}
 
     	ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
+    	codeEsService.indexScanInfo(sCodeInfoMO);
     	//在校验产品及产品批次时可以从活动设置表中获取组织id
         String organizationId=sCodeInfoMO.getOrganizationId();
+
+        //
+
         MarketingWxMerchants mWxMerchants=mWxMerchantsService.selectByOrganizationId(organizationId);
         if (null==mWxMerchants || StringUtils.isBlank(mWxMerchants.getMchAppid())) {
         	 return "redirect:"+h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId,"utf-8"),"utf-8");
