@@ -3,13 +3,19 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
@@ -24,6 +30,7 @@ import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
@@ -33,6 +40,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -1298,4 +1306,116 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mSet.setOrganizatioIdlName(organizationName);
 		return mSet;
 	}
+	
+	/**
+	 * 获取编辑参数
+	 * @param activitySetId
+	 * @return
+	 */
+	public MarketingActivityCreateParam activityInfo(Long activitySetId) {
+		MarketingActivityCreateParam marketingActivityCreateParam = new MarketingActivityCreateParam();
+		//活动参数设置项
+		MarketingActivitySet marketingActivitySet = mSetMapper.selectById(activitySetId);
+		MarketingActivitySetParam marketingActivitySetParam = new MarketingActivitySetParam();
+		BeanUtils.copyProperties(marketingActivitySet, marketingActivitySetParam);
+		String conditionStr = marketingActivitySet.getValidCondition();
+		if(StringUtils.isNotBlank(conditionStr)) {
+			MarketingActivitySetCondition condition = JSON.parseObject(conditionStr, MarketingActivitySetCondition.class);
+			marketingActivitySetParam.setParticipationCondition(condition.getParticipationCondition());
+		}
+		marketingActivityCreateParam.setmActivitySetParam(marketingActivitySetParam);
+		//领取页
+		MarketingReceivingPage MarketingReceivingPage = maReceivingPageMapper.getByActivityId(activitySetId);
+		MarketingReceivingPageParam marketingReceivingPageParam = new MarketingReceivingPageParam();
+		BeanUtils.copyProperties(MarketingReceivingPage, marketingReceivingPageParam);
+		marketingActivityCreateParam.setmReceivingPageParam(marketingReceivingPageParam);
+		//获取拼接活动设置产品参数
+		List<MarketingActivityProduct> marketingActivityProductList = mProductMapper.selectByActivitySetId(activitySetId.toString());
+		Map<String, MarketingActivityProductParam> mActivityProductParamMap = new HashMap<>();
+		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
+			for(MarketingActivityProduct product : marketingActivityProductList) {
+				String productId = product.getProductId();
+				MarketingActivityProductParam marketingActivityProductParam = mActivityProductParamMap.get(productId);
+				if(marketingActivityProductParam == null) {
+					marketingActivityProductParam = new MarketingActivityProductParam();
+					MarketingActivityProductParam MarketingActivityProductParam = new MarketingActivityProductParam();
+					MarketingActivityProductParam.setProductId(product.getProductId());
+					MarketingActivityProductParam.setProductName(product.getProductBatchName());
+					//添加批次
+					ProductBatchParam productBatchParam = new ProductBatchParam();
+					productBatchParam.setProductBatchId(product.getProductBatchId());
+					productBatchParam.setProductBatchName(product.getProductBatchName());
+					MarketingActivityProductParam.setProductBatchParams(Collections.singletonList(productBatchParam));
+					mActivityProductParamMap.put(productId, marketingActivityProductParam);
+				} else {
+					ProductBatchParam productBatchParam = new ProductBatchParam();
+					productBatchParam.setProductBatchId(product.getProductBatchId());
+					productBatchParam.setProductBatchName(product.getProductBatchName());
+					marketingActivityProductParam.getProductBatchParams().add(productBatchParam);
+				}
+			}
+		}
+		marketingActivityCreateParam.setmProductParams(new ArrayList<MarketingActivityProductParam>(mActivityProductParamMap.values()));
+		//获取设置中奖奖次
+		List<MarketingPrizeType> marketingPrizeTypeList = mPrizeTypeMapper.selectByActivitySetId(activitySetId);
+		if(!CollectionUtils.isEmpty(marketingPrizeTypeList)) {
+			List<MarketingPrizeTypeParam> marketingPrizeTypeParams = marketingPrizeTypeList.stream().map(priceType -> {
+				MarketingPrizeTypeParam marketingPrizeTypeParam = new MarketingPrizeTypeParam(); 
+				BeanUtils.copyProperties(priceType, marketingPrizeTypeParam);
+				return marketingPrizeTypeParam;
+			}).collect(Collectors.toList());
+			marketingActivityCreateParam.setMarketingPrizeTypeParams(marketingPrizeTypeParams);
+		}
+		//获取并拼接渠道
+		List<MarketingChannel> marketingChannelList  = mChannelMapper.selectByActivitySetId(activitySetId);
+		if(!CollectionUtils.isEmpty(marketingChannelList)) {
+			Map<String, MarketingChannelParam> MarketingChannelParamMap = marketingChannelList.stream()
+				.collect(Collectors.toMap(
+					MarketingChannel::getCustomerId ,marketingChannel -> {
+					MarketingChannelParam marketingChannelParam = new MarketingChannelParam();
+					BeanUtils.copyProperties(marketingChannel, marketingChannelParam);
+					return marketingChannelParam;
+			}));
+			Set<MarketingChannelParam> MarketingChannelParam = getSonByFatherWithAllData(MarketingChannelParamMap);
+			marketingActivityCreateParam.setmChannelParams(new ArrayList<MarketingChannelParam>(MarketingChannelParam));
+		}
+		return marketingActivityCreateParam;
+	}
+	
+	
+	//将渠道数据递归添加到子项中
+	private Set<MarketingChannelParam> getSonByFatherWithAllData(Map<String, MarketingChannelParam> marketingChannelMap) {
+		Set<MarketingChannelParam> channelSet = new HashSet<>();
+		Collection<MarketingChannelParam> channelCollection = marketingChannelMap.values();
+		for(MarketingChannelParam marketingChannel : channelCollection) {
+			MarketingChannelParam channel = putChildrenChannel(marketingChannelMap, marketingChannel);
+			if(channel != null)
+				channelSet.add(channel);
+		}
+		return channelSet;
+	}
+	
+	//将渠道数据递归添加到子项中
+	private MarketingChannelParam putChildrenChannel(Map<String, MarketingChannelParam> marketingChannelMap, MarketingChannelParam channel) {
+		MarketingChannelParam reChannel = null;
+		Set<String> mkSet = marketingChannelMap.keySet();
+		if(mkSet.contains(channel.getCustomerSuperior())) {
+			MarketingChannelParam parentChannel = marketingChannelMap.get(channel.getCustomerSuperior());
+			List<MarketingChannelParam> childList = parentChannel.getChildrens();
+			//如果父级的children为空，则说明第一次添加，需递归调用，如果不为空，则说明不是第一次添加，
+			//以前已经递归调用过，父级以上的关系已添加过，不用再次递归，也无需返回实例。
+			if(childList == null) {
+				childList = new ArrayList<>();
+				childList.add(channel);
+				parentChannel.setChildrens(childList);
+				reChannel = putChildrenChannel(marketingChannelMap, parentChannel);
+			} else {
+				childList.add(channel);
+			}
+		} else {
+			reChannel = channel;
+		}
+		return reChannel;
+	}
+	
 }

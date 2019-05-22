@@ -33,22 +33,6 @@ public class MarketingActivitySetController {
 
     @Autowired
     private MarketingActivityProductService maProductService;
-    
-    
-    /**
-     * 活动编辑;本期不做
-     * @param marketingActivityParam
-     * @return
-     * @throws Exception
-     */
-    @GetMapping("/activityInfo")
-    @ApiOperation("获取活动数据")
-    @ApiImplicitParams({
-    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true),
-    @ApiImplicitParam(name="activitySetId",paramType="query",value="活动设置ID",required=true)})
-    public RestResult<MarketingActivityCreateParam> activityInfo(@RequestParam Long activitySetId) throws Exception {
-    	return new RestResult<>(200, "查询成功", new MarketingActivityCreateParam());
-    }
 
 
 

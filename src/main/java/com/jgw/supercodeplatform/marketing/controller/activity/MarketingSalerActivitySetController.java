@@ -1,26 +1,30 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
-import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityProductService;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityProductService;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/marketing/saler/activity/set")
@@ -135,6 +139,23 @@ public class MarketingSalerActivitySetController extends CommonUtil {
         return service.detail(id);
     }
 
+    
+    
+    /**
+     * 活动编辑;本期不做
+     * @param marketingActivityParam
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/activityInfo")
+    @ApiOperation("获取活动数据")
+    @ApiImplicitParams({
+    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true),
+    @ApiImplicitParam(name="activitySetId",paramType="query",value="活动设置ID",required=true)})
+    public RestResult<MarketingActivityCreateParam> activityInfo(@RequestParam Long activitySetId) throws Exception {
+    	MarketingActivityCreateParam marketingActivityCreateParam = service.activityInfo(activitySetId);
+    	return new RestResult<>(200, "查询成功", marketingActivityCreateParam);
+    }
 
 
 }
