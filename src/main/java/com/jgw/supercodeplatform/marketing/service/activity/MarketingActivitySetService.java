@@ -1134,7 +1134,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		return null;
 	}
 
-<<<<<<< HEAD
     /**
     * 获取营销活动列表
     */

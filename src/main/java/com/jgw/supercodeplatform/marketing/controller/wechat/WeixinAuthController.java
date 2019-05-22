@@ -98,22 +98,8 @@ public class WeixinAuthController {
     	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
     	boolean needWriteJwtToken=false;
 
-    	MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
-    	String memberParam="";
-		if (null!=members ) {
-			Byte memberState=members.getState();
-			// 1表示正常
-			if (null!=memberState && memberState.intValue()==1) {
-				memberParam="&memberId="+members.getId();
-				needWriteJwtToken=true;
-			}else {
-				memberParam="&memberId=-1";
-    		}
-		}else {
-			memberParam="&memberId=-1";
-		}
-
-
+   
+    	MarketingMembers members=null;
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
     		organizationId=statearr[1];
@@ -127,7 +113,13 @@ public class WeixinAuthController {
     			h5BUf.append("&uuid="+statearr[2]);
 			}
     		h5BUf.append("&organizationId="+organizationId);
-    		h5BUf.append(memberParam);
+    		
+    	 	members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+    		Long memberParamId = loginMemberId(members);
+            if (memberParamId.intValue()!=-1) {
+            	needWriteJwtToken=true;
+			}
+    		h5BUf.append("&memberId="+memberParamId);
 			nickName=userInfo.getString("nickname");
     		redirectUrl=h5BUf.toString();
 		}else {
@@ -141,7 +133,12 @@ public class WeixinAuthController {
 			scanCodeInfoMO.setOpenId(userInfo.getString("openid"));
 			//更新扫码信息
 			globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
-			redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+organizationId+memberParam;
+    	 	members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+    		Long memberParamId = loginMemberId(members);
+            if (memberParamId.intValue()!=-1) {
+            	needWriteJwtToken=true;
+			}
+			redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+organizationId+"&memberId="+memberParamId;
 		}
 		//判断是否需要保存用户
 		if (null==members) {
@@ -158,8 +155,6 @@ public class WeixinAuthController {
 				scanCodeInfoMO.setUserId(members.getId());
 				globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
 			}
-			//更新扫码信息
-			globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
 			members.setWxName(nickName);
 			marketingMembersService.update(members);
 		}
@@ -172,6 +167,20 @@ public class WeixinAuthController {
     	logger.info("最终跳转路径："+redirectUrl);
     	return  redirectUrl;
     }
+
+	private Long loginMemberId(MarketingMembers members) {
+		if (null!=members ) {
+			Byte memberState=members.getState();
+			// 1表示正常
+			if (null!=memberState && memberState.intValue()==1) {
+				return members.getId();
+			}else {
+				return -1L;
+    		}
+		}else {
+			return -1L;
+		}
+	}
 
 	private void writeJwtToken(HttpServletResponse response, MarketingMembers members) {
 		String orgnazationName="";
