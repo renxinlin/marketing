@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,9 +18,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageR
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityProductService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 
 import io.swagger.annotations.Api;
@@ -33,22 +31,17 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "导购活动设置管理")
 public class MarketingSalerActivitySetController extends CommonUtil {
 
-
-    //
-    // 停用 列表
     @Autowired
     private MarketingActivitySetService service;
 
-    @Autowired
-    private MarketingActivityProductService maProductService;
     /**
      * 活动创建
      * @param marketingActivityParam
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/add",method = RequestMethod.POST)
-    @ApiOperation(value = "导购活动创建", notes = "")
+    @PostMapping("/add")
+    @ApiOperation("导购活动创建")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerAdd(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
         return service.salerAdd(activitySetParam);
@@ -61,8 +54,8 @@ public class MarketingSalerActivitySetController extends CommonUtil {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/page", method = RequestMethod.GET)
-    @ApiOperation(value = "获取销售活动列表", notes = "")
+    @GetMapping("/page")
+    @ApiOperation("获取销售活动列表")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<PageResults<List<MarketingSalerActivitySetMO>>> list(DaoSearchWithOrganizationIdParam organizationIdParam) throws Exception {
         RestResult<PageResults<List<MarketingSalerActivitySetMO>>> restResult = new RestResult<>();
@@ -78,8 +71,8 @@ public class MarketingSalerActivitySetController extends CommonUtil {
      * 启用或禁用活动
      * @return
      */
-    @RequestMapping(value = "/enableOrDisable", method = RequestMethod.POST)
-    @ApiOperation(value = "启用或禁用活动", notes = "启用或禁用活动")
+    @PostMapping("/enableOrDisable")
+    @ApiOperation(value="启用或禁用活动", notes = "启用或禁用活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> enableOrDisable(@RequestBody MarketingActivitySetStatusUpdateParam setStatusUpdateParam) throws SuperCodeException {
         return service.updateSalerActivitySetStatus(setStatusUpdateParam);
@@ -96,8 +89,8 @@ public class MarketingSalerActivitySetController extends CommonUtil {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/update",method = RequestMethod.POST)
-    @ApiOperation(value = "导购活动更新,需要携带产品productId,删除原来的信息", notes = "")
+    @PostMapping("/update")
+    @ApiOperation("导购活动更新,需要携带产品productId,删除原来的信息")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerUpdate(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
         return service.salerUpdate(activitySetParam);
@@ -112,8 +105,8 @@ public class MarketingSalerActivitySetController extends CommonUtil {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/copy",method = RequestMethod.POST)
-    @ApiOperation(value = "导购活动复制", notes = "")
+    @PostMapping("/copy")
+    @ApiOperation("导购活动复制")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerCopy(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
         return service.salerCopy(activitySetParam);
@@ -129,8 +122,8 @@ public class MarketingSalerActivitySetController extends CommonUtil {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/detail",method = RequestMethod.POST)
-    @ApiOperation(value = "导购活动详情", notes = "")
+    @PostMapping("/detail")
+    @ApiOperation("导购活动详情")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<MarketingSalerActivityCreateParam> detail(Long id) throws Exception {
         // todo
@@ -150,9 +143,9 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @ApiImplicitParams({
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true),
     @ApiImplicitParam(name="activitySetId",paramType="query",value="活动设置ID",required=true)})
-    public RestResult<MarketingActivityCreateParam> activityInfo(@RequestParam Long activitySetId) throws Exception {
-    	MarketingActivityCreateParam marketingActivityCreateParam = service.activityInfo(activitySetId);
-    	return new RestResult<>(200, "查询成功", marketingActivityCreateParam);
+    public RestResult<MarketingSalerActivityCreateParam> activityInfo(@RequestParam Long activitySetId) throws Exception {
+    	MarketingSalerActivityCreateParam marketingSalerActivityCreateParam = service.activityInfo(activitySetId);
+    	return new RestResult<>(200, "查询成功", marketingSalerActivityCreateParam);
     }
 
 
