@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -27,9 +28,14 @@ import java.util.*;
 
 @Service
 public class MarketingSaleMemberService extends AbstractPageService<MarketingMembersListParam> {
+	/**
+	 * 短信链接
+	 */
+	@Value("https://www.baidu.com")
+	private  String WEB_SALER_CENTER_URL_FOR_SHORT_MSG ;
 	protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberService.class);
-
-	private String SHORT_MSG = "亲爱的【注册人姓名】，您已通过审核，可登录红包中心https:xxxxxxx";
+	@Value("亲爱的{{user}}，您已通过审核，可登录红包中心{{url}}")
+	private String SHORT_MSG ;
 	@Autowired
 	private MarketingUserMapperExt mapper;
 
@@ -39,6 +45,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 	@Autowired
 	private CommonService commonService;
+
+	@Autowired
+	private MarketingMembersService membersService;
 
 
 	@Override
@@ -81,15 +90,37 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(!organizationId.equals(marketingUser.getOrganizationId())){
 			throw new SuperCodeException("组织越权...");
 		}
-
+		// 审核时发送短信
 		if(marketingUser.getState().intValue() == SaleUserStatus.AUDITED.getStatus().intValue()
 				&& state == SaleUserStatus.ENABLE.getStatus().intValue()  ){
-			//  TODO 审核通过发送短信
+			String msg = msgTimplate(marketingUser.getUserName()==null ? "您":marketingUser.getUserName()
+					,WEB_SALER_CENTER_URL_FOR_SHORT_MSG);
+			try {
+				checkPhoneFormat(marketingUser.getMobile());
+
+				membersService.sendRegisterMessage(marketingUser.getMobile(),msg);
+			} catch (SuperCodeException e) {
+				e.printStackTrace();
+				logger.error("发送导购员审核通过失败:手机:{},信息:{}",marketingUser.getMobile(),msg);
+			}
 		}
 		MarketingUser dto = new MarketingUser();
 		dto.setId(id);
 		dto.setState((byte)state);
 		mapper.updateByPrimaryKeySelective(dto);
+
+	}
+
+
+
+	/**
+	 * 短信注册模板生成
+	 * @param userName
+	 * @param url
+	 * @return
+	 */
+	private String msgTimplate(String userName, String url) {
+		return  SHORT_MSG.replace("{{user}}",userName).replace("{{organization}}",url);
 
 	}
 
