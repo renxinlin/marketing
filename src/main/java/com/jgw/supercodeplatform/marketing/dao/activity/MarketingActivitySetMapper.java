@@ -19,13 +19,12 @@ public interface MarketingActivitySetMapper extends CommonSql {
  		+ "ActivityDesc activityDesc,ConsumeIntegralNum consumeIntegralNum, ValidCondition validCondition ";
 
     String whereSearch =
-            startWhere
-                    + "<choose>"
+                    "<choose>"
                     + "<when test = 'search == null  or search == &apos;&apos;'>"
                     + "</when>"
                     + "<otherwise>"
                     + "<if test = 'search != null and search != &apos;&apos;'>"
-                    + " ( "
+                    + " AND ( "
                     + " mas.ActivityTitle LIKE CONCAT('%', #{search}, '%') "
                     + " OR mas.ActivityStartDate LIKE BINARY CONCAT('%', #{search}, '%') "
                     + " OR mas.ActivityEndDate LIKE BINARY CONCAT('%', #{search}, '%') "
@@ -33,11 +32,11 @@ public interface MarketingActivitySetMapper extends CommonSql {
                     + " OR mas.OrganizatioIdlName LIKE CONCAT('%', #{search}, '%') "
                     + " OR map.ProductBatchName LIKE CONCAT('%', #{search}, '%') "
                     + " OR map.ProductName LIKE CONCAT('%', #{search}, '%') "
+                    + " OR mc.CustomerName LIKE CONCAT('%', #{search}, '%')"
                     + " ) "
                     + "</if>"
                     + "</otherwise>"
-                    + "</choose>"
-                    + endWhere;
+                    + "</choose>";
 
     @Select("select "+allFields+" from marketing_activity_set where Id=#{activitySetId}")
     MarketingActivitySet selectById(Long activitySetId);
@@ -117,11 +116,14 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
     @Select(startScript
             + " SELECT mas.Id, mas.ActivityId, mas.ActivityTitle, DATE_FORMAT(mas.ActivityStartDate, '%Y/%m/%d %H:%i') as activityStartDate, "
-            + " DATE_FORMAT(mas.ActivityEndDate, '%Y/%m/%d %H:%i') as activityEndDate, mas.UpdateUserName, "
+            + " DATE_FORMAT(mas.ActivityEndDate, '%Y/%m/%d %H:%i') as activityEndDate, mas.UpdateUserId, mas.UpdateUserName, "
+            + " DATE_FORMAT(mas.UpdateDate, '%Y/%m/%d %H:%i') as updateDate, "
             + " mas.OrganizatioIdlName, mas.ActivityStatus "
             + " FROM marketing_activity_set mas "
             + " INNER JOIN marketing_activity ma ON ma.Id = mas.ActivityId AND ma.ActivityType = 2 "
             + " LEFT JOIN marketing_activity_product map ON map.ActivitySetId = mas.Id "
+            + " LEFT JOIN marketing_channel mc ON mc.ActivitySetId = mas.Id "
+            + " WHERE mas.OrganizationId = #{organizationId} "
             + whereSearch
             + " GROUP BY mas.Id "
             + " ORDER BY mas.UpdateDate "
@@ -135,11 +137,13 @@ public interface MarketingActivitySetMapper extends CommonSql {
             @Result(column = "activityStartDate", property = "activityStartDate", jdbcType = JdbcType.DATE),
             @Result(column = "activityEndDate", property = "activityEndDate", jdbcType = JdbcType.DATE),
             @Result(column = "UpdateUserName", property = "updateUserName", jdbcType = JdbcType.VARCHAR),
+            @Result(column = "UpdateUserId", property = "updateUserId", jdbcType = JdbcType.VARCHAR),
+            @Result(column = "updateDate", property = "updateDate", jdbcType = JdbcType.DATE),
             @Result(column = "OrganizatioIdlName", property = "organizationIdName", jdbcType = JdbcType.VARCHAR),
             @Result(column = "ActivityStatus", property = "activityStatus", jdbcType = JdbcType.INTEGER),
             @Result(column = "Id", property = "maActivityProducts", javaType = List.class,
-            many = @Many(select = "com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper.selectByActivitySetId"))
-    })
+                    many = @Many(select = "com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper.selectByActivitySetId"))
+})
     List<MarketingSalerActivitySetMO> list(DaoSearchWithOrganizationIdParam searchParams);
 
     @Select(startScript
@@ -147,12 +151,15 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " FROM marketing_activity_set mas "
             + " INNER JOIN marketing_activity ma ON ma.Id = mas.ActivityId AND ma.ActivityType = 2 "
             + " LEFT JOIN marketing_activity_product map ON map.ActivitySetId = mas.Id "
+            + " LEFT JOIN marketing_channel mc ON mc.ActivitySetId = mas.Id "
+            + " WHERE mas.OrganizationId = #{organizationId} "
             + whereSearch
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>"
             + endScript
     )
     int count(DaoSearchWithOrganizationIdParam searchParams);
 
-    @Update(" UPDATE marketing_activity_set SET ActivityStatus = #{activityStatus} WHERE Id = #{activitySetId} and ActivityId = 3 ")
-    void updateSalerActivitySetStatus(MarketingActivitySetStatusUpdateParam setStatusUpdateParam);
+    @Update(" UPDATE marketing_activity_set SET ActivityStatus = #{mas.activityStatus}, UpdateUserId = #{userId}, " +
+            "UpdateUserName = #{userName}, UpdateDate = NOW() WHERE Id = #{mas.activitySetId} and ActivityId = 3 ")
+    void updateSalerActivitySetStatus(@Param("mas") MarketingActivitySetStatusUpdateParam setStatusUpdateParam, @Param("userId") String userId, @Param("userName") String userName);
 }

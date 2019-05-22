@@ -20,7 +20,13 @@ public class MarketingSaleMembersUpdateParam {
     /** 省市区前端编码 */
     private String pCCcode;
 
-    private List<CustomerInfo> customer;
+//    private List<CustomerInfo> customer;
+
+    @ApiModelProperty(value = "门店名称",required=true)
+    private String customerName;//门店名称
+
+    @ApiModelProperty(value = "门店ID",required=true)
+    private String customerId;//门店编码
 
 
 }

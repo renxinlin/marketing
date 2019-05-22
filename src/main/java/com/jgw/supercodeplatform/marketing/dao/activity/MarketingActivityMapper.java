@@ -40,8 +40,8 @@ public interface MarketingActivityMapper extends CommonSql{
 					" <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
 					"</where>";
     
-	@Select("select "+allFileds +" from marketing_activity")
-	List<MarketingActivity> selectAll();
+	@Select("select "+allFileds +" from marketing_activity where ActivityType = #{activityType} ")
+	List<MarketingActivity> selectAll(@Param("activityType") Integer activityType);
 
 	@Select(startScript
 			+ " select aset.Id id, ac.ActivityName activityName,aset.ActivityTitle activityTitle, "

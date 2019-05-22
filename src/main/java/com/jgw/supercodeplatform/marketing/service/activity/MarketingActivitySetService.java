@@ -3,7 +3,6 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -17,16 +16,6 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
-import com.jgw.supercodeplatform.marketing.pojo.*;
-import com.jgw.supercodeplatform.utils.SpringContextUtil;
-
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +28,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -46,8 +37,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.check.activity.StandActicityParamCheck;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
@@ -59,6 +52,8 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
@@ -68,16 +63,20 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPageUpdateParam
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.util.CollectionUtils;
+import com.jgw.supercodeplatform.pojo.cache.AccountCache;
+import com.jgw.supercodeplatform.utils.SpringContextUtil;
 
 @Service
 public class MarketingActivitySetService extends AbstractPageService<DaoSearchWithOrganizationIdParam> {
@@ -109,6 +108,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
 	@Autowired
 	private CommonService commonService;
+
+	@Autowired
+	private MarketingActivityChannelService channelService;
 
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
@@ -824,7 +826,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		//保存奖次
 		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
-		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】 TODO 拆分两者业务
+		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】
 		saveProductBatchsWithThread(maProductParams,activitySetId,
 				ActivityTypeEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
 
@@ -936,11 +938,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	/**
 	 * 事务管理器
 	 */
-	ThreadLocal transm = new ThreadLocal();
+	ThreadLocal<PlatformTransactionManager> transm = new ThreadLocal<>();
 	/**
 	 * 事务状态ID
 	 */
-	ThreadLocal transs = new ThreadLocal();
+	ThreadLocal<TransactionStatus> transs = new ThreadLocal<>();
 	/**
 	 * 参与事务的线程数
 	 */
@@ -1007,12 +1009,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
 		String organizationId=commonUtil.getOrganizationId();
 		String organizationName=commonUtil.getOrganizationName();
-		// 先删后增
-		mChannelMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		MarketingActivitySetParam mActivitySetParam = activitySetParam.getMActivitySetParam();
-		mSetMapper.update(changeDtoToDoWhenUpdate(mActivitySetParam,organizationId,organizationName));
 
 
 		AtomicInteger successNum = new AtomicInteger(0);
@@ -1031,6 +1027,18 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 // step-2：校验实体
 		validateBasicBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
 		validateBizBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
+
+
+
+		// 先删后增
+		mChannelMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		MarketingActivitySetParam mActivitySetParam = activitySetParam.getMActivitySetParam();
+		mSetMapper.update(changeDtoToDoWhenUpdate(mActivitySetParam,organizationId,organizationName));
+
+
+
 
 		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
 		if(!CollectionUtils.isEmpty(maProductParams)){
@@ -1057,7 +1065,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		//保存奖次
 		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
-		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】 TODO 拆分两者业务
+		//保存商品批次 [导购不像码平台发起调用]
 		saveProductBatchsWithThread(maProductParams,activitySetId,
 				ActivityTypeEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
 
@@ -1143,22 +1151,24 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 
     /**
-    * 获取营销活动列表
-    */
-    public RestResult<List<MarketingSalerActivitySetMO>> list(DaoSearchWithOrganizationIdParam param) {
-        RestResult<List<MarketingSalerActivitySetMO>> restResult = new RestResult();
-        // 查询满足条件的营销活动集合
-        List<MarketingSalerActivitySetMO> list = mSetMapper.list(param);
-        // 返回
-        restResult.setState(200);
-        restResult.setMsg("success");
-        restResult.setResults(list);
-        return restResult;
-    }
-
+	 * 获取营销活动列表
+	 */
     @Override
     protected List<MarketingSalerActivitySetMO> searchResult(DaoSearchWithOrganizationIdParam searchParams) throws Exception {
-        return mSetMapper.list(searchParams);
+        // 查询满足条件的营销活动集合
+        List<MarketingSalerActivitySetMO> list = mSetMapper.list(searchParams);
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.EMPTY_LIST;
+        }
+        // 获取渠道信息的树形结构
+        list.forEach(mo -> {
+            List<MarketingChannel> marketingChannels = mChannelMapper.selectByActivitySetId(mo.getId());
+            // 转换渠道为树结构： 1先获取所有根节点，2在获取所有当前父节点以及子节点，3将子节点添加到父节点
+            // 渠道父级编码可以不存在，但渠道编码必须存在
+            List<MarketingChannel> treeMarketingChannels = channelService.getTree(marketingChannels);
+            mo.setMarketingChannels(treeMarketingChannels);
+        });
+        return list;
     }
 
     @Override
@@ -1166,8 +1176,10 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
         return mSetMapper.count(searchParams);
     }
 
-    public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusUpdateParam setStatusUpdateParam) {
-        mSetMapper.updateSalerActivitySetStatus(setStatusUpdateParam);
+    public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusUpdateParam setStatusUpdateParam) throws SuperCodeException {
+        // 获取当前的用户信息
+        AccountCache userLoginCache = getUserLoginCache();
+        mSetMapper.updateSalerActivitySetStatus(setStatusUpdateParam, userLoginCache.getUserId(), userLoginCache.getUserName());
         RestResult<String> restResult=new RestResult<String>();
         restResult.setState(200);
         restResult.setMsg("更新成功");
@@ -1181,7 +1193,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 */
 	@Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
 	public RestResult<String> salerCopy(MarketingSalerActivityCreateParam activitySetParam) throws SuperCodeException {
-		// 业务逻辑,先删除后更新:
+		// 业务逻辑,先插入主表后删除子表更新子表:
 		/**
 		 * 删除 产品
 		 * 删除 渠道
@@ -1196,18 +1208,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		haveActivitySetId(activitySetParam);
 		String organizationId=commonUtil.getOrganizationId();
 		String organizationName=commonUtil.getOrganizationName();
-		// 先删后增
-		mChannelMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		MarketingActivitySetParam mActivitySetParam = activitySetParam.getMActivitySetParam();
-		// 插入完成携带主键
-		MarketingActivitySet marketingActivitySet = changeDtoToDoWhenCopy(mActivitySetParam, organizationId, organizationName);
-		mSetMapper.insert(marketingActivitySet);
-		// 替换复制功能后[新增主表数据,先删或加子表数据]的主键
-		activitySetParam.getMActivitySetParam().setId(marketingActivitySet.getId());
 
 
+		// 事务预提交结果计数器
 		AtomicInteger successNum = new AtomicInteger(0);
 		// 事务参与计量器
 		CyclicBarrier cb = new CyclicBarrier(TX_THREAD_NUM);
@@ -1225,6 +1228,19 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		validateBasicBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
 		validateBizBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
 
+// step-3：先删后增
+		mChannelMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		MarketingActivitySetParam mActivitySetParam = activitySetParam.getMActivitySetParam();
+		// 插入完成携带主键
+		MarketingActivitySet marketingActivitySet = changeDtoToDoWhenCopy(mActivitySetParam, organizationId, organizationName);
+		mSetMapper.insert(marketingActivitySet);
+		// 替换复制功能后[新增主表数据,先删或加子表数据]的主键
+		activitySetParam.getMActivitySetParam().setId(marketingActivitySet.getId());
+
+
+
 		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
 		if(!CollectionUtils.isEmpty(maProductParams)){
 			for( MarketingActivityProductParam vo:maProductParams ){
@@ -1237,7 +1253,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 
 
-// step-3：转换保存实体
+// step-4：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
 		MarketingActivitySet mActivitySet = convertActivitySetBySaler(activitySetParam.getMActivitySetParam(),organizationId,organizationName);
 		// 插入数据库后获取
@@ -1250,7 +1266,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		//保存奖次
 		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
-		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】 TODO 拆分两者业务
+		//保存商品批次 【导购不像码平台发起产品业务绑定】
 		saveProductBatchsWithThread(maProductParams,activitySetId,
 				ActivityTypeEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
 
@@ -1383,7 +1399,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 	
 	
-	//将渠道数据递归添加到子项中
+	//遍历渠道数据并添加为树形结构
 	private Set<MarketingChannelParam> getSonByFatherWithAllData(Map<String, MarketingChannelParam> marketingChannelMap) {
 		Set<MarketingChannelParam> channelSet = new HashSet<>();
 		Collection<MarketingChannelParam> channelCollection = marketingChannelMap.values();

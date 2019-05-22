@@ -73,7 +73,7 @@ public class MarketingSaleMembersController extends CommonUtil {
 
 
     @RequestMapping(value = "/update",method = RequestMethod.POST)
-    @ApiOperation(value = "编辑会员", notes = "")
+    @ApiOperation(value = "编辑导购员", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> updateMember(@Valid @RequestBody MarketingSaleMembersUpdateParam marketingMembersUpdateParam) throws Exception {
         service.updateMembers(marketingMembersUpdateParam,getOrganizationId());

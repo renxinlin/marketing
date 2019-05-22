@@ -176,6 +176,15 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		}
 
+//		if(StringUtils.isBlank(marketingMembersUpdateParam.getCustomerId())){
+//			throw new SuperCodeException("机构id不存在...");
+//
+//		}
+//		if(StringUtils.isBlank(marketingMembersUpdateParam.getCustomerName())){
+//			throw new SuperCodeException("机构名称不存在...");
+//
+//		}
+
 		// 业务校验
 		MarketingUser marketingUser = mapper.selectByPrimaryKey(marketingMembersUpdateParam.getId());
 		if(marketingUser == null || !organizationId.equals(marketingUser.getOrganizationId())){
@@ -190,21 +199,20 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		// 数据转化
 		// 机构信息
-		List<CustomerInfo> customers = marketingMembersUpdateParam.getCustomer();
-		if(!CollectionUtils.isEmpty(customers)){
-			StringBuffer customerIds =new StringBuffer("");
-			StringBuffer customerNames =new StringBuffer("");
-			for(CustomerInfo customer: customers){
-				if(StringUtils.isEmpty(customer.getCustomerId()) || (StringUtils.isEmpty(customer.getCustomerName()))){
-					throw new SuperCodeException("门店信息不全...");
-				}
-				customerIds.append(",").append(customer.getCustomerId());
-				customerNames.append(",").append(customer.getCustomerName());
-			}
-			// 移除第一个逗号
-			dto.setCustomerId(customerIds.toString().substring(0));
-			dto.setCustomerName(customerNames.toString().substring(0));
-		}
+//		List<CustomerInfo> customers = marketingMembersUpdateParam.getCustomer();
+//		if(!CollectionUtils.isEmpty(customers)){
+//			StringBuffer customerIds =new StringBuffer("");
+//			StringBuffer customerNames =new StringBuffer("");
+//			for(CustomerInfo customer: customers){
+//				if(StringUtils.isEmpty(customer.getCustomerId()) || (StringUtils.isEmpty(customer.getCustomerName()))){
+//					throw new SuperCodeException("门店信息不全...");
+//				}
+//				customerIds.append(",").append(customer.getCustomerId());
+//				customerNames.append(",").append(customer.getCustomerName());
+//			}
+//			// 移除第一个逗号
+
+//		}
 
 		// 行政信息处理
 
@@ -222,8 +230,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		dto.setCityName(city.getString(areaName));
 		dto.setCountyName(country.getString(areaName));
 		dto.setpCCcode(pcccode);
-
-
+		dto.setCustomerId(marketingMembersUpdateParam.getCustomerId());
+		dto.setCustomerName(marketingMembersUpdateParam.getCustomerName());
 		// 更新操作
 		int i = mapper.updateByPrimaryKeySelective(dto);
 		if(i!=1){
@@ -308,9 +316,17 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	 * @throws SuperCodeException
 	 */
 	private void validateBasicByRegisterUser(MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
-		if(userInfo == null){
-			throw new SuperCodeException("保存用户失败001...");
-		}
+        if(userInfo == null){
+            throw new SuperCodeException("保存用户失败001...");
+        }
+
+
+        if(userInfo == null){
+            throw new SuperCodeException("保存用户失败001...");
+        }
+
+
+
 		if(StringUtils.isBlank(userInfo.getOrganizationId())){
 			throw new SuperCodeException("组织信息获取失败...");
 		}
@@ -327,6 +343,15 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			throw new SuperCodeException("请输入所在地信息...");
 		}
 
+		if(StringUtils.isBlank(userInfo.getCustomerId())){
+			throw new SuperCodeException("请输入渠道ID信息...");
+		}
+
+		if(StringUtils.isBlank(userInfo.getCustomerName())){
+			throw new SuperCodeException("请输入渠道名称信息...");
+		}
+
+
 	}
 
 	/**
@@ -339,28 +364,28 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		MarketingUser userDtoToDb = modelMapper.map(userInfo,MarketingUser.class);
 
 		// 门店信息转换
-		List<CustomerInfo> customers = userInfo.getCustomer();
-		if(!CollectionUtils.isEmpty(customers)){
-			StringBuffer ids = new StringBuffer();
-			StringBuffer names = new StringBuffer();
-			int i = 0;
-			for(CustomerInfo  customer:customers){
-				if(StringUtils.isEmpty(customer.getCustomerId()) || (StringUtils.isEmpty(customer.getCustomerName()))){
-					throw new SuperCodeException("门店信息不全...");
-				}
-				i++;
-				if(i == customers.size()){
-					ids.append(customer.getCustomerId());
-					names.append(customer.getCustomerName());
-				}else {
-					ids.append(customer.getCustomerId()).append(",");
-					names.append(customer.getCustomerName()).append(",");
-
-				}
-			}
-			userDtoToDb.setCustomerId(ids.toString());
-			userDtoToDb.setCustomerName(names.toString());
-		}
+//		List<CustomerInfo> customers = userInfo.getCustomer();
+//		if(!CollectionUtils.isEmpty(customers)){
+//			StringBuffer ids = new StringBuffer();
+//			StringBuffer names = new StringBuffer();
+//			int i = 0;
+//			for(CustomerInfo  customer:customers){
+//				if(StringUtils.isEmpty(customer.getCustomerId()) || (StringUtils.isEmpty(customer.getCustomerName()))){
+//					throw new SuperCodeException("门店信息不全...");
+//				}
+//				i++;
+//				if(i == customers.size()){
+//					ids.append(customer.getCustomerId());
+//					names.append(customer.getCustomerName());
+//				}else {
+//					ids.append(customer.getCustomerId()).append(",");
+//					names.append(customer.getCustomerName()).append(",");
+//
+//				}
+//			}
+//			userDtoToDb.setCustomerId(ids.toString());
+//			userDtoToDb.setCustomerName(names.toString());
+//		}
 
 		// pcccode转换
 		// 省市区编码
@@ -414,6 +439,10 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 
 	}
+
+    public MarketingUser selectByOpenidAndOrgId(String openid, String organizationId) {
+	    return mapper.selectByOpenidAndOrgId( openid,  organizationId);
+    }
 }
 
 

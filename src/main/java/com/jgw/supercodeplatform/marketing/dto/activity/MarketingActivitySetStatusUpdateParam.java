@@ -27,4 +27,5 @@ public class MarketingActivitySetStatusUpdateParam {
     public void setActivityStatus(Integer activityStatus) {
         this.activityStatus = activityStatus;
     }
+
 }

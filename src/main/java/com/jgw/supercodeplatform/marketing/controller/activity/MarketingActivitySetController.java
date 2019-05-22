@@ -46,7 +46,7 @@ public class MarketingActivitySetController {
     @ApiOperation("活动创建")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> create(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
-    	return service.memberActivityAdd(activitySetParam);
+        return service.memberActivityAdd(activitySetParam);
     }
     
     /**

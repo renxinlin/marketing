@@ -43,7 +43,7 @@ public class MarketingActivityChannelService {
      * @param marketingChannels
      * @return
      */
-    private List<MarketingChannel> getTree(List<MarketingChannel> marketingChannels)  {
+    protected List<MarketingChannel> getTree(List<MarketingChannel> marketingChannels)  {
         // 空数据不做处理
         if(CollectionUtils.isEmpty(marketingChannels)){
             return new LinkedList<>();

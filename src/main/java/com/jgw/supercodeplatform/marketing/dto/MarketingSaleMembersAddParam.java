@@ -13,6 +13,10 @@ public class MarketingSaleMembersAddParam {
     private String organizationId;
 
 
+    @ApiModelProperty(value = "openId",required=true)
+    private String openId;
+
+
     @ApiModelProperty(value = "手机",required=true)
     private String mobile;//手机
 
@@ -22,10 +26,19 @@ public class MarketingSaleMembersAddParam {
     /** 省市区前端编码 */
     private String pCCcode;
 
-    private List<CustomerInfo> customer;
+    @ApiModelProperty(value = "门店名称",required=true)
+    private String customerName;//门店名称
 
+    @ApiModelProperty(value = "门店编码",required=true)
+    private String customerId;//门店编码
+
+
+
+//    @ApiModelProperty(value = "门店信息")
+//    private List<CustomerInfo> customer;
+    @ApiModelProperty(value = "用户姓名")
     private String verificationCode;
-    @ApiModelProperty(value = "客户端类型，字符串格式1表示微信2表示非微信")
-    private String browerType ;
+//    @ApiModelProperty(value = "客户端类型，字符串格式1表示微信2表示非微信")
+//    private String browerType ;
 
 }

@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
@@ -31,8 +33,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "导购活动设置管理")
 public class MarketingSalerActivitySetController extends CommonUtil {
 
-    // todo  复制  更新
-    // todo 扫码领红包
+
     //
     // 停用 列表
     @Autowired
@@ -77,11 +78,10 @@ public class MarketingSalerActivitySetController extends CommonUtil {
      * 启用或禁用活动
      * @return
      */
-
-    @RequestMapping(value = "/enableOrDisable", method = RequestMethod.PUT)
-    @ApiOperation(value = "启用或禁用活动", notes = "")
+    @RequestMapping(value = "/enableOrDisable", method = RequestMethod.POST)
+    @ApiOperation(value = "启用或禁用活动", notes = "启用或禁用活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> enable(@RequestBody MarketingActivitySetStatusUpdateParam setStatusUpdateParam) {
+    public RestResult<String> enableOrDisable(@RequestBody MarketingActivitySetStatusUpdateParam setStatusUpdateParam) throws SuperCodeException {
         return service.updateSalerActivitySetStatus(setStatusUpdateParam);
     }
 
@@ -100,7 +100,6 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @ApiOperation(value = "导购活动更新,需要携带产品productId,删除原来的信息", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerUpdate(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
-        //TODO 待码平台处理完毕
         return service.salerUpdate(activitySetParam);
     }
 
@@ -117,7 +116,6 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @ApiOperation(value = "导购活动复制", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerCopy(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
-        //TODO 待码平台处理完毕
         return service.salerCopy(activitySetParam);
     }
 

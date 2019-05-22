@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivi
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,8 @@ public class MarketingActivityService extends AbstractPageService<MarketingActiv
     
     
 	public RestResult<List<MarketingActivity>> selectAll() {
-		List<MarketingActivity> list=dao.selectAll();
+
+		List<MarketingActivity> list=dao.selectAll(1);
 		RestResult<List<MarketingActivity>> restResult=new RestResult<List<MarketingActivity>>();
 		restResult.setState(200);
 		restResult.setResults(list);
