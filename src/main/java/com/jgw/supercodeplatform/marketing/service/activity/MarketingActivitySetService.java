@@ -16,6 +16,10 @@ import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.utils.SpringContextUtil;
+
+import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +59,19 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPageUpdateParam
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.CollectionUtils;
 
 @Service
-public class MarketingActivitySetService  {
+public class MarketingActivitySetService extends AbstractPageService<DaoSearchWithOrganizationIdParam> {
 	protected static Logger logger = LoggerFactory.getLogger(MarketingActivitySetService.class);
 
 	@Autowired
@@ -779,19 +789,6 @@ public class MarketingActivitySetService  {
 		}else{
 			return RestResult.error("保存数据失败" ,null);
 		}
-
-
-
-
-
-
-
-
-
-
-
-
-
 	}
 
 	private void saveProductBatchsWithThread(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int intValue, CyclicBarrier cb, AtomicInteger successNum) {
@@ -1066,4 +1063,36 @@ public class MarketingActivitySetService  {
 
 		return null;
 	}
+
+    /**
+    * 获取营销活动列表
+    */
+    public RestResult<List<MarketingSalerActivitySetMO>> list(DaoSearchWithOrganizationIdParam param) {
+        RestResult<List<MarketingSalerActivitySetMO>> restResult = new RestResult();
+        // 查询满足条件的营销活动集合
+        List<MarketingSalerActivitySetMO> list = mSetMapper.list(param);
+        // 返回
+        restResult.setState(200);
+        restResult.setMsg("success");
+        restResult.setResults(list);
+        return restResult;
+    }
+
+    @Override
+    protected List<MarketingSalerActivitySetMO> searchResult(DaoSearchWithOrganizationIdParam searchParams) throws Exception {
+        return mSetMapper.list(searchParams);
+    }
+
+    @Override
+    protected int count(DaoSearchWithOrganizationIdParam searchParams) throws Exception {
+        return mSetMapper.count(searchParams);
+    }
+
+    public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusUpdateParam setStatusUpdateParam) {
+        mSetMapper.updateSalerActivitySetStatus(setStatusUpdateParam);
+        RestResult<String> restResult=new RestResult<String>();
+        restResult.setState(200);
+        restResult.setMsg("更新成功");
+        return restResult;
+    }
 }
