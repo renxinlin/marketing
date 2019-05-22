@@ -80,7 +80,7 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 		List<MarketingMembersWinRecordListReturn> list = pageResults.getList();
 
 		// step-3:处理excel字段映射 转换excel {filedMap:[ {key:英文} ,  {value:中文} ]} 有序
-		Map filedMap = null;
+		Map<String, String> filedMap = null;
 		try {
 			filedMap = JsonToMapUtil.toMap(MARKET_WIN_RECORD_EXCEL_FIELD_MAP);
 		} catch (Exception e){
