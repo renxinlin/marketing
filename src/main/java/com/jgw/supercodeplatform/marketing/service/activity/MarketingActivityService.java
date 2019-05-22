@@ -20,7 +20,7 @@ public class MarketingActivityService extends AbstractPageService<MarketingActiv
     
 	public RestResult<List<MarketingActivity>> selectAll() {
 
-		List<MarketingActivity> list=dao.selectAll(ActivityTypeEnum.ACTIVITY_MEMBER.getType().intValue());
+		List<MarketingActivity> list=dao.selectAll(1);
 		RestResult<List<MarketingActivity>> restResult=new RestResult<List<MarketingActivity>>();
 		restResult.setState(200);
 		restResult.setResults(list);

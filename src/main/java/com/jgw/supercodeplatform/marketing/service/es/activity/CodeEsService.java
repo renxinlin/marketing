@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -163,15 +164,6 @@ public class CodeEsService extends AbstractEsSearch {
 	}
 
 
-	// 兑换数量插入
-	public void  putExchangeCount(String key, Integer count){
-		// TODO 待实现
-		// 刷入写数据
-	}
-	// 兑换数量统计
-	public Long getExchangeCount(String key){
-		return 0L;
-	}
 
 
 	/**
@@ -404,5 +396,18 @@ public class CodeEsService extends AbstractEsSearch {
 		Stats aggs = searchResponse.getAggregations().get(AggregationName);
 		return  (int)aggs.getCount();
 
+    }
+
+	/**
+	 * 扫码信息,扫完就插入,插入失败不影响业务
+	 * @param sCodeInfoMO
+	 */
+    public void indexScanInfo(ScanCodeInfoMO sCodeInfoMO) {
+    	try{
+    		// todo  保存用户产品信息
+
+		}catch (Exception e){
+    		//
+		}
     }
 }

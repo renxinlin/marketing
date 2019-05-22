@@ -48,7 +48,7 @@ public class SupercodeplatformApplicationTests {
 			if(childList == null) {
 				childList = new ArrayList<>();
 				childList.add(channel);
-//				parentChannel.setChildren(childList);
+				parentChannel.setChildren(childList);
 				reChannel = putChildrenChannel(marketingChannelMap, parentChannel);
 			} else {
 				childList.add(channel);
@@ -57,7 +57,6 @@ public class SupercodeplatformApplicationTests {
 			reChannel = channel;
 		}
 		return reChannel;
-		
 	}
 		 
 		 

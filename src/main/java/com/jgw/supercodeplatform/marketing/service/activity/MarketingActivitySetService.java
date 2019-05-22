@@ -3,29 +3,23 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
-import com.jgw.supercodeplatform.marketing.pojo.*;
-import com.jgw.supercodeplatform.pojo.cache.AccountCache;
-import com.jgw.supercodeplatform.user.UserInfoUtil;
-import com.jgw.supercodeplatform.utils.SpringContextUtil;
-
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
@@ -34,14 +28,19 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.check.activity.StandActicityParamCheck;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
@@ -53,6 +52,8 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
@@ -62,16 +63,20 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPageUpdateParam
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
-import org.springframework.util.CollectionUtils;
+import com.jgw.supercodeplatform.pojo.cache.AccountCache;
+import com.jgw.supercodeplatform.utils.SpringContextUtil;
 
 @Service
 public class MarketingActivitySetService extends AbstractPageService<DaoSearchWithOrganizationIdParam> {
@@ -103,6 +108,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
 	@Autowired
 	private CommonService commonService;
+
+	@Autowired
+	private MarketingActivityChannelService channelService;
 
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
@@ -818,7 +826,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		//保存奖次
 		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
-		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】 TODO 拆分两者业务
+		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】
 		saveProductBatchsWithThread(maProductParams,activitySetId,
 				ActivityTypeEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
 
@@ -930,11 +938,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	/**
 	 * 事务管理器
 	 */
-	ThreadLocal transm = new ThreadLocal();
+	ThreadLocal<PlatformTransactionManager> transm = new ThreadLocal<>();
 	/**
 	 * 事务状态ID
 	 */
-	ThreadLocal transs = new ThreadLocal();
+	ThreadLocal<TransactionStatus> transs = new ThreadLocal<>();
 	/**
 	 * 参与事务的线程数
 	 */
@@ -1143,22 +1151,24 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 
     /**
-    * 获取营销活动列表
-    */
-    public RestResult<List<MarketingSalerActivitySetMO>> list(DaoSearchWithOrganizationIdParam param) {
-        RestResult<List<MarketingSalerActivitySetMO>> restResult = new RestResult();
-        // 查询满足条件的营销活动集合
-        List<MarketingSalerActivitySetMO> list = mSetMapper.list(param);
-        // 返回
-        restResult.setState(200);
-        restResult.setMsg("success");
-        restResult.setResults(list);
-        return restResult;
-    }
-
+	 * 获取营销活动列表
+	 */
     @Override
     protected List<MarketingSalerActivitySetMO> searchResult(DaoSearchWithOrganizationIdParam searchParams) throws Exception {
-        return mSetMapper.list(searchParams);
+        // 查询满足条件的营销活动集合
+        List<MarketingSalerActivitySetMO> list = mSetMapper.list(searchParams);
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.EMPTY_LIST;
+        }
+        // 获取渠道信息的树形结构
+        list.forEach(mo -> {
+            List<MarketingChannel> marketingChannels = mChannelMapper.selectByActivitySetId(mo.getId());
+            // 转换渠道为树结构： 1先获取所有根节点，2在获取所有当前父节点以及子节点，3将子节点添加到父节点
+            // 渠道父级编码可以不存在，但渠道编码必须存在
+            List<MarketingChannel> treeMarketingChannels = channelService.getTree(marketingChannels);
+            mo.setMarketingChannels(treeMarketingChannels);
+        });
+        return list;
     }
 
     @Override
@@ -1169,9 +1179,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
     public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusUpdateParam setStatusUpdateParam) throws SuperCodeException {
         // 获取当前的用户信息
         AccountCache userLoginCache = getUserLoginCache();
-        setStatusUpdateParam.setUserId(userLoginCache.getUserId());
-        setStatusUpdateParam.setUserName(userLoginCache.getUserName());
-        mSetMapper.updateSalerActivitySetStatus(setStatusUpdateParam);
+        mSetMapper.updateSalerActivitySetStatus(setStatusUpdateParam, userLoginCache.getUserId(), userLoginCache.getUserName());
         RestResult<String> restResult=new RestResult<String>();
         restResult.setState(200);
         restResult.setMsg("更新成功");
@@ -1314,4 +1322,110 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mSet.setOrganizatioIdlName(organizationName);
 		return mSet;
 	}
+	
+	/**
+	 * 获取编辑参数
+	 * @param activitySetId
+	 * @return
+	 */
+	public MarketingSalerActivityCreateParam activityInfo(Long activitySetId) {
+		MarketingSalerActivityCreateParam marketingActivityCreateParam = new MarketingSalerActivityCreateParam();
+		//活动参数设置项
+		MarketingActivitySet marketingActivitySet = mSetMapper.selectById(activitySetId);
+		MarketingActivitySetParam marketingActivitySetParam = new MarketingActivitySetParam();
+		BeanUtils.copyProperties(marketingActivitySet, marketingActivitySetParam);
+		String conditionStr = marketingActivitySet.getValidCondition();
+		if(StringUtils.isNotBlank(conditionStr)) {
+			MarketingActivitySetCondition condition = JSON.parseObject(conditionStr, MarketingActivitySetCondition.class);
+			marketingActivitySetParam.setParticipationCondition(condition.getParticipationCondition());
+		}
+		marketingActivityCreateParam.setMActivitySetParam(marketingActivitySetParam);
+		//获取拼接活动设置产品参数
+		List<MarketingActivityProduct> marketingActivityProductList = mProductMapper.selectByActivitySetId(activitySetId.toString());
+		Map<String, MarketingActivityProductParam> mActivityProductParamMap = new HashMap<>();
+		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
+			for(MarketingActivityProduct product : marketingActivityProductList) {
+				String productId = product.getProductId();
+				MarketingActivityProductParam marketingActivityProductParam = mActivityProductParamMap.get(productId);
+				if(marketingActivityProductParam == null) {
+					marketingActivityProductParam = new MarketingActivityProductParam();
+					marketingActivityProductParam.setProductId(product.getProductId());
+					marketingActivityProductParam.setProductName(product.getProductBatchName());
+					//添加批次
+					ProductBatchParam productBatchParam = new ProductBatchParam();
+					productBatchParam.setProductBatchId(product.getProductBatchId());
+					productBatchParam.setProductBatchName(product.getProductBatchName());
+					marketingActivityProductParam.setProductBatchParams(Collections.singletonList(productBatchParam));
+					mActivityProductParamMap.put(productId, marketingActivityProductParam);
+				} else {
+					ProductBatchParam productBatchParam = new ProductBatchParam();
+					productBatchParam.setProductBatchId(product.getProductBatchId());
+					productBatchParam.setProductBatchName(product.getProductBatchName());
+					marketingActivityProductParam.getProductBatchParams().add(productBatchParam);
+				}
+			}
+		}
+		marketingActivityCreateParam.setMProductParams(new ArrayList<MarketingActivityProductParam>(mActivityProductParamMap.values()));
+		//获取设置中奖奖次
+		List<MarketingPrizeType> marketingPrizeTypeList = mPrizeTypeMapper.selectByActivitySetId(activitySetId);
+		if(!CollectionUtils.isEmpty(marketingPrizeTypeList)) {
+			List<MarketingPrizeTypeParam> marketingPrizeTypeParams = marketingPrizeTypeList.stream().map(priceType -> {
+				MarketingPrizeTypeParam marketingPrizeTypeParam = new MarketingPrizeTypeParam(); 
+				BeanUtils.copyProperties(priceType, marketingPrizeTypeParam);
+				return marketingPrizeTypeParam;
+			}).collect(Collectors.toList());
+			marketingActivityCreateParam.setMarketingPrizeTypeParams(marketingPrizeTypeParams);
+		}
+		//获取并拼接渠道
+		List<MarketingChannel> marketingChannelList  = mChannelMapper.selectByActivitySetId(activitySetId);
+		if(!CollectionUtils.isEmpty(marketingChannelList)) {
+			Map<String, MarketingChannelParam> MarketingChannelParamMap = marketingChannelList.stream()
+				.collect(Collectors.toMap(
+					MarketingChannel::getCustomerId ,marketingChannel -> {
+					MarketingChannelParam marketingChannelParam = new MarketingChannelParam();
+					BeanUtils.copyProperties(marketingChannel, marketingChannelParam);
+					return marketingChannelParam;
+			}));
+			Set<MarketingChannelParam> MarketingChannelParam = getSonByFatherWithAllData(MarketingChannelParamMap);
+			marketingActivityCreateParam.setMChannelParams(new ArrayList<MarketingChannelParam>(MarketingChannelParam));
+		}
+		return marketingActivityCreateParam;
+	}
+	
+	
+	//遍历渠道数据并添加为树形结构
+	private Set<MarketingChannelParam> getSonByFatherWithAllData(Map<String, MarketingChannelParam> marketingChannelMap) {
+		Set<MarketingChannelParam> channelSet = new HashSet<>();
+		Collection<MarketingChannelParam> channelCollection = marketingChannelMap.values();
+		for(MarketingChannelParam marketingChannel : channelCollection) {
+			MarketingChannelParam channel = putChildrenChannel(marketingChannelMap, marketingChannel);
+			if(channel != null)
+				channelSet.add(channel);
+		}
+		return channelSet;
+	}
+	
+	//将渠道数据递归添加到子项中
+	private MarketingChannelParam putChildrenChannel(Map<String, MarketingChannelParam> marketingChannelMap, MarketingChannelParam channel) {
+		MarketingChannelParam reChannel = null;
+		Set<String> mkSet = marketingChannelMap.keySet();
+		if(mkSet.contains(channel.getCustomerSuperior())) {
+			MarketingChannelParam parentChannel = marketingChannelMap.get(channel.getCustomerSuperior());
+			List<MarketingChannelParam> childList = parentChannel.getChildrens();
+			//如果父级的children为空，则说明第一次添加，需递归调用，如果不为空，则说明不是第一次添加，
+			//以前已经递归调用过，父级以上的关系已添加过，不用再次递归，也无需返回实例。
+			if(childList == null) {
+				childList = new ArrayList<>();
+				childList.add(channel);
+				parentChannel.setChildrens(childList);
+				reChannel = putChildrenChannel(marketingChannelMap, parentChannel);
+			} else {
+				childList.add(channel);
+			}
+		} else {
+			reChannel = channel;
+		}
+		return reChannel;
+	}
+	
 }

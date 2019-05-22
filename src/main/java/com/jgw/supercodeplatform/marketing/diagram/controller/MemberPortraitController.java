@@ -158,7 +158,7 @@ public class MemberPortraitController extends CommonUtil {
         CricleVo woman = new CricleVo();
         woman.setItem("女");
         CricleVo other = new CricleVo();
-        other.setItem("其他");
+        other.setItem("未知");
 
         // 注册设备
         CricleVo wxdevice = new CricleVo();
@@ -177,7 +177,7 @@ public class MemberPortraitController extends CommonUtil {
         qqdevice.setItem("qq");
 
         CricleVo otherDevice = new CricleVo();
-        otherDevice.setItem("其他");
+        otherDevice.setItem("未知");
 
 
 
@@ -194,7 +194,7 @@ public class MemberPortraitController extends CommonUtil {
 
         // 100岁以上和0岁以下以及其他都归属其他
         CricleVo otherage = new CricleVo();
-        otherage.setItem("其他");
+        otherage.setItem("未知");
 
 
 
