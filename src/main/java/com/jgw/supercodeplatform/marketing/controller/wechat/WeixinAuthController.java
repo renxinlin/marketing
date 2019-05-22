@@ -11,6 +11,7 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.enums.market.AccessProtocol;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
@@ -386,6 +387,9 @@ public class WeixinAuthController {
 				scanCodeInfoMO.setOpenId(userInfo.getString("openid"));
 				//更新扫码信息
 				globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
+
+				// success = 0失败
+
 				redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+organizationId;
 			}
 
@@ -457,25 +461,30 @@ public class WeixinAuthController {
 		if(marketingUser != null){
 			// 说明用户存在,需要自动登录
 			// 返回销售员中心页面
-			// TODO 用户是否禁用等校验
-			StringBuffer sb = new StringBuffer("");
-			sb.append("?").append("memberId=-1").append("openid=").append(openid)
-					.append("organizationId=").append(organizationId);
-			redirectUrl = SALER_CENTER_URL+sb.toString();
-			MarketingMembers user = new MarketingMembers();
-			MarketingMembers userVo = modelMapper.map(marketingUser, MarketingMembers.class);
-			user.setId(user.getId());
-			writeJwtToken(response,userVo);
-
+			if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
+				// 非启用状态
+				StringBuffer sb = new StringBuffer("?");
+				sb.append("memberId=-1").append("&openid=").append(openid)
+						.append("&organizationId=").append(organizationId);
+				redirectUrl = SALER_LOGIN_URL+sb.toString();
+			}else{
+				StringBuffer sb = new StringBuffer("?");
+				sb.append("memberId=").append(marketingUser.getId()).append("&openid=").append(openid)
+						.append("&organizationId=").append(organizationId);
+				redirectUrl = SALER_CENTER_URL+sb.toString();
+				MarketingMembers user = new MarketingMembers();
+				MarketingMembers userVo = modelMapper.map(marketingUser, MarketingMembers.class);
+				user.setId(user.getId());
+				writeJwtToken(response,userVo);
+			}
 		}else{
 			// 前端需要的信息
 			// 推荐前端缓存该信息
 			// 组织Id等关键信息不适合url上携带
-			StringBuffer sb = new StringBuffer("");
-			sb.append("?").append("memberId=-1").append("openid=").append(openid)
-					.append("organizationId=").append(organizationId);
+			StringBuffer sb = new StringBuffer("?");
+			sb.append("memberId=-1").append("&openid=").append(openid)
+					.append("&organizationId=").append(organizationId);
 			redirectUrl = SALER_LOGIN_URL+sb.toString();
-
 		}
 		return  redirectUrl;
 	}
