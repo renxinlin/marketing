@@ -117,12 +117,12 @@ public class RestTemplateUtil {
 	 * @param headerMap
 	 * @return
 	 */
-	public RestResult postJsonDataAndReturnJosnObject(String url,Map json,Map<String, String> headerMap)   {
+	public RestResult<?> postJsonDataAndReturnJosnObject(String url,Map<?, ?> json,Map<String, String> headerMap)   {
 		ResponseEntity<RestResult> restResultResponseEntity = restTemplate.postForEntity(url, json, RestResult.class);
 		if(restResultResponseEntity.getStatusCode().value() == HttpStatus.OK.value() && restResultResponseEntity.getBody().getState() == 200){
-			return  new RestResult(200, "success", null);
+			return  new RestResult<>(200, "success", null);
 		}else {
-			return  new RestResult(500, "短信发送失败", null);
+			return  new RestResult<>(500, "短信发送失败", null);
 		}
 	}
 

@@ -744,7 +744,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @return
 	 */
 	public RestResult<MarketingActivitySet> getActivityBaseInfoByeditPage(Long activitySetId) {
-		RestResult restResult = new RestResult();
+		RestResult<MarketingActivitySet> restResult = new RestResult<>();
 		// 校验
 		if(activitySetId == null || activitySetId <= 0 ){
 			restResult.setState(500);

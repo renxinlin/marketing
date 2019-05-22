@@ -158,8 +158,6 @@ public class WeixinAuthController {
 				scanCodeInfoMO.setUserId(members.getId());
 				globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
 			}
-			//更新扫码信息
-			globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
 			members.setWxName(nickName);
 			marketingMembersService.update(members);
 		}

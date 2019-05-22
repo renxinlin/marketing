@@ -1,9 +1,10 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,18 +33,22 @@ public class MarketingActivitySetController {
 
     @Autowired
     private MarketingActivityProductService maProductService;
+    
+    
     /**
      * 活动编辑;本期不做
      * @param marketingActivityParam
      * @return
      * @throws Exception
      */
-//    @RequestMapping(value = "/edit",method = RequestMethod.POST)
-//    @ApiOperation(value = "活动编辑", notes = "")
-//    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-//    public RestResult<String> edit(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
-//        return service.edit(activitySetParam);
-//    }
+    @GetMapping("/activityInfo")
+    @ApiOperation("获取活动数据")
+    @ApiImplicitParams({
+    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true),
+    @ApiImplicitParam(name="activitySetId",paramType="query",value="活动设置ID",required=true)})
+    public RestResult<MarketingActivityCreateParam> activityInfo(@RequestParam Long activitySetId) throws Exception {
+    	return new RestResult<>(200, "查询成功", new MarketingActivityCreateParam());
+    }
 
 
 
@@ -53,12 +58,26 @@ public class MarketingActivitySetController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/add",method = RequestMethod.POST)
-    @ApiOperation(value = "活动创建", notes = "")
+    @PostMapping("/add")
+    @ApiOperation("活动创建")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> create(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
     	return service.memberActivityAdd(activitySetParam);
     }
+    
+    /**
+     * 活动创建
+     * @param marketingActivityParam
+     * @return
+     * @throws Exception
+     */
+    @PostMapping("/guideActivityAdd")
+    @ApiOperation("活动创建")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<String> guideActivityAdd(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
+    	return service.guideActivityAdd(activitySetParam);
+    }
+    
     
     /**
      * 活动编辑
@@ -66,8 +85,8 @@ public class MarketingActivitySetController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/update",method = RequestMethod.POST)
-    @ApiOperation(value = "活动更新", notes = "")
+    @PostMapping("/update")
+    @ApiOperation("活动更新")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> update(@RequestBody MarketingActivityCreateParam activitySetParam) throws Exception {
     	return service.update(activitySetParam);
@@ -79,9 +98,9 @@ public class MarketingActivitySetController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/disOrEnable",method = RequestMethod.POST)
-    @ApiOperation(value = "停用或启用", notes = "")
-    @ApiImplicitParams(value= {
+    @PostMapping("/disOrEnable")
+    @ApiOperation("停用或启用")
+    @ApiImplicitParams({
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     })
     public RestResult<String> disOrEnable(@RequestBody MarketingActivitySetStatusUpdateParam mUpdateStatus) throws Exception {
@@ -94,16 +113,16 @@ public class MarketingActivitySetController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getPageInfo",method = RequestMethod.GET)
-    @ApiOperation(value = "根据活动id获取领取页和中奖页数据", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
+    @GetMapping("/getPageInfo")
+    @ApiOperation("根据活动id获取领取页和中奖页数据")
+    @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
     public RestResult<ReceivingAndWinningPageVO> getPageInfo(@RequestParam(required=true) Long activitySetId) throws Exception {
     	return service.getPageInfo(activitySetId);
     }
     
 
-    @RequestMapping(value = "/updatePage",method = RequestMethod.POST)
-    @ApiOperation(value = "更新领取页中奖页", notes = "")
+    @PostMapping("/updatePage")
+    @ApiOperation("更新领取页中奖页")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> updatePage(@RequestBody MarketingReceivingPageParam mUpdateParam) throws Exception {
     	return service.updatePage(mUpdateParam);
@@ -114,20 +133,18 @@ public class MarketingActivitySetController {
      * @param activitySetId
      * @return
      */
-    @RequestMapping(value = "/getBaseInfo",method = RequestMethod.GET)
-    @ApiOperation(value = "编辑活动： 获取活动基础信息", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
-    public RestResult<MarketingActivitySet> getActivityBaseInfoByeditPage(@RequestParam(required=true) Long activitySetId){
+    @GetMapping(value = "/getBaseInfo")
+    @ApiOperation("编辑活动： 获取活动基础信息")
+    @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
+    public RestResult<MarketingActivitySet> getActivityBaseInfoByeditPage(@RequestParam Long activitySetId){
         return service.getActivityBaseInfoByeditPage(activitySetId);
 
     }
 
 
-    @RequestMapping(value = "/relationActProds",method = RequestMethod.GET)
-    @ApiOperation(value = "获取活动做过码关联的产品及产品批次数据", notes = "")
-    @ApiImplicitParams(value= {
-    		 @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    		})
+    @GetMapping("/relationActProds")
+    @ApiOperation("获取活动做过码关联的产品及产品批次数据")
+    @ApiImplicitParams({@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)})
     public JSONObject relationActProds() throws Exception {
     	
         return maProductService.relationActProds();
