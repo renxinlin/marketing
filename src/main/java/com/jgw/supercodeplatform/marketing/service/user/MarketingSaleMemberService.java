@@ -84,7 +84,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		if(marketingUser.getState().intValue() == SaleUserStatus.AUDITED.getStatus().intValue()
 				&& state == SaleUserStatus.ENABLE.getStatus().intValue()  ){
-			//  审核通过发送短信
+			//  TODO 审核通过发送短信
 		}
 		MarketingUser dto = new MarketingUser();
 		dto.setId(id);

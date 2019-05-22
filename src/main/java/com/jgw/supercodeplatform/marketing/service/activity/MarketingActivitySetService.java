@@ -964,7 +964,6 @@ public class MarketingActivitySetService  {
 		mSetMapper.update(changeDtoToDo(mActivitySetParam,organizationId,organizationName));
 
 
-
 		AtomicInteger successNum = new AtomicInteger(0);
 		// 事务参与计量器
 		CyclicBarrier cb = new CyclicBarrier(TX_THREAD_NUM);
@@ -981,6 +980,18 @@ public class MarketingActivitySetService  {
 // step-2：校验实体
 		validateBasicBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
 		validateBizBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
+
+		// todo 判断新选择的产品是否存在,存在则删除
+		if(!CollectionUtils.isEmpty(maProductParams)){
+			for( MarketingActivityProductParam vo:maProductParams ){
+				if(vo.getId() == null){
+					throw new SuperCodeException("编辑需要传入id主键");
+				}
+			}
+			// 删除[导购]存在的原活动产品
+			mProductMapper.deleteOldProducts(maProductParams);
+		}
+
 
 // step-3：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
