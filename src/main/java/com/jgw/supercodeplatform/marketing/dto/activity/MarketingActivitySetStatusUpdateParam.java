@@ -12,6 +12,16 @@ public class MarketingActivitySetStatusUpdateParam {
     @ApiModelProperty(value = "活动状态",required=true)
     private Integer activityStatus;//活动状态(1、表示上架进展，0 表示下架)
 
+    /**
+     * 用户id
+     */
+    private String userId;
+
+    /**
+     * 用户名称
+     */
+    private String userName;
+
     public Long getActivitySetId() {
         return activitySetId;
     }
@@ -26,5 +36,21 @@ public class MarketingActivitySetStatusUpdateParam {
 
     public void setActivityStatus(Integer activityStatus) {
         this.activityStatus = activityStatus;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

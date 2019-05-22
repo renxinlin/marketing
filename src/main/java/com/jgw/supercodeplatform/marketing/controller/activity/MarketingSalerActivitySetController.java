@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivityListMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
@@ -72,11 +73,10 @@ public class MarketingSalerActivitySetController extends CommonUtil {
      * 启用或禁用活动
      * @return
      */
-
-    @RequestMapping(value = "/enableOrDisable", method = RequestMethod.PUT)
-    @ApiOperation(value = "启用或禁用活动", notes = "")
+    @RequestMapping(value = "/enableOrDisable", method = RequestMethod.POST)
+    @ApiOperation(value = "启用或禁用活动", notes = "启用或禁用活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> enable(@RequestBody MarketingActivitySetStatusUpdateParam setStatusUpdateParam) {
+    public RestResult<String> enableOrDisable(@RequestBody MarketingActivitySetStatusUpdateParam setStatusUpdateParam) throws SuperCodeException {
         return service.updateSalerActivitySetStatus(setStatusUpdateParam);
     }
 

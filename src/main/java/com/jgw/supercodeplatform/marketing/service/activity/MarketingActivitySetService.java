@@ -16,6 +16,8 @@ import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.pojo.cache.AccountCache;
+import com.jgw.supercodeplatform.user.UserInfoUtil;
 import com.jgw.supercodeplatform.utils.SpringContextUtil;
 
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
@@ -1164,7 +1166,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
         return mSetMapper.count(searchParams);
     }
 
-    public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusUpdateParam setStatusUpdateParam) {
+    public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusUpdateParam setStatusUpdateParam) throws SuperCodeException {
+        // 获取当前的用户信息
+        AccountCache userLoginCache = getUserLoginCache();
+        setStatusUpdateParam.setUserId(userLoginCache.getUserId());
+        setStatusUpdateParam.setUserName(userLoginCache.getUserName());
         mSetMapper.updateSalerActivitySetStatus(setStatusUpdateParam);
         RestResult<String> restResult=new RestResult<String>();
         restResult.setState(200);

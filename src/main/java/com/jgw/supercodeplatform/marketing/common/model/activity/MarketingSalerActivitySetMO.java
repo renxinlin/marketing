@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.common.model.activity;
 
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import lombok.Data;
 
 import java.util.List;
@@ -44,6 +45,11 @@ public class MarketingSalerActivitySetMO {
      * 活动状态(1、表示上架进展，0 表示下架)
      */
     private Integer activityStatus;
+
+    /**
+     * 关联的活动渠道信息集合
+     */
+    private List<MarketingChannel> marketingChannels;
 
     /**
      * 关联的活动产品信息集合
