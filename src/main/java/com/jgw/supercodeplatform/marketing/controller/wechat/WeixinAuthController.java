@@ -44,6 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/marketing/front/auth")
 @Api(tags = "微信授权回调地址")
 public class WeixinAuthController {
+	// TODO 前端URL
 	@Value("${marketing.activity.h5page.url}")
 	private   String SALER_LOGIN_URL  ;
 	@Value("${marketing.activity.h5page.url}")
