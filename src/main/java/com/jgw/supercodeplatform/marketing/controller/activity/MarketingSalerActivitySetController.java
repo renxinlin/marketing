@@ -68,7 +68,7 @@ public class MarketingSalerActivitySetController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/update",method = RequestMethod.POST)
+    @RequestMapping(value = "/copy",method = RequestMethod.POST)
     @ApiOperation(value = "导购活动更新", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerCopy(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
