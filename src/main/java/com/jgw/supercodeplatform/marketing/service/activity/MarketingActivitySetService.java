@@ -162,15 +162,16 @@ public class MarketingActivitySetService  {
 		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		//获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
+		
 		//获取活动实体
 		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getmActivitySetParam(),organizationId,organizationName);
-
+		
 		//检查奖次类型
 		standActicityParamCheck.basePrizeTypeCheck(mPrizeTypeParams);
 
 		//检查产品
 	    standActicityParamCheck.baseProductBatchCheck(maProductParams);
-
+		
 		Long activitySetId= mActivitySet.getId();
 		if (null!=mChannelParams && mChannelParams.size()!=0) {
 			//保存渠道
@@ -188,9 +189,49 @@ public class MarketingActivitySetService  {
 	 * @return
 	 * @throws SuperCodeException
 	 */
+	@Transactional
 	public RestResult<String> update(MarketingActivityCreateParam activitySetParam) throws SuperCodeException {
+		String organizationId=commonUtil.getOrganizationId();
+		String organizationName=commonUtil.getOrganizationName();
+		List<MarketingChannelParam> mChannelParams=activitySetParam.getmChannelParams();
+		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
+		//获取奖次参数
+		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
+		
+		MarketingActivitySetParam mSetParam=activitySetParam.getmActivitySetParam();
+		Long id=mSetParam.getId();
+		if (null==id) {
+			throw new SuperCodeException("活动设置id不能为空", 500);
+		}
+		
+		MarketingReceivingPageParam mReceivingPageParam=activitySetParam.getmReceivingPageParam();
+		
+		//获取活动实体
+		MarketingActivitySet mActivitySet = convertActivitySet(mSetParam,organizationId,organizationName);
+		mPrizeTypeMapper.deleteByActivitySetId(mActivitySet.getId());
+		mProductMapper.deleteByActivitySetId(mActivitySet.getId());
+		mChannelMapper.deleteByActivitySetId(mActivitySet.getId());
+		updatePage(mReceivingPageParam);
+		
+		//检查奖次类型
+		standActicityParamCheck.basePrizeTypeCheck(mPrizeTypeParams);
 
-		return null;
+		//检查产品
+	    standActicityParamCheck.baseProductBatchCheck(maProductParams);
+
+		Long activitySetId= mActivitySet.getId();
+		if (null!=mChannelParams && mChannelParams.size()!=0) {
+			//保存渠道
+			saveChannels(mChannelParams,activitySetId);
+		}
+		//保存奖次
+		savePrizeTypes(mPrizeTypeParams,activitySetId);
+		//保存商品批次活动总共批次参与的码总数
+		saveProductBatchs(maProductParams,activitySetId,0);
+		RestResult<String> restResult=new RestResult<String>();
+		restResult.setState(200);
+		restResult.setMsg("成功");
+		return restResult;
 	}
 
 
@@ -205,6 +246,7 @@ public class MarketingActivitySetService  {
 			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
 		}
 		activityTimeCheck(activitySetParam.getActivityStartDate(),activitySetParam.getActivityEndDate());
+		Long id=activitySetParam.getId();
 		MarketingActivitySet mSet=new MarketingActivitySet();
 		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
 		mSet.setActivityId(activitySetParam.getActivityId());
@@ -213,12 +255,19 @@ public class MarketingActivitySetService  {
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
 		mSet.setEachDayNumber(activitySetParam.getEachDayNumber());
-		mSet.setId(activitySetParam.getId());
+		mSet.setId(id);
+		mSet.setActivityDesc(activitySetParam.getActivityDesc());
+		mSet.setConsumeIntegralNum(activitySetParam.getConsumeIntegralNum());
 		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
 		mSet.setActivityStatus(1);
 		mSet.setOrganizationId(organizationId);
 		mSet.setOrganizatioIdlName(organizationName);
-		mSetMapper.insert(mSet);
+		if (null==id) {
+			mSetMapper.insert(mSet);
+		}else {
+			mSetMapper.update(mSet);
+		}
+		
 		return mSet;
 	}
 
@@ -234,6 +283,7 @@ public class MarketingActivitySetService  {
 		}
 		activityTimeCheck(activitySetParam.getActivityStartDate(),activitySetParam.getActivityEndDate());
 		MarketingActivitySet mSet=new MarketingActivitySet();
+		mSet.setId(activitySetParam.getId());
 		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
 		mSet.setActivityId(activitySetParam.getActivityId());
 		mSet.setActivityRangeMark(activitySetParam.getActivityRangeMark());
@@ -241,17 +291,18 @@ public class MarketingActivitySetService  {
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
 		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
-		mSet.setId(activitySetParam.getId());
 		// 门槛保存红包条件和每人每天上限
 		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
 		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
 		condition.setParticipationCondition(activitySetParam.getParticipationCondition());
+		condition.setConsumeIntegral(activitySetParam.getConsumeIntegralNum());
 		String conditinoString = condition.toJsonString();
 		mSet.setValidCondition(conditinoString);
 		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
 		mSet.setActivityStatus(1);
 		mSet.setOrganizationId(organizationId);
 		mSet.setOrganizatioIdlName(organizationName);
+		
 		mSetMapper.insert(mSet);
 		return mSet;
 	}
@@ -496,7 +547,6 @@ public class MarketingActivitySetService  {
 			List<MarketingChannelParam> childrens=marketingChannelParam.getChildrens();
 			recursiveCreateChannel(customerId,customerType,activitySetId,childrens,mList);
 		}
-
 		mChannelMapper.batchInsert(mList);
 	}
 
@@ -537,18 +587,10 @@ public class MarketingActivitySetService  {
 	 * @return
 	 */
 	@Transactional
-	public RestResult<String> updatePage(MarketingPageUpdateParam mUpdateParam) {
+	public RestResult<String> updatePage(MarketingReceivingPageParam mReceivingPageParam) {
 		RestResult<String> restResult=new RestResult<String>();
-		// 更新参数校验，中奖页和领取页参数
-		boolean legal = validateParam(mUpdateParam);
-		if (!legal){
-			restResult.setState(500);
-			restResult.setMsg("参数校验失败");
-			return restResult;
-		}
 
 		// 保存领取页信息
-		MarketingReceivingPageParam mReceivingPageParam=mUpdateParam.getmReceivingPageParam();
 		MarketingReceivingPage mReceivingPage=new MarketingReceivingPage();
 		mReceivingPage.setId(mReceivingPageParam.getId());
 		mReceivingPage.setIsQrcodeView(mReceivingPageParam.getIsQrcodeView());
@@ -957,9 +999,9 @@ public class MarketingActivitySetService  {
 		String organizationId=commonUtil.getOrganizationId();
 		String organizationName=commonUtil.getOrganizationName();
 		// 先删后增
-		mChannelMapper.delete(activitySetParam.getMActivitySetParam().getId());
-		mPrizeTypeMapper.delete(activitySetParam.getMActivitySetParam().getId());
-		mProductMapper.delete(activitySetParam.getMActivitySetParam().getId());
+		mChannelMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
 		MarketingActivitySetParam mActivitySetParam = activitySetParam.getMActivitySetParam();
 		mSetMapper.update(changeDtoToDo(mActivitySetParam,organizationId,organizationName));
 

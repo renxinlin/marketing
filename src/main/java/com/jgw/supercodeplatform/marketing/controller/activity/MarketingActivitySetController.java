@@ -1,20 +1,26 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPageUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityProductService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/marketing/activity/set")
@@ -99,11 +105,9 @@ public class MarketingActivitySetController {
     @RequestMapping(value = "/updatePage",method = RequestMethod.POST)
     @ApiOperation(value = "更新领取页中奖页", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> updatePage(@RequestBody MarketingPageUpdateParam mUpdateParam) throws Exception {
+    public RestResult<String> updatePage(@RequestBody MarketingReceivingPageParam mUpdateParam) throws Exception {
     	return service.updatePage(mUpdateParam);
     }
-
-
 
     /**
      * 获取活动基础信息

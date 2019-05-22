@@ -1,6 +1,5 @@
 package com.jgw.supercodeplatform.marketing.dto.activity;
 
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -31,7 +30,13 @@ public class MarketingActivitySetParam {
 
 	@ApiModelProperty(name = "participationCondition", value = "0无条件 1协助领红包 2协助领积分", example = "1")
 	private Byte participationCondition;
+	
+    @ApiModelProperty(name = "consumeIntegralNum", value = "消耗积分", example = "11")
+    private Integer consumeIntegralNum;
 
+    @ApiModelProperty(name = "activityDesc", value = "活动描述", example = "红包活动")
+    private String activityDesc;
+    
 	public Byte getParticipationCondition() {
 		return participationCondition;
 	}
@@ -101,6 +106,22 @@ public class MarketingActivitySetParam {
 
 	public void setActivityEndDate(String activityEndDate) {
 		this.activityEndDate = activityEndDate;
+	}
+
+	public Integer getConsumeIntegralNum() {
+		return consumeIntegralNum;
+	}
+
+	public void setConsumeIntegralNum(Integer consumeIntegralNum) {
+		this.consumeIntegralNum = consumeIntegralNum;
+	}
+
+	public String getActivityDesc() {
+		return activityDesc;
+	}
+
+	public void setActivityDesc(String activityDesc) {
+		this.activityDesc = activityDesc;
 	}
     
 }
