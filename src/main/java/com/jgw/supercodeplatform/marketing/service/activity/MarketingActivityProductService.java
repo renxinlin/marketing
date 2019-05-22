@@ -83,7 +83,7 @@ public class MarketingActivityProductService {
         return  restResult;
     }
 
-	public JSONObject relationActProds() throws SuperCodeException {
+	public JSONObject relationActProds(String search, Integer pageSize, Integer current) throws SuperCodeException {
 		String organizationId=commonUtil.getOrganizationId();
 		List<String> productBatchIds=mapper.usedProductBatchIds(organizationId);
 		Map<String, Object>params=new HashMap<String, Object>();
@@ -96,6 +96,9 @@ public class MarketingActivityProductService {
 		}
 		params.put("organizationId",organizationId );
 		params.put("relationType",3 );
+		params.put("search",search);
+		params.put("pageSize",pageSize);
+		params.put("current",current);
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
 		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
 		String body=responseEntity.getBody();
