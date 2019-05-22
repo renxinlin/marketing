@@ -116,7 +116,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
     @Select(startScript
             + " SELECT mas.Id, mas.ActivityId, mas.ActivityTitle, DATE_FORMAT(mas.ActivityStartDate, '%Y/%m/%d %H:%i') as activityStartDate, "
-            + " DATE_FORMAT(mas.ActivityEndDate, '%Y/%m/%d %H:%i') as activityEndDate, mas.UpdateUserId, mas.UpdateUserName, mas.UpdateDate, "
+            + " DATE_FORMAT(mas.ActivityEndDate, '%Y/%m/%d %H:%i') as activityEndDate, mas.UpdateUserId, mas.UpdateUserName, "
+            + " DATE_FORMAT(mas.UpdateDate, '%Y/%m/%d %H:%i') as updateDate, "
             + " mas.OrganizatioIdlName, mas.ActivityStatus "
             + " FROM marketing_activity_set mas "
             + " INNER JOIN marketing_activity ma ON ma.Id = mas.ActivityId AND ma.ActivityType = 2 "
@@ -137,7 +138,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
             @Result(column = "activityEndDate", property = "activityEndDate", jdbcType = JdbcType.DATE),
             @Result(column = "UpdateUserName", property = "updateUserName", jdbcType = JdbcType.VARCHAR),
             @Result(column = "UpdateUserId", property = "updateUserId", jdbcType = JdbcType.VARCHAR),
-            @Result(column = "UpdateDate", property = "updateDate", jdbcType = JdbcType.DATE),
+            @Result(column = "updateDate", property = "updateDate", jdbcType = JdbcType.DATE),
             @Result(column = "OrganizatioIdlName", property = "organizationIdName", jdbcType = JdbcType.VARCHAR),
             @Result(column = "ActivityStatus", property = "activityStatus", jdbcType = JdbcType.INTEGER),
             @Result(column = "Id", property = "maActivityProducts", javaType = List.class,
