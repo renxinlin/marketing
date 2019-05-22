@@ -176,14 +176,14 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		}
 
-		if(StringUtils.isBlank(marketingMembersUpdateParam.getCustomerId())){
-			throw new SuperCodeException("机构id不存在...");
-
-		}
-		if(StringUtils.isBlank(marketingMembersUpdateParam.getCustomerName())){
-			throw new SuperCodeException("机构名称不存在...");
-
-		}
+//		if(StringUtils.isBlank(marketingMembersUpdateParam.getCustomerId())){
+//			throw new SuperCodeException("机构id不存在...");
+//
+//		}
+//		if(StringUtils.isBlank(marketingMembersUpdateParam.getCustomerName())){
+//			throw new SuperCodeException("机构名称不存在...");
+//
+//		}
 
 		// 业务校验
 		MarketingUser marketingUser = mapper.selectByPrimaryKey(marketingMembersUpdateParam.getId());
