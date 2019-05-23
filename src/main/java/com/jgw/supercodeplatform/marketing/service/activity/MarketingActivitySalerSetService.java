@@ -125,11 +125,11 @@ public class MarketingActivitySalerSetService   {
 		// 获取非前端参数
 
 		// 1 产品参数
-		List<MarketingActivityProductParam> maProductParams=activitySetParam.getMProductParams();
+		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		// 2 获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		// 3 渠道参数:TODO 本期不做校验不做保存
-		List<MarketingChannelParam> mChannelParams = activitySetParam.getMChannelParams();
+		List<MarketingChannelParam> mChannelParams = activitySetParam.getmChannelParams();
 
 // step-2：校验实体
 		validateBasicBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
@@ -138,16 +138,16 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 先删后增
-		mChannelMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		mChannelMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		mProductMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
 
 
 
 
 // step-3：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
-		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getMActivitySetParam();
+		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getmActivitySetParam();
 		mSetMapper.update(changeDtoToDoWhenUpdate(mActivitySetParam,organizationId,organizationName));
 
 		// 插入数据库后获取
@@ -220,11 +220,11 @@ public class MarketingActivitySalerSetService   {
 		String organizationId=commonUtil.getOrganizationId();
 		String organizationName=commonUtil.getOrganizationName();
 		// 1 产品参数
-		List<MarketingActivityProductParam> maProductParams=activitySetParam.getMProductParams();
+		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		// 2 获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		// 3 渠道参数:TODO 本期不做校验不做保存
-		List<MarketingChannelParam> mChannelParams = activitySetParam.getMChannelParams();
+		List<MarketingChannelParam> mChannelParams = activitySetParam.getmChannelParams();
 
 // step-2：校验实体
 		validateBasicBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
@@ -232,7 +232,7 @@ public class MarketingActivitySalerSetService   {
 
 // step-3：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
-		MarketingActivitySet mActivitySet = convertActivitySetBySalerAdd(activitySetParam.getMActivitySetParam(),organizationId,organizationName);
+		MarketingActivitySet mActivitySet = convertActivitySetBySalerAdd(activitySetParam.getmActivitySetParam(),organizationId,organizationName);
 		// 插入数据库后获取id
 		mSetMapper.insert(mActivitySet);
 		Long activitySetId= mActivitySet.getId();
@@ -319,21 +319,21 @@ public class MarketingActivitySalerSetService   {
 		// 获取非前端参数
 
 		// 1 产品参数
-		List<MarketingActivityProductParam> maProductParams=activitySetParam.getMProductParams();
+		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		// 2 获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		// 3 渠道参数:TODO 本期不做校验不做保存
-		List<MarketingChannelParam> mChannelParams = activitySetParam.getMChannelParams();
+		List<MarketingChannelParam> mChannelParams = activitySetParam.getmChannelParams();
 
 // step-2：校验实体
 		validateBasicBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
 		validateBizBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
 
 // step-3：先删后增
-		mChannelMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getMActivitySetParam();
+		mChannelMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		mProductMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getmActivitySetParam();
 
 
 
@@ -578,7 +578,7 @@ public class MarketingActivitySalerSetService   {
 
 	private void haveActivitySetId(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException{
 		try {
-			if(StringUtils.isEmpty(activitySetParam.getMActivitySetParam().getId().toString())){
+			if(StringUtils.isEmpty(activitySetParam.getmActivitySetParam().getId().toString())){
 				throw new SuperCodeException("校验失败");
 			}
 		} catch (SuperCodeException e) {
