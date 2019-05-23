@@ -77,9 +77,8 @@ public class ScanCodeController {
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
     	String	wxstate=commonUtil.getUUID();
-
+    	logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
     	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0);
-
         return "redirect:"+url;
     }
 
@@ -98,8 +97,8 @@ public class ScanCodeController {
     @RequestMapping(value = "/saler",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统导购路径", notes = "")
     public String daogou(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
+    	logger.info("导购扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
     	String	wxstate=commonUtil.getUUID();
-
     	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId, wxstate, ReferenceRoleEnum.ACTIVITY_SALER.getType());
         // 领取按钮对应的前端URL
         return "redirect:"+SALER_LOTTERY_URL+"?wxstate="+wxstate;

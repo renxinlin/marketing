@@ -213,7 +213,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		//保存奖次
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
 		//保存商品批次活动总共批次参与的码总数
-		saveProductBatchs(maProductParams,activitySetId,0);
+		saveProductBatchs(maProductParams,activitySetId,ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
 		return mActivitySet;
 	}
 	/**
@@ -682,7 +682,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @throws ParseException
 	 */
 	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String outerCodeId, String codeTypeId, String productId, String productBatchId, byte referenceRole) throws ParseException {
-		logger.info("扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
 		RestResult<ScanCodeInfoMO> restResult=new RestResult<ScanCodeInfoMO>();
 		if (StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(outerCodeId)||StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)) {
 			restResult.setState(500);

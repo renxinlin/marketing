@@ -10,16 +10,17 @@ import java.util.List;
 public interface MarketingPrizeTypeMapper {
 
 	String allFields =" Id id,ActivitySetId activitySetId,PrizeTypeName prizeTypeName,PrizeAmount prizeAmount,PrizeProbability prizeProbability,IsRrandomMoney isRrandomMoney,"
-			+"WiningNum winingNum,RealPrize realPrize,LowRand lowRand,HighRand highRand,AwardType awardType,RemainingStock remainingStock,CardLink cardLink,AwardIntegralNum awardIntegralNum";
+			+"WiningNum winingNum,RealPrize realPrize,LowRand lowRand,HighRand highRand,AwardType awardType,RemainingStock remainingStock,CardLink cardLink,AwardIntegralNum awardIntegralNum,ReferenceRole referenceRole";
 
 
 
 	@Insert({
 			"<script>",
-			"INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,IsRrandomMoney,WiningNum,RealPrize,LowRand,HighRand,AwardType, RemainingStock,CardLink,AwardIntegralNum) VALUES ",
+			"INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,IsRrandomMoney,WiningNum,RealPrize,LowRand,HighRand,AwardType, RemainingStock,"
+			+ "CardLink,AwardIntegralNum,ReferenceRole) VALUES ",
 			"<foreach collection='mList' item='mPrize' index='index' separator=','>",
 			"(#{mPrize.activitySetId},#{mPrize.prizeTypeName},#{mPrize.prizeAmount},#{mPrize.prizeProbability},#{mPrize.isRrandomMoney},#{mPrize.winingNum},"
-			+ "#{mPrize.realPrize},#{mPrize.lowRand},#{mPrize.highRand},#{mPrize.awardType},#{mPrize.remainingStock},#{mPrize.cardLink},#{mPrize.awardIntegralNum})",
+			+ "#{mPrize.realPrize},#{mPrize.lowRand},#{mPrize.highRand},#{mPrize.awardType},#{mPrize.remainingStock},#{mPrize.cardLink},#{mPrize.awardIntegralNum},#{mPrize.referenceRole})",
 			"</foreach>",
 			"</script>"
 	})
@@ -48,9 +49,7 @@ public interface MarketingPrizeTypeMapper {
 			+ " <if test='cardLink !=null and cardLink != &apos;&apos;'> CardLink = #{cardLink} ,</if> "
 			+ " <if test='awardIntegralNum !=null'> AwardIntegralNum = #{awardIntegralNum} ,</if> "
 			+ " </set>"
-			+ " <where> "
-			+ " Id = #{id} "
-			+ " </where>"
+			+ " where Id = #{id} "
 			+ " </script>")
 	void update(MarketingPrizeType marketingPrizeType);
 
@@ -62,4 +61,9 @@ public interface MarketingPrizeTypeMapper {
 
 	@Delete(" delete from marketing_prize_type where  ActivitySetId=#{activitySetId} ")
 	void deleteByActivitySetId(Long id);
+
+	@Update(" <script>"
+			+ " UPDATE marketing_prize_type set  RemainingStock = #{remainingStock} where Id = #{id} "
+			+ " </script>")
+	void updateRemainingStock(@Param("id")long id, @Param("remainingStock")int i);
 }

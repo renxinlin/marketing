@@ -90,7 +90,7 @@ public class LotteryService {
 	private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
 
 	@Autowired
-	private RestTemplateUtil restTemplateUtil;
+	private MarketingPrizeTypeMapper mPrizeTypeMapper;
 	
 	@Autowired
 	private RedisUtil redisUtil;
@@ -103,6 +103,7 @@ public class LotteryService {
 	
 	@Value("${marketing.server.ip}")
 	private String serverIp;
+	
 	
 	public RestResult<String> baselottery(String wxstate) throws SuperCodeException, ParseException {
 		RestResult<String> restResult=new RestResult<String>();
@@ -152,6 +153,7 @@ public class LotteryService {
 		
 		return restResult;
 	}
+
 	/**
 	 * 点击中奖逻辑
 	 * @param activitySetId
@@ -251,6 +253,7 @@ public class LotteryService {
 						if (null!=remainingStock && remainingStock.intValue()<1) {
 							restResult.setResults("‘啊呀没中，一定是打开方式不对’：没中奖");
 						}else {
+							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId(),remainingStock-1);
 							restResult.setResults("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						}
@@ -272,6 +275,8 @@ public class LotteryService {
 							restResult.setState(200);
 							restResult.setResults("‘啊呀没中，一定是打开方式不对’：没中奖");
 						}else {
+							mPrizeTypeMO.setRemainingStock(remainingStock-1);
+							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId(),remainingStock-1);
 							restResult.setResults("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						}
