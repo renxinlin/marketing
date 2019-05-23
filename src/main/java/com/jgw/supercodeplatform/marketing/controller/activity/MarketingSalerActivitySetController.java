@@ -113,10 +113,8 @@ public class MarketingSalerActivitySetController extends CommonUtil {
         return service.salerCopy(activitySetParam);
     }
 
-    
-    
     /**
-     * 活动编辑;本期不做
+     * 活动编辑
      * @param marketingActivityParam
      * @return
      * @throws Exception

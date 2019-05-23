@@ -73,31 +73,7 @@ public class CommonController extends CommonUtil {
             @ApiImplicitParam(name = "content", paramType = "query", defaultValue = "http://www.baidu.com", value = "", required = true),
     })
     public  boolean createQrCode(String content,HttpServletResponse response) throws WriterException, IOException,Exception{
-        //设置二维码纠错级别ＭＡＰ
-        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
-        hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);  // 矫错级别
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
-        //创建比特矩阵(位矩阵)的QR码编码的字符串
-        StringBuilder sb = new StringBuilder();
-        sb.append(content);
-        BitMatrix byteMatrix = qrCodeWriter.encode(sb.toString(), BarcodeFormat.QR_CODE, 1600, 1600, hintMap);
-        // 使BufferedImage勾画QRCode  (matrixWidth 是行二维码像素点)
-        int matrixWidth = byteMatrix.getWidth();
-        BufferedImage image = new BufferedImage(matrixWidth-200, matrixWidth-200, BufferedImage.TYPE_INT_RGB);
-        image.createGraphics();
-        Graphics2D graphics = (Graphics2D) image.getGraphics();
-        graphics.setColor(Color.WHITE);
-        graphics.fillRect(0, 0, matrixWidth, matrixWidth);
-        // 使用比特矩阵画并保存图像
-        graphics.setColor(Color.BLACK);
-        for (int i = 0; i < matrixWidth; i++){
-            for (int j = 0; j < matrixWidth; j++){
-                if (byteMatrix.get(i, j)){
-                    graphics.fillRect(i-100, j-100, 1, 1);
-                }
-            }
-        }
-        return ImageIO.write(image, "JPEG", response.getOutputStream());
+        return service.generateQR(content, response);
     }
     
     @RequestMapping(value = "/getJssdkInfo",method = RequestMethod.GET)

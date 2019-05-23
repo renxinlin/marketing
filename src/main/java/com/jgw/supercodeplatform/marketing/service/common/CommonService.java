@@ -2,6 +2,12 @@ package com.jgw.supercodeplatform.marketing.service.common;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -22,11 +28,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class CommonService {
@@ -285,7 +299,33 @@ public class CommonService {
 			throw  new SuperCodeException("对不起,该码不存在",500);
 		}
 	}
-
+	public boolean generateQR(String content, HttpServletResponse response) throws WriterException, IOException {
+		//设置二维码纠错级别ＭＡＰ
+        Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();
+        hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);  // 矫错级别
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        //创建比特矩阵(位矩阵)的QR码编码的字符串
+        StringBuilder sb = new StringBuilder();
+        sb.append(content);
+        BitMatrix byteMatrix = qrCodeWriter.encode(sb.toString(), BarcodeFormat.QR_CODE, 1600, 1600, hintMap);
+        // 使BufferedImage勾画QRCode  (matrixWidth 是行二维码像素点)
+        int matrixWidth = byteMatrix.getWidth();
+        BufferedImage image = new BufferedImage(matrixWidth-200, matrixWidth-200, BufferedImage.TYPE_INT_RGB);
+        image.createGraphics();
+        Graphics2D graphics = (Graphics2D) image.getGraphics();
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, matrixWidth, matrixWidth);
+        // 使用比特矩阵画并保存图像
+        graphics.setColor(Color.BLACK);
+        for (int i = 0; i < matrixWidth; i++){
+            for (int j = 0; j < matrixWidth; j++){
+                if (byteMatrix.get(i, j)){
+                    graphics.fillRect(i-100, j-100, 1, 1);
+                }
+            }
+        }
+        return ImageIO.write(image, "JPEG", response.getOutputStream());
+	}
 	/**
 	 * 验证码校验
 	 * @param mobile 手机号
