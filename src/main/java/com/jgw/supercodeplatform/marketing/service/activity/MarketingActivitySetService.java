@@ -1391,7 +1391,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			MarketingActivitySetCondition condition = JSON.parseObject(conditionStr, MarketingActivitySetCondition.class);
 			marketingActivitySetParam.setParticipationCondition(condition.getParticipationCondition());
 		}
-		marketingActivityCreateParam.setMActivitySetParam(marketingActivitySetParam);
+		marketingActivityCreateParam.setmActivitySetParam(marketingActivitySetParam);
 		//获取拼接活动设置产品参数
 		List<MarketingActivityProduct> marketingActivityProductList = mProductMapper.selectByActivitySetId(activitySetId.toString());
 		Map<String, MarketingActivityProductParam> mActivityProductParamMap = new HashMap<>();
@@ -1417,7 +1417,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				}
 			}
 		}
-		marketingActivityCreateParam.setMProductParams(new ArrayList<MarketingActivityProductParam>(mActivityProductParamMap.values()));
+		marketingActivityCreateParam.setmProductParams(new ArrayList<MarketingActivityProductParam>(mActivityProductParamMap.values()));
 		//获取设置中奖奖次
 		List<MarketingPrizeType> marketingPrizeTypeList = mPrizeTypeMapper.selectByActivitySetId(activitySetId);
 		if(!CollectionUtils.isEmpty(marketingPrizeTypeList)) {
@@ -1439,7 +1439,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 					return marketingChannelParam;
 			}));
 			Set<MarketingChannelParam> MarketingChannelParam = getSonByFatherWithAllData(MarketingChannelParamMap);
-			marketingActivityCreateParam.setMChannelParams(new ArrayList<MarketingChannelParam>(MarketingChannelParam));
+			marketingActivityCreateParam.setmChannelParams(new ArrayList<MarketingChannelParam>(MarketingChannelParam));
 		}
 		return marketingActivityCreateParam;
 	}
