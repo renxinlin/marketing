@@ -5,7 +5,7 @@ import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
@@ -100,7 +100,7 @@ public class ScanCodeController {
     public String daogou(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
     	String	wxstate=commonUtil.getUUID();
 
-    	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId, wxstate,ActivityTypeEnum.ACTIVITY_SALER.getType());
+    	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId, wxstate, ReferenceRoleEnum.ACTIVITY_SALER.getType());
         // 领取按钮对应的前端URL
         return "redirect:"+SALER_LOTTERY_URL+"?wxstate="+wxstate;
     }

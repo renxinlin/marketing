@@ -7,9 +7,7 @@ import lombok.Setter;
  * 前后台微信授授权协议定义
  */
 public enum AccessProtocol {
-    /**
-     * 同marketing_activity 表的ActivityType值
-     */
+
     ACTIVITY_MEMBER("0","活动"),
     ACTIVITY_SALER("2","导购业务");
     /**

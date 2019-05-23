@@ -5,7 +5,6 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingActivi
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityListParam;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
