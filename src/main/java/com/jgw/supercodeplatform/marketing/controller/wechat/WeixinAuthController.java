@@ -44,11 +44,8 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/marketing/front/auth")
 @Api(tags = "微信授权回调地址")
 public class WeixinAuthController {
-	// TODO 前端URL
-	@Value("${marketing.activity.h5page.url}")
-	private   String SALER_LOGIN_URL  ;
-	@Value("${marketing.activity.h5page.url}")
-	private String SALER_CENTER_URL ;
+
+
 	@Autowired
 	private ModelMapper modelMapper;
 	protected static Logger logger = LoggerFactory.getLogger(WeixinAuthController.class);
@@ -463,18 +460,17 @@ public class WeixinAuthController {
 			marketingUserDo.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
 			marketingSaleMemberService.saveUser(marketingUser);
 			// 说明用户存在,需要自动登录
-			// 返回销售员中心页面
 			if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
 				// 非启用状态
-				StringBuffer sb = new StringBuffer("?");
-				sb.append("memberId=-1").append("&openid=").append(openid)
+				StringBuffer urlParams = new StringBuffer("?");
+				urlParams.append("memberId=-1").append("&openid=").append(openid)
 						.append("&organizationId=").append(organizationId);
-				redirectUrl = SALER_LOGIN_URL+sb.toString();
+				redirectUrl =  h5pageUrl + WechatConstants.SALER_LOGIN_URL+urlParams.toString();
 			}else{
-				StringBuffer sb = new StringBuffer("?");
-				sb.append("memberId=").append(marketingUser.getId()).append("&openid=").append(openid)
+				StringBuffer urlParams = new StringBuffer("?");
+				urlParams.append("memberId=").append(marketingUser.getId()).append("&openid=").append(openid)
 						.append("&organizationId=").append(organizationId);
-				redirectUrl = SALER_CENTER_URL+sb.toString();
+				redirectUrl = h5pageUrl + WechatConstants.SALER_LOGIN_URL+urlParams.toString();
 				MarketingMembers user = new MarketingMembers();
 				MarketingMembers userVo = modelMapper.map(marketingUser, MarketingMembers.class);
 				user.setId(user.getId());
@@ -482,12 +478,11 @@ public class WeixinAuthController {
 			}
 		}else{
 			// 前端需要的信息
-			// 推荐前端缓存该信息
-			// 组织Id等关键信息不适合url上携带
+			// 推荐前端缓存该信息:组织Id等关键信息不适合url上携带
 			StringBuffer sb = new StringBuffer("?");
 			sb.append("memberId=-1").append("&openid=").append(openid)
 					.append("&organizationId=").append(organizationId);
-			redirectUrl = SALER_LOGIN_URL+sb.toString();
+			redirectUrl =  h5pageUrl + WechatConstants.SALER_LOGIN_URL+sb.toString();
 		}
 		return  redirectUrl;
 	}
