@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
+@Data
 public class MarketingSalerActivityCreateParam {
 
     @ApiModelProperty(value = "活动基础参数")
@@ -26,43 +27,4 @@ public class MarketingSalerActivityCreateParam {
     private List<MarketingChannelParam> mChannelParams;
 
 
-    public MarketingActivitySetParam getmActivitySetParam() {
-        return mActivitySetParam;
-    }
-
-    public void setmActivitySetParam(MarketingActivitySetParam mActivitySetParam) {
-        this.mActivitySetParam = mActivitySetParam;
-    }
-
-    public MarketingActivityParam getmActivityParam() {
-        return mActivityParam;
-    }
-
-    public void setmActivityParam(MarketingActivityParam mActivityParam) {
-        this.mActivityParam = mActivityParam;
-    }
-
-    public List<MarketingActivityProductParam> getmProductParams() {
-        return mProductParams;
-    }
-
-    public void setmProductParams(List<MarketingActivityProductParam> mProductParams) {
-        this.mProductParams = mProductParams;
-    }
-
-    public List<MarketingPrizeTypeParam> getMarketingPrizeTypeParams() {
-        return marketingPrizeTypeParams;
-    }
-
-    public void setMarketingPrizeTypeParams(List<MarketingPrizeTypeParam> marketingPrizeTypeParams) {
-        this.marketingPrizeTypeParams = marketingPrizeTypeParams;
-    }
-
-    public List<MarketingChannelParam> getmChannelParams() {
-        return mChannelParams;
-    }
-
-    public void setmChannelParams(List<MarketingChannelParam> mChannelParams) {
-        this.mChannelParams = mChannelParams;
-    }
 }
