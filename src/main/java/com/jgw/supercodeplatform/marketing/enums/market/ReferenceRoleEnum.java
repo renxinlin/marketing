@@ -6,7 +6,7 @@ import lombok.Setter;
 /**
  * 对应产品表 refrencerole
  */
-public enum ActivityTypeEnum {
+public enum ReferenceRoleEnum {
     /**
      * 同marketing_activity 表的ActivityType值
      */
@@ -26,7 +26,7 @@ public enum ActivityTypeEnum {
     @Setter
     private String desc;
 
-    ActivityTypeEnum(Byte type, String desc){
+    ReferenceRoleEnum(Byte type, String desc){
         this.type=type;
         this.desc=desc;
     }
