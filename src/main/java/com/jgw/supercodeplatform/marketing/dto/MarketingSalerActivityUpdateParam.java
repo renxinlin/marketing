@@ -6,7 +6,6 @@ import lombok.Data;
 
 import java.util.List;
 
-@Data
 public class MarketingSalerActivityUpdateParam {
 
     @ApiModelProperty(value = "活动基础参数")
@@ -28,4 +27,37 @@ public class MarketingSalerActivityUpdateParam {
 
     @ApiModelProperty(value = "本期不传渠道")
     private List<MarketingChannelParam> mChannelParams;
+
+
+    public MarketingActivitySalerSetUpdateParam getmActivitySetParam() {
+        return mActivitySetParam;
+    }
+
+    public void setmActivitySetParam(MarketingActivitySalerSetUpdateParam mActivitySetParam) {
+        this.mActivitySetParam = mActivitySetParam;
+    }
+
+    public List<MarketingActivityProductParam> getmProductParams() {
+        return mProductParams;
+    }
+
+    public void setmProductParams(List<MarketingActivityProductParam> mProductParams) {
+        this.mProductParams = mProductParams;
+    }
+
+    public List<MarketingPrizeTypeParam> getMarketingPrizeTypeParams() {
+        return marketingPrizeTypeParams;
+    }
+
+    public void setMarketingPrizeTypeParams(List<MarketingPrizeTypeParam> marketingPrizeTypeParams) {
+        this.marketingPrizeTypeParams = marketingPrizeTypeParams;
+    }
+
+    public List<MarketingChannelParam> getmChannelParams() {
+        return mChannelParams;
+    }
+
+    public void setmChannelParams(List<MarketingChannelParam> mChannelParams) {
+        this.mChannelParams = mChannelParams;
+    }
 }

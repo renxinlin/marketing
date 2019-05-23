@@ -79,7 +79,9 @@ public class MarketingSalerActivitySetController extends CommonUtil {
 
 
     /**
-     * 活动创建
+     * 活动创建:
+     * 注意:线程使用时,一定要注意事务的回滚,提交,死锁释放问题
+     * 本期已经测试完:回滚正常,提交正常
      * @param marketingActivityParam
      * @return
      * @throws Exception
