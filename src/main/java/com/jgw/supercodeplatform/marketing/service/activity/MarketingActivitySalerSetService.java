@@ -164,15 +164,15 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-//		successNum.addAndGet(1);
-//		cb.await();
-//        int finalSuccessNum = successNum.get();
-//		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
-//		if(finalSuccessNum == TX_THREAD_NUM){
+		successNum.addAndGet(1);
+		cb.await();
+        int finalSuccessNum = successNum.get();
+		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
+		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
-//		}else{
-//			throw  new SuperCodeException("保存数据失败...");
-//		}
+		}else{
+			throw  new SuperCodeException("保存数据失败...");
+		}
 
 
 	}
@@ -360,15 +360,15 @@ public class MarketingActivitySalerSetService   {
 		// 保存导购活动结果
 
 		// 保存导购活动结果
-//		successNum.addAndGet(1);
-//		cb.await();
-//        int finalSuccessNum =successNum.get();
-//		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
-//		if(finalSuccessNum == TX_THREAD_NUM){
+		successNum.addAndGet(1);
+		cb.await();
+        int finalSuccessNum =successNum.get();
+		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
+		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
-//		}else{
-//			throw  new SuperCodeException("保存数据失败...");
-//		}
+		}else{
+			throw  new SuperCodeException("保存数据失败...");
+		}
 
 	}
 
