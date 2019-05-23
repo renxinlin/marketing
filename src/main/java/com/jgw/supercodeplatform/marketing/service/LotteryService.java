@@ -105,6 +105,8 @@ public class LotteryService {
 	private String serverIp;
 	
 	public RestResult<String> baselottery(String wxstate) throws SuperCodeException, ParseException {
+
+
 		RestResult<String> restResult=new RestResult<String>();
 
 		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
