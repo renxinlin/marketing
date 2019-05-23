@@ -3,8 +3,12 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 
 import java.util.List;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateNewParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityUpdateParam;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySalerSetService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,11 +36,13 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/marketing/saler/activity/set")
 @Api(tags = "导购活动设置管理")
 public class MarketingSalerActivitySetController extends CommonUtil {
+    private static Logger logger = LoggerFactory.getLogger(MarketingSalerActivitySetController.class);
 
     @Autowired
     private MarketingActivitySetService service;
 
-
+    @Autowired
+    private MarketingActivitySalerSetService marketingActivitySalerSetService;
 
     /**
      * 获取销售活动列表
@@ -82,7 +88,8 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerAdd(@RequestBody MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException {
         // TODO 产品覆盖
-        return service.salerAdd(activitySetParam);
+        logger.error("导购活动新增活动产品参数{}",JSONObject.toJSONString(activitySetParam));
+        return marketingActivitySalerSetService.salerAdd(activitySetParam);
     }
 
     /**
@@ -96,7 +103,11 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @ApiOperation("导购活动更新,需要携带产品productId,删除原来的信息")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerUpdate(@RequestBody MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException {
-        return service.salerUpdate(activitySetParam);
+        logger.error("导购活动更新产品参数{}",JSONObject.toJSONString(activitySetParam));
+        long startTime = System.currentTimeMillis();
+        RestResult<String> stringRestResult = marketingActivitySalerSetService.salerUpdate(activitySetParam);
+        logger.error("响应时间{}",(System.currentTimeMillis()-startTime));
+        return stringRestResult;
     }
 
     /**
@@ -110,7 +121,8 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @ApiOperation("导购活动复制")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerCopy(@RequestBody MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException {
-        return service.salerCopy(activitySetParam);
+        logger.error("导购活动copy产品参数{}",JSONObject.toJSONString(activitySetParam));
+        return marketingActivitySalerSetService.salerCopy(activitySetParam);
     }
 
     /**
