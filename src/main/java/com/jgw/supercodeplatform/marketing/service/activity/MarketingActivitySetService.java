@@ -34,6 +34,7 @@ import org.springframework.util.CollectionUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.check.activity.StandActicityParamCheck;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -1358,7 +1359,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 					ProductBatchParam productBatchParam = new ProductBatchParam();
 					productBatchParam.setProductBatchId(product.getProductBatchId());
 					productBatchParam.setProductBatchName(product.getProductBatchName());
-					marketingActivityProductParam.setProductBatchParams(Collections.singletonList(productBatchParam));
+					marketingActivityProductParam.setProductBatchParams(Lists.newArrayList(productBatchParam));
 					mActivityProductParamMap.put(productId, marketingActivityProductParam);
 				} else {
 					ProductBatchParam productBatchParam = new ProductBatchParam();
@@ -1417,10 +1418,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			//如果父级的children为空，则说明第一次添加，需递归调用，如果不为空，则说明不是第一次添加，
 			//以前已经递归调用过，父级以上的关系已添加过，不用再次递归，也无需返回实例。
 			if(childList == null) {
-				parentChannel.setChildrens(Collections.singletonList(channel));
+				parentChannel.setChildrens(Lists.newArrayList(channel));
 				reChannel = putChildrenChannel(marketingChannelMap, parentChannel);
 			} else {
-				childList.add(channel);
+				if(!childList.contains(channel))
+					childList.add(channel);
 			}
 		} else {
 			reChannel = channel;
