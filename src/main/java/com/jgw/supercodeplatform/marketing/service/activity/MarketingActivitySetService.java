@@ -1146,44 +1146,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
  	}
 
-	/**
-	 * 编辑时候活动主键不变
-	 * @param mActivitySetParam
-	 * @param organizationId
-	 * @param organizationName
-	 * @return
-	 */
-	private MarketingActivitySet convertActivitySetBySalerWhenUpdate(MarketingActivitySalerSetUpdateParam activitySetParam, String organizationId, String organizationName) throws SuperCodeException{
-		String title=activitySetParam.getActivityTitle();
-		if (StringUtils.isBlank(title)) {
-			throw new SuperCodeException("添加的活动设置标题不能为空", 500);
-		}
-		MarketingActivitySet existmActivitySet =mSetMapper.selectByTitleOrgId(activitySetParam.getActivityTitle(),organizationId);
-		if (null!=existmActivitySet) {
-			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
-		}
-		activityTimeCheck(activitySetParam.getActivityStartDate(),activitySetParam.getActivityEndDate());
-		MarketingActivitySet mSet=new MarketingActivitySet();
-		mSet.setId(activitySetParam.getId());
-		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
-		mSet.setActivityId(ActivityIdEnum.ACTIVITY_SALER.getId().longValue());
-		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
-		mSet.setActivityTitle(title);
-		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
-		// 门槛保存红包条件和每人每天上限
-		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
-		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
-		condition.setParticipationCondition(activitySetParam.getParticipationCondition());
-		String conditinoString = condition.toJsonString();
-		mSet.setValidCondition(conditinoString);
-		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
-		mSet.setActivityStatus(1);
-		mSet.setOrganizationId(organizationId);
-		mSet.setOrganizatioIdlName(organizationName);
-
-		return mSet;
-	}
 
 	private void validateBizBySalerUpdate(MarketingSalerActivityUpdateParam activitySetParam, List<MarketingActivityProductParam> maProductParams, List<MarketingPrizeTypeParam> mPrizeTypeParams) {
 
