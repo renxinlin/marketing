@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.zxing.WriterException;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.check.activity.StandActicityParamCheck;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -44,7 +46,9 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
@@ -56,6 +60,7 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapp
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
@@ -65,8 +70,8 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
@@ -107,6 +112,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	@Autowired
 	private CommonUtil commonUtil;
 
+	@Autowired
+	private RedisUtil redisUtil;
+	
 	@Autowired
 	private CommonService commonService;
 
@@ -414,6 +422,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			mPrizeType.setRealPrize((byte) 1);
 			mPrizeType.setLowRand(marketingPrizeTypeParam.getLowRand());
 			mPrizeType.setHighRand(marketingPrizeTypeParam.getHighRand());
+			mPrizeType.setAwardType(marketingPrizeTypeParam.getAwardType());
+			mPrizeType.setAwardIntegralNum(marketingPrizeTypeParam.getAwardIntegralNum());
+			mPrizeType.setCardLink(marketingPrizeTypeParam.getCardLink());
 			mList.add(mPrizeType);
 			sumprizeProbability+=prizeProbability;
 		}
@@ -1428,6 +1439,45 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			reChannel = channel;
 		}
 		return reChannel;
+	}
+	
+	public RestResult<String> preview(MarketingActivityPreviewParam mPreviewParam) throws WriterException, IOException, SuperCodeException {
+		RestResult<String> restResult=new RestResult<String>();
+		List<MarketingPrizeTypeParam> moPrizeTypes=mPreviewParam.getMarketingPrizeTypeParams();
+		if (null==moPrizeTypes || moPrizeTypes.isEmpty()) {
+			restResult.setState(500);
+			restResult.setMsg("该活动未设置中奖奖次");
+			return restResult;
+		}
+		//检查奖次类型
+		standActicityParamCheck.basePrizeTypeCheck(moPrizeTypes);
+		
+		String uuid=commonUtil.getUUID();
+		String json=JSONObject.toJSONString(mPreviewParam);
+		boolean flag=redisUtil.set(RedisKey.ACTIVITY_PREVIEW_PREFIX+uuid, json, 600L);
+		if (flag) {
+			restResult.setResults(uuid);
+			restResult.setState(200);
+			restResult.setMsg("成功");
+		}else {
+			restResult.setState(500);
+			restResult.setMsg("失败");
+		}
+		return restResult;
+	}
+	
+	public RestResult<MarketingReceivingPageParam> getPreviewParam(String uuid) {
+		RestResult<MarketingReceivingPageParam> restResult=new RestResult<MarketingReceivingPageParam>();
+		String value=redisUtil.get(RedisKey.ACTIVITY_PREVIEW_PREFIX+uuid);
+		if (StringUtils.isBlank(value)) {
+			restResult.setState(500);
+			restResult.setMsg("扫码已过期请重新扫码预览");
+			return restResult;
+		}
+		MarketingActivityPreviewParam mPreviewParam=JSONObject.parseObject(value, MarketingActivityPreviewParam.class);
+		restResult.setResults(mPreviewParam.getmReceivingPageParam());
+		restResult.setState(200);
+		return restResult;
 	}
 	
 }
