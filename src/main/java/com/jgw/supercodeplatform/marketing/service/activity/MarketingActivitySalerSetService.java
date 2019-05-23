@@ -170,8 +170,9 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-		int finalSuccessNum = successNum.addAndGet(1);
+		successNum.addAndGet(1);
 		cb.await();
+        int finalSuccessNum = successNum.get();
 		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
@@ -254,9 +255,11 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-		int finalSuccessNum = successNum.addAndGet(1);
+		successNum.addAndGet(1);
 		cb.await();
-		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
+        int finalSuccessNum = successNum.get();
+
+        logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
 		}else{
@@ -362,8 +365,9 @@ public class MarketingActivitySalerSetService   {
 		// 保存导购活动结果
 
 		// 保存导购活动结果
-		int finalSuccessNum = successNum.addAndGet(1);
+		successNum.addAndGet(1);
 		cb.await();
+        int finalSuccessNum =successNum.get();
 		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
