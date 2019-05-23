@@ -1332,6 +1332,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		MarketingSalerActivityCreateParam marketingActivityCreateParam = new MarketingSalerActivityCreateParam();
 		//活动参数设置项
 		MarketingActivitySet marketingActivitySet = mSetMapper.selectById(activitySetId);
+		if(marketingActivitySet == null) {
+			return marketingActivityCreateParam;
+		}
 		MarketingActivitySetParam marketingActivitySetParam = new MarketingActivitySetParam();
 		BeanUtils.copyProperties(marketingActivitySet, marketingActivitySetParam);
 		String conditionStr = marketingActivitySet.getValidCondition();
@@ -1381,7 +1384,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		if(!CollectionUtils.isEmpty(marketingChannelList)) {
 			Map<String, MarketingChannelParam> MarketingChannelParamMap = marketingChannelList.stream()
 				.collect(Collectors.toMap(
-					MarketingChannel::getCustomerId ,marketingChannel -> {
+					MarketingChannel::getCustomerId, marketingChannel -> {
 					MarketingChannelParam marketingChannelParam = new MarketingChannelParam();
 					BeanUtils.copyProperties(marketingChannel, marketingChannelParam);
 					return marketingChannelParam;
@@ -1408,16 +1411,13 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	//将渠道数据递归添加到子项中
 	private MarketingChannelParam putChildrenChannel(Map<String, MarketingChannelParam> marketingChannelMap, MarketingChannelParam channel) {
 		MarketingChannelParam reChannel = null;
-		Set<String> mkSet = marketingChannelMap.keySet();
-		if(mkSet.contains(channel.getCustomerSuperior())) {
+		if(marketingChannelMap.containsKey(channel.getCustomerSuperior())) {
 			MarketingChannelParam parentChannel = marketingChannelMap.get(channel.getCustomerSuperior());
 			List<MarketingChannelParam> childList = parentChannel.getChildrens();
 			//如果父级的children为空，则说明第一次添加，需递归调用，如果不为空，则说明不是第一次添加，
 			//以前已经递归调用过，父级以上的关系已添加过，不用再次递归，也无需返回实例。
 			if(childList == null) {
-				childList = new ArrayList<>();
-				childList.add(channel);
-				parentChannel.setChildrens(childList);
+				parentChannel.setChildrens(Collections.singletonList(channel));
 				reChannel = putChildrenChannel(marketingChannelMap, parentChannel);
 			} else {
 				childList.add(channel);

@@ -111,29 +111,9 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     public RestResult<String> salerCopy(@RequestBody MarketingSalerActivityCreateParam activitySetParam) throws Exception {
         return service.salerCopy(activitySetParam);
     }
-
-
-
-
-
-    /**
-     * 导购更新
-     * @param marketingActivityParam
-     * @return
-     * @throws Exception
-     */
-    @PostMapping("/detail")
-    @ApiOperation("导购活动详情")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<MarketingSalerActivityCreateParam> detail(Long id) throws Exception {
-        // todo
-        return service.detail(id);
-    }
-
-    
     
     /**
-     * 活动编辑;本期不做
+     * 活动编辑
      * @param marketingActivityParam
      * @return
      * @throws Exception
