@@ -74,7 +74,7 @@ public interface MarketingActivityProductMapper extends CommonSql{
 	 */
 	@Delete( startScript +
 			 " delete from marketing_activity_product where ReferenceRole = 1 and ProductId in " +
-			 " <foreach collection='list' item='item' index='index' open='(' separator=',' close=')'> #{item}</foreach> "+
+			 " <foreach collection='list' item='item' index='index' open='(' separator=',' close=')'> #{item.id}</foreach> "+
 			 endScript )
     int deleteOldProducts(@Param("list") List<MarketingActivityProductParam> maProductParams);
 }
