@@ -276,6 +276,7 @@ public class MarketingActivitySalerSetService   {
 
 		// 保存导购活动结果
 		int finalSuccessNum = successNum.get();
+		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
 		}else{
@@ -487,7 +488,7 @@ public class MarketingActivitySalerSetService   {
 				}
 				//==================================buziness-end=============================
 				// 事务处理
-				transControl(cb,successNum.get());
+				transControl(cb,successNum);
 			}
 		});
 	}
@@ -509,7 +510,7 @@ public class MarketingActivitySalerSetService   {
 				}
 				//==================================buziness-end=============================
 				// 事务处理
-				transControl(cb,successNum.get());
+				transControl(cb,successNum);
 			}
 		});
 	}
@@ -559,21 +560,22 @@ public class MarketingActivitySalerSetService   {
 	 * @param cb
 	 * @param num
 	 */
-	private void transControl(  CyclicBarrier cb ,int num){
+	private void transControl(  CyclicBarrier cb ,AtomicInteger successNum){
 		try {
+			logger.error("事务等待ing");
 			cb.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (BrokenBarrierException e) {
 			e.printStackTrace();
 		}finally {
-			commitOrRollback(num);
+			commitOrRollback(successNum);
 		}
 	}
-	private void commitOrRollback(int num) {
+	private void commitOrRollback(AtomicInteger successNum) {
 		PlatformTransactionManager txManager = (PlatformTransactionManager) transm.get();
 		TransactionStatus status = (TransactionStatus) transs.get();
-		if(TX_THREAD_NUM == num){
+		if(TX_THREAD_NUM == successNum.get()){
 			txManager.commit(status);
 		}else {
 			txManager.rollback(status);
