@@ -145,18 +145,6 @@ public class MarketingActivitySalerSetService   {
 
 
 
-		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
-		if(!CollectionUtils.isEmpty(maProductParams)){
-			for( MarketingActivityProductParam vo:maProductParams ){
-				if(vo.getProductId() == null){
-					throw new SuperCodeException("编辑需要传入productId");
-				}
-			}
-			// 删除[导购]存在的原活动产品
-			mProductMapper.deleteOldProducts(maProductParams);
-		}
-
-
 // step-3：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
 		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getMActivitySetParam();
@@ -248,16 +236,6 @@ public class MarketingActivitySalerSetService   {
 		mSetMapper.insert(mActivitySet);
 		Long activitySetId= mActivitySet.getId();
 
-		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
-		if(!CollectionUtils.isEmpty(maProductParams)){
-			for( MarketingActivityProductParam vo:maProductParams ){
-				if(vo.getProductId() == null){
-					throw new SuperCodeException("编辑需要传入productId");
-				}
-			}
-			// 删除[导购]存在的原活动产品
-			mProductMapper.deleteOldProducts(maProductParams);
-		}
 
 
 		//保存渠道 TODO 后期增加该逻辑
@@ -354,18 +332,6 @@ public class MarketingActivitySalerSetService   {
 		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
 		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getMActivitySetParam();
 
-
-
-		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
-		if(!CollectionUtils.isEmpty(maProductParams)){
-			for( MarketingActivityProductParam vo:maProductParams ){
-				if(vo.getProductId() == null){
-					throw new SuperCodeException("编辑需要传入productId");
-				}
-			}
-			// 删除[导购]存在的原活动产品
-			mProductMapper.deleteOldProducts(maProductParams);
-		}
 
 
 // step-4：转换保存实体
@@ -484,6 +450,7 @@ public class MarketingActivitySalerSetService   {
 				initTx();
 				//==================================buziness-start===========================
 				try {
+					// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
 					saveProductBatchsWithSaler(maProductParams,activitySetId);
 					// 计数器成功加1
 					successNum.addAndGet(1);
@@ -548,7 +515,7 @@ public class MarketingActivitySalerSetService   {
 	/**
 	 * 参与事务的线程数
 	 */
-	private static final int TX_THREAD_NUM = 2+1;
+	private static final int TX_THREAD_NUM = 3;
 
 	/**
 	 * 初始化子线程事务
