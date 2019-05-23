@@ -87,13 +87,13 @@ public class MarketingActivityProductService {
 		String organizationId=commonUtil.getOrganizationId();
 		List<String> productBatchIds=mapper.usedProductBatchIds(organizationId);
 		Map<String, Object>params=new HashMap<String, Object>();
-		if (null!=productBatchIds && !productBatchIds.isEmpty()) {
-			StringBuffer buf=new StringBuffer();
-			for (String productBatchId : productBatchIds) {
-				buf.append(productBatchId).append(",");
-			}
-			params.put("productBatchIds",buf.substring(0, buf.length()-1));
-		}
+//		if (null!=productBatchIds && !productBatchIds.isEmpty()) {
+//			StringBuffer buf=new StringBuffer();
+//			for (String productBatchId : productBatchIds) {
+//				buf.append(productBatchId).append(",");
+//			}
+//			params.put("productBatchIds",buf.substring(0, buf.length()-1));
+//		}
 		params.put("organizationId",organizationId );
 		params.put("relationType",3 );
 		params.put("search",search);

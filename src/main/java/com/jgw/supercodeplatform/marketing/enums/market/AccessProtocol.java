@@ -8,14 +8,14 @@ import lombok.Setter;
  */
 public enum AccessProtocol {
 
-    ACTIVITY_MEMBER("0","活动"),
-    ACTIVITY_SALER("2","导购业务");
+    ACTIVITY_MEMBER(0,"活动"),
+    ACTIVITY_SALER(2,"导购业务");
     /**
      * 业务类型
      */
     @Getter
     @Setter
-    private String type;
+    private int type;
     /**
      * 业务描述
      */
@@ -23,7 +23,7 @@ public enum AccessProtocol {
     @Setter
     private String desc;
 
-    AccessProtocol(String type, String desc){
+    AccessProtocol(int type, String desc){
         this.type=type;
         this.desc=desc;
     }
