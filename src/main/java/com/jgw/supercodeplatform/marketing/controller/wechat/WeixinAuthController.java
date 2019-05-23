@@ -108,16 +108,16 @@ public class WeixinAuthController {
     	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
     	boolean needWriteJwtToken=false;
 
-		// step: 导购微信授权
-		// 2表示导购
-		if(AccessProtocol.ACTIVITY_SALER.getType().equals(statecode)){
-			redirectUrl =doBizBySaler(statearr,state,code,userInfo,redirectUrl,response);
-			return redirectUrl;
-		}
+
 
     	MarketingMembers members=null;
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
+    		// 2表示导购
+    		if(AccessProtocol.ACTIVITY_SALER.getType()==statecode){
+    			redirectUrl =doBizBySaler(statearr,state,code,userInfo,redirectUrl,response);
+    			return redirectUrl;
+    		}
     		organizationId=statearr[1];
     		userInfo=getUserInfo(code, organizationId);
     		openid=userInfo.getString("openid");
