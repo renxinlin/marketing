@@ -136,15 +136,6 @@ public class MarketingActivitySalerSetService   {
 		validateBizBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
 
 
-
-		// 先删后增
-		mChannelMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
-		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
-		mProductMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
-
-
-
-
 // step-3：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
 		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getmActivitySetParam();
@@ -159,13 +150,13 @@ public class MarketingActivitySalerSetService   {
 			saveChannels(mChannelParams,activitySetId);
 		}
 		//保存奖次
-//		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
+		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
 
 		//保存商品批次 [导购不像码平台发起调用]
-//		saveProductBatchsWithThread(maProductParams,activitySetId,
-//				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
-		savePrizeTypes(mPrizeTypeParams,activitySetId);
-		saveProductBatchsWithSaler(maProductParams,activitySetId);
+		saveProductBatchsWithThread(maProductParams,activitySetId,
+				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+//		savePrizeTypes(mPrizeTypeParams,activitySetId);
+//		saveProductBatchsWithSaler(maProductParams,activitySetId);
 
 
 
@@ -334,9 +325,6 @@ public class MarketingActivitySalerSetService   {
 		validateBizBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
 
 // step-3：先删后增
-		mChannelMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
-		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
-		mProductMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
 		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getmActivitySetParam();
 
 
@@ -680,6 +668,8 @@ public class MarketingActivitySalerSetService   {
 	 * @throws SuperCodeException
 	 */
 	private void saveChannels(List<MarketingChannelParam> mChannelParams,Long activitySetId) throws SuperCodeException {
+		mChannelMapper.deleteByActivitySetId(activitySetId);
+
 		List<MarketingChannel> mList=new ArrayList<MarketingChannel>();
 		//遍历顶层
 		for (MarketingChannelParam marketingChannelParam : mChannelParams) {
@@ -735,6 +725,7 @@ public class MarketingActivitySalerSetService   {
 
 
 	private void saveProductBatchsWithSaler(List<MarketingActivityProductParam> maProductParams, Long activitySetId) throws SuperCodeException {
+		mProductMapper.deleteByActivitySetId(activitySetId);
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
 //		Map<String, MarketingActivityProduct> activityProductMap = new HashMap<String, MarketingActivityProduct>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
@@ -780,6 +771,7 @@ public class MarketingActivitySalerSetService   {
 	 * @throws SuperCodeException
 	 */
 	private void savePrizeTypes(List<MarketingPrizeTypeParam> mPrizeTypeParams, Long activitySetId) throws SuperCodeException {
+		mPrizeTypeMapper.deleteByActivitySetId(activitySetId);
 
 		List<MarketingPrizeType> mList=new ArrayList<MarketingPrizeType>(mPrizeTypeParams.size());
 		int sumprizeProbability=0;
