@@ -499,6 +499,7 @@ public class MarketingActivitySalerSetService   {
 			public void run() {
 				// 初始化事务
 				initTx();
+
 				//==================================buziness-start===========================
 				try {
 					savePrizeTypes(mPrizeTypeParams,activitySetId);
@@ -554,6 +555,8 @@ public class MarketingActivitySalerSetService   {
 		TransactionStatus status = txManager.getTransaction(def);
 		transm.set(txManager);
 		transs.set(status);
+		logger.error("开启事务");
+
 	}
 	/**
 	 * 多线程事务提交/回滚
@@ -573,6 +576,7 @@ public class MarketingActivitySalerSetService   {
 		}
 	}
 	private void commitOrRollback(AtomicInteger successNum) {
+		logger.error("事务预提交数目{}",successNum.get());
 		PlatformTransactionManager txManager = (PlatformTransactionManager) transm.get();
 		TransactionStatus status = (TransactionStatus) transs.get();
 		if(TX_THREAD_NUM == successNum.get()){
