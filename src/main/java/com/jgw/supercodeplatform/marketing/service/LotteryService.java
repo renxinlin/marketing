@@ -326,7 +326,7 @@ public class LotteryService {
 						}
 					}
 				}else {
-					restResult.setState(200);
+					restResult.setState(500);
 					restResult.setMsg("您手速太慢，该码已被其它用户领取");
 				}
 
