@@ -100,7 +100,7 @@ public class MarketingActivitySalerSetService   {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
-	public RestResult<String> salerUpdate(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException {
+	public RestResult<String> salerUpdate(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
 		// 业务逻辑,先删除后更新:
 		/**
 		 * 删除 产品
@@ -182,12 +182,13 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-		int finalSuccessNum = successNum.get();
+		int finalSuccessNum = successNum.addAndGet(1);
+		cb.await();
+		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
 		}else{
-			// 外层事务回滚
-			throw new SuperCodeException("保存数据失败...");
+			throw  new SuperCodeException("保存数据失败...");
 		}
 
 
@@ -204,7 +205,7 @@ public class MarketingActivitySalerSetService   {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {SuperCodeException.class,RuntimeException.class})
-	public RestResult<String> salerAdd(MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException{
+	public RestResult<String> salerAdd(MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
 		// 业务逻辑
 		// 1新增set表信息
 		// 2新增产品表信息
@@ -275,7 +276,8 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-		int finalSuccessNum = successNum.get();
+		int finalSuccessNum = successNum.addAndGet(1);
+		cb.await();
 		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
@@ -310,7 +312,7 @@ public class MarketingActivitySalerSetService   {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
-	public RestResult<String> salerCopy(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException {
+	public RestResult<String> salerCopy(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
 		// 业务逻辑,先插入主表后删除子表更新子表:
 		/**
 		 * 删除 产品
@@ -392,12 +394,15 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-		int finalSuccessNum = successNum.get();
+
+		// 保存导购活动结果
+		int finalSuccessNum = successNum.addAndGet(1);
+		cb.await();
+		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
 		}else{
-			// 外层事务回滚
-			throw new SuperCodeException("保存数据失败...");
+			throw  new SuperCodeException("保存数据失败...");
 		}
 
 	}
@@ -543,7 +548,7 @@ public class MarketingActivitySalerSetService   {
 	/**
 	 * 参与事务的线程数
 	 */
-	private static final int TX_THREAD_NUM = 2;
+	private static final int TX_THREAD_NUM = 2+1;
 
 	/**
 	 * 初始化子线程事务

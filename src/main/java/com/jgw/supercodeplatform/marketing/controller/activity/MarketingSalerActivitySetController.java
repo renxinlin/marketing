@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 
 
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateNewParam;
@@ -86,10 +87,15 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @PostMapping("/add")
     @ApiOperation("导购活动创建")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> salerAdd(@RequestBody MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException {
+    public RestResult<String> salerAdd(@RequestBody MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
         // TODO 产品覆盖
-        logger.error("导购活动新增活动产品参数{}",JSONObject.toJSONString(activitySetParam));
-        return marketingActivitySalerSetService.salerAdd(activitySetParam);
+        logger.error("导购活动add活动产品参数{}",JSONObject.toJSONString(activitySetParam));
+        logger.error("导购活动add产品参数{}",JSONObject.toJSONString(activitySetParam));
+        long startTime = System.currentTimeMillis();
+        RestResult<String> stringRestResult = marketingActivitySalerSetService.salerAdd(activitySetParam);
+        logger.error("响应时间{}",(System.currentTimeMillis()-startTime));
+        return stringRestResult;
+
     }
 
     /**
@@ -102,7 +108,7 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @PostMapping("/update")
     @ApiOperation("导购活动更新,需要携带产品productId,删除原来的信息")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> salerUpdate(@RequestBody MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException {
+    public RestResult<String> salerUpdate(@RequestBody MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
         logger.error("导购活动更新产品参数{}",JSONObject.toJSONString(activitySetParam));
         long startTime = System.currentTimeMillis();
         RestResult<String> stringRestResult = marketingActivitySalerSetService.salerUpdate(activitySetParam);
@@ -120,7 +126,7 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @PostMapping("/copy")
     @ApiOperation("导购活动复制")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> salerCopy(@RequestBody MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException {
+    public RestResult<String> salerCopy(@RequestBody MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
         logger.error("导购活动copy产品参数{}",JSONObject.toJSONString(activitySetParam));
         return marketingActivitySalerSetService.salerCopy(activitySetParam);
     }
