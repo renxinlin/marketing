@@ -355,7 +355,7 @@ public class LotteryService {
 			if(acquireLock){
 				try{
 					// lua脚本
-					lock.releaseLock(activitySetId + codeId +codeTypeId);
+					lock.releaseLock(activitySetId + ":" + codeId + ":" + codeTypeId);
 				}catch (Exception e){
 					logger.error("{锁释放失败:" +activitySetId + codeId +codeTypeId+ ",请检查}");
 					e.printStackTrace();
