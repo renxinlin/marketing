@@ -223,8 +223,8 @@ public class LotteryService {
 		String productId=scanCodeInfoMO.getProductId();
 		String productBatchId=scanCodeInfoMO.getProductBatchId();
 		String mobile=scanCodeInfoMO.getMobile();
- 		holdLockJudgeES(restResult,marketingMembersInfo.getId(),marketingMembersInfo.getMemberType().intValue(), openId,productId,productBatchId, activitySetId, mActivitySet, organizationId, codeId, codeTypeId);
- 		if (restResult.getState().intValue()==500) {
+ 		boolean flag=holdLockJudgeES(restResult,marketingMembersInfo.getId(),marketingMembersInfo.getMemberType().intValue(), openId,productId,productBatchId, activitySetId, mActivitySet, organizationId, codeId, codeTypeId);
+ 		if (!flag ) {
 			return restResult;
 		}
 		//判断realprize是否为0,0表示为新增的虚拟不中奖奖项，为了计算中奖率设置
@@ -302,7 +302,7 @@ public class LotteryService {
 		return restResult;
 	}
 	
-	private void holdLockJudgeES(RestResult<String> restResult,Long memberId,int memberType, String openId,String productId, String productBatchId, Long activitySetId,
+	private boolean holdLockJudgeES(RestResult<String> restResult,Long memberId,int memberType, String openId,String productId, String productBatchId, Long activitySetId,
 			MarketingActivitySet mActivitySet, String organizationId, String codeId, String codeTypeId) {
 		boolean acquireLock =false;
 		try {
@@ -328,11 +328,13 @@ public class LotteryService {
 						if (null!=userscanNum && userscanNum.intValue()>=scanLimit.intValue()) {
 							restResult.setState(500);
 							restResult.setMsg("您今日扫码已超过该活动限制数量");
+							return false;
 						}
 					}
 				}else {
 					restResult.setState(200);
 					restResult.setMsg("您手速太慢，该码已被其它用户领取");
+					return false;
 				}
 
 				codeEsService.addScanCodeRecord(opneIdNoSpecialChactar, productId, productBatchId, codeId, codeTypeId, activitySetId,nowTtimeStemp,organizationId,0,memberId);
@@ -346,11 +348,13 @@ public class LotteryService {
 				}
 				restResult.setState(500);
 				restResult.setMsg("扫码人数过多,请稍后再试");
+				return false;
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			restResult.setState(500);
 			restResult.setMsg(e.getLocalizedMessage());
+			return false;
 		}finally {
 			if(acquireLock){
 				try{
@@ -362,6 +366,7 @@ public class LotteryService {
 				}
 			}
 		}
+		return  true;
 	}
 
 

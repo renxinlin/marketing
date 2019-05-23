@@ -91,7 +91,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
 
 
-    @Update(" update marketing_activity_set " +
+    @Update(startScript + " update marketing_activity_set " +
             "<set> "
             + " <if test='activityId !=null and activityId != &apos;&apos; '> ActivityId = #{activityId} ,</if> "
             + " <if test='organizationId !=null and organizationId != &apos;&apos; '> OrganizationId = #{organizationId} ,</if> "
@@ -110,7 +110,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
 		    + " <if test='consumeIntegralNum !=null and consumeIntegralNum != &apos;&apos; '> ConsumeIntegralNum = #{consumeIntegralNum} ,</if> "
 		    + " <if test='activityDesc !=null and activityDesc != &apos;&apos; '> ActivityDesc = #{activityDesc} ,</if> "
             + " </set> "
-            + " where Id = #{id}"
+            + " where Id = #{id}" +endScript
     )
     int update(MarketingActivitySet mActivitySet);
 

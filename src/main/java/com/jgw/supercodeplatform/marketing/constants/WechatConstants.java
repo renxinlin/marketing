@@ -35,6 +35,13 @@ public interface WechatConstants {
 
     // 短信发送接口
     public  static  String SMS_SEND_PHONE_MESSGAE="/sms/send/phone/message";
+
+
+
+    /**
+     * 导购登录页
+     */
+    public static final String SALER_LOGIN_URL ="#/sales/login"  ;
     
     
 }
