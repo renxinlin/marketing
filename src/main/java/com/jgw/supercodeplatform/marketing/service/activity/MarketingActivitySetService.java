@@ -64,7 +64,7 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
@@ -828,7 +828,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
 		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】
 		saveProductBatchsWithThread(maProductParams,activitySetId,
-				ActivityTypeEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
 
 
 
@@ -1067,7 +1067,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
 		//保存商品批次 [导购不像码平台发起调用]
 		saveProductBatchsWithThread(maProductParams,activitySetId,
-				ActivityTypeEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
 
 
 
@@ -1268,7 +1268,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
 		//保存商品批次 【导购不像码平台发起产品业务绑定】
 		saveProductBatchsWithThread(maProductParams,activitySetId,
-				ActivityTypeEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
 
 
 
