@@ -3,7 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,10 +33,10 @@ public class MarketingActivityFrontSetController {
      * @throws IOException 
      * @throws WriterException 
      */
-    @PostMapping(value = "/preview")
-    @ApiOperation("活动预览")
+    @GetMapping(value = "/getPreviewData")
+    @ApiOperation("获取活动预览数据")
     @ApiImplicitParams({@ApiImplicitParam(paramType="query",value = "唯一id",name="uuid")})
-    public RestResult<MarketingReceivingPageParam> preview(String uuid) throws WriterException, IOException{
+    public RestResult<MarketingReceivingPageParam> getPreviewData(String uuid) throws WriterException, IOException{
         return service.getPreviewParam(uuid);
     }
 
