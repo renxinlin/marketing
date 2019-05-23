@@ -69,6 +69,5 @@ public class MarketingSalerActivityCreateParam {
 	public void setmChannelParams(List<MarketingChannelParam> mChannelParams) {
 		this.mChannelParams = mChannelParams;
 	}
-    
-    
+	
 }

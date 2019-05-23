@@ -100,7 +100,7 @@ public class MarketingActivitySalerSetService   {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
-	public RestResult<String> salerUpdate(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException {
+	public RestResult<String> salerUpdate(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
 		// 业务逻辑,先删除后更新:
 		/**
 		 * 删除 产品
@@ -125,11 +125,11 @@ public class MarketingActivitySalerSetService   {
 		// 获取非前端参数
 
 		// 1 产品参数
-		List<MarketingActivityProductParam> maProductParams=activitySetParam.getMProductParams();
+		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		// 2 获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		// 3 渠道参数:TODO 本期不做校验不做保存
-		List<MarketingChannelParam> mChannelParams = activitySetParam.getMChannelParams();
+		List<MarketingChannelParam> mChannelParams = activitySetParam.getmChannelParams();
 
 // step-2：校验实体
 		validateBasicBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
@@ -138,28 +138,16 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 先删后增
-		mChannelMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
+		mChannelMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		mProductMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
 
 
-
-
-		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
-		if(!CollectionUtils.isEmpty(maProductParams)){
-			for( MarketingActivityProductParam vo:maProductParams ){
-				if(vo.getProductId() == null){
-					throw new SuperCodeException("编辑需要传入productId");
-				}
-			}
-			// 删除[导购]存在的原活动产品
-			mProductMapper.deleteOldProducts(maProductParams);
-		}
 
 
 // step-3：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
-		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getMActivitySetParam();
+		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getmActivitySetParam();
 		mSetMapper.update(changeDtoToDoWhenUpdate(mActivitySetParam,organizationId,organizationName));
 
 		// 插入数据库后获取
@@ -182,12 +170,14 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-		int finalSuccessNum = successNum.get();
+		successNum.addAndGet(1);
+		cb.await();
+        int finalSuccessNum = successNum.get();
+		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
 		}else{
-			// 外层事务回滚
-			throw new SuperCodeException("保存数据失败...");
+			throw  new SuperCodeException("保存数据失败...");
 		}
 
 
@@ -204,7 +194,7 @@ public class MarketingActivitySalerSetService   {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {SuperCodeException.class,RuntimeException.class})
-	public RestResult<String> salerAdd(MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException{
+	public RestResult<String> salerAdd(MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
 		// 业务逻辑
 		// 1新增set表信息
 		// 2新增产品表信息
@@ -230,11 +220,11 @@ public class MarketingActivitySalerSetService   {
 		String organizationId=commonUtil.getOrganizationId();
 		String organizationName=commonUtil.getOrganizationName();
 		// 1 产品参数
-		List<MarketingActivityProductParam> maProductParams=activitySetParam.getMProductParams();
+		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		// 2 获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		// 3 渠道参数:TODO 本期不做校验不做保存
-		List<MarketingChannelParam> mChannelParams = activitySetParam.getMChannelParams();
+		List<MarketingChannelParam> mChannelParams = activitySetParam.getmChannelParams();
 
 // step-2：校验实体
 		validateBasicBySalerAdd(activitySetParam,maProductParams,mPrizeTypeParams);
@@ -242,21 +232,11 @@ public class MarketingActivitySalerSetService   {
 
 // step-3：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
-		MarketingActivitySet mActivitySet = convertActivitySetBySalerAdd(activitySetParam.getMActivitySetParam(),organizationId,organizationName);
+		MarketingActivitySet mActivitySet = convertActivitySetBySalerAdd(activitySetParam.getmActivitySetParam(),organizationId,organizationName);
 		// 插入数据库后获取id
 		mSetMapper.insert(mActivitySet);
 		Long activitySetId= mActivitySet.getId();
 
-		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
-		if(!CollectionUtils.isEmpty(maProductParams)){
-			for( MarketingActivityProductParam vo:maProductParams ){
-				if(vo.getProductId() == null){
-					throw new SuperCodeException("编辑需要传入productId");
-				}
-			}
-			// 删除[导购]存在的原活动产品
-			mProductMapper.deleteOldProducts(maProductParams);
-		}
 
 
 		//保存渠道 TODO 后期增加该逻辑
@@ -275,7 +255,11 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-		int finalSuccessNum = successNum.get();
+		successNum.addAndGet(1);
+		cb.await();
+        int finalSuccessNum = successNum.get();
+
+        logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
 		}else{
@@ -309,7 +293,7 @@ public class MarketingActivitySalerSetService   {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
-	public RestResult<String> salerCopy(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException {
+	public RestResult<String> salerCopy(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
 		// 业务逻辑,先插入主表后删除子表更新子表:
 		/**
 		 * 删除 产品
@@ -335,34 +319,22 @@ public class MarketingActivitySalerSetService   {
 		// 获取非前端参数
 
 		// 1 产品参数
-		List<MarketingActivityProductParam> maProductParams=activitySetParam.getMProductParams();
+		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		// 2 获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		// 3 渠道参数:TODO 本期不做校验不做保存
-		List<MarketingChannelParam> mChannelParams = activitySetParam.getMChannelParams();
+		List<MarketingChannelParam> mChannelParams = activitySetParam.getmChannelParams();
 
 // step-2：校验实体
 		validateBasicBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
 		validateBizBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
 
 // step-3：先删后增
-		mChannelMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		mProductMapper.deleteByActivitySetId(activitySetParam.getMActivitySetParam().getId());
-		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getMActivitySetParam();
+		mChannelMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		mPrizeTypeMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		mProductMapper.deleteByActivitySetId(activitySetParam.getmActivitySetParam().getId());
+		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getmActivitySetParam();
 
-
-
-		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
-		if(!CollectionUtils.isEmpty(maProductParams)){
-			for( MarketingActivityProductParam vo:maProductParams ){
-				if(vo.getProductId() == null){
-					throw new SuperCodeException("编辑需要传入productId");
-				}
-			}
-			// 删除[导购]存在的原活动产品
-			mProductMapper.deleteOldProducts(maProductParams);
-		}
 
 
 // step-4：转换保存实体
@@ -391,12 +363,16 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-		int finalSuccessNum = successNum.get();
+
+		// 保存导购活动结果
+		successNum.addAndGet(1);
+		cb.await();
+        int finalSuccessNum =successNum.get();
+		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
 		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
 		}else{
-			// 外层事务回滚
-			throw new SuperCodeException("保存数据失败...");
+			throw  new SuperCodeException("保存数据失败...");
 		}
 
 	}
@@ -478,6 +454,7 @@ public class MarketingActivitySalerSetService   {
 				initTx();
 				//==================================buziness-start===========================
 				try {
+					// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
 					saveProductBatchsWithSaler(maProductParams,activitySetId);
 					// 计数器成功加1
 					successNum.addAndGet(1);
@@ -487,7 +464,7 @@ public class MarketingActivitySalerSetService   {
 				}
 				//==================================buziness-end=============================
 				// 事务处理
-				transControl(cb,successNum.get());
+				transControl(cb,successNum);
 			}
 		});
 	}
@@ -498,6 +475,7 @@ public class MarketingActivitySalerSetService   {
 			public void run() {
 				// 初始化事务
 				initTx();
+
 				//==================================buziness-start===========================
 				try {
 					savePrizeTypes(mPrizeTypeParams,activitySetId);
@@ -509,7 +487,7 @@ public class MarketingActivitySalerSetService   {
 				}
 				//==================================buziness-end=============================
 				// 事务处理
-				transControl(cb,successNum.get());
+				transControl(cb,successNum);
 			}
 		});
 	}
@@ -541,7 +519,7 @@ public class MarketingActivitySalerSetService   {
 	/**
 	 * 参与事务的线程数
 	 */
-	private static final int TX_THREAD_NUM = 2;
+	private static final int TX_THREAD_NUM = 3;
 
 	/**
 	 * 初始化子线程事务
@@ -553,27 +531,31 @@ public class MarketingActivitySalerSetService   {
 		TransactionStatus status = txManager.getTransaction(def);
 		transm.set(txManager);
 		transs.set(status);
+		logger.error("开启事务");
+
 	}
 	/**
 	 * 多线程事务提交/回滚
 	 * @param cb
 	 * @param num
 	 */
-	private void transControl(  CyclicBarrier cb ,int num){
+	private void transControl(  CyclicBarrier cb ,AtomicInteger successNum){
 		try {
+			logger.error("事务等待ing");
 			cb.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (BrokenBarrierException e) {
 			e.printStackTrace();
 		}finally {
-			commitOrRollback(num);
+			commitOrRollback(successNum);
 		}
 	}
-	private void commitOrRollback(int num) {
+	private void commitOrRollback(AtomicInteger successNum) {
+		logger.error("事务预提交数目{}",successNum.get());
 		PlatformTransactionManager txManager = (PlatformTransactionManager) transm.get();
 		TransactionStatus status = (TransactionStatus) transs.get();
-		if(TX_THREAD_NUM == num){
+		if(TX_THREAD_NUM == successNum.get()){
 			txManager.commit(status);
 		}else {
 			txManager.rollback(status);
@@ -596,7 +578,7 @@ public class MarketingActivitySalerSetService   {
 
 	private void haveActivitySetId(MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException{
 		try {
-			if(StringUtils.isEmpty(activitySetParam.getMActivitySetParam().getId().toString())){
+			if(StringUtils.isEmpty(activitySetParam.getmActivitySetParam().getId().toString())){
 				throw new SuperCodeException("校验失败");
 			}
 		} catch (SuperCodeException e) {
