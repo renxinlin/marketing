@@ -2,8 +2,6 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.WriterException;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
@@ -149,12 +148,13 @@ public class MarketingActivitySetController {
      * @return
      * @throws IOException 
      * @throws WriterException 
+     * @throws SuperCodeException 
      */
-    @GetMapping(value = "/preview")
+    @PostMapping(value = "/preview")
     @ApiOperation("活动预览")
     @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
-    public void preview(@RequestBody MarketingActivityPreviewParam mPreviewParam,HttpServletResponse response) throws WriterException, IOException{
-         service.preview(mPreviewParam,response);
+    public RestResult<String> preview(@RequestBody MarketingActivityPreviewParam mPreviewParam) throws WriterException, IOException, SuperCodeException{
+        return service.preview(mPreviewParam);
     }
 
 }

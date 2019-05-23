@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.service;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -27,6 +28,7 @@ import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
@@ -34,11 +36,14 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
@@ -414,9 +419,87 @@ public class LotteryService {
 		wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(),partner_trade_no, organizationId);
 		return amount;
 	}
-	public RestResult<String> guideLottery(String wxstate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
+	public RestResult<String> previewLottery(String uuid, HttpServletRequest request) throws SuperCodeException {
+		RestResult<String> restResult = new RestResult<String>();
+		String value = redisUtil.get(RedisKey.ACTIVITY_PREVIEW_PREFIX + uuid);
+		if (StringUtils.isBlank(value)) {
+			restResult.setState(500);
+			restResult.setMsg("扫码信息已过期请重新扫码预览");
+			return restResult;
+		}
+		MarketingActivityPreviewParam mPreviewParam = JSONObject.parseObject(value,
+				MarketingActivityPreviewParam.class);
+		List<MarketingPrizeTypeParam> moPrizeTypes = mPreviewParam.getMarketingPrizeTypeParams();
 
+		List<MarketingPrizeTypeMO> mList = new ArrayList<MarketingPrizeTypeMO>(moPrizeTypes.size());
+		int sumprizeProbability = 0;
+		for (MarketingPrizeTypeParam marketingPrizeTypeParam : moPrizeTypes) {
+			Integer prizeProbability = marketingPrizeTypeParam.getPrizeProbability();
+			MarketingPrizeTypeMO mPrizeType = new MarketingPrizeTypeMO();
+			mPrizeType.setPrizeAmount(marketingPrizeTypeParam.getPrizeAmount());
+			mPrizeType.setPrizeProbability(prizeProbability);
+			mPrizeType.setPrizeTypeName(marketingPrizeTypeParam.getPrizeTypeName());
+			mPrizeType.setIsRrandomMoney(marketingPrizeTypeParam.getIsRrandomMoney());
+			mPrizeType.setRealPrize((byte) 1);
+			mPrizeType.setLowRand(marketingPrizeTypeParam.getLowRand());
+			mPrizeType.setHighRand(marketingPrizeTypeParam.getHighRand());
+			mPrizeType.setAwardType(marketingPrizeTypeParam.getAwardType());
+			mList.add(mPrizeType);
+			sumprizeProbability += prizeProbability;
+		}
+		if (sumprizeProbability > 100) {
+			throw new SuperCodeException("概率参数非法，总数不能大于100", 500);
+		} else if (sumprizeProbability < 100) {
+			int i = 100 - sumprizeProbability;
+			MarketingPrizeTypeMO NoReal = new MarketingPrizeTypeMO();
+			NoReal.setPrizeAmount((float) 0);
+			NoReal.setPrizeProbability(i);
+			NoReal.setPrizeTypeName("未中奖");
+			NoReal.setIsRrandomMoney((byte) 0);
+			NoReal.setRealPrize((byte) 0);
+			mList.add(NoReal);
+		}
+
+		// 执行抽奖逻辑
+		MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtilWithOutCodeNum.startLottery(mList);
+		// 判断realprize是否为0,0表示为新增的虚拟不中奖奖项，为了计算中奖率设置
+		Byte realPrize = mPrizeTypeMO.getRealPrize();
+		if (realPrize.equals((byte) 0)) {
+			restResult.setState(200);
+			restResult.setResults("‘啊呀没中，一定是打开方式不对’：没中奖");
+		} else {
+			Byte awardType = mPrizeTypeMO.getAwardType();
+			if (null==awardType) {
+				restResult.setState(200);
+				restResult.setResults("‘啊呀没中，一定是打开方式不对’：没中奖");
+				return restResult;
+			}
+			// 已中奖执行奖品方法中奖纪录保存等逻辑
+			try {
+				switch (awardType.intValue()) {
+				case 1:// 实物
+					restResult.setResults("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
+					break;
+				case 2: // 奖券
+					restResult.setResults("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
+					restResult.setResults(mPrizeTypeMO.getCardLink());
+					break;
+				case 3: // 积分
+					Integer awardIntegralNum = mPrizeTypeMO.getAwardIntegralNum();
+					restResult.setResults("恭喜您，获得" + awardIntegralNum + "积分");
+					break;
+				case 9:// 其它
+					restResult.setResults("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
+					break;
+				default:
+					System.out.println(1);
+					break;
+				}
+			} catch (Exception e) {
+			}
+		}
+		restResult.setState(200);
+		return restResult;
+	}
 }

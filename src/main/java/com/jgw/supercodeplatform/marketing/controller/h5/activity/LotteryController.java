@@ -44,6 +44,12 @@ public class LotteryController extends CommonUtil {
         return service.lottery(wxstate, request);
     }
     
+    
+    @RequestMapping(value = "/previewLottery",method = RequestMethod.POST)
+    @ApiOperation(value = "活动预览领奖方法", notes = "")
+    public RestResult<String> previewLottery(String uuid) throws Exception {
+        return service.previewLottery(uuid, request);
+    }
     /**
      * 扫码条件:
      *  1 活动规则
@@ -74,7 +80,7 @@ public class LotteryController extends CommonUtil {
      *  备注:多人同时扫码的并发处理
      */
     @RequestMapping(value = "salerLottery",method = RequestMethod.POST)
-    @ApiOperation(value = "salerLottery", notes = "导购活动领取")
+    @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")}
                        )
     public RestResult<String> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException {

@@ -13,4 +13,6 @@ public class RedisKey {
 	 public static String organizationId_prefix="marketing:organizationId:";
 	 
 	 public static String ACCESS_TOKEN_prefix="marketing:access_token:";
+	 
+	 public static String ACTIVITY_PREVIEW_PREFIX="marketing:activity_preview:";
 }
