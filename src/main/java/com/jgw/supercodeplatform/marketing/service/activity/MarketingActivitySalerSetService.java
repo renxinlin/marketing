@@ -344,12 +344,12 @@ public class MarketingActivitySalerSetService   {
 			saveChannels(mChannelParams,activitySetId);
 		}
 		//保存奖次
-//		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
+		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
 		//保存商品批次 【导购不像码平台发起产品业务绑定】
-//		saveProductBatchsWithThread(maProductParams,activitySetId,
-//				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
-		savePrizeTypes(mPrizeTypeParams,activitySetId);
-		saveProductBatchsWithSaler(maProductParams,activitySetId);
+		saveProductBatchsWithThread(maProductParams,activitySetId,
+				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+//		savePrizeTypes(mPrizeTypeParams,activitySetId);
+//		saveProductBatchsWithSaler(maProductParams,activitySetId);
 
 
 
