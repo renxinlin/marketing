@@ -95,7 +95,7 @@ public class MarketingActivitySalerSetService   {
 
 
 	/**
-	 * 导购活动更新
+	 * 导购活动更新:存在全局锁导致的死锁:需要索引
 	 * @param activitySetParam
 	 * @return
 	 */
@@ -159,10 +159,13 @@ public class MarketingActivitySalerSetService   {
 			saveChannels(mChannelParams,activitySetId);
 		}
 		//保存奖次
-		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
+//		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
+
 		//保存商品批次 [导购不像码平台发起调用]
-		saveProductBatchsWithThread(maProductParams,activitySetId,
-				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+//		saveProductBatchsWithThread(maProductParams,activitySetId,
+//				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+		savePrizeTypes(mPrizeTypeParams,activitySetId);
+		saveProductBatchsWithSaler(maProductParams,activitySetId);
 
 
 
@@ -170,15 +173,15 @@ public class MarketingActivitySalerSetService   {
 
 
 		// 保存导购活动结果
-		successNum.addAndGet(1);
-		cb.await();
-        int finalSuccessNum = successNum.get();
-		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
-		if(finalSuccessNum == TX_THREAD_NUM){
+//		successNum.addAndGet(1);
+//		cb.await();
+//        int finalSuccessNum = successNum.get();
+//		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
+//		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
-		}else{
-			throw  new SuperCodeException("保存数据失败...");
-		}
+//		}else{
+//			throw  new SuperCodeException("保存数据失败...");
+//		}
 
 
 	}
@@ -289,6 +292,7 @@ public class MarketingActivitySalerSetService   {
 
 	/**
 	 * 复制导购活动
+	 * 导购活动更新:存在全局锁导致的死锁:需要索引
 	 * @param activitySetParam
 	 * @return
 	 */
@@ -352,10 +356,13 @@ public class MarketingActivitySalerSetService   {
 			saveChannels(mChannelParams,activitySetId);
 		}
 		//保存奖次
-		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
+//		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
 		//保存商品批次 【导购不像码平台发起产品业务绑定】
-		saveProductBatchsWithThread(maProductParams,activitySetId,
-				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+//		saveProductBatchsWithThread(maProductParams,activitySetId,
+//				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+		savePrizeTypes(mPrizeTypeParams,activitySetId);
+		saveProductBatchsWithSaler(maProductParams,activitySetId);
+
 
 
 
@@ -365,15 +372,15 @@ public class MarketingActivitySalerSetService   {
 		// 保存导购活动结果
 
 		// 保存导购活动结果
-		successNum.addAndGet(1);
-		cb.await();
-        int finalSuccessNum =successNum.get();
-		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
-		if(finalSuccessNum == TX_THREAD_NUM){
+//		successNum.addAndGet(1);
+//		cb.await();
+//        int finalSuccessNum =successNum.get();
+//		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
+//		if(finalSuccessNum == TX_THREAD_NUM){
 			return RestResult.success();
-		}else{
-			throw  new SuperCodeException("保存数据失败...");
-		}
+//		}else{
+//			throw  new SuperCodeException("保存数据失败...");
+//		}
 
 	}
 
