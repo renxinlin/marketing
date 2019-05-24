@@ -271,6 +271,10 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			throw new SuperCodeException("验证码校验失败");
 		}
 		MarketingUser marketingUser = mapper.selectByPhone(loginUser.getMobile());
+		if(marketingUser == null){
+			throw new SuperCodeException("用户不存在");
+
+		}
 		if(!loginUser.getOrganizationId().equals(marketingUser.getOrganizationId())){
 			throw new SuperCodeException("组织校验失败");
 
@@ -302,6 +306,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		// 3数据转换和保存
 		MarketingUser userDo =changeToDo(userInfo);
+
 		int i = mapper.insertSelective(userDo);
 		if(i !=1){
 			throw new SuperCodeException("保存信息失败...");
@@ -408,6 +413,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		userDtoToDb.setMemberType(MemberTypeEnums.SALER.getType());
 		// USER ID
 		userDtoToDb.setUserId(UUID.randomUUID().toString().replaceAll("-",""));
+		if(StringUtils.isBlank(userDtoToDb.getOpenid())){
+			userDtoToDb.setOpenid(null);
+		}
 		return userDtoToDb;
 	}
 
