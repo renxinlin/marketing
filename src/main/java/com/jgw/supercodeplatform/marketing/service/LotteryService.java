@@ -493,6 +493,7 @@ public class LotteryService {
 				restResult.setState(200);
 				lResultMO.setWinnOrNot(0);
 				lResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+				restResult.setResults(lResultMO);
 				return restResult;
 			}
 			lResultMO.setAwardType(awardType);
