@@ -134,7 +134,7 @@ public class LotteryService {
 			if (StringUtils.isBlank(openId)) {
 				throw new SuperCodeException("微信红包活动openId参数不能为空", 500);
 			}
-			//MarketingMembers marketingMembersInfo = marketingMembersMapper.selectByOpenIdAndOrgId(openId, scanCodeInfoMO.getOrganizationId());
+			MarketingMembers marketingMembersInfo = marketingMembersMapper.selectByOpenIdAndOrgId(openId, scanCodeInfoMO.getOrganizationId());
 			break;
 		default:
 			break;
