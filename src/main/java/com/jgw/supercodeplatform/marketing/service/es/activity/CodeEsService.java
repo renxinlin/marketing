@@ -398,16 +398,17 @@ public class CodeEsService extends AbstractEsSearch {
 
     }
 
-	/**
-	 * 扫码信息,扫完就插入,插入失败不影响业务
-	 * @param sCodeInfoMO
-	 */
+    /**
+     * 扫码信息,扫完就插入,插入失败不影响业务
+     * @param sCodeInfoMO
+     */
     public void indexScanInfo(ScanCodeInfoMO sCodeInfoMO) {
-    	try{
-    		// todo  保存用户产品信息
-
-		}catch (Exception e){
-    		//
-		}
+        try{
+            // 保存用户产品信息
+            eClient.prepareIndex("marketingscan", EsType.INFO.getType()).setSource(JSONObject.toJSONString(sCodeInfoMO), XContentType.JSON).get();
+        }catch (Exception e){
+            logger.debug("扫码信息插入失败");
+            logger.debug(e.getMessage(), e);
+        }
     }
 }
