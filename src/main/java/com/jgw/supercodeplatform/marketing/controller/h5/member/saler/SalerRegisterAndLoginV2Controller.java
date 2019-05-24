@@ -15,6 +15,7 @@ import com.jgw.supercodeplatform.marketing.dto.CustomerInfo;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -108,6 +109,7 @@ public class SalerRegisterAndLoginV2Controller {
                 jwtUser.setMobile(loginUser.getMobile());
                 jwtUser.setMemberId(user.getId());
                 jwtUser.setOrganizationId(loginUser.getOrganizationId());
+                jwtUser.setMemberType(MemberTypeEnums.SALER.getType());
                 // TODO 可能存在其他登录信息需要设置
 
                 String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);
