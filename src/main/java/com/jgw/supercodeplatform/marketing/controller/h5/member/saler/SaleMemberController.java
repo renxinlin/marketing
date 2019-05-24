@@ -109,13 +109,14 @@ public class SaleMemberController {
     @GetMapping("getOrgName")
     public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, H5LoginVO jwtUser) throws SuperCodeException {
 
+        // 数据埋点
         taskExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 // index
             }
         });
-        // 数据埋点
+        // 业务处理: 获取企业名称
         boolean haveOrgId = validateParam(orgId, wxstate);
         return getNameByIdWithDefaultWhenError(orgId,haveOrgId);
     }
