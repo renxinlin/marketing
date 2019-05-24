@@ -73,6 +73,10 @@ public class SaleMemberController {
     @ApiOperation(value = "销售员中心", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<SaleInfo> info(@ApiIgnore H5LoginVO jwtUser) throws Exception {
+        if(jwtUser.getMemberType() == null){
+            throw new SuperCodeException("服务器未指定用户角色...");
+
+        }
         if(MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
             throw new SuperCodeException("会员角色错误...");
         }
@@ -103,7 +107,7 @@ public class SaleMemberController {
     @ApiOperation(value = "销售员中心page", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult page(@ApiIgnore H5LoginVO jwtUser, DaoSearch search) throws Exception {
-        if(MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
+        if(jwtUser.getMemberType()==null|| MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
             throw new SuperCodeException("会员角色错误...");
         }
         // 分页信息传递
