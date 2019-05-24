@@ -13,11 +13,13 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCo
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -64,8 +66,8 @@ public class SaleMemberController {
     @Autowired
     private GlobalRamCache globalRamCache;
 
-
-
+    @Autowired
+    private MarketingSaleMemberService marketingSaleMemberService;
 
     @GetMapping("info")
     @ApiOperation(value = "销售员中心", notes = "")
@@ -80,11 +82,18 @@ public class SaleMemberController {
         // 3 获取扫码信息
         Integer scanNum = es.searchScanInfoNum(jwtUser.getMemberId(), MemberTypeEnums.SALER.getType());
         // 4 数据转换
+
+
+        MarketingUser marketingUser = marketingSaleMemberService.selectById(jwtUser.getMemberId());
+        saleInfo.setUserName(marketingUser != null ? marketingUser.getUserName():null);
+        saleInfo.setUserName(marketingUser != null ? marketingUser.getWechatHeadImgUrl():null);
         saleInfo.setScanQRCodeNum(scanNum);
         saleInfo.setScanAmoutNum((Integer) acquireMoneyAndAcquireNums.get("count"));
         saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum"));
         saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
-        return RestResult.success("success",saleInfo);
+
+
+      return RestResult.success("success",saleInfo);
     }
 
 
