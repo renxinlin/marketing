@@ -260,7 +260,7 @@ public class CodeEsService extends AbstractEsSearch {
 
 		// out of date
 		TransportClient eClient = SpringContextUtil.getBean("elClient");
-		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKETING.getIndex()).setTypes( EsType.INFO.getType());
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
@@ -405,7 +405,8 @@ public class CodeEsService extends AbstractEsSearch {
     public void indexScanInfo(ScanCodeInfoMO sCodeInfoMO) {
         try{
             // 保存用户产品信息
-            eClient.prepareIndex("marketingscan", EsType.INFO.getType()).setSource(JSONObject.toJSONString(sCodeInfoMO), XContentType.JSON).get();
+            eClient.prepareIndex(EsIndex.MARKET_SCAN_INFO.getIndex(), EsType.INFO.getType())
+					.setSource(JSONObject.toJSONString(sCodeInfoMO), XContentType.JSON).get();
         }catch (Exception e){
             logger.debug("扫码信息插入失败");
             logger.debug(e.getMessage(), e);
