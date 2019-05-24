@@ -194,7 +194,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
     List<IntegralRecord> getOrganizationAllSalePrice(String organizationId, Date startDate, Date endDate);
 
 
-	@Select(" select count(SalerAmount) count, sum(SalerAmount) sum marketing_integral_record where organizationId = #{organizationId}" +
+	@Select(" select count(SalerAmount) count, sum(SalerAmount) sum from marketing_integral_record where organizationId = #{organizationId} " +
 			" and memberId = #{memberId}" +
 			" and memberType = #{memberType} " +
 			" and Status = 1" +
