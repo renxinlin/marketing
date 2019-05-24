@@ -1,6 +1,9 @@
 package com.jgw.supercodeplatform.marketing.vo.activity;
 
 public class H5LoginVO {
+	/**
+	 *
+	 */
 	private Long memberId;//返回用户表主键id
 
 	private String memberName;//用户姓名
@@ -16,6 +19,9 @@ public class H5LoginVO {
     private String mobile;//手机
 
 	private String wechatHeadImgUrl;
+	/**
+	 * 参见枚举值
+	 */
 	private Byte memberType;
 
 	public Byte getMemberType() {
