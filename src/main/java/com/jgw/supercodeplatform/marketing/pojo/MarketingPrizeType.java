@@ -158,6 +158,7 @@ public class MarketingPrizeType implements Comparable<MarketingPrizeType>{
 		return 0;
 	}
 
+
 	
 	
 }
