@@ -263,40 +263,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 
 
-	private MarketingActivitySet convertActivitySetBySaler(MarketingActivitySetParam activitySetParam, String organizationId, String organizationName) throws SuperCodeException {
-		String title=activitySetParam.getActivityTitle();
-		if (StringUtils.isBlank(title)) {
-			throw new SuperCodeException("添加的活动设置标题不能为空", 500);
-		}
-		MarketingActivitySet existmActivitySet =mSetMapper.selectByTitleOrgId(activitySetParam.getActivityTitle(),organizationId);
-		if (null!=existmActivitySet) {
-			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
-		}
-		activityTimeCheck(activitySetParam.getActivityStartDate(),activitySetParam.getActivityEndDate());
-		MarketingActivitySet mSet=new MarketingActivitySet();
-		mSet.setId(activitySetParam.getId());
-		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
-		mSet.setActivityId(activitySetParam.getActivityId());
-		mSet.setActivityRangeMark(activitySetParam.getActivityRangeMark());
-		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
-		mSet.setActivityTitle(title);
-		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
-		// 门槛保存红包条件和每人每天上限
-		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
-		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
-		condition.setParticipationCondition(activitySetParam.getParticipationCondition());
-		condition.setConsumeIntegral(activitySetParam.getConsumeIntegralNum());
-		String conditinoString = condition.toJsonString();
-		mSet.setValidCondition(conditinoString);
-		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
-		mSet.setActivityStatus(1);
-		mSet.setOrganizationId(organizationId);
-		mSet.setOrganizatioIdlName(organizationName);
-		
-		mSetMapper.insert(mSet);
-		return mSet;
-	}
 	/**
 	 * 校验活动创建时间
 	 * @param mActivitySet
@@ -470,48 +436,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		//插入对应活动产品数据
 		mProductMapper.batchDeleteByProBatchsAndRole(mList, referenceRole);
-		mProductMapper.activityProductInsert(mList);
-	}
-
-
-
-
-	private void saveProductBatchsWithSaler(List<MarketingActivityProductParam> maProductParams, Long activitySetId) throws SuperCodeException {
-		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
-//		Map<String, MarketingActivityProduct> activityProductMap = new HashMap<String, MarketingActivityProduct>();
-		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
-
-		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
-			String productId = marketingActivityProductParam.getProductId();
-			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
-			if (null != batchParams && !batchParams.isEmpty()) {
-				ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
-				List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
-				for (ProductBatchParam prBatchParam : batchParams) {
-					String productBatchId = prBatchParam.getProductBatchId();
-					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
-					mActivityProduct.setActivitySetId(activitySetId);
-					mActivityProduct.setProductBatchId(productBatchId);
-					mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
-					mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
-					mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
-					mActivityProduct.setReferenceRole(MemberTypeEnums.SALER.getType());
-//					activityProductMap.put(productId + productBatchId, mActivityProduct);
-					mList.add(mActivityProduct);
-					// 拼装请求码管理批次信息接口商品批次参数
-					Map<String, String> batchmap = new HashMap<String, String>();
-					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
-					productBatchList.add(batchmap);
-				}
-				// 拼装请求码管理批次信息接口商品参数
-				productAndBatchGetCodeMO.setProductBatchList(productBatchList);
-				productAndBatchGetCodeMO.setProductId(productId);
-				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
-			}
-		}
-
-		//插入对应活动产品数据
-		mProductMapper.batchDeleteByProBatchsAndRole(mList, MemberTypeEnums.SALER.getType());
 		mProductMapper.activityProductInsert(mList);
 	}
 
