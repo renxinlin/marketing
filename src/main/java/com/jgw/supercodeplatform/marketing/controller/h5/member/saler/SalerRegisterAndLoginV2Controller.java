@@ -97,9 +97,9 @@ public class SalerRegisterAndLoginV2Controller {
             MarketingUser user = service.selectBylogin(loginUser);
             // 写jwt
             if(user != null){
-                if(loginUser.getOpenid()!= null){
+                if(!StringUtils.isBlank(loginUser.getOpenid())){
                     // 说明微信登录失败,但用户存在
-                    // 说明没绑定openid
+                    // 说明没绑定openid/如果微信openid变动【刷新openid】
                     Long id = user.getId();
                     user = new MarketingUser();
                     user.setId(id);
