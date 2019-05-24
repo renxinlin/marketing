@@ -481,10 +481,11 @@ public class LotteryService {
 			lResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 		} else {
 			Byte awardType = mPrizeTypeMO.getAwardType();
-			if (null==awardType) {
+			if (null==awardType ||awardType.intValue()==4 ) {
 				restResult.setState(200);
-				lResultMO.setWinnOrNot(0);
-				lResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+				lResultMO.setWinnOrNot(1);
+				lResultMO.setData(mPrizeTypeMO.getPrizeAmount());
+				lResultMO.setAwardType((byte)4);
 				restResult.setResults(lResultMO);
 				return restResult;
 			}
