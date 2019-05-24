@@ -39,14 +39,14 @@ public class LotteryController extends CommonUtil {
 	@Value("${rest.user.url}")
 	private String USER_SERVICE;
 
-    @RequestMapping(value = "/lottery",method = RequestMethod.POST)
+    @RequestMapping(value = "/lottery",method = RequestMethod.GET)
     @ApiOperation(value = "用户点击领奖方法", notes = "")
     public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
         return service.lottery(wxstate, request);
     }
     
     
-    @RequestMapping(value = "/previewLottery",method = RequestMethod.POST)
+    @RequestMapping(value = "/previewLottery",method = RequestMethod.GET)
     @ApiOperation(value = "活动预览领奖方法", notes = "")
     public RestResult<LotteryResultMO> previewLottery(String uuid) throws Exception {
         return service.previewLottery(uuid, request);

@@ -459,6 +459,9 @@ public class LotteryService {
 			mPrizeType.setLowRand(marketingPrizeTypeParam.getLowRand());
 			mPrizeType.setHighRand(marketingPrizeTypeParam.getHighRand());
 			mPrizeType.setAwardType(marketingPrizeTypeParam.getAwardType());
+			mPrizeType.setAwardIntegralNum(marketingPrizeTypeParam.getAwardIntegralNum());
+			mPrizeType.setCardLink(marketingPrizeTypeParam.getCardLink());
+			mPrizeType.setRemainingStock(marketingPrizeTypeParam.getRemainingStock());
 			mList.add(mPrizeType);
 			sumprizeProbability += prizeProbability;
 		}
@@ -517,6 +520,7 @@ public class LotteryService {
 			} catch (Exception e) {
 			}
 		}
+		restResult.setResults(lResultMO);
 		restResult.setState(200);
 		return restResult;
 	}
