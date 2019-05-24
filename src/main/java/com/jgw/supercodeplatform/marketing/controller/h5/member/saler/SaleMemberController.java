@@ -1,38 +1,45 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.member.saler;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
-import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.SaleInfo;
-import com.jgw.supercodeplatform.marketing.dto.integral.ExchangeProductParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeSkuDetailAndAddress;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
+import com.jgw.supercodeplatform.marketing.enums.EsIndex;
+import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
-import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
-import org.elasticsearch.monitor.os.OsStats;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.springframework.beans.BeanUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import java.text.ParseException;
 import java.util.HashMap;
+
 import java.util.Map;
 
 /**
@@ -52,6 +59,16 @@ public class SaleMemberController {
 
     @Autowired
     private CommonService commonService;
+
+    private TaskExecutor taskExecutor;
+
+    @Autowired
+    private GlobalRamCache globalRamCache;
+
+    @Autowired
+    @Qualifier("elClient")
+    private TransportClient eClient;
+
 
     @GetMapping("info")
     @ApiOperation(value = "销售员中心", notes = "")
@@ -96,8 +113,6 @@ public class SaleMemberController {
         // 4 数据转换
         return RestResult.success("success",objectPageResults);
     }
-    @Autowired
-    private TaskExecutor taskExecutor;
 
     /**
      * 应前端要求将扫码信息和埋点整合一个接口
@@ -108,12 +123,28 @@ public class SaleMemberController {
      */
     @GetMapping("getOrgName")
     public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException {
-
         // 数据埋点
         taskExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                // index
+                // 获取扫码信息
+                MarketingMemberAndScanCodeInfoParam infoParam = new MarketingMemberAndScanCodeInfoParam();
+                try{
+                    ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
+                    BeanUtils.copyProperties(scanCodeInfoMO, infoParam);
+                    infoParam.setUserId(jwtUser.getMemberId());
+                    infoParam.setUserName(jwtUser.getMemberName());
+                    infoParam.setMemberType(jwtUser.getMemberType());
+                    JSONObject.toJSONString(infoParam);
+                    // 保存用户产品信息
+                    eClient.prepareIndex(EsIndex.MARKET_SCAN_INFO.getIndex(), EsType.INFO.getType())
+                            .setSource(JSONObject.toJSONString(infoParam), XContentType.JSON).get();
+                }catch (Exception e){
+                    logger.debug("扫码信息插入失败");
+                    logger.debug(e.getMessage(), e);
+                }
+
+
             }
         });
         // 业务处理: 获取企业名称
