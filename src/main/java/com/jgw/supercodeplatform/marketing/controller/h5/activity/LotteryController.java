@@ -6,8 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -39,14 +40,14 @@ public class LotteryController extends CommonUtil {
 	@Value("${rest.user.url}")
 	private String USER_SERVICE;
 
-    @RequestMapping(value = "/lottery",method = RequestMethod.GET)
+    @GetMapping("/lottery")
     @ApiOperation(value = "用户点击领奖方法", notes = "")
     public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
         return service.lottery(wxstate, request);
     }
     
     
-    @RequestMapping(value = "/previewLottery",method = RequestMethod.GET)
+    @GetMapping("/previewLottery")
     @ApiOperation(value = "活动预览领奖方法", notes = "")
     public RestResult<LotteryResultMO> previewLottery(String uuid) throws Exception {
         return service.previewLottery(uuid, request);
@@ -80,19 +81,11 @@ public class LotteryController extends CommonUtil {
      *
      *  备注:多人同时扫码的并发处理
      */
-    @RequestMapping(value = "salerLottery",method = RequestMethod.POST)
+    @PostMapping("salerLottery")
     @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")}
-                       )
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<String> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException {
-        // 不可以跨组织
-
-        // 产品 用户
-
-        Long memberId = jwtUser.getMemberId();
-        String organizationId = jwtUser.getOrganizationId();
         return service.baselottery(wxstate);
-//
     }
     
    

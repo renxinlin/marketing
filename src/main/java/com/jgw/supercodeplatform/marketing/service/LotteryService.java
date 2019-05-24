@@ -105,15 +105,11 @@ public class LotteryService {
 	
 	
 	public RestResult<String> baselottery(String wxstate) throws SuperCodeException, ParseException {
-
-
-		RestResult<String> restResult=new RestResult<String>();
-
+		RestResult<String> restResult=new RestResult<>();
 		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null==scanCodeInfoMO) {
 			throw new SuperCodeException("不存在扫码唯一纪录="+wxstate+"的扫码缓存信息，请重新扫码", 500);
 		}
-		
 		Long activitySetId=scanCodeInfoMO.getActivitySetId();
 		MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
 		if (null==mActivitySet) {
@@ -129,7 +125,6 @@ public class LotteryService {
 		if (StringUtils.isNotBlank(condition)) {
 			MarketingActivitySetCondition mSetCondition=JSONObject.parseObject(condition, MarketingActivitySetCondition.class);
 			mSetCondition.getConsumeIntegral();
-			
 		}
 		int activityType=activity.getActivityType().intValue();
 		switch (activityType) {
@@ -139,10 +134,8 @@ public class LotteryService {
 			if (StringUtils.isBlank(openId)) {
 				throw new SuperCodeException("微信红包活动openId参数不能为空", 500);
 			}
-			MarketingMembers marketingMembersInfo = marketingMembersMapper.selectByOpenIdAndOrgId(openId, scanCodeInfoMO.getOrganizationId());
-			
+			//MarketingMembers marketingMembersInfo = marketingMembersMapper.selectByOpenIdAndOrgId(openId, scanCodeInfoMO.getOrganizationId());
 			break;
-
 		default:
 			break;
 		}
@@ -151,7 +144,6 @@ public class LotteryService {
 		if (StringUtils.isNotBlank(mobile)) {
 			commonUtil.checkPhoneFormat(mobile);
 		}
-		
 		return restResult;
 	}
 
@@ -163,7 +155,7 @@ public class LotteryService {
 	 * @throws SuperCodeException
 	 */
 	public RestResult<LotteryResultMO> lottery(String wxstate,HttpServletRequest request) throws SuperCodeException, ParseException {
-		RestResult<LotteryResultMO> restResult=new RestResult<LotteryResultMO>();
+		RestResult<LotteryResultMO> restResult=new RestResult<>();
 
 		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null==scanCodeInfoMO) {
@@ -435,7 +427,7 @@ public class LotteryService {
 	}
 	
 	public RestResult<LotteryResultMO> previewLottery(String uuid, HttpServletRequest request) throws SuperCodeException {
-		RestResult<LotteryResultMO> restResult = new RestResult<LotteryResultMO>();
+		RestResult<LotteryResultMO> restResult = new RestResult<>();
 		String value = redisUtil.get(RedisKey.ACTIVITY_PREVIEW_PREFIX + uuid);
 		if (StringUtils.isBlank(value)) {
 			restResult.setState(500);
@@ -446,7 +438,7 @@ public class LotteryService {
 				MarketingActivityPreviewParam.class);
 		List<MarketingPrizeTypeParam> moPrizeTypes = mPreviewParam.getMarketingPrizeTypeParams();
 
-		List<MarketingPrizeTypeMO> mList = new ArrayList<MarketingPrizeTypeMO>(moPrizeTypes.size());
+		List<MarketingPrizeTypeMO> mList = new ArrayList<>(moPrizeTypes.size());
 		int sumprizeProbability = 0;
 		for (MarketingPrizeTypeParam marketingPrizeTypeParam : moPrizeTypes) {
 			Integer prizeProbability = marketingPrizeTypeParam.getPrizeProbability();
