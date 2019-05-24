@@ -20,8 +20,8 @@ public class MarketingActivitySet {
     @ApiModelProperty(name = "activityEndDate", value = "活动结束时间", example = "2217-01-11")
     private String activityEndDate;//活动结束时间
 
-    @ApiModelProperty(name = "eachDayNumber", value = "每人每天次数", example = "2")
-    private Integer eachDayNumber;//每人每天次数
+//    @ApiModelProperty(name = "eachDayNumber", value = "每人每天次数", example = "2")
+//    private Integer eachDayNumber;//每人每天次数
 
     @ApiModelProperty(name = "activityRangeMark", value = "活动范围标志(1、表示部分产品有效 2、表示全部产品有效 ", example = "1")
     private Integer activityRangeMark;//活动范围标志(1、表示部分产品有效 2、表示全部产品有效 )
@@ -42,8 +42,8 @@ public class MarketingActivitySet {
     @ApiModelProperty(name = "codeTotalNum", value = "参与该活动一共的码数", example = "11")
     private Long codeTotalNum;//参与该活动一共的码数
     
-    @ApiModelProperty(name = "consumeIntegralNum", value = "消耗积分", example = "11")
-    private Integer consumeIntegralNum;
+//    @ApiModelProperty(name = "consumeIntegralNum", value = "消耗积分", example = "11")
+//    private Integer consumeIntegralNum;
 
     @ApiModelProperty(name = "activityDesc", value = "活动描述", example = "红包活动")
     private String activityDesc;
@@ -79,10 +79,6 @@ public class MarketingActivitySet {
 		this.activityId = activityId;
 	}
 
-	public void setEachDayNumber(Integer eachDayNumber) {
-		this.eachDayNumber = eachDayNumber;
-	}
-
 	public String getCreateDate() {
 		return createDate;
 	}
@@ -106,11 +102,6 @@ public class MarketingActivitySet {
     public void setOrganizatioIdlName(String organizatioIdlName) {
         this.organizatioIdlName = organizatioIdlName;
     }
-
-    public Integer getEachDayNumber() {
-		return eachDayNumber;
-	}
-
 
 	public String getActivityTitle() {
         return activityTitle;
@@ -189,14 +180,6 @@ public class MarketingActivitySet {
 
 	public void setAutoFetch(Integer autoFetch) {
 		this.autoFetch = autoFetch;
-	}
-
-	public Integer getConsumeIntegralNum() {
-		return consumeIntegralNum;
-	}
-
-	public void setConsumeIntegralNum(Integer consumeIntegralNum) {
-		this.consumeIntegralNum = consumeIntegralNum;
 	}
 
 	public String getActivityDesc() {
