@@ -505,10 +505,12 @@ public class LotteryService {
 					break;
 				case 2: // 奖券
 					lResultMO.setMsg("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
+					lResultMO.setData(mPrizeTypeMO.getCardLink());
 					break;
 				case 3: // 积分
 					Integer awardIntegralNum = mPrizeTypeMO.getAwardIntegralNum();
 					lResultMO.setMsg("恭喜您，获得" + awardIntegralNum + "积分");
+					lResultMO.setData(awardIntegralNum);
 					break;
 				case 9:// 其它
 					lResultMO.setMsg("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
