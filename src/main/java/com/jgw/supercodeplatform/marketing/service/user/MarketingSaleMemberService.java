@@ -451,6 +451,10 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
     public MarketingUser selectByOpenidAndOrgId(String openid, String organizationId) {
 	    return mapper.selectByOpenidAndOrgId( openid,  organizationId);
     }
+
+	public MarketingUser selectById(Long memberId) {
+		return mapper.selectByPrimaryKey(memberId);
+	}
 }
 
 

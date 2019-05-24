@@ -13,11 +13,13 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCo
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -64,13 +66,17 @@ public class SaleMemberController {
     @Autowired
     private GlobalRamCache globalRamCache;
 
-
-
+    @Autowired
+    private MarketingSaleMemberService marketingSaleMemberService;
 
     @GetMapping("info")
     @ApiOperation(value = "销售员中心", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<SaleInfo> info(@ApiIgnore H5LoginVO jwtUser) throws Exception {
+        if(jwtUser.getMemberType() == null){
+            throw new SuperCodeException("服务器未指定用户角色...");
+
+        }
         if(MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
             throw new SuperCodeException("会员角色错误...");
         }
@@ -80,11 +86,19 @@ public class SaleMemberController {
         // 3 获取扫码信息
         Integer scanNum = es.searchScanInfoNum(jwtUser.getMemberId(), MemberTypeEnums.SALER.getType());
         // 4 数据转换
+
+
+        MarketingUser marketingUser = marketingSaleMemberService.selectById(jwtUser.getMemberId());
+        saleInfo.setUserName(marketingUser != null ? marketingUser.getUserName():null);
+        saleInfo.setWechatHeadImgUrl(marketingUser != null ? marketingUser.getWechatHeadImgUrl():null);
         saleInfo.setScanQRCodeNum(scanNum);
-        saleInfo.setScanAmoutNum((Integer) acquireMoneyAndAcquireNums.get("count"));
-        saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum"));
+        Long count = (Long) acquireMoneyAndAcquireNums.get("count");
+        saleInfo.setScanAmoutNum((count.intValue()));
+        saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum") != null ? (Float) acquireMoneyAndAcquireNums.get("sum"):0F);
         saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
-        return RestResult.success("success",saleInfo);
+
+
+      return RestResult.success("success",saleInfo);
     }
 
 
@@ -94,7 +108,7 @@ public class SaleMemberController {
     @ApiOperation(value = "销售员中心page", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult page(@ApiIgnore H5LoginVO jwtUser, DaoSearch search) throws Exception {
-        if(MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
+        if(jwtUser.getMemberType()==null|| MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
             throw new SuperCodeException("会员角色错误...");
         }
         // 分页信息传递
@@ -119,6 +133,8 @@ public class SaleMemberController {
      * @return
      */
     @GetMapping("getOrgName")
+    @ApiOperation(value = "获取组织名称并且传递wxstate", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException {
         // 数据埋点
         taskExecutor.execute(new Runnable() {

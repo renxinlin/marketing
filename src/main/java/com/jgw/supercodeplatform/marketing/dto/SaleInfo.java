@@ -21,4 +21,8 @@ public class SaleInfo {
     private String amoutNumStr;
 //    @ApiModelProperty("分页数据 红包中奖|未中奖记录")
 //    private  AbstractPageService.PageResults<IntegralRecord> pageInfo;
+    @ApiModelProperty("用户名")
+    private String userName;
+    @ApiModelProperty("头像")
+    private String wechatHeadImgUrl;
 }
