@@ -434,8 +434,8 @@ public class LotteryService {
 		return amount;
 	}
 	
-	public RestResult<String> previewLottery(String uuid, HttpServletRequest request) throws SuperCodeException {
-		RestResult<String> restResult = new RestResult<String>();
+	public RestResult<LotteryResultMO> previewLottery(String uuid, HttpServletRequest request) throws SuperCodeException {
+		RestResult<LotteryResultMO> restResult = new RestResult<LotteryResultMO>();
 		String value = redisUtil.get(RedisKey.ACTIVITY_PREVIEW_PREFIX + uuid);
 		if (StringUtils.isBlank(value)) {
 			restResult.setState(500);
@@ -477,34 +477,38 @@ public class LotteryService {
 
 		// 执行抽奖逻辑
 		MarketingPrizeTypeMO mPrizeTypeMO = LotteryUtilWithOutCodeNum.startLottery(mList);
+		LotteryResultMO lResultMO=new LotteryResultMO();
 		// 判断realprize是否为0,0表示为新增的虚拟不中奖奖项，为了计算中奖率设置
 		Byte realPrize = mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte) 0)) {
 			restResult.setState(200);
-			restResult.setResults("‘啊呀没中，一定是打开方式不对’：没中奖");
+			lResultMO.setWinnOrNot(0);
+			lResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 		} else {
 			Byte awardType = mPrizeTypeMO.getAwardType();
 			if (null==awardType) {
 				restResult.setState(200);
-				restResult.setResults("‘啊呀没中，一定是打开方式不对’：没中奖");
+				lResultMO.setWinnOrNot(0);
+				lResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 				return restResult;
 			}
+			lResultMO.setAwardType(awardType);
+			lResultMO.setWinnOrNot(1);
 			// 已中奖执行奖品方法中奖纪录保存等逻辑
 			try {
 				switch (awardType.intValue()) {
 				case 1:// 实物
-					restResult.setResults("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
+					lResultMO.setMsg("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
 					break;
 				case 2: // 奖券
-					restResult.setResults("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
-					restResult.setResults(mPrizeTypeMO.getCardLink());
+					lResultMO.setMsg("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
 					break;
 				case 3: // 积分
 					Integer awardIntegralNum = mPrizeTypeMO.getAwardIntegralNum();
-					restResult.setResults("恭喜您，获得" + awardIntegralNum + "积分");
+					lResultMO.setMsg("恭喜您，获得" + awardIntegralNum + "积分");
 					break;
 				case 9:// 其它
-					restResult.setResults("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
+					lResultMO.setMsg("恭喜您，获得" + mPrizeTypeMO.getPrizeTypeName());
 					break;
 				default:
 					System.out.println(1);

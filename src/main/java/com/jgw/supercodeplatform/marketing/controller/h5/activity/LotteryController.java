@@ -48,7 +48,7 @@ public class LotteryController extends CommonUtil {
     
     @RequestMapping(value = "/previewLottery",method = RequestMethod.POST)
     @ApiOperation(value = "活动预览领奖方法", notes = "")
-    public RestResult<String> previewLottery(String uuid) throws Exception {
+    public RestResult<LotteryResultMO> previewLottery(String uuid) throws Exception {
         return service.previewLottery(uuid, request);
     }
     /**
