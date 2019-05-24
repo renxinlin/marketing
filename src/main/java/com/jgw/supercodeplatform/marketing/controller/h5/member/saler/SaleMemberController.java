@@ -90,7 +90,7 @@ public class SaleMemberController {
 
         MarketingUser marketingUser = marketingSaleMemberService.selectById(jwtUser.getMemberId());
         saleInfo.setUserName(marketingUser != null ? marketingUser.getUserName():null);
-        saleInfo.setUserName(marketingUser != null ? marketingUser.getWechatHeadImgUrl():null);
+        saleInfo.setWechatHeadImgUrl(marketingUser != null ? marketingUser.getWechatHeadImgUrl():null);
         saleInfo.setScanQRCodeNum(scanNum);
         Long count = (Long) acquireMoneyAndAcquireNums.get("count");
         saleInfo.setScanAmoutNum((count.intValue()));
