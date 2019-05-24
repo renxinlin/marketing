@@ -99,7 +99,7 @@ public class MarketingActivityProductService {
 		params.put("search",search);
 		params.put("pageSize",pageSize);
 		params.put("current",current);
-		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn("http://PLATFORM-CODEMANAGER-SUPERCODE-ZC"+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
 		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
 		String body=responseEntity.getBody();
 		JSONObject json=JSONObject.parseObject(body);

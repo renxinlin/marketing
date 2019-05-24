@@ -198,6 +198,7 @@ public class WeixinAuthController {
 	private void writeJwtToken(HttpServletResponse response, MarketingMembers members) {
 		String orgnazationName="";
 		H5LoginVO h5LoginVO=new H5LoginVO();
+		h5LoginVO.setMemberType(members.getMemberType());
 		h5LoginVO.setHaveIntegral(members.getHaveIntegral());
 		h5LoginVO.setMemberId(members.getId());
 		h5LoginVO.setMobile(members.getMobile());
@@ -484,6 +485,7 @@ public class WeixinAuthController {
 					.append("&organizationId=").append(organizationId);
 			redirectUrl =  h5pageUrl + WechatConstants.SALER_LOGIN_URL+sb.toString();
 		}
+		logger.info("导购扫码最终返回url:"+redirectUrl);
 		return  redirectUrl;
 	}
 }

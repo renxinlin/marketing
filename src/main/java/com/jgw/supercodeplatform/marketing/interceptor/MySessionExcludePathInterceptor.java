@@ -33,7 +33,8 @@ public class MySessionExcludePathInterceptor implements WebMvcSessionInterceptor
                 "/marketing/h5/**",
                 "/marketing/address/**",
                 "/marketing/jwt/**",
-                "/marketing/front/saler/**"
+                "/marketing/front/saler/**",
+                "/marketing/saleMember/**"
 
 
         };

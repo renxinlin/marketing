@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -154,6 +155,7 @@ public class LotteryService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
+	@Transactional(rollbackFor=SuperCodeException.class)
 	public RestResult<LotteryResultMO> lottery(String wxstate,HttpServletRequest request) throws SuperCodeException, ParseException {
 		RestResult<LotteryResultMO> restResult=new RestResult<>();
 
@@ -264,7 +266,11 @@ public class LotteryService {
 						 marketingMembersInfo.setHaveIntegral((haveIntegral==null?0:haveIntegral)+awardIntegralNum);
 						 lotteryResultMO.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
 						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
-						break;
+						 if (null!=consumeIntegralNum) {
+							marketingMembersInfo.setHaveIntegral(marketingMembersInfo.getHaveIntegral()-consumeIntegralNum);
+						 }
+						 marketingMembersMapper.update(marketingMembersInfo);
+						 break;
 					case 9://其它
 						remainingStock=mPrizeTypeMO.getRemainingStock();
 						if (null!=remainingStock && remainingStock.intValue()<1) {
@@ -288,10 +294,6 @@ public class LotteryService {
 				//一切ok后清除缓存
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
 			}
-			if (null!=consumeIntegralNum) {
-				marketingMembersInfo.setHaveIntegral(marketingMembersInfo.getHaveIntegral()-consumeIntegralNum);
-			}
-			marketingMembersMapper.update(marketingMembersInfo);
 			restResult.setState(200);
 		}
 		restResult.setResults(lotteryResultMO);
@@ -481,10 +483,12 @@ public class LotteryService {
 			lResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 		} else {
 			Byte awardType = mPrizeTypeMO.getAwardType();
-			if (null==awardType) {
+			if (null==awardType ||awardType.intValue()==4 ) {
 				restResult.setState(200);
-				lResultMO.setWinnOrNot(0);
-				lResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+				lResultMO.setWinnOrNot(1);
+				lResultMO.setData(mPrizeTypeMO.getPrizeAmount());
+				lResultMO.setAwardType((byte)4);
+				restResult.setResults(lResultMO);
 				return restResult;
 			}
 			lResultMO.setAwardType(awardType);
