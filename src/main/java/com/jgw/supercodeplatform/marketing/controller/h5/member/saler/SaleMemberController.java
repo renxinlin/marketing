@@ -12,6 +12,7 @@ import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeSkuDetai
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
@@ -20,7 +21,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.monitor.os.OsStats;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Controller;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,6 +42,7 @@ import java.util.Map;
 @RequestMapping("/marketing/saleMember/")
 @Api(tags = "销售员H5")
 public class SaleMemberController {
+    private static Logger logger = LoggerFactory.getLogger(SaleMemberController.class);
     @Autowired
     private IntegralRecordService service;
     @Autowired
@@ -44,7 +50,8 @@ public class SaleMemberController {
     @Autowired
     private LotteryService lotteryService;
 
-
+    @Autowired
+    private CommonService commonService;
 
     @GetMapping("info")
     @ApiOperation(value = "销售员中心", notes = "")
@@ -92,17 +99,55 @@ public class SaleMemberController {
     @Autowired
     private TaskExecutor taskExecutor;
 
-    @GetMapping("")
-    public RestResult<Map<String,String>>  getOrgNameAndAnsycPushScanIfo(String orgId ,String wxstate, H5LoginVO jwtUser){
-        // 数据埋点
+    /**
+     * 应前端要求将扫码信息和埋点整合一个接口
+     * @param orgId
+     * @param wxstate
+     * @param jwtUser
+     * @return
+     */
+    @GetMapping("getOrgName")
+    public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, H5LoginVO jwtUser) throws SuperCodeException {
+
         taskExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 // index
             }
         });
+        // 数据埋点
+        boolean haveOrgId = validateParam(orgId, wxstate);
+        return getNameByIdWithDefaultWhenError(orgId,haveOrgId);
+    }
+    private RestResult<Map<String, String>> getNameByIdWithDefaultWhenError(String orgId,boolean haveOrgId) {
+        String defaultValue = "企业";
+        Map<String, String> orgInfo = new HashMap<>();
+        if(!haveOrgId){
+            orgInfo.put("organizationName",defaultValue);
+        }else{
+            String organizationName = null;
+            try {
+                organizationName = commonService.getOrgNameByOrgId(orgId);
+            } catch (SuperCodeException e) {
+                e.printStackTrace();
+            }
+            if(StringUtils.isBlank(organizationName)){
+                organizationName = defaultValue;
+            }
+            orgInfo.put("organizationName",organizationName);
 
-        return null;
+        }
+        return RestResult.success("success",orgInfo);
+    }
+
+    private boolean validateParam(String orgId, String wxstate)   {
+        if(StringUtils.isBlank(orgId)){
+            return false;
+        }
+        if(StringUtils.isBlank(wxstate)){
+            logger.error("导购领奖:获取微信state 失败");
+        }
+        return true;
     }
 
 
