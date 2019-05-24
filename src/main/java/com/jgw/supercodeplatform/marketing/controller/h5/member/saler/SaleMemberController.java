@@ -92,7 +92,8 @@ public class SaleMemberController {
         saleInfo.setUserName(marketingUser != null ? marketingUser.getUserName():null);
         saleInfo.setUserName(marketingUser != null ? marketingUser.getWechatHeadImgUrl():null);
         saleInfo.setScanQRCodeNum(scanNum);
-        saleInfo.setScanAmoutNum((Integer) acquireMoneyAndAcquireNums.get("count"));
+        Long count = (Long) acquireMoneyAndAcquireNums.get("count");
+        saleInfo.setScanAmoutNum((count.intValue()));
         saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum"));
         saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
 
