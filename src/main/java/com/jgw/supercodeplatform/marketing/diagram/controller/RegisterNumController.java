@@ -193,9 +193,7 @@ public class RegisterNumController extends CommonUtil {
         for (MarketingMembers registerNumMember : registerNumMembers){
             for( String day : monthVo.keySet()){
                 if(day.equals(registerNumMember.getCreateDate())){
-                    // 会不会有意外导致异常？
-                    // TODO monthVo.get(registerNumMember.getCreateDate()).add(1);
-                    monthVo.get(day).add(1);
+                     monthVo.get(day).add(1);
                     continue;
                 }
             }

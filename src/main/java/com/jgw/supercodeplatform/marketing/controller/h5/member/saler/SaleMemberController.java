@@ -4,6 +4,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.member.saler;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.SaleInfo;
 import com.jgw.supercodeplatform.marketing.dto.integral.ExchangeProductParam;
@@ -51,13 +52,28 @@ public class SaleMemberController {
             throw new SuperCodeException("会员角色错误...");
         }
         SaleInfo saleInfo = new SaleInfo();
-
-
-
         // 1 获取红包统计信息
         Map acquireMoneyAndAcquireNums = service.getAcquireMoneyAndAcquireNums(jwtUser.getMemberId(), jwtUser.getMemberType(), jwtUser.getOrganizationId());
+        // 3 获取扫码信息
+        Integer scanNum = es.searchScanInfoNum(jwtUser.getMemberId(), jwtUser.getMemberType());
+        // 4 数据转换
+        saleInfo.setScanQRCodeNum(scanNum);
+        saleInfo.setScanAmoutNum((Integer) acquireMoneyAndAcquireNums.get("count"));
+        saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum"));
+        saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
+        return RestResult.success("success",saleInfo);
+    }
 
-        // 2 获取红包信息
+
+
+
+    @GetMapping("page")
+    @ApiOperation(value = "销售员中心page", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
+    public RestResult page(@ApiIgnore H5LoginVO jwtUser, DaoSearch search) throws Exception {
+        if(MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
+            throw new SuperCodeException("会员角色错误...");
+        }
         // 分页信息传递
         IntegralRecord params = new IntegralRecord();
         params.setMemberType(MemberTypeEnums.SALER.getType());
@@ -68,16 +84,7 @@ public class SaleMemberController {
         params.setPageSize(search.getPageSize());
         // 查询
         AbstractPageService.PageResults<IntegralRecord> objectPageResults = service.listSearchViewLike(params);
-
-        // 3 获取扫码信息
-        Integer scanNum = es.searchScanInfoNum(jwtUser.getMemberId(), jwtUser.getMemberType());
         // 4 数据转换
-        saleInfo.setScanQRCodeNum(scanNum);
-        saleInfo.setScanAmoutNum((Integer) acquireMoneyAndAcquireNums.get("count"));
-        saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum"));
-        saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
-        // TODO page转前端格式
-        saleInfo.setPageInfo(objectPageResults);
-        return RestResult.success("success",saleInfo);
+        return RestResult.success("success",objectPageResults);
     }
 }
