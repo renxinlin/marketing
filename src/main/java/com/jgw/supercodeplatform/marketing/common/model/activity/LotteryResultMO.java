@@ -7,6 +7,8 @@ public class LotteryResultMO {
 
 	private int winnOrNot;
 
+	private Object data;
+	
 	public Byte getAwardType() {
 		return awardType;
 	}
@@ -29,6 +31,14 @@ public class LotteryResultMO {
 
 	public void setWinnOrNot(int winnOrNot) {
 		this.winnOrNot = winnOrNot;
+	}
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
 	}
 
 }
