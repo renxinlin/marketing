@@ -19,6 +19,6 @@ public class SaleInfo {
     private Float amoutNum;
     @ApiModelProperty("红包金额字符串")
     private String amoutNumStr;
-    @ApiModelProperty("分页数据 红包中奖|未中奖记录")
-    private  AbstractPageService.PageResults<IntegralRecord> pageInfo;
+//    @ApiModelProperty("分页数据 红包中奖|未中奖记录")
+//    private  AbstractPageService.PageResults<IntegralRecord> pageInfo;
 }

@@ -56,15 +56,15 @@ public class SaleMemberController {
     @GetMapping("info")
     @ApiOperation(value = "销售员中心", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
-    public RestResult info(@ApiIgnore H5LoginVO jwtUser, DaoSearchWithOrganizationIdParam search) throws Exception {
+    public RestResult<SaleInfo> info(@ApiIgnore H5LoginVO jwtUser) throws Exception {
         if(MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
             throw new SuperCodeException("会员角色错误...");
         }
         SaleInfo saleInfo = new SaleInfo();
         // 1 获取红包统计信息
         Map acquireMoneyAndAcquireNums = service.getAcquireMoneyAndAcquireNums(jwtUser.getMemberId(), jwtUser.getMemberType(), jwtUser.getOrganizationId());
-        // 3 获取扫码信息 TODO bUG 导购扫码的时候，需要将导购用户带到营销，等待码平台参数交互
-        Integer scanNum = es.searchScanInfoNum(jwtUser.getMemberId(), jwtUser.getMemberType());
+        // 3 获取扫码信息
+        Integer scanNum = es.searchScanInfoNum(jwtUser.getMemberId(), MemberTypeEnums.SALER.getType());
         // 4 数据转换
         saleInfo.setScanQRCodeNum(scanNum);
         saleInfo.setScanAmoutNum((Integer) acquireMoneyAndAcquireNums.get("count"));
@@ -107,7 +107,7 @@ public class SaleMemberController {
      * @return
      */
     @GetMapping("getOrgName")
-    public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, H5LoginVO jwtUser) throws SuperCodeException {
+    public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException {
 
         // 数据埋点
         taskExecutor.execute(new Runnable() {

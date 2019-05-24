@@ -370,7 +370,7 @@ public class CodeEsService extends AbstractEsSearch {
 	}
 
 	/**
-	 * 获取导购员的所有扫码记录
+	 * 获取导购员的所有扫码后的领奖记录
 	 * @param memberId
 	 * @param memberType
 	 * @return
@@ -382,7 +382,7 @@ public class CodeEsService extends AbstractEsSearch {
     	if(memberType == null){
 			throw new SuperCodeException("会员类型获取失败...");
 		}
-		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termOrgIdQuery = new TermQueryBuilder("userId",memberId);
 		QueryBuilder termUserIdQuery = new TermQueryBuilder("memberType",memberType);
 		StatsAggregationBuilder aggregation =
