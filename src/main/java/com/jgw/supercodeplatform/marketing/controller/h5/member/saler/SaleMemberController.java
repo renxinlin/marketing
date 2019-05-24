@@ -22,6 +22,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.elasticsearch.monitor.os.OsStats;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -54,7 +56,7 @@ public class SaleMemberController {
         SaleInfo saleInfo = new SaleInfo();
         // 1 获取红包统计信息
         Map acquireMoneyAndAcquireNums = service.getAcquireMoneyAndAcquireNums(jwtUser.getMemberId(), jwtUser.getMemberType(), jwtUser.getOrganizationId());
-        // 3 获取扫码信息
+        // 3 获取扫码信息 TODO bUG 导购扫码的时候，需要将导购用户带到营销，等待码平台参数交互
         Integer scanNum = es.searchScanInfoNum(jwtUser.getMemberId(), jwtUser.getMemberType());
         // 4 数据转换
         saleInfo.setScanQRCodeNum(scanNum);
@@ -87,4 +89,21 @@ public class SaleMemberController {
         // 4 数据转换
         return RestResult.success("success",objectPageResults);
     }
+    @Autowired
+    private TaskExecutor taskExecutor;
+
+    @GetMapping("")
+    public RestResult<Map<String,String>>  getOrgNameAndAnsycPushScanIfo(String orgId ,String wxstate, H5LoginVO jwtUser){
+        // 数据埋点
+        taskExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                // index
+            }
+        });
+
+        return null;
+    }
+
+
 }
