@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -260,17 +261,20 @@ public class CodeEsService extends AbstractEsSearch {
 
 		// out of date
 		TransportClient eClient = SpringContextUtil.getBean("elClient");
-		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKETING.getIndex()).setTypes( EsType.INFO.getType());
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
+		// 只获取会员活动点击量
+		QueryBuilder memberType = QueryBuilders.termQuery("memberType", MemberTypeEnums.VIP.getType().intValue());
+
 		StatsAggregationBuilder aggregation =
 				AggregationBuilders
 						.stats(AggregationName)
 						// 聚和字段：码
 						.field("scanCodeTime");
 		// 添加查询条件
-		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate);
+		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate).setQuery(memberType);
 		searchRequestBuilder.addAggregation(aggregation);
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
@@ -370,7 +374,7 @@ public class CodeEsService extends AbstractEsSearch {
 	}
 
 	/**
-	 * 获取导购员的所有扫码记录
+	 * 获取导购员的所有扫码后的领奖记录
 	 * @param memberId
 	 * @param memberType
 	 * @return
@@ -382,7 +386,7 @@ public class CodeEsService extends AbstractEsSearch {
     	if(memberType == null){
 			throw new SuperCodeException("会员类型获取失败...");
 		}
-		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termOrgIdQuery = new TermQueryBuilder("userId",memberId);
 		QueryBuilder termUserIdQuery = new TermQueryBuilder("memberType",memberType);
 		StatsAggregationBuilder aggregation =
@@ -398,16 +402,18 @@ public class CodeEsService extends AbstractEsSearch {
 
     }
 
-	/**
-	 * 扫码信息,扫完就插入,插入失败不影响业务
-	 * @param sCodeInfoMO
-	 */
+    /**
+     * 扫码信息,扫完就插入,插入失败不影响业务
+     * @param sCodeInfoMO
+     */
     public void indexScanInfo(ScanCodeInfoMO sCodeInfoMO) {
-    	try{
-    		// todo  保存用户产品信息
-
-		}catch (Exception e){
-    		//
-		}
+        try{
+            // 保存用户产品信息
+            eClient.prepareIndex(EsIndex.MARKET_SCAN_INFO.getIndex(), EsType.INFO.getType())
+					.setSource(JSONObject.toJSONString(sCodeInfoMO), XContentType.JSON).get();
+        }catch (Exception e){
+            logger.debug("扫码信息插入失败");
+            logger.debug(e.getMessage(), e);
+        }
     }
 }

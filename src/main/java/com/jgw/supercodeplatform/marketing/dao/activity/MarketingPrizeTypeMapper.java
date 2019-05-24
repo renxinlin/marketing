@@ -10,17 +10,18 @@ import java.util.List;
 public interface MarketingPrizeTypeMapper {
 
 	String allFields =" Id id,ActivitySetId activitySetId,PrizeTypeName prizeTypeName,PrizeAmount prizeAmount,PrizeProbability prizeProbability,IsRrandomMoney isRrandomMoney,"
-			+"WiningNum winingNum,RealPrize realPrize,LowRand lowRand,HighRand highRand,AwardType awardType,RemainingStock remainingStock,CardLink cardLink,AwardIntegralNum awardIntegralNum,ReferenceRole referenceRole";
+			+"WiningNum winingNum,RealPrize realPrize,LowRand lowRand,HighRand highRand,AwardType awardType,RemainingStock remainingStock,CardLink cardLink,"
+			+ "AwardIntegralNum awardIntegralNum";
 
 
 
 	@Insert({
 			"<script>",
 			"INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,IsRrandomMoney,WiningNum,RealPrize,LowRand,HighRand,AwardType, RemainingStock,"
-			+ "CardLink,AwardIntegralNum,ReferenceRole) VALUES ",
+			+ "CardLink,AwardIntegralNum) VALUES ",
 			"<foreach collection='mList' item='mPrize' index='index' separator=','>",
 			"(#{mPrize.activitySetId},#{mPrize.prizeTypeName},#{mPrize.prizeAmount},#{mPrize.prizeProbability},#{mPrize.isRrandomMoney},#{mPrize.winingNum},"
-			+ "#{mPrize.realPrize},#{mPrize.lowRand},#{mPrize.highRand},#{mPrize.awardType},#{mPrize.remainingStock},#{mPrize.cardLink},#{mPrize.awardIntegralNum},#{mPrize.referenceRole})",
+			+ "#{mPrize.realPrize},#{mPrize.lowRand},#{mPrize.highRand},#{mPrize.awardType},#{mPrize.remainingStock},#{mPrize.cardLink},#{mPrize.awardIntegralNum})",
 			"</foreach>",
 			"</script>"
 	})

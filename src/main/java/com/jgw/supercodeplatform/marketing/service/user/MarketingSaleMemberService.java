@@ -271,6 +271,10 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			throw new SuperCodeException("验证码校验失败");
 		}
 		MarketingUser marketingUser = mapper.selectByPhone(loginUser.getMobile());
+		if(marketingUser == null){
+			throw new SuperCodeException("用户不存在");
+
+		}
 		if(!loginUser.getOrganizationId().equals(marketingUser.getOrganizationId())){
 			throw new SuperCodeException("组织校验失败");
 
@@ -302,6 +306,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		// 3数据转换和保存
 		MarketingUser userDo =changeToDo(userInfo);
+
 		int i = mapper.insertSelective(userDo);
 		if(i !=1){
 			throw new SuperCodeException("保存信息失败...");
@@ -339,17 +344,17 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(StringUtils.isBlank(userInfo.getVerificationCode())){
 			throw new SuperCodeException("请填入验证码...");
 		}
-		if(StringUtils.isBlank(userInfo.getPCCcode())){
+		if(StringUtils.isBlank(userInfo.getpCCcode())){
 			throw new SuperCodeException("请输入所在地信息...");
 		}
-
-		if(StringUtils.isBlank(userInfo.getCustomerId())){
-			throw new SuperCodeException("请输入渠道ID信息...");
-		}
-
-		if(StringUtils.isBlank(userInfo.getCustomerName())){
-			throw new SuperCodeException("请输入渠道名称信息...");
-		}
+        // 产品需求改变:非必填
+//		if(StringUtils.isBlank(userInfo.getCustomerId())){
+//			throw new SuperCodeException("请输入渠道ID信息...");
+//		}
+//
+//		if(StringUtils.isBlank(userInfo.getCustomerName())){
+//			throw new SuperCodeException("请输入渠道名称信息...");
+//		}
 
 
 	}
@@ -389,7 +394,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		// pcccode转换
 		// 省市区编码
-		String pcccode = userInfo.getPCCcode();
+		String pcccode = userInfo.getpCCcode();
 		List<JSONObject> objects = JSONObject.parseArray(pcccode,JSONObject.class);
 		JSONObject province = objects.get(0);
 		JSONObject city = objects.get(1);
@@ -408,6 +413,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		userDtoToDb.setMemberType(MemberTypeEnums.SALER.getType());
 		// USER ID
 		userDtoToDb.setUserId(UUID.randomUUID().toString().replaceAll("-",""));
+		if(StringUtils.isBlank(userDtoToDb.getOpenid())){
+			userDtoToDb.setOpenid(null);
+		}
 		return userDtoToDb;
 	}
 

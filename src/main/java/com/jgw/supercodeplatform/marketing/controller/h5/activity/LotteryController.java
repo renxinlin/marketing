@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -38,16 +39,16 @@ public class LotteryController extends CommonUtil {
 	@Value("${rest.user.url}")
 	private String USER_SERVICE;
 
-    @RequestMapping(value = "/lottery",method = RequestMethod.POST)
+    @RequestMapping(value = "/lottery",method = RequestMethod.GET)
     @ApiOperation(value = "用户点击领奖方法", notes = "")
-    public RestResult<String> lottery(String wxstate) throws Exception {
+    public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
         return service.lottery(wxstate, request);
     }
     
     
-    @RequestMapping(value = "/previewLottery",method = RequestMethod.POST)
+    @RequestMapping(value = "/previewLottery",method = RequestMethod.GET)
     @ApiOperation(value = "活动预览领奖方法", notes = "")
-    public RestResult<String> previewLottery(String uuid) throws Exception {
+    public RestResult<LotteryResultMO> previewLottery(String uuid) throws Exception {
         return service.previewLottery(uuid, request);
     }
     /**
