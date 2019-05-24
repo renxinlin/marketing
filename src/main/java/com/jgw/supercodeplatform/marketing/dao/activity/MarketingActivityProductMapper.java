@@ -22,9 +22,9 @@ public interface MarketingActivityProductMapper extends CommonSql{
 
 	@Insert({
 			"<script>",
-			"INSERT INTO marketing_activity_product(ActivitySetId,CodeType,ProductBatchId,ProductBatchName,ProductId,ProductName,CodeTotalAmount) VALUES ",
+			"INSERT INTO marketing_activity_product(ActivitySetId,CodeType,ProductBatchId,ProductBatchName,ProductId,ProductName,CodeTotalAmount,ReferenceRole) VALUES ",
 			"<foreach collection='mList' item='mProduct' index='index' separator=','>",
-			"(#{mProduct.activitySetId},#{mProduct.codeType},#{mProduct.productBatchId},#{mProduct.productBatchName},#{mProduct.productId},#{mProduct.productName},#{mProduct.codeTotalAmount})",
+			"(#{mProduct.activitySetId},#{mProduct.codeType},#{mProduct.productBatchId},#{mProduct.productBatchName},#{mProduct.productId},#{mProduct.productName},#{mProduct.codeTotalAmount},#{mProduct.referenceRole})",
 			"</foreach>",
 			"</script>"
 	})
