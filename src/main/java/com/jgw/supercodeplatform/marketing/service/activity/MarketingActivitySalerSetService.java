@@ -391,7 +391,6 @@ public class MarketingActivitySalerSetService   {
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
 		// 门槛保存红包条件和每人每天上限
 		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
 		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
@@ -426,7 +425,6 @@ public class MarketingActivitySalerSetService   {
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
 		// 门槛保存红包条件和每人每天上限
 		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
 		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
@@ -607,7 +605,6 @@ public class MarketingActivitySalerSetService   {
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
 		mSet.setId(activitySetParam.getId());
 		// 门槛保存红包条件和每人每天上限
 		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();

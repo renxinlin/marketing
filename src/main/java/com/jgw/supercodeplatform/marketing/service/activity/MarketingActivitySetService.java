@@ -24,6 +24,7 @@ import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.*;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
@@ -244,11 +245,14 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber());
 		mSet.setId(id);
 		mSet.setActivityDesc(activitySetParam.getActivityDesc());
-		mSet.setConsumeIntegralNum(activitySetParam.getConsumeIntegralNum());
-		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
+		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
+		condition.setEachDayNumber(activitySetParam.getEachDayNumber() == null?200:activitySetParam.getEachDayNumber());
+		condition.setConsumeIntegral(activitySetParam.getConsumeIntegralNum());
+		condition.setParticipationCondition(activitySetParam.getParticipationCondition());
+		mSet.setValidCondition(condition.toJsonString());
+		// 起止时间校验【允许活动不传时间，但起止时间不可颠倒】
 		mSet.setActivityStatus(1);
 		mSet.setOrganizationId(organizationId);
 		mSet.setOrganizatioIdlName(organizationName);
@@ -280,7 +284,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
 		// 门槛保存红包条件和每人每天上限
 		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
 		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
@@ -795,6 +798,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		if(StringUtils.isNotBlank(conditionStr)) {
 			MarketingActivitySetCondition condition = JSON.parseObject(conditionStr, MarketingActivitySetCondition.class);
 			marketingActivitySetParam.setParticipationCondition(condition.getParticipationCondition());
+			marketingActivitySetParam.setEachDayNumber(condition.getEachDayNumber());
+			marketingActivitySetParam.setConsumeIntegralNum(condition.getConsumeIntegral());
 		}
 		marketingActivityCreateParam.setmActivitySetParam(marketingActivitySetParam);
 		//获取拼接活动设置产品参数
