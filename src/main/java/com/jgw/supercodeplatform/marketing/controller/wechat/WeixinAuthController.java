@@ -485,6 +485,7 @@ public class WeixinAuthController {
 					.append("&organizationId=").append(organizationId);
 			redirectUrl =  h5pageUrl + WechatConstants.SALER_LOGIN_URL+sb.toString();
 		}
+		logger.info("导购扫码最终返回url:"+redirectUrl);
 		return  redirectUrl;
 	}
 }
