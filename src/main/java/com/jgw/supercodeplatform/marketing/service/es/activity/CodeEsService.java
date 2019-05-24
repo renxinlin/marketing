@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -264,13 +265,16 @@ public class CodeEsService extends AbstractEsSearch {
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
+		// 只获取会员活动点击量
+		QueryBuilder memberType = QueryBuilders.termQuery("memberType", MemberTypeEnums.VIP.getType().intValue());
+
 		StatsAggregationBuilder aggregation =
 				AggregationBuilders
 						.stats(AggregationName)
 						// 聚和字段：码
 						.field("scanCodeTime");
 		// 添加查询条件
-		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate);
+		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate).setQuery(memberType);
 		searchRequestBuilder.addAggregation(aggregation);
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
