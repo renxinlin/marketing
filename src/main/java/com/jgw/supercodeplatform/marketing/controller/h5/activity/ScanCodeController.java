@@ -34,8 +34,6 @@ public class ScanCodeController {
     @Autowired
     private CommonUtil commonUtil;
     @Autowired
-    private CodeEsService codeEsService;
-    @Autowired
     private MarketingActivitySetService mActivitySetService;
 
     @Autowired
@@ -160,7 +158,6 @@ public class ScanCodeController {
 		}
 
     	ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
-    	codeEsService.indexScanInfo(sCodeInfoMO);
     	//在校验产品及产品批次时可以从活动设置表中获取组织id
         String organizationId=sCodeInfoMO.getOrganizationId();
 
