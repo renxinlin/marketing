@@ -152,7 +152,7 @@ public class MarketingActivitySetController {
      */
     @PostMapping(value = "/preview")
     @ApiOperation("活动预览")
-    @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
+    @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
     public RestResult<String> preview(@RequestBody MarketingActivityPreviewParam mPreviewParam) throws WriterException, IOException, SuperCodeException{
         return service.preview(mPreviewParam);
     }

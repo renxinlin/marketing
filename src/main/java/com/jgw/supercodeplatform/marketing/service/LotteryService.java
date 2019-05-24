@@ -517,6 +517,7 @@ public class LotteryService {
 			} catch (Exception e) {
 			}
 		}
+		restResult.setResults(lResultMO);
 		restResult.setState(200);
 		return restResult;
 	}
