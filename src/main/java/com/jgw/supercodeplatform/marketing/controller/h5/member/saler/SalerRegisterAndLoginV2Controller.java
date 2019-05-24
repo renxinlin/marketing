@@ -29,9 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -131,10 +129,10 @@ public class SalerRegisterAndLoginV2Controller {
     }
 
 
-   @GetMapping("/tempRegister")
+   @PostMapping("/tempRegister")
    @ResponseBody
-   @ApiOperation(value = "注册 此版本为前端授权后调用的注册接口", notes = "")
-   public RestResult loadingRegisterBeforeWxReturnOpenId(MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
+   @ApiOperation(value = "此版本为前端授权后调用的注册接口", notes = "")
+   public RestResult loadingRegisterBeforeWxReturnOpenId(@RequestBody  MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
            // 直接保存 有微信用户时携带openiD访问该接口
          service.saveRegisterUser(userInfo);
          return RestResult.success();

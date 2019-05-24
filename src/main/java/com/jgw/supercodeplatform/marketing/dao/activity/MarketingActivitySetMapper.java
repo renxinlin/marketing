@@ -14,9 +14,9 @@ import java.util.List;
 public interface MarketingActivitySetMapper extends CommonSql {
  static String allFields="Id id,ActivityId ActivityId,ActivityTitle ActivityTitle,ActivityStartDate ActivityStartDate,"
  		+ "ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,CreateDate createDate,UpdateDate UpdateDate,"
- 		+ "ActivityStatus ActivityStatus,EachDayNumber EachDayNumber,ActivityRangeMark ActivityRangeMark,"
+ 		+ "ActivityStatus ActivityStatus,ActivityRangeMark ActivityRangeMark,"
  		+ "autoFetch autoFetch,CodeTotalNum codeTotalNum,OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,"
- 		+ "ActivityDesc activityDesc,ConsumeIntegralNum consumeIntegralNum, ValidCondition validCondition ";
+ 		+ "ActivityDesc activityDesc, ValidCondition validCondition ";
 
     String whereSearch =
                     "<choose>"
@@ -58,11 +58,11 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
 
    @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle,"
-           + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus,EachDayNumber,"
-           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ConsumeIntegralNum,ActivityDesc) "
+           + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus,"
+           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc),ValidCondition "
            + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate},"
-           + "#{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.eachDayNumber},#{ma.activityRangeMark}, "
-           + "#{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(),#{ma.consumeIntegralNum} ,#{ma.activityDesc}"
+           + "#{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.activityRangeMark}, "
+           + "#{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition}"
            + ")")
    @Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
    int insert(@Param("ma")MarketingActivitySet marketingActivitySet);
@@ -103,13 +103,12 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " <if test='updateUserName !=null and updateUserName != &apos;&apos; '> UpdateUserName = #{updateUserName} ,</if> "
             + " <if test='updateDate !=null and updateDate != &apos;&apos; '> UpdateDate = #{updateDate} ,</if> "
             + " <if test='activityStatus !=null and activityStatus != &apos;&apos; '> ActivityStatus = #{activityStatus} ,</if> "
-            + " <if test='eachDayNumber !=null and eachDayNumber != &apos;&apos; '> EachDayNumber = #{eachDayNumber} ,</if> "
             + " <if test='activityRangeMark !=null and activityRangeMark != &apos;&apos; '> ActivityRangeMark = #{activityRangeMark} ,</if> "
             + " <if test='autoFetch !=null and autoFetch != &apos;&apos; '> autoFetch = #{autoFetch} ,</if> "
             + " <if test='codeTotalNum !=null and codeTotalNum != &apos;&apos; '> CodeTotalNum = #{codeTotalNum} ,</if> "
-		    + " <if test='consumeIntegralNum !=null and consumeIntegralNum != &apos;&apos; '> ConsumeIntegralNum = #{consumeIntegralNum} ,</if> "
-		    + " <if test='activityDesc !=null and activityDesc != &apos;&apos; '> ActivityDesc = #{activityDesc} ,</if> "
-            + " </set> "
+		    + " <if test='validCondition !=null and validCondition != &apos;&apos; '> ValidCondition = #{validCondition} ,</if> "
+            + " <if test='activityDesc !=null and activityDesc != &apos;&apos; '> ActivityDesc = #{activityDesc} ,</if> "
+		    + " </set> "
             + " where Id = #{id}" +endScript
     )
     int update(MarketingActivitySet mActivitySet);

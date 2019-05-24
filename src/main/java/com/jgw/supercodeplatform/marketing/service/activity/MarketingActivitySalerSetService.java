@@ -311,25 +311,23 @@ public class MarketingActivitySalerSetService   {
 		// 事务参与计量器
 		CyclicBarrier cb = new CyclicBarrier(TX_THREAD_NUM);
 // step-1：获取实体
-		// 获取非前端参数
-
 		// 1 产品参数
 		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		// 2 获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		// 3 渠道参数:TODO 本期不做校验不做保存
 		List<MarketingChannelParam> mChannelParams = activitySetParam.getmChannelParams();
+		// 4 获取主表数据
+		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getmActivitySetParam();
 
 // step-2：校验实体
 		validateBasicBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
 		validateBizBySalerUpdate(activitySetParam,maProductParams,mPrizeTypeParams);
 
-// step-3：先删后增
-		MarketingActivitySalerSetUpdateParam mActivitySetParam = activitySetParam.getmActivitySetParam();
 
 
 
-// step-4：转换保存实体
+// step-3：转换保存实体
 		// 4 获取活动实体：校验并且保存 返回活动主键ID
 		// 插入完成携带主键
 		MarketingActivitySet marketingActivitySet = changeDtoToDoWhenCopy(mActivitySetParam, organizationId, organizationName);
@@ -337,8 +335,6 @@ public class MarketingActivitySalerSetService   {
 		// 替换复制功能后[新增主表数据,先删或加子表数据]的主键
 		// 插入数据库后获取
 		Long activitySetId= marketingActivitySet.getId();
-
-
 		//保存渠道 TODO 后期增加该逻辑
 		if (!CollectionUtils.isEmpty(mChannelParams)) {
 			saveChannels(mChannelParams,activitySetId);
@@ -391,7 +387,6 @@ public class MarketingActivitySalerSetService   {
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
 		// 门槛保存红包条件和每人每天上限
 		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
 		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
@@ -426,7 +421,6 @@ public class MarketingActivitySalerSetService   {
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
 		// 门槛保存红包条件和每人每天上限
 		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
 		condition.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber() );
@@ -499,67 +493,6 @@ public class MarketingActivitySalerSetService   {
 	}
 
 
-
-
-	@Autowired
-	private TaskExecutor taskExecutor;
-	/**
-	 * 事务管理器
-	 */
-	ThreadLocal<PlatformTransactionManager> transm = new ThreadLocal<>();
-	/**
-	 * 事务状态ID
-	 */
-	ThreadLocal<TransactionStatus> transs = new ThreadLocal<>();
-	/**
-	 * 参与事务的线程数
-	 */
-	private static final int TX_THREAD_NUM = 3;
-
-	/**
-	 * 初始化子线程事务
-	 */
-	private void initTx() {
-		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-		PlatformTransactionManager txManager = SpringContextUtil.getBean(PlatformTransactionManager.class);
-		TransactionStatus status = txManager.getTransaction(def);
-		transm.set(txManager);
-		transs.set(status);
-		logger.error("开启事务");
-
-	}
-	/**
-	 * 多线程事务提交/回滚
-	 * @param cb
-	 * @param num
-	 */
-	private void transControl(  CyclicBarrier cb ,AtomicInteger successNum){
-		try {
-			logger.error("事务等待ing");
-			cb.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (BrokenBarrierException e) {
-			e.printStackTrace();
-		}finally {
-			commitOrRollback(successNum);
-		}
-	}
-	private void commitOrRollback(AtomicInteger successNum) {
-		logger.error("事务预提交数目{}",successNum.get());
-		PlatformTransactionManager txManager = (PlatformTransactionManager) transm.get();
-		TransactionStatus status = (TransactionStatus) transs.get();
-		if(TX_THREAD_NUM == successNum.get()){
-			txManager.commit(status);
-		}else {
-			txManager.rollback(status);
-
-		}
-	}
-
-
-
 	private void validateBasicBySalerUpdate(MarketingSalerActivityUpdateParam activitySetParam, List<MarketingActivityProductParam> maProductParams, List<MarketingPrizeTypeParam> mPrizeTypeParams) throws SuperCodeException {
 		if(activitySetParam == null){
 			throw new SuperCodeException("导购活动参数丢失001");
@@ -607,7 +540,6 @@ public class MarketingActivitySalerSetService   {
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber()==null ? 200:activitySetParam.getEachDayNumber());
 		mSet.setId(activitySetParam.getId());
 		// 门槛保存红包条件和每人每天上限
 		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
@@ -807,4 +739,111 @@ public class MarketingActivitySalerSetService   {
 		}
 		mPrizeTypeMapper.batchInsert(mList);
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+	/*========================================= 多线程 事务 trans start=========================================*/
+	/******************************************
+	 *
+	 */
+
+	class JgwTransaction{
+		/**
+		 * tx manager
+		 */
+		ThreadLocal<PlatformTransactionManager> manager = new ThreadLocal<>();
+
+		/**
+		 * status
+		 */
+		ThreadLocal<TransactionStatus> status = new ThreadLocal<>();
+
+		/**
+		 * method using thread  num
+		 */
+		private int TX_THREAD_NUM;
+		/**
+		 * thread pool for biz
+		 */
+		@Autowired
+		private TaskExecutor taskExecutor;
+		/**
+		 * its throw exception where mrthods Son threads + 1 != TX_THREAD_NUM
+		 */
+		int throwExIfThreadOut;
+		/**
+		 * 应用层同一全局事务Id标志;aop通过该参数的该属性确定是否为同一应用层事务
+		 */
+		private String uuid;
+
+
+	}
+
+	@Autowired
+	private TaskExecutor taskExecutor;
+	/**
+	 * 事务管理器
+	 */
+	ThreadLocal<PlatformTransactionManager> transm = new ThreadLocal<>();
+	/**
+	 * 事务状态ID
+	 */
+	ThreadLocal<TransactionStatus> transs = new ThreadLocal<>();
+	/**
+	 * 参与事务的线程数
+	 */
+	private static final int TX_THREAD_NUM = 3;
+
+	/**
+	 * 初始化子线程事务
+	 */
+	private void initTx() {
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		PlatformTransactionManager txManager = SpringContextUtil.getBean(PlatformTransactionManager.class);
+		TransactionStatus status = txManager.getTransaction(def);
+		transm.set(txManager);
+		transs.set(status);
+		logger.error("开启事务");
+
+	}
+	/**
+	 * 多线程事务提交/回滚
+	 * @param cb
+	 * @param num
+	 */
+	private void transControl(  CyclicBarrier cb ,AtomicInteger successNum){
+		try {
+			logger.error("事务等待ing");
+			cb.await();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (BrokenBarrierException e) {
+			e.printStackTrace();
+		}finally {
+			commitOrRollback(successNum);
+		}
+	}
+	private void commitOrRollback(AtomicInteger successNum) {
+		logger.error("事务预提交数目{}",successNum.get());
+		PlatformTransactionManager txManager = transm.get();
+		TransactionStatus status = transs.get();
+		if(TX_THREAD_NUM == successNum.get()){
+			txManager.commit(status);
+		}else {
+			txManager.rollback(status);
+		}
+	}
+
+	/*=========================================trans start=========================================*/
+
 }

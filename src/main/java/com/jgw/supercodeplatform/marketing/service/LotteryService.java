@@ -224,7 +224,7 @@ public class LotteryService {
 		String productId=scanCodeInfoMO.getProductId();
 		String productBatchId=scanCodeInfoMO.getProductBatchId();
 		String mobile=scanCodeInfoMO.getMobile();
- 		boolean flag=holdLockJudgeES(restResult,marketingMembersInfo.getId(),marketingMembersInfo.getMemberType().intValue(), openId,productId,productBatchId, activitySetId, mActivitySet, organizationId, codeId, codeTypeId);
+ 		boolean flag=holdLockJudgeES(restResult,marketingMembersInfo.getId(),marketingMembersInfo.getMemberType().intValue(), openId,productId,productBatchId, activitySetId, mSetCondition, organizationId, codeId, codeTypeId);
  		LotteryResultMO lotteryResultMO=new LotteryResultMO();
  		if (!flag ) {
  			lotteryResultMO.setWinnOrNot(0);
@@ -307,7 +307,7 @@ public class LotteryService {
 	}
 	
 	private boolean holdLockJudgeES(RestResult<LotteryResultMO> restResult,Long memberId,int memberType, String openId,String productId, String productBatchId, Long activitySetId,
-			MarketingActivitySet mActivitySet, String organizationId, String codeId, String codeTypeId) {
+			MarketingActivitySetCondition mSetCondition, String organizationId, String codeId, String codeTypeId) {
 		boolean acquireLock =false;
 		try {
 			// 超时时间,重试次数，重试间隔
@@ -325,7 +325,7 @@ public class LotteryService {
 				logger.info("领取方法=====：根据codeId="+codeId+",codeTypeId="+codeTypeId+"获得的扫码记录次数为="+codeCount);
 				if (null==codeCount ||codeCount.intValue()<1) {
 					//校验有没有设置活动用户扫码量限制
-					Integer scanLimit=mActivitySet.getEachDayNumber();
+					Integer scanLimit=mSetCondition.getEachDayNumber();
 					if (null!=scanLimit&& scanLimit.intValue()>0) {
 						Long userscanNum=codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTtimeStemp);
 						logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+",nowTime="+nowTime+"获得的用户扫码记录次数为="+userscanNum+",当前活动扫码限制次数为："+scanLimit);

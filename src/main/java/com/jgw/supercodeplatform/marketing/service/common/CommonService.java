@@ -20,10 +20,16 @@ import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
+import com.jgw.supercodeplatform.marketing.enums.EsIndex;
+import com.jgw.supercodeplatform.marketing.enums.EsType;
 import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -62,7 +68,10 @@ public class CommonService {
 	
 	@Value("${rest.code.url}")
 	private String msCodeUrl;
-	
+	@Autowired
+	@Qualifier("elClient")
+	private TransportClient eClient;
+
 	public RestResult<String> sendPhoneCode(String mobile) throws Exception {
 		RestResult<String> resuRestResult=new RestResult<String>();
 		if (StringUtils.isBlank(mobile)) {
@@ -343,5 +352,20 @@ public class CommonService {
 		return true;
 
 	}
-	
+
+    public void indexScanInfo(MarketingMemberAndScanCodeInfoParam infoParam) throws SuperCodeException{
+		if(infoParam.getMemberType() == null ){
+			logger.error("扫码MemberType不存在{}",JSONObject.toJSONString(infoParam));
+			throw new SuperCodeException("扫码MemberType不存在");
+		}
+		JSONObject.toJSONString(infoParam);
+		// 保存用户产品信息
+		try {
+			eClient.prepareIndex(EsIndex.MARKET_SCAN_INFO.getIndex(), EsType.INFO.getType())
+					.setSource(JSONObject.toJSONString(infoParam), XContentType.JSON).get();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new SuperCodeException("index 扫码信息失败");
+		}
+	}
 }

@@ -344,17 +344,17 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(StringUtils.isBlank(userInfo.getVerificationCode())){
 			throw new SuperCodeException("请填入验证码...");
 		}
-		if(StringUtils.isBlank(userInfo.getPCCcode())){
+		if(StringUtils.isBlank(userInfo.getpCCcode())){
 			throw new SuperCodeException("请输入所在地信息...");
 		}
-
-		if(StringUtils.isBlank(userInfo.getCustomerId())){
-			throw new SuperCodeException("请输入渠道ID信息...");
-		}
-
-		if(StringUtils.isBlank(userInfo.getCustomerName())){
-			throw new SuperCodeException("请输入渠道名称信息...");
-		}
+        // 产品需求改变:非必填
+//		if(StringUtils.isBlank(userInfo.getCustomerId())){
+//			throw new SuperCodeException("请输入渠道ID信息...");
+//		}
+//
+//		if(StringUtils.isBlank(userInfo.getCustomerName())){
+//			throw new SuperCodeException("请输入渠道名称信息...");
+//		}
 
 
 	}
@@ -394,7 +394,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		// pcccode转换
 		// 省市区编码
-		String pcccode = userInfo.getPCCcode();
+		String pcccode = userInfo.getpCCcode();
 		List<JSONObject> objects = JSONObject.parseArray(pcccode,JSONObject.class);
 		JSONObject province = objects.get(0);
 		JSONObject city = objects.get(1);

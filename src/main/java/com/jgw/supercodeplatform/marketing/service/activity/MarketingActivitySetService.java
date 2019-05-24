@@ -1,5 +1,29 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -19,31 +43,34 @@ import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.*;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.*;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
-import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 import com.jgw.supercodeplatform.pojo.cache.AccountCache;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class MarketingActivitySetService extends AbstractPageService<DaoSearchWithOrganizationIdParam> {
@@ -245,11 +272,14 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
-		mSet.setEachDayNumber(activitySetParam.getEachDayNumber());
 		mSet.setId(id);
 		mSet.setActivityDesc(activitySetParam.getActivityDesc());
-		mSet.setConsumeIntegralNum(activitySetParam.getConsumeIntegralNum());
-		// 岂止时间校验【允许活动不传时间，但起止时间不可颠倒】
+		MarketingActivitySetCondition condition = new MarketingActivitySetCondition();
+		condition.setEachDayNumber(activitySetParam.getEachDayNumber() == null?200:activitySetParam.getEachDayNumber());
+		condition.setConsumeIntegral(activitySetParam.getConsumeIntegralNum());
+		condition.setParticipationCondition(activitySetParam.getParticipationCondition());
+		mSet.setValidCondition(condition.toJsonString());
+		// 起止时间校验【允许活动不传时间，但起止时间不可颠倒】
 		mSet.setActivityStatus(1);
 		mSet.setOrganizationId(organizationId);
 		mSet.setOrganizatioIdlName(organizationName);
@@ -261,7 +291,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		
 		return mSet;
 	}
-
 
 	/**
 	 * 校验活动创建时间
@@ -524,34 +553,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		return restResult;
 	}
 
-	private boolean validateParam(MarketingPageUpdateParam mUpdateParam) {
-		// 校验更新中奖和领奖的参数;都执行了update所以参数要合法
-		boolean validateResult = false;
-		if (mUpdateParam == null){
-			return  validateResult;
-		}
-		// 领取页校验
-		MarketingReceivingPageParam marketingReceivingPageParam = mUpdateParam.getmReceivingPageParam();
-		if (org.springframework.util.StringUtils.isEmpty(marketingReceivingPageParam)) {
-			return  validateResult;
-		}
-		// 校验ID
-		if (null==marketingReceivingPageParam.getId() || marketingReceivingPageParam.getId() <= 0  ){
-			return  validateResult;
-		}
-		// 校验取值范围0-1 领取页是否显示
-		if (!(marketingReceivingPageParam.getIsReceivePage() ==0 || marketingReceivingPageParam.getIsReceivePage() ==1) ){
-			return  validateResult;
-		}
-		// 校验取值范围0-1 二维码是否显示
-		if (!(marketingReceivingPageParam.getIsQrcodeView() ==0 || marketingReceivingPageParam.getIsQrcodeView() ==1) ){
-			return  validateResult;
-		}
-		// 校验通过
-		return  ! validateResult;
-	}
-
-
 	/**
 	 * 活动扫码跳转授权前判断逻辑
 	 * @param productBatchId
@@ -720,6 +721,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		if(StringUtils.isNotBlank(conditionStr)) {
 			MarketingActivitySetCondition condition = JSON.parseObject(conditionStr, MarketingActivitySetCondition.class);
 			marketingActivitySetParam.setParticipationCondition(condition.getParticipationCondition());
+			marketingActivitySetParam.setEachDayNumber(condition.getEachDayNumber());
+			marketingActivitySetParam.setConsumeIntegralNum(condition.getConsumeIntegral());
 		}
 		marketingActivityCreateParam.setmActivitySetParam(marketingActivitySetParam);
 		//获取拼接活动设置产品参数

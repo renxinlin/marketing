@@ -13,18 +13,18 @@ spring:
     multipart:
       max-request-size: 100Mb
   application: 
-    name: platform-marketing-supercode-test
+    name: platform-marketing-supercode-lyl
   cloud:
     config:
       uri: http://192.168.2.216:7001
       profile: dev
       label: master
-     
+      name: platform-marketing-supercode-test
 eureka: 
   instance:
     prefer-ip-address: true
     non-secure-port: ${server.port}
   client:
     service-url: 
-      defaultZone:  /eureka/,http://192.168.2.216:8762/eureka/
+      defaultZone:  /eureka/,http://127.0.0.1:8761/eureka/
 
