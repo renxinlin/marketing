@@ -154,6 +154,10 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		//获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		
+		MarketingActivitySet existmActivitySet =mSetMapper.selectByTitleOrgId(activitySetParam.getmActivitySetParam().getActivityTitle(),organizationId);
+		if (null!=existmActivitySet) {
+			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
+		}
 		//获取活动实体
 		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getmActivitySetParam(),organizationId,organizationName);
 		
@@ -231,10 +235,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		String title=activitySetParam.getActivityTitle();
 		if (StringUtils.isBlank(title)) {
 			throw new SuperCodeException("添加的活动设置标题不能为空", 500);
-		}
-		MarketingActivitySet existmActivitySet =mSetMapper.selectByTitleOrgId(activitySetParam.getActivityTitle(),organizationId);
-		if (null!=existmActivitySet) {
-			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
 		}
 		activityTimeCheck(activitySetParam.getActivityStartDate(),activitySetParam.getActivityEndDate());
 		Long id=activitySetParam.getId();
