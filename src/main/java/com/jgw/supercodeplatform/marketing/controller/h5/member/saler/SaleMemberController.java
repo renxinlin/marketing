@@ -54,20 +54,17 @@ public class SaleMemberController {
     private IntegralRecordService service;
     @Autowired
     private CodeEsService es;
-    @Autowired
-    private LotteryService lotteryService;
 
     @Autowired
     private CommonService commonService;
 
+    @Autowired
     private TaskExecutor taskExecutor;
 
     @Autowired
     private GlobalRamCache globalRamCache;
 
-    @Autowired
-    @Qualifier("elClient")
-    private TransportClient eClient;
+
 
 
     @GetMapping("info")
@@ -135,13 +132,12 @@ public class SaleMemberController {
                     infoParam.setUserId(jwtUser.getMemberId());
                     infoParam.setUserName(jwtUser.getMemberName());
                     infoParam.setMemberType(jwtUser.getMemberType());
-                    JSONObject.toJSONString(infoParam);
-                    // 保存用户产品信息
-                    eClient.prepareIndex(EsIndex.MARKET_SCAN_INFO.getIndex(), EsType.INFO.getType())
-                            .setSource(JSONObject.toJSONString(infoParam), XContentType.JSON).get();
+                    commonService.indexScanInfo(infoParam);
+
+
                 }catch (Exception e){
-                    logger.debug("扫码信息插入失败");
-                    logger.debug(e.getMessage(), e);
+                    logger.info("扫码信息插入失败");
+                    logger.info(e.getMessage(), e);
                 }
 
 
