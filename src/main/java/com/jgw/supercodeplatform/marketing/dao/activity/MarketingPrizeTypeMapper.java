@@ -64,7 +64,7 @@ public interface MarketingPrizeTypeMapper {
 	void deleteByActivitySetId(Long id);
 
 	@Update(" <script>"
-			+ " UPDATE marketing_prize_type set  RemainingStock = #{remainingStock} where Id = #{id} "
+			+ " UPDATE marketing_prize_type set RemainingStock = RemainingStock-1 where Id = #{id} "
 			+ " </script>")
-	void updateRemainingStock(@Param("id")long id, @Param("remainingStock")int i);
+	void updateRemainingStock(@Param("id")long id);
 }
