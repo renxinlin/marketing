@@ -16,6 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,6 +43,8 @@ import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 
+import redis.clients.jedis.JedisCommands;
+
 @RunWith(SpringJUnit4ClassRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
 @SpringBootTest(classes = SuperCodeMarketingApplication.class) // 指定我们SpringBoot工程的Application启动类
 public class RestTemplateTest {
@@ -55,6 +62,8 @@ private CommonUtil commonUtil;
 @Value("${marketing.integral.h5page.urls}")
 private String integrals;
 
+@Autowired
+private StringRedisTemplate stringRedisTemplate;
 
 @Autowired
 private RedisUtil redisUtil;
@@ -263,5 +272,20 @@ public  void main() throws UnsupportedEncodingException, SuperCodeException {
 		ResponseEntity<String>responseEntity=getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId=86580781309180006&codeTypeId=122", null, headerparams);
 	    System.out.println(responseEntity.toString());
 	    
+	}
+	
+	@Test
+	public void tt() {
+		ValueOperations<String, String> vo = stringRedisTemplate.opsForValue();
+		vo.set("a", "1");
+		Long f = vo.increment("b", -3);
+		System.err.println("----->"+f);
+//		String result = redisTemplate.execute(new RedisCallback<String>() {
+//            @Override
+//            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
+//                JedisCommands jedisCommands = (JedisCommands) redisConnection.getNativeConnection();
+//                return jedisCommands.set(key, mPrizeTypeMO.getRemainingStock()+"", "NX", "EX", 60);
+//            }
+//        });
 	}
 }
