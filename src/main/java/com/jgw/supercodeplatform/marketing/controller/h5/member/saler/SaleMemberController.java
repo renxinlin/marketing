@@ -134,7 +134,6 @@ public class SaleMemberController {
      */
     @GetMapping("getOrgName")
     @ApiOperation(value = "获取组织名称并且传递wxstate", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException {
         // 数据埋点
         taskExecutor.execute(new Runnable() {
