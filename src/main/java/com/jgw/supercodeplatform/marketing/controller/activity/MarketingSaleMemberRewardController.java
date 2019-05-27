@@ -76,6 +76,9 @@ public class MarketingSaleMemberRewardController  extends CommonUtil {
     @ApiOperation(value = "导购参与记录", notes = "")
     @ApiImplicitParams(value= { @ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token") 	})
     public RestResult<AbstractPageService.PageResults<List<SalerIntegralRecordParam>>> list(DaoSearchWithOrganizationIdAndSetIdParam integralRecord) throws Exception {
+        if(integralRecord.getId() == null || integralRecord.getId()<=0){
+            throw new SuperCodeException("活动ID不存在...");
+        }
         RestResult<AbstractPageService.PageResults<List<SalerIntegralRecordParam>>> restResult= new RestResult<AbstractPageService.PageResults<List<SalerIntegralRecordParam>>>();
         String organizationId = getOrganizationId();
 
@@ -113,7 +116,9 @@ public class MarketingSaleMemberRewardController  extends CommonUtil {
             ,@ApiImplicitParam(paramType="search",value = "查询条件",name="search")
     })
     public void littleWinRecordOutExcelWithOrganization(String search,Long id) throws SuperCodeException, UnsupportedEncodingException, Exception {
-
+        if(id == null || id<=0){
+            throw new SuperCodeException("活动ID不存在...");
+        }
         // step-1: 参数设置
         String organizationId = getOrganizationId();
         IntegralRecord record =  new IntegralRecord();
