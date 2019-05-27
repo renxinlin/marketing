@@ -216,9 +216,7 @@ public class LotteryService {
 	            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
 	                JedisCommands jedisCommands = (JedisCommands) redisConnection.getNativeConnection();
 	                String res = jedisCommands.set(key, mPrizeTypeMO.getRemainingStock()+"", "NX", "EX", 60);
-	                if(!"ok".equalsIgnoreCase(res)) {
-	                	jedisCommands.expire(key, 60);
-	                }
+	                jedisCommands.expire(key, 60);
 	                return res;
 	            }
 	        });
@@ -281,13 +279,11 @@ public class LotteryService {
 					lotteryResultMO.setMsg(amount+"");
 				}else {
 					lotteryResultMO.setAwardType(awardType);
-					int redisRemainingStock = 0;
+					int redisRemainingStock = -1;
 					switch (awardType.intValue()) {
 					case 1://实物
-						String redisRemainingStockStr = valueOperations.get(key);
-						if(redisRemainingStockStr != null)
-							redisRemainingStock = Integer.parseInt(redisRemainingStockStr);
-						if (redisRemainingStock < 1) {
+						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
+						if (redisRemainingStock < 0) {
 							lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 							lotteryResultMO.setWinnOrNot(0);
 							valueOperations.increment(key, 1);
@@ -312,11 +308,10 @@ public class LotteryService {
 						 marketingMembersMapper.update(marketingMembersInfo);
 						 break;
 					case 9://其它
-						String remainingStockStr = valueOperations.get(key);
-						if(remainingStockStr != null)
-							redisRemainingStock = Integer.parseInt(remainingStockStr);
-						if (redisRemainingStock < 1) {
+						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
+						if (redisRemainingStock < 0) {
 							restResult.setState(200);
+							lotteryResultMO.setWinnOrNot(0);
 							lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 							valueOperations.increment(key, 1);
 						} else {
@@ -331,6 +326,9 @@ public class LotteryService {
 				}
 				
 			} catch (Exception e) {
+				if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
+	 				valueOperations.increment(key, 1);
+	 			}
 				throw new SuperCodeException(e.getLocalizedMessage(), 500);
 			}finally {
 				//一切ok后清除缓存

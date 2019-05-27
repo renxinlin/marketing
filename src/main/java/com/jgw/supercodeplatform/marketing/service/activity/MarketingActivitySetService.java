@@ -464,6 +464,10 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				if (null != batchstate && batchstate.intValue() != 200) {
 					throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, 500);
 				}
+				Map<String, String> codeBatchMap = params.stream().collect(Collectors.toMap(paramMap -> paramMap.get("productId")+","+paramMap.get("productBatchId"), paramMap -> (String)paramMap.get("codeBatch")));
+				mList.forEach(marketingActivityProduct -> 
+					marketingActivityProduct.setSbatchId(codeBatchMap.get(marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId()))
+				);
 			} else {
 				throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
 			}
