@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.jgw.supercodeplatform.marketing.dto.activity.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,15 +52,6 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMa
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
@@ -640,6 +632,12 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 
 	public RestResult<String> updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus){
+		if(mUpdateStatus.getActivityStatus() == null || mUpdateStatus.getActivityStatus() <=0){
+			throw new RuntimeException("状态值不存在...");
+		}
+		if(mUpdateStatus.getActivitySetId() == null || mUpdateStatus.getActivitySetId() <=0){
+			throw new RuntimeException("ID不存在...");
+		}
 		mSetMapper.updateActivitySetStatus(mUpdateStatus);
 		RestResult<String> restResult=new RestResult<String>();
 		restResult.setState(200);
@@ -704,7 +702,18 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
         return mSetMapper.count(searchParams);
     }
 
-    public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusBatchUpdateParam batchUpdateParam) throws SuperCodeException {
+	public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusUpdateParam setStatusUpdateParam) throws SuperCodeException {
+		// 获取当前的用户信息
+//		AccountCache userLoginCache = getUserLoginCache();
+		mSetMapper.updateActivitySetStatus(setStatusUpdateParam);
+		RestResult<String> restResult=new RestResult<String>();
+		restResult.setState(200);
+		restResult.setMsg("更新成功");
+		return restResult;
+	}
+
+
+	public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusBatchUpdateParam batchUpdateParam) throws SuperCodeException {
         // 获取当前的用户信息
         AccountCache userLoginCache = getUserLoginCache();
         batchUpdateParam.getActivitySetIds().forEach(activitySetId -> {
