@@ -63,8 +63,6 @@ public interface MarketingPrizeTypeMapper {
 	@Delete(" delete from marketing_prize_type where  ActivitySetId=#{activitySetId} ")
 	void deleteByActivitySetId(Long id);
 
-	@Update(" <script>"
-			+ " UPDATE marketing_prize_type set RemainingStock = RemainingStock-1 where Id = #{id} "
-			+ " </script>")
+	@Update("UPDATE marketing_prize_type set RemainingStock = RemainingStock-1 where Id = #{id}")
 	void updateRemainingStock(@Param("id")long id);
 }
