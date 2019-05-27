@@ -311,6 +311,7 @@ public class LotteryService {
 						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
 						if (redisRemainingStock < 0) {
 							restResult.setState(200);
+							lotteryResultMO.setWinnOrNot(0);
 							lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 							valueOperations.increment(key, 1);
 						} else {
