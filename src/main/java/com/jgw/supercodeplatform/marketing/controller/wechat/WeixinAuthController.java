@@ -466,12 +466,12 @@ public class WeixinAuthController {
 				StringBuffer urlParams = new StringBuffer("?");
 				urlParams.append("memberId=-1").append("&openid=").append(openid)
 						.append("&organizationId=").append(organizationId);
-				redirectUrl ="redirect" + h5pageUrl + WechatConstants.SALER_LOGIN_URL+urlParams.toString();
+				redirectUrl ="redirect:" + h5pageUrl + WechatConstants.SALER_LOGIN_URL+urlParams.toString();
 			}else{
 				StringBuffer urlParams = new StringBuffer("?");
 				urlParams.append("memberId=").append(marketingUser.getId()).append("&openid=").append(openid)
 						.append("&organizationId=").append(organizationId);
-				redirectUrl ="redirect" + h5pageUrl + WechatConstants.SALER_LOGIN_URL+urlParams.toString();
+				redirectUrl ="redirect:" + h5pageUrl + WechatConstants.SALER_LOGIN_URL+urlParams.toString();
 				MarketingMembers user = new MarketingMembers();
 				MarketingMembers userVo = modelMapper.map(marketingUser, MarketingMembers.class);
 				user.setId(user.getId());
@@ -483,7 +483,7 @@ public class WeixinAuthController {
 			StringBuffer sb = new StringBuffer("?");
 			sb.append("memberId=-1").append("&openid=").append(openid)
 					.append("&organizationId=").append(organizationId);
-			redirectUrl ="redirect" +  h5pageUrl + WechatConstants.SALER_LOGIN_URL+sb.toString();
+			redirectUrl ="redirect:" +  h5pageUrl + WechatConstants.SALER_LOGIN_URL+sb.toString();
 		}
 		logger.info("导购扫码最终返回url:"+redirectUrl);
 		return  redirectUrl;
