@@ -158,7 +158,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
     )
     int count(DaoSearchWithOrganizationIdParam searchParams);
 
-    @Update(" UPDATE marketing_activity_set SET ActivityStatus = #{mas.activityStatus}, UpdateUserId = #{userId}, " +
-            "UpdateUserName = #{userName}, UpdateDate = NOW() WHERE Id = #{mas.activitySetId} and ActivityId = 3 ")
-    void updateSalerActivitySetStatus(@Param("mas") MarketingActivitySetStatusUpdateParam setStatusUpdateParam, @Param("userId") String userId, @Param("userName") String userName);
+    @Update(" UPDATE marketing_activity_set SET ActivityStatus = #{activityStatus}, UpdateUserId = #{userId}, " +
+            "UpdateUserName = #{userName}, UpdateDate = NOW() WHERE Id = #{activitySetId} and ActivityId = 3 ")
+    void updateSalerActivitySetStatus(@Param("activitySetId") Long activitySetId, @Param("activityStatus") Integer activityStatus, @Param("userId") String userId, @Param("userName") String userName);
 }

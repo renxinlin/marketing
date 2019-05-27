@@ -704,10 +704,12 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
         return mSetMapper.count(searchParams);
     }
 
-    public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusUpdateParam setStatusUpdateParam) throws SuperCodeException {
+    public RestResult<String> updateSalerActivitySetStatus(MarketingActivitySetStatusBatchUpdateParam batchUpdateParam) throws SuperCodeException {
         // 获取当前的用户信息
         AccountCache userLoginCache = getUserLoginCache();
-        mSetMapper.updateSalerActivitySetStatus(setStatusUpdateParam, userLoginCache.getUserId(), userLoginCache.getUserName());
+        batchUpdateParam.getActivitySetIds().forEach(activitySetId -> {
+            mSetMapper.updateSalerActivitySetStatus(activitySetId, batchUpdateParam.getActivityStatus(), userLoginCache.getUserId(), userLoginCache.getUserName());
+        });
         RestResult<String> restResult=new RestResult<String>();
         restResult.setState(200);
         restResult.setMsg("更新成功");
