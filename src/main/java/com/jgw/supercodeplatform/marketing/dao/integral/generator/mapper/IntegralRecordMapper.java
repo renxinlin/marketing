@@ -2,7 +2,14 @@ package com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper;
 
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.provider.IntegralRecordSqlProvider;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.InsertProvider;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.UpdateProvider;
 import org.apache.ibatis.type.JdbcType;
 
 public interface IntegralRecordMapper {
@@ -24,7 +31,7 @@ public interface IntegralRecordMapper {
             "IntegralNum, ProductPrice, ",
             "SalerName, SalerId, ",
             "SalerMobile, Status, ",
-            "SalerAmount)",
+            "SalerAmount, ActivitySetId)",
             "values (#{id,jdbcType=BIGINT}, #{memberType,jdbcType=TINYINT}, ",
             "#{memberId,jdbcType=BIGINT}, #{memberName,jdbcType=VARCHAR}, ",
             "#{mobile,jdbcType=VARCHAR}, #{integralReasonCode,jdbcType=INTEGER}, ",
@@ -36,11 +43,11 @@ public interface IntegralRecordMapper {
             "#{integralNum,jdbcType=INTEGER}, #{productPrice,jdbcType=REAL}, ",
             "#{salerName,jdbcType=VARCHAR}, #{salerId,jdbcType=BIGINT}, ",
             "#{salerMobile,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, ",
-            "#{salerAmount,jdbcType=REAL})"
+            "#{salerAmount,jdbcType=REAL}, #{activitySetId,jdbcType=BIGINT})"
     })
     int insert(IntegralRecord record);
 
-    @InsertProvider(type=IntegralRecordSqlProvider.class, method="insertSelective")
+    @InsertProvider(type= IntegralRecordSqlProvider.class, method="insertSelective")
     int insertSelective(IntegralRecord record);
 
     @Select({
@@ -48,7 +55,7 @@ public interface IntegralRecordMapper {
             "Id, MemberType, MemberId, MemberName, Mobile, IntegralReasonCode, IntegralReason, ",
             "ProductId, ProductName, OuterCodeId, CodeTypeId, CustomerName, CustomerId, CreateDate, ",
             "OrganizationId, OrganizationName, IntegralNum, ProductPrice, SalerName, SalerId, ",
-            "SalerMobile, Status, SalerAmount",
+            "SalerMobile, Status, SalerAmount, ActivitySetId",
             "from marketing_integral_record",
             "where Id = #{id,jdbcType=BIGINT}"
     })
@@ -75,7 +82,8 @@ public interface IntegralRecordMapper {
             @Result(column="SalerId", property="salerId", jdbcType=JdbcType.BIGINT),
             @Result(column="SalerMobile", property="salerMobile", jdbcType=JdbcType.VARCHAR),
             @Result(column="Status", property="status", jdbcType=JdbcType.VARCHAR),
-            @Result(column="SalerAmount", property="salerAmount", jdbcType=JdbcType.REAL)
+            @Result(column="SalerAmount", property="salerAmount", jdbcType=JdbcType.REAL),
+            @Result(column="ActivitySetId", property="activitySetId", jdbcType=JdbcType.BIGINT)
     })
     IntegralRecord selectByPrimaryKey(Long id);
 
@@ -105,7 +113,8 @@ public interface IntegralRecordMapper {
             "SalerId = #{salerId,jdbcType=BIGINT},",
             "SalerMobile = #{salerMobile,jdbcType=VARCHAR},",
             "Status = #{status,jdbcType=VARCHAR},",
-            "SalerAmount = #{salerAmount,jdbcType=REAL}",
+            "SalerAmount = #{salerAmount,jdbcType=REAL},",
+            "ActivitySetId = #{activitySetId,jdbcType=BIGINT}",
             "where Id = #{id,jdbcType=BIGINT}"
     })
     int updateByPrimaryKey(IntegralRecord record);

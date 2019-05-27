@@ -2,7 +2,14 @@ package com.jgw.supercodeplatform.marketing.dao.integral.generator.provider;
 
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 
-import static org.apache.ibatis.jdbc.SqlBuilder.*;
+import static org.apache.ibatis.jdbc.SqlBuilder.BEGIN;
+import static org.apache.ibatis.jdbc.SqlBuilder.INSERT_INTO;
+import static org.apache.ibatis.jdbc.SqlBuilder.SET;
+import static org.apache.ibatis.jdbc.SqlBuilder.SQL;
+import static org.apache.ibatis.jdbc.SqlBuilder.UPDATE;
+import static org.apache.ibatis.jdbc.SqlBuilder.VALUES;
+import static org.apache.ibatis.jdbc.SqlBuilder.WHERE;
+
 
 public class IntegralRecordSqlProvider {
 
@@ -102,6 +109,10 @@ public class IntegralRecordSqlProvider {
             VALUES("SalerAmount", "#{salerAmount,jdbcType=REAL}");
         }
 
+        if (record.getActivitySetId() != null) {
+            VALUES("ActivitySetId", "#{activitySetId,jdbcType=BIGINT}");
+        }
+
         return SQL();
     }
 
@@ -195,6 +206,10 @@ public class IntegralRecordSqlProvider {
 
         if (record.getSalerAmount() != null) {
             SET("SalerAmount = #{salerAmount,jdbcType=REAL}");
+        }
+
+        if (record.getActivitySetId() != null) {
+            SET("ActivitySetId = #{activitySetId,jdbcType=BIGINT}");
         }
 
         WHERE("Id = #{id,jdbcType=BIGINT}");
