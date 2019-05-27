@@ -210,7 +210,6 @@ public class SaleMemberController {
 
     @GetMapping("getWxstate")
     @ApiOperation(value = "测试接口:上线时删除,获取wxstate", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult produceScaninfoAndGetWxstate(
                                                    @RequestParam("outerCodeId") String  outerCodeId,
                                                    @RequestParam("activitySetId") Long activitySetId,
