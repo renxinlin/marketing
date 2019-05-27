@@ -382,8 +382,10 @@ public class MarketingActivitySalerSetService   {
 		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
 		// 导购活动Id
 		mSet.setActivityId(ActivityIdEnum.ACTIVITY_SALER.getId().longValue());
-
-
+		// 保存创建更新用户
+		AccountCache userLoginCache = commonUtil.getUserLoginCache();
+		mSet.setUpdateUserId(userLoginCache.getUserId());
+		mSet.setUpdateUserName(userLoginCache.getUserName());
 		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());

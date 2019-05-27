@@ -57,13 +57,13 @@ public interface MarketingActivitySetMapper extends CommonSql {
     int updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus);
 
 
-   @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle,"
-           + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus,"
-           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc),ValidCondition "
-           + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate},"
-           + "#{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.activityRangeMark}, "
-           + "#{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition}"
-           + ")")
+   @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle, "
+           + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus, "
+           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition ) "
+           + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate}, "
+           + " #{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.activityRangeMark}, "
+           + " #{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition} "
+           + " )")
    @Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
    int insert(@Param("ma")MarketingActivitySet marketingActivitySet);
 
