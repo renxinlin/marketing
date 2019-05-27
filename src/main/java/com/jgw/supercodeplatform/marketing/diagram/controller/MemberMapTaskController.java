@@ -109,7 +109,15 @@ public class MemberMapTaskController extends CommonUtil {
             Collections.sort(list,(o2,o1)->o1.getValue().getValue()-o2.getValue().getValue());
             List<MemberMapVo> listValue = new LinkedList();
             list.forEach(e->listValue.add(e.getValue()));
-            return RestResult.success("success",listValue);
+            MemberMapVo max = listValue.get(0);
+            MemberMapVo min = listValue.get(listValue.size()-1);
+            Map result = new HashMap();
+            Map other = new HashMap();
+            other.put("max",max);
+            other.put("min",min);
+            result.put("list",listValue);
+            result.put("other",other);
+            return RestResult.success("success",result);
         }
 
         return RestResult.success("",new ArrayList<>() );
