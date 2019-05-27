@@ -113,8 +113,8 @@ public class MemberMapTaskController extends CommonUtil {
             MemberMapVo min = listValue.get(listValue.size()-1);
             Map result = new HashMap();
             Map other = new HashMap();
-            other.put("max",max);
-            other.put("min",min);
+            other.put("max",max.getValue());
+            other.put("min",min.getValue());
             result.put("list",listValue);
             result.put("other",other);
             return RestResult.success("success",result);
