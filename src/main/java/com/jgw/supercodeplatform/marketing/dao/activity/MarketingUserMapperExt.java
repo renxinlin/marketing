@@ -122,7 +122,7 @@ public interface MarketingUserMapperExt extends MarketingUserMapper , CommonSql 
     MarketingUser selectByOpenidAndOrgId(@Param("openid") String openid, @Param("organizationId") String organizationId);
 
     @Update(startScript +
-            " update marketing_user set status = #{idsAndStatus.state} " +
+            " update marketing_user set state = #{idsAndStatus.state} " +
             " where organizationId = #{organizationId} and id in " +
             " <foreach collection='idsAndStatus.ids' index='index' item='item' open='(' separator=',' close=')'> #{item} </foreach> "
             + endScript)
