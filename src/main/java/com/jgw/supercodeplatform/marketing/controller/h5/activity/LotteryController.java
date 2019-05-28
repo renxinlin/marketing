@@ -72,7 +72,7 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/salerLottery")
     @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
-    public RestResult<String> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws SuperCodeException, ParseException {
+    public RestResult<String> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
         return salerLotteryService.salerlottery(wxstate,jwtUser,request);
     }
     
