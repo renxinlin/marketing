@@ -132,23 +132,7 @@ public class CommonService {
      * @throws SuperCodeException 
      */
 	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
-		List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
-		for(int i=0;i<array.size();i++) {
-			JSONObject batchobj=array.getJSONObject(i);
-			String productId=batchobj.getString("productId");
-			String productBatchId=batchobj.getString("productBatchId");
-			Long codeTotal=batchobj.getLong("codeTotal");
-			String codeBatch=batchobj.getString("codeBatch");
-			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
-				throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
-			}
-			Map<String, Object> batchMap=new HashMap<String, Object>();
-			batchMap.put("batchId", codeBatch);
-			batchMap.put("businessType", businessType);
-			batchMap.put("url",  url);
-			bindBatchList.add(batchMap);
-		}
-		return bindBatchList;
+		return new ArrayList<>(getUrlToBatchParamMap(array, url, businessType).values());
 	}
 	
     /**
