@@ -198,14 +198,17 @@ public class LotteryService {
 				throw  new SuperCodeException("对不起,领取本活动需要消耗"+consumeIntegralNum+"积分，您的积分不够",500);
 			}
 		}
-		
+		LotteryResultMO lotteryResultMO = new LotteryResultMO();
+		restResult.setResults(lotteryResultMO);
 		List<MarketingPrizeTypeMO> moPrizeTypes=mMarketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
 		if (null==moPrizeTypes || moPrizeTypes.isEmpty()) {
 			restResult.setState(500);
-			restResult.setMsg("该活动未设置中奖奖次");
+			lotteryResultMO.setWinnOrNot(0);
+			lotteryResultMO.setMsg("该活动未设置中奖奖次");
+			restResult.setMsg(lotteryResultMO.getMsg());
 			return restResult;
 		}
-		LotteryResultMO lotteryResultMO=new LotteryResultMO();
+		
 		//执行抽奖逻辑 
 		MarketingPrizeTypeMO mPrizeTypeMO=LotteryUtilWithOutCodeNum.startLottery(moPrizeTypes);
 		Byte awardType=mPrizeTypeMO.getAwardType();
@@ -227,6 +230,7 @@ public class LotteryService {
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
 				lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+				restResult.setMsg(lotteryResultMO.getMsg());
 				return restResult;
 			}
 			Long reStockNum = valueOperations.increment(key, -1);
@@ -236,7 +240,8 @@ public class LotteryService {
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
-				lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+	 			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+				restResult.setMsg(lotteryResultMO.getMsg());
 				return restResult;
 			}
 		}
@@ -255,7 +260,7 @@ public class LotteryService {
  			globalRamCache.deleteScanCodeInfoMO(wxstate);
  			lotteryResultMO.setWinnOrNot(0);
  			restResult.setState(200);
-			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+ 			lotteryResultMO.setMsg(restResult.getMsg());
 			return restResult;
 		}
 		//判断realprize是否为0,0表示为新增的虚拟不中奖奖项，为了计算中奖率设置
@@ -267,6 +272,7 @@ public class LotteryService {
 			restResult.setState(200);
 			lotteryResultMO.setWinnOrNot(0);
 			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+			restResult.setMsg(lotteryResultMO.getMsg());
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
 		}else{
 			lotteryResultMO.setWinnOrNot(1);
@@ -339,7 +345,6 @@ public class LotteryService {
 			}
 			restResult.setState(200);
 		}
-		restResult.setResults(lotteryResultMO);
 		return restResult;
 	}
 	
@@ -394,7 +399,8 @@ public class LotteryService {
 		}catch (Exception e) {
 			e.printStackTrace();
 			restResult.setState(500);
-			restResult.setMsg(e.getLocalizedMessage());
+			restResult.setMsg("扫码人数过多,请稍后再试");
+			logger.error("扫码判断出错", e);
 			return false;
 		}finally {
 			if(acquireLock){
