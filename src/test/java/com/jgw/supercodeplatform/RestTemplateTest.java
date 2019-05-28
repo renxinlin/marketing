@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,6 +76,8 @@ private String userServiceUrl;
 
 private String msCodeUrl="http://PLATFORM-MS-CODETEST";
 
+@Value("${marketing.domain.url}")
+private String wxauthRedirectUri;
 
 @Test
 public void unSelectPage() throws SuperCodeException {
@@ -104,13 +107,17 @@ public void unSelectPage() throws SuperCodeException {
 }
 @Test
 public  void test1() throws UnsupportedEncodingException, SuperCodeException {
-	Map<String, Object>params=new HashMap<String, Object>();
-	String organizationId="3d096f49448e4444b97d9a79aaa21f13";
-	params.put("organizationId",organizationId );
-	params.put("productBatchIds","e46604d24aa54f9091e054adaae020dd,e46604d24aa54f9091e054adaae020dd");
+    String wholeUrl=wxauthRedirectUri+"/marketing/front/auth/code";
+	String encoderedirectUri=URLEncoder.encode(wholeUrl, "utf-8");
+	System.out.println(encoderedirectUri);
 	
-	ResponseEntity<String>responseEntity=getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
-    System.out.println(responseEntity.toString());
+//	Map<String, Object>params=new HashMap<String, Object>();
+//	String organizationId="3d096f49448e4444b97d9a79aaa21f13";
+//	params.put("organizationId",organizationId );
+//	params.put("productBatchIds","e46604d24aa54f9091e054adaae020dd,e46604d24aa54f9091e054adaae020dd");
+//	
+//	ResponseEntity<String>responseEntity=getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
+//    System.out.println(responseEntity.toString());
 }
 
 

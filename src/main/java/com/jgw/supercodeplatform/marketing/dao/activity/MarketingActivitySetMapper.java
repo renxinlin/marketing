@@ -59,7 +59,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
    @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle,"
            + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus,"
-           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc),ValidCondition "
+           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition) "
            + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate},"
            + "#{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.activityRangeMark}, "
            + "#{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition}"
