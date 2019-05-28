@@ -281,7 +281,6 @@ public class LotteryService {
 				//如果是微信红包奖项类型可能为空需特殊处理
 				if (null==awardType || awardType.intValue()==4) {
 					lotteryResultMO.setAwardType((byte)4);
-					lotteryResultMO.setWinnOrNot(1);
 					Float amount =mPrizeTypeMO.getPrizeAmount();
 					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
 					weixinpay(mobile, openId, organizationId, mPrizeTypeMO,remoteAddr);
@@ -298,13 +297,11 @@ public class LotteryService {
 							valueOperations.increment(key, 1);
 						}else {
 							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
-							lotteryResultMO.setWinnOrNot(1);
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						}
 						break;
 					case 2: //奖券
-						lotteryResultMO.setWinnOrNot(1);
 						lotteryResultMO.setData(mPrizeTypeMO.getCardLink());
 						lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
@@ -312,7 +309,6 @@ public class LotteryService {
 					case 3: //积分
 						 Integer awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum();
 						 marketingMembersInfo.setHaveIntegral((haveIntegral==null?0:haveIntegral)+awardIntegralNum);
-						 lotteryResultMO.setWinnOrNot(1);
 						 lotteryResultMO.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
 						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						 if (null!=consumeIntegralNum) {
@@ -329,7 +325,6 @@ public class LotteryService {
 							valueOperations.increment(key, 1);
 						} else {
 							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
-							lotteryResultMO.setWinnOrNot(1);
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						}
