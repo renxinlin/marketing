@@ -1,16 +1,19 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
+import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
+import com.jgw.supercodeplatform.marketing.dto.SaleMemberBatchStatusParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
 @Mapper
-public interface MarketingUserMapperExt extends MarketingUserMapper {
+public interface MarketingUserMapperExt extends MarketingUserMapper , CommonSql {
 
     String selectSql = " a.Id as id, a.WxName as wxName,a.Openid as openid,a.Mobile as mobile, "
             + " a.UserId as userId,a.UserName as userName, "
@@ -117,4 +120,11 @@ public interface MarketingUserMapperExt extends MarketingUserMapper {
      */
     @Select(" select " + selectSql + " from marketing_user a where a.Openid = #{openid} and OrganizationId = #{organizationId}")
     MarketingUser selectByOpenidAndOrgId(@Param("openid") String openid, @Param("organizationId") String organizationId);
+
+    @Update(startScript +
+            " update marketing_user set status = #{idsAndStatus.state} " +
+            " where organizationId = #{organizationId} and id in " +
+            " <foreach collection='idsAndStatus.ids' index='index' item='item' open='(' separator=',' close=')'> #{item} </foreach> "
+            + endScript)
+    int updateBatch(@Param("idsAndStatus") SaleMemberBatchStatusParam idsAndStatus, @Param("organizationId") String organizationId);
 }
