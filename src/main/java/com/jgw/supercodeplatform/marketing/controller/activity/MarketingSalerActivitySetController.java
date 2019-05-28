@@ -7,10 +7,12 @@ import java.util.concurrent.BrokenBarrierException;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateNewParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusBatchUpdateParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySalerSetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,11 +70,33 @@ public class MarketingSalerActivitySetController extends CommonUtil {
      * 启用或禁用活动
      * @return
      */
+
+    /**
+     * 启用或禁用活动
+     * @return
+     */
     @PostMapping("/enableOrDisable")
     @ApiOperation(value="启用或禁用活动", notes = "启用或禁用活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> enableOrDisable(@RequestBody MarketingActivitySetStatusUpdateParam setStatusUpdateParam) throws SuperCodeException {
         return service.updateSalerActivitySetStatus(setStatusUpdateParam);
+    }
+
+    /**
+     * 启用或禁用活动
+     * @return
+     */
+    @PostMapping("/enableOrDisableBatch")
+    @ApiOperation(value="批量启用或禁用活动", notes = "批量启用或禁用活动")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<String> enableOrDisableBatch(@RequestBody MarketingActivitySetStatusBatchUpdateParam batchUpdateParam) throws SuperCodeException {
+        RestResult<String> restResult = new RestResult<>();
+        if (CollectionUtils.isEmpty(batchUpdateParam.getActivitySetIds())) {
+            restResult.setState(500);
+            restResult.setMsg("请至少选择一个活动");
+            return restResult;
+        }
+        return service.updateSalerActivitySetStatus(batchUpdateParam);
     }
 
 

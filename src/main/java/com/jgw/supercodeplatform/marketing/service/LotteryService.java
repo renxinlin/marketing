@@ -15,6 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.RedisCallback;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +40,6 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapp
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
-import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
@@ -49,6 +53,8 @@ import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
 
+import redis.clients.jedis.JedisCommands;
+
 @Service
 public class LotteryService {
 	protected static Logger logger = LoggerFactory.getLogger(LotteryService.class);
@@ -58,10 +64,6 @@ public class LotteryService {
 
 	@Autowired
 	private MarketingActivityMapper mActivityMapper;
-
-	@Autowired
-	private MarketingWxMerchantsMapper mWxMerchantsMapper;
-
 
 	@Autowired
 	private MarketingMembersWinRecordMapper mWinRecordMapper;
@@ -104,6 +106,8 @@ public class LotteryService {
 	@Value("${marketing.server.ip}")
 	private String serverIp;
 	
+	@Autowired
+	private StringRedisTemplate redisTemplate;
 	
 	public RestResult<String> baselottery(String wxstate) throws SuperCodeException, ParseException {
 		RestResult<String> restResult=new RestResult<>();
@@ -121,12 +125,6 @@ public class LotteryService {
 		if (null==activity) {
 			throw new SuperCodeException("该活动不存在", 500);
 		}
-		// 门槛
-		String condition=mActivitySet.getValidCondition();
-		if (StringUtils.isNotBlank(condition)) {
-			MarketingActivitySetCondition mSetCondition=JSONObject.parseObject(condition, MarketingActivitySetCondition.class);
-			mSetCondition.getConsumeIntegral();
-		}
 		int activityType=activity.getActivityType().intValue();
 		switch (activityType) {
 		case 1:
@@ -135,7 +133,6 @@ public class LotteryService {
 			if (StringUtils.isBlank(openId)) {
 				throw new SuperCodeException("微信红包活动openId参数不能为空", 500);
 			}
-			//MarketingMembers marketingMembersInfo = marketingMembersMapper.selectByOpenIdAndOrgId(openId, scanCodeInfoMO.getOrganizationId());
 			break;
 		default:
 			break;
@@ -155,10 +152,10 @@ public class LotteryService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	@Transactional(rollbackFor=SuperCodeException.class)
+	@Transactional(rollbackFor = Exception.class)
 	public RestResult<LotteryResultMO> lottery(String wxstate,HttpServletRequest request) throws SuperCodeException, ParseException {
 		RestResult<LotteryResultMO> restResult=new RestResult<>();
-
+		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null==scanCodeInfoMO) {
 			restResult.setState(500);
@@ -208,9 +205,39 @@ public class LotteryService {
 			restResult.setMsg("该活动未设置中奖奖次");
 			return restResult;
 		}
+		LotteryResultMO lotteryResultMO=new LotteryResultMO();
 		//执行抽奖逻辑 
 		MarketingPrizeTypeMO mPrizeTypeMO=LotteryUtilWithOutCodeNum.startLottery(moPrizeTypes);
-		
+		Byte awardType=mPrizeTypeMO.getAwardType();
+		String key = mPrizeTypeMO.getId() + "_"+mPrizeTypeMO.getActivitySetId();
+		if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
+			String result = redisTemplate.execute(new RedisCallback<String>() {
+	            @Override
+	            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
+	                JedisCommands jedisCommands = (JedisCommands) redisConnection.getNativeConnection();
+	                String res = jedisCommands.set(key, mPrizeTypeMO.getRemainingStock()+"", "NX", "EX", 60);
+	                jedisCommands.expire(key, 60);
+	                return res;
+	            }
+	        });
+			if(StringUtils.isBlank(valueOperations.get(key))) {
+				globalRamCache.deleteScanCodeInfoMO(wxstate);
+				lotteryResultMO.setWinnOrNot(0);
+	 			restResult.setState(200);
+				lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+				return restResult;
+			}
+			Long reStockNum = valueOperations.increment(key, -1);
+			//说明此时库存已不够
+			if(reStockNum < 0) {
+				valueOperations.increment(key, 1);
+				globalRamCache.deleteScanCodeInfoMO(wxstate);
+				lotteryResultMO.setWinnOrNot(0);
+	 			restResult.setState(200);
+				lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+				return restResult;
+			}
+		}
 		String openId=scanCodeInfoMO.getOpenId();
 		String organizationId=mActivitySet.getOrganizationId();
 		String codeId=scanCodeInfoMO.getCodeId();
@@ -219,20 +246,27 @@ public class LotteryService {
 		String productBatchId=scanCodeInfoMO.getProductBatchId();
 		String mobile=scanCodeInfoMO.getMobile();
  		boolean flag=holdLockJudgeES(restResult,marketingMembersInfo.getId(),marketingMembersInfo.getMemberType().intValue(), openId,productId,productBatchId, activitySetId, mSetCondition, organizationId, codeId, codeTypeId);
- 		LotteryResultMO lotteryResultMO=new LotteryResultMO();
  		if (!flag ) {
+ 			if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
+ 				valueOperations.increment(key, 1);
+ 			}
+ 			globalRamCache.deleteScanCodeInfoMO(wxstate);
  			lotteryResultMO.setWinnOrNot(0);
+ 			restResult.setState(200);
+			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 			return restResult;
 		}
 		//判断realprize是否为0,0表示为新增的虚拟不中奖奖项，为了计算中奖率设置
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
+			if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
+ 				valueOperations.increment(key, 1);
+ 			}
 			restResult.setState(200);
 			lotteryResultMO.setWinnOrNot(0);
 			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
 		}else{
-			Byte awardType=mPrizeTypeMO.getAwardType();
 			lotteryResultMO.setWinnOrNot(1);
 			//已中奖执行奖品方法中奖纪录保存等逻辑
 			try {
@@ -245,14 +279,16 @@ public class LotteryService {
 					lotteryResultMO.setMsg(amount+"");
 				}else {
 					lotteryResultMO.setAwardType(awardType);
-					Integer remainingStock=null;
+					int redisRemainingStock = -1;
 					switch (awardType.intValue()) {
 					case 1://实物
-						remainingStock=mPrizeTypeMO.getRemainingStock();
-						if (null!=remainingStock && remainingStock.intValue()<1) {
+						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
+						if (redisRemainingStock < 0) {
 							lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+							lotteryResultMO.setWinnOrNot(0);
+							valueOperations.increment(key, 1);
 						}else {
-							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId(),remainingStock-1);
+							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						}
@@ -272,13 +308,14 @@ public class LotteryService {
 						 marketingMembersMapper.update(marketingMembersInfo);
 						 break;
 					case 9://其它
-						remainingStock=mPrizeTypeMO.getRemainingStock();
-						if (null!=remainingStock && remainingStock.intValue()<1) {
+						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
+						if (redisRemainingStock < 0) {
 							restResult.setState(200);
+							lotteryResultMO.setWinnOrNot(0);
 							lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
-						}else {
-							mPrizeTypeMO.setRemainingStock(remainingStock-1);
-							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId(),remainingStock-1);
+							valueOperations.increment(key, 1);
+						} else {
+							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						}
@@ -289,6 +326,9 @@ public class LotteryService {
 				}
 				
 			} catch (Exception e) {
+				if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
+	 				valueOperations.increment(key, 1);
+	 			}
 				throw new SuperCodeException(e.getLocalizedMessage(), 500);
 			}finally {
 				//一切ok后清除缓存

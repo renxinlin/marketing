@@ -81,7 +81,7 @@ public class LotteryController extends CommonUtil {
      *
      *  备注:多人同时扫码的并发处理
      */
-    @PostMapping("salerLottery")
+    @GetMapping("/salerLottery")
     @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<String> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException {

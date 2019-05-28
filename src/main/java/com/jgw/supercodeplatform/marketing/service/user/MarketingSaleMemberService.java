@@ -5,10 +5,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
-import com.jgw.supercodeplatform.marketing.dto.CustomerInfo;
-import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersAddParam;
-import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
+import com.jgw.supercodeplatform.marketing.dto.*;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
@@ -66,6 +63,34 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		Integer count=mapper.count(searchParams);
 		return count;
 	}
+
+
+
+	/**
+	 * 批量改变会员状态
+	 * @param id
+	 * @param state
+	 * @param organizationId
+	 * @throws SuperCodeException
+	 */
+	public void updateMembersBatchStatus(SaleMemberBatchStatusParam ids, String organizationId) throws SuperCodeException {
+		if(ids == null ){
+			throw new SuperCodeException("参数不存在");
+		}
+		if(StringUtils.isBlank(organizationId)){
+			throw new SuperCodeException("组织信息不存在");
+		}
+		if(CollectionUtils.isEmpty(ids.getIds())){
+			throw new SuperCodeException("id不存在...");
+		}
+		if(ids.getState() > SaleUserStatus.Max.getStatus().intValue() || ids.getState() < SaleUserStatus.Min.getStatus().intValue()){
+			throw new SuperCodeException("状态不合法...");
+
+		}
+
+		mapper.updateBatch(ids, organizationId);
+	}
+
 
 	/**
 	 * 改变会员状态
@@ -455,6 +480,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	public MarketingUser selectById(Long memberId) {
 		return mapper.selectByPrimaryKey(memberId);
 	}
+
+
 }
 
 

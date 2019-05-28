@@ -8,11 +8,15 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dto.SaleInfo;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
@@ -42,7 +46,9 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.HashMap;
 
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 销售员扫码领红包
@@ -134,7 +140,6 @@ public class SaleMemberController {
      */
     @GetMapping("getOrgName")
     @ApiOperation(value = "获取组织名称并且传递wxstate", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException {
         // 数据埋点
         taskExecutor.execute(new Runnable() {
@@ -194,5 +199,39 @@ public class SaleMemberController {
         return true;
     }
 
+
+    /**
+     * 此接口用于测试
+     *
+     */
+
+    @Autowired
+    private MarketingActivityProductMapper productMapper;
+
+    @GetMapping("getWxstate")
+    @ApiOperation(value = "测试接口:上线时删除,获取wxstate", notes = "")
+    public RestResult produceScaninfoAndGetWxstate(
+                                                   @RequestParam("outerCodeId") String  outerCodeId,
+                                                   @RequestParam("activitySetId") Long activitySetId,
+                                                   @RequestParam("userId") Long userId ) throws Exception {
+        String wxstate = "wxstate12345678900987654321";
+
+        ScanCodeInfoMO pMo=new ScanCodeInfoMO();
+        MarketingActivityProduct marketingActivityProduct = productMapper.selectByActivitySetId(activitySetId + "").get(0);
+
+        pMo.setCodeId(outerCodeId);
+        pMo.setCodeTypeId(marketingActivityProduct.getCodeType());
+        pMo.setProductBatchId(marketingActivityProduct.getProductBatchId());
+        pMo.setProductId(marketingActivityProduct.getProductId());
+        pMo.setActivitySetId(activitySetId);
+        ;
+        pMo.setUserId(userId);
+        MarketingUser marketingUser = marketingSaleMemberService.selectById(userId);
+        pMo.setMobile(marketingUser.getMobile());
+        pMo.setOpenId(marketingUser.getOpenid());
+        pMo.setOrganizationId(marketingUser.getOrganizationId());
+        globalRamCache.putScanCodeInfoMO(wxstate,pMo);
+        return RestResult.success("success","wxstate12345678900987654321");
+    }
 
 }

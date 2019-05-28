@@ -57,13 +57,13 @@ public interface MarketingActivitySetMapper extends CommonSql {
     int updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus);
 
 
-   @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle,"
-           + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus,"
-           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition) "
-           + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate},"
-           + "#{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.activityRangeMark}, "
-           + "#{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition}"
-           + ")")
+   @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle, "
+           + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus, "
+           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition ) "
+           + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate}, "
+           + " #{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.activityRangeMark}, "
+           + " #{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition} "
+           + " )")
    @Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
    int insert(@Param("ma")MarketingActivitySet marketingActivitySet);
 
@@ -158,7 +158,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
     )
     int count(DaoSearchWithOrganizationIdParam searchParams);
 
-    @Update(" UPDATE marketing_activity_set SET ActivityStatus = #{mas.activityStatus}, UpdateUserId = #{userId}, " +
-            "UpdateUserName = #{userName}, UpdateDate = NOW() WHERE Id = #{mas.activitySetId} and ActivityId = 3 ")
-    void updateSalerActivitySetStatus(@Param("mas") MarketingActivitySetStatusUpdateParam setStatusUpdateParam, @Param("userId") String userId, @Param("userName") String userName);
+    @Update(" UPDATE marketing_activity_set SET ActivityStatus = #{activityStatus}, UpdateUserId = #{userId}, " +
+            "UpdateUserName = #{userName}, UpdateDate = NOW() WHERE Id = #{activitySetId} and ActivityId = 3 ")
+    void updateSalerActivitySetStatus(@Param("activitySetId") Long activitySetId, @Param("activityStatus") Integer activityStatus, @Param("userId") String userId, @Param("userName") String userName);
 }

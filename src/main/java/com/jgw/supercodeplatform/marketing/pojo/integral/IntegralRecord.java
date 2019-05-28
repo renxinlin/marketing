@@ -105,6 +105,19 @@ public class IntegralRecord  extends DaoSearch {
     /** 导购员红包金额 */
     private Float salerAmount;
 
+
+
+    /** 活动设置ID,导购细分到活动 */
+    private Long activitySetId;
+
+    public Long getActivitySetId() {
+        return activitySetId;
+    }
+
+    public void setActivitySetId(Long activitySetId) {
+        this.activitySetId = activitySetId;
+    }
+
     public String getSalerName() {
         return salerName;
     }

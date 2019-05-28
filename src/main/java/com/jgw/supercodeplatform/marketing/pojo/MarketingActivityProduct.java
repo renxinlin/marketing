@@ -12,8 +12,8 @@ public class MarketingActivityProduct {
 	private Long codeTotalAmount;//该批次关联码总数
 	private Byte referenceRole;
     private String createDate;//建立日期
-    private String UpdateDate;//修改日期
-    
+    private String updateDate;//修改日期
+    private String sbatchId;//生码批次
 
     public String getCodeType() {
         return codeType;
@@ -56,11 +56,11 @@ public class MarketingActivityProduct {
     }
 
     public String getUpdateDate() {
-        return UpdateDate;
+        return updateDate;
     }
 
     public void setUpdateDate(String updateDate) {
-        UpdateDate = updateDate;
+        this.updateDate = updateDate;
     }
 
 	public Long getId() {
@@ -101,6 +101,14 @@ public class MarketingActivityProduct {
 
 	public void setReferenceRole(Byte referenceRole) {
 		this.referenceRole = referenceRole;
+	}
+
+	public String getSbatchId() {
+		return sbatchId;
+	}
+
+	public void setSbatchId(String sbatchId) {
+		this.sbatchId = sbatchId;
 	}
 	
 }

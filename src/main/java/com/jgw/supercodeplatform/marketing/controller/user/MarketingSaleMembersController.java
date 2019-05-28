@@ -7,6 +7,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageR
 import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.SaleMemberBatchStatusParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingSaleUserParam;
 import com.jgw.supercodeplatform.marketing.dto.members.SaleMemberStatusParam;
@@ -84,15 +85,34 @@ public class MarketingSaleMembersController extends CommonUtil {
 
 
     @RequestMapping(value = "/update/status", method = RequestMethod.POST)
-    @ApiOperation(value = "修改导购员状态1待审核2停用3启用", notes = "修改导购员状态")
+    @ApiOperation(value = "修改导购员状态2停用3启用", notes = "修改导购员状态")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-})
+            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
+    })
     public RestResult<String> enableStatus(@RequestBody SaleMemberStatusParam sale) throws SuperCodeException {
-    	if (null==sale) {
-			throw new SuperCodeException("参数不存在...", 500);
-		}
+        if (null==sale) {
+            throw new SuperCodeException("参数不存在...", 500);
+        }
         service.updateMembersStatus(sale.getId(),sale.getState(),getOrganizationId());
+        return new RestResult(200, "success", null);
+    }
+
+
+
+
+
+
+
+    @RequestMapping(value = "/batchUpdate/status", method = RequestMethod.POST)
+    @ApiOperation(value = "批量修改导购员状态2停用3启用", notes = "修改导购员状态")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
+    })
+    public RestResult<String> enableStatus(@RequestBody SaleMemberBatchStatusParam sale) throws SuperCodeException {
+        if (null==sale) {
+            throw new SuperCodeException("参数不存在...", 500);
+        }
+        service.updateMembersBatchStatus(sale,getOrganizationId());
         return new RestResult(200, "success", null);
     }
 
