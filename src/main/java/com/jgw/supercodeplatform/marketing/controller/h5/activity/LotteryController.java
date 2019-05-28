@@ -50,6 +50,7 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/lottery")
     @ApiOperation(value = "用户点击领奖方法", notes = "")
     public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
+    	logger.info("领奖传入微信参数:{}", wxstate);
         return service.lottery(wxstate, request.getRemoteAddr());
     }
     

@@ -157,6 +157,7 @@ public class LotteryService {
 		RestResult<LotteryResultMO> restResult=new RestResult<>();
 		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
+		logger.info("领奖传入参数:{}", scanCodeInfoMO);
 		if (null==scanCodeInfoMO) {
 			restResult.setState(500);
 			restResult.setMsg("不存在扫码唯一纪录="+wxstate+"的扫码缓存信息，请重新扫码");
