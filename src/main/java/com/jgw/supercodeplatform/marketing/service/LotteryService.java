@@ -153,7 +153,7 @@ public class LotteryService {
 	 * @throws SuperCodeException
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public RestResult<LotteryResultMO> lottery(String wxstate,HttpServletRequest request) throws SuperCodeException, ParseException {
+	public RestResult<LotteryResultMO> lottery(String wxstate, String remoteAddr) throws SuperCodeException, ParseException {
 		RestResult<LotteryResultMO> restResult=new RestResult<>();
 		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
@@ -211,15 +211,17 @@ public class LotteryService {
 		Byte awardType=mPrizeTypeMO.getAwardType();
 		String key = mPrizeTypeMO.getId() + "_"+mPrizeTypeMO.getActivitySetId();
 		if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
-			String result = redisTemplate.execute(new RedisCallback<String>() {
-	            @Override
-	            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
-	                JedisCommands jedisCommands = (JedisCommands) redisConnection.getNativeConnection();
-	                String res = jedisCommands.set(key, mPrizeTypeMO.getRemainingStock()+"", "NX", "EX", 60);
-	                jedisCommands.expire(key, 60);
-	                return res;
-	            }
-	        });
+			if(mPrizeTypeMO.getRemainingStock() != null) {
+				String result = redisTemplate.execute(new RedisCallback<String>() {
+		            @Override
+		            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
+		                JedisCommands jedisCommands = (JedisCommands) redisConnection.getNativeConnection();
+		                String res = jedisCommands.set(key, mPrizeTypeMO.getRemainingStock().toString(), "NX", "EX", 60);
+		                jedisCommands.expire(key, 60);
+		                return res;
+		            }
+		        });
+			}
 			if(StringUtils.isBlank(valueOperations.get(key))) {
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
 				lotteryResultMO.setWinnOrNot(0);
@@ -275,7 +277,7 @@ public class LotteryService {
 					lotteryResultMO.setAwardType((byte)4);
 					Float amount =mPrizeTypeMO.getPrizeAmount();
 					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
-					weixinpay(mobile, openId, organizationId, mPrizeTypeMO,request);
+					weixinpay(mobile, openId, organizationId, mPrizeTypeMO,remoteAddr);
 					lotteryResultMO.setMsg(amount+"");
 				}else {
 					lotteryResultMO.setAwardType(awardType);
@@ -294,7 +296,8 @@ public class LotteryService {
 						}
 						break;
 					case 2: //奖券
-						lotteryResultMO.setMsg(mPrizeTypeMO.getCardLink());
+						lotteryResultMO.setData(mPrizeTypeMO.getCardLink());
+						lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						break;
 					case 3: //积分
@@ -425,7 +428,7 @@ public class LotteryService {
 		mWinRecordMapper.addWinRecord(redWinRecord);
 	}
 
-	private Float weixinpay(String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO,HttpServletRequest request)
+	private Float weixinpay(String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, String remoteAddr)
 			throws SuperCodeException, Exception {
 		if (StringUtils.isBlank(openId)) {
 			throw  new SuperCodeException("微信支付openid不能为空",500);
@@ -459,8 +462,6 @@ public class LotteryService {
 		tradeOrder.setTradeDate(format.format(new Date()));
 		tradeOrder.setOrganizationId(organizationId);
 		wXPayTradeOrderMapper.insert(tradeOrder);
-
-		String remoteAddr = request.getRemoteAddr();
 		if (StringUtils.isBlank(remoteAddr)) {
 			remoteAddr=serverIp;
 		}
