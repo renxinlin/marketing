@@ -51,6 +51,9 @@ public abstract class BaseActivityParamCheck {
   }
   
 	/**
+	 * TODO 目前校验逻辑是根据awardType判断需不需要名称;此外依赖前端传递数据格式保障逻辑
+	 * 存在问题:微信活动是全部没有奖项名称的，锦鲤翻牌全有，其他待定
+	 * 这套检验逻辑不够严谨
 	 * 公共奖次校验，校验目前已有的奖项参数是否合法
 	 * @param mPrizeTypeParams
 	 * @throws SuperCodeException
@@ -61,10 +64,12 @@ public abstract class BaseActivityParamCheck {
 			throw new SuperCodeException("奖次信息不能为空", 500);
 		}else {
 			Set<String> set = new HashSet<String>();
+			boolean haveAwardType = false;
+
 			for (MarketingPrizeTypeParam prizeTypeParam:mPrizeTypeParams){
 				Byte awardType=prizeTypeParam.getAwardType();
 				//如果奖项类型是空则是之前的红包活动没有奖项设置的
-				if (null==awardType) {
+				if (null==awardType) { //如果为空则所有为空，如果不为空则所有不为空 shouldEveryprizeTypeParam实现
 					Byte randomAmont=prizeTypeParam.getIsRrandomMoney();
 					if (null==randomAmont) {
 						throw new SuperCodeException("是否固定金额不能为空", 500);
@@ -86,6 +91,7 @@ public abstract class BaseActivityParamCheck {
 						}
 					}
 				}else {
+					haveAwardType = true;
 				   	//奖项类型不为空则为新活动
 					switch (awardType) {
 					case 1://实物
@@ -119,7 +125,9 @@ public abstract class BaseActivityParamCheck {
 				}
 				set.add(prizeTypeParam.getPrizeTypeName());
 			}
-			if (set.size()<mPrizeTypeParams.size()) {
+			// 目前用于检测锦鲤翻牌类型活动
+
+			if (set.size()<mPrizeTypeParams.size() && haveAwardType ) {
 				throw new SuperCodeException("奖项名称不能重复", 500);
 			}
 		}
