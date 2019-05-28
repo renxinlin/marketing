@@ -1,16 +1,21 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
-import javax.crypto.*;
-import javax.crypto.spec.SecretKeySpec;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Scanner;
+import java.util.Base64;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 /*
  * AES对称加密和解密
@@ -56,7 +61,7 @@ public class SymmetricEncoder {
             //这里用Base64Encoder中会找不到包
             //解决办法：
             //在项目的Build path中先移除JRE System Library，再添加库JRE System Library，重新编译后就一切正常了。
-            String AES_encode=new String(new BASE64Encoder().encode(byte_AES));
+            String AES_encode = Base64.getEncoder().encodeToString(byte_AES);
             //11.将字符串返回
             return AES_encode;
         } catch (NoSuchAlgorithmException e) {
@@ -83,7 +88,7 @@ public class SymmetricEncoder {
      * 2.将加密后的字符串反纺成byte[]数组
      * 3.将加密内容解密
      */
-    public static String AESDncode(String encodeRules,String content){
+    public static String AESDecode(String encodeRules,String content){
         if (encodeRules == null){
             encodeRules = KEY;
         }
@@ -104,7 +109,7 @@ public class SymmetricEncoder {
             //7.初始化密码器，第一个参数为加密(Encrypt_mode)或者解密(Decrypt_mode)操作，第二个参数为使用的KEY
             cipher.init(Cipher.DECRYPT_MODE, key);
             //8.将加密并编码后的内容解码成字节数组
-            byte [] byte_content= new BASE64Decoder().decodeBuffer(content);
+            byte [] byte_content= Base64.getDecoder().decode(content);
             /*
              * 解密
              */
@@ -127,28 +132,6 @@ public class SymmetricEncoder {
 
         //如果有错就返加nulll
         return null;
-    }
-
-    public static void main(String[] args) {
-        SymmetricEncoder se=new SymmetricEncoder();
-        Scanner scanner=new Scanner(System.in);
-        /*
-         * 加密
-         */
-        System.out.println("使用AES对称加密，请输入加密的规则");
-        String encodeRules=scanner.next();
-        System.out.println("请输入要加密的内容:");
-        String content = scanner.next();
-        System.out.println("根据输入的规则"+encodeRules+"加密后的密文是:"+AESEncode(encodeRules, content));
-
-        /*
-         * 解密
-         */
-        System.out.println("使用AES对称解密，请输入加密的规则：(须与加密相同)");
-        encodeRules=scanner.next();
-        System.out.println("请输入要解密的内容（密文）:");
-        content = scanner.next();
-        System.out.println("根据输入的规则"+encodeRules+"解密后的明文是:"+AESDncode(encodeRules, content));
     }
 
 }
