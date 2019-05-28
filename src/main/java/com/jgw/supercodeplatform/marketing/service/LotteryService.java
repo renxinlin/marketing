@@ -211,15 +211,17 @@ public class LotteryService {
 		Byte awardType=mPrizeTypeMO.getAwardType();
 		String key = mPrizeTypeMO.getId() + "_"+mPrizeTypeMO.getActivitySetId();
 		if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
-			String result = redisTemplate.execute(new RedisCallback<String>() {
-	            @Override
-	            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
-	                JedisCommands jedisCommands = (JedisCommands) redisConnection.getNativeConnection();
-	                String res = jedisCommands.set(key, mPrizeTypeMO.getRemainingStock()+"", "NX", "EX", 60);
-	                jedisCommands.expire(key, 60);
-	                return res;
-	            }
-	        });
+			if(mPrizeTypeMO.getRemainingStock() != null) {
+				String result = redisTemplate.execute(new RedisCallback<String>() {
+		            @Override
+		            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
+		                JedisCommands jedisCommands = (JedisCommands) redisConnection.getNativeConnection();
+		                String res = jedisCommands.set(key, mPrizeTypeMO.getRemainingStock().toString(), "NX", "EX", 60);
+		                jedisCommands.expire(key, 60);
+		                return res;
+		            }
+		        });
+			}
 			if(StringUtils.isBlank(valueOperations.get(key))) {
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
 				lotteryResultMO.setWinnOrNot(0);
@@ -294,7 +296,8 @@ public class LotteryService {
 						}
 						break;
 					case 2: //奖券
-						lotteryResultMO.setMsg(mPrizeTypeMO.getCardLink());
+						lotteryResultMO.setData(mPrizeTypeMO.getCardLink());
+						lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						break;
 					case 3: //积分
