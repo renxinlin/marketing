@@ -153,7 +153,7 @@ public class LotteryService {
 	 * @throws SuperCodeException
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public RestResult<LotteryResultMO> lottery(String wxstate,HttpServletRequest request) throws SuperCodeException, ParseException {
+	public RestResult<LotteryResultMO> lottery(String wxstate, String remoteAddr) throws SuperCodeException, ParseException {
 		RestResult<LotteryResultMO> restResult=new RestResult<>();
 		ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
 		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
@@ -275,7 +275,7 @@ public class LotteryService {
 					lotteryResultMO.setAwardType((byte)4);
 					Float amount =mPrizeTypeMO.getPrizeAmount();
 					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
-					weixinpay(mobile, openId, organizationId, mPrizeTypeMO,request);
+					weixinpay(mobile, openId, organizationId, mPrizeTypeMO,remoteAddr);
 					lotteryResultMO.setMsg(amount+"");
 				}else {
 					lotteryResultMO.setAwardType(awardType);
@@ -425,7 +425,7 @@ public class LotteryService {
 		mWinRecordMapper.addWinRecord(redWinRecord);
 	}
 
-	private Float weixinpay(String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO,HttpServletRequest request)
+	private Float weixinpay(String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, String remoteAddr)
 			throws SuperCodeException, Exception {
 		if (StringUtils.isBlank(openId)) {
 			throw  new SuperCodeException("微信支付openid不能为空",500);
@@ -459,8 +459,6 @@ public class LotteryService {
 		tradeOrder.setTradeDate(format.format(new Date()));
 		tradeOrder.setOrganizationId(organizationId);
 		wXPayTradeOrderMapper.insert(tradeOrder);
-
-		String remoteAddr = request.getRemoteAddr();
 		if (StringUtils.isBlank(remoteAddr)) {
 			remoteAddr=serverIp;
 		}

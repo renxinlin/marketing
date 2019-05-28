@@ -43,7 +43,7 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/lottery")
     @ApiOperation(value = "用户点击领奖方法", notes = "")
     public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
-        return service.lottery(wxstate, request);
+        return service.lottery(wxstate, request.getRemoteAddr());
     }
     
     
