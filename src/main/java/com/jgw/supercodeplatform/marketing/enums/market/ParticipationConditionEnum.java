@@ -17,6 +17,8 @@ public enum ParticipationConditionEnum {
     @Setter
     private Byte condition;
 
+
+
     @Getter
     @Setter
     private String desc;

@@ -20,6 +20,10 @@ public interface MarketingActivityProductMapper extends CommonSql{
 	MarketingActivityProduct selectByProductAndProductBatchIdWithReferenceRole(@Param("productId") String productId,@Param("productBatchId") String productBatchId,@Param("referenceRole") byte referenceRole);
 
 
+	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ProductBatchId = #{productBatchId} and ReferenceRole=#{referenceRole} and ActivitySetId = #{activitySetId}")
+	MarketingActivityProduct selectByProductAndProductBatchIdWithReferenceRoleAndSetId(@Param("productId") String productId,@Param("productBatchId") String productBatchId,@Param("referenceRole") byte referenceRole,@Param("activitySetId") Long activitySetId);
+
+
 	@Insert({
 			"<script>",
 			"INSERT INTO marketing_activity_product(ActivitySetId,CodeType,ProductBatchId,ProductBatchName,ProductId,ProductName,CodeTotalAmount,ReferenceRole,SbatchId) VALUES ",

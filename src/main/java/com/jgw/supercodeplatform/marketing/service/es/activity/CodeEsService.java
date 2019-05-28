@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.index.IndexRequest;
@@ -133,6 +134,30 @@ public class CodeEsService extends AbstractEsSearch {
 		return getCount(eSearch);
 	}
 
+
+
+	/**
+	 * 根据码信息查询积分扫码批次
+	 *
+	 * @param productId
+	 * @param productBatchId
+	 * @return
+	 */
+	public Long countByCodeForIntegral(String codeId, String codeType,Integer memberType) {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("codeId.keyword", codeId);
+		addParam.put("codeType.keyword", codeType);
+		addParam.put("memberType", memberType);
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.INTEGRAL);
+		eSearch.setType(EsType.INFO);
+		eSearch.setParam(addParam);
+		return getCount(eSearch);
+	}
+
+
+
+
 	/**
 	 * 通过码和码制查询该码是不是被扫过
 	 *
@@ -243,6 +268,9 @@ public class CodeEsService extends AbstractEsSearch {
 		eSearch.setParam(addParam);
 		return getCount(eSearch);
 	}
+
+
+
 
 
 	/**
@@ -403,7 +431,7 @@ public class CodeEsService extends AbstractEsSearch {
     }
 
     /**
-     * 扫码信息,扫完就插入,插入失败不影响业务
+     * 扫码信息,扫完就插入,插入失败不影响业务,统计数据：不是扫码成功的业务数据
      * @param sCodeInfoMO
      */
     public void indexScanInfo(ScanCodeInfoMO sCodeInfoMO) {
@@ -416,4 +444,118 @@ public class CodeEsService extends AbstractEsSearch {
             logger.debug(e.getMessage(), e);
         }
     }
+
+	/**
+	 * 查询某一个码被多少导购扫了
+	 * @param codeId
+	 * @param codeTypeId
+	 * @return
+	 */
+	public int searchCodeScanedBySaler(String codeId, String codeTypeId) {
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SALER_INFO.getIndex()).setTypes(EsType.INFO.getType());
+		QueryBuilder termIdQuery = new TermQueryBuilder("codeId",codeId);
+		QueryBuilder termTypeQuery = new TermQueryBuilder("codeTypeId",codeTypeId);
+		StatsAggregationBuilder aggregation =
+				AggregationBuilders
+						.stats(AggregationName)
+						// 聚和字段：码
+						.field("scanCodeTime");
+		searchRequestBuilder.setQuery(termIdQuery).setQuery(termTypeQuery);
+		searchRequestBuilder.addAggregation(aggregation);
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+		return  (int)aggs.getCount();
+
+	}
+
+
+
+	/**
+	 *
+	 * @param organizationId
+	 * @param userId
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 * @throws SuperCodeException
+	 */
+	public int countSalerNumByUserIdAndDate(String organizationId, Long userId, String startDate ,String endDate) throws SuperCodeException {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		if (null ==userId) {
+			throw new SuperCodeException("userID error");
+		}
+		if (StringUtils.isBlank(startDate)) {
+			throw new SuperCodeException("startDate error");
+		}
+		if (StringUtils.isBlank(endDate)) {
+			throw new SuperCodeException("endDate error");
+		}
+		if (StringUtils.isNotBlank(organizationId)) {
+			throw new SuperCodeException("organizationId error");
+		}
+		// 聚合求和;效果同 select count from table where org = and date between a and b
+		// out of date
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SALER_INFO.getIndex()).setTypes( EsType.INFO.getType());
+		// 创建查询条件 >= <=
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
+		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
+		// 只获取会员活动点击量
+		QueryBuilder memberType = QueryBuilders.termQuery("userId",userId);
+
+		StatsAggregationBuilder aggregation =
+				AggregationBuilders
+						.stats(AggregationName)
+						// 聚和字段：码
+						.field("scanCodeTime");
+		// 添加查询条件
+		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate).setQuery(memberType);
+		searchRequestBuilder.addAggregation(aggregation);
+		// 获取查询结果
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		// 获取count
+		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+		// 优化方向，其他结果如非必须可剔除
+		// 除去评分机制
+		// 采用过滤而非查询提高查询速度
+		// 取所需结果
+		return  (int)aggs.getCount();
+	}
+
+	public void indexSalerScanInfo(SalerScanInfo param) throws SuperCodeException {
+		try{
+			// 保存导购信息
+			eClient.prepareIndex(EsIndex.MARKET_SALER_INFO.getIndex(), EsType.INFO.getType())
+					.setSource(JSONObject.toJSONString(param), XContentType.JSON).get();
+		}catch (Exception e){
+			logger.error("扫码信息插入失败");
+			logger.error(e.getMessage(), e);
+			throw new SuperCodeException("保存导购领奖的扫码信息失败...");
+		}
+	}
+
+	/**
+	 * 导购码是不是被扫过
+	 * @param codeTypeId
+	 * @param codeId
+	 * @return
+	 */
+	public boolean searchCodeScaned(String codeTypeId, String codeId) {
+
+		boolean scaned = true;
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("codeId.keyword", codeId);
+		addParam.put("codeType.keyword", codeTypeId);
+
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.MARKET_SALER_INFO);
+		eSearch.setType(EsType.INFO);
+		eSearch.setParam(addParam);
+		// TODO 改成乐观锁查询
+		List<SearchHit> searchHits = get(eSearch);
+		if( searchHits.size() <= 0){
+			scaned = false;
+		}
+		return scaned;
+
+	}
 }

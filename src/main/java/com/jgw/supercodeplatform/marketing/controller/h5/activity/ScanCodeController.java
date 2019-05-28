@@ -178,4 +178,6 @@ public class ScanCodeController {
         String url=h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1"+"&organizationId="+organizationId;
         return url;
     }
+
+
 }

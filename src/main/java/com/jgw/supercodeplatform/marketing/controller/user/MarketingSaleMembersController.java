@@ -32,7 +32,11 @@ import java.util.List;
 @RequestMapping("/marketing/salemembers")
 @Api(tags = "销售员管理")
 public class MarketingSaleMembersController extends CommonUtil {
-
+    public static void main(String[] args) {
+        System.out.println("");
+        System.out.println("");
+        System.out.println("");
+    }
     @Autowired
     private MarketingSaleMemberService service;
     @Autowired

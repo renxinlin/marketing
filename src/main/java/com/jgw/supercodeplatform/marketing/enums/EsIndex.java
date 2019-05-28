@@ -6,7 +6,8 @@ package com.jgw.supercodeplatform.marketing.enums;
 public enum  EsIndex {
     MARKETING("marketing"),INTEGRAL("integral"),MARKET_DIAGRAM_REMBER("marketdiagram"),
 
-    MARKET_SCAN_INFO("marketingscan");
+    MARKET_SCAN_INFO("marketingscan"),
+    MARKET_SALER_INFO("marketingsaler");
 
     private String index;
 
