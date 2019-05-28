@@ -32,7 +32,7 @@ public interface MarketingActivityProductMapper extends CommonSql{
 
 	
 	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ActivitySetId = #{activitySetId} ")
-	List<MarketingActivityProduct> selectByActivitySetId(@Param("activitySetId") String activitySetId);
+	List<MarketingActivityProduct> selectByActivitySetId(@Param("activitySetId") Long activitySetId);
 
 
 

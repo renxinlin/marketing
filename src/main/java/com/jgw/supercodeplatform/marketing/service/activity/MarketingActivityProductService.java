@@ -46,8 +46,7 @@ public class MarketingActivityProductService {
             return  restResult;
         }
         // 获取中奖规则-奖次信息
-        String strActivitySetId = String.valueOf(activitySetId);
-        List<MarketingActivityProduct> marketingActivityProducts = mapper.selectByActivitySetId(strActivitySetId);
+        List<MarketingActivityProduct> marketingActivityProducts = mapper.selectByActivitySetId(activitySetId);
 
         // 产品批次转换成网页格式数据转换1==产品去重
         Set<MarketingActivityProductParam> transferDatas = new HashSet<MarketingActivityProductParam>();

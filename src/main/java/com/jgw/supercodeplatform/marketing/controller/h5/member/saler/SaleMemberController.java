@@ -217,7 +217,7 @@ public class SaleMemberController {
         String wxstate = "wxstate12345678900987654321";
 
         ScanCodeInfoMO pMo=new ScanCodeInfoMO();
-        MarketingActivityProduct marketingActivityProduct = productMapper.selectByActivitySetId(activitySetId + "").get(0);
+        MarketingActivityProduct marketingActivityProduct = productMapper.selectByActivitySetId(activitySetId).get(0);
 
         pMo.setCodeId(outerCodeId);
         pMo.setCodeTypeId(marketingActivityProduct.getCodeType());

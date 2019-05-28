@@ -150,6 +150,33 @@ public class CommonService {
 		}
 		return bindBatchList;
 	}
+	
+    /**
+     * 获取绑定批次和url的请求参数
+     * @param obj：通过产品和产品批次获取的码管理平台生码批次信息
+     * @param url
+     * @return
+     * @throws SuperCodeException 
+     */
+	public Map<String, Map<String, Object>> getUrlToBatchParamMap(JSONArray array,String url,int businessType) throws SuperCodeException {
+		Map<String, Map<String, Object>> bindBatchMap=new HashMap<>();
+		for(int i=0;i<array.size();i++) {
+			JSONObject batchobj=array.getJSONObject(i);
+			String productId=batchobj.getString("productId");
+			String productBatchId=batchobj.getString("productBatchId");
+			Long codeTotal=batchobj.getLong("codeTotal");
+			String codeBatch=batchobj.getString("codeBatch");
+			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+				throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
+			}
+			Map<String, Object> batchMap = new HashMap<String, Object>();
+			batchMap.put("batchId", codeBatch);
+			batchMap.put("businessType", businessType);
+			batchMap.put("url",  url);
+			bindBatchMap.put(productId + "," + productBatchId, batchMap);
+		}
+		return bindBatchMap;
+	}
 	/**
 	 * 生码批次绑定url
 	 * @param url
@@ -168,7 +195,23 @@ public class CommonService {
 		return body;
 	}
 
-	
+	/**
+	 * 删除生码批次绑定url
+	 * @param url
+	 * @param superToken
+	 * @return
+	 * @throws SuperCodeException 
+	 */
+	public String deleteUrlToBatch(List<Map<String, Object>> deleteBatchList,String superToken) throws SuperCodeException {
+		//生码批次跟url绑定
+		String deleteJson=JSONObject.toJSONString(deleteBatchList);
+		Map<String,String> headerMap=new HashMap<String, String>();
+		headerMap.put("super-token", superToken);
+		ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_DELETE_BATCH_TO_URL, deleteJson, headerMap);
+		logger.info("请求码管理删除批次与url返回数据:"+bindBatchresponse.toString());
+		String body=bindBatchresponse.getBody();
+		return body;
+	}
 	
     /**
      * 根据产品集合获取产品和批次集合
