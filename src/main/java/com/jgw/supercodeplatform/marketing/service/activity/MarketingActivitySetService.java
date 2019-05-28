@@ -223,13 +223,15 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		MarketingActivitySet mActivitySet = convertActivitySet(mSetParam,organizationId,organizationName);
 		List<MarketingActivityProduct> marketActivityProductList = mProductMapper.selectByActivitySetId(mActivitySet.getId());
 		List<Map<String, Object>> delBatchProductList = null;
-//		if(!CollectionUtils.isEmpty(marketActivityProductList)) {
-//			delBatchProductList = marketActivityProductList.stream().map(product -> {
-//				Map<String, Object> delMap = new HashMap<>();
-//				delMap.put("batchId", value)
-//				product.getSbatchId();
-//			})
-//		}
+		if(!CollectionUtils.isEmpty(marketActivityProductList)) {
+			delBatchProductList = marketActivityProductList.stream().map(product -> {
+				Map<String, Object> delMap = new HashMap<>();
+				delMap.put("batchId", product.getSbatchId());
+				delMap.put("businessType", BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+				delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+				return delMap;
+			}).collect(Collectors.toList());
+		}
 		mPrizeTypeMapper.deleteByActivitySetId(mActivitySet.getId());
 		mProductMapper.deleteByActivitySetId(mActivitySet.getId());
 		mChannelMapper.deleteByActivitySetId(mActivitySet.getId());
@@ -249,7 +251,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		//保存奖次
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
 		//保存商品批次活动总共批次参与的码总数
-		saveProductBatchs(maProductParams,activitySetId,0);
+		saveProductBatchs(maProductParams,delBatchProductList,activitySetId,0);
 		RestResult<String> restResult=new RestResult<String>();
 		restResult.setState(200);
 		restResult.setMsg("成功");
