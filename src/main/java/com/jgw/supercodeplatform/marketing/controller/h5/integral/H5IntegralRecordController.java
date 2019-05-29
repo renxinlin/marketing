@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -60,6 +61,7 @@ public class H5IntegralRecordController   {
         integralRecord.setMemberId(memberId);
         integralRecord.setOrganizationId(null);
         integralRecord.setIntegralType(integralTypeInt);
+        integralRecord.setMemberType(MemberTypeEnums.VIP.getType());
         // 获取积分记录分页结果
         AbstractPageService.PageResults<List<IntegralRecord>> pages = integralRecordService.listSearchViewLike(integralRecord);
         restResult.setState(200);
