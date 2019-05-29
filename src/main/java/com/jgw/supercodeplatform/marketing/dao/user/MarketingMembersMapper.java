@@ -104,7 +104,7 @@ public interface MarketingMembersMapper {
             + " SELECT  COUNT(1)  FROM marketing_members "
             + " <where>"
             + "  OrganizationId = #{ organizationId} "
-            + "  and state !=2 "
+            + "  and state !=2"
             + " <if test='mobile != null and mobile != &apos;&apos;'> AND Mobile like &apos;%${mobile}%&apos; </if>"
             + " <if test='wxName != null and wxName != &apos;&apos;'> AND WxName like &apos;%${wxName}%&apos; </if>"
             + " <if test='openid != null and openid != &apos;&apos;'> AND Openid like &apos;%${openid}%&apos; </if>"
@@ -136,6 +136,47 @@ public interface MarketingMembersMapper {
             + " </script>")
     Integer getAllMarketingMembersCount(Map<String,Object> map);
 
+
+
+    @Select(" <script>"
+            + " SELECT  COUNT(1)  FROM marketing_members "
+            + " <where>"
+            + "  OrganizationId = #{ organizationId} "
+            + "  and state !=2"
+            + "  and CreateDate < #{createDate}"+
+
+            "  and CreateDate < #{createDate}"
+            + " <if test='mobile != null and mobile != &apos;&apos;'> AND Mobile like &apos;%${mobile}%&apos; </if>"
+            + " <if test='wxName != null and wxName != &apos;&apos;'> AND WxName like &apos;%${wxName}%&apos; </if>"
+            + " <if test='openid != null and openid != &apos;&apos;'> AND Openid like &apos;%${openid}%&apos; </if>"
+            + " <if test='userName != null and userName != &apos;&apos;'> AND UserName like &apos;%${userName}%&apos; </if>"
+            + " <if test='sex != null and sex != &apos;&apos;'> AND Sex like &apos;%${sex}%&apos; </if>"
+            + " <if test='birthday != null and birthday != &apos;&apos;'> AND Birthday like &apos;%${birthday}%&apos; </if>"
+            + " <if test='customerName != null and customerName != &apos;&apos;'> AND CustomerName like &apos;%${customerName}%&apos; </if>"
+            + " <if test='newRegisterFlag != null '> AND NewRegisterFlag like &apos;%${newRegisterFlag}%&apos; </if>"
+            + " <if test='registDate != null and registDate != &apos;&apos;'> AND RegistDate like &apos;%${registDate}%&apos; </if>"
+            + " <if test='babyBirthday != null and babyBirthday != &apos;&apos;'> AND BabyBirthday like &apos;%${babyBirthday}%&apos; </if>"
+            + " <if test='state != null and state != &apos;&apos;'> AND State like &apos;%${state}%&apos; </if>"
+            + " <if test='search !=null and search != &apos;&apos;'>"
+            + " AND ("
+            + " Mobile LIKE binary CONCAT('%',#{search},'%')  "
+            + " OR WxName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Openid LIKE binary CONCAT('%',#{search},'%') "
+            + " OR UserName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Sex LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Birthday LIKE binary CONCAT('%',#{search},'%') "
+            + " OR PCCcode LIKE binary CONCAT('%',#{search},'%') "
+            + " OR CustomerName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR NewRegisterFlag LIKE binary CONCAT('%',#{search},'%') "
+            + " OR RegistDate LIKE binary CONCAT('%',#{search},'%') "
+            + " OR BabyBirthday LIKE binary CONCAT('%',#{search},'%') "
+            + " OR State LIKE binary CONCAT('%',#{search},'%') "
+            + ")"
+            + " </if>"
+            + " </where>"
+            + " </script>")
+    Integer getAllMarketingMembersCountWithOutToday(Map<String,Object> map);
+
     /**
      * 根据id获取单个会员信息
      * @param id
@@ -147,7 +188,7 @@ public interface MarketingMembersMapper {
 
     @Delete("delete from marketing_members where Id=#{id}")
 	void deleteById(@Param("id")Long id);
-    
+
 
     @Select("${sql}")
 	List<Map<String, Object>> dynamicList(@Param("sql")String listSQl);

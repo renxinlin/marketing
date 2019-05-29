@@ -323,8 +323,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @param map
 	 * @return
 	 */
-	public Integer getAllMarketingMembersCount(Map<String,Object> map){
-		return marketingMembersMapper.getAllMarketingMembersCount(map);
+	public Integer getAllMarketingMembersCountWithOutToday(Map<String,Object> map){
+		return marketingMembersMapper.getAllMarketingMembersCountWithOutToday(map);
 	}
 
 	/**
