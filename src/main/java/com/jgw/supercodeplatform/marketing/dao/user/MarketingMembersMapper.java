@@ -30,7 +30,8 @@ public interface MarketingMembersMapper {
             + " DATE_FORMAT(a.BabyBirthday ,'%Y-%m-%d') as babyBirthday,  a.IsRegistered as isRegistered , "
             + " a.HaveIntegral as haveIntegral , MemberType memberType, a.IntegralReceiveDate as integralReceiveDate, "
             + " a.WechatHeadImgUrl as wechatHeadImgUrl, "
-            + " a.UserSource, a.ProvinceCode, a.ProvinceName, a.DeviceType  ";
+            + " a.UserSource, a.ProvinceCode, a.ProvinceName, a.DeviceType, " +
+              " a.ProvinceCode,a.CityCode,a.CountyCode,a.ProvinceName,a.CityName,a.CountyName  ";
 
     /**
      * 会员注册
@@ -39,11 +40,13 @@ public interface MarketingMembersMapper {
      */
     @Options(useGeneratedKeys=true, keyProperty="id", keyColumn="Id")
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
-            + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday,PCCcode,State,IsRegistered,WechatHeadImgUrl)"
+            + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday,PCCcode,State,IsRegistered,WechatHeadImgUrl, " +
+              " ProvinceCode,CityCode,CountyCode,ProvinceName,CityName,CountyName ) "
             + " VALUES("
             + " #{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday}"
             + " ,NOW(),#{organizationId},"
-            + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state},1,#{wechatHeadImgUrl})")
+            + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state},1,#{wechatHeadImgUrl}," +
+              " provinceCode,cityCode,countyCode,provinceName,cityName,countyName )")
     int insert(MarketingMembers marketingMembers);
 
 

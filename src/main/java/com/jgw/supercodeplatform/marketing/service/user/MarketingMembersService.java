@@ -9,6 +9,8 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -233,7 +235,19 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String userId = getUUID();
 		marketingMembersAddParam.setUserId(userId);
 		marketingMembersAddParam.setState(1);
+		//
+
 		MarketingMembers members=modelMapper.map(marketingMembersAddParam,MarketingMembers.class);
+		List<JSONObject> objects = JSONObject.parseArray(marketingMembersAddParam.getpCCcode(),JSONObject.class);
+		JSONObject province = objects.get(0);
+		JSONObject city = objects.get(1);
+		JSONObject country = objects.get(2);
+		members.setProvinceCode(province.getString(PcccodeConstants.areaCode));
+		members.setCityCode(city.getString(PcccodeConstants.areaCode));
+		members.setCountyCode(country.getString(PcccodeConstants.areaCode));
+		members.setProvinceName(province.getString(PcccodeConstants.areaName));
+		members.setCityName(city.getString(PcccodeConstants.areaName));
+		members.setCountyName(country.getString(PcccodeConstants.areaName));
 		members.setIsRegistered((byte)1);//手机号注册默认为已完善过信息
 		int result = marketingMembersMapper.insert(members);
 		// 调用用户模块发送短信
