@@ -39,6 +39,9 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
 
     @Override
     protected int count(IntegralRecord integralRecord) throws Exception {
+        if(integralRecord.getMemberType() == null || integralRecord.getMemberType().intValue() < 0){
+            throw new SuperCodeException("用户类型未区分...");
+        }
         return recordMapper.count(integralRecord);
     }
 
