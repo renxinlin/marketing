@@ -75,6 +75,8 @@ public class MemberPortraitController extends CommonUtil {
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);
     }
@@ -86,6 +88,8 @@ public class MemberPortraitController extends CommonUtil {
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);
     }
@@ -97,6 +101,8 @@ public class MemberPortraitController extends CommonUtil {
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);      }
 
@@ -108,6 +114,8 @@ public class MemberPortraitController extends CommonUtil {
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);      }
 
@@ -120,6 +128,8 @@ public class MemberPortraitController extends CommonUtil {
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);     }
 
@@ -131,7 +141,24 @@ public class MemberPortraitController extends CommonUtil {
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+           return returnNull();
         }
+        return RestResult.success("success",result);
+    }
+
+    /**
+     * 协调前端
+     * @return
+     */
+    private RestResult returnNull() {
+        HashMap result = new HashMap();
+        List<CricleVo> sexCricleVos = new LinkedList();
+        List<CricleVo> deviceCricleVos = new LinkedList();
+        List<CricleVo> ageCricleVos = new LinkedList();
+        result.put("sex",sexCricleVos);
+        result.put("age",ageCricleVos);
+        result.put("device",deviceCricleVos);
         return RestResult.success("success",result);
     }
 
