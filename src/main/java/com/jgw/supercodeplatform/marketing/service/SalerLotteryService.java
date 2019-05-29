@@ -1,45 +1,56 @@
 package com.jgw.supercodeplatform.marketing.service;
 
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
-import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.ParticipationConditionConstant;
-import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
-import com.jgw.supercodeplatform.marketing.dao.activity.*;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
-import com.jgw.supercodeplatform.marketing.enums.market.*;
-import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityStatusEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * 导购员领奖
@@ -50,9 +61,6 @@ public class SalerLotteryService {
 
     @Autowired
     private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
-
-    @Autowired
-    private MarketingMembersWinRecordMapper mWinRecordMapper;
 
     @Autowired
     private WXPayTradeOrderMapper wXPayTradeOrderMapper;
@@ -137,7 +145,7 @@ public class SalerLotteryService {
         String productBatchId = scanCodeInfoMO.getProductBatchId();
         Long activitySetId     = scanCodeInfoMO.getActivitySetId();
         //   用户数据
-        Map map = getBizData(productId, productBatchId, activitySetId);
+        Map<String, Object> map = getBizData(productId, productBatchId, activitySetId);
         //  活动数据
         MarketingActivitySet marketingActivitySet = (MarketingActivitySet) map.get("marketingActivitySet");
         List<MarketingPrizeTypeMO> marketingPrizeTypes = (List<MarketingPrizeTypeMO>) map.get("marketingPrizeTypes");
@@ -166,7 +174,7 @@ public class SalerLotteryService {
 
 
 
-    private Map weixinpayForSaler(String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, HttpServletRequest request)
+    private Map<String, Object> weixinpayForSaler(String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, HttpServletRequest request)
             throws SuperCodeException{
         if (StringUtils.isBlank(openId)) {
             throw  new SuperCodeException("微信支付openid不能为空",500);
@@ -215,7 +223,7 @@ public class SalerLotteryService {
             e.printStackTrace();
 
         }
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
         map.put("amount",amount);
         map.put("success",success);
         return map;
@@ -277,7 +285,7 @@ public class SalerLotteryService {
 
                 // 保存 微信支付数据
                 // 更新微信回调状态
-                Map floatMoneyAndSuccessFlag = weixinpayForSaler(marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), marketingPrizeType, request);
+                Map<String, Object> floatMoneyAndSuccessFlag = weixinpayForSaler(marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), marketingPrizeType, request);
                 // 中奖记录
                 IntegralRecord record                                           = new IntegralRecord();
                 Float amount                          = (Float) floatMoneyAndSuccessFlag.get("amount");
@@ -406,7 +414,7 @@ public class SalerLotteryService {
 
     }
 
-    private Map getBizData(String productId, String productBatchId, Long activitySetId) throws SuperCodeException {
+    private Map<String, Object> getBizData(String productId, String productBatchId, Long activitySetId) throws SuperCodeException {
         // 1 活动数据
         MarketingActivitySet marketingActivitySet = mSetMapper.selectByIdWithActivityId(activitySetId, ActivityIdEnum.ACTIVITY_SALER.getId().longValue());
         // 2 奖次数据
@@ -427,7 +435,7 @@ public class SalerLotteryService {
         }
 
 
-        Map result = new HashMap();
+        Map<String, Object> result = new HashMap<>();
         result.put("marketingActivitySet",marketingActivitySet);
         result.put("marketingPrizeTypes",marketingPrizeTypes);
         result.put("marketingActivityProduct",marketingActivityProduct);

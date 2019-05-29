@@ -6,13 +6,13 @@ package com.jgw.supercodeplatform.marketing.constants;
  * @author liujianqiang
  * @date 2018年9月5日
  */
-public class RedisKey {
+public interface RedisKey {
 	
-	 public static String phone_code_prefix="marketing:h5_phone_code:";
+	 public final static String phone_code_prefix="marketing:h5_phone_code:";
 	 
-	 public static String organizationId_prefix="marketing:organizationId:";
+	 public final static String organizationId_prefix="marketing:organizationId:";
 	 
-	 public static String ACCESS_TOKEN_prefix="marketing:access_token:";
+	 public final static String ACCESS_TOKEN_prefix="marketing:access_token:";
 	 
-	 public static String ACTIVITY_PREVIEW_PREFIX="marketing:activity_preview:";
+	 public final static String ACTIVITY_PREVIEW_PREFIX="marketing:activity_preview:";
 }

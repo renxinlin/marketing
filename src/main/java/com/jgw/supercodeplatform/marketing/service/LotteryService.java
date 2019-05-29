@@ -225,6 +225,7 @@ public class LotteryService {
 		                return res;
 		            }
 		        });
+				logger.info("抽奖结果：{},设置redis返回值：{}", mPrizeTypeMO, result);
 			}
 			if(StringUtils.isBlank(valueOperations.get(key))) {
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
@@ -282,10 +283,11 @@ public class LotteryService {
 				//如果是微信红包奖项类型可能为空需特殊处理
 				if (null==awardType || awardType.intValue()==4) {
 					lotteryResultMO.setAwardType((byte)4);
-					Float amount =mPrizeTypeMO.getPrizeAmount();
+					Float amount = weixinpay(mobile, openId, organizationId, mPrizeTypeMO,remoteAddr);
 					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
-					weixinpay(mobile, openId, organizationId, mPrizeTypeMO,remoteAddr);
-					lotteryResultMO.setMsg(amount+"");
+					DecimalFormat decimalFormat=new DecimalFormat(".00");
+					String strAmount=decimalFormat.format(amount);
+					lotteryResultMO.setMsg(strAmount);
 				}else {
 					lotteryResultMO.setAwardType(awardType);
 					int redisRemainingStock = -1;
@@ -446,12 +448,7 @@ public class LotteryService {
 		if (randAmount.equals((byte)1)) {
 			float min=mPrizeTypeMO.getLowRand();
 			float max=mPrizeTypeMO.getHighRand();
-            //amount=new Random().nextFloat() * (max - min)+min;
-            // 保留两位小数
-			float init = new Random().nextFloat() *((max-min)) +min;
-			DecimalFormat decimalFormat=new DecimalFormat(".00");
-			String strAmount=decimalFormat.format(init);//format 返回的是字符串
-			amount = Float.valueOf(strAmount);
+			amount = new Random().nextFloat() *((max-min)) +min;
 		}
 		Float finalAmount = amount * 100;//金额转化为分
 

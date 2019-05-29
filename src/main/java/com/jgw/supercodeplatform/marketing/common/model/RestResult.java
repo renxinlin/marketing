@@ -11,7 +11,6 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(description = "返回结果")
 public class RestResult <T>{
 	
-	private static final long serialVersionUID = 5331794418863519060L;
 	@ApiModelProperty(value = "返回成功标识：200-成功；非200-失败",position = 0)
 	private Integer state;
 	@ApiModelProperty(value = "成功或者失败的描述",position = 1)
@@ -71,17 +70,17 @@ public class RestResult <T>{
 		return results;
 	}
 
-	public static RestResult success(){
-		RestResult result = new RestResult();
+	public static <T> RestResult<T> success(){
+		RestResult<T> result = new RestResult<>();
 		result.state = 200;
 		result.msg = "success";
 		result.results = null;
-		return  result;
+		return result;
 
 	}
 
 	public static <T> RestResult<T> successWithData(T data){
-		RestResult<T>  result = new RestResult();
+		RestResult<T>  result = new RestResult<>();
 		result.state = 200;
 		result.msg = "success";
 		result.results = data;
@@ -90,7 +89,7 @@ public class RestResult <T>{
 
 
 	public static <T> RestResult<T> error(T data){
-		RestResult<T> result = new RestResult();
+		RestResult<T> result = new RestResult<>();
 		result.state = 500;
 		result.msg = "ERROR";
 		result.results = data;
@@ -99,7 +98,7 @@ public class RestResult <T>{
 	}
 
 	public static <T> RestResult<T> error(String msg, T data){
-		RestResult<T> result = new RestResult();
+		RestResult<T> result = new RestResult<>();
 		result.state = 500;
 		result.msg = msg;
 		result.results = data;
@@ -108,7 +107,7 @@ public class RestResult <T>{
 	}
 
 	public static <T> RestResult<T> error(String msg, T data,int state){
-		RestResult<T> result = new RestResult();
+		RestResult<T> result = new RestResult<>();
 		result.state = state;
 		result.msg = msg;
 		result.results = data;
