@@ -118,10 +118,9 @@ public class BeanPropertyUtil {
 	 * @throws IllegalAccessException 如果实例化 JavaBean 失败
 	 * @throws InvocationTargetException 如果调用属性的 setter 方法失败
 	 */
-	@SuppressWarnings("rawtypes")
-	public static Map toMap(Object bean) {
+	public static Map<String, Object> toMap(Object bean) {
 		Class<? extends Object> clazz = bean.getClass();
-		Map<Object, Object> returnMap = new HashMap<Object, Object>();
+		Map<String, Object> returnMap = new HashMap<>();
 		BeanInfo beanInfo = null;
 		try {
 			beanInfo = Introspector.getBeanInfo(clazz);

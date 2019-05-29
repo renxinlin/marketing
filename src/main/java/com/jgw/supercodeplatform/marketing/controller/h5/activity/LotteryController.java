@@ -2,13 +2,13 @@ package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
 import java.text.ParseException;
 
-import com.jgw.supercodeplatform.marketing.service.SalerLotteryService;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +17,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
+import com.jgw.supercodeplatform.marketing.service.SalerLotteryService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
 import io.swagger.annotations.Api;
@@ -24,8 +25,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
-
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/marketing/front/lottery")

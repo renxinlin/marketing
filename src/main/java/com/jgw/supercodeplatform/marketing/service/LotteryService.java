@@ -287,6 +287,7 @@ public class LotteryService {
 					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
 					DecimalFormat decimalFormat=new DecimalFormat(".00");
 					String strAmount=decimalFormat.format(amount);
+					lotteryResultMO.setData(strAmount);
 					lotteryResultMO.setMsg(strAmount);
 				}else {
 					lotteryResultMO.setAwardType(awardType);

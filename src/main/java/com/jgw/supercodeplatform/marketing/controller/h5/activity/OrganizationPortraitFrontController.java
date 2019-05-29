@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
 import com.jgw.supercodeplatform.marketing.service.user.OrganizationPortraitService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -45,11 +46,11 @@ public class OrganizationPortraitFrontController  extends CommonUtil {
     @ApiImplicitParams({
     	   @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "扫码唯一id", required = true)
     })
-    public RestResult<String> getUnselectedPortrait(String organizationId) throws Exception {
+    public RestResult<List<MarketingUnitcode>> getUnselectedPortrait(String organizationId) throws Exception {
 		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("组织id不存在", 500);
 		}
-        return new RestResult(200, "success", organizationPortraitService.getUnselectedPortrait(organizationId));
+        return new RestResult<>(200, "success", organizationPortraitService.getUnselectedPortrait(organizationId));
     }
 
 

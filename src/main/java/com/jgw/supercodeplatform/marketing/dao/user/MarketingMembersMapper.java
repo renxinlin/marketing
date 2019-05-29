@@ -179,6 +179,7 @@ public interface MarketingMembersMapper {
             + " <if test='openid !=null and openid != &apos;&apos; '> Openid = #{openid} ,</if> "
             + " <if test='wechatHeadImgUrl !=null and wechatHeadImgUrl != &apos;&apos; '> WechatHeadImgUrl = #{wechatHeadImgUrl} ,</if> "
             + " <if test=' isRegistered !=null'> IsRegistered = #{isRegistered} ,</if> "
+            + " <if test=' integralReceiveDate !=null'> IntegralReceiveDate = #{integralReceiveDate} ,</if> "
             + " UpdateDate = NOW() ,"
             + " </set>"
             + " <where> "

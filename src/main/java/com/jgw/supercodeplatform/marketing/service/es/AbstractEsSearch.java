@@ -11,10 +11,12 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -289,14 +291,26 @@ public abstract class AbstractEsSearch extends CommonUtil {
     }
 
     public void add(EsSearch esSearch, Map<String, Object> addParam) {
+    	add(esSearch, false,  addParam);
+    }
+    
+    /**
+     * 添加数据
+     * @param esSearch 
+     * @param immediateFlag 是否忽略刷新频率配置直接立刻添加进ES，
+     * @param addParam
+     */
+    public void add(EsSearch esSearch, boolean immediateFlag, Map<String, Object> addParam) {
 
         TransportClient eClient = SpringContextUtil.getBean("elClient");
 
-        IndexResponse indexResponse = eClient
-                .prepareIndex(esSearch.getIndex().getIndex()
-                        , esSearch.getType().getType())
-                .setSource(addParam).get();
-
+        IndexRequestBuilder indexRequest = eClient
+                .prepareIndex(esSearch.getIndex().getIndex(), esSearch.getType().getType())
+                .setSource(addParam);
+        if(immediateFlag) {
+        	indexRequest.setRefreshPolicy(RefreshPolicy.IMMEDIATE);
+        }
+        indexRequest.get();
     }
 
     /**

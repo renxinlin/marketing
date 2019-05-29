@@ -81,7 +81,7 @@ public class OrganizationPortraitService extends CommonUtil {
 
       // 手机号画像添加
       MarketingUnitcode mobileUnitCode = organizationPortraitMapper.getMobilePortrait();
-      Set mPortraitSets = new HashSet();
+      Set<MarketingOrganizationPortrait> mPortraitSets = new HashSet<>();
       MarketingOrganizationPortrait mobilePortrait=new MarketingOrganizationPortrait();
       mobilePortrait.setOrganizationFullName(organizationName);
       mobilePortrait.setOrganizationId(organizationId);

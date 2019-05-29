@@ -20,7 +20,7 @@ public class AbstractPageService<E extends DaoSearch> extends CommonUtil {
     public <T> PageResults<T> listSearchViewLike(E searchParams) throws Exception {
         //总页数
         int total = count(searchParams);
-        Map param = BeanPropertyUtil.toMap(searchParams);
+        Map<String, Object> param = BeanPropertyUtil.toMap(searchParams);
         
         param.put("current", searchParams.getCurrent());
         //分页参数
@@ -28,8 +28,8 @@ public class AbstractPageService<E extends DaoSearch> extends CommonUtil {
         searchParams.setStartNumber(page.getStartNumber());
         searchParams.setPageSize(page.getPageSize());
         //返回分页结果
-        Object t=searchResult(searchParams);
-        return new PageResults(t, page);
+        T t = searchResult(searchParams);
+        return new PageResults<>(t, page);
     }
 
     protected <T> T searchResult(E searchParams) throws Exception {

@@ -1,5 +1,20 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
@@ -7,34 +22,15 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdAndSetIdParam;
-import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.SalerIntegralRecordParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralRecordParam;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingMembersWinRecordService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.CollectionUtils;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 销售员奖励查询导出
@@ -46,15 +42,6 @@ import java.util.Map;
 public class MarketingSaleMemberRewardController  extends CommonUtil {
     // todo 积分记录插入和查询都需要【区分会员和导购以及其他】
     protected static Logger logger = LoggerFactory.getLogger(MarketingMembersWinRecordController.class);
-    @Autowired
-    private MarketingMembersWinRecordService service;
-
-
-
-
-
-
-
     // 	@Value("${marketing.winRecord.sheetHead}")
     @Value("{\"customerName\":\"所属机构\",\"salerMobile\":\"销售员手机\",\"salerName\":\"姓名\", \"productName\":\"产品\",\"outerCodeId\":\"码\",\"salerAmount\":\"红包金额\", \"integralReason\":\"参与条件\",\"mobile\":\"会员手机\",\"createDate\":\"参与时间\",\"status\":\"状态\"}")
     private String EXCEL_FIELD_MAP;
@@ -144,7 +131,7 @@ public class MarketingSaleMemberRewardController  extends CommonUtil {
         // step-2: 获取结果
         List<IntegralRecord> list = pages.getList();
         // 导出
-        Map filedMap = null;
+        Map<String, String> filedMap = null;
         try {
             filedMap = JsonToMapUtil.toMap(EXCEL_FIELD_MAP);
         } catch (Exception e){
