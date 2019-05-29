@@ -44,9 +44,21 @@ public class MarketingMembersAddParam {
     
     @ApiModelProperty(value = "是否停用",hidden=true)
     private Integer state;
-    
+
     @ApiModelProperty(value = "手机验证码")
     private  String verificationCode;
+
+
+    @ApiModelProperty(value = "设备类型 1微信2 支付宝3app 4 浏览器5 qq6其他")
+    private  String deviceType;
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
 
     public String getVerificationCode() {
         return verificationCode;

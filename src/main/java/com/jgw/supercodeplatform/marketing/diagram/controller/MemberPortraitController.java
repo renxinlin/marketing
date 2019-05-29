@@ -238,6 +238,7 @@ public class MemberPortraitController extends CommonUtil {
                 other.add(1);
             }
             // 注册设备统计
+
             if(marketingMember.getDeviceType() == null){
                 otherDevice.add(1);
             }else if(marketingMember.getDeviceType().intValue() == 1) {
