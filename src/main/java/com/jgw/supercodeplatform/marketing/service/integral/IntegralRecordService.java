@@ -29,9 +29,7 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
     @Override
     protected List<IntegralRecord> searchResult(IntegralRecord integralRecord) throws Exception {
         // 0会员1导购2 其他
-        if(integralRecord.getMemberType() == null || integralRecord.getMemberType().intValue() < 0){
-            throw new SuperCodeException("用户类型未区分...");
-        }
+
         List<IntegralRecord> list=recordMapper.list(integralRecord);
         return list;
     }
@@ -39,9 +37,7 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
 
     @Override
     protected int count(IntegralRecord integralRecord) throws Exception {
-        if(integralRecord.getMemberType() == null || integralRecord.getMemberType().intValue() < 0){
-            throw new SuperCodeException("用户类型未区分...");
-        }
+
         return recordMapper.count(integralRecord);
     }
 
