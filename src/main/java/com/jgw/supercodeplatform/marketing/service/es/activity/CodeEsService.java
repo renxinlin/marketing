@@ -1,6 +1,8 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -277,6 +279,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * 活动点击量聚合名称
 	 */
 	private static final String AggregationName="agg";
+	private static final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 	/**
 	 * 活动点击量
 	 * @param organizationId
@@ -284,13 +287,14 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param endDate yyyy-MM-dd
 	 * @return
 	 */
-	public Integer countOrganizationActivityClickNumByDate(String organizationId, String startDate, String endDate) {
+	public Integer countOrganizationActivityClickNumByDate(String organizationId, String startDate, String endDate) throws ParseException {
 		// 聚合求和;效果同 select count from table where org = and date between a and b
 
 		// out of date
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
+
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(sdf.parse(startDate)).lte(sdf.parse(endDate));
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
 		// 只获取会员活动点击量
 

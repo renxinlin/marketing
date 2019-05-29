@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class StatisicsTaskController extends CommonUtil {
             @ApiImplicitParam(paramType = "query", value = "1一周,2,3,4,5,6一年,字符串格式，按顺序一周到一年", name = "timeValue")
     })
     @GetMapping("query")
-    public RestResult<StatisicsVo> query(String timeValue) throws SuperCodeException {
+    public RestResult<StatisicsVo> query(String timeValue) throws SuperCodeException, ParseException {
         /**
          *
          * 活动点击量                                                 1，100,000
@@ -76,7 +77,7 @@ public class StatisicsTaskController extends CommonUtil {
         return RestResult.error("请选择时间范围...",null);
     }
 
-    public RestResult weekTask( ) throws SuperCodeException{
+    public RestResult weekTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getWeek();
         List<String> dateParamsString = taskTimeCalculator.getWeekString();
@@ -105,7 +106,7 @@ public class StatisicsTaskController extends CommonUtil {
     }
 
 
-    public RestResult twoWeekTask( ) throws SuperCodeException {
+    public RestResult twoWeekTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getTwoWeek();
         List<String> dateParamsString = taskTimeCalculator.getTwoWeekString();
@@ -123,7 +124,7 @@ public class StatisicsTaskController extends CommonUtil {
 
     }
 
-    public RestResult monthTask( ) throws SuperCodeException{
+    public RestResult monthTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getMonth();
         List<String> dateParamsString = taskTimeCalculator.getMonthString();
@@ -141,7 +142,7 @@ public class StatisicsTaskController extends CommonUtil {
 
     }
 
-    public RestResult threeMonthTask( ) throws SuperCodeException{
+    public RestResult threeMonthTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getThreeMonth();
         List<String> dateParamsString = taskTimeCalculator.getThreeMonthString();
@@ -165,7 +166,7 @@ public class StatisicsTaskController extends CommonUtil {
 
     }
 
-    public RestResult halfYearTask( ) throws SuperCodeException{
+    public RestResult halfYearTask( ) throws SuperCodeException, ParseException {
 
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getHalfYear();
@@ -191,7 +192,7 @@ public class StatisicsTaskController extends CommonUtil {
 
     }
 
-    public RestResult yearTask( ) throws SuperCodeException{
+    public RestResult yearTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getYear();
         List<String> dateParamsString = taskTimeCalculator.getYearString();
