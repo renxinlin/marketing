@@ -16,6 +16,7 @@ import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersAddParam;
 import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -104,6 +105,10 @@ public class SalerRegisterAndLoginV2Controller {
                     user.setId(id);
                     user.setOpenid(loginUser.getOpenid());
                     service.updateUserOpenId(user);
+                }
+                if(user.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
+                    return RestResult.error("您已经被禁用",null,500);
+
                 }
                 H5LoginVO jwtUser = new H5LoginVO();
                 jwtUser.setMobile(loginUser.getMobile());
