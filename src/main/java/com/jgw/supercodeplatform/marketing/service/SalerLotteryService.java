@@ -18,6 +18,7 @@ import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
 import com.jgw.supercodeplatform.marketing.enums.market.*;
+import com.jgw.supercodeplatform.marketing.exception.SalerLotteryException;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
@@ -50,9 +51,6 @@ public class SalerLotteryService {
 
     @Autowired
     private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
-
-    @Autowired
-    private MarketingMembersWinRecordMapper mWinRecordMapper;
 
     @Autowired
     private WXPayTradeOrderMapper wXPayTradeOrderMapper;
@@ -248,7 +246,7 @@ public class SalerLotteryService {
                 // 备注:保存前在原子性校验一次【扫码成功则保存】 es准实时的特性有坑，采用es自带的乐观锁功能解决该问题！！！！
                 boolean scaned = codeEsService.searchCodeScaned(scanInfo.getCodeTypeId(),scanInfo.getCodeId());
                 if(scaned){
-                    throw new SuperCodeException("手速慢啦，换个码在试吧");
+                    throw new SalerLotteryException("手速慢啦，换个码在试吧");
                 }
                 // 基于es 乐观锁处理非实时特性
                 SalerScanInfo param                             = new SalerScanInfo();
@@ -315,7 +313,7 @@ public class SalerLotteryService {
             }
 
         }else{
-            throw new SuperCodeException("请稍后重试!");
+            throw new SalerLotteryException("请稍后重试!");
         }
 
 
@@ -332,7 +330,7 @@ public class SalerLotteryService {
      * 基于码和码制唯一确定码
      * @param marketingActivitySet
      */
-    private MarketingActivitySetCondition validateSetRule(MarketingActivitySet marketingActivitySet,String codeId,String codeTypeId,String organizationId,Long userId) throws SuperCodeException {
+    private MarketingActivitySetCondition validateSetRule(MarketingActivitySet marketingActivitySet,String codeId,String codeTypeId,String organizationId,Long userId) throws SuperCodeException, SalerLotteryException {
         // 业务规则
         Date now = new Date();
         String nowStr = sdf.format(now);
@@ -368,7 +366,7 @@ public class SalerLotteryService {
         }
 
         if(marketingActivitySetCondition.getParticipationCondition() ==null ){
-            throw new SuperCodeException("活动数据没有完善...");
+            throw new SuperCodeException("活动数据没有完善呀...");
         }
 
         // 规则校验1
@@ -395,12 +393,12 @@ public class SalerLotteryService {
         // 规则校验2
         int todayScanNum = codeEsService.countSalerNumByUserIdAndDate(organizationId, userId, "","");
         if(todayScanNum >= marketingActivitySetCondition.getEachDayNumber()){
-            throw new SuperCodeException("扫码虽好,可不要贪多哦!欢迎明天在试");
+            throw new SalerLotteryException("扫码虽好,可不要贪多哦!欢迎明天在试");
         }
         // 规则校验3
         int i = codeEsService.searchCodeScanedBySaler(codeId, codeTypeId);
         if(i>0){
-            throw new SuperCodeException("哎呀,有人领走啦！");
+            throw new SalerLotteryException("哎呀,有人领走啦！");
         }
         return marketingActivitySetCondition;
 

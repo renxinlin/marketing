@@ -225,4 +225,22 @@ public class GlobalExceptionHandler {
         restResult.setResults(null);
         return restResult;
     }
+
+
+
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(SalerLotteryException.class)
+    public RestResult handlerSalerLotteryException(SalerLotteryException e) {
+        logger.error("会员未登录异常{}",e.getMessage());
+        RestResult restResult = new RestResult();
+        // 前端格式:不可修改
+        restResult.setState(200);
+        restResult.setMsg(e.getMessage());
+        // 前端格式:不可修改
+        restResult.setResults(e.getMessage());
+        return restResult;
+    }
+
+
+
 }
