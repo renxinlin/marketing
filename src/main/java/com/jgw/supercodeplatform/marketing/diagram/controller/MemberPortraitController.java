@@ -110,7 +110,7 @@ public class MemberPortraitController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getThreeMonth();
         List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
@@ -124,7 +124,7 @@ public class MemberPortraitController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getHalfYear();
         List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
@@ -137,7 +137,7 @@ public class MemberPortraitController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getYear();
         List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);

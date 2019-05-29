@@ -115,7 +115,7 @@ public class TotalMemberTaskController extends CommonUtil {
          // 查询日期内的数据
         // TODO 优化，改成求和函数计算
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId
-                ,dateParams.get(0),taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(0),dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
@@ -130,7 +130,7 @@ public class TotalMemberTaskController extends CommonUtil {
         List<Date> dateParams = taskTimeCalculator.getHalfYear();
          // 查询日期内的数据
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId
-                ,dateParams.get(0),taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(0),dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
@@ -143,7 +143,7 @@ public class TotalMemberTaskController extends CommonUtil {
         List<Date> dateParams = taskTimeCalculator.getYear();
          // 查询日期内的数据
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId
-                ,dateParams.get(0),taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(0),dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);

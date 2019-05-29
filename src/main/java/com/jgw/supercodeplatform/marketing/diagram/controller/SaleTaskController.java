@@ -100,7 +100,7 @@ public class SaleTaskController extends CommonUtil {
         List<String> dateParamsString = taskTimeCalculator.getThreeMonthString();
         // 只有日期，价格数据
         List<IntegralRecord> organizationAllSalePrice = service.getOrganizationAllSalePrice(organizationId
-                ,dateParams.get(0),taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(0),dateParams.get(dateParams.size() - 1));
         return timeIntervalWeektask(organizationAllSalePrice, dateParamsString);
 
     }
@@ -113,7 +113,7 @@ public class SaleTaskController extends CommonUtil {
         List<String> dateParamsString = taskTimeCalculator.getHalfYearString();
         // 只有日期，价格数据
         List<IntegralRecord> organizationAllSalePrice = service.getOrganizationAllSalePrice(organizationId
-                ,dateParams.get(0),taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(0),dateParams.get(dateParams.size() - 1));
         return timeIntervalMonthtask(organizationAllSalePrice, dateParamsString);
     }
 
@@ -123,7 +123,7 @@ public class SaleTaskController extends CommonUtil {
         List<String> dateParamsString = taskTimeCalculator.getYearString();
         // 只有日期，价格数据
         List<IntegralRecord> organizationAllSalePrice = service.getOrganizationAllSalePrice(organizationId
-                ,dateParams.get(0),taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(0),dateParams.get(dateParams.size() - 1));
         return timeIntervalMonthtask(organizationAllSalePrice, dateParamsString);      }
 
     /**
