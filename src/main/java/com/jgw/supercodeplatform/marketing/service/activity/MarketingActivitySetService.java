@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.jgw.supercodeplatform.marketing.dto.activity.*;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +101,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
 	@Autowired
 	private MarketingActivityChannelService channelService;
+
 
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
@@ -645,6 +647,12 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		pMo.setProductId(productId);
 		pMo.setActivitySetId(activitySetId);
 		pMo.setOrganizationId(mActivitySet.getOrganizationId());
+
+		Long id = mActivitySet.getId();
+		// 此方法统一活动类型！！！不可是其他业务
+		pMo.setActivityType(ActivityIdEnum.ACTIVITY_2.getType());
+		pMo.setActivityId(mActivitySet.getActivityId());
+
 		restResult.setResults(pMo);
 		restResult.setState(200);
 		return restResult;

@@ -288,7 +288,6 @@ public class CodeEsService extends AbstractEsSearch {
 		// 聚合求和;效果同 select count from table where org = and date between a and b
 
 		// out of date
-		TransportClient eClient = SpringContextUtil.getBean("elClient");
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
@@ -431,6 +430,7 @@ public class CodeEsService extends AbstractEsSearch {
     }
 
     /**
+     * 统计活动扫码量
      * 扫码信息,扫完就插入,插入失败不影响业务,统计数据：不是扫码成功的业务数据
      * @param sCodeInfoMO
      */
