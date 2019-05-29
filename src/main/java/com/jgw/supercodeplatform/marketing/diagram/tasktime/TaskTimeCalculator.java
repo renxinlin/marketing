@@ -30,6 +30,7 @@ public class TaskTimeCalculator {
     Calendar calendar = Calendar.getInstance();
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-01");
+    SimpleDateFormat todayZeroFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
 
     /**
      * 判断是否一周内
@@ -200,27 +201,37 @@ public class TaskTimeCalculator {
      * @return
      */
     public List getThreeMonth(){
-        Date current = new Date();
-
         List dates = new LinkedList();
-        calendar.setTime(current);
-        calendar.add(Calendar.DATE, -1);
-        // 先获取到产品定义的三个月，在从三个月前的那一天+7的方式标注时间戳到当前
-        calendar.add(Calendar.MONTH, -3);
-        Date threeMonthAgo = calendar.getTime();
-        dates.add(threeMonthAgo);
-
-        // 按x轴添加
-        while (true) {
-            calendar.add(Calendar.DATE, 7);
-            Date date = calendar.getTime();
-            if(date.after(current)){
-                break;
+        List<String> dateStrs = getThreeMonthString();
+        for(String dateStr : dateStrs){
+            try {
+                dates.add(todayZeroFormat.parse(dateStr+" 00:00:00"));
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-            dates.add(date);
         }
-        dates.add(current);
         return dates;
+//        Date current = new Date();
+//
+//        List dates = new LinkedList();
+//        calendar.setTime(current);
+//        calendar.add(Calendar.DATE, -1);
+//        // 先获取到产品定义的三个月，在从三个月前的那一天+7的方式标注时间戳到当前
+//        calendar.add(Calendar.MONTH, -3);
+//        Date threeMonthAgo = calendar.getTime();
+//        dates.add(threeMonthAgo);
+//
+//        // 按x轴添加
+//        while (true) {
+//            calendar.add(Calendar.DATE, 7);
+//            Date date = calendar.getTime();
+//            if(date.after(current)){
+//                break;
+//            }
+//            dates.add(date);
+//        }
+//        dates.add(current);
+//        return dates;
     }
 
 
@@ -264,14 +275,24 @@ public class TaskTimeCalculator {
      */
     public List getHalfYear(){
         List dates = new LinkedList();
-        for(String date :getHalfYearString()){
+        List<String> dateStrs = getHalfYearString();
+        for(String dateStr : dateStrs){
             try {
-                dates.add(format.parse(date));
+                dates.add(todayZeroFormat.parse(dateStr+" 00:00:00"));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
         return dates;
+//        List dates = new LinkedList();
+//        for(String date :getHalfYearString()){
+//            try {
+//                dates.add(format.parse(date));
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return dates;
 
     }
 
@@ -319,26 +340,25 @@ public class TaskTimeCalculator {
      * @return
      */
     public List getYear(){
-//        List dates = new LinkedList();
-//        calendar.setTime(new Date());
-//        calendar.add(Calendar.DATE, -1);
-//        // 按x轴添加
-//        calendar.add(Calendar.MONTH, -13);
-//        for(int i=-13;i<0;i++) {
-//            calendar.add(Calendar.MONTH, 1);
-//            Date date = calendar.getTime();
-//            dates.add(date);
-//        }
-//        return dates;
         List dates = new LinkedList();
-        for(String date :getYearString()){
+        List<String> dateStrs = getYearString();
+        for(String dateStr : dateStrs){
             try {
-                dates.add(format.parse(date));
+                dates.add(todayZeroFormat.parse(dateStr+" 00:00:00"));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
         return dates;
+//        List dates = new LinkedList();
+//        for(String date :getYearString()){
+//            try {
+//                dates.add(format.parse(date));
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return dates;
     }
 
 
