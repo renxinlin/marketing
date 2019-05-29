@@ -294,7 +294,7 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(sdf.parse(startDate)).lte(sdf.parse(endDate));
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(sdf.parse(startDate).getTime()).lte(sdf.parse(endDate).getTime());
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
 		// 只获取会员活动点击量
 
