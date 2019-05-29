@@ -392,8 +392,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return marketingMembersMapper.getMemberById(id);
 	}
 
-	public MarketingMembers selectByOpenIdAndOrgId(String openid, String organizationId) {
-		return marketingMembersMapper.selectByOpenIdAndOrgId(openid,organizationId);
+	public MarketingMembers selectByOpenIdAndOrgIdWithTemp(String openid, String organizationId) {
+		return marketingMembersMapper.selectByOpenIdAndOrgIdWithTemp(openid,organizationId);
 	}
 	/**
 	 * h5页面登录接口--既然已经执行登录接口那肯定是该活动中奖页设置了手机登录（通过活动设置id查询中奖页信息得知）
@@ -499,7 +499,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			}
 			trueMember=memberByPhone;
 		}else {
-			MarketingMembers memberByOpenId=marketingMembersMapper.selectByOpenIdAndOrgId(openid, organizationId);
+			MarketingMembers memberByOpenId=marketingMembersMapper.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
 			if (null==memberByOpenId) {
 				throw new SuperCodeException("登录失败，无此微信用户", 500);
 			}
@@ -518,7 +518,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				trueMember=memberByOpenId;
 			}else{
 				//如果state为2则表示该用户未激活刚刚授权状态
-				
+				//
 				//判断手机号用户是否存在，判断手机号用户是否已绑定微信号，判断手机号用户的微信号是否与登录微信号一直
 				MarketingMembers memberByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
 				if (null==memberByPhone) {

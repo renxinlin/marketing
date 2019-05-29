@@ -85,15 +85,4 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	int addWinRecord(MarketingMembersWinRecord winRecord);
 
 
-	@Update(startScript
-			+"update marketing_members_win "
-				+ " <set>"
-			+ " <if test='newopenId !=null and newopenId != &apos;&apos; '> OpenId = #{newopenId} ,</if> "
-			+ " <if test='mobile !=null and mobile != &apos;&apos; '> Mobile = #{mobile} ,</if> "
-			+ " </set>"
-			+"where OrganizationId = #{organizationId} and OpenId= #{oldopenId}"
-			+endScript)
-	void updateOpenIdAndMobileByOpenIdAndOrgId(@Param("newopenId")String newopenId, @Param("mobile")String mobile,  @Param("organizationId")String organizationId,
-			 @Param("oldopenId")String oldopenId);
-
 }

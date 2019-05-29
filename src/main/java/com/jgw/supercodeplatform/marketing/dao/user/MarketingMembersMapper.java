@@ -143,12 +143,6 @@ public interface MarketingMembersMapper {
     MarketingMembers getMemberById(@Param("id")Long id);
 
 
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} ")
-	MarketingMembers selectByOpenIdAndOrgId(@Param("openid")String openid, @Param("organizationId")String  organizationId);
-
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} ")
-	MarketingMembers selectByMobileAndOrgId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId);
-
     @Delete("delete from marketing_members where Id=#{id}")
 	void deleteById(@Param("id")Long id);
     
@@ -195,11 +189,25 @@ public interface MarketingMembersMapper {
     @Update("update marketing_members set  HaveIntegral = HaveIntegral - #{ingetralNum} where Id=#{id} ")
     int deleteIntegral(@Param("ingetralNum") Integer ingetralNum,@Param("id")Long id);
 
+
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} and State != 2 ")
+    MarketingMembers selectByOpenIdAndOrgId(@Param("openid")String openid, @Param("organizationId")String  organizationId);
+
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} ")
+    MarketingMembers selectByMobileAndOrgId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId);
+
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} and Id !=#{id} ")
 	MarketingMembers selectByPhoneAndOrgIdExcludeId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId, @Param("id")Long id);
 
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} and State=#{state}")
-	MarketingMembers selectByStateOpenIdAndOrgId(@Param("state")Integer state,@Param("openid")String openid, @Param("organizationId")String  organizationId);
+    /**
+     * 查询所有会员类型:临时数据【2】上线【1】 下线【0】
+     * @param state
+     * @param openid
+     * @param organizationId
+     * @return
+     */
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} ")
+	MarketingMembers selectByOpenIdAndOrgIdWithTemp(@Param("openid")String openid, @Param("organizationId")String  organizationId);
 
     /**
      * 招募会员入口注册的会员
@@ -208,7 +216,7 @@ public interface MarketingMembersMapper {
      * @param endDate
      * @return
      */
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.UserSource = 1 and a.CreateDate between #{startDate} and #{endDate} ")
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.UserSource = 1 and a.CreateDate between #{startDate} and #{endDate} and state !=2  ")
     List<MarketingMembers> getRegisterNum(String organizationId, Date startDate, Date endDate);
 
     /**
@@ -218,6 +226,6 @@ public interface MarketingMembersMapper {
      * @param endDate
      * @return
      */
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.CreateDate between #{startDate} and #{endDate} ")
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.CreateDate between #{startDate} and #{endDate} and state !=2 ")
     List<MarketingMembers> getOrganizationAllMemberWithDate(String organizationId, Date startDate, Date endDate);
 }
