@@ -30,7 +30,8 @@ public interface MarketingMembersMapper {
             + " DATE_FORMAT(a.BabyBirthday ,'%Y-%m-%d') as babyBirthday,  a.IsRegistered as isRegistered , "
             + " a.HaveIntegral as haveIntegral , MemberType memberType, a.IntegralReceiveDate as integralReceiveDate, "
             + " a.WechatHeadImgUrl as wechatHeadImgUrl, "
-            + " a.UserSource, a.ProvinceCode, a.ProvinceName, a.DeviceType  ";
+            + " a.UserSource, a.ProvinceCode, a.ProvinceName, a.DeviceType, " +
+              " a.ProvinceCode,a.CityCode,a.CountyCode,a.ProvinceName,a.CityName,a.CountyName  ";
 
     /**
      * 会员注册
@@ -39,11 +40,13 @@ public interface MarketingMembersMapper {
      */
     @Options(useGeneratedKeys=true, keyProperty="id", keyColumn="Id")
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
-            + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday,PCCcode,State,IsRegistered,WechatHeadImgUrl)"
+            + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday,PCCcode,State,IsRegistered,WechatHeadImgUrl, " +
+              " ProvinceCode,CityCode,CountyCode,ProvinceName,CityName,CountyName ) "
             + " VALUES("
             + " #{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday}"
             + " ,NOW(),#{organizationId},"
-            + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state},1,#{wechatHeadImgUrl})")
+            + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state},1,#{wechatHeadImgUrl}," +
+              " provinceCode,cityCode,countyCode,provinceName,cityName,countyName )")
     int insert(MarketingMembers marketingMembers);
 
 
@@ -55,6 +58,7 @@ public interface MarketingMembersMapper {
             + " SELECT  ${portraitsList}  FROM marketing_members "
             + " <where>"
             + "  OrganizationId = #{ organizationId }  "
+            + "  and state != 2  "
             + " <if test='mobile != null and mobile != &apos;&apos;'> AND Mobile like &apos;%${mobile}%&apos; </if>"
             + " <if test='wxName != null and wxName != &apos;&apos;'> AND WxName like &apos;%${wxName}%&apos; </if>"
             + " <if test='openid != null and openid != &apos;&apos;'> AND Openid like &apos;%${openid}%&apos; </if>"
@@ -100,6 +104,7 @@ public interface MarketingMembersMapper {
             + " SELECT  COUNT(1)  FROM marketing_members "
             + " <where>"
             + "  OrganizationId = #{ organizationId} "
+            + "  and state !=2"
             + " <if test='mobile != null and mobile != &apos;&apos;'> AND Mobile like &apos;%${mobile}%&apos; </if>"
             + " <if test='wxName != null and wxName != &apos;&apos;'> AND WxName like &apos;%${wxName}%&apos; </if>"
             + " <if test='openid != null and openid != &apos;&apos;'> AND Openid like &apos;%${openid}%&apos; </if>"
@@ -131,6 +136,45 @@ public interface MarketingMembersMapper {
             + " </script>")
     Integer getAllMarketingMembersCount(Map<String,Object> map);
 
+
+
+    @Select(" <script>"
+            + " SELECT  COUNT(1)  FROM marketing_members "
+            + " <where>"
+            + "  OrganizationId = #{ organizationId} "
+            + "  and state !=2"
+            + "  and CreateDate &lt; #{createDate}"
+            + " <if test='mobile != null and mobile != &apos;&apos;'> AND Mobile like &apos;%${mobile}%&apos; </if>"
+            + " <if test='wxName != null and wxName != &apos;&apos;'> AND WxName like &apos;%${wxName}%&apos; </if>"
+            + " <if test='openid != null and openid != &apos;&apos;'> AND Openid like &apos;%${openid}%&apos; </if>"
+            + " <if test='userName != null and userName != &apos;&apos;'> AND UserName like &apos;%${userName}%&apos; </if>"
+            + " <if test='sex != null and sex != &apos;&apos;'> AND Sex like &apos;%${sex}%&apos; </if>"
+            + " <if test='birthday != null and birthday != &apos;&apos;'> AND Birthday like &apos;%${birthday}%&apos; </if>"
+            + " <if test='customerName != null and customerName != &apos;&apos;'> AND CustomerName like &apos;%${customerName}%&apos; </if>"
+            + " <if test='newRegisterFlag != null '> AND NewRegisterFlag like &apos;%${newRegisterFlag}%&apos; </if>"
+            + " <if test='registDate != null and registDate != &apos;&apos;'> AND RegistDate like &apos;%${registDate}%&apos; </if>"
+            + " <if test='babyBirthday != null and babyBirthday != &apos;&apos;'> AND BabyBirthday like &apos;%${babyBirthday}%&apos; </if>"
+            + " <if test='state != null and state != &apos;&apos;'> AND State like &apos;%${state}%&apos; </if>"
+            + " <if test='search !=null and search != &apos;&apos;'>"
+            + " AND ("
+            + " Mobile LIKE binary CONCAT('%',#{search},'%')  "
+            + " OR WxName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Openid LIKE binary CONCAT('%',#{search},'%') "
+            + " OR UserName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Sex LIKE binary CONCAT('%',#{search},'%') "
+            + " OR Birthday LIKE binary CONCAT('%',#{search},'%') "
+            + " OR PCCcode LIKE binary CONCAT('%',#{search},'%') "
+            + " OR CustomerName LIKE binary CONCAT('%',#{search},'%') "
+            + " OR NewRegisterFlag LIKE binary CONCAT('%',#{search},'%') "
+            + " OR RegistDate LIKE binary CONCAT('%',#{search},'%') "
+            + " OR BabyBirthday LIKE binary CONCAT('%',#{search},'%') "
+            + " OR State LIKE binary CONCAT('%',#{search},'%') "
+            + ")"
+            + " </if>"
+            + " </where>"
+            + " </script>")
+    Integer getAllMarketingMembersCountWithOutToday(Map<String,Object> map);
+
     /**
      * 根据id获取单个会员信息
      * @param id
@@ -140,15 +184,9 @@ public interface MarketingMembersMapper {
     MarketingMembers getMemberById(@Param("id")Long id);
 
 
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} ")
-	MarketingMembers selectByOpenIdAndOrgId(@Param("openid")String openid, @Param("organizationId")String  organizationId);
-
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} ")
-	MarketingMembers selectByMobileAndOrgId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId);
-
     @Delete("delete from marketing_members where Id=#{id}")
 	void deleteById(@Param("id")Long id);
-    
+
 
     @Select("${sql}")
 	List<Map<String, Object>> dynamicList(@Param("sql")String listSQl);
@@ -193,11 +231,25 @@ public interface MarketingMembersMapper {
     @Update("update marketing_members set  HaveIntegral = HaveIntegral - #{ingetralNum} where Id=#{id} ")
     int deleteIntegral(@Param("ingetralNum") Integer ingetralNum,@Param("id")Long id);
 
+
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} and State != 2 ")
+    MarketingMembers selectByOpenIdAndOrgId(@Param("openid")String openid, @Param("organizationId")String  organizationId);
+
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} ")
+    MarketingMembers selectByMobileAndOrgId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId);
+
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Mobile = #{mobile} AND OrganizationId = #{organizationId} and Id !=#{id} ")
 	MarketingMembers selectByPhoneAndOrgIdExcludeId(@Param("mobile")String mobile,  @Param("organizationId")String organizationId, @Param("id")Long id);
 
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} and State=#{state}")
-	MarketingMembers selectByStateOpenIdAndOrgId(@Param("state")Integer state,@Param("openid")String openid, @Param("organizationId")String  organizationId);
+    /**
+     * 查询所有会员类型:临时数据【2】上线【1】 下线【0】
+     * @param state
+     * @param openid
+     * @param organizationId
+     * @return
+     */
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} ")
+	MarketingMembers selectByOpenIdAndOrgIdWithTemp(@Param("openid")String openid, @Param("organizationId")String  organizationId);
 
     /**
      * 招募会员入口注册的会员
@@ -206,7 +258,7 @@ public interface MarketingMembersMapper {
      * @param endDate
      * @return
      */
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.UserSource = 1 and a.CreateDate between #{startDate} and #{endDate} ")
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.UserSource = 1 and a.CreateDate between #{startDate} and #{endDate} and state !=2  ")
     List<MarketingMembers> getRegisterNum(String organizationId, Date startDate, Date endDate);
 
     /**
@@ -216,6 +268,6 @@ public interface MarketingMembersMapper {
      * @param endDate
      * @return
      */
-    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.CreateDate between #{startDate} and #{endDate} ")
+    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.CreateDate between #{startDate} and #{endDate} and state !=2 ")
     List<MarketingMembers> getOrganizationAllMemberWithDate(String organizationId, Date startDate, Date endDate);
 }

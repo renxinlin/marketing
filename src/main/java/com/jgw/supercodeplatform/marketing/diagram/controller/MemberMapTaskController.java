@@ -103,7 +103,6 @@ public class MemberMapTaskController extends CommonUtil {
 
         // 定义排序规则
         if(!CollectionUtils.isEmpty(map.values())){
-
 ;           List<Map.Entry<String, MemberMapVo>> list = new ArrayList<>(map.entrySet());
             // 按值降序
             Collections.sort(list,(o2,o1)->o1.getValue().getValue()-o2.getValue().getValue());
@@ -118,9 +117,15 @@ public class MemberMapTaskController extends CommonUtil {
             result.put("list",listValue);
             result.put("other",other);
             return RestResult.success("success",result);
+        }else{
+            Map result = new HashMap();
+            Map other = new HashMap();
+            other.put("max",0);
+            other.put("min",0);
+            result.put("list",new LinkedList());
+            result.put("other",other);
+            return RestResult.success("success",result);
         }
-
-        return RestResult.success("",new ArrayList<>() );
     }
 
     /**
@@ -148,7 +153,7 @@ public class MemberMapTaskController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getThreeMonth();
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0)
-                 ,taskTimeCalculator.getYesterday(week.get(week.size() - 1)));
+                 ,week.get(week.size() - 1));
         return  task(registerNumMembers);
     }
 
@@ -157,7 +162,7 @@ public class MemberMapTaskController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getHalfYear();
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0)
-                ,taskTimeCalculator.getYesterday(week.get(week.size() - 1)));
+                ,week.get(week.size() - 1));
         return  task(registerNumMembers);
     }
 
@@ -166,7 +171,7 @@ public class MemberMapTaskController extends CommonUtil {
         List<Date> week = taskTimeCalculator.getYear();
         List<String> weekString = taskTimeCalculator.getYearString();
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0)
-                ,taskTimeCalculator.getYesterday(week.get(week.size() - 1)));
+                ,week.get(week.size() - 1));
         return  task(registerNumMembers);
 
 

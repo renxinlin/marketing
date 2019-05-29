@@ -1,6 +1,8 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -278,6 +280,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * 活动点击量聚合名称
 	 */
 	private static final String AggregationName="agg";
+	private static final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 	/**
 	 * 活动点击量
 	 * @param organizationId
@@ -285,17 +288,16 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param endDate yyyy-MM-dd
 	 * @return
 	 */
-	public Integer countOrganizationActivityClickNumByDate(String organizationId, String startDate, String endDate) {
+	public Integer countOrganizationActivityClickNumByDate(String organizationId, String startDate, String endDate) throws ParseException {
 		// 聚合求和;效果同 select count from table where org = and date between a and b
 
 		// out of date
-		TransportClient eClient = SpringContextUtil.getBean("elClient");
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
+
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(sdf.parse(startDate).getTime()).lte(sdf.parse(endDate).getTime());
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
 		// 只获取会员活动点击量
-		QueryBuilder memberType = QueryBuilders.termQuery("memberType", MemberTypeEnums.VIP.getType().intValue());
 
 		StatsAggregationBuilder aggregation =
 				AggregationBuilders
@@ -303,7 +305,7 @@ public class CodeEsService extends AbstractEsSearch {
 						// 聚和字段：码
 						.field("scanCodeTime");
 		// 添加查询条件
-		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate).setQuery(memberType);
+		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate);
 		searchRequestBuilder.addAggregation(aggregation);
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
@@ -432,6 +434,7 @@ public class CodeEsService extends AbstractEsSearch {
     }
 
     /**
+     * 统计活动扫码量
      * 扫码信息,扫完就插入,插入失败不影响业务,统计数据：不是扫码成功的业务数据
      * @param sCodeInfoMO
      */

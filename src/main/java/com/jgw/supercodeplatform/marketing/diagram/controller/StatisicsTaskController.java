@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class StatisicsTaskController extends CommonUtil {
             @ApiImplicitParam(paramType = "query", value = "1一周,2,3,4,5,6一年,字符串格式，按顺序一周到一年", name = "timeValue")
     })
     @GetMapping("query")
-    public RestResult<StatisicsVo> query(String timeValue) throws SuperCodeException {
+    public RestResult<StatisicsVo> query(String timeValue) throws SuperCodeException, ParseException {
         /**
          *
          * 活动点击量                                                 1，100,000
@@ -76,7 +77,7 @@ public class StatisicsTaskController extends CommonUtil {
         return RestResult.error("请选择时间范围...",null);
     }
 
-    public RestResult weekTask( ) throws SuperCodeException{
+    public RestResult weekTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getWeek();
         List<String> dateParamsString = taskTimeCalculator.getWeekString();
@@ -105,7 +106,7 @@ public class StatisicsTaskController extends CommonUtil {
     }
 
 
-    public RestResult twoWeekTask( ) throws SuperCodeException {
+    public RestResult twoWeekTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getTwoWeek();
         List<String> dateParamsString = taskTimeCalculator.getTwoWeekString();
@@ -123,7 +124,7 @@ public class StatisicsTaskController extends CommonUtil {
 
     }
 
-    public RestResult monthTask( ) throws SuperCodeException{
+    public RestResult monthTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getMonth();
         List<String> dateParamsString = taskTimeCalculator.getMonthString();
@@ -141,7 +142,7 @@ public class StatisicsTaskController extends CommonUtil {
 
     }
 
-    public RestResult threeMonthTask( ) throws SuperCodeException{
+    public RestResult threeMonthTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getThreeMonth();
         List<String> dateParamsString = taskTimeCalculator.getThreeMonthString();
@@ -152,20 +153,20 @@ public class StatisicsTaskController extends CommonUtil {
 
         // * 微信红包发放累计金额【精度同微信:分】
         Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0)
-                , taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                , dateParams.get(dateParams.size() - 1));
         // * 积分发放累计数值
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
 
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
 
         return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
 
     }
 
-    public RestResult halfYearTask( ) throws SuperCodeException{
+    public RestResult halfYearTask( ) throws SuperCodeException, ParseException {
 
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getHalfYear();
@@ -173,24 +174,25 @@ public class StatisicsTaskController extends CommonUtil {
 
 
         // * 活动点击量
+        // TODO 测试es时间问题
         Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0)
                 ,taskTimeCalculator.getYesterdayStr(dateParamsString.get(dateParamsString.size() - 1)));
 
         // * 微信红包发放累计金额【精度同微信:分】
         Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0)
-                , taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                , dateParams.get(dateParams.size() - 1));
         // * 积分发放累计数值
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
 
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
         return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
 
     }
 
-    public RestResult yearTask( ) throws SuperCodeException{
+    public RestResult yearTask( ) throws SuperCodeException, ParseException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getYear();
         List<String> dateParamsString = taskTimeCalculator.getYearString();
@@ -201,14 +203,14 @@ public class StatisicsTaskController extends CommonUtil {
 
         // * 微信红包发放累计金额【精度同微信:分】
         Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0)
-                , taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                , dateParams.get(dateParams.size() - 1));
         // * 积分发放累计数值
         Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
 
         // * 积分兑换累计数值
         Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
 
         return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
 

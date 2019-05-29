@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 
 import io.swagger.annotations.Api;
@@ -50,6 +52,8 @@ public class ScanCodeController {
     @Value("${rest.user.url}")
     private String restUserUrl;
 
+
+
     /**
      * 导购前端领奖页
      */
@@ -61,6 +65,9 @@ public class ScanCodeController {
     @Autowired
     private GlobalRamCache globalRamCache;
 
+
+    @Autowired
+    private CodeEsService es;
     /**
      * 客户扫码码平台跳转到营销系统地址接口
      * @param codeId
@@ -76,8 +83,18 @@ public class ScanCodeController {
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
     	String	wxstate=commonUtil.getUUID();
-    	logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
+
+
+        logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
     	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0);
+
+        ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
+        if(scanCodeInfoMO != null ){
+            // 全部是活动
+            scanCodeInfoMO.setScanCodeTime(new Date());
+            es.indexScanInfo(scanCodeInfoMO);
+
+        }
         return "redirect:"+url;
     }
 

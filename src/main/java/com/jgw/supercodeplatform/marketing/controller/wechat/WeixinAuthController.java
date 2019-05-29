@@ -60,16 +60,16 @@ public class WeixinAuthController {
 
 	@Autowired
 	private CommonService commonService;
-	
+
 	@Autowired
 	private GlobalRamCache globalRamCache;
-	
+
     @Value("${marketing.activity.h5page.url}")
     private String h5pageUrl;
-    
+
     @Value("${marketing.integral.h5page.urls}")
     private String integralH5Pages;
-    
+
 	@Value("${cookie.domain}")
 	private String cookieDomain;
     /**
@@ -126,8 +126,8 @@ public class WeixinAuthController {
     			h5BUf.append("&uuid="+statearr[2]);
 			}
     		h5BUf.append("&organizationId="+organizationId);
-    		
-    	 	members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+
+    	 	members=marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
     		Long memberParamId = loginMemberId(members);
             if (memberParamId.intValue()!=-1) {
             	needWriteJwtToken=true;
@@ -146,7 +146,7 @@ public class WeixinAuthController {
 			scanCodeInfoMO.setOpenId(userInfo.getString("openid"));
 			//更新扫码信息
 			globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
-    	 	members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+    	 	members=marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
     		Long memberParamId = loginMemberId(members);
             if (memberParamId.intValue()!=-1) {
             	needWriteJwtToken=true;
@@ -240,11 +240,11 @@ public class WeixinAuthController {
 		if (tokenContent.contains("errcode")) {
 			throw new SuperCodeException(tokenContent, 500);
 		}
-		
+
 		JSONObject accessTokenObj=JSONObject.parseObject(tokenContent);
 		String openid=accessTokenObj.getString("openid");
-		
-		
+
+
 		logger.info("--------------------授权成功--------------------------------");
 		HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(WechatConstants.ACCESS_TOKEN_URL+"&appid="+appId+"&secret="+secret);
 	    String body=reHttpClientResult.getContent();
@@ -261,7 +261,7 @@ public class WeixinAuthController {
 			}
 		}
 //		String access_token=accessTokenObj.getString("access_token");
-//		
+//
 //		String userInfoParams="?access_token="+access_token+"&openid="+openid+"&lang=zh_CN";
 //		HttpClientResult userinfohttpResult=HttpRequestUtil.doGet(WechatConstants.USER_INFO_URL+userInfoParams);
 //		String userinfoContent=userinfohttpResult.getContent();
@@ -273,8 +273,8 @@ public class WeixinAuthController {
 		return null;
     }
 
-    
-    
+
+
     /**
      * 微信授权回调方法
      * @param code
@@ -288,8 +288,8 @@ public class WeixinAuthController {
     	if (StringUtils.isBlank(state)) {
     		throw new SuperCodeException("state不能为空", 500);
 		}
-    	
-    	
+
+
     	String redirectUrl=null;
     	String nickName=null;
     	String openid=null;
@@ -359,7 +359,7 @@ public class WeixinAuthController {
 				h5BUf.append("redirect:");
 				h5BUf.append(integralH5Pages.split(",")[statecode]);
 				h5BUf.append("?openid="+openid).append("&").append(state);
-				MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+				MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
 				if (null!=members ) {
 					Byte memberState=members.getState();
 					if (null!=memberState && memberState.intValue()==1) {
@@ -393,18 +393,20 @@ public class WeixinAuthController {
 			}
 
 			//判断是否需要保存用户
-			MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgId(openid, organizationId);
+			MarketingMembers members=marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
 			if (null==members) {
 				members=new MarketingMembers();
 				members.setOpenid(openid);
 				members.setWxName(nickName);
 				members.setState((byte)1);
-				members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
-				members.setOrganizationId(organizationId);
-				if (null!=statecode) {
-					members.setState((byte)2);
-				}
-				marketingMembersService.insert(members);
+				// TODO STATE=2
+//				members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
+//				members.setOrganizationId(organizationId);
+//				if (null!=statecode) {
+//					members.setState((byte)2);
+//				}
+//				marketingMembersService.insert(members);
+				//
 			}else {
 				members.setWxName(nickName);
 				marketingMembersService.update(members);

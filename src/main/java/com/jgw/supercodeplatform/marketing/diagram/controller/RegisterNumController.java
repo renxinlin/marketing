@@ -211,7 +211,7 @@ public class RegisterNumController extends CommonUtil {
         List<Date> threeMonth = taskTimeCalculator.getThreeMonth();
         List<String> threeMonthString = taskTimeCalculator.getThreeMonthString();
         List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, threeMonth.get(0)
-                ,taskTimeCalculator.getYesterday(threeMonth.get(threeMonth.size() - 1)));
+                ,threeMonth.get(threeMonth.size() - 1));
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
@@ -262,7 +262,7 @@ public class RegisterNumController extends CommonUtil {
         List<String> halfYearString = taskTimeCalculator.getHalfYearString();
 
         List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, halfYear.get(0)
-                ,taskTimeCalculator.getYesterday(halfYear.get(halfYear.size() - 1)));
+                ,halfYear.get(halfYear.size() - 1));
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
@@ -313,7 +313,7 @@ public class RegisterNumController extends CommonUtil {
         List<String> yearString = taskTimeCalculator.getYearString();
 
         List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, year.get(0)
-                ,taskTimeCalculator.getYesterday(year.get(year.size() - 1)));
+                ,year.get(year.size() - 1));
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
         Map<String, SerialVo> yearVo = new TreeMap<>();

@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
+import org.apache.tomcat.jni.Time;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -68,8 +70,12 @@ public class DateUtil
 		Date date2 = sdf.parse(date);
 		return sdf.format(date2);	
 	}
-	 
-	  
+
+	public static void main(String[] args) throws Exception {
+		Date date = new Date();
+		Thread.sleep(100);
+		System.out.println(getAge(date));
+	}
 	    //由出生日期获得年龄  
 	    public static int getAge(Date birthDay) throws Exception {  
 	    	
@@ -97,7 +103,7 @@ public class DateUtil
 	                age--;  
 	            }  
 	        }  
-	        return age;  
+	        return age+1;
 	    }
 	    
 	    

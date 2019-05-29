@@ -75,6 +75,8 @@ public class MemberPortraitController extends CommonUtil {
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);
     }
@@ -86,6 +88,8 @@ public class MemberPortraitController extends CommonUtil {
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);
     }
@@ -97,6 +101,8 @@ public class MemberPortraitController extends CommonUtil {
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);      }
 
@@ -104,10 +110,12 @@ public class MemberPortraitController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getThreeMonth();
         List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);      }
 
@@ -116,10 +124,12 @@ public class MemberPortraitController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getHalfYear();
         List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+            return returnNull();
         }
         return RestResult.success("success",result);     }
 
@@ -127,11 +137,28 @@ public class MemberPortraitController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getYear();
         List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0)
-                ,taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(dateParams.size() - 1));
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
+        }else{
+           return returnNull();
         }
+        return RestResult.success("success",result);
+    }
+
+    /**
+     * 协调前端
+     * @return
+     */
+    private RestResult returnNull() {
+        HashMap result = new HashMap();
+        List<CricleVo> sexCricleVos = new LinkedList();
+        List<CricleVo> deviceCricleVos = new LinkedList();
+        List<CricleVo> ageCricleVos = new LinkedList();
+        result.put("sex",sexCricleVos);
+        result.put("age",ageCricleVos);
+        result.put("device",deviceCricleVos);
         return RestResult.success("success",result);
     }
 
@@ -211,6 +238,7 @@ public class MemberPortraitController extends CommonUtil {
                 other.add(1);
             }
             // 注册设备统计
+
             if(marketingMember.getDeviceType() == null){
                 otherDevice.add(1);
             }else if(marketingMember.getDeviceType().intValue() == 1) {

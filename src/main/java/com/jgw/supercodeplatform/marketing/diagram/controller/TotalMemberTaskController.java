@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @RestController
@@ -69,9 +70,10 @@ public class TotalMemberTaskController extends CommonUtil {
         List<Date> week = taskTimeCalculator.getWeek();
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
+        conditions.put("createDate",sdf.format(new Date()));
         conditions.put("organizationId",organizationId);
         // 获取所有
-        Integer total = service.getAllMarketingMembersCount(conditions);
+        Integer total = service.getAllMarketingMembersCountWithOutToday(conditions);
         // 查询日期内的数据
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
 
@@ -80,7 +82,7 @@ public class TotalMemberTaskController extends CommonUtil {
 
     }
 
-
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     public RestResult twoWeekTask( ) throws SuperCodeException {
         String organizationId = getOrganizationId();
@@ -90,7 +92,8 @@ public class TotalMemberTaskController extends CommonUtil {
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
-        Integer total = service.getAllMarketingMembersCount(conditions);
+        conditions.put("createDate",sdf.format(new Date()));
+        Integer total = service.getAllMarketingMembersCountWithOutToday(conditions);
 
         return task(registerNumMembers, total);
 
@@ -105,7 +108,8 @@ public class TotalMemberTaskController extends CommonUtil {
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
-        Integer total = service.getAllMarketingMembersCount(conditions);
+        conditions.put("createDate",sdf.format(new Date()));
+        Integer total = service.getAllMarketingMembersCountWithOutToday(conditions);
         return task(registerNumMembers, total);
    }
 
@@ -115,11 +119,12 @@ public class TotalMemberTaskController extends CommonUtil {
          // 查询日期内的数据
         // TODO 优化，改成求和函数计算
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId
-                ,dateParams.get(0),taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(0),dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
-        Integer total = service.getAllMarketingMembersCount(conditions);
+        conditions.put("createDate",sdf.format(new Date()));
+        Integer total = service.getAllMarketingMembersCountWithOutToday(conditions);
 
         return task(registerNumMembers, total);
     }
@@ -130,11 +135,12 @@ public class TotalMemberTaskController extends CommonUtil {
         List<Date> dateParams = taskTimeCalculator.getHalfYear();
          // 查询日期内的数据
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId
-                ,dateParams.get(0),taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(0),dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
-        Integer total = service.getAllMarketingMembersCount(conditions);
+        conditions.put("createDate",sdf.format(new Date()));
+        Integer total = service.getAllMarketingMembersCountWithOutToday(conditions);
         return task(registerNumMembers, total);
     }
 
@@ -143,11 +149,12 @@ public class TotalMemberTaskController extends CommonUtil {
         List<Date> dateParams = taskTimeCalculator.getYear();
          // 查询日期内的数据
         List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId
-                ,dateParams.get(0),taskTimeCalculator.getYesterday(dateParams.get(dateParams.size() - 1)));
+                ,dateParams.get(0),dateParams.get(dateParams.size() - 1));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
-        Integer total = service.getAllMarketingMembersCount(conditions);
+        conditions.put("createDate",sdf.format(new Date()));
+        Integer total = service.getAllMarketingMembersCountWithOutToday(conditions);
         return task(registerNumMembers, total);
     }
     private RestResult task(List<MarketingMembers> registerNumMembers, Integer total) {
