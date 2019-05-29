@@ -58,7 +58,7 @@ public interface MarketingMembersMapper {
             + " SELECT  ${portraitsList}  FROM marketing_members "
             + " <where>"
             + "  OrganizationId = #{ organizationId }  "
-            + "  state != 2  "
+            + "  and state != 2  "
             + " <if test='mobile != null and mobile != &apos;&apos;'> AND Mobile like &apos;%${mobile}%&apos; </if>"
             + " <if test='wxName != null and wxName != &apos;&apos;'> AND WxName like &apos;%${wxName}%&apos; </if>"
             + " <if test='openid != null and openid != &apos;&apos;'> AND Openid like &apos;%${openid}%&apos; </if>"
