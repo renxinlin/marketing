@@ -293,7 +293,6 @@ public class CodeEsService extends AbstractEsSearch {
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
 		// 只获取会员活动点击量
-		QueryBuilder memberType = QueryBuilders.termQuery("memberType", MemberTypeEnums.VIP.getType().intValue());
 
 		StatsAggregationBuilder aggregation =
 				AggregationBuilders
@@ -301,7 +300,7 @@ public class CodeEsService extends AbstractEsSearch {
 						// 聚和字段：码
 						.field("scanCodeTime");
 		// 添加查询条件
-		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate).setQuery(memberType);
+		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate);
 		searchRequestBuilder.addAggregation(aggregation);
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();

@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.common.model.activity;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class ScanCodeInfoMO implements Serializable{
 	private static final long serialVersionUID = 1L;
@@ -22,6 +23,16 @@ public class ScanCodeInfoMO implements Serializable{
 	// 目前没用到，防止后期产品多维度查询
 	private Long activityId;//用户id
 	private Byte activityType;//用户id
+	private Date scanCodeTime;//扫码时间
+
+
+	public Date getScanCodeTime() {
+		return scanCodeTime;
+	}
+
+	public void setScanCodeTime(Date scanCodeTime) {
+		this.scanCodeTime = scanCodeTime;
+	}
 
 	public Long getActivityId() {
 		return activityId;

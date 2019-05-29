@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
+import java.util.Date;
 
 @Controller
 @RequestMapping("/marketing/front/scan")
@@ -88,6 +89,7 @@ public class ScanCodeController {
         ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
         if(scanCodeInfoMO != null ){
             // 全部是活动
+            scanCodeInfoMO.setScanCodeTime(new Date());
             es.indexScanInfo(scanCodeInfoMO);
 
         }
