@@ -25,6 +25,15 @@ public class GlobalRamCache {
 
 
 
+	public  ScanCodeInfoMO getScanCodeInfoMO(String wxsate) throws SuperCodeException {
+		if (StringUtils.isBlank(wxsate)) {
+			throw new SuperCodeException("获取扫码缓存信息时参数wxsate不能为空", 500);
+		}
+		String json =(String) redisUtil.hmGet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
+		ScanCodeInfoMO scanCodeInfoMO=JSONObject.parseObject(json, ScanCodeInfoMO.class);
+		return scanCodeInfoMO;
+	}
+
 	public void putScanCodeInfoMO(String wxsate, ScanCodeInfoMO scanCodeInfoMO) throws SuperCodeException {
 		if (StringUtils.isBlank(wxsate)) {
 			throw new SuperCodeException("wxstae为空", 500);
@@ -46,15 +55,6 @@ public class GlobalRamCache {
 	}
 
 
-
-	public  ScanCodeInfoMO getScanCodeInfoMO(String wxsate) throws SuperCodeException {
-		if (StringUtils.isBlank(wxsate)) {
-			throw new SuperCodeException("获取扫码缓存信息时参数wxsate不能为空", 500);
-		}
-		String json =(String) redisUtil.hmGet(MARKETING_GLOBAL_SCAN_CODE_INFO, wxsate);
-		ScanCodeInfoMO scanCodeInfoMO=JSONObject.parseObject(json, ScanCodeInfoMO.class);
-		return scanCodeInfoMO;
-	}
 
 	public  MarketingWxMerchants getWXMerchants(String organizationId) throws SuperCodeException {
 		if (StringUtils.isBlank(organizationId)) {
