@@ -44,7 +44,7 @@ public interface WechatConstants {
     /**
      * 导购登录页
      */
-    public static final String SALER_LOGIN_URL ="#/sales/login"  ;
+    public static final String SALER_LOGIN_URL ="#/sales/index"  ;
     
     
 }
