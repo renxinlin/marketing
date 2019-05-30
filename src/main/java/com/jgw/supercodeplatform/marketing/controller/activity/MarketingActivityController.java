@@ -38,6 +38,7 @@ public class MarketingActivityController extends CommonUtil {
     public RestResult<PageResults<List<MarketingActivityListMO>>> list( MarketingActivityListParam marketingActivityListParam) throws Exception {
     	RestResult<PageResults<List<MarketingActivityListMO>>> restResult=new RestResult<PageResults<List<MarketingActivityListMO>>>();
     	marketingActivityListParam.setOrganizationId(getOrganizationId());
+    	marketingActivityListParam.setOtherCondition("ActivityId != 3");
     	PageResults<List<MarketingActivityListMO>> pageResults=service.listSearchViewLike(marketingActivityListParam);
     	restResult.setState(200);
     	restResult.setResults(pageResults);
