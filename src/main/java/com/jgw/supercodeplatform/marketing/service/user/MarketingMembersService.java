@@ -131,14 +131,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
 			// TODO 这个月份是按天【DATEDIFF】计算还是跨月【period_dif，%Y%mf】计算
 			}else if("NoIntegralWithOneMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 1 ,1,0) NoIntegralWithOneMonth ");
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 1 ,0,1) NoIntegralWithOneMonth ");
 
 			}else if("NoIntegralWithThreeMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 3 ,1,0) NoIntegralWithThreeMonth ");
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 3 ,0,1) NoIntegralWithThreeMonth ");
 
 			}else if("NoIntegralWithSixMonth".equalsIgnoreCase(code)){
 			    // if(DATEDIFF(now(),IntegralReceiveDate)<=180,1,0 ) NoIntegralWithOneMonth  1,表示6月内有领取，0表示没有
-				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 6 ,1,0) NoIntegralWithSixMonth ");
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 6 ,0,1) NoIntegralWithSixMonth ");
 
 			}else{
 				fieldsbuf.append(code);
