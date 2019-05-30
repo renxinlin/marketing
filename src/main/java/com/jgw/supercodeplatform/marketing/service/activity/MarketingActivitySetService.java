@@ -391,6 +391,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			mPrizeType.setAwardType(marketingPrizeTypeParam.getAwardType());
 			mPrizeType.setAwardIntegralNum(marketingPrizeTypeParam.getAwardIntegralNum());
 			mPrizeType.setCardLink(marketingPrizeTypeParam.getCardLink());
+			mPrizeType.setRemainingStock(marketingPrizeTypeParam.getRemainingStock());
 			mList.add(mPrizeType);
 			sumprizeProbability+=prizeProbability;
 		}
