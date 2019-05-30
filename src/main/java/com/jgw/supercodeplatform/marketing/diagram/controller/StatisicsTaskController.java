@@ -51,7 +51,7 @@ public class StatisicsTaskController extends CommonUtil {
     public RestResult<StatisicsVo> query(String timeValue) throws SuperCodeException, ParseException {
         /**
          *
-         * 活动点击量                                                 1，100,000
+         * 活动点击量   【统计23-29 的数据 输入参数23-30】
          * 微信红包发放累计金额  数据库的单位是分
          * 积分发放累计数值                                             1，100,000
          * 积分兑换累计数值                                             1，100,000
@@ -83,7 +83,7 @@ public class StatisicsTaskController extends CommonUtil {
         List<String> dateParamsString = taskTimeCalculator.getWeekString();
 
         // * 活动点击量
-        Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0), dateParamsString.get(dateParams.size() - 1));
+        Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0),taskTimeCalculator.getNextdayStr( dateParams.get(dateParams.size() - 1)));
 
         // * 微信红包发放累计金额【精度同微信:分】
         Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
@@ -112,7 +112,7 @@ public class StatisicsTaskController extends CommonUtil {
         List<String> dateParamsString = taskTimeCalculator.getTwoWeekString();
 
         // * 活动点击量
-        Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0), dateParamsString.get(dateParamsString.size() - 1));
+        Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0),taskTimeCalculator.getNextdayStr( dateParams.get(dateParams.size() - 1)));
 
         // * 微信红包发放累计金额【精度同微信:分】
         Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
@@ -130,7 +130,7 @@ public class StatisicsTaskController extends CommonUtil {
         List<String> dateParamsString = taskTimeCalculator.getMonthString();
 
         // * 活动点击量
-        Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0), dateParamsString.get(dateParamsString.size() - 1));
+        Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0), taskTimeCalculator.getNextdayStr( dateParams.get(dateParams.size() - 1)));
 
         // * 微信红包发放累计金额【精度同微信:分】
         Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
@@ -149,7 +149,7 @@ public class StatisicsTaskController extends CommonUtil {
 
         // * 活动点击量
         Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0)
-                ,taskTimeCalculator.getYesterdayStr(dateParamsString.get(dateParamsString.size() - 1)));
+                ,dateParamsString.get(dateParamsString.size() - 1));
 
         // * 微信红包发放累计金额【精度同微信:分】
         Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0)
@@ -174,9 +174,8 @@ public class StatisicsTaskController extends CommonUtil {
 
 
         // * 活动点击量
-        // TODO 测试es时间问题
         Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0)
-                ,taskTimeCalculator.getYesterdayStr(dateParamsString.get(dateParamsString.size() - 1)));
+                ,dateParamsString.get(dateParamsString.size() - 1));
 
         // * 微信红包发放累计金额【精度同微信:分】
         Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0)
@@ -199,7 +198,7 @@ public class StatisicsTaskController extends CommonUtil {
 
         // * 活动点击量
         Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0)
-                ,taskTimeCalculator.getYesterdayStr(dateParamsString.get(dateParamsString.size() - 1)));
+                ,dateParamsString.get(dateParamsString.size() - 1));
 
         // * 微信红包发放累计金额【精度同微信:分】
         Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0)

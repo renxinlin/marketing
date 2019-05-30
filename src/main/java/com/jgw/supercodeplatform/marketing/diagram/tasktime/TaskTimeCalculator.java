@@ -7,10 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.LinkedList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 获取任务的时间维度
@@ -243,8 +240,8 @@ public class TaskTimeCalculator {
      */
     public List getThreeMonthString(){
         Date current = new Date();
-
-        List dates = new LinkedList();
+        Set dates = new TreeSet<>();
+//        List dates = new LinkedList();
         calendar.setTime(current);
         calendar.add(Calendar.DATE, -1);
         // 先获取到产品定义的三个月，在从三个月前的那一天+7的方式标注时间戳到当前
@@ -262,8 +259,8 @@ public class TaskTimeCalculator {
             dates.add(format.format(date));
         }
         dates.add(format.format(current));
-
-        return dates;
+        ArrayList lastDate = new ArrayList(dates);
+        return lastDate;
     }
 
 
@@ -405,6 +402,23 @@ public class TaskTimeCalculator {
         Date redate = null;
         try {
             redate = format.parse(yesterday);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return redate;
+    }
+
+    public  String getNextdayStr(Date date){
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE,   1);
+        return format.format(calendar.getTime());
+    }
+
+    public  Date getNextDay(Date date){
+        String nextDay = getNextdayStr(date);
+        Date redate = null;
+        try {
+            redate = format.parse(nextDay);
         } catch (ParseException e) {
             e.printStackTrace();
         }
