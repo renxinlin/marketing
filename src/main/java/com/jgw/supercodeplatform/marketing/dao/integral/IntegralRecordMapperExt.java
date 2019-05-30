@@ -1,9 +1,8 @@
 package com.jgw.supercodeplatform.marketing.dao.integral;
 
-import com.jgw.supercodeplatform.marketing.dao.CommonSql;
-import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralRecordMapper;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -11,9 +10,9 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import com.jgw.supercodeplatform.marketing.dao.CommonSql;
+import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.IntegralRecordMapper;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 
 @Mapper
 public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql {
