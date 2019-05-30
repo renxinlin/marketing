@@ -212,7 +212,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		List<MarketingChannelParam> mChannelParams=activitySetParam.getmChannelParams();
 		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		//获取奖次参数
-		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
+		List<MarketingPrizeTypeParam> mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
 		
 		MarketingActivitySetParam mSetParam=activitySetParam.getmActivitySetParam();
 		Long id=mSetParam.getId();
@@ -683,8 +683,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @param activitySetId
 	 * @return
 	 */
-	public RestResult<MarketingActivitySet> getActivityBaseInfoByeditPage(Long activitySetId) {
-		RestResult<MarketingActivitySet> restResult = new RestResult<>();
+	public RestResult<MarketingActivitySetParam> getActivityBaseInfoByeditPage(Long activitySetId) {
+		RestResult<MarketingActivitySetParam> restResult = new RestResult<>();
 		// 校验
 		if(activitySetId == null || activitySetId <= 0 ){
 			restResult.setState(500);
@@ -693,10 +693,18 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		// 获取
 		MarketingActivitySet marketingActivitySet = mSetMapper.selectById(activitySetId);
+		MarketingActivitySetParam MarketingActivitySetParam = new MarketingActivitySetParam();
+		BeanUtils.copyProperties(marketingActivitySet, MarketingActivitySetParam);
+		if(marketingActivitySet != null && StringUtils.isNotBlank(marketingActivitySet.getValidCondition())) {
+			MarketingActivitySetCondition conditonJson = JSON.parseObject(marketingActivitySet.getValidCondition(), MarketingActivitySetCondition.class);
+			MarketingActivitySetParam.setConsumeIntegralNum(conditonJson.getConsumeIntegral());
+			MarketingActivitySetParam.setEachDayNumber(conditonJson.getEachDayNumber());
+			MarketingActivitySetParam.setParticipationCondition(conditonJson.getParticipationCondition());
+		}
 		// 返回
 		restResult.setState(200);
 		restResult.setMsg("success");
-		restResult.setResults(marketingActivitySet);
+		restResult.setResults(MarketingActivitySetParam);
 		return  restResult;
 
 	}

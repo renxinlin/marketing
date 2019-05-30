@@ -226,7 +226,7 @@ public class CodeEsService extends AbstractEsSearch {
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.INTEGRAL);
 		eSearch.setType(EsType.INFO);
-		add(eSearch, addParam);
+		add(eSearch,true, addParam);
 
 	}
 

@@ -33,9 +33,7 @@ public interface MarketingReceivingPageMapper {
             + " <if test='updateDate !=null and updateDate != &apos;&apos; '> UpdateDate = NOW() ,</if> "
             + " <if test='flipTimes !=null and flipTimes != &apos;&apos; '> FlipTimes == #{flipTimes},</if> "
             + " </set>"
-            + " <where> "
-            + "  Id = #{id}"
-            + " </where>"
+            + " where Id = #{id}"
             + " </script>")
 	void update(MarketingReceivingPage mReceivingPage);
 

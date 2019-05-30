@@ -192,12 +192,10 @@ public class LotteryService {
 		}else {
 			mSetCondition=new MarketingActivitySetCondition();
 		}
-		Integer consumeIntegralNum=mSetCondition.getConsumeIntegral();
-		Integer haveIntegral=marketingMembersInfo.getHaveIntegral();
-		if (null!=consumeIntegralNum) {
-			if (null==haveIntegral || haveIntegral.intValue()<consumeIntegralNum.intValue()) {
-				throw  new SuperCodeException("对不起,领取本活动需要消耗"+consumeIntegralNum+"积分，您的积分不够",500);
-			}
+		int consumeIntegralNum=mSetCondition.getConsumeIntegral() == null? 0: mSetCondition.getConsumeIntegral();
+		int haveIntegral=marketingMembersInfo.getHaveIntegral() == null? 0:marketingMembersInfo.getHaveIntegral();
+		if (haveIntegral < consumeIntegralNum) {
+			throw new SuperCodeException("对不起,领取本活动需要消耗"+consumeIntegralNum+"积分，您的积分不够",500);
 		}
 		LotteryResultMO lotteryResultMO = new LotteryResultMO();
 		restResult.setResults(lotteryResultMO);
@@ -229,6 +227,10 @@ public class LotteryService {
 			}
 			if(StringUtils.isBlank(valueOperations.get(key))) {
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
+				if(consumeIntegralNum != 0) {
+					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
+					marketingMembersMapper.update(marketingMembersInfo);
+				}
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
 				lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
@@ -240,6 +242,10 @@ public class LotteryService {
 			if(reStockNum < 0) {
 				valueOperations.increment(key, 1);
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
+				if(consumeIntegralNum != 0) {
+					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
+					marketingMembersMapper.update(marketingMembersInfo);
+				}
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
 	 			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
@@ -260,6 +266,10 @@ public class LotteryService {
  				valueOperations.increment(key, 1);
  			}
  			globalRamCache.deleteScanCodeInfoMO(wxstate);
+ 			if(consumeIntegralNum != 0) {
+				marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
+				marketingMembersMapper.update(marketingMembersInfo);
+			}
  			lotteryResultMO.setWinnOrNot(0);
  			restResult.setState(200);
  			lotteryResultMO.setMsg(restResult.getMsg());
@@ -312,13 +322,10 @@ public class LotteryService {
 						break;
 					case 3: //积分
 						 Integer awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum();
-						 marketingMembersInfo.setHaveIntegral((haveIntegral==null?0:haveIntegral)+awardIntegralNum);
+						 marketingMembersInfo.setHaveIntegral(haveIntegral+awardIntegralNum);
 						 lotteryResultMO.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
 						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
-						 if (null!=consumeIntegralNum) {
-							marketingMembersInfo.setHaveIntegral(marketingMembersInfo.getHaveIntegral()-consumeIntegralNum);
-						 }
-						 marketingMembersMapper.update(marketingMembersInfo);
+						 consumeIntegralNum = consumeIntegralNum - awardIntegralNum;
 						 break;
 					case 9://其它
 						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
@@ -337,7 +344,10 @@ public class LotteryService {
 						break;
 					}
 				}
-				
+				if(consumeIntegralNum != 0) {
+					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
+					marketingMembersMapper.update(marketingMembersInfo);
+				}
 			} catch (Exception e) {
 				if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
 	 				valueOperations.increment(key, 1);
