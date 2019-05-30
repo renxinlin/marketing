@@ -101,10 +101,10 @@ public class SalerRegisterAndLoginV2Controller {
                     // 说明微信登录失败,但用户存在
                     // 说明没绑定openid/如果微信openid变动【刷新openid】
                     Long id = user.getId();
-                    user = new MarketingUser();
-                    user.setId(id);
-                    user.setOpenid(loginUser.getOpenid());
-                    service.updateUserOpenId(user);
+                    MarketingUser userDo = new MarketingUser();
+                    userDo.setId(id);
+                    userDo.setOpenid(loginUser.getOpenid());
+                    service.updateUserOpenId(userDo);
                 }
                 if(user.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
                     return RestResult.error("您已经被禁用",null,500);
