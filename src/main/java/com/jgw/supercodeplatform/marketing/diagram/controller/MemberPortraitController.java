@@ -193,9 +193,9 @@ public class MemberPortraitController extends CommonUtil {
 
         CricleVo zhifubaodevice = new CricleVo();
         zhifubaodevice.setItem("支付宝");
-
+        // app 改为钉钉
         CricleVo appdevice = new CricleVo();
-        appdevice.setItem("app");
+        appdevice.setItem("钉钉");
 
         CricleVo browerdevice = new CricleVo();
         browerdevice.setItem("浏览器");
