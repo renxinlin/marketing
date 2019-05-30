@@ -460,8 +460,9 @@ public class WeixinAuthController {
 			// 始终刷新微信用户头像,用于同步微信信息
 			MarketingUser marketingUserDo = new MarketingUser();
 			marketingUserDo.setId(marketingUser.getId());
+			marketingUserDo.setId(marketingUser.getId());
 			marketingUserDo.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
-			marketingSaleMemberService.saveUser(marketingUser);
+			marketingSaleMemberService.updateWxInfo(marketingUser);
 			// 说明用户存在,需要自动登录
 			if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
 				// 非启用状态
