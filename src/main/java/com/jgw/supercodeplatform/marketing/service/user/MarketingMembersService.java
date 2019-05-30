@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -416,7 +417,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	 */
 
-	public RestResult<H5LoginVO> login(String mobile, String wxstate, String verificationCode, String openid, String organizationId, HttpServletResponse response) throws SuperCodeException {
+	public RestResult<H5LoginVO> login(String mobile, String wxstate, String verificationCode, String openid, String organizationId,Integer deviceType, HttpServletResponse response) throws SuperCodeException {
 		RestResult<H5LoginVO> restResult=new RestResult<H5LoginVO>();
 		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(verificationCode)) {
 			restResult.setState(500);
@@ -438,8 +439,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 		
 		H5LoginVO h5LoginVO =null;
+		if(deviceType == null || BrowerTypeEnum.Min.getStatus() > deviceType.byteValue()  || BrowerTypeEnum.Max.getStatus() < deviceType.byteValue()  ){
+			deviceType = BrowerTypeEnum.OTHER.getStatus().intValue();
+		}
 		if (StringUtils.isNotBlank(wxstate)) {
-			 h5LoginVO = loginWithWxstate(mobile, wxstate);
+			 h5LoginVO = loginWithWxstate(mobile, wxstate,deviceType);
 			restResult.setResults(h5LoginVO);
 		}else {
 			List<MarketingOrganizationPortraitListParam> mPortraits = organizationPortraitMapper
@@ -447,7 +451,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			if (null == mPortraits || mPortraits.isEmpty()) {
 				throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
 			}
-			h5LoginVO = commonLogin(mobile, openid, organizationId,mPortraits.size());
+			h5LoginVO = commonLogin(mobile, openid, organizationId,mPortraits.size(),deviceType);
 		}
 		try {
 			String jwtToken=JWTUtil.createTokenWithClaim(h5LoginVO);
@@ -469,7 +473,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return restResult;
 	}
 
-	private H5LoginVO commonLogin(String mobile, String openid, String organizationId, int portraitsSize) throws SuperCodeException {
+	private H5LoginVO commonLogin(String mobile, String openid, String organizationId, int portraitsSize,int deviceType) throws SuperCodeException {
 		H5LoginVO h5LoginVO;
 		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("积分领取登录时组织id必传", 500);
@@ -492,6 +496,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				}
 				memberByPhone.setMemberType((byte)0);
 				memberByPhone.setOrganizationId(organizationId);
+				memberByPhone.setDeviceType((byte)deviceType);
 				marketingMembersMapper.insert(memberByPhone);
 			}
 			if (memberByPhone.getState().intValue()==0) {
@@ -525,6 +530,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					//如果手机号用户不存在，微信用户又是未激活则表明这个是彻底的新用户
 					memberByOpenId.setMobile(mobile);
 					memberByOpenId.setState((byte)1);
+					memberByOpenId.setDeviceType((byte) deviceType);
 					marketingMembersMapper.update(memberByOpenId);
 					
 					//设置用户
@@ -576,7 +582,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
      * @return
      * @throws SuperCodeException
      */
-	private H5LoginVO loginWithWxstate(String mobile, String wxstate) throws SuperCodeException {
+	private H5LoginVO loginWithWxstate(String mobile, String wxstate,int deviceType) throws SuperCodeException {
 		ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null == scanCodeInfoMO) {
 			throw new SuperCodeException("参数wxstate对应的后台扫码缓存信息不存在，请重新扫码", 500);
@@ -594,7 +600,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if (null == mPortraits || mPortraits.isEmpty()) {
 			throw new SuperCodeException("登录时获取企业画像设置为空，无法进行后续逻辑", 500);
 		}
-		H5LoginVO h5LoginVO = commonLogin(mobile, scanCodeInfoMO.getOpenId(), organizationId,mPortraits.size());
+		H5LoginVO h5LoginVO = commonLogin(mobile, scanCodeInfoMO.getOpenId(), organizationId,mPortraits.size(),deviceType);
 		scanCodeInfoMO.setUserId(h5LoginVO.getMemberId());
 		globalRamCache.putScanCodeInfoMO(wxstate, scanCodeInfoMO);
 		return h5LoginVO;

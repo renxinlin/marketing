@@ -12,17 +12,15 @@ public enum BrowerTypeEnum {
      * 无条件
      */
     WX((byte)1,"微信"),
-
-    OTHER((byte)2,"其他"),
-
-    QQ((byte)3,"qq"),
-
-    ZFBAO((byte)4,"支付宝"),
+    ZFBAO((byte)2,"支付宝"),
+    DINGDING((byte)3,"钉钉"),
+    BROWER((byte)4,"浏览器 "),
+    QQ((byte)5,"qq"),
+    OTHER((byte)6,"其他"),
 
 
     Min((byte)1,""),
-
-    Max((byte)4,"");
+    Max((byte)6,"");
 
     @Getter
     @Setter

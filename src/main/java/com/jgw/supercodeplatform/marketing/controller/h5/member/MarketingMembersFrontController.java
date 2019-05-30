@@ -135,10 +135,17 @@ public class MarketingMembersFrontController extends CommonUtil {
     		@ApiImplicitParam(paramType="query",value = "扫产品标签码时才需要传，由前端保存",name="wxstate"),
     		@ApiImplicitParam(paramType="query",value = "用户中心登录时才需要传",name="openid"),
     		@ApiImplicitParam(paramType="query",value = "用户中心登录时才需要传",name="organizationId"),
-    		@ApiImplicitParam(paramType="query",value = "手机验证码",name="verificationCode")
+			@ApiImplicitParam(paramType="query",value = "手机验证码",name="verificationCode"),
+			@ApiImplicitParam(paramType="query",value = "设备类型:会员御花园自动注册",name="deviceType")
     		})
-    public RestResult<H5LoginVO> login(@RequestParam String mobile,@RequestParam(required=false) String wxstate,@RequestParam String verificationCode,@RequestParam(required=false) String openid,@RequestParam(required=false) String organizationId,HttpServletResponse response) throws Exception {
-        return marketingMembersService.login(mobile,wxstate,verificationCode,openid,organizationId,response);
+    public RestResult<H5LoginVO> login(@RequestParam String mobile,
+									   @RequestParam String verificationCode,
+									   @RequestParam(required=false) Integer deviceType,
+									   @RequestParam(required=false) String wxstate,
+									   @RequestParam(required=false) String openid,
+									   @RequestParam(required=false) String organizationId,
+									   HttpServletResponse response) throws Exception {
+        return marketingMembersService.login(mobile,wxstate,verificationCode,openid,organizationId,deviceType,response);
     }
 
     @RequestMapping(value = "/register",method = RequestMethod.POST)
