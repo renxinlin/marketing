@@ -50,13 +50,13 @@ public class MarketingMembersAddParam {
 
 
     @ApiModelProperty(value = "设备类型 1微信2 支付宝3app 4 浏览器5 qq6其他")
-    private  String deviceType;
+    private  Byte deviceType;
 
-    public String getDeviceType() {
+    public Byte getDeviceType() {
         return deviceType;
     }
 
-    public void setDeviceType(String deviceType) {
+    public void setDeviceType(Byte deviceType) {
         this.deviceType = deviceType;
     }
 

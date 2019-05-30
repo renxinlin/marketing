@@ -239,16 +239,20 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		//
 
 		MarketingMembers members=modelMapper.map(marketingMembersAddParam,MarketingMembers.class);
-		List<JSONObject> objects = JSONObject.parseArray(marketingMembersAddParam.getpCCcode(),JSONObject.class);
-		JSONObject province = objects.get(0);
-		JSONObject city = objects.get(1);
-		JSONObject country = objects.get(2);
-		members.setProvinceCode(province.getString(PcccodeConstants.areaCode));
-		members.setCityCode(city.getString(PcccodeConstants.areaCode));
-		members.setCountyCode(country.getString(PcccodeConstants.areaCode));
-		members.setProvinceName(province.getString(PcccodeConstants.areaName));
-		members.setCityName(city.getString(PcccodeConstants.areaName));
-		members.setCountyName(country.getString(PcccodeConstants.areaName));
+		if(!StringUtils.isBlank(marketingMembersAddParam.getpCCcode())){
+			List<JSONObject> objects = JSONObject.parseArray(marketingMembersAddParam.getpCCcode(),JSONObject.class);
+			JSONObject province = objects.get(0);
+			JSONObject city = objects.get(1);
+			JSONObject country = objects.get(2);
+			members.setProvinceCode(province.getString(PcccodeConstants.areaCode));
+			members.setCityCode(city.getString(PcccodeConstants.areaCode));
+			members.setCountyCode(country.getString(PcccodeConstants.areaCode));
+			members.setProvinceName(province.getString(PcccodeConstants.areaName));
+			members.setCityName(city.getString(PcccodeConstants.areaName));
+			members.setCountyName(country.getString(PcccodeConstants.areaName));
+		}
+
+
 		members.setIsRegistered((byte)1);//手机号注册默认为已完善过信息
 		int result = marketingMembersMapper.insert(members);
 		// 调用用户模块发送短信
