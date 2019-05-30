@@ -467,6 +467,7 @@ public class WeixinAuthController {
 			marketingUserDo.setWxName(userInfo.getString("nickname"));
 			marketingSaleMemberService.updateWxInfo(marketingUser);
 			// 说明用户存在,需要自动登录
+			logger.error("user =>{} define =>{}", marketingUser.getState().intValue(),SaleUserStatus.ENABLE.getStatus().intValue());
 			if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
 				// 非启用状态
 				StringBuffer urlParams = new StringBuffer("?");
