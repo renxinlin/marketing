@@ -16,9 +16,9 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityProductService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
@@ -122,10 +122,10 @@ public class MarketingActivitySetController {
      * @param activitySetId
      * @return
      */
-    @GetMapping(value = "/getBaseInfo")
+    @GetMapping("/getBaseInfo")
     @ApiOperation("编辑活动： 获取活动基础信息")
     @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
-    public RestResult<MarketingActivitySet> getActivityBaseInfoByeditPage(@RequestParam Long activitySetId){
+    public RestResult<MarketingActivitySetParam> getActivityBaseInfoByeditPage(@RequestParam Long activitySetId){
         return service.getActivityBaseInfoByeditPage(activitySetId);
 
     }
@@ -150,7 +150,7 @@ public class MarketingActivitySetController {
      * @throws WriterException 
      * @throws SuperCodeException 
      */
-    @PostMapping(value = "/preview")
+    @PostMapping("/preview")
     @ApiOperation("活动预览")
     @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
     public RestResult<String> preview(@RequestBody MarketingActivityPreviewParam mPreviewParam) throws WriterException, IOException, SuperCodeException{
