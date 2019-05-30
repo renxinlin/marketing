@@ -355,6 +355,26 @@ public class LotteryService {
 						 integralRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
 						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						 consumeIntegralNum = consumeIntegralNum - awardIntegralNum;
+						 MarketingActivityProduct marketingActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
+							integralRecord.setActivitySetId(marketingActivityProduct.getActivitySetId());
+							integralRecord.setCodeTypeId(scanCodeInfoMO.getCodeTypeId());
+							integralRecord.setCreateDate(new Date());
+							integralRecord.setCustomerId(marketingMembersInfo.getCustomerId());
+							integralRecord.setCustomerName(marketingMembersInfo.getCustomerName());
+							integralRecord.setMemberId(marketingMembersInfo.getId());
+							integralRecord.setMemberName(marketingMembersInfo.getUserName());
+							integralRecord.setMemberType(marketingMembersInfo.getMemberType());
+							integralRecord.setMobile(marketingMembersInfo.getMobile());
+							integralRecord.setOrganizationId(organizationId);
+							integralRecord.setOuterCodeId(codeId);
+							integralRecord.setProductId(productId);
+							integralRecord.setProductName(marketingActivityProduct.getProductName());
+							integralRecord.setStatus("2");
+							integralRecordMapperExt.insertSelective(integralRecord);
+							if(consumeIntegralNum != 0) {
+								marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
+								marketingMembersMapper.update(marketingMembersInfo);
+							}
 						 break;
 					case 9://其它
 						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
@@ -373,27 +393,6 @@ public class LotteryService {
 					default:
 						break;
 					}
-				}
-				MarketingActivityProduct marketingActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
-				
-				integralRecord.setActivitySetId(marketingActivityProduct.getActivitySetId());
-				integralRecord.setCodeTypeId(scanCodeInfoMO.getCodeTypeId());
-				integralRecord.setCreateDate(new Date());
-				integralRecord.setCustomerId(marketingMembersInfo.getCustomerId());
-				integralRecord.setCustomerName(marketingMembersInfo.getCustomerName());
-				integralRecord.setMemberId(marketingMembersInfo.getId());
-				integralRecord.setMemberName(marketingMembersInfo.getUserName());
-				integralRecord.setMemberType(marketingMembersInfo.getMemberType());
-				integralRecord.setMobile(marketingMembersInfo.getMobile());
-				integralRecord.setOrganizationId(organizationId);
-				integralRecord.setOuterCodeId(codeId);
-				integralRecord.setProductId(productId);
-				integralRecord.setProductName(marketingActivityProduct.getProductName());
-				integralRecord.setStatus("2");
-				integralRecordMapperExt.insertSelective(integralRecord);
-				if(consumeIntegralNum != 0) {
-					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
-					marketingMembersMapper.update(marketingMembersInfo);
 				}
 			} catch (Exception e) {
 				if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
