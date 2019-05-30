@@ -281,7 +281,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					 integralRecordDao.insert(integralRecord);
 				}
 			}
-			String msg = msgTimplate(marketingMembersAddParam.getUserName() == null ? "您": marketingMembersAddParam.getUserName() ,selectedPortrait.get(0).getOrganizationFullName());
+			String msg = msgTimplate(marketingMembersAddParam.getUserName() == null ? "用户": marketingMembersAddParam.getUserName() ,selectedPortrait.get(0).getOrganizationFullName());
 			sendRegisterMessage(mobile,msg);
 
 		}else {
