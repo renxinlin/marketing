@@ -31,7 +31,7 @@ public interface MarketingReceivingPageMapper {
             + " <if test='isQrcodeView !=null  '> IsQrcodeView = #{isQrcodeView} ,</if> "
             + " <if test='qrcodeUrl !=null and qrcodeUrl != &apos;&apos; '> QrcodeUrl = #{qrcodeUrl} ,</if> "
             + " <if test='updateDate !=null and updateDate != &apos;&apos; '> UpdateDate = NOW() ,</if> "
-            + " <if test='flipTimes !=null and flipTimes != &apos;&apos; '> FlipTimes == #{flipTimes},</if> "
+            + " <if test='flipTimes !=null and flipTimes != &apos;&apos; '> FlipTimes = #{flipTimes},</if> "
             + " </set>"
             + " where Id = #{id}"
             + " </script>")
