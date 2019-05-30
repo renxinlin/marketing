@@ -364,6 +364,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mPage.setQrcodeUrl(mReceivingPageParam.getQrcodeUrl());
 		mPage.setTemplateId(mReceivingPageParam.getTemplateId());
 		mPage.setTextContent(mReceivingPageParam.getTextContent());
+		mPage.setFlipTimes(mReceivingPageParam.getFlipTimes());
 		maReceivingPageMapper.insert(mPage);
 	}
 
@@ -567,6 +568,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mReceivingPage.setQrcodeUrl(mReceivingPageParam.getQrcodeUrl());
 		mReceivingPage.setTemplateId(mReceivingPageParam.getTemplateId());
 		mReceivingPage.setTextContent(mReceivingPageParam.getTextContent());
+		mReceivingPage.setFlipTimes(mReceivingPageParam.getFlipTimes());
 		maReceivingPageMapper.update(mReceivingPage);
 
 		restResult.setState(200);
