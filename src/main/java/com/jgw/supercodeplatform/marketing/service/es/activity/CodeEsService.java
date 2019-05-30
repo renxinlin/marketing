@@ -16,6 +16,7 @@ import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -77,7 +78,7 @@ public class CodeEsService extends AbstractEsSearch {
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
 		eSearch.setType(EsType.INFO);
-		add(eSearch, addParam);
+		add(eSearch,true, addParam);
 	}
 	/**
 	 * 根据产品id和批次id查询参与扫码的批次一共被扫了多少次
@@ -528,7 +529,7 @@ public class CodeEsService extends AbstractEsSearch {
 		try{
 			// 保存导购信息
 			eClient.prepareIndex(EsIndex.MARKET_SALER_INFO.getIndex(), EsType.INFO.getType())
-					.setSource(JSONObject.toJSONString(param), XContentType.JSON).get();
+					.setSource(JSONObject.toJSONString(param), XContentType.JSON).setRefreshPolicy(RefreshPolicy.IMMEDIATE).get();
 		}catch (Exception e){
 			logger.error("扫码信息插入失败");
 			logger.error(e.getMessage(), e);

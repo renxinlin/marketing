@@ -133,7 +133,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	@Transactional(rollbackFor = SuperCodeException.class)
+	@Transactional(rollbackFor = Exception.class)
 	public RestResult<String> memberActivityAdd(MarketingActivityCreateParam activitySetParam) throws SuperCodeException {
 		MarketingActivitySet mActivitySet =baseAdd(activitySetParam);
 		//保存领取页
@@ -226,7 +226,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		List<MarketingActivityProduct> marketActivityProductList = mProductMapper.selectByActivitySetId(mActivitySet.getId());
 		List<Map<String, Object>> delBatchProductList = null;
 		if(!CollectionUtils.isEmpty(marketActivityProductList)) {
-			delBatchProductList = marketActivityProductList.stream().map(product -> {
+			delBatchProductList = marketActivityProductList.stream()
+			.filter(product -> StringUtils.isNotBlank(product.getSbatchId())).map(product -> {
 				Map<String, Object> delMap = new HashMap<>();
 				delMap.put("batchId", product.getSbatchId());
 				delMap.put("businessType", BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
@@ -390,6 +391,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			mPrizeType.setAwardType(marketingPrizeTypeParam.getAwardType());
 			mPrizeType.setAwardIntegralNum(marketingPrizeTypeParam.getAwardIntegralNum());
 			mPrizeType.setCardLink(marketingPrizeTypeParam.getCardLink());
+			mPrizeType.setRemainingStock(marketingPrizeTypeParam.getRemainingStock());
 			mList.add(mPrizeType);
 			sumprizeProbability+=prizeProbability;
 		}
@@ -418,9 +420,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 */
 	private void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int referenceRole) throws SuperCodeException {
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
-//		Map<String, MarketingActivityProduct> activityProductMap = new HashMap<String, MarketingActivityProduct>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
-
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
@@ -436,7 +436,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 					mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
 					mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
 					mActivityProduct.setReferenceRole((byte) referenceRole);
-//					activityProductMap.put(productId + productBatchId, mActivityProduct);
 					mList.add(mActivityProduct);
 					// 拼装请求码管理批次信息接口商品批次参数
 					Map<String, String> batchmap = new HashMap<String, String>();
@@ -711,7 +710,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
         // 查询满足条件的营销活动集合
         List<MarketingSalerActivitySetMO> list = mSetMapper.list(searchParams);
         if (CollectionUtils.isEmpty(list)) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         // 获取渠道信息的树形结构
         list.forEach(mo -> {

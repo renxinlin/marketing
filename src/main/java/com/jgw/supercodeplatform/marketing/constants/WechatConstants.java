@@ -25,7 +25,7 @@ public interface WechatConstants {
     public final static String CODEMANAGER_BIND_BATCH_TO_URL="/code/sbatchUrl/addSbatchUrl";
     
     /** 删除码绑定关系接口 */
-    public final static String CODEMANAGER_DELETE_BATCH_TO_URL="/code/sbatchUrl/addSbatchUrl";
+    public final static String CODEMANAGER_DELETE_BATCH_TO_URL="/code/sbatchUrl/delete/one";
     
     //码管理跳转到营销系统路径
     public final static String SCAN_CODE_JUMP_URL="/marketing/front/scan/";

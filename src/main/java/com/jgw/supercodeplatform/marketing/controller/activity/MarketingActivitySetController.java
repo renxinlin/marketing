@@ -105,7 +105,7 @@ public class MarketingActivitySetController {
     @GetMapping("/getPageInfo")
     @ApiOperation("根据活动id获取领取页和中奖页数据")
     @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
-    public RestResult<ReceivingAndWinningPageVO> getPageInfo(@RequestParam(required=true) Long activitySetId) throws Exception {
+    public RestResult<ReceivingAndWinningPageVO> getPageInfo(@RequestParam Long activitySetId) throws Exception {
     	return service.getPageInfo(activitySetId);
     }
     
