@@ -204,8 +204,10 @@ public class WeixinAuthController {
 		h5LoginVO.setMobile(members.getMobile());
 		h5LoginVO.setWechatHeadImgUrl(members.getWechatHeadImgUrl());
 		h5LoginVO.setMemberName(members.getUserName()==null?members.getWxName():members.getUserName());
+		h5LoginVO.setOrganizationId(members.getOrganizationId());
 		try {
 			orgnazationName=commonService.getOrgNameByOrgId(members.getOrganizationId());
+
 			h5LoginVO.setOrganizationName(orgnazationName);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -446,7 +448,6 @@ public class WeixinAuthController {
 		String organizationId=statearr[1];
 		userInfo=getUserInfo(code, organizationId);
 		String openid=userInfo.getString("openid");
-		String nickname=userInfo.getString("nickname");
 
 
 // 导购step-2: 刷新头像
