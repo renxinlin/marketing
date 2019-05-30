@@ -504,6 +504,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			}
 			trueMember=memberByPhone;
 		}else {
+			logger.error("marketingMembersMapper.selectByOpenIdAndOrgIdWithTemp参数 openid{}organizationId{}",openid,organizationId);
 			MarketingMembers memberByOpenId=marketingMembersMapper.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
 			if (null==memberByOpenId) {
 				throw new SuperCodeException("登录失败，无此微信用户", 500);
