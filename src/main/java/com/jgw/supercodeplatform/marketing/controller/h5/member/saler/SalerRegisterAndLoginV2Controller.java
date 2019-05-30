@@ -100,11 +100,18 @@ public class SalerRegisterAndLoginV2Controller {
                 if(!StringUtils.isBlank(loginUser.getOpenid())){
                     // 说明微信登录失败,但用户存在
                     // 说明没绑定openid/如果微信openid变动【刷新openid】
-                    Long id = user.getId();
-                    MarketingUser userDo = new MarketingUser();
-                    userDo.setId(id);
-                    userDo.setOpenid(loginUser.getOpenid());
-                    service.updateUserOpenId(userDo);
+                    MarketingUser userOpenidExist = service.selectByOpenidAndOrgId(loginUser.getOpenid(), loginUser.getOrganizationId());
+                    // openid已经绑定用户
+                    if(userOpenidExist==null){
+                        Long id = user.getId();
+                        MarketingUser userDo = new MarketingUser();
+                        userDo.setId(id);
+                        userDo.setOpenid(loginUser.getOpenid());
+                        service.updateUserOpenId(userDo);
+                    }else{
+                        return RestResult.error("您的微信已经绑定其他手机号...",null,500);
+
+                    }
                 }
                 if(user.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
                     return RestResult.error("您已经被禁用",null,500);
