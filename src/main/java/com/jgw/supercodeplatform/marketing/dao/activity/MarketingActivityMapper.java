@@ -37,8 +37,8 @@ public interface MarketingActivityMapper extends CommonSql{
 						"</if>" +
 					"</otherwise>" +
 					"</choose>" +
-					" <if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
-					" <if test='otherCondition' != null and otherCondition !=&apos;&apos;'> and ${otherCondition} </if>"+
+					"<if test='organizationId !=null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
+					"<if test='otherCondition != null and otherCondition !=&apos;&apos;'> and ${otherCondition} </if>"+
 					"</where>";
     
 	@Select("select "+allFileds +" from marketing_activity where ActivityType = #{activityType} ")
