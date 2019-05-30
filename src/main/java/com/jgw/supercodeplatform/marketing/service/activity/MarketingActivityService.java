@@ -30,7 +30,6 @@ public class MarketingActivityService extends AbstractPageService<MarketingActiv
 
 	@Override
 	protected List<MarketingActivityListMO> searchResult(MarketingActivityListParam marketingActivityListParam) throws Exception {
-		marketingActivityListParam.setOtherCondition("ActivityId != 3");
 		List<MarketingActivityListMO> list=dao.list(marketingActivityListParam);
 		return list;
 	}
