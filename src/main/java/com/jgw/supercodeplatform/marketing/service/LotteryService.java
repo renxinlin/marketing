@@ -109,13 +109,16 @@ public class LotteryService {
 	@Autowired
 	private StringRedisTemplate redisTemplate;
 	
-	public RestResult<String> baselottery(String wxstate) throws SuperCodeException, ParseException {
+	public RestResult baselottery(String wxstate) throws SuperCodeException, ParseException {
 		RestResult<String> restResult=new RestResult<>();
 		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null==scanCodeInfoMO) {
-			logger.error("不存在扫码唯一纪录="+wxstate+"的扫码缓存信息，请重新扫码");
 			// 贴合前端提示方式
-			throw new SuperCodeException("您的进入方式错啦！请重新扫码", 200);
+			logger.error("不存在扫码唯一纪录="+wxstate+"的扫码缓存信息，请重新扫码");
+			LotteryResultMO mo = new LotteryResultMO();
+			mo.setMsg("您的进入方式错啦！请重新扫码");
+			return RestResult.success("success",mo);
+			// 贴合前端提示方式
 		}
 		Long activitySetId=scanCodeInfoMO.getActivitySetId();
 		MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
@@ -162,10 +165,10 @@ public class LotteryService {
 		logger.info("领奖传入参数:{}", scanCodeInfoMO);
 		if (null==scanCodeInfoMO) {
 			// 贴合前端提示方式
-			restResult.setState(200);
-			restResult.setMsg("您的进入方式错啦！请重新扫码");
 			logger.error("不存在扫码唯一纪录="+wxstate+"的扫码缓存信息，请重新扫码");
-			return restResult;
+			LotteryResultMO mo = new LotteryResultMO();
+			mo.setMsg("您的进入方式错啦！请重新扫码");
+			return RestResult.success("success",mo);
 		}
 
 		Long activitySetId=scanCodeInfoMO.getActivitySetId();
