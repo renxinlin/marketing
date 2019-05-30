@@ -481,7 +481,14 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		return mapper.selectByPrimaryKey(memberId);
 	}
 
-
+	/**
+	 * 更新openid 用户头像
+	 * @param marketingUser
+	 * @return
+	 */
+	public int updateWxInfo(MarketingUser marketingUser) {
+		return mapper.updateWxInfo(marketingUser);
+	}
 }
 
 

@@ -127,4 +127,9 @@ public interface MarketingUserMapperExt extends MarketingUserMapper , CommonSql 
             " <foreach collection='idsAndStatus.ids' index='index' item='item' open='(' separator=',' close=')'> #{item} </foreach> "
             + endScript)
     int updateBatch(@Param("idsAndStatus") SaleMemberBatchStatusParam idsAndStatus, @Param("organizationId") String organizationId);
+    @Update(startScript +
+            " update marketing_user set Openid = #{openid},WxName = #{wxName}, WechatHeadImgUrl = #{wechatHeadImgUrl}" +
+            " where id = #{id} "
+            + endScript)
+    int updateWxInfo(MarketingUser marketingUser);
 }

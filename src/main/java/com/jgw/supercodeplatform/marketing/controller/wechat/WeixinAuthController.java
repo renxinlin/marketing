@@ -446,6 +446,7 @@ public class WeixinAuthController {
 		String organizationId=statearr[1];
 		userInfo=getUserInfo(code, organizationId);
 		String openid=userInfo.getString("openid");
+		String nickname=userInfo.getString("nickname");
 
 
 // 导购step-2: 刷新头像
@@ -460,8 +461,9 @@ public class WeixinAuthController {
 			// 始终刷新微信用户头像,用于同步微信信息
 			MarketingUser marketingUserDo = new MarketingUser();
 			marketingUserDo.setId(marketingUser.getId());
-			marketingUserDo.setId(marketingUser.getId());
+			marketingUserDo.setOpenid(userInfo.getString("openid"));
 			marketingUserDo.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
+			marketingUserDo.setWxName(userInfo.getString("nickname"));
 			marketingSaleMemberService.updateWxInfo(marketingUser);
 			// 说明用户存在,需要自动登录
 			if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
