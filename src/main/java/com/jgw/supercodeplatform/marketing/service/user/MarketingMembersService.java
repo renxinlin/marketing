@@ -254,6 +254,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 
 		members.setIsRegistered((byte)1);//手机号注册默认为已完善过信息
+        if(members.getDeviceType() == null){
+            members.setDeviceType((byte) 6);
+        }
 		int result = marketingMembersMapper.insert(members);
 		// 调用用户模块发送短信
 		if(1 == result){
@@ -278,7 +281,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					 integralRecordDao.insert(integralRecord);
 				}
 			}
-			String msg = msgTimplate(marketingMembersAddParam.getUserName(),selectedPortrait.get(0).getOrganizationFullName());
+			String msg = msgTimplate(marketingMembersAddParam.getUserName() == null ? "您": marketingMembersAddParam.getUserName() ,selectedPortrait.get(0).getOrganizationFullName());
 			sendRegisterMessage(mobile,msg);
 
 		}else {
