@@ -45,6 +45,7 @@ public class MemberPortraitController extends CommonUtil {
     })
     @GetMapping("query")
     public RestResult query(String timeValue) throws Exception {
+        //   4浏览器    1微信   2支付宝   5qq  3钉钉  6其他
         if(QueryEnum.WEEK.getStatus().equals(timeValue)){
             return weekTask();
         }
