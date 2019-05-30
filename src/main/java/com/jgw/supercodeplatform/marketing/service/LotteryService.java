@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +24,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -36,18 +39,25 @@ import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
@@ -61,6 +71,12 @@ public class LotteryService {
 	
 	@Autowired
 	private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
+	
+	@Autowired
+	private IntegralRecordMapperExt integralRecordMapperExt;
+	
+	@Autowired
+	private MarketingActivityProductMapper maProductMapper;
 
 	@Autowired
 	private MarketingActivityMapper mActivityMapper;
@@ -294,6 +310,7 @@ public class LotteryService {
 			restResult.setMsg(lotteryResultMO.getMsg());
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
 		}else{
+			IntegralRecord integralRecord = new IntegralRecord();
 			lotteryResultMO.setWinnOrNot(1);
 			//已中奖执行奖品方法中奖纪录保存等逻辑
 			try {
@@ -306,6 +323,7 @@ public class LotteryService {
 					String strAmount=decimalFormat.format(amount);
 					lotteryResultMO.setData(strAmount);
 					lotteryResultMO.setMsg(strAmount);
+					integralRecord.setProductPrice(amount);
 				}else {
 					lotteryResultMO.setAwardType(awardType);
 					int redisRemainingStock = -1;
@@ -320,6 +338,7 @@ public class LotteryService {
 							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
+							integralRecord.setProductPrice(mPrizeTypeMO.getPrizeAmount());
 						}
 						break;
 					case 2: //奖券
@@ -331,6 +350,9 @@ public class LotteryService {
 						 Integer awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum();
 						 marketingMembersInfo.setHaveIntegral(haveIntegral+awardIntegralNum);
 						 lotteryResultMO.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
+						 integralRecord.setIntegralNum(awardIntegralNum);
+						 integralRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
+						 integralRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
 						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						 consumeIntegralNum = consumeIntegralNum - awardIntegralNum;
 						 break;
@@ -344,6 +366,7 @@ public class LotteryService {
 						} else {
 							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
+							integralRecord.setProductPrice(mPrizeTypeMO.getPrizeAmount());
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						}
 						break;
@@ -351,6 +374,23 @@ public class LotteryService {
 						break;
 					}
 				}
+				MarketingActivityProduct marketingActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
+				
+				integralRecord.setActivitySetId(marketingActivityProduct.getActivitySetId());
+				integralRecord.setCodeTypeId(scanCodeInfoMO.getCodeTypeId());
+				integralRecord.setCreateDate(new Date());
+				integralRecord.setCustomerId(marketingMembersInfo.getCustomerId());
+				integralRecord.setCustomerName(marketingMembersInfo.getCustomerName());
+				integralRecord.setMemberId(marketingMembersInfo.getId());
+				integralRecord.setMemberName(marketingMembersInfo.getUserName());
+				integralRecord.setMemberType(marketingMembersInfo.getMemberType());
+				integralRecord.setMobile(marketingMembersInfo.getMobile());
+				integralRecord.setOrganizationId(organizationId);
+				integralRecord.setOuterCodeId(codeId);
+				integralRecord.setProductId(productId);
+				integralRecord.setProductName(marketingActivityProduct.getProductName());
+				integralRecord.setStatus("2");
+				integralRecordMapperExt.insertSelective(integralRecord);
 				if(consumeIntegralNum != 0) {
 					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 					marketingMembersMapper.update(marketingMembersInfo);
@@ -585,4 +625,5 @@ public class LotteryService {
 		restResult.setState(200);
 		return restResult;
 	}
+	
 }
