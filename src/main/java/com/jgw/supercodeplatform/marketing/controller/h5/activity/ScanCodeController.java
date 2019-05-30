@@ -191,6 +191,10 @@ public class ScanCodeController {
     	String encoderedirectUri=URLEncoder.encode(wholeUrl, "utf-8");
         logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid()+",h5pageUrl="+h5pageUrl);
         String url=h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1"+"&organizationId="+organizationId;
+        /***********************/
+        if("72388903699976191".equals(outerCodeId))
+        	url = "http://192.168.10.129:7081/?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1"+"&organizationId="+organizationId;
+        /***********************/
         return url;
     }
 
