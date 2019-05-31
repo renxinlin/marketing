@@ -54,19 +54,19 @@ public class CommonService {
 	protected static Logger logger = LoggerFactory.getLogger(CommonService.class);
     @Autowired
     private CommonUtil commonUtil;
-    
+
     @Autowired
     private RestTemplateUtil restTemplateUtil;
-    
+
     @Autowired
     private RedisUtil redisUtil;
-    
+
     @Value("${rest.user.url}")
     private String restUserUrl;
-    
+
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
-	
+
 	@Value("${rest.code.url}")
 	private String msCodeUrl;
 	@Autowired
@@ -114,8 +114,8 @@ public class CommonService {
 		resuRestResult.setMsg(body);
 		return resuRestResult;
 	}
-	
-	
+
+
 	public String getBatchInfo(List<ProductAndBatchGetCodeMO>productAndBatchGetCodeMOs,String superToken,String url) throws SuperCodeException {
 		String jsonData=JSONObject.toJSONString(productAndBatchGetCodeMOs);
 		Map<String,String> headerMap=new HashMap<String, String>();
@@ -130,18 +130,18 @@ public class CommonService {
      * @param obj：通过产品和产品批次获取的码管理平台生码批次信息
      * @param url
      * @return
-     * @throws SuperCodeException 
+     * @throws SuperCodeException
      */
 	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
 		return new ArrayList<>(getUrlToBatchParamMap(array, url, businessType).values());
 	}
-	
+
     /**
      * 获取绑定批次和url的请求参数
      * @param obj：通过产品和产品批次获取的码管理平台生码批次信息
      * @param url
      * @return
-     * @throws SuperCodeException 
+     * @throws SuperCodeException
      */
 	public Map<String, Map<String, Object>> getUrlToBatchParamMap(JSONArray array,String url,int businessType) throws SuperCodeException {
 		Map<String, Map<String, Object>> bindBatchMap=new HashMap<>();
@@ -167,7 +167,7 @@ public class CommonService {
 	 * @param url
 	 * @param superToken
 	 * @return
-	 * @throws SuperCodeException 
+	 * @throws SuperCodeException
 	 */
 	public String bindUrlToBatch(List<Map<String, Object>> bindBatchList,String superToken) throws SuperCodeException {
 		//生码批次跟url绑定
@@ -185,7 +185,7 @@ public class CommonService {
 	 * @param url
 	 * @param superToken
 	 * @return
-	 * @throws SuperCodeException 
+	 * @throws SuperCodeException
 	 */
 	public String deleteUrlToBatch(List<Map<String, Object>> deleteBatchList,String superToken) throws SuperCodeException {
 		//生码批次跟url绑定
@@ -197,7 +197,7 @@ public class CommonService {
 		String body=bindBatchresponse.getBody();
 		return body;
 	}
-	
+
     /**
      * 根据产品集合获取产品和批次集合
      * @param productIds
@@ -207,19 +207,19 @@ public class CommonService {
      */
 	public JSONArray requestPriductBatchIds(List<String> productIds, String superToken)
 			throws SuperCodeException {
-		
+
 		if (null==productIds || productIds.isEmpty()) {
 			throw new SuperCodeException("根据产品集合获取产品批次集合出错产品id集合不能为空", 500);
 		}
 		Map<String,String>headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
-		
+
 		Map<String, Object>params=new HashMap<String, Object>();
 		StringBuffer buf=new StringBuffer();
 		for (String productId : productIds) {
 			buf.append(productId).append(",");
 		}
-		
+
 		params.put("productIds",String.join(",", productIds));
 		ResponseEntity<String> response=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_PRODUCT_BATCH, params, headerMap);
 		logger.info("根据产品集合请求基础平台批次数据收到响应："+response.toString());
@@ -231,12 +231,12 @@ public class CommonService {
 		}
 		return jsonObject.getJSONArray("results");
 	}
-	
-	
+
+
 	/**
 	 * 请求基础平台批量获取组织信息
 	 * @return
-	 * @throws SuperCodeException 
+	 * @throws SuperCodeException
 	 */
 	public JSONArray getOrgsInfoByOrgIds(List<String> orgIds) throws SuperCodeException {
 		Map<String, Object> params=new HashMap<String, Object>();
@@ -244,7 +244,7 @@ public class CommonService {
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, null);
 		String body=responseEntity.getBody();
 		logger.info("请求基础平台批量获取组织信息接口返回信息："+body);
-		
+
 		JSONObject jsonBody=JSONObject.parseObject(body);
 		Integer state=jsonBody.getInteger("state");
 		if (null==state || state.intValue()!=200) {
@@ -256,8 +256,8 @@ public class CommonService {
 		}
 		return arr;
 	}
-	
-	
+
+
     /**
      * 根据组织id获取组织名称
      * @param organizationId
@@ -275,22 +275,22 @@ public class CommonService {
 			JSONArray arr=getOrgsInfoByOrgIds(orgIds);
 			organizationName=arr.getJSONObject(0).getString("organizationFullName");
 			redisUtil.hmSet(RedisKey.organizationId_prefix, organizationId, organizationName);
-			
+
 			Long seconds=redisUtil.leftExpireSeconds(RedisKey.organizationId_prefix);
-			
+
 			if (null==seconds) {
 				redisUtil.expire(RedisKey.organizationId_prefix, 7200, TimeUnit.SECONDS);
 			}
 		}
 		return organizationName;
 	}
-	
-	
+
+
     /**
      * 获取access_token
      * @param organizationId
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
 	public String getAccessTokenByOrgId(String appId,String secret,String organizationId) throws Exception {
 		if (StringUtils.isBlank(appId) || StringUtils.isBlank(secret)|| StringUtils.isBlank(organizationId)) {
@@ -346,9 +346,11 @@ public class CommonService {
 	 * @throws SuperCodeException
 	 */
 	public void checkCodeTypeValid( Long codeTypeId) throws SuperCodeException {
-		if (! (codeTypeId != null
-                && SystemLabelEnum.MARKETING.getCodeTypeId().intValue() == codeTypeId.intValue())) {
-            throw  new SuperCodeException("对不起,该码不存在",500);
+		if(codeTypeId == null){
+			throw  new SuperCodeException("对不起,非营销码制");
+		}
+		if (SystemLabelEnum.MARKETING.getCodeTypeId().intValue() != codeTypeId.intValue()) {
+            throw  new SuperCodeException("对不起,非营销码制");
 		}
 	}
 
