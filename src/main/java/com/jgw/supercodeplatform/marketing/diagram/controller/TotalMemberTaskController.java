@@ -75,20 +75,20 @@ public class TotalMemberTaskController extends CommonUtil {
         // 获取所有
         Integer total = service.getAllMarketingMembersCountWithOutToday(conditions);
         // 查询日期内的数据
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), week.get(week.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, week.get(0), taskTimeCalculator.getNextDay(week.get(week.size() - 1)));
 
 
         return task(registerNumMembers, total);
 
     }
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
 
     public RestResult twoWeekTask( ) throws SuperCodeException {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getTwoWeek();
         // 查询日期内的数据
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
@@ -104,7 +104,7 @@ public class TotalMemberTaskController extends CommonUtil {
         List<Date> dateParams = taskTimeCalculator.getMonth();
         List<String> weekString = taskTimeCalculator.getMonthString();
         // 查询日期内的数据
-        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0),taskTimeCalculator.getNextDay( dateParams.get(dateParams.size() - 1)));
         // 查询组织下的会员总量
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("organizationId",organizationId);
