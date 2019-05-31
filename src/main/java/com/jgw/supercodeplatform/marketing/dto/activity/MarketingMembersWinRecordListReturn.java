@@ -36,7 +36,9 @@ public class MarketingMembersWinRecordListReturn {
     private String prizeTypeName;//奖品类型名称
     @ApiModelProperty(value = "门店名称")
     private String customerName;//门店名称
-
+    @ApiModelProperty(value = "奖项类型")
+    private String awardType;
+    
     public MarketingMembersWinRecordListReturn() {
     }
 
@@ -159,4 +161,13 @@ public class MarketingMembersWinRecordListReturn {
     public void setCustomerName(String customerName) {
         this.customerName = customerName;
     }
+
+	public String getAwardType() {
+		return awardType;
+	}
+
+	public void setAwardType(String awardType) {
+		this.awardType = awardType;
+	}
+    
 }

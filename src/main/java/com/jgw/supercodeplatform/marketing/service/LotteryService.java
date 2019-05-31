@@ -5,9 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +22,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -48,7 +45,6 @@ import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
@@ -318,7 +314,7 @@ public class LotteryService {
 				if (null==awardType || awardType.intValue()==4) {
 					lotteryResultMO.setAwardType((byte)4);
 					Float amount = weixinpay(mobile, openId, organizationId, mPrizeTypeMO,remoteAddr);
-					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
+					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount,productId);
 					DecimalFormat decimalFormat=new DecimalFormat(".00");
 					String strAmount=decimalFormat.format(amount);
 					lotteryResultMO.setData(strAmount);
@@ -337,14 +333,14 @@ public class LotteryService {
 						}else {
 							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
-							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
+							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
 							integralRecord.setProductPrice(mPrizeTypeMO.getPrizeAmount());
 						}
 						break;
 					case 2: //奖券
 						lotteryResultMO.setData(mPrizeTypeMO.getCardLink());
 						lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
-						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
+						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
 						break;
 					case 3: //积分
 						 Integer awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum();
@@ -353,7 +349,7 @@ public class LotteryService {
 						 integralRecord.setIntegralNum(awardIntegralNum);
 						 integralRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
 						 integralRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
-						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
+						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
 						 consumeIntegralNum = consumeIntegralNum - awardIntegralNum;
 						 break;
 					case 9://其它
@@ -367,7 +363,7 @@ public class LotteryService {
 							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
 							integralRecord.setProductPrice(mPrizeTypeMO.getPrizeAmount());
-							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
+							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
 						}
 						break;
 					default:
@@ -479,7 +475,7 @@ public class LotteryService {
 
 
 	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,
-			MarketingActivity activity, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, Float amount) {
+			MarketingActivity activity, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, Float amount, String productId) {
 		//插入中奖纪录
 		MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
 		redWinRecord.setActivityId(activity.getId());
@@ -489,6 +485,7 @@ public class LotteryService {
 		redWinRecord.setOpenid(openId);
 		redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
 		redWinRecord.setWinningAmount(amount );
+		redWinRecord.setProductId(productId);
 		redWinRecord.setWinningCode(outCodeId);
 		redWinRecord.setPrizeName(mPrizeTypeMO.getPrizeTypeName());
 		redWinRecord.setOrganizationId(organizationId);

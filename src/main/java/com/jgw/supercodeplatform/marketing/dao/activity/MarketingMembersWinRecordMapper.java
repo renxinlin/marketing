@@ -12,13 +12,13 @@ import java.util.List;
 public interface MarketingMembersWinRecordMapper extends CommonSql{
 
 	static String allFields="Id as id,ActivityId as activityId,ActivitySetId as activitySetId,ActivityName as activityName,Openid as openid,PrizeTypeId as prizeTypeId,"
-			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId ,PrizeName prizeName ";
+			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId ,PrizeName prizeName,ProductId productId";
 
 	static String allWinFields="mmw.Id as id,mmw.ActivityId as activityId,mmw.ActivitySetId as activitySetId,mmw.ActivityName as activityName,mmw.Openid as openid,mmw.PrizeTypeId as prizeTypeId,"
 			+ " CAST(mmw.WinningAmount AS CHAR) as winningAmount,mmw.PrizeName as prizeName "
 			+ ",mmw.WinningCode as winningCode,mmw.Mobile as mobile,mmw.OrganizationId as organizationId,"
 			+ "mm.UserName as userName,mm.WxName as wxName,mm.CustomerName as customerName, "
-			+ "mpt.PrizeTypeName as prizeTypeName,map.ProductName as productName ";
+			+ "mpt.PrizeTypeName as prizeTypeName,map.ProductName as productName,mpt.AwardType awardType ,mmw.ProductId productId";
 
 	static String whereSearch =
 			"<where>" +
@@ -61,7 +61,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	@Select(startScript
 			+"select count(*) from "
 			+"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  "
-			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId "
+			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId and mmw.ProductId=map.ProductId"
 			+whereSearch
 			+endScript
 		   )
@@ -70,7 +70,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	@Select(startScript
 			+"select "+allWinFields+" from "
 			+"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  "
-			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId  "
+			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId and mmw.ProductId=map.ProductId "
 			+whereSearch
 			+ " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
 			+endScript
