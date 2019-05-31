@@ -372,14 +372,14 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(StringUtils.isBlank(userInfo.getpCCcode())){
 			throw new SuperCodeException("请输入所在地信息...");
 		}
-        // 产品需求改变:非必填
-//		if(StringUtils.isBlank(userInfo.getCustomerId())){
-//			throw new SuperCodeException("请输入渠道ID信息...");
-//		}
-//
-//		if(StringUtils.isBlank(userInfo.getCustomerName())){
-//			throw new SuperCodeException("请输入渠道名称信息...");
-//		}
+        // 产品需求改变:必填
+		if(StringUtils.isBlank(userInfo.getCustomerId())){
+			throw new SuperCodeException("请输入渠道ID信息...");
+		}
+
+		if(StringUtils.isBlank(userInfo.getCustomerName())){
+			throw new SuperCodeException("请输入渠道名称信息...");
+		}
 
 
 	}
@@ -438,8 +438,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		userDtoToDb.setMemberType(MemberTypeEnums.SALER.getType());
 		// USER ID
 		userDtoToDb.setUserId(UUID.randomUUID().toString().replaceAll("-",""));
-		if(StringUtils.isBlank(userDtoToDb.getOpenid())){
-			userDtoToDb.setOpenid(null);
+		if(!StringUtils.isBlank(userDtoToDb.getOpenid())){
+			userDtoToDb.setOpenid(userInfo.getOpenId());
 		}
 		return userDtoToDb;
 	}
