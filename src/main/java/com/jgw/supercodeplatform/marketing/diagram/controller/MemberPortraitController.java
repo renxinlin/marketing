@@ -390,12 +390,13 @@ public class MemberPortraitController extends CommonUtil {
             e.setPercent(edouble);
             e.setPercentStr(edouble +"");
         });
-        BigDecimal otherageBD = new BigDecimal(percentAgeDoubleSumWithLast.get());
+
+        BigDecimal otherageBD = new BigDecimal(1.00D- percentAgeDoubleSumWithLast.get());
 
         double otheragedouble =otherageBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
 
-        otherage.setPercent(1.00D- otheragedouble);
-        otherage.setPercentStr((1.00D-otheragedouble)+"");
+        otherage.setPercent(otheragedouble);
+        otherage.setPercentStr(otheragedouble+"");
 
         List<CricleVo> cricleVos = Arrays.asList(agex0);
         for(CricleVo vo:cricleVos){
