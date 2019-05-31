@@ -328,6 +328,14 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(userDto != null){
 			throw new SuperCodeException("手机号已存在...");
 		}
+		if(!StringUtils.isBlank(userInfo.getOpenId())){
+			MarketingUser marketingUser = mapper.selectByOpenid(userInfo.getOpenId());
+			if(marketingUser != null){
+				throw new SuperCodeException("该微信号已经绑定其他手机...");
+			}
+
+		}
+
 
 		// 3数据转换和保存
 		MarketingUser userDo =changeToDo(userInfo);
@@ -372,14 +380,14 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(StringUtils.isBlank(userInfo.getpCCcode())){
 			throw new SuperCodeException("请输入所在地信息...");
 		}
-        // 产品需求改变:非必填
-//		if(StringUtils.isBlank(userInfo.getCustomerId())){
-//			throw new SuperCodeException("请输入渠道ID信息...");
-//		}
-//
-//		if(StringUtils.isBlank(userInfo.getCustomerName())){
-//			throw new SuperCodeException("请输入渠道名称信息...");
-//		}
+        // 产品需求改变:必填
+		if(StringUtils.isBlank(userInfo.getCustomerId())){
+			throw new SuperCodeException("请输入渠道ID信息...");
+		}
+
+		if(StringUtils.isBlank(userInfo.getCustomerName())){
+			throw new SuperCodeException("请输入渠道名称信息...");
+		}
 
 
 	}
@@ -438,8 +446,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		userDtoToDb.setMemberType(MemberTypeEnums.SALER.getType());
 		// USER ID
 		userDtoToDb.setUserId(UUID.randomUUID().toString().replaceAll("-",""));
-		if(StringUtils.isBlank(userDtoToDb.getOpenid())){
-			userDtoToDb.setOpenid(null);
+		if(!StringUtils.isBlank(userInfo.getOpenId())){
+			userDtoToDb.setOpenid(userInfo.getOpenId());
 		}
 		return userDtoToDb;
 	}

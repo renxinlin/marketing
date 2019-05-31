@@ -41,12 +41,12 @@ public interface MarketingMembersMapper {
     @Options(useGeneratedKeys=true, keyProperty="id", keyColumn="Id")
     @Insert(" INSERT INTO marketing_members(WxName,Openid,Mobile,UserId,UserName,"
             + " Sex,Birthday,RegistDate,OrganizationId,CustomerName,CustomerId,BabyBirthday,PCCcode,State,IsRegistered,WechatHeadImgUrl, " +
-              " ProvinceCode,CityCode,CountyCode,ProvinceName,CityName,CountyName ) "
+              " ProvinceCode,CityCode,CountyCode,ProvinceName,CityName,CountyName, DeviceType) "
             + " VALUES("
             + " #{wxName},#{openid},#{mobile},#{userId},#{userName},#{sex},#{birthday}"
             + " ,NOW(),#{organizationId},"
             + " #{customerName},#{customerId},#{babyBirthday},#{pCCcode},#{state},1,#{wechatHeadImgUrl}," +
-              " provinceCode,cityCode,countyCode,provinceName,cityName,countyName )")
+              " #{provinceCode},#{cityCode},#{countyCode},#{provinceName},#{cityName},#{countyName},#{deviceType} )")
     int insert(MarketingMembers marketingMembers);
 
 
