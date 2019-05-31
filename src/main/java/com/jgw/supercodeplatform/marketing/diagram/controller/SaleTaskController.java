@@ -69,7 +69,7 @@ public class SaleTaskController extends CommonUtil {
         List<Date> dateParams = taskTimeCalculator.getWeek();
         List<String> dateParamsString = taskTimeCalculator.getWeekString();
         // 只有日期，价格数据
-        List<IntegralRecord> organizationAllSalePrice = service.getOrganizationAllSalePrice(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        List<IntegralRecord> organizationAllSalePrice = service.getOrganizationAllSalePrice(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         return timePointtask(organizationAllSalePrice, dateParamsString);
     }
 
@@ -79,7 +79,7 @@ public class SaleTaskController extends CommonUtil {
         List<Date> dateParams = taskTimeCalculator.getTwoWeek();
         List<String> dateParamsString = taskTimeCalculator.getTwoWeekString();
         // 只有日期，价格数据
-        List<IntegralRecord> organizationAllSalePrice = service.getOrganizationAllSalePrice(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        List<IntegralRecord> organizationAllSalePrice = service.getOrganizationAllSalePrice(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         return timePointtask(organizationAllSalePrice, dateParamsString);
     }
 
@@ -88,7 +88,7 @@ public class SaleTaskController extends CommonUtil {
         List<Date> dateParams = taskTimeCalculator.getMonth();
         List<String> dateParamsString = taskTimeCalculator.getMonthString();
         // 只有日期，价格数据
-        List<IntegralRecord> organizationAllSalePrice = service.getOrganizationAllSalePrice(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        List<IntegralRecord> organizationAllSalePrice = service.getOrganizationAllSalePrice(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         return timePointtask(organizationAllSalePrice, dateParamsString);
     }
 

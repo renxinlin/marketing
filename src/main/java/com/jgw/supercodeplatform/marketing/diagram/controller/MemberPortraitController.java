@@ -72,7 +72,7 @@ public class MemberPortraitController extends CommonUtil {
     public RestResult weekTask( ) throws Exception {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getWeek();
-        List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
@@ -85,7 +85,7 @@ public class MemberPortraitController extends CommonUtil {
     public RestResult twoWeekTask( ) throws Exception {
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getTwoWeek();
-        List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);
@@ -98,7 +98,7 @@ public class MemberPortraitController extends CommonUtil {
     public RestResult monthTask( ) throws Exception{
         String organizationId = getOrganizationId();
         List<Date> dateParams = taskTimeCalculator.getMonth();
-        List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        List<MarketingMembers> organizationAllMemberWithDate = service.getOrganizationAllMemberWithDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         Map result = new HashMap();
         if(!CollectionUtils.isEmpty(organizationAllMemberWithDate)){
             result = task(organizationAllMemberWithDate);

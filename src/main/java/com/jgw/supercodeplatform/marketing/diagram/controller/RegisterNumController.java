@@ -81,7 +81,7 @@ public class RegisterNumController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> week = taskTimeCalculator.getWeek();
         List<String> weekString = taskTimeCalculator.getWeekString();
-        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, week.get(0), week.get(week.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, week.get(0), taskTimeCalculator.getNextDay(week.get(week.size() - 1)));
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
@@ -146,7 +146,7 @@ public class RegisterNumController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> twoWeek = taskTimeCalculator.getTwoWeek();
         List<String> twoWeekString = taskTimeCalculator.getTwoWeekString();
-        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, twoWeek.get(0), twoWeek.get(twoWeek.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, twoWeek.get(0), taskTimeCalculator.getNextDay(twoWeek.get(twoWeek.size() - 1)));
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];
@@ -178,7 +178,7 @@ public class RegisterNumController extends CommonUtil {
         String organizationId = getOrganizationId();
         List<Date> month = taskTimeCalculator.getMonth();
         List<String> monthString = taskTimeCalculator.getMonthString();
-        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, month.get(0), month.get(month.size() - 1));
+        List<MarketingMembers> registerNumMembers = service.getRegisterNum(organizationId, month.get(0), taskTimeCalculator.getNextDay(month.get(month.size() - 1)));
 
         // 图表数据格式
         //       data  =  [{year:  '1991',value:  3},{year:  '1999',value:  13}];

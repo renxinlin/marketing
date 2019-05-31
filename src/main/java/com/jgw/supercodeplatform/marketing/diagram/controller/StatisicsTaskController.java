@@ -86,11 +86,11 @@ public class StatisicsTaskController extends CommonUtil {
         Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0),taskTimeCalculator.getNextdayStr( dateParams.get(dateParams.size() - 1)));
 
         // * 微信红包发放累计金额【精度同微信:分】
-        Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         // * 积分发放累计数值
-        Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         // * 积分兑换累计数值
-        Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
 
     }
@@ -115,11 +115,11 @@ public class StatisicsTaskController extends CommonUtil {
         Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0),taskTimeCalculator.getNextdayStr( dateParams.get(dateParams.size() - 1)));
 
         // * 微信红包发放累计金额【精度同微信:分】
-        Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         // * 积分发放累计数值
-        Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         // * 积分兑换累计数值
-        Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
 
     }
@@ -133,11 +133,11 @@ public class StatisicsTaskController extends CommonUtil {
         Integer clickNum = codeEsService.countOrganizationActivityClickNumByDate(organizationId, dateParamsString.get(0), taskTimeCalculator.getNextdayStr( dateParams.get(dateParams.size() - 1)));
 
         // * 微信红包发放累计金额【精度同微信:分】
-        Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        Integer momeyNum = wXPayTradeOrderMapper.getOrganizationIdAmoutByDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         // * 积分发放累计数值
-        Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        Integer integralNum = integralRecordService.sumOrganizationUsingIntegralByDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         // * 积分兑换累计数值
-        Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), dateParams.get(dateParams.size() - 1));
+        Integer exchangeNum = integralRecordService.sumOrganizationIntegralExchangeByDate(organizationId, dateParams.get(0), taskTimeCalculator.getNextDay(dateParams.get(dateParams.size() - 1)));
         return returnVo(clickNum,integralNum,exchangeNum,momeyNum);
 
     }

@@ -90,14 +90,16 @@ public class TaskTimeCalculator {
     }
 
     public List getWeek(){
-        List dates = new LinkedList();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, -8);
 
-        for(int i=-7;i<0;i++){
-            calendar.add(Calendar.DATE, 1);
-            Date date = calendar.getTime();
-            dates.add(date);
+
+        List<Date> dates = new LinkedList();
+        List<String> weekString = getWeekString();
+        for(String dateStr : weekString){
+            try {
+                dates.add(todayZeroFormat.parse(dateStr+" 00:00:00"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         return dates;
     }
@@ -121,15 +123,14 @@ public class TaskTimeCalculator {
      * @return
      */
     public List getTwoWeek(){
-        List dates = new LinkedList();
-        calendar.setTime(new Date());
-        // 按x轴添加
-        calendar.add(Calendar.DATE, -15);
-
-        for(int i=-14;i<0;i++){
-            calendar.add(Calendar.DATE, 1);
-            Date date = calendar.getTime();
-            dates.add(date);
+        List<Date> dates = new LinkedList();
+        List<String> weekString = getTwoWeekString();
+        for(String dateStr : weekString){
+            try {
+                dates.add(todayZeroFormat.parse(dateStr+" 00:00:00"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         return dates;
     }
@@ -158,15 +159,14 @@ public class TaskTimeCalculator {
      * @return
      */
     public List getMonth(){
-        List dates = new LinkedList();
-        calendar.setTime(new Date());
-        // 按x轴添加
-        calendar.add(Calendar.DATE, -31);
-
-        for(int i=-30;i<0;i++){
-            calendar.add(Calendar.DATE, 1);
-            Date date = calendar.getTime();
-            dates.add(date);
+        List<Date> dates = new LinkedList();
+        List<String> weekString = getMonthString();
+        for(String dateStr : weekString){
+            try {
+                dates.add(todayZeroFormat.parse(dateStr+" 00:00:00"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
         return dates;
     }
