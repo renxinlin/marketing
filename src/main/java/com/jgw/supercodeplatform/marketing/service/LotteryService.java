@@ -324,6 +324,7 @@ public class LotteryService {
 				//如果是微信红包奖项类型可能为空需特殊处理
 				if (null==awardType || awardType.intValue()==4) {
 					lotteryResultMO.setAwardType((byte)4);
+					// amount单位是元
 					Float amount = weixinpay(mobile, openId, organizationId, mPrizeTypeMO,remoteAddr);
 					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount);
 					DecimalFormat decimalFormat=new DecimalFormat(".00");

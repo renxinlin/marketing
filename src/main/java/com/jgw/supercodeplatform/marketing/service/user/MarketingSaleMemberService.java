@@ -26,10 +26,16 @@ import java.util.*;
 @Service
 public class MarketingSaleMemberService extends AbstractPageService<MarketingMembersListParam> {
 	/**
-	 * 短信链接
+	 * 短信链接URI
 	 */
-	@Value("http://market.h5.kf315.net/#/sales/index?organizationId=")
-	private  String WEB_SALER_CENTER_URL_FOR_SHORT_MSG ;
+	@Value("#/sales/index?organizationId=")
+	private  String WEB_SALER_CENTER_URI_FOR_SHORT_MSG ;
+
+
+	@Value("${marketing.activity.h5page.url}")
+	private  String WEB_SALER_CENTER_DOMAIN;
+
+
 	protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberService.class);
 	@Value("亲爱的{{user}}，您已通过审核，可登录红包中心{{url}}")
 	private String SHORT_MSG ;
@@ -119,7 +125,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(marketingUser.getState().intValue() == SaleUserStatus.AUDITED.getStatus().intValue()
 				&& state == SaleUserStatus.ENABLE.getStatus().intValue()  ){
 			String msg = msgTimplate(marketingUser.getUserName()==null ? "您":marketingUser.getUserName()
-					,WEB_SALER_CENTER_URL_FOR_SHORT_MSG,organizationId);
+					, WEB_SALER_CENTER_DOMAIN+WEB_SALER_CENTER_URI_FOR_SHORT_MSG ,organizationId);
 			try {
 				checkPhoneFormat(marketingUser.getMobile());
 
