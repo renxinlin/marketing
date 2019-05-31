@@ -11,13 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingDeliveryAddressParam;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
 import com.jgw.supercodeplatform.marketing.service.SalerLotteryService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -88,5 +92,11 @@ public class LotteryController extends CommonUtil {
         return salerLotteryService.salerlottery(wxstate,jwtUser,request);
     }
     
+    
+    @PostMapping("/addPrizeOrder")
+    @ApiOperation(value = "中奖奖品添加收货", notes = "中奖奖品添加收货")
+    public RestResult<String> addPrizeOrder(@RequestBody MarketingDeliveryAddressParam marketingDeliveryAddressParam){
+    	return RestResult.success();
+    }
    
 }
