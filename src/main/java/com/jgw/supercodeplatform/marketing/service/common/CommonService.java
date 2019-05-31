@@ -19,6 +19,7 @@ import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
+import com.jgw.supercodeplatform.marketing.constants.SystemLabelEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
@@ -316,13 +317,13 @@ public class CommonService {
 		}
 	}
 
-    /**
-     * 校验抽奖码是否存在
-     * @param codeId
-     * @param codeTypeId
-     * @return
-     * @throws SuperCodeException
-     */
+	/**
+	 * 校验抽奖码是否存在
+	 * @param codeId
+	 * @param codeTypeId
+	 * @return
+	 * @throws SuperCodeException
+	 */
 	public void checkCodeValid(String codeId, String codeTypeId) throws SuperCodeException {
 		Map<String, String>headerparams=new HashMap<String, String>();
 		headerparams.put("token",commonUtil.getCodePlatformToken() );
@@ -335,6 +336,24 @@ public class CommonService {
 			throw  new SuperCodeException("对不起,该码不存在",500);
 		}
 	}
+
+
+
+	/**
+	 * 校验是否为营销码制
+	 * @param codeTypeId
+	 * @return
+	 * @throws SuperCodeException
+	 */
+	public void checkCodeTypeValid( Long codeTypeId) throws SuperCodeException {
+		if (! (codeTypeId != null
+                && SystemLabelEnum.MARKETING.getCodeTypeId().intValue() == codeTypeId.intValue())) {
+            throw  new SuperCodeException("对不起,该码不存在",500);
+		}
+	}
+
+
+
 	public boolean generateQR(String content, HttpServletResponse response) throws WriterException, IOException {
 		//设置二维码纠错级别ＭＡＰ
         Hashtable<EncodeHintType, ErrorCorrectionLevel> hintMap = new Hashtable<EncodeHintType, ErrorCorrectionLevel>();

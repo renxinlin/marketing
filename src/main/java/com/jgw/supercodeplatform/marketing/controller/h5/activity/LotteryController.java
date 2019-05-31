@@ -4,6 +4,8 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +37,12 @@ public class LotteryController extends CommonUtil {
     private LotteryService service;
 
     @Autowired
+    private CommonService commonService;
+
+    @Autowired
     private SalerLotteryService  salerLotteryService;
 
+    private static final Long codeTypeId = 12L;
 
     @Value("${cookie.domain}")
 	private String cookieDomain;
@@ -72,7 +78,13 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/salerLottery")
     @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
-    public RestResult<String> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
+    public RestResult<String> salerLottery( String codeId,Long codeTypeId ,String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
+        // 是不是营销码制，不是不可通过
+        if(codeTypeId == null|| codeTypeId != 12){
+            throw new SuperCodeException("非营销码...");
+        }
+        commonService.checkCodeTypeValid(codeTypeId);
+        commonService.checkCodeValid(codeId,codeTypeId+"");
         return salerLotteryService.salerlottery(wxstate,jwtUser,request);
     }
     
