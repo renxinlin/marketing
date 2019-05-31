@@ -328,7 +328,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(userDto != null){
 			throw new SuperCodeException("手机号已存在...");
 		}
-		if(StringUtils.isBlank(userInfo.getOpenId())){
+		if(!StringUtils.isBlank(userInfo.getOpenId())){
 			MarketingUser marketingUser = mapper.selectByOpenid(userInfo.getOpenId());
 			if(marketingUser != null){
 				throw new SuperCodeException("该微信号已经绑定其他手机...");

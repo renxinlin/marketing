@@ -108,9 +108,9 @@ public class SalerRegisterAndLoginV2Controller {
                         userDo.setId(id);
                         userDo.setOpenid(loginUser.getOpenid());
                         service.updateUserOpenId(userDo);
-                    }else{
+                    }
+                    if(userOpenidExist!=null && !userOpenidExist.getMobile().equals(loginUser.getMobile())){
                         return RestResult.error("您的微信已经绑定其他手机号...",null,500);
-
                     }
                 }
                 if(user.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
