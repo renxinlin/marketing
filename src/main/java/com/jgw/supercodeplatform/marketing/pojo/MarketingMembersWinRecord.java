@@ -17,6 +17,7 @@ public class MarketingMembersWinRecord {
     private String organizationId;//组织id
     private String mobile;//会员手机号
     private String prizeName;//奖项名称
+    private String productId;//奖项名称
     
     
     public int getId() {
@@ -32,6 +33,14 @@ public class MarketingMembersWinRecord {
 		this.winningAmount = winningAmount;
 	}
 
+
+	public String getProductId() {
+		return productId;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
 
 	public Float getWinningAmount() {
 		return winningAmount;
