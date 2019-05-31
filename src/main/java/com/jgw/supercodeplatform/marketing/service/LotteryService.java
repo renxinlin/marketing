@@ -234,6 +234,7 @@ public class LotteryService {
 		String productBatchId=scanCodeInfoMO.getProductBatchId();
 		String mobile=scanCodeInfoMO.getMobile();
 		MarketingActivityProduct marketingActivityProduct = new MarketingActivityProduct();
+		marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 		IntegralRecord integralRecord = new IntegralRecord();
 		integralRecord.setIntegralNum(0 - consumeIntegralNum);
 		integralRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
@@ -258,7 +259,6 @@ public class LotteryService {
 			if(StringUtils.isBlank(valueOperations.get(key))) {
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
 				if(consumeIntegralNum != 0) {
-					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 					marketingMembersMapper.update(marketingMembersInfo);
 					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				}
@@ -274,7 +274,6 @@ public class LotteryService {
 				valueOperations.increment(key, 1);
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
 				if(consumeIntegralNum != 0) {
-					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 					marketingMembersMapper.update(marketingMembersInfo);
 					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				}
@@ -309,7 +308,6 @@ public class LotteryService {
 			restResult.setMsg(lotteryResultMO.getMsg());
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
 			if(consumeIntegralNum != 0) {
-				marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 				marketingMembersMapper.update(marketingMembersInfo);
 				addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 			}
@@ -362,7 +360,6 @@ public class LotteryService {
 						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, iRecord, mActivityProduct);
 						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 						 if(consumeIntegralNum != awardIntegralNum) {
-							marketingMembersInfo.setHaveIntegral(haveIntegral + awardIntegralNum - consumeIntegralNum);
 							marketingMembersMapper.update(marketingMembersInfo);
 						 }
 						 break;
