@@ -226,7 +226,19 @@ public class LotteryService {
 			restResult.setMsg(lotteryResultMO.getMsg());
 			return restResult;
 		}
-		
+		String openId=scanCodeInfoMO.getOpenId();
+		String organizationId=mActivitySet.getOrganizationId();
+		String codeId=scanCodeInfoMO.getCodeId();
+		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
+		String productId=scanCodeInfoMO.getProductId();
+		String productBatchId=scanCodeInfoMO.getProductBatchId();
+		String mobile=scanCodeInfoMO.getMobile();
+		MarketingActivityProduct marketingActivityProduct = new MarketingActivityProduct();
+		marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
+		IntegralRecord integralRecord = new IntegralRecord();
+		integralRecord.setIntegralNum(0 - consumeIntegralNum);
+		integralRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
+		integralRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
 		//执行抽奖逻辑 
 		MarketingPrizeTypeMO mPrizeTypeMO=LotteryUtilWithOutCodeNum.startLottery(moPrizeTypes);
 		Byte awardType=mPrizeTypeMO.getAwardType();
@@ -247,8 +259,8 @@ public class LotteryService {
 			if(StringUtils.isBlank(valueOperations.get(key))) {
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
 				if(consumeIntegralNum != 0) {
-					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 					marketingMembersMapper.update(marketingMembersInfo);
+					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				}
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
@@ -262,8 +274,8 @@ public class LotteryService {
 				valueOperations.increment(key, 1);
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
 				if(consumeIntegralNum != 0) {
-					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 					marketingMembersMapper.update(marketingMembersInfo);
+					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				}
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
@@ -272,23 +284,13 @@ public class LotteryService {
 				return restResult;
 			}
 		}
-		String openId=scanCodeInfoMO.getOpenId();
-		String organizationId=mActivitySet.getOrganizationId();
-		String codeId=scanCodeInfoMO.getCodeId();
-		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
-		String productId=scanCodeInfoMO.getProductId();
-		String productBatchId=scanCodeInfoMO.getProductBatchId();
-		String mobile=scanCodeInfoMO.getMobile();
+		
  		boolean flag=holdLockJudgeES(restResult,marketingMembersInfo.getId(),marketingMembersInfo.getMemberType().intValue(), openId,productId,productBatchId, activitySetId, mSetCondition, organizationId, codeId, codeTypeId);
  		if (!flag ) {
  			if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
  				valueOperations.increment(key, 1);
  			}
  			globalRamCache.deleteScanCodeInfoMO(wxstate);
- 			if(consumeIntegralNum != 0) {
-				marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
-				marketingMembersMapper.update(marketingMembersInfo);
-			}
  			lotteryResultMO.setWinnOrNot(0);
  			restResult.setState(200);
  			lotteryResultMO.setMsg(restResult.getMsg());
@@ -305,8 +307,11 @@ public class LotteryService {
 			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 			restResult.setMsg(lotteryResultMO.getMsg());
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
+			if(consumeIntegralNum != 0) {
+				marketingMembersMapper.update(marketingMembersInfo);
+				addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
+			}
 		}else{
-			IntegralRecord integralRecord = new IntegralRecord();
 			lotteryResultMO.setWinnOrNot(1);
 			//已中奖执行奖品方法中奖纪录保存等逻辑
 			try {
@@ -343,15 +348,22 @@ public class LotteryService {
 						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
 						break;
 					case 3: //积分
-						 Integer awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum();
-						 marketingMembersInfo.setHaveIntegral(haveIntegral+awardIntegralNum);
+						 int awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum().intValue();
+						 marketingMembersInfo.setHaveIntegral(haveIntegral+awardIntegralNum-consumeIntegralNum);
 						 lotteryResultMO.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
-						 integralRecord.setIntegralNum(awardIntegralNum);
-						 integralRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
-						 integralRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
+						 IntegralRecord iRecord = new IntegralRecord();
+						 iRecord.setIntegralNum(awardIntegralNum);
+						 iRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
+						 iRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
 						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
-						 consumeIntegralNum = consumeIntegralNum - awardIntegralNum;
+						 MarketingActivityProduct mActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
+						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, iRecord, mActivityProduct);
+						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
+						 if(consumeIntegralNum != awardIntegralNum) {
+							marketingMembersMapper.update(marketingMembersInfo);
+						 }
 						 break;
+
 					case 9://其它
 						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
 						if (redisRemainingStock < 0) {
@@ -370,25 +382,8 @@ public class LotteryService {
 						break;
 					}
 				}
-				MarketingActivityProduct marketingActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
-				
-				integralRecord.setActivitySetId(marketingActivityProduct.getActivitySetId());
-				integralRecord.setCodeTypeId(scanCodeInfoMO.getCodeTypeId());
-				integralRecord.setCreateDate(new Date());
-				integralRecord.setCustomerId(marketingMembersInfo.getCustomerId());
-				integralRecord.setCustomerName(marketingMembersInfo.getCustomerName());
-				integralRecord.setMemberId(marketingMembersInfo.getId());
-				integralRecord.setMemberName(marketingMembersInfo.getUserName());
-				integralRecord.setMemberType(marketingMembersInfo.getMemberType());
-				integralRecord.setMobile(marketingMembersInfo.getMobile());
-				integralRecord.setOrganizationId(organizationId);
-				integralRecord.setOuterCodeId(codeId);
-				integralRecord.setProductId(productId);
-				integralRecord.setProductName(marketingActivityProduct.getProductName());
-				integralRecord.setStatus("2");
-				integralRecordMapperExt.insertSelective(integralRecord);
-				if(consumeIntegralNum != 0) {
-					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
+				if(consumeIntegralNum != 0 && awardType.intValue() != 3) {
+					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 					marketingMembersMapper.update(marketingMembersInfo);
 				}
 			} catch (Exception e) {
@@ -403,6 +398,26 @@ public class LotteryService {
 			restResult.setState(200);
 		}
 		return restResult;
+	}
+
+	private void addToInteral(ScanCodeInfoMO scanCodeInfoMO, MarketingMembers marketingMembersInfo,
+			String organizationId, String codeId, String productId, IntegralRecord integralRecord,
+			MarketingActivityProduct marketingActivityProduct) {
+		integralRecord.setActivitySetId(marketingActivityProduct.getActivitySetId());
+		integralRecord.setCodeTypeId(scanCodeInfoMO.getCodeTypeId());
+		integralRecord.setCreateDate(new Date());
+		integralRecord.setCustomerId(marketingMembersInfo.getCustomerId());
+		integralRecord.setCustomerName(marketingMembersInfo.getCustomerName());
+		integralRecord.setMemberId(marketingMembersInfo.getId());
+		integralRecord.setMemberName(marketingMembersInfo.getUserName());
+		integralRecord.setMemberType(marketingMembersInfo.getMemberType());
+		integralRecord.setMobile(marketingMembersInfo.getMobile());
+		integralRecord.setOrganizationId(organizationId);
+		integralRecord.setOuterCodeId(codeId);
+		integralRecord.setProductId(productId);
+		integralRecord.setProductName(marketingActivityProduct.getProductName());
+		integralRecord.setStatus("2");
+		integralRecordMapperExt.insertSelective(integralRecord);
 	}
 	
 	private boolean holdLockJudgeES(RestResult<LotteryResultMO> restResult,Long memberId,int memberType, String openId,String productId, String productBatchId, Long activitySetId,

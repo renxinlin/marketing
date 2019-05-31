@@ -28,7 +28,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	/**
 	 * 短信链接
 	 */
-	@Value("https://www.baidu.com")
+	@Value("http://market.h5.kf315.net/#/sales/index?organizationId=")
 	private  String WEB_SALER_CENTER_URL_FOR_SHORT_MSG ;
 	protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberService.class);
 	@Value("亲爱的{{user}}，您已通过审核，可登录红包中心{{url}}")
@@ -119,7 +119,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(marketingUser.getState().intValue() == SaleUserStatus.AUDITED.getStatus().intValue()
 				&& state == SaleUserStatus.ENABLE.getStatus().intValue()  ){
 			String msg = msgTimplate(marketingUser.getUserName()==null ? "您":marketingUser.getUserName()
-					,WEB_SALER_CENTER_URL_FOR_SHORT_MSG);
+					,WEB_SALER_CENTER_URL_FOR_SHORT_MSG,organizationId);
 			try {
 				checkPhoneFormat(marketingUser.getMobile());
 
@@ -144,8 +144,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	 * @param url
 	 * @return
 	 */
-	private String msgTimplate(String userName, String url) {
-		return  SHORT_MSG.replace("{{user}}",userName).replace("{{organization}}",url);
+	private String msgTimplate(String userName, String url,String organizationId) {
+		url = url+organizationId;
+		return  SHORT_MSG.replace("{{user}}",userName).replace("{{url}}",url);
 
 	}
 
@@ -328,7 +329,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(userDto != null){
 			throw new SuperCodeException("手机号已存在...");
 		}
-		if(StringUtils.isBlank(userInfo.getOpenId())){
+		if(!StringUtils.isBlank(userInfo.getOpenId())){
 			MarketingUser marketingUser = mapper.selectByOpenid(userInfo.getOpenId());
 			if(marketingUser != null){
 				throw new SuperCodeException("该微信号已经绑定其他手机...");
