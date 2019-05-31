@@ -328,6 +328,14 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(userDto != null){
 			throw new SuperCodeException("手机号已存在...");
 		}
+		if(StringUtils.isBlank(userInfo.getOpenId())){
+			MarketingUser marketingUser = mapper.selectByOpenid(userInfo.getOpenId());
+			if(marketingUser != null){
+				throw new SuperCodeException("该微信号已经绑定其他手机...");
+			}
+
+		}
+
 
 		// 3数据转换和保存
 		MarketingUser userDo =changeToDo(userInfo);
@@ -438,7 +446,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		userDtoToDb.setMemberType(MemberTypeEnums.SALER.getType());
 		// USER ID
 		userDtoToDb.setUserId(UUID.randomUUID().toString().replaceAll("-",""));
-		if(!StringUtils.isBlank(userDtoToDb.getOpenid())){
+		if(!StringUtils.isBlank(userInfo.getOpenId())){
 			userDtoToDb.setOpenid(userInfo.getOpenId());
 		}
 		return userDtoToDb;
