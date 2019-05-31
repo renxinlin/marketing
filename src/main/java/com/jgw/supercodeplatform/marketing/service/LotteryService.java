@@ -55,6 +55,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
@@ -92,6 +93,9 @@ public class LotteryService {
 	@Autowired
 	private CodeEsService codeEsService;
 
+	@Autowired
+	private CommonService commonService;
+	
 	@Autowired
 	private WXPayTradeNoGenerator wXPayTradeNoGenerator ;
 
@@ -182,7 +186,14 @@ public class LotteryService {
 			mo.setMsg("您的进入方式错啦！请重新扫码");
 			return RestResult.success("success",mo);
 		}
-
+		String openId=scanCodeInfoMO.getOpenId();
+		String codeId=scanCodeInfoMO.getCodeId();
+		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
+		String productId=scanCodeInfoMO.getProductId();
+		String productBatchId=scanCodeInfoMO.getProductBatchId();
+		String mobile=scanCodeInfoMO.getMobile();
+		commonService.checkCodeValid(codeId, codeTypeId);
+		commonService.checkCodeTypeValid(Long.valueOf(codeTypeId));
 		Long activitySetId=scanCodeInfoMO.getActivitySetId();
 		MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
 		if (null==mActivitySet) {
@@ -226,14 +237,11 @@ public class LotteryService {
 			restResult.setMsg(lotteryResultMO.getMsg());
 			return restResult;
 		}
-		String openId=scanCodeInfoMO.getOpenId();
 		String organizationId=mActivitySet.getOrganizationId();
-		String codeId=scanCodeInfoMO.getCodeId();
-		String codeTypeId=scanCodeInfoMO.getCodeTypeId();
-		String productId=scanCodeInfoMO.getProductId();
-		String productBatchId=scanCodeInfoMO.getProductBatchId();
-		String mobile=scanCodeInfoMO.getMobile();
 		MarketingActivityProduct marketingActivityProduct = new MarketingActivityProduct();
+		marketingActivityProduct.setProductId(productId);
+		marketingActivityProduct.setActivitySetId(activitySetId);
+		marketingActivityProduct.setProductBatchId(productBatchId);
 		marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 		IntegralRecord integralRecord = new IntegralRecord();
 		integralRecord.setIntegralNum(0 - consumeIntegralNum);
@@ -383,7 +391,7 @@ public class LotteryService {
 						break;
 					}
 				}
-				if(consumeIntegralNum != 0 && awardType.intValue() != 3) {
+				if(consumeIntegralNum != 0 && (awardType == null || awardType.intValue() != 3)) {
 					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 					marketingMembersMapper.update(marketingMembersInfo);
 				}
