@@ -9,7 +9,7 @@ public interface MarketingReceivingPageMapper {
 
 
     static String allFieldsWhenJoin="a.Id id,a.TemplateId templateId,a.ActivitySetId activitySetId,a.IsReceivePage isReceivePage,a.TextContent textContent,a.PicAddress picAddress,a.IsQrcodeView isQrcodeView,"
-    		                        + "a.QrcodeUrl qrcodeUrl,a.CreateDate createDate,a.UpdateDate updateDate,a.FlipTimes flipTimes";
+    		                        + "a.QrcodeUrl qrcodeUrl,a.CreateDate createDate,a.UpdateDate updateDate,a.FlipTimes flipTimes,a.ActivityDesc activityDesc";
 
     @Select("select " + allFieldsWhenJoin + " ,b.OrganizationId organizationId ,b.OrganizatioIdlName organizatioIdlName  from marketing_template a left join marketing_activity_set b on a.ActivitySetId = b.Id where ActivitySetId=#{activitySetId}")
     MarketingReceivingPage getByActivityId(@Param("activitySetId")Long activitySetId);

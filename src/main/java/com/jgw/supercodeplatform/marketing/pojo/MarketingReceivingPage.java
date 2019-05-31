@@ -38,6 +38,8 @@ public class MarketingReceivingPage {
     private String organizatioIdlName;
     @ApiModelProperty(value = "翻转次数")
     private Integer flipTimes;
+    @ApiModelProperty(value = "活动说明")
+    private String activityDesc;
 
     public Long getId() {
 		return id;
@@ -141,6 +143,14 @@ public class MarketingReceivingPage {
 
 	public void setFlipTimes(Integer flipTimes) {
 		this.flipTimes = flipTimes;
+	}
+
+	public String getActivityDesc() {
+		return activityDesc;
+	}
+
+	public void setActivityDesc(String activityDesc) {
+		this.activityDesc = activityDesc;
 	}
     
 }
