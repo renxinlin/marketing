@@ -5,9 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +22,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -48,7 +45,6 @@ import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
@@ -239,6 +235,7 @@ public class LotteryService {
 		String mobile=scanCodeInfoMO.getMobile();
 		MarketingActivityProduct marketingActivityProduct = new MarketingActivityProduct();
 		IntegralRecord integralRecord = new IntegralRecord();
+		integralRecord.setIntegralNum(0 - consumeIntegralNum);
 		integralRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
 		integralRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
 		//执行抽奖逻辑 
@@ -263,12 +260,12 @@ public class LotteryService {
 				if(consumeIntegralNum != 0) {
 					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 					marketingMembersMapper.update(marketingMembersInfo);
+					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				}
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
 				lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 				restResult.setMsg(lotteryResultMO.getMsg());
-				addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				return restResult;
 			}
 			Long reStockNum = valueOperations.increment(key, -1);
@@ -279,12 +276,12 @@ public class LotteryService {
 				if(consumeIntegralNum != 0) {
 					marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
 					marketingMembersMapper.update(marketingMembersInfo);
+					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				}
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
 	 			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 				restResult.setMsg(lotteryResultMO.getMsg());
-				addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				return restResult;
 			}
 		}
@@ -295,14 +292,9 @@ public class LotteryService {
  				valueOperations.increment(key, 1);
  			}
  			globalRamCache.deleteScanCodeInfoMO(wxstate);
- 			if(consumeIntegralNum != 0) {
-				marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
-				marketingMembersMapper.update(marketingMembersInfo);
-			}
  			lotteryResultMO.setWinnOrNot(0);
  			restResult.setState(200);
  			lotteryResultMO.setMsg(restResult.getMsg());
- 			addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 			return restResult;
 		}
 		//判断realprize是否为0,0表示为新增的虚拟不中奖奖项，为了计算中奖率设置
@@ -316,7 +308,11 @@ public class LotteryService {
 			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
 			restResult.setMsg(lotteryResultMO.getMsg());
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
-			addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
+			if(consumeIntegralNum != 0) {
+				marketingMembersInfo.setHaveIntegral(haveIntegral - consumeIntegralNum);
+				marketingMembersMapper.update(marketingMembersInfo);
+				addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
+			}
 		}else{
 			lotteryResultMO.setWinnOrNot(1);
 			//已中奖执行奖品方法中奖纪录保存等逻辑
@@ -355,9 +351,8 @@ public class LotteryService {
 						break;
 					case 3: //积分
 						 int awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum().intValue();
-						 marketingMembersInfo.setHaveIntegral(haveIntegral+awardIntegralNum);
+						 marketingMembersInfo.setHaveIntegral(haveIntegral+awardIntegralNum-consumeIntegralNum);
 						 lotteryResultMO.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
-						 integralRecord.setIntegralNum(0 - consumeIntegralNum);
 						 IntegralRecord iRecord = new IntegralRecord();
 						 iRecord.setIntegralNum(awardIntegralNum);
 						 iRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
@@ -365,6 +360,7 @@ public class LotteryService {
 						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null);
 						 MarketingActivityProduct mActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
 						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, iRecord, mActivityProduct);
+						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 						 if(consumeIntegralNum != awardIntegralNum) {
 							marketingMembersInfo.setHaveIntegral(haveIntegral + awardIntegralNum - consumeIntegralNum);
 							marketingMembersMapper.update(marketingMembersInfo);
@@ -388,7 +384,10 @@ public class LotteryService {
 						break;
 					}
 				}
-				addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
+				if(consumeIntegralNum != 0 && awardType.intValue() != 3) {
+					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
+					marketingMembersMapper.update(marketingMembersInfo);
+				}
 			} catch (Exception e) {
 				if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
 	 				valueOperations.increment(key, 1);
