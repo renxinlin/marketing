@@ -48,7 +48,6 @@ public class CommonMqTaskService {
 	 * @param batchList
 	 */
 	public void handleNewBindBatch(List<Map<String, Object>> batchList) {
-		synchronized (this) {
 			Map<Long, Long> activityCodeSumMap=new HashMap<Long, Long>();
 			List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
 			for (Map<String, Object> map : batchList) {
@@ -124,5 +123,4 @@ public class CommonMqTaskService {
 			}
 		}
 
-	}
 }
