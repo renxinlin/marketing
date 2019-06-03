@@ -133,7 +133,23 @@ public class CommonService {
      * @throws SuperCodeException
      */
 	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
-		return new ArrayList<>(getUrlToBatchParamMap(array, url, businessType).values());
+		List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
+		for(int i=0;i<array.size();i++) {
+			JSONObject batchobj=array.getJSONObject(i);
+			String productId=batchobj.getString("productId");
+			String productBatchId=batchobj.getString("productBatchId");
+			Long codeTotal=batchobj.getLong("codeTotal");
+			String codeBatch=batchobj.getString("codeBatch");
+			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+				throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
+			}
+			Map<String, Object> batchMap=new HashMap<String, Object>();
+			batchMap.put("batchId", codeBatch);
+			batchMap.put("businessType", businessType);
+			batchMap.put("url",  url);
+			bindBatchList.add(batchMap);
+		}
+		return bindBatchList;
 	}
 
     /**
@@ -154,14 +170,26 @@ public class CommonService {
 			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
 				throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
 			}
-			Map<String, Object> batchMap = new HashMap<String, Object>();
-			batchMap.put("batchId", codeBatch);
-			batchMap.put("businessType", businessType);
-			batchMap.put("url",  url);
-			bindBatchMap.put(productId + "," + productBatchId, batchMap);
+			String key = productId + "," + productBatchId;
+			Map<String, Object> batchMap = bindBatchMap.get(key);
+			if(batchMap == null){
+				batchMap = new HashMap<String, Object>();
+				batchMap.put("businessType", businessType);
+				batchMap.put("url",  url);
+			}
+			String batchId = (String) batchMap.get("batchId");
+			if(batchId == null) {
+				batchMap.put("batchId", codeBatch);
+			}
+			if(batchId != null && codeBatch!= null && !batchId.contains(codeBatch)) {
+				batchId = batchId + "," + codeBatch;
+				batchMap.put("batchId", batchId);
+			}
+			bindBatchMap.put(key, batchMap);
 		}
 		return bindBatchMap;
 	}
+
 	/**
 	 * 生码批次绑定url
 	 * @param url

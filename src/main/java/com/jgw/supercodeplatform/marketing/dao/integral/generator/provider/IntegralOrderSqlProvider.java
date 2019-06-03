@@ -97,6 +97,14 @@ public class IntegralOrderSqlProvider {
         if (record.getSkuId() != null) {
             VALUES("SkuId", "#{skuId,jdbcType=VARCHAR}");
         }
+        
+        if (record.getPrizeId() != null) {
+        	SET("PrizeId = #{prizeId,jdbcType=BIGINT}");
+        }
+        
+        if(record.getPrizeName() != null) {
+        	SET("PrizeName = #{prizeName,jdbcType=VARCHAR}");
+        }
 
         return SQL();
     }
@@ -187,6 +195,14 @@ public class IntegralOrderSqlProvider {
 
         if (record.getSkuId() != null) {
             SET("SkuId = #{skuId,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getPrizeId() != null) {
+        	SET("PrizeId = #{prizeId,jdbcType=BIGINT}");
+        }
+        
+        if(record.getPrizeName() != null) {
+        	SET("PrizeName = #{prizeName,jdbcType=VARCHAR}");
         }
 
         WHERE("Id = #{id,jdbcType=BIGINT}");
