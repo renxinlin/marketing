@@ -7,12 +7,12 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "中奖奖品添加收货")
 public class MarketingDeliveryAddressParam {
 
-    /** 会员id */
-    @ApiModelProperty(value = "微信sate")
-    private String wxstate;
-    
     /** 奖品ID */
+	@ApiModelProperty(value = "奖品ID")
     private Long prizeId;
+	/** 奖品名称 */
+	@ApiModelProperty(value = "奖品名称")
+	private String prizeName;
 
     /** 收货名称 */
     @ApiModelProperty(value = "收货人")
@@ -128,6 +128,14 @@ public class MarketingDeliveryAddressParam {
 
 	public void setPrizeId(Long prizeId) {
 		this.prizeId = prizeId;
+	}
+
+	public String getPrizeName() {
+		return prizeName;
+	}
+
+	public void setPrizeName(String prizeName) {
+		this.prizeName = prizeName;
 	}
 
 }

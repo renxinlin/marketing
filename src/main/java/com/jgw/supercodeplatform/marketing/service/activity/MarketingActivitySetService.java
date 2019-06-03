@@ -458,7 +458,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			int state = obj.getInteger("state");
 			if (200 == state) {
 				JSONArray arr = obj.getJSONArray("results");
-				Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
+				List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr,
 						marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
 						BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
 				if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
@@ -470,15 +470,19 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 					}
 				}
 				// 绑定生码批次到url
-				String bindbatchBody = commonService.bindUrlToBatch(new ArrayList<>(paramsMap.values()), superToken);
+				String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
 				JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
 				Integer batchstate = bindBatchobj.getInteger("state");
 				if (null != batchstate && batchstate.intValue() != 200) {
 					throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, 500);
 				}
-				mList.forEach(marketingActivityProduct -> 
-					marketingActivityProduct.setSbatchId((String)paramsMap.get(marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId()).get("batchId"))
-				);
+				Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
+						marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
+						BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+				mList.forEach(marketingActivityProduct -> {
+					String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
+					marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
+				});
 			} else {
 				throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
 			}

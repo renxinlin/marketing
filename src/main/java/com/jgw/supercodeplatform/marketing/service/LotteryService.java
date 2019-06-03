@@ -5,7 +5,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
@@ -347,6 +349,10 @@ public class LotteryService {
 						}else {
 							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
+							Map<String, Object> lotteryDataMap = new HashMap<>();
+							lotteryDataMap.put("prizeId", mPrizeTypeMO.getId());
+							lotteryDataMap.put("prizeName", mPrizeTypeMO.getPrizeTypeName());
+							lotteryResultMO.setData(lotteryDataMap);
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
 							integralRecord.setProductPrice(mPrizeTypeMO.getPrizeAmount());
 						}
@@ -383,6 +389,10 @@ public class LotteryService {
 						} else {
 							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
 							lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
+							Map<String, Object> lotteryDataMap = new HashMap<>();
+							lotteryDataMap.put("prizeId", mPrizeTypeMO.getId());
+							lotteryDataMap.put("prizeName", mPrizeTypeMO.getPrizeTypeName());
+							lotteryResultMO.setData(lotteryDataMap);
 							integralRecord.setProductPrice(mPrizeTypeMO.getPrizeAmount());
 							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
 						}
@@ -425,7 +435,7 @@ public class LotteryService {
 		integralRecord.setOuterCodeId(codeId);
 		integralRecord.setProductId(productId);
 		integralRecord.setProductName(marketingActivityProduct.getProductName());
-		integralRecord.setStatus("2");
+		integralRecord.setStatus("1");
 		integralRecordMapperExt.insertSelective(integralRecord);
 	}
 	

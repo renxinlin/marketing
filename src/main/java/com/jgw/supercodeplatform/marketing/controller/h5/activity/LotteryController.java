@@ -4,8 +4,6 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.jgw.supercodeplatform.marketing.service.common.CommonService;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -22,8 +19,11 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingDeliveryAddressParam;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
 import com.jgw.supercodeplatform.marketing.service.SalerLotteryService;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import com.jgw.supercodeplatform.marketing.service.integral.IntegralOrderExcelService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
 import io.swagger.annotations.Api;
@@ -45,8 +45,9 @@ public class LotteryController extends CommonUtil {
 
     @Autowired
     private SalerLotteryService  salerLotteryService;
-
-    private static final Long codeTypeId = 12L;
+    
+    @Autowired
+    private IntegralOrderExcelService integralOrderExcelService;
 
     @Value("${cookie.domain}")
 	private String cookieDomain;
@@ -95,7 +96,14 @@ public class LotteryController extends CommonUtil {
     
     @PostMapping("/addPrizeOrder")
     @ApiOperation(value = "中奖奖品添加收货", notes = "中奖奖品添加收货")
-    public RestResult<String> addPrizeOrder(@RequestBody MarketingDeliveryAddressParam marketingDeliveryAddressParam){
+    @ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")
+    public RestResult<String> addPrizeOrder(@RequestBody MarketingDeliveryAddressParam marketingDeliveryAddressParam, @ApiIgnore H5LoginVO jwtUser){
+    	IntegralOrder integralOrder = new IntegralOrder();
+    	integralOrder.setMemberId(jwtUser.getMemberId());
+    	integralOrder.setMemberName(jwtUser.getMemberName());
+    	integralOrder.setOrderId(jwtUser.getOrganizationId());
+    	integralOrder.setOrganizationName(jwtUser.getOrganizationName());
+    	integralOrderExcelService.addPrizeOrder(marketingDeliveryAddressParam, integralOrder);
     	return RestResult.success();
     }
    
