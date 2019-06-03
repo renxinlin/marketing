@@ -61,7 +61,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	@Select(startScript
 			+"select count(*) from "
 			+"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  "
-			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId and mmw.ProductId=map.ProductId"
+			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId and mmw.ProductId=map.ProductId AND map.ProductBatchId = mmw.ProductBatchId "
 			+whereSearch
 			+endScript
 		   )
@@ -70,7 +70,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	@Select(startScript
 			+"select "+allWinFields+" from "
 			+"marketing_members_win mmw left join marketing_members mm on mmw.Openid = mm.Openid AND mmw.OrganizationId = mm.OrganizationId  "
-			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId and mmw.ProductId=map.ProductId "
+			+"left join marketing_prize_type mpt on mmw.PrizeTypeId = mpt.Id left join marketing_activity_product map on mmw.ActivitySetId = map.ActivitySetId and mmw.ProductId=map.ProductId AND map.ProductBatchId = mmw.ProductBatchId "
 			+whereSearch
 			+ " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
 			+endScript
@@ -78,10 +78,10 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	List<MarketingMembersWinRecordListReturn> list(MarketingMembersWinRecordListParam searchParams);
 
 	@Insert(" INSERT INTO marketing_members_win(ActivityId,ActivitySetId,ActivityName,Openid,"
-			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,Mobile,PrizeName)"
+			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,Mobile,PrizeName,ProductId,ProductBatchId)"
 			+ " VALUES(#{activityId},#{activitySetId},#{activityName},#{openid},#{prizeTypeId},"
-			+ "#{winningAmount},#{winningCode},#{organizationId},#{mobile},#{prizeName}"
-			+ ")")
+			+ "#{winningAmount},#{winningCode},#{organizationId},#{mobile},#{prizeName},"
+			+ "#{productId},#{productBatchId})")
 	int addWinRecord(MarketingMembersWinRecord winRecord);
 
 

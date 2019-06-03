@@ -330,7 +330,7 @@ public class LotteryService {
 					lotteryResultMO.setAwardType((byte)4);
 					// amount单位是元
 					Float amount = weixinpay(mobile, openId, organizationId, mPrizeTypeMO,remoteAddr);
-					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount,productId);
+					addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, amount,productId,productBatchId);
 					DecimalFormat decimalFormat=new DecimalFormat(".00");
 					String strAmount=decimalFormat.format(amount);
 					lotteryResultMO.setData(strAmount);
@@ -353,14 +353,14 @@ public class LotteryService {
 							lotteryDataMap.put("prizeId", mPrizeTypeMO.getId());
 							lotteryDataMap.put("prizeName", mPrizeTypeMO.getPrizeTypeName());
 							lotteryResultMO.setData(lotteryDataMap);
-							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
+							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId,productBatchId);
 							integralRecord.setProductPrice(mPrizeTypeMO.getPrizeAmount());
 						}
 						break;
 					case 2: //奖券
 						lotteryResultMO.setData(mPrizeTypeMO.getCardLink());
 						lotteryResultMO.setMsg("恭喜您，获得"+mPrizeTypeMO.getPrizeTypeName());
-						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
+						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId,productBatchId);
 						break;
 					case 3: //积分
 						 int awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum().intValue();
@@ -370,7 +370,7 @@ public class LotteryService {
 						 iRecord.setIntegralNum(awardIntegralNum);
 						 iRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
 						 iRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
-						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
+						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId,productBatchId);
 						 MarketingActivityProduct mActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
 						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, iRecord, mActivityProduct);
 						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
@@ -394,7 +394,7 @@ public class LotteryService {
 							lotteryDataMap.put("prizeName", mPrizeTypeMO.getPrizeTypeName());
 							lotteryResultMO.setData(lotteryDataMap);
 							integralRecord.setProductPrice(mPrizeTypeMO.getPrizeAmount());
-							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId);
+							addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId,productBatchId);
 						}
 						break;
 					default:
@@ -509,7 +509,7 @@ public class LotteryService {
 
 
 	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,
-			MarketingActivity activity, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, Float amount, String productId) {
+			MarketingActivity activity, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, Float amount, String productId, String productBatchId) {
 		//插入中奖纪录
 		MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
 		redWinRecord.setActivityId(activity.getId());
@@ -523,6 +523,7 @@ public class LotteryService {
 		redWinRecord.setWinningCode(outCodeId);
 		redWinRecord.setPrizeName(mPrizeTypeMO.getPrizeTypeName());
 		redWinRecord.setOrganizationId(organizationId);
+		redWinRecord.setProductBatchId(productBatchId);
 		mWinRecordMapper.addWinRecord(redWinRecord);
 	}
 

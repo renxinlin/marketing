@@ -46,6 +46,7 @@ public class IntegralOrderExcelService extends AbstractPageService<IntegralOrder
     	integralOrder.setPrizeId(marketingDeliveryAddressParam.getPrizeId());
     	integralOrder.setPrizeName(marketingDeliveryAddressParam.getPrizeName());
     	integralOrder.setStatus((byte)0);
+    	integralOrder.setExchangeResource((byte)2);
     	mapper.insertSelective(integralOrder);
     }
 }
