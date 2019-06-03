@@ -67,13 +67,13 @@ import redis.clients.jedis.JedisCommands;
 @Service
 public class LotteryService {
 	protected static Logger logger = LoggerFactory.getLogger(LotteryService.class);
-	
+
 	@Autowired
 	private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
-	
+
 	@Autowired
 	private IntegralRecordMapperExt integralRecordMapperExt;
-	
+
 	@Autowired
 	private MarketingActivityProductMapper maProductMapper;
 
@@ -85,10 +85,10 @@ public class LotteryService {
 
 	@Autowired
 	private WXPayTradeOrderMapper wXPayTradeOrderMapper;
-	
+
 	@Autowired
 	private GlobalRamCache globalRamCache;
-	
+
 	@Autowired
 	private WXPayService wxpService;
 
@@ -97,36 +97,36 @@ public class LotteryService {
 
 	@Autowired
 	private CommonService commonService;
-	
+
 	@Autowired
 	private WXPayTradeNoGenerator wXPayTradeNoGenerator ;
 
 	@Autowired
 	private MarketingMembersMapper marketingMembersMapper;
-	
+
 	@Autowired
 	private MarketingActivitySetMapper mSetMapper;
-	
+
 	private static SimpleDateFormat staticESSafeFormat=new SimpleDateFormat("yyyy-MM-dd");
 
 	@Autowired
 	private MarketingPrizeTypeMapper mPrizeTypeMapper;
-	
+
 	@Autowired
 	private RedisUtil redisUtil;
-	
+
 	@Autowired
 	private CommonUtil commonUtil;
-	
+
 	@Autowired
 	private RedisLockUtil lock;
-	
+
 	@Value("${marketing.server.ip}")
 	private String serverIp;
-	
+
 	@Autowired
 	private StringRedisTemplate redisTemplate;
-	
+
 	public RestResult baselottery(String wxstate) throws SuperCodeException, ParseException {
 		RestResult<String> restResult=new RestResult<>();
 		ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
@@ -143,7 +143,7 @@ public class LotteryService {
 		if (null==mActivitySet) {
 			throw new SuperCodeException("该活动设置不存在", 500);
 		}
-		
+
 		MarketingActivity activity=mActivityMapper.selectById(mActivitySet.getActivityId());
 		if (null==activity) {
 			throw new SuperCodeException("该活动不存在", 500);
@@ -261,14 +261,14 @@ public class LotteryService {
 		if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
 			if(mPrizeTypeMO.getRemainingStock() != null) {
 				String result = redisTemplate.execute(new RedisCallback<String>() {
-		            @Override
-		            public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
-		                JedisCommands jedisCommands = (JedisCommands) redisConnection.getNativeConnection();
-		                String res = jedisCommands.set(key, mPrizeTypeMO.getRemainingStock().toString(), "NX", "EX", 60);
-		                jedisCommands.expire(key, 60);
-		                return res;
-		            }
-		        });
+					@Override
+					public String doInRedis(RedisConnection redisConnection) throws DataAccessException {
+						JedisCommands jedisCommands = (JedisCommands) redisConnection.getNativeConnection();
+						String res = jedisCommands.set(key, mPrizeTypeMO.getRemainingStock().toString(), "NX", "EX", 60);
+						jedisCommands.expire(key, 60);
+						return res;
+					}
+				});
 				logger.info("抽奖结果：{},设置redis返回值：{}", mPrizeTypeMO, result);
 			}
 			if(StringUtils.isBlank(valueOperations.get(key))) {
@@ -278,7 +278,7 @@ public class LotteryService {
 					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				}
 				lotteryResultMO.setWinnOrNot(0);
-	 			restResult.setState(200);
+				restResult.setState(200);
 				lotteryResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
 				restResult.setMsg(lotteryResultMO.getMsg());
 				return restResult;
@@ -293,30 +293,30 @@ public class LotteryService {
 					addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 				}
 				lotteryResultMO.setWinnOrNot(0);
-	 			restResult.setState(200);
-	 			lotteryResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
+				restResult.setState(200);
+				lotteryResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
 				restResult.setMsg(lotteryResultMO.getMsg());
 				return restResult;
 			}
 		}
-		
- 		boolean flag=holdLockJudgeES(restResult,marketingMembersInfo.getId(),marketingMembersInfo.getMemberType().intValue(), openId,productId,productBatchId, activitySetId, mSetCondition, organizationId, codeId, codeTypeId);
- 		if (!flag ) {
- 			if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
- 				valueOperations.increment(key, 1);
- 			}
- 			globalRamCache.deleteScanCodeInfoMO(wxstate);
- 			lotteryResultMO.setWinnOrNot(0);
- 			restResult.setState(200);
- 			lotteryResultMO.setMsg(restResult.getMsg());
+
+		boolean flag=holdLockJudgeES(restResult,marketingMembersInfo.getId(),marketingMembersInfo.getMemberType().intValue(), openId,productId,productBatchId, activitySetId, mSetCondition, organizationId, codeId, codeTypeId);
+		if (!flag ) {
+			if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
+				valueOperations.increment(key, 1);
+			}
+			globalRamCache.deleteScanCodeInfoMO(wxstate);
+			lotteryResultMO.setWinnOrNot(0);
+			restResult.setState(200);
+			lotteryResultMO.setMsg(restResult.getMsg());
 			return restResult;
 		}
 		//判断realprize是否为0,0表示为新增的虚拟不中奖奖项，为了计算中奖率设置
 		Byte realPrize=mPrizeTypeMO.getRealPrize();
 		if (realPrize.equals((byte)0)) {
 			if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
- 				valueOperations.increment(key, 1);
- 			}
+				valueOperations.increment(key, 1);
+			}
 			restResult.setState(200);
 			lotteryResultMO.setWinnOrNot(0);
 			lotteryResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
@@ -368,20 +368,22 @@ public class LotteryService {
 						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId,productBatchId);
 						break;
 					case 3: //积分
-						 int awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum().intValue();
-						 marketingMembersInfo.setHaveIntegral(haveIntegral+awardIntegralNum-consumeIntegralNum);
-						 lotteryResultMO.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
-						 IntegralRecord iRecord = new IntegralRecord();
-						 iRecord.setIntegralNum(awardIntegralNum);
-						 iRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
-						 iRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
-						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId,productBatchId);
-						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, iRecord, mActivityProduct);
-						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
-						 if(consumeIntegralNum != awardIntegralNum) {
+						int awardIntegralNum=mPrizeTypeMO.getAwardIntegralNum().intValue();
+						marketingMembersInfo.setHaveIntegral(haveIntegral+awardIntegralNum-consumeIntegralNum);
+						lotteryResultMO.setMsg("恭喜您，获得"+awardIntegralNum+"积分");
+						IntegralRecord iRecord = new IntegralRecord();
+						iRecord.setIntegralNum(awardIntegralNum);
+						iRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
+						iRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
+						addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId,productBatchId);
+						addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, iRecord, mActivityProduct);
+						if(consumeIntegralNum != 0) {
+							addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
+						}
+						if(consumeIntegralNum != awardIntegralNum) {
 							marketingMembersMapper.update(marketingMembersInfo);
-						 }
-						 break;
+						}
+						break;
 
 					case 9://其它
 						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
@@ -411,8 +413,8 @@ public class LotteryService {
 				}
 			} catch (Exception e) {
 				if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
-	 				valueOperations.increment(key, 1);
-	 			}
+					valueOperations.increment(key, 1);
+				}
 				throw new SuperCodeException(e.getLocalizedMessage(), 500);
 			}finally {
 				//一切ok后清除缓存
@@ -442,7 +444,7 @@ public class LotteryService {
 		integralRecord.setStatus("1");
 		integralRecordMapperExt.insertSelective(integralRecord);
 	}
-	
+
 	private boolean holdLockJudgeES(RestResult<LotteryResultMO> restResult,Long memberId,int memberType, String openId,String productId, String productBatchId, Long activitySetId,
 			MarketingActivitySetCondition mSetCondition, String organizationId, String codeId, String codeTypeId) {
 		boolean acquireLock =false;
@@ -452,7 +454,7 @@ public class LotteryService {
 			if(acquireLock){
 				String nowTime=staticESSafeFormat.format(new Date());
 				long nowTtimeStemp=staticESSafeFormat.parse(nowTime).getTime();
-				
+
 				String opneIdNoSpecialChactar=null;
 				if (StringUtils.isNotBlank(openId)) {
 					opneIdNoSpecialChactar=CommonUtil.replaceSpicialChactar(openId);
@@ -566,7 +568,7 @@ public class LotteryService {
 		wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(),partner_trade_no, organizationId);
 		return amount;
 	}
-	
+
 	public RestResult<LotteryResultMO> previewLottery(String uuid, HttpServletRequest request) throws SuperCodeException {
 		RestResult<LotteryResultMO> restResult = new RestResult<>();
 		String value = redisUtil.get(RedisKey.ACTIVITY_PREVIEW_PREFIX + uuid);
@@ -661,5 +663,5 @@ public class LotteryService {
 		restResult.setState(200);
 		return restResult;
 	}
-	
+
 }
