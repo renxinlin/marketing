@@ -279,7 +279,7 @@ public class LotteryService {
 				}
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
-				lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+				lotteryResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
 				restResult.setMsg(lotteryResultMO.getMsg());
 				return restResult;
 			}
@@ -294,7 +294,7 @@ public class LotteryService {
 				}
 				lotteryResultMO.setWinnOrNot(0);
 	 			restResult.setState(200);
-	 			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+	 			lotteryResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
 				restResult.setMsg(lotteryResultMO.getMsg());
 				return restResult;
 			}
@@ -319,7 +319,7 @@ public class LotteryService {
  			}
 			restResult.setState(200);
 			lotteryResultMO.setWinnOrNot(0);
-			lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+			lotteryResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
 			restResult.setMsg(lotteryResultMO.getMsg());
 			globalRamCache.deleteScanCodeInfoMO(wxstate);
 			if(consumeIntegralNum != 0) {
@@ -348,7 +348,7 @@ public class LotteryService {
 					case 1://实物
 						redisRemainingStock = Integer.parseInt(valueOperations.get(key));
 						if (redisRemainingStock < 0) {
-							lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+							lotteryResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
 							lotteryResultMO.setWinnOrNot(0);
 							valueOperations.increment(key, 1);
 						}else {
@@ -388,7 +388,7 @@ public class LotteryService {
 						if (redisRemainingStock < 0) {
 							restResult.setState(200);
 							lotteryResultMO.setWinnOrNot(0);
-							lotteryResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+							lotteryResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
 							valueOperations.increment(key, 1);
 						} else {
 							mPrizeTypeMapper.updateRemainingStock(mPrizeTypeMO.getId());
@@ -619,7 +619,7 @@ public class LotteryService {
 		if (realPrize.equals((byte) 0)) {
 			restResult.setState(200);
 			lResultMO.setWinnOrNot(0);
-			lResultMO.setMsg("‘啊呀没中，一定是打开方式不对’：没中奖");
+			lResultMO.setMsg("别灰心，这次的擦肩而过，是为了下次拔得更大的奖项");
 		} else {
 			Byte awardType = mPrizeTypeMO.getAwardType();
 			if (null==awardType ||awardType.intValue()==4 ) {
