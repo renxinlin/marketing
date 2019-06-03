@@ -81,13 +81,11 @@ public class ScanCodeController {
      */
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
-    public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
-    	String	wxstate=commonUtil.getUUID();
-
-
+    public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId) throws Exception {
+    	String wxstate=commonUtil.getUUID();
         logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
-    	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0);
-
+    	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0, sBatchId);
+    	
         ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
         if(scanCodeInfoMO != null ){
             // 全部是活动
@@ -168,7 +166,7 @@ public class ScanCodeController {
      * @throws ParseException
      * @throws SuperCodeException
      */
-    public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate, byte referenceRole) throws UnsupportedEncodingException, ParseException, SuperCodeException {
+    public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate, byte referenceRole,String sbatchId) throws UnsupportedEncodingException, ParseException, SuperCodeException {
     	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole);
     	if (restResult.getState()==500) {
     		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
@@ -182,6 +180,7 @@ public class ScanCodeController {
         if (null==mWxMerchants || StringUtils.isBlank(mWxMerchants.getMchAppid())) {
         	 return "redirect:"+h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId,"utf-8"),"utf-8");
 		}
+        sCodeInfoMO.setSbatchId(sbatchId);
         sCodeInfoMO.setOrganizationId(organizationId);
         globalRamCache.putScanCodeInfoMO(wxstate,sCodeInfoMO);
         logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);

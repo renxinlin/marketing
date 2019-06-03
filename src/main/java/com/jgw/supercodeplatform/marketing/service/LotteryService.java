@@ -194,6 +194,7 @@ public class LotteryService {
 		String productId=scanCodeInfoMO.getProductId();
 		String productBatchId=scanCodeInfoMO.getProductBatchId();
 		String mobile=scanCodeInfoMO.getMobile();
+		String sbatchId = scanCodeInfoMO.getSbatchId();
 		commonService.checkCodeValid(codeId, codeTypeId);
 		commonService.checkCodeTypeValid(Long.valueOf(codeTypeId));
 		Long activitySetId=scanCodeInfoMO.getActivitySetId();
@@ -203,7 +204,11 @@ public class LotteryService {
 			restResult.setMsg("该活动设置不存在");
 			return restResult;
 		}
-		
+		MarketingActivityProduct mActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
+		String productSbatchId = mActivityProduct.getSbatchId();
+		if(productSbatchId == null || !productSbatchId.contains(sbatchId)) {
+			throw new SuperCodeException("码批次有误", 500);
+		}
 		MarketingActivity activity=mActivityMapper.selectById(mActivitySet.getActivityId());
 		if (null==activity) {
 			throw new SuperCodeException("该活动不存在", 500);
@@ -371,7 +376,6 @@ public class LotteryService {
 						 iRecord.setIntegralReason(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReason());
 						 iRecord.setIntegralReasonCode(IntegralReasonEnum.ACTIVITY_INTEGRAL.getIntegralReasonCode());
 						 addWinRecord(scanCodeInfoMO.getCodeId(), mobile, openId, activitySetId, activity, organizationId, mPrizeTypeMO, null,productId,productBatchId);
-						 MarketingActivityProduct mActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
 						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, iRecord, mActivityProduct);
 						 addToInteral(scanCodeInfoMO, marketingMembersInfo, organizationId, codeId, productId, integralRecord, marketingActivityProduct);
 						 if(consumeIntegralNum != awardIntegralNum) {

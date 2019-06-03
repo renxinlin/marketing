@@ -1,8 +1,14 @@
 package com.jgw.supercodeplatform.marketing.dao.integral.generator.provider;
 
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
+import static org.apache.ibatis.jdbc.SqlBuilder.BEGIN;
+import static org.apache.ibatis.jdbc.SqlBuilder.INSERT_INTO;
+import static org.apache.ibatis.jdbc.SqlBuilder.SET;
+import static org.apache.ibatis.jdbc.SqlBuilder.SQL;
+import static org.apache.ibatis.jdbc.SqlBuilder.UPDATE;
+import static org.apache.ibatis.jdbc.SqlBuilder.VALUES;
+import static org.apache.ibatis.jdbc.SqlBuilder.WHERE;
 
-import static org.apache.ibatis.jdbc.SqlBuilder.*;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
 
 public class IntegralOrderSqlProvider {
 
@@ -99,11 +105,11 @@ public class IntegralOrderSqlProvider {
         }
         
         if (record.getPrizeId() != null) {
-        	SET("PrizeId = #{prizeId,jdbcType=BIGINT}");
+        	VALUES("PrizeId", "#{prizeId,jdbcType=BIGINT}");
         }
         
         if(record.getPrizeName() != null) {
-        	SET("PrizeName = #{prizeName,jdbcType=VARCHAR}");
+        	VALUES("PrizeName", "#{prizeName,jdbcType=VARCHAR}");
         }
 
         return SQL();
