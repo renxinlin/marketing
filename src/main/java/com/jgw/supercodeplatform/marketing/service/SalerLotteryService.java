@@ -145,7 +145,7 @@ public class SalerLotteryService {
         String productId           = scanCodeInfoMO.getProductId();
         String productBatchId = scanCodeInfoMO.getProductBatchId();
         Long activitySetId     = scanCodeInfoMO.getActivitySetId();
-        //   用户数据
+        //   活动数据
         Map<String, Object> map = getBizData(productId, productBatchId, activitySetId);
         //  活动数据
         MarketingActivitySet marketingActivitySet = (MarketingActivitySet) map.get("marketingActivitySet");
@@ -487,7 +487,7 @@ public class SalerLotteryService {
 
         // 用户角色校验
         if(MemberTypeEnums.SALER.getType().intValue() != jwtUser.getMemberType().intValue()){
-            throw new SuperCodeException("您非注册的导购用户，无法领奖");
+            throw new SuperCodeException("您非导购用户，无法领奖");
         }
 
 
