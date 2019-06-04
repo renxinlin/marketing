@@ -83,7 +83,7 @@ public class ScanCodeController {
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId) throws Exception {
     	String wxstate=commonUtil.getUUID();
-        logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
+        logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+",sBatchId="+sBatchId);
     	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0, sBatchId);
     	
         ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
