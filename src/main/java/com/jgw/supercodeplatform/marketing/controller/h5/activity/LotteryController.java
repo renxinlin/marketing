@@ -102,6 +102,7 @@ public class LotteryController extends CommonUtil {
     	integralOrder.setMemberId(jwtUser.getMemberId());
     	integralOrder.setMemberName(jwtUser.getMemberName());
     	integralOrder.setOrderId(jwtUser.getOrganizationId());
+    	integralOrder.setOrganizationId(jwtUser.getOrganizationId());
     	integralOrder.setOrganizationName(jwtUser.getOrganizationName());
     	integralOrderExcelService.addPrizeOrder(marketingDeliveryAddressParam, integralOrder);
     	return RestResult.success();

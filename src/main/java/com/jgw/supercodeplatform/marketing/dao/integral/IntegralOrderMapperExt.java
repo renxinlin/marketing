@@ -17,7 +17,7 @@ public interface IntegralOrderMapperExt extends IntegralOrderMapper, CommonSql {
 
 
     static String allFileds=" Id id, OrderId orderId, ExchangeResource exchangeResource, " +
-            " ProductId productId, ProductName productName,  " +
+            " CASE ExchangeResource WHEN 2 THEN PrizeId ELSE ProductId END productId, CASE ExchangeResource WHEN 2 THEN PrizeName ELSE ProductName END productName, " +
             " SkuName skuName, SkuUrl skuUrl, ExchangeIntegralNum exchangeIntegralNum, " +
             " ExchangeNum exchangeNum, Name name, Mobile mobile, Address address, Status status, MemberId memberId, MemberName memberName, " +
             " CreateDate createDate, DeliveryDate deliveryDate, OrganizationId organizationId, OrganizationName organizationName ," +
