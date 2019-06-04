@@ -185,14 +185,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	}
 
 
-	/**
-	 * 前端组件传递时携带的areaCode key
-	 */
-	private static final String areaCode="areaCode";
-	/**
-	 * 前端组件传递时携带的areaName key
-	 */
-	private static final String areaName="areaName";
+
 
 	public void updateMembers(MarketingSaleMembersUpdateParam marketingMembersUpdateParam, String organizationId) throws SuperCodeException{
 		// 基础校验
@@ -250,17 +243,18 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		String pcccode = marketingMembersUpdateParam.getPCCcode();
 		List<JSONObject> objects = JSONObject.parseArray(pcccode,JSONObject.class);
-		JSONObject province = objects.get(0);
-		JSONObject city = objects.get(1);
-		JSONObject country = objects.get(2);
+		int size = objects.size();
+		JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
+		JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
+		JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
 		// 省市区编码
 
-		dto.setProvinceCode(province.getString(areaCode));
-		dto.setCityCode(city.getString(areaCode));
-		dto.setCountyCode(country.getString(areaCode));
-		dto.setProvinceName(province.getString(areaName));
-		dto.setCityName(city.getString(areaName));
-		dto.setCountyName(country.getString(areaName));
+		dto.setProvinceCode(province.getString(PcccodeConstants.areaCode));
+		dto.setCityCode(city.getString(PcccodeConstants.areaCode));
+		dto.setCountyCode(country.getString(PcccodeConstants.areaCode));
+		dto.setProvinceName(province.getString(PcccodeConstants.areaName));
+		dto.setCityName(city.getString(PcccodeConstants.areaName));
+		dto.setCountyName(country.getString(PcccodeConstants.areaName));
 		dto.setpCCcode(pcccode);
 		dto.setCustomerId(marketingMembersUpdateParam.getCustomerId());
 		dto.setCustomerName(marketingMembersUpdateParam.getCustomerName());
