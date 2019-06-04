@@ -65,6 +65,9 @@ public class MarketingReceivingPageFrontController {
 		if (null==mReceivingPage) {
 			throw new SuperCodeException("h5扫码时获取领取页信息失败根据activitySetId="+activitySetId+"无法获取领取页信息", 500);
 		}
+		mReceivingPage.setOrganizationId(marketingActivitySet.getOrganizationId());
+		mReceivingPage.setOrganizatioIdlName(marketingActivitySet.getOrganizatioIdlName());
+		mReceivingPage.setActivityDesc(marketingActivitySet.getActivityDesc());
 		RestResult<MarketingReceivingPage> restResult=new RestResult<MarketingReceivingPage>();
 		if (null!=mReceivingPage.getIsQrcodeView() && 1==mReceivingPage.getIsQrcodeView().intValue()) {
 			String organizationId=marketingActivitySet.getOrganizationId();
