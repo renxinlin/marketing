@@ -11,6 +11,9 @@ public class MarketingActivityPreviewParam {
 	@ApiModelProperty(value = "领取页参数")
     private MarketingReceivingPageParam mReceivingPageParam;
 	
+	@ApiModelProperty(value = "基础参数")
+	private MarketingActivitySetParam mActivitySetParam;
+	
 	@ApiModelProperty(value = "活动设置中奖奖次")
 	private List<MarketingPrizeTypeParam> marketingPrizeTypeParams;
 	
@@ -29,6 +32,14 @@ public class MarketingActivityPreviewParam {
 
 	public void setMarketingPrizeTypeParams(List<MarketingPrizeTypeParam> marketingPrizeTypeParams) {
 		this.marketingPrizeTypeParams = marketingPrizeTypeParams;
+	}
+
+	public MarketingActivitySetParam getmActivitySetParam() {
+		return mActivitySetParam;
+	}
+
+	public void setmActivitySetParam(MarketingActivitySetParam mActivitySetParam) {
+		this.mActivitySetParam = mActivitySetParam;
 	}
 
 

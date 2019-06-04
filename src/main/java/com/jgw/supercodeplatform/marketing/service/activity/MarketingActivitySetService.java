@@ -275,11 +275,12 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		AccountCache userLoginCache = commonUtil.getUserLoginCache();
 		mSet.setUpdateUserId(userLoginCache.getUserId());
 		mSet.setUpdateUserName(userLoginCache.getUserName());
-
-		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
+		String activityStartDate = StringUtils.isBlank(activitySetParam.getActivityStartDate())?null:activitySetParam.getActivityStartDate();
+		String activityEndDate = StringUtils.isBlank(activitySetParam.getActivityEndDate())?null:activitySetParam.getActivityEndDate();
+		mSet.setActivityEndDate(activityEndDate);
 		mSet.setActivityId(activitySetParam.getActivityId());
 		mSet.setActivityRangeMark(activitySetParam.getActivityRangeMark());
-		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
+		mSet.setActivityStartDate(activityStartDate);
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
 		mSet.setId(id);
