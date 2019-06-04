@@ -436,9 +436,10 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		// 省市区编码
 		String pcccode = userInfo.getpCCcode();
 		List<JSONObject> objects = JSONObject.parseArray(pcccode,JSONObject.class);
-		JSONObject province = objects.get(0);
-		JSONObject city = objects.get(1);
-		JSONObject country = objects.get(2);
+		int size = objects.size();
+		JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
+		JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
+		JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
 		userDtoToDb.setProvinceCode(province.getString(PcccodeConstants.areaCode));
 		userDtoToDb.setCityCode(city.getString(PcccodeConstants.areaCode));
 		userDtoToDb.setCountyCode(country.getString(PcccodeConstants.areaCode));
