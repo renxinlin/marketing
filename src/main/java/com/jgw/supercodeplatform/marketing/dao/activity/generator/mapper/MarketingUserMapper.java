@@ -90,6 +90,41 @@ public interface MarketingUserMapper {
     @UpdateProvider(type=MarketingUserSqlProvider.class, method="updateByPrimaryKeySelective")
     int updateByPrimaryKeySelective(MarketingUser record);
 
+    /**
+     * pcccode不为空修改行政字段
+     * @param record
+     * @return
+     */
+    @Update(" <script>"
+            + " UPDATE marketing_user "
+            + " <set>"
+            + " <if test='wxName !=null and wxName != &apos;&apos; '> WxName = #{wxName} ,</if> "
+            + " <if test='openid !=null and openid != &apos;&apos; '> Openid = #{openid} ,</if> "
+            + " <if test='mobile !=null and mobile != &apos;&apos; '> Mobile = #{mobile} ,</if> "
+            + " <if test='userId !=null'> UserId = #{userId} ,</if> "
+            + " <if test='sex !=null'> Sex = #{sex} ,</if> "
+            + " <if test='birthday !=null and birthday != &apos;&apos; '> Birthday = #{birthday} ,</if> "
+            + " <if test='pCCcode !=null and pCCcode != &apos;&apos; '> PCCcode = #{pCCcode} ,</if> "
+            + " <if test='pCCcode !=null'> CountyCode = #{countyCode} ,</if> "
+            + " <if test='pCCcode !=null'> CityCode = #{cityCode} ,</if> "
+            + " <if test='pCCcode !=null'> ProvinceCode = #{provinceCode} ,</if> "
+            + " <if test='pCCcode !=null'> CountyName = #{countyName} ,</if> "
+            + " <if test='pCCcode !=null'> CityName = #{cityName} ,</if> "
+            + " <if test='pCCcode !=null'> ProvinceName = #{provinceName} ,</if> "
+            + " <if test='customerName !=null and customerName != &apos;&apos; '> CustomerName = #{customerName} ,</if> "
+            + " <if test='customerId !=null and customerId != &apos;&apos; '> CustomerId = #{customerId} ,</if> "
+            + " <if test='wechatHeadImgUrl !=null and wechatHeadImgUrl != &apos;&apos; '> WechatHeadImgUrl = #{wechatHeadImgUrl} ,</if> "
+            + " <if test='memberType !=null  '> MemberType = #{memberType} ,</if> "
+            + " <if test='state !=null  '> State = #{state} ,</if> "
+            + " <if test='deviceType !=null '> DeviceType = #{deviceType} ,</if> "
+            + " UpdateDate = NOW() "
+            + " </set>"
+            + " <where> "
+            + "  Id = #{id} "
+            + " </where>"
+            + " </script>")
+    int updateByPrimaryKeySelectiveWithBiz(MarketingUser record);
+
     @Update({
         "update marketing_user",
         "set WxName = #{wxName,jdbcType=VARCHAR},",
@@ -99,6 +134,7 @@ public interface MarketingUserMapper {
           "UserName = #{userName,jdbcType=VARCHAR},",
           "Sex = #{sex,jdbcType=VARCHAR},",
           "Birthday = #{birthday,jdbcType=TIMESTAMP},",
+          "PCCcode = #{pCCcode,jdbcType=VARCHAR},",
           "ProvinceCode = #{provinceCode,jdbcType=VARCHAR},",
           "CountyCode = #{countyCode,jdbcType=VARCHAR},",
           "CityCode = #{cityCode,jdbcType=VARCHAR},",
@@ -110,7 +146,6 @@ public interface MarketingUserMapper {
           "UpdateDate = #{updateDate,jdbcType=TIMESTAMP},",
           "CustomerName = #{customerName,jdbcType=VARCHAR},",
           "CustomerId = #{customerId,jdbcType=VARCHAR},",
-          "PCCcode = #{pCCcode,jdbcType=VARCHAR},",
           "WechatHeadImgUrl = #{wechatHeadImgUrl,jdbcType=VARCHAR},",
           "MemberType = #{memberType,jdbcType=TINYINT},",
           "State = #{state,jdbcType=TINYINT},",

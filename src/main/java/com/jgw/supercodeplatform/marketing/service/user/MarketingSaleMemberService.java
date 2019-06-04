@@ -258,8 +258,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		dto.setpCCcode(pcccode);
 		dto.setCustomerId(marketingMembersUpdateParam.getCustomerId());
 		dto.setCustomerName(marketingMembersUpdateParam.getCustomerName());
-		// 更新操作
-		int i = mapper.updateByPrimaryKeySelective(dto);
+		// 更新操作 pcccode不为空则修改省市区全部字段
+		int i = mapper.updateByPrimaryKeySelectiveWithBiz(dto);
 		if(i!=1){
 			throw new SuperCodeException("更新失败...");
 		}

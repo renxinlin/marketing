@@ -4,6 +4,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -36,6 +38,8 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/marketing/front/members")
@@ -125,7 +129,23 @@ public class MarketingMembersFrontController extends CommonUtil {
 		if(!StringUtils.isBlank(memberById.getBirthday())){
 			memberDto.setBirthday(null);
 		}
- 		marketingMembersService.update(memberDto);
+
+		if(!StringUtils.isBlank(member.getpCCcode())){
+			List<JSONObject> objects = JSONObject.parseArray(member.getpCCcode(),JSONObject.class);
+			int size = objects.size();
+			JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
+			JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
+			JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
+			memberDto.setProvinceCode(province.getString(PcccodeConstants.areaCode));
+			memberDto.setCityCode(city.getString(PcccodeConstants.areaCode));
+			memberDto.setCountyCode(country.getString(PcccodeConstants.areaCode));
+			memberDto.setProvinceName(province.getString(PcccodeConstants.areaName));
+			memberDto.setCityName(city.getString(PcccodeConstants.areaName));
+			memberDto.setCountyName(country.getString(PcccodeConstants.areaName));
+		}
+
+
+		marketingMembersService.update(memberDto);
 		return RestResult.success("success",null);
 
 	}
