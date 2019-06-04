@@ -132,7 +132,7 @@ public class ScanCodeInfoMO implements Serializable{
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("codeId", codeId).append("codeTypeId", codeTypeId).append("productId", productId)
+		return new ToStringBuilder(this).append("codeId", codeId).append("codeTypeId", codeTypeId).append("productId", productId).append("sbatchId", sbatchId)
 				.append("productBatchId", productBatchId).append("openId", openId).append("activitySetId", activitySetId).append("organizationId", organizationId).append("创建时间", createTime).toString();
 	}
 
