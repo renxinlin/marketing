@@ -111,7 +111,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " <if test='autoFetch !=null and autoFetch != &apos;&apos; '> autoFetch = #{autoFetch} ,</if> "
             + " <if test='codeTotalNum !=null and codeTotalNum != &apos;&apos; '> CodeTotalNum = #{codeTotalNum} ,</if> "
 		    + " <if test='validCondition !=null and validCondition != &apos;&apos; '> ValidCondition = #{validCondition} ,</if> "
-            + " <if test='activityDesc !=null and activityDesc != &apos;&apos; '> ActivityDesc = #{activityDesc} ,</if> "
+            + " <if test='activityDesc !=null'> ActivityDesc = #{activityDesc} ,</if> "
 		    + " </set> "
             + " where Id = #{id}" +endScript
     )
