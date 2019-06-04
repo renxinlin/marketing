@@ -7,6 +7,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageR
 import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.MarketingUserVO;
 import com.jgw.supercodeplatform.marketing.dto.SaleMemberBatchStatusParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingSaleUserParam;
@@ -71,9 +72,10 @@ public class MarketingSaleMembersController extends CommonUtil {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "id", paramType = "query", defaultValue = "1", value = "用户Id,必需", required = true),
     })
-    public RestResult<MarketingUser> getUserMember(Long id) throws Exception {
-        // TODO 转化VO
-        return new RestResult(200, "success",service.getMemberById(id));
+    public RestResult<MarketingUserVO> getUserMember(Long id) throws Exception {
+        MarketingUser memberById = service.getMemberById(id);
+        MarketingUserVO vo = modelMapper.map(memberById, MarketingUserVO.class);
+        return new RestResult(200, "success",vo);
     }
 
 
