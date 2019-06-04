@@ -12,7 +12,7 @@ public interface MarketingActivityProductMapper extends CommonSql{
 
 	String selectSql = " Id as id, ActivitySetId as activitySetId,CodeType as codeType,ProductBatchId as productBatchId,"
 			+ " ProductBatchName as productBatchName,ProductId as productId,ReferenceRole referenceRole,"
-			+ " ProductName as productName,CodeTotalAmount as codeTotalAmount,CreateDate createDate,UpdateDate updateDate";
+			+ " ProductName as productName,CodeTotalAmount as codeTotalAmount,CreateDate createDate,UpdateDate updateDate,SbatchId sbatchId";
 
 
 
