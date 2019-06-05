@@ -204,6 +204,9 @@ public class LotteryService {
 			restResult.setMsg("该活动设置不存在");
 			return restResult;
 		}
+		if(mActivitySet.getActivityStatus() == 0) {
+			throw new SuperCodeException("该活动已停用", 200);
+		}
 		MarketingActivityProduct mActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
 		String productSbatchId = mActivityProduct.getSbatchId();
 		if(productSbatchId == null || !productSbatchId.contains(sbatchId)) {
