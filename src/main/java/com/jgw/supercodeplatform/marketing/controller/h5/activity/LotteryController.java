@@ -19,6 +19,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingDeliveryAddressParam;
+import com.jgw.supercodeplatform.marketing.exception.LotteryException;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
 import com.jgw.supercodeplatform.marketing.service.SalerLotteryService;
@@ -60,8 +61,14 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/lottery")
     @ApiOperation(value = "用户点击领奖方法", notes = "")
     public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
-    	logger.info("领奖传入微信参数:{}", wxstate);
-        return service.lottery(wxstate, request.getRemoteAddr());
+    	RestResult<LotteryResultMO> restResult = null;
+    	try {
+    		restResult = service.lottery(wxstate, request.getRemoteAddr());
+    	} catch (Exception e) {
+			logger.error("中奖方法出错", e);
+			throw new LotteryException(e.getMessage(), 200);
+		}
+        return restResult;
     }
     
     
