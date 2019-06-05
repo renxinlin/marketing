@@ -49,6 +49,7 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreview
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
+import com.jgw.supercodeplatform.marketing.exception.LotteryException;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
@@ -205,24 +206,24 @@ public class LotteryService {
 			return restResult;
 		}
 		if(mActivitySet.getActivityStatus() == 0) {
-			throw new SuperCodeException("该活动已停用", 200);
+			throw new LotteryException("该活动已停用", 200);
 		}
 		MarketingActivityProduct mActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
 		String productSbatchId = mActivityProduct.getSbatchId();
 		if(productSbatchId == null || !productSbatchId.contains(sbatchId)) {
-			throw new SuperCodeException("码批次有误", 200);
+			throw new LotteryException("码批次有误", 200);
 		}
 		MarketingActivity activity=mActivityMapper.selectById(mActivitySet.getActivityId());
 		if (null==activity) {
-			throw new SuperCodeException("该活动不存在", 200);
+			throw new LotteryException("该活动不存在", 200);
 		}
 		Long userId=scanCodeInfoMO.getUserId();
 		MarketingMembers marketingMembersInfo = marketingMembersMapper.getMemberById(userId);
 		if(marketingMembersInfo == null){
-			throw  new SuperCodeException("会员信息不存在",200);
+			throw new LotteryException("会员信息不存在",200);
 		}
 		if( null!=marketingMembersInfo.getState() && marketingMembersInfo.getState() == 0){
-			throw  new SuperCodeException("对不起,该会员已被加入黑名单",200);
+			throw new LotteryException("对不起,该会员已被加入黑名单",200);
 		}
 
 		String condition=mActivitySet.getValidCondition();
@@ -235,7 +236,7 @@ public class LotteryService {
 		int consumeIntegralNum=mSetCondition.getConsumeIntegral() == null? 0: mSetCondition.getConsumeIntegral();
 		int haveIntegral=marketingMembersInfo.getHaveIntegral() == null? 0:marketingMembersInfo.getHaveIntegral();
 		if (haveIntegral < consumeIntegralNum) {
-			throw new SuperCodeException("对不起,领取本活动需要消耗"+consumeIntegralNum+"积分，您的积分不够",200);
+			throw new LotteryException("对不起,领取本活动需要消耗"+consumeIntegralNum+"积分，您的积分不够",200);
 		}
 		LotteryResultMO lotteryResultMO = new LotteryResultMO();
 		restResult.setResults(lotteryResultMO);
@@ -418,7 +419,7 @@ public class LotteryService {
 				if (awardType != null && (awardType.intValue() == 1 || awardType.intValue() == 9)) {
 					valueOperations.increment(key, 1);
 				}
-				throw new SuperCodeException(e.getLocalizedMessage(), 200);
+				throw new LotteryException(e.getLocalizedMessage(), 200);
 			}finally {
 				//一切ok后清除缓存
 				globalRamCache.deleteScanCodeInfoMO(wxstate);
