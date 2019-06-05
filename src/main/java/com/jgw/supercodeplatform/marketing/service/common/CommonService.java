@@ -212,7 +212,7 @@ public class CommonService {
 		}
 		Map<String,String>headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
-		
+		headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForBaseInfo());
 		Map<String, Object>params=new HashMap<String, Object>();
 		StringBuffer buf=new StringBuffer();
 		for (String productId : productIds) {
@@ -220,6 +220,7 @@ public class CommonService {
 		}
 		
 		params.put("productIds",String.join(",", productIds));
+		
 		ResponseEntity<String> response=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_PRODUCT_BATCH, params, headerMap);
 		logger.info("根据产品集合请求基础平台批次数据收到响应："+response.toString());
 		String body=response.getBody();
@@ -240,6 +241,8 @@ public class CommonService {
 	public JSONArray getOrgsInfoByOrgIds(List<String> orgIds) throws SuperCodeException {
 		Map<String, Object> params=new HashMap<String, Object>();
 		params.put("organizationIds", JSONObject.toJSONString(orgIds));
+		Map<String,String>headerMap=new HashMap<String, String>();
+		headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForBaseInfo());
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, null);
 		String body=responseEntity.getBody();
 		logger.info("请求基础平台批量获取组织信息接口返回信息："+body);

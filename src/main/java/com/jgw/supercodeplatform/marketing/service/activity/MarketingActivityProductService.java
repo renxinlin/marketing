@@ -98,6 +98,8 @@ public class MarketingActivityProductService {
 		params.put("search",search);
 		params.put("pageSize",pageSize);
 		params.put("current",current);
+		Map<String, String> headerMap=new HashMap<>();
+		headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
 		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
 		String body=responseEntity.getBody();
