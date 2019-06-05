@@ -664,7 +664,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 
 	public RestResult<String> updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus){
-		if(mUpdateStatus.getActivityStatus() == null || mUpdateStatus.getActivityStatus() <=0){
+		if(mUpdateStatus.getActivityStatus() == null ){
 			throw new RuntimeException("状态值不存在...");
 		}
 		if(mUpdateStatus.getActivitySetId() == null || mUpdateStatus.getActivitySetId() <=0){
