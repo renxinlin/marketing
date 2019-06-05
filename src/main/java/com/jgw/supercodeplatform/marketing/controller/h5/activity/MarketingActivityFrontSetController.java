@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.zxing.WriterException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 
 import io.swagger.annotations.Api;
@@ -36,7 +36,7 @@ public class MarketingActivityFrontSetController {
     @GetMapping(value = "/getPreviewData")
     @ApiOperation("获取活动预览数据")
     @ApiImplicitParams({@ApiImplicitParam(paramType="query",value = "唯一id",name="uuid")})
-    public RestResult<MarketingReceivingPageParam> getPreviewData(String uuid) throws WriterException, IOException{
+    public RestResult<MarketingReceivingPage> getPreviewData(String uuid) throws WriterException, IOException{
         return service.getPreviewParam(uuid);
     }
 

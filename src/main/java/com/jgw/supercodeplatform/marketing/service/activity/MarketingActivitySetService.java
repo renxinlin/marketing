@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.jgw.supercodeplatform.marketing.dto.activity.*;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +51,17 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMa
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusBatchUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
@@ -275,11 +284,12 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		AccountCache userLoginCache = commonUtil.getUserLoginCache();
 		mSet.setUpdateUserId(userLoginCache.getUserId());
 		mSet.setUpdateUserName(userLoginCache.getUserName());
-
-		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
+		String activityStartDate = StringUtils.isBlank(activitySetParam.getActivityStartDate())?null:activitySetParam.getActivityStartDate();
+		String activityEndDate = StringUtils.isBlank(activitySetParam.getActivityEndDate())?null:activitySetParam.getActivityEndDate();
+		mSet.setActivityEndDate(activityEndDate);
 		mSet.setActivityId(activitySetParam.getActivityId());
 		mSet.setActivityRangeMark(activitySetParam.getActivityRangeMark());
-		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
+		mSet.setActivityStartDate(activityStartDate);
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
 		mSet.setId(id);
@@ -896,16 +906,22 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		return restResult;
 	}
 
-	public RestResult<MarketingReceivingPageParam> getPreviewParam(String uuid) {
-		RestResult<MarketingReceivingPageParam> restResult=new RestResult<MarketingReceivingPageParam>();
+	public RestResult<MarketingReceivingPage> getPreviewParam(String uuid) {
+		RestResult<MarketingReceivingPage> restResult=new RestResult<>();
 		String value=redisUtil.get(RedisKey.ACTIVITY_PREVIEW_PREFIX+uuid);
 		if (StringUtils.isBlank(value)) {
 			restResult.setState(500);
 			restResult.setMsg("扫码已过期请重新扫码预览");
 			return restResult;
 		}
+		MarketingReceivingPage marketingReceivingPage = new MarketingReceivingPage();
 		MarketingActivityPreviewParam mPreviewParam=JSONObject.parseObject(value, MarketingActivityPreviewParam.class);
-		restResult.setResults(mPreviewParam.getmReceivingPageParam());
+		MarketingActivitySetParam mActivitySetParam = mPreviewParam.getmActivitySetParam();
+		MarketingReceivingPageParam mReceivingPageParam = mPreviewParam.getmReceivingPageParam();
+		BeanUtils.copyProperties(mReceivingPageParam, marketingReceivingPage);
+		if(mActivitySetParam != null)
+			marketingReceivingPage.setActivityDesc(mActivitySetParam.getActivityDesc());
+		restResult.setResults(marketingReceivingPage);
 		restResult.setState(200);
 		return restResult;
 	}
