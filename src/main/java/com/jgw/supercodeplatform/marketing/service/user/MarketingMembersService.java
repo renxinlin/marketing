@@ -12,12 +12,15 @@ import javax.servlet.http.HttpServletResponse;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
@@ -241,9 +244,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		MarketingMembers members=modelMapper.map(marketingMembersAddParam,MarketingMembers.class);
 		if(!StringUtils.isBlank(marketingMembersAddParam.getpCCcode())){
 			List<JSONObject> objects = JSONObject.parseArray(marketingMembersAddParam.getpCCcode(),JSONObject.class);
-			JSONObject province = objects.get(0);
-			JSONObject city = objects.get(1);
-			JSONObject country = objects.get(2);
+ 			int size = objects.size();
+			JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
+			JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
+			JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
 			members.setProvinceCode(province.getString(PcccodeConstants.areaCode));
 			members.setCityCode(city.getString(PcccodeConstants.areaCode));
 			members.setCountyCode(country.getString(PcccodeConstants.areaCode));
@@ -290,6 +294,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return  result;
 	}
 
+
+
 	/**
 	 * 发送短信 	todo,转移到公共类
 	 * @param mobile 手机号
@@ -302,7 +308,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			msgData.put("mobileId",mobile);
 			msgData.put("sendContent",msg);
 			// 发送短信
-			restTemplate.postForEntity(userServiceUrl + WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, RestResult.class);
+			ResponseEntity<RestResult> restResultResponseEntity = restTemplate.postForEntity(userServiceUrl + WechatConstants.SMS_SEND_PHONE_MESSGAE, msgData, RestResult.class);
+			HttpStatus statusCode =  restResultResponseEntity.getStatusCode();
+			RestResult body = restResultResponseEntity.getBody();
 
 		} catch (Exception e) {
 			// 公共方法提示交给调用方
@@ -342,7 +350,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 */
 	public int updateMembers(MarketingMembersUpdateParam membersUpdateParam) throws SuperCodeException{
 		if(membersUpdateParam == null || membersUpdateParam.getId() == null || membersUpdateParam.getId() <= 0){
-			throw new SuperCodeException("完善信息未获取到会员唯一性ID",500);
+			throw new SuperCodeException("未获取到会员唯一性ID",500);
 		}
 		if(StringUtils.isBlank(membersUpdateParam.getCustomerId()) &&  !StringUtils.isBlank(membersUpdateParam.getCustomerName())){
 			throw new SuperCodeException("门店编码和名称信息丢失：门店编码",500);
@@ -371,6 +379,19 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		members.setMobile(membersUpdateParam.getMobile());
 		members.setOpenid(membersUpdateParam.getOpenid());
 		members.setpCCcode(membersUpdateParam.getpCCcode());
+		if(!StringUtils.isBlank(membersUpdateParam.getpCCcode())){
+			List<JSONObject> objects = JSONObject.parseArray(membersUpdateParam.getpCCcode(),JSONObject.class);
+			int size = objects.size();
+			JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
+			JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
+			JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
+			members.setProvinceCode(province.getString(PcccodeConstants.areaCode));
+			members.setCityCode(city.getString(PcccodeConstants.areaCode));
+			members.setCountyCode(country.getString(PcccodeConstants.areaCode));
+			members.setProvinceName(province.getString(PcccodeConstants.areaName));
+			members.setCityName(city.getString(PcccodeConstants.areaName));
+			members.setCountyName(country.getString(PcccodeConstants.areaName));
+		}
 		members.setSex(membersUpdateParam.getSex());
 		members.setState(membersUpdateParam.getState());
 		members.setWxName(membersUpdateParam.getWxName());

@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.service.integral;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
 import org.apache.commons.lang.StringUtils;
@@ -21,14 +22,7 @@ import java.util.List;
 @Service
 public class DeliveryAddressService {
     private Logger logger = LoggerFactory.getLogger(DeliveryAddressService.class);
-    /**
-     * 前端组件传递时携带的areaCode key
-     */
-    private static final String areaCode="areaCode";
-    /**
-     * 前端组件传递时携带的areaName key
-     */
-    private static final String areaName="areaName";
+
 
 
     @Autowired
@@ -175,17 +169,18 @@ public class DeliveryAddressService {
         // 补充省市区名称
         String pcccode = deliveryAddress.getPcccode();
         List<JSONObject> objects = JSONObject.parseArray(pcccode,JSONObject.class);
-        JSONObject province = objects.get(0);
-        JSONObject city = objects.get(1);
-        JSONObject country = objects.get(2);
+        int size = objects.size();
+        JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
+        JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
+        JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
         // 省市区编码
-        deliveryAddress.setProvinceCode(province.getString(areaCode));
-        deliveryAddress.setCityCode(city.getString(areaCode));
-        deliveryAddress.setCountryCode(country.getString(areaCode));
+        deliveryAddress.setProvinceCode(province.getString(PcccodeConstants.areaCode));
+        deliveryAddress.setCityCode(city.getString(PcccodeConstants.areaCode));
+        deliveryAddress.setCountryCode(country.getString(PcccodeConstants.areaCode));
         // 省市区
-        deliveryAddress.setProvince(province.getString(areaName));
-        deliveryAddress.setCity(city.getString(areaName));
-        deliveryAddress.setCountry(country.getString(areaName));
+        deliveryAddress.setProvince(province.getString(PcccodeConstants.areaName));
+        deliveryAddress.setCity(city.getString(PcccodeConstants.areaName));
+        deliveryAddress.setCountry(country.getString(PcccodeConstants.areaName));
 
         // 目前街道没有编码，系统不支持4级编码信息
 

@@ -17,7 +17,8 @@ public class MarketingMembersWinRecord {
     private String organizationId;//组织id
     private String mobile;//会员手机号
     private String prizeName;//奖项名称
-    private String productId;//奖项名称
+    private String productId;//产品ID
+    private String productBatchId;//产品批次ID
     
     
     public int getId() {
@@ -116,6 +117,14 @@ public class MarketingMembersWinRecord {
 
 	public void setPrizeName(String prizeName) {
 		this.prizeName = prizeName;
+	}
+
+	public String getProductBatchId() {
+		return productBatchId;
+	}
+
+	public void setProductBatchId(String productBatchId) {
+		this.productBatchId = productBatchId;
 	}
     
 }

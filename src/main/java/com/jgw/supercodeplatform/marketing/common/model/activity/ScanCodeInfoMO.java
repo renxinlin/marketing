@@ -17,8 +17,8 @@ public class ScanCodeInfoMO implements Serializable{
     private String createTime;//将用于定时任务检查清除已经长时间未用的扫码缓存 yyyy-MM-dd HH:mm:ss
     private String mobile;//登录的手机号
 	private Long userId;//用户id
-
-
+	private String sbatchId;
+	
 
 	// 目前没用到，防止后期产品多维度查询
 	private Long activityId;//用户id
@@ -132,8 +132,16 @@ public class ScanCodeInfoMO implements Serializable{
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("codeId", codeId).append("codeTypeId", codeTypeId).append("productId", productId)
+		return new ToStringBuilder(this).append("codeId", codeId).append("codeTypeId", codeTypeId).append("productId", productId).append("sbatchId", sbatchId)
 				.append("productBatchId", productBatchId).append("openId", openId).append("activitySetId", activitySetId).append("organizationId", organizationId).append("创建时间", createTime).toString();
+	}
+
+	public String getSbatchId() {
+		return sbatchId;
+	}
+
+	public void setSbatchId(String sbatchId) {
+		this.sbatchId = sbatchId;
 	}
 
 }

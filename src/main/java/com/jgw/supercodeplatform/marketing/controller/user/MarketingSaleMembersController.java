@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.user;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
@@ -7,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageR
 import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.MarketingUserVO;
 import com.jgw.supercodeplatform.marketing.dto.SaleMemberBatchStatusParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingSaleUserParam;
@@ -25,8 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/marketing/salemembers")
@@ -71,9 +72,27 @@ public class MarketingSaleMembersController extends CommonUtil {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "id", paramType = "query", defaultValue = "1", value = "用户Id,必需", required = true),
     })
-    public RestResult<MarketingUser> getUserMember(Long id) throws Exception {
-        // TODO 转化VO
-        return new RestResult(200, "success",service.getMemberById(id));
+    public RestResult<MarketingUserVO> getUserMember(Long id) throws Exception {
+        MarketingUser memberById = service.getMemberById(id);
+        if(memberById == null){
+            throw new SuperCodeException("用户不存在");
+        }
+        MarketingUserVO vo = modelMapper.map(memberById, MarketingUserVO.class);
+        List pcccodes = new LinkedList();
+        Map pcccode = new HashMap<>();
+        pcccode.put("areaCode",vo.getProvinceCode());
+        pcccode.put("areaName",vo.getProvinceName());
+        pcccodes.add(pcccode);
+        Map pcccode1 = new HashMap<>();
+        pcccode1.put("areaCode",vo.getCityCode());
+        pcccode1.put("areaName",vo.getCityName());
+        pcccodes.add(pcccode1);
+        Map pcccode2 = new HashMap<>();
+        pcccode2.put("areaCode",vo.getCountyCode());
+        pcccode2.put("areaName",vo.getCountyName());
+        pcccodes.add(pcccode2);
+        vo.setPCCcode(JSONObject.toJSONString(pcccodes));
+        return new RestResult(200, "success",vo);
     }
 
 

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -26,10 +27,16 @@ import java.util.*;
 @Service
 public class MarketingSaleMemberService extends AbstractPageService<MarketingMembersListParam> {
 	/**
-	 * 短信链接
+	 * 短信链接URI
 	 */
-	@Value("http://market.h5.kf315.net/#/sales/index?organizationId=")
-	private  String WEB_SALER_CENTER_URL_FOR_SHORT_MSG ;
+	@Value("#/sales/index?organizationId=")
+	private  String WEB_SALER_CENTER_URI_FOR_SHORT_MSG ;
+
+
+	@Value("${marketing.activity.h5page.url}")
+	private  String WEB_SALER_CENTER_DOMAIN;
+
+
 	protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberService.class);
 	@Value("亲爱的{{user}}，您已通过审核，可登录红包中心{{url}}")
 	private String SHORT_MSG ;
@@ -119,7 +126,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(marketingUser.getState().intValue() == SaleUserStatus.AUDITED.getStatus().intValue()
 				&& state == SaleUserStatus.ENABLE.getStatus().intValue()  ){
 			String msg = msgTimplate(marketingUser.getUserName()==null ? "您":marketingUser.getUserName()
-					,WEB_SALER_CENTER_URL_FOR_SHORT_MSG,organizationId);
+					, WEB_SALER_CENTER_DOMAIN+WEB_SALER_CENTER_URI_FOR_SHORT_MSG ,organizationId);
 			try {
 				checkPhoneFormat(marketingUser.getMobile());
 
@@ -179,14 +186,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	}
 
 
-	/**
-	 * 前端组件传递时携带的areaCode key
-	 */
-	private static final String areaCode="areaCode";
-	/**
-	 * 前端组件传递时携带的areaName key
-	 */
-	private static final String areaName="areaName";
+
 
 	public void updateMembers(MarketingSaleMembersUpdateParam marketingMembersUpdateParam, String organizationId) throws SuperCodeException{
 		// 基础校验
@@ -244,26 +244,27 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 		String pcccode = marketingMembersUpdateParam.getPCCcode();
 		List<JSONObject> objects = JSONObject.parseArray(pcccode,JSONObject.class);
-		JSONObject province = objects.get(0);
-		JSONObject city = objects.get(1);
-		JSONObject country = objects.get(2);
+		int size = objects.size();
+		JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
+		JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
+		JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
 		// 省市区编码
 
-		dto.setProvinceCode(province.getString(areaCode));
-		dto.setCityCode(city.getString(areaCode));
-		dto.setCountyCode(country.getString(areaCode));
-		dto.setProvinceName(province.getString(areaName));
-		dto.setCityName(city.getString(areaName));
-		dto.setCountyName(country.getString(areaName));
+		dto.setProvinceCode(province.getString(PcccodeConstants.areaCode));
+		dto.setCityCode(city.getString(PcccodeConstants.areaCode));
+		dto.setCountyCode(country.getString(PcccodeConstants.areaCode));
+		dto.setProvinceName(province.getString(PcccodeConstants.areaName));
+		dto.setCityName(city.getString(PcccodeConstants.areaName));
+		dto.setCountyName(country.getString(PcccodeConstants.areaName));
 		dto.setpCCcode(pcccode);
 		dto.setCustomerId(marketingMembersUpdateParam.getCustomerId());
 		dto.setCustomerName(marketingMembersUpdateParam.getCustomerName());
-		// 更新操作
-		int i = mapper.updateByPrimaryKeySelective(dto);
+		// 更新操作 pcccode不为空则修改省市区全部字段
+		int i = mapper.updateByPrimaryKeySelectiveWithBiz(dto);
 		if(i!=1){
 			throw new SuperCodeException("更新失败...");
 		}
-	}
+ 	}
 
 	/**
 	 *
@@ -430,9 +431,10 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		// 省市区编码
 		String pcccode = userInfo.getpCCcode();
 		List<JSONObject> objects = JSONObject.parseArray(pcccode,JSONObject.class);
-		JSONObject province = objects.get(0);
-		JSONObject city = objects.get(1);
-		JSONObject country = objects.get(2);
+		int size = objects.size();
+		JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
+		JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
+		JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
 		userDtoToDb.setProvinceCode(province.getString(PcccodeConstants.areaCode));
 		userDtoToDb.setCityCode(city.getString(PcccodeConstants.areaCode));
 		userDtoToDb.setCountyCode(country.getString(PcccodeConstants.areaCode));

@@ -155,6 +155,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	 */
 	@Select(" select ProductId,ProductName ,-sum(IntegralNum) IntegralNum from marketing_integral_record " +
 			" where 1=1 " +
+			" and MemberType = 0 and productName is not null " +
 			" and OrganizationId = #{organizationId} " +
 			" and IntegralNum < 0 " +
 			" and CreateDate between #{startDate} and #{endDate} " +
@@ -172,6 +173,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	 */
 	@Select(" select -sum(IntegralNum) IntegralNum from marketing_integral_record " +
 			" where 1=1 " +
+			" and MemberType = 0 and productName is not null " +
 			" and OrganizationId = #{organizationId} " +
 			" and IntegralNum < 0 " +
 			" and CreateDate between #{startDate} and #{endDate} " )

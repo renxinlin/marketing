@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.jgw.supercodeplatform.marketing.dto.activity.*;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +51,17 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMa
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusBatchUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
@@ -275,11 +284,12 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		AccountCache userLoginCache = commonUtil.getUserLoginCache();
 		mSet.setUpdateUserId(userLoginCache.getUserId());
 		mSet.setUpdateUserName(userLoginCache.getUserName());
-
-		mSet.setActivityEndDate(activitySetParam.getActivityEndDate());
+		String activityStartDate = StringUtils.isBlank(activitySetParam.getActivityStartDate())?null:activitySetParam.getActivityStartDate();
+		String activityEndDate = StringUtils.isBlank(activitySetParam.getActivityEndDate())?null:activitySetParam.getActivityEndDate();
+		mSet.setActivityEndDate(activityEndDate);
 		mSet.setActivityId(activitySetParam.getActivityId());
 		mSet.setActivityRangeMark(activitySetParam.getActivityRangeMark());
-		mSet.setActivityStartDate(activitySetParam.getActivityStartDate());
+		mSet.setActivityStartDate(activityStartDate);
 		mSet.setActivityTitle(title);
 		mSet.setAutoFetch(activitySetParam.getAutoFetch());
 		mSet.setId(id);
@@ -458,7 +468,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			int state = obj.getInteger("state");
 			if (200 == state) {
 				JSONArray arr = obj.getJSONArray("results");
-				Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
+				List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr,
 						marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
 						BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
 				if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
@@ -470,15 +480,19 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 					}
 				}
 				// 绑定生码批次到url
-				String bindbatchBody = commonService.bindUrlToBatch(new ArrayList<>(paramsMap.values()), superToken);
+				String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
 				JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
 				Integer batchstate = bindBatchobj.getInteger("state");
 				if (null != batchstate && batchstate.intValue() != 200) {
 					throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, 500);
 				}
-				mList.forEach(marketingActivityProduct -> 
-					marketingActivityProduct.setSbatchId((String)paramsMap.get(marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId()).get("batchId"))
-				);
+				Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
+						marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
+						BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+				mList.forEach(marketingActivityProduct -> {
+					String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
+					marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
+				});
 			} else {
 				throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
 			}
@@ -660,7 +674,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 
 	public RestResult<String> updateActivitySetStatus(MarketingActivitySetStatusUpdateParam mUpdateStatus){
-		if(mUpdateStatus.getActivityStatus() == null || mUpdateStatus.getActivityStatus() <=0){
+		if(mUpdateStatus.getActivityStatus() == null ){
 			throw new RuntimeException("状态值不存在...");
 		}
 		if(mUpdateStatus.getActivitySetId() == null || mUpdateStatus.getActivitySetId() <=0){
@@ -892,16 +906,22 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		return restResult;
 	}
 
-	public RestResult<MarketingReceivingPageParam> getPreviewParam(String uuid) {
-		RestResult<MarketingReceivingPageParam> restResult=new RestResult<MarketingReceivingPageParam>();
+	public RestResult<MarketingReceivingPage> getPreviewParam(String uuid) {
+		RestResult<MarketingReceivingPage> restResult=new RestResult<>();
 		String value=redisUtil.get(RedisKey.ACTIVITY_PREVIEW_PREFIX+uuid);
 		if (StringUtils.isBlank(value)) {
 			restResult.setState(500);
 			restResult.setMsg("扫码已过期请重新扫码预览");
 			return restResult;
 		}
+		MarketingReceivingPage marketingReceivingPage = new MarketingReceivingPage();
 		MarketingActivityPreviewParam mPreviewParam=JSONObject.parseObject(value, MarketingActivityPreviewParam.class);
-		restResult.setResults(mPreviewParam.getmReceivingPageParam());
+		MarketingActivitySetParam mActivitySetParam = mPreviewParam.getmActivitySetParam();
+		MarketingReceivingPageParam mReceivingPageParam = mPreviewParam.getmReceivingPageParam();
+		BeanUtils.copyProperties(mReceivingPageParam, marketingReceivingPage);
+		if(mActivitySetParam != null)
+			marketingReceivingPage.setActivityDesc(mActivitySetParam.getActivityDesc());
+		restResult.setResults(marketingReceivingPage);
 		restResult.setState(200);
 		return restResult;
 	}
