@@ -2,15 +2,22 @@ package com.jgw.supercodeplatform.marketing.pojo.integral;
 
 import java.util.Date;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+@ApiModel("核销信息")
 public class MarketingMemberCoupon {
-    private Long id;
+    
+	private Long id;
 
     private Long memberId;
 
     private Long couponId;
-
+    @ApiModelProperty("抵扣券码")
     private String couponCode;
-
+    @ApiModelProperty("抵扣券金额")
+    private Double couponAmount;
+    @ApiModelProperty("会员手机号")
     private String memberPhone;
 
     private String productId;
@@ -20,17 +27,19 @@ public class MarketingMemberCoupon {
     private String productBatchName;
 
     private String sbatchId;
-
+    @ApiModelProperty("产品名称")
     private String productName;
 
-    private Long obtainCustomerId;
+    private String obtainCustomerId;
+    @ApiModelProperty("获得渠道名称")
+    private String obtainCustmerName;
 
     private Date deductionDate;
-
+    @ApiModelProperty("获得时间")
     private Date createTime;
 
-    private Long verifyCustomerId;
-
+    private String verifyCustomerId;
+    @ApiModelProperty("核销渠道名称")
     private String verifyCustomerName;
 
     private String verifyPersonName;
@@ -123,11 +132,11 @@ public class MarketingMemberCoupon {
         this.productName = productName;
     }
 
-    public Long getObtainCustomerId() {
+    public String getObtainCustomerId() {
         return obtainCustomerId;
     }
 
-    public void setObtainCustomerId(Long obtainCustomerId) {
+    public void setObtainCustomerId(String obtainCustomerId) {
         this.obtainCustomerId = obtainCustomerId;
     }
 
@@ -147,11 +156,11 @@ public class MarketingMemberCoupon {
         this.createTime = createTime;
     }
 
-    public Long getVerifyCustomerId() {
+    public String getVerifyCustomerId() {
         return verifyCustomerId;
     }
 
-    public void setVerifyCustomerId(Long verifyCustomerId) {
+    public void setVerifyCustomerId(String verifyCustomerId) {
         this.verifyCustomerId = verifyCustomerId;
     }
 
@@ -202,4 +211,20 @@ public class MarketingMemberCoupon {
     public void setUsed(Byte used) {
         this.used = used;
     }
+
+	public Double getCouponAmount() {
+		return couponAmount;
+	}
+
+	public void setCouponAmount(Double couponAmount) {
+		this.couponAmount = couponAmount;
+	}
+
+	public String getObtainCustmerName() {
+		return obtainCustmerName;
+	}
+
+	public void setObtainCustmerName(String obtainCustmerName) {
+		this.obtainCustmerName = obtainCustmerName;
+	}
 }
