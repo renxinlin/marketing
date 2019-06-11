@@ -70,7 +70,7 @@ public class MarketingMemberCouponSqlProvider {
         }
         
         if (record.getVerifyCustomerId() != null) {
-            sql.VALUES("VerifyCustomerId", "#{verifyCustomerId,jdbcType=BIGINT}");
+            sql.VALUES("VerifyCustomerId", "#{verifyCustomerId,jdbcType=VARCHAR}");
         }
         
         if (record.getVerifyCustomerName() != null) {
@@ -161,7 +161,7 @@ public class MarketingMemberCouponSqlProvider {
         }
         
         if (record.getVerifyCustomerId() != null) {
-            sql.SET("VerifyCustomerId = #{verifyCustomerId,jdbcType=BIGINT}");
+            sql.SET("VerifyCustomerId = #{verifyCustomerId,jdbcType=VARCHAR}");
         }
         
         if (record.getVerifyCustomerName() != null) {

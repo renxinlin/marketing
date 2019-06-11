@@ -31,15 +31,15 @@ public class MarketingMemberCoupon {
     private String productName;
 
     private String obtainCustomerId;
-    
+    @ApiModelProperty("获得渠道名称")
     private String obtainCustmerName;
 
     private Date deductionDate;
-    @ApiModelProperty("")
+    @ApiModelProperty("获得时间")
     private Date createTime;
 
-    private Long verifyCustomerId;
-
+    private String verifyCustomerId;
+    @ApiModelProperty("核销渠道名称")
     private String verifyCustomerName;
 
     private String verifyPersonName;
@@ -156,11 +156,11 @@ public class MarketingMemberCoupon {
         this.createTime = createTime;
     }
 
-    public Long getVerifyCustomerId() {
+    public String getVerifyCustomerId() {
         return verifyCustomerId;
     }
 
-    public void setVerifyCustomerId(Long verifyCustomerId) {
+    public void setVerifyCustomerId(String verifyCustomerId) {
         this.verifyCustomerId = verifyCustomerId;
     }
 
