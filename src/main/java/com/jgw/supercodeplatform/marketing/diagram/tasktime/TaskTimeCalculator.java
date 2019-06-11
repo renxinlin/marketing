@@ -46,12 +46,7 @@ public class TaskTimeCalculator {
         calendar.setTime(startDate);//把当前时间赋给日历
         calendar.add(Calendar.DAY_OF_MONTH, 7);  //设置为7天后
         Date sevenAfter = calendar.getTime();   //得到7天后的时间
-        if (startDate.getTime() <= vauleDate.getTime() && sevenAfter.getTime() > vauleDate.getTime()) {
-            return true;
-        } else {
-            return false;
-
-        }
+        return startDate.getTime() <= vauleDate.getTime() && sevenAfter.getTime() > vauleDate.getTime();
     }
 
     /**
@@ -81,11 +76,7 @@ public class TaskTimeCalculator {
         // 按自然月
         String yyyyMMStr = startDateStr.substring(0, 7);
         String yyyyMMStr1 = value.substring(0, 7);
-        if(yyyyMMStr.equals(yyyyMMStr1)){
-            return true;
-        }else {
-            return false;
-        }
+        return yyyyMMStr.equals(yyyyMMStr1);
 
     }
 
@@ -519,7 +510,6 @@ public class TaskTimeCalculator {
         String yyyyMMStr1 = startDateStr.substring(0, 7);
         System.out.println(yyyyMMStr);
 
-        ;
     }
 
 
