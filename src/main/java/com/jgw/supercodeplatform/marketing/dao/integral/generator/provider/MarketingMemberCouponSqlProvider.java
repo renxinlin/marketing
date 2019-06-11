@@ -54,11 +54,15 @@ public class MarketingMemberCouponSqlProvider {
         }
         
         if (record.getObtainCustomerId() != null) {
-            sql.VALUES("ObtainCustomerId", "#{obtainCustomerId,jdbcType=BIGINT}");
+            sql.VALUES("ObtainCustomerId", "#{obtainCustomerId,jdbcType=VARCHAR}");
         }
         
         if (record.getDeductionDate() != null) {
             sql.VALUES("DeductionDate", "#{deductionDate,jdbcType=DATE}");
+        }
+        
+        if(record.getObtainCustmerName() != null) {
+        	sql.VALUES("ObtainCustmerName", "#{obtainCustmerName,jdbcType=VARCHAR}");
         }
         
         if (record.getCreateTime() != null) {
@@ -141,11 +145,15 @@ public class MarketingMemberCouponSqlProvider {
         }
         
         if (record.getObtainCustomerId() != null) {
-            sql.SET("ObtainCustomerId = #{obtainCustomerId,jdbcType=BIGINT}");
+            sql.SET("ObtainCustomerId = #{obtainCustomerId,jdbcType=VARCHAR}");
         }
         
         if (record.getDeductionDate() != null) {
             sql.SET("DeductionDate = #{deductionDate,jdbcType=DATE}");
+        }
+        
+        if(record.getObtainCustmerName() != null) {
+        	sql.SET("ObtainCustmerName = #{obtainCustmerName,jdbcType=VARCHAR}");
         }
         
         if (record.getCreateTime() != null) {
