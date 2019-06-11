@@ -44,7 +44,11 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
     @Select("select "+allFields+" from marketing_activity_set where Id=#{activitySetId} and ActivityId = #{activityId}")
     MarketingActivitySet selectByIdWithActivityId(Long activitySetId, Long activityId);
- 
+
+    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId} and activityType = #{activityType}")
+    MarketingActivitySet selectByTitleOrgIdWithActivityType(@Param("activityTitle")String activityTitle, @Param("organizationId")String organizationId,@Param("activityType")Byte activityType);
+
+
     @Select("select EachDayNumber from marketing_activity_set where Id=#{activitySetId}")
     Integer selectEachDayNumber(Long activitySetId);
 
