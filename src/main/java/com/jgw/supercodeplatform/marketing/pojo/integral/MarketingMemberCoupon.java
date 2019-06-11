@@ -7,11 +7,11 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("核销信息")
 public class MarketingMemberCoupon {
-    
+    @ApiModelProperty(hidden = true)
 	private Long id;
-
+    @ApiModelProperty(hidden = true)
     private Long memberId;
-
+    @ApiModelProperty(hidden = true)
     private Long couponId;
     @ApiModelProperty("抵扣券码")
     private String couponCode;
@@ -19,38 +19,41 @@ public class MarketingMemberCoupon {
     private Double couponAmount;
     @ApiModelProperty("会员手机号")
     private String memberPhone;
-
+    @ApiModelProperty(hidden = true)
     private String productId;
-
+    @ApiModelProperty(hidden = true)
     private String productBatchId;
-
+    @ApiModelProperty(hidden = true)
     private String productBatchName;
-
+    @ApiModelProperty(hidden = true)
     private String sbatchId;
     @ApiModelProperty("产品名称")
     private String productName;
-
+    @ApiModelProperty(hidden = true)
     private String obtainCustomerId;
     @ApiModelProperty("获得渠道名称")
     private String obtainCustmerName;
-
+    @ApiModelProperty(hidden = true)
     private Date deductionDate;
     @ApiModelProperty("获得时间")
     private Date createTime;
-
+    @ApiModelProperty(hidden = true)
     private String verifyCustomerId;
     @ApiModelProperty("核销渠道名称")
     private String verifyCustomerName;
-
+    @ApiModelProperty("核销人员姓名")
     private String verifyPersonName;
-
+    @ApiModelProperty("核销人员手机")
     private String verifyPersonPhone;
-
+    @ApiModelProperty("核销时间")
     private Date verifyTime;
-
+    @ApiModelProperty(hidden = true)
     private Byte verifyPersonType;
-
+    @ApiModelProperty(hidden = true)
     private Byte used;
+    /***********获得条件，根据活动条件设置获取*************/
+    @ApiModelProperty("获得条件")
+    private String obtainCondition;
 
     public Long getId() {
         return id;
@@ -226,5 +229,13 @@ public class MarketingMemberCoupon {
 
 	public void setObtainCustmerName(String obtainCustmerName) {
 		this.obtainCustmerName = obtainCustmerName;
+	}
+
+	public String getObtainCondition() {
+		return obtainCondition;
+	}
+
+	public void setObtainCondition(String obtainCondition) {
+		this.obtainCondition = obtainCondition;
 	}
 }

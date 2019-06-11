@@ -1,6 +1,6 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -61,60 +61,11 @@ public class MarketingActivitySetCondition {
      * @return
      */
     public String toJsonString(){
-        // {"":"","":""}
-        StringBuffer sb = new StringBuffer("{");
-        if(eachDayNumber != null ){
-            sb.append("\"eachDayNumber\":").append(eachDayNumber);
-
-        }
-        // 加逗号
-        if(participationCondition != null ){
-            sb.append(",\"participationCondition\":").append(participationCondition);
-        }
-
-        if(consumeIntegral != null ){
-            sb.append(",\"consumeIntegral\":").append(consumeIntegral);
-
-        }
-
-        if(acquireCondition != null ){
-            // 抵扣券
-            sb.append(",\"acquireCondition\":").append(acquireCondition);
-        }
-
-        if(acquireConditionIntegral != null ){
-            // 抵扣券
-            sb.append(",\"acquireConditionIntegral\":").append(acquireConditionIntegral);
-        }
-
-        if(allChannels != null ){
-            // 抵扣券
-            sb.append(",\"allChannels\":").append(allChannels);
-        }
-
-        sb.append("}");
-        String objectString = sb.toString();
+        String objectString = JSON.toJSONString(this);
         if(objectString.equals("{}")){
             return null;
         }
         return objectString;
     }
-
-    // 测试
-    public static void main(String[] args) {
-        MarketingActivitySetCondition object = new MarketingActivitySetCondition();
-         String s = JSONObject.toJSONString(object);
-        System.out.println(s);
-
-        MarketingActivitySetCondition marketingActivitySetCondition = JSONObject.parseObject(s, MarketingActivitySetCondition.class);
-        System.out.println(marketingActivitySetCondition);
-
-        String s1 = object.toJsonString();
-
-
-        MarketingActivitySetCondition marketingActivitySetCondition1 = JSONObject.parseObject(s1, MarketingActivitySetCondition.class);
-        System.out.println(marketingActivitySetCondition1);
-    }
-
     
 }
