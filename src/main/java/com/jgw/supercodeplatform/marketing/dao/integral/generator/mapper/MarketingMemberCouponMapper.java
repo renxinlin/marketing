@@ -21,7 +21,7 @@ public interface MarketingMemberCouponMapper {
 
     @Insert({
         "insert into marketing_member_coupon (Id, MemberId, ",
-        "CouponId, CouponCode, ",
+        "CouponId, CouponCode, CouponAmount,",
         "MemberPhone, ProductId, ",
         "ProductBatchId, ProductBatchName, ",
         "SbatchId, ProductName, ",
@@ -31,7 +31,7 @@ public interface MarketingMemberCouponMapper {
         "VerifyPersonPhone, VerifyTime, ",
         "VerifyPersonType, Used)",
         "values (#{id,jdbcType=BIGINT}, #{memberId,jdbcType=BIGINT}, ",
-        "#{couponId,jdbcType=BIGINT}, #{couponCode,jdbcType=VARCHAR}, ",
+        "#{couponId,jdbcType=BIGINT}, #{couponCode,jdbcType=VARCHAR}, #{couponAmount,jdbcType=DOUBLE}, ",
         "#{memberPhone,jdbcType=VARCHAR}, #{productId,jdbcType=VARCHAR}, ",
         "#{productBatchId,jdbcType=VARCHAR}, #{productBatchName,jdbcType=VARCHAR}, ",
         "#{sbatchId,jdbcType=VARCHAR}, #{productName,jdbcType=VARCHAR}, ",
@@ -48,7 +48,7 @@ public interface MarketingMemberCouponMapper {
 
     @Select({
         "select",
-        "Id, MemberId, CouponId, CouponCode, MemberPhone, ProductId, ProductBatchId, ",
+        "Id, MemberId, CouponId, CouponCode,CouponAmount, MemberPhone, ProductId, ProductBatchId, ",
         "ProductBatchName, SbatchId, ProductName, ObtainCustomerId, DeductionDate, CreateTime, ",
         "VerifyCustomerId, VerifyCustomerName, VerifyPersonName, VerifyPersonPhone, VerifyTime, ",
         "VerifyPersonType, Used",
@@ -60,6 +60,7 @@ public interface MarketingMemberCouponMapper {
         @Result(column="MemberId", property="memberId", jdbcType=JdbcType.BIGINT),
         @Result(column="CouponId", property="couponId", jdbcType=JdbcType.BIGINT),
         @Result(column="CouponCode", property="couponCode", jdbcType=JdbcType.VARCHAR),
+        @Result(column="CouponAmount", property="couponAmount", jdbcType=JdbcType.DOUBLE),
         @Result(column="MemberPhone", property="memberPhone", jdbcType=JdbcType.VARCHAR),
         @Result(column="ProductId", property="productId", jdbcType=JdbcType.VARCHAR),
         @Result(column="ProductBatchId", property="productBatchId", jdbcType=JdbcType.VARCHAR),
@@ -87,6 +88,7 @@ public interface MarketingMemberCouponMapper {
         "set MemberId = #{memberId,jdbcType=BIGINT},",
           "CouponId = #{couponId,jdbcType=BIGINT},",
           "CouponCode = #{couponCode,jdbcType=VARCHAR},",
+          "CouponAmount = #{couponAmount,jdbcType=DOUBLE}",
           "MemberPhone = #{memberPhone,jdbcType=VARCHAR},",
           "ProductId = #{productId,jdbcType=VARCHAR},",
           "ProductBatchId = #{productBatchId,jdbcType=VARCHAR},",

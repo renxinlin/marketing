@@ -10,6 +10,8 @@ public class MarketingMemberCoupon {
     private Long couponId;
 
     private String couponCode;
+    
+    private Double couponAmount;
 
     private String memberPhone;
 
@@ -202,4 +204,12 @@ public class MarketingMemberCoupon {
     public void setUsed(Byte used) {
         this.used = used;
     }
+
+	public Double getCouponAmount() {
+		return couponAmount;
+	}
+
+	public void setCouponAmount(Double couponAmount) {
+		this.couponAmount = couponAmount;
+	}
 }

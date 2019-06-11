@@ -25,6 +25,10 @@ public class MarketingMemberCouponSqlProvider {
             sql.VALUES("CouponCode", "#{couponCode,jdbcType=VARCHAR}");
         }
         
+        if(record.getCouponAmount() != null) {
+        	sql.VALUES("CouponAmount", "#{couponAmount,jdbcType=DOUBLE}");
+        }
+        
         if (record.getMemberPhone() != null) {
             sql.VALUES("MemberPhone", "#{memberPhone,jdbcType=VARCHAR}");
         }
@@ -106,6 +110,10 @@ public class MarketingMemberCouponSqlProvider {
         
         if (record.getCouponCode() != null) {
             sql.SET("CouponCode = #{couponCode,jdbcType=VARCHAR}");
+        }
+        
+        if(record.getCouponAmount() != null) {
+        	sql.SET("CouponAmount = #{couponAmount,jdbcType=DOUBLE}");
         }
         
         if (record.getMemberPhone() != null) {

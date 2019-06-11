@@ -13,6 +13,7 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
@@ -207,6 +209,21 @@ public class LotteryService {
 		if(mActivitySet.getActivityStatus() == 0) {
 			throw new SuperCodeException("该活动已停用", 200);
 		}
+		long currentMills = System.currentTimeMillis();
+		String startDateStr = mActivitySet.getActivityStartDate();
+		if(StringUtils.isNotBlank(startDateStr)) {
+			long startMills = DateUtil.parse(startDateStr, "yyyy-MM-dd HH:mm:ss").getTime();
+			if(currentMills < startMills)
+				throw new SuperCodeException("该活动还未开始", 200);
+			
+		}
+		String endDateStr = mActivitySet.getActivityEndDate();
+		if(StringUtils.isNotBlank(endDateStr)) {
+			long endMills = DateUtil.parse(endDateStr, "yyyy-MM-dd HH:mm:ss").getTime();
+			if(currentMills > endMills)
+				throw new SuperCodeException("该活动已经结束", 200);
+		}
+		
 		MarketingActivityProduct mActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
 		String productSbatchId = mActivityProduct.getSbatchId();
 		if(productSbatchId == null || !productSbatchId.contains(sbatchId)) {

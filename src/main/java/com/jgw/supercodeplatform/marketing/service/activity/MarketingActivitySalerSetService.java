@@ -580,7 +580,7 @@ public class MarketingActivitySalerSetService   {
 		SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
 		if (null==activityStartDate && null==activityEndDate) {
 			activityEndDate=format.format(new Date());
-		}else if (null!=activityEndDate && null!=activityEndDate) {
+		}else if (null!=activityStartDate && null!=activityEndDate) {
 			try {
 				endDate = DateUtil.parse(activityEndDate,"yyyy-MM-dd");
 				startDate = DateUtil.parse(activityStartDate,"yyyy-MM-dd");
