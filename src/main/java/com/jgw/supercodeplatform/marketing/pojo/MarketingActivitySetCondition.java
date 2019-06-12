@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import io.swagger.annotations.ApiModelProperty;

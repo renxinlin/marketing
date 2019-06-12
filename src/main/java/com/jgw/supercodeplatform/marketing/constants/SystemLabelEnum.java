@@ -35,7 +35,7 @@ public enum SystemLabelEnum {
 	public void setCodeTypeId(Long codeTypeId) {
 		this.codeTypeId = codeTypeId;
 	}
-	private SystemLabelEnum(String label, Integer codeLength, Long codeTypeId, String businessName) {
+	SystemLabelEnum(String label, Integer codeLength, Long codeTypeId, String businessName) {
 		this.label = label;
 		this.codeLength = codeLength;
 		this.codeTypeId = codeTypeId;

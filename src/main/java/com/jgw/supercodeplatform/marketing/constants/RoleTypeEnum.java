@@ -17,7 +17,7 @@ public enum RoleTypeEnum {
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
-	private RoleTypeEnum(int memberType, String desc) {
+	RoleTypeEnum(int memberType, String desc) {
 		this.memberType = memberType;
 		this.desc = desc;
 	}

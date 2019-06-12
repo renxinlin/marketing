@@ -45,8 +45,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
     @Select("select "+allFields+" from marketing_activity_set where Id=#{activitySetId} and ActivityId = #{activityId}")
     MarketingActivitySet selectByIdWithActivityId(Long activitySetId, Long activityId);
 
-    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId} and activityType = #{activityType}")
-    MarketingActivitySet selectByTitleOrgIdWithActivityType(@Param("activityTitle")String activityTitle, @Param("organizationId")String organizationId,@Param("activityType")Byte activityType);
+    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId} and ActivityId = #{activityId}")
+    MarketingActivitySet selectByTitleOrgIdWithActivityId(@Param("activityTitle")String activityTitle, @Param("organizationId")String organizationId,@Param("activityId")Byte activityId);
 
 
     @Select("select EachDayNumber from marketing_activity_set where Id=#{activitySetId}")
@@ -94,6 +94,10 @@ public interface MarketingActivitySetMapper extends CommonSql {
     @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId} and id != #{id} ")
     MarketingActivitySet selectByTitleOrgIdWhenUpdate(@Param("activityTitle")String activityTitle,@Param("id")Long activitySetid, @Param("organizationId")String organizationId);
 
+
+    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and OrganizationId=#{organizationId} and id != #{id} and ActivityId = #{activityId} ")
+    MarketingActivitySet selectByTitleOrgIdWithActivityIdWhenUpdate(@Param("activityTitle")String activityTitle,@Param("id")Long activitySetid, @Param("organizationId")String organizationId,@Param("activityId")Byte activityId);
+
     @Update("update marketing_activity_set set CodeTotalNum =CodeTotalNum+#{codeTotalNum} where Id = #{id}")
    void addCodeTotalNum(@Param("codeTotalNum")Long codeNum, @Param("id")Long activitySetid);
 
@@ -114,8 +118,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " <if test='activityRangeMark !=null and activityRangeMark != &apos;&apos; '> ActivityRangeMark = #{activityRangeMark} ,</if> "
             + " <if test='autoFetch !=null and autoFetch != &apos;&apos; '> autoFetch = #{autoFetch} ,</if> "
             + " <if test='codeTotalNum !=null and codeTotalNum != &apos;&apos; '> CodeTotalNum = #{codeTotalNum} ,</if> "
-		    + " <if test='validCondition !=null and validCondition != &apos;&apos; '> ValidCondition = #{validCondition} ,</if> "
             + " <if test='activityDesc !=null'> ActivityDesc = #{activityDesc} ,</if> "
+		    + " <if test='validCondition !=null and validCondition != &apos;&apos; '> ValidCondition = #{validCondition} ,</if> "
 		    + " </set> "
             + " where Id = #{id}" +endScript
     )
@@ -169,4 +173,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
     @Update(" UPDATE marketing_activity_set SET ActivityStatus = #{activityStatus}, UpdateUserId = #{userId}, " +
             "UpdateUserName = #{userName}, UpdateDate = NOW() WHERE Id = #{activitySetId} and ActivityId = 3 ")
     void updateSalerActivitySetStatus(@Param("activitySetId") Long activitySetId, @Param("activityStatus") Integer activityStatus, @Param("userId") String userId, @Param("userName") String userName);
+
+
+    @Delete(" delete from marketing_activity_set where id = #{activitySetId} ")
+    int deleteById(@Param("activitySetId") Long activitySetId);
 }

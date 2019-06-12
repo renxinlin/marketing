@@ -10,9 +10,13 @@ public class MarketingCoupon {
     private String organizationId;
 
     private String organizationName;
-
+    /**
+     * 优惠券金额
+     */
     private Double couponAmount;
-
+    /**
+     * 领取截止时间
+     */
     private Date deductionDate;
 
     private Byte deductionProductType;
