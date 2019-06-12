@@ -13,12 +13,33 @@ public class H5LoginVO {
 
 	private String organizationId;
 	private String organizationName;
-	
+
+	private String  customerName;
+
+	private String customerId;
+
     private Integer haveIntegral; //  会员积分
-    
+
     private String mobile;//手机
 
 	private String wechatHeadImgUrl;
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
 	/**
 	 * 参见枚举值
 	 */
