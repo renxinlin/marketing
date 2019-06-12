@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface MarketingCouponMapperExt extends MarketingCouponMapper, CommonSql {
-    String bizField = " ActivitySetId, CouponAmount, DeductionDate, DeductionProductType, DeductionChannelType ";
+    String bizField = " ActivitySetId, CouponAmount, DeductionStartDate,DeductionEndDate, DeductionProductType, DeductionChannelType ";
     @Insert(startScript +
             " insert into marketing_coupon ( ActivitySetId, "+
             " CouponAmount, DeductionStartDate, DeductionEndDate, "+

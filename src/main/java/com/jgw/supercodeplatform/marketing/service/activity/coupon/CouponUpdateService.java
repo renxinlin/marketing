@@ -1,25 +1,29 @@
 package com.jgw.supercodeplatform.marketing.service.activity.coupon;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
-import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAddParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAddParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponAmoutAndDateVo;
 import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponVo;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityStatusEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.AutoGetEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponWithAllChannelEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.DeductionChannelTypeEnum;
@@ -108,7 +112,7 @@ public class CouponUpdateService {
             send = true;
         }
         // 覆盖: 去除重复
-        saveProductBatchsWhenUpdate(copyVO.getProductParams(),activitySet.getId(), RoleTypeEnum.MEMBER.getMemberType(),send);
+        saveProductBatchsWhenUpdate(copyVO.getProductParams(),activitySet.getId(), copyVO.getAutoFetch(),send);
         // 保存抵扣券规则
         saveCouponRulesWhenUpdate(copyVO.getCouponRules(),activitySet.getId());
 
@@ -142,7 +146,7 @@ public class CouponUpdateService {
             send = true;
         }
         // 覆盖: 去除重复
-        saveProductBatchsWhenUpdate(updateVo.getProductParams(),activitySet.getId(), RoleTypeEnum.MEMBER.getMemberType(),send);
+        saveProductBatchsWhenUpdate(updateVo.getProductParams(),activitySet.getId(), updateVo.getAutoFetch(),send);
         // 保存抵扣券规则
         saveCouponRulesWhenUpdate(updateVo.getCouponRules(),activitySet.getId());
 
@@ -210,7 +214,7 @@ public class CouponUpdateService {
     }
 
 
-    private void saveProductBatchsWhenUpdate(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int referenceRole,boolean send) throws SuperCodeException {
+    private void saveProductBatchsWhenUpdate(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int autoFecth,boolean send) throws SuperCodeException {
         List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
         List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
         for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
@@ -227,7 +231,7 @@ public class CouponUpdateService {
                     mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
                     mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
                     mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
-                    mActivityProduct.setReferenceRole((byte) referenceRole);
+                    mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
                     mList.add(mActivityProduct);
                     // 拼装请求码管理批次信息接口商品批次参数
                     Map<String, String> batchmap = new HashMap<String, String>();
@@ -240,13 +244,35 @@ public class CouponUpdateService {
                 productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
             }
         }
+        // 仅当前数量绑定生码批次
+        if (autoFecth == AutoGetEnum.BY_NOT_AUTO.getAuto()) {
+            // copy之前活动的代码
+            // TODO 这里产品和产品批次已经有了？是不是可以不请求 待处理
+            String superToken = commonUtil.getSuperToken();
+            String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
+                    WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+            JSONObject obj = JSONObject.parseObject(body);
+            int state = obj.getInteger("state");
+            if (200 == state) {
+                JSONArray arr = obj.getJSONArray("results");
+                Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
+                        marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
+                        BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+                mList.forEach(marketingActivityProduct -> {
+                    String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
+                    marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
+                });
+            } else {
+                throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
+            }
+        }
+
         // TODO 等待建强那边处理交互协议
         if(send){
-            //如果是会员活动需要去绑定扫码连接到批次号
 
         }
         //插入对应活动产品数据
-        productMapper.batchDeleteByProBatchsAndRole(mList, referenceRole);
+        productMapper.batchDeleteByProBatchsAndRole(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
         productMapper.activityProductInsert(mList);
 
     }
@@ -453,18 +479,22 @@ public class CouponUpdateService {
                 if(channelParam.getCustomerType() == null){
                     throw new SuperCodeException("渠道参数非法001");
                 }
-                if(channelParam.getCustomerSuperiorType() == null){
+
+                if(StringUtils.isBlank(channelParam.getCustomerId())){
                     throw new SuperCodeException("渠道参数非法002");
                 }
-                if(StringUtils.isBlank(channelParam.getCustomerId())){
+
+                if(StringUtils.isBlank(channelParam.getCustomerName())){
                     throw new SuperCodeException("渠道参数非法003");
                 }
-                if(StringUtils.isBlank(channelParam.getCustomerSuperior())){
-                    throw new SuperCodeException("渠道参数非法004");
-                }
-                if(StringUtils.isBlank(channelParam.getCustomerName())){
-                    throw new SuperCodeException("渠道参数非法005");
-                }
+
+//                if(StringUtils.isBlank(channelParam.getCustomerSuperior())){
+//                    throw new SuperCodeException("渠道参数非法004");
+//                }
+
+//                if(channelParam.getCustomerSuperiorType() == null){
+//                    throw new SuperCodeException("渠道参数非法005");
+//                }
 
             }
         }

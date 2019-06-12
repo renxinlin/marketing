@@ -7,6 +7,7 @@ import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -38,10 +39,12 @@ public class MarketingActivityCouponAddParam {
 
     @ApiModelProperty(name = "activityStartDate", value = "活动开始时间", example = "2017-01-11")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date activityStartDate;//活动开始时间
 
     @ApiModelProperty(name = "activityEndDate", value = "活动结束时间", example = "2217-01-11")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date activityEndDate;//活动结束时间
 
 

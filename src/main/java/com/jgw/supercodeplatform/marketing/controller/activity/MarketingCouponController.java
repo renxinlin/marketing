@@ -16,6 +16,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/marketing/activity/coupon")
 @Api(tags = "抵扣券管理")
@@ -37,21 +39,21 @@ public class MarketingCouponController {
     @PostMapping("/add")
     @ApiOperation("新建优惠券活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> couponActivityAdd(@RequestBody MarketingActivityCouponAddParam addVO) throws SuperCodeException {
+    public RestResult<String> couponActivityAdd(@Valid @RequestBody MarketingActivityCouponAddParam addVO) throws SuperCodeException {
         return service.add(addVO);
     }
 
     @PostMapping("/update")
     @ApiOperation("编辑优惠券活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> couponActivityUpdate(@RequestBody MarketingActivityCouponUpdateParam updateVo) throws SuperCodeException {
+    public RestResult<String> couponActivityUpdate(@Valid @RequestBody MarketingActivityCouponUpdateParam updateVo) throws SuperCodeException {
         return updateService.update(updateVo);
     }
 
     @PostMapping("/copy")
     @ApiOperation("复制优惠券活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> couponActivityUpdateCopy(@RequestBody MarketingActivityCouponUpdateParam copyVO) throws SuperCodeException {
+    public RestResult<String> couponActivityUpdateCopy(@Valid @RequestBody MarketingActivityCouponUpdateParam copyVO) throws SuperCodeException {
         return updateService.copy(copyVO);
     }
     @GetMapping("/detail")

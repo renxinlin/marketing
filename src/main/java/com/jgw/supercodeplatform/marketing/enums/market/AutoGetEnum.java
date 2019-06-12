@@ -13,7 +13,7 @@ import lombok.Setter;
 public enum AutoGetEnum {
 
     BY_AUTO(1,"自动追加"),
-    BY_NOT_AUTO(2,"仅此一次");
+    BY_NOT_AUTO(2,"仅此一次;仅当前数量");
     /**
      * 业务类型
      */
