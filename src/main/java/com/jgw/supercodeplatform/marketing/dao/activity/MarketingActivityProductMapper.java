@@ -81,4 +81,6 @@ public interface MarketingActivityProductMapper extends CommonSql{
 			 " <foreach collection='list' item='item' index='index' open='(' separator=',' close=')'> #{item.id}</foreach> "+
 			 endScript )
     int deleteOldProducts(@Param("list") List<MarketingActivityProductParam> maProductParams);
+	@Update(" update marketing_activity_product set SbatchId = #{marketingActivityProduct.sbatchId} where id = #{marketingActivityProduct.id}")
+	int updateWhenAutoFetch(@Param("marketingActivityProduct") MarketingActivityProduct marketingActivityProduct);
 }
