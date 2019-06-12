@@ -35,7 +35,7 @@ public class Receiver {
         logger.info("mq开始消费--------------->>>>>>>>>>接收到数据data="+batchList);
        if (null!=batchList && !batchList.isEmpty()) {
     	   service.handleNewBindBatch(batchList);
-    	   // 业务解耦
+    	   // 业务解耦:处理抵扣券
 		   autoFecthProcess.initchains(couponAutoFecthService);
 		   autoFecthProcess.fireBiz(batchList);
 	   }
