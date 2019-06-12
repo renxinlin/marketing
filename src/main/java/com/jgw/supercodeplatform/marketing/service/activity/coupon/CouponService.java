@@ -15,8 +15,8 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProduct
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.MarketingActivityCouponUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCouponAddParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAddParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;

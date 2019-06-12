@@ -1,21 +1,17 @@
 package com.jgw.supercodeplatform.marketing.service.activity.coupon;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
-import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.MarketingActivityCouponUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCouponAddParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAddParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;

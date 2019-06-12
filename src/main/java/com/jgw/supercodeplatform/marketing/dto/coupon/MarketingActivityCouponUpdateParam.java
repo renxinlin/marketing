@@ -1,6 +1,6 @@
-package com.jgw.supercodeplatform.marketing.dto;
+package com.jgw.supercodeplatform.marketing.dto.coupon;
 
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCouponAddParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAddParam;
 import lombok.Data;
 
 @Data

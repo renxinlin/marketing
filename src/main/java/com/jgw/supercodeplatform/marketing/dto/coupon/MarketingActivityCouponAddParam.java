@@ -1,6 +1,8 @@
-package com.jgw.supercodeplatform.marketing.dto.activity;
+package com.jgw.supercodeplatform.marketing.dto.coupon;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponVo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

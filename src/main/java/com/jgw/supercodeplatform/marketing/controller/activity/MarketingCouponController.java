@@ -3,8 +3,8 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.dto.MarketingActivityCouponUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCouponAddParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAddParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.activity.coupon.CouponService;
