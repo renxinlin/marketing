@@ -13,8 +13,10 @@ public class MarketingCoupon {
 
     private Double couponAmount;
 
-    private Date deductionDate;
+    private Date deductionStartDate;
 
+    private Date deductionEndDate;
+    
     private Byte deductionProductType;
 
     private Byte deductionChannelType;
@@ -63,14 +65,6 @@ public class MarketingCoupon {
         this.couponAmount = couponAmount;
     }
 
-    public Date getDeductionDate() {
-        return deductionDate;
-    }
-
-    public void setDeductionDate(Date deductionDate) {
-        this.deductionDate = deductionDate;
-    }
-
     public Byte getDeductionProductType() {
         return deductionProductType;
     }
@@ -102,4 +96,20 @@ public class MarketingCoupon {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
+	public Date getDeductionStartDate() {
+		return deductionStartDate;
+	}
+
+	public void setDeductionStartDate(Date deductionStartDate) {
+		this.deductionStartDate = deductionStartDate;
+	}
+
+	public Date getDeductionEndDate() {
+		return deductionEndDate;
+	}
+
+	public void setDeductionEndDate(Date deductionEndDate) {
+		this.deductionEndDate = deductionEndDate;
+	}
 }

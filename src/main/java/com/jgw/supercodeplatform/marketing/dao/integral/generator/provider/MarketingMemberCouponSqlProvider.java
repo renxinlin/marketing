@@ -57,8 +57,12 @@ public class MarketingMemberCouponSqlProvider {
             sql.VALUES("ObtainCustomerId", "#{obtainCustomerId,jdbcType=VARCHAR}");
         }
         
-        if (record.getDeductionDate() != null) {
-            sql.VALUES("DeductionDate", "#{deductionDate,jdbcType=DATE}");
+        if (record.getDeductionStartDate() != null) {
+            sql.VALUES("DeductionStartDate", "#{deductionStartDate,jdbcType=DATE}");
+        }
+        
+        if (record.getDeductionEndDate() != null) {
+            sql.VALUES("DeductionEndDate", "#{deductionEndDate,jdbcType=DATE}");
         }
         
         if(record.getObtainCustmerName() != null) {
@@ -148,8 +152,12 @@ public class MarketingMemberCouponSqlProvider {
             sql.SET("ObtainCustomerId = #{obtainCustomerId,jdbcType=VARCHAR}");
         }
         
-        if (record.getDeductionDate() != null) {
-            sql.SET("DeductionDate = #{deductionDate,jdbcType=DATE}");
+        if (record.getDeductionStartDate() != null) {
+            sql.SET("DeductionStartDate = #{deductionStartDate,jdbcType=DATE}");
+        }
+        
+        if (record.getDeductionEndDate() != null) {
+            sql.SET("DeductionEndDate = #{deductionEndDate,jdbcType=DATE}");
         }
         
         if(record.getObtainCustmerName() != null) {

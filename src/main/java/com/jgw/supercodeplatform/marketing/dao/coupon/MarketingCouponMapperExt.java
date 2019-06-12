@@ -14,13 +14,14 @@ public interface MarketingCouponMapperExt extends MarketingCouponMapper, CommonS
 
     @Insert(startScript +
             " insert into marketing_coupon ( ActivitySetId, "+
-            " CouponAmount, DeductionDate, "+
+            " CouponAmount, DeductionStartDate, DeductionEndDate, "+
             " DeductionProductType, DeductionChannelType ) values "+
             "<foreach collection='list' item='channel' index='index' separator=','>"+
             "(" +
             "#{channel.activitySetId}," +
             "#{channel.couponAmount}," +
-            "#{channel.deductionDate}," +
+            "#{channel.deductionStartDate}," +
+            "#{channel.deductionEndDate}," +
             "#{channel.deductionProductType}," +
             "#{channel.deductionChannelType}" +
             ")"+

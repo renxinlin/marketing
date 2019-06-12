@@ -34,7 +34,9 @@ public class MarketingMemberCoupon {
     @ApiModelProperty("获得渠道名称")
     private String obtainCustmerName;
     @ApiModelProperty(hidden = true)
-    private Date deductionDate;
+    private Date deductionStartDate;
+    @ApiModelProperty(hidden = true)
+    private Date deductionEndDate;
     @ApiModelProperty("获得时间")
     private Date createTime;
     @ApiModelProperty(hidden = true)
@@ -43,7 +45,24 @@ public class MarketingMemberCoupon {
     private String verifyCustomerName;
     @ApiModelProperty("核销人员姓名")
     private String verifyPersonName;
-    @ApiModelProperty("核销人员手机")
+    
+    public Date getDeductionStartDate() {
+		return deductionStartDate;
+	}
+
+	public void setDeductionStartDate(Date deductionStartDate) {
+		this.deductionStartDate = deductionStartDate;
+	}
+
+	public Date getDeductionEndDate() {
+		return deductionEndDate;
+	}
+
+	public void setDeductionEndDate(Date deductionEndDate) {
+		this.deductionEndDate = deductionEndDate;
+	}
+
+	@ApiModelProperty("核销人员手机")
     private String verifyPersonPhone;
     @ApiModelProperty("核销时间")
     private Date verifyTime;
@@ -142,15 +161,7 @@ public class MarketingMemberCoupon {
     public void setObtainCustomerId(String obtainCustomerId) {
         this.obtainCustomerId = obtainCustomerId;
     }
-
-    public Date getDeductionDate() {
-        return deductionDate;
-    }
-
-    public void setDeductionDate(Date deductionDate) {
-        this.deductionDate = deductionDate;
-    }
-
+    
     public Date getCreateTime() {
         return createTime;
     }

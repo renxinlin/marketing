@@ -13,9 +13,9 @@ import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMapper {
 	
 	String allFields = "mmc.Id, mmc.MemberId memberId, mmc.CouponId couponId, mmc.CouponCode couponCode,mmc.CouponAmount couponAmount, mmc.MemberPhone memberPhone, mmc.ProductId productId, mmc.ProductBatchId productBatchId,"+
-	        "mmc.ProductBatchName productBatchName, mmc.SbatchId sbatchId, mmc.ProductName productName, mmc.ObtainCustomerId obtainCustomerId, mmc.DeductionDate deductionDate, mmc.CreateTime createTime,"+
-	        "mmc.ObtainCustmerName obtainCustmerName,mmc.VerifyCustomerId verifyCustomerId, mmc.VerifyCustomerName verifyCustomerName, mmc.VerifyPersonName verifyPersonName, mmc.VerifyPersonPhone verifyPersonPhone,"+
-	        "mmc.VerifyTime verifyTime,mmc.VerifyPersonType verifyPersonType, mmc.Used used ";
+	        "mmc.ProductBatchName productBatchName, mmc.SbatchId sbatchId, mmc.ProductName productName, mmc.ObtainCustomerId obtainCustomerId, mmc.DeductionStartDate deductionStartDate, mmc.DeductionEndDate deductionEndDate,"+
+	        "mmc.CreateTime createTime,mmc.ObtainCustmerName obtainCustmerName,mmc.VerifyCustomerId verifyCustomerId, mmc.VerifyCustomerName verifyCustomerName, mmc.VerifyPersonName verifyPersonName,"+
+	        "mmc.VerifyPersonPhone verifyPersonPhone,mmc.VerifyTime verifyTime,mmc.VerifyPersonType verifyPersonType, mmc.Used used ";
 	String whereSearch = "<where>"+
 			"<if test='organizationId !=null and organizationId != &apos;&apos; '> AND mas.OrganizationId = #{organizationId}</if>"+
 			"<if test='activitySetId !=null and activitySetId != &apos;&apos; '> AND mas.ActivitySetId = #{activitySetId}</if>"+
