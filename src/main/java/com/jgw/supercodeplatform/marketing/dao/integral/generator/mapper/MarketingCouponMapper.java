@@ -22,12 +22,12 @@ public interface MarketingCouponMapper {
     @Insert({
         "insert into marketing_coupon (Id, ActivitySetId, ",
         "OrganizationId, OrganizationName, ",
-        "CouponAmount, DeductionDate, ",
+        "CouponAmount, DeductionStartDate,DeductionEndDate, ",
         "DeductionProductType, DeductionChannelType, ",
         "CreateTime, UpdateTime)",
         "values (#{id,jdbcType=BIGINT}, #{activitySetId,jdbcType=BIGINT}, ",
         "#{organizationId,jdbcType=VARCHAR}, #{organizationName,jdbcType=VARCHAR}, ",
-        "#{couponAmount,jdbcType=DOUBLE}, #{deductionDate,jdbcType=DATE}, ",
+        "#{couponAmount,jdbcType=DOUBLE}, #{deductionStartDate,jdbcType=DATE},#{deductionEndDate,jdbcType=DATE}, ",
         "#{deductionProductType,jdbcType=TINYINT}, #{deductionChannelType,jdbcType=TINYINT}, ",
         "#{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})"
     })
@@ -38,7 +38,7 @@ public interface MarketingCouponMapper {
 
     @Select({
         "select",
-        "Id, ActivitySetId, OrganizationId, OrganizationName, CouponAmount, DeductionDate, ",
+        "Id, ActivitySetId, OrganizationId, OrganizationName, CouponAmount, DeductionStartDate, DeductionEndDate,",
         "DeductionProductType, DeductionChannelType, CreateTime, UpdateTime",
         "from marketing_coupon",
         "where Id = #{id,jdbcType=BIGINT}"
@@ -49,7 +49,8 @@ public interface MarketingCouponMapper {
         @Result(column="OrganizationId", property="organizationId", jdbcType=JdbcType.VARCHAR),
         @Result(column="OrganizationName", property="organizationName", jdbcType=JdbcType.VARCHAR),
         @Result(column="CouponAmount", property="couponAmount", jdbcType=JdbcType.DOUBLE),
-        @Result(column="DeductionDate", property="deductionDate", jdbcType=JdbcType.DATE),
+        @Result(column="DeductionStartDate", property="deductionStartDate", jdbcType=JdbcType.DATE),
+        @Result(column="DeductionEndDate", property="deductionEndDate", jdbcType=JdbcType.DATE),
         @Result(column="DeductionProductType", property="deductionProductType", jdbcType=JdbcType.TINYINT),
         @Result(column="DeductionChannelType", property="deductionChannelType", jdbcType=JdbcType.TINYINT),
         @Result(column="CreateTime", property="createTime", jdbcType=JdbcType.TIMESTAMP),
@@ -66,7 +67,8 @@ public interface MarketingCouponMapper {
           "OrganizationId = #{organizationId,jdbcType=VARCHAR},",
           "OrganizationName = #{organizationName,jdbcType=VARCHAR},",
           "CouponAmount = #{couponAmount,jdbcType=DOUBLE},",
-          "DeductionDate = #{deductionDate,jdbcType=DATE},",
+          "DeductionStartDate = #{deductionStartDate,jdbcType=DATE},",
+          "DeductionEndDate = #{deductionEndDate,jdbcType=DATE},",
           "DeductionProductType = #{deductionProductType,jdbcType=TINYINT},",
           "DeductionChannelType = #{deductionChannelType,jdbcType=TINYINT},",
           "CreateTime = #{createTime,jdbcType=TIMESTAMP},",

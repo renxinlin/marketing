@@ -14,10 +14,10 @@ public class MarketingCoupon {
      * 优惠券金额
      */
     private Double couponAmount;
-    /**
-     * 领取截止时间
-     */
-    private Date deductionDate;
+
+    private Date deductionStartDate;
+
+    private Date deductionEndDate;
 
     private Byte deductionProductType;
 
@@ -67,14 +67,6 @@ public class MarketingCoupon {
         this.couponAmount = couponAmount;
     }
 
-    public Date getDeductionDate() {
-        return deductionDate;
-    }
-
-    public void setDeductionDate(Date deductionDate) {
-        this.deductionDate = deductionDate;
-    }
-
     public Byte getDeductionProductType() {
         return deductionProductType;
     }
@@ -105,5 +97,21 @@ public class MarketingCoupon {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Date getDeductionStartDate() {
+        return deductionStartDate;
+    }
+
+    public void setDeductionStartDate(Date deductionStartDate) {
+        this.deductionStartDate = deductionStartDate;
+    }
+
+    public Date getDeductionEndDate() {
+        return deductionEndDate;
+    }
+
+    public void setDeductionEndDate(Date deductionEndDate) {
+        this.deductionEndDate = deductionEndDate;
     }
 }

@@ -13,5 +13,10 @@ public class MarketingCouponAmoutAndDateVo {
     /**
      * 领取截止时间
      */
-    private Date deductionDate;
+    private Date deductionStartDate;
+
+    /**
+     * 领取截止时间
+     */
+    private Date deductionEndDate;
 }

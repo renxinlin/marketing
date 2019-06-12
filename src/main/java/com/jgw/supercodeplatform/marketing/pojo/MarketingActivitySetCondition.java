@@ -62,39 +62,7 @@ public class MarketingActivitySetCondition {
      * @return
      */
     public String toJsonString(){
-        // {"":"","":""}
-        StringBuffer sb = new StringBuffer("{");
-        if(eachDayNumber != null ){
-            sb.append("\"eachDayNumber\":").append(eachDayNumber);
-
-        }
-        // 加逗号
-        if(participationCondition != null ){
-            sb.append(",\"participationCondition\":").append(participationCondition);
-        }
-
-        if(consumeIntegral != null ){
-            sb.append(",\"consumeIntegral\":").append(consumeIntegral);
-
-        }
-
-        if(acquireCondition != null ){
-            // 抵扣券
-            sb.append(",\"acquireCondition\":").append(acquireCondition);
-        }
-
-        if(acquireConditionIntegral != null ){
-            // 抵扣券
-            sb.append(",\"acquireConditionIntegral\":").append(acquireConditionIntegral);
-        }
-
-        if(allChannels != null ){
-            // 抵扣券
-            sb.append(",\"allChannels\":").append(allChannels);
-        }
-
-        sb.append("}");
-        String objectString = sb.toString();
+        String objectString = JSON.toJSONString(this);
         if(objectString.equals("{}")){
             return null;
         }

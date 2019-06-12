@@ -153,8 +153,9 @@ public class CouponService {
         for(MarketingCouponAmoutAndDateVo vo: couponAmoutAndDateVo){
             MarketingCoupon toDbEntity = new MarketingCoupon();
             toDbEntity.setActivitySetId(activitySetId);
-            toDbEntity.setDeductionDate(vo.getDeductionDate());
             toDbEntity.setCouponAmount(vo.getCouponAmount());
+            toDbEntity.setDeductionEndDate(vo.getDeductionEndDate());
+            toDbEntity.setDeductionStartDate(vo.getDeductionStartDate());
             toDbEntity.setDeductionChannelType(couponRules.getDeductionChannelType());
             toDbEntity.setDeductionProductType(couponRules.getDeductionProductType());
              toDbEntitys.add(toDbEntity);
@@ -475,7 +476,11 @@ public class CouponService {
             if(couponAmoutAndDateVo.getCouponAmount() == null || couponAmoutAndDateVo.getCouponAmount() <= 0 ){
                 throw new SuperCodeException("金额非法...");
             }
-            if(couponAmoutAndDateVo.getDeductionDate() == null || couponAmoutAndDateVo.getDeductionDate().before(date)){
+
+            if(couponAmoutAndDateVo.getDeductionStartDate() == null
+                    || couponAmoutAndDateVo.getDeductionEndDate() == null
+                    || couponAmoutAndDateVo.getDeductionEndDate().before(date)
+                    || couponAmoutAndDateVo.getDeductionEndDate().before(couponAmoutAndDateVo.getDeductionStartDate())){
                 throw new SuperCodeException("时间录入错误..."); // 时间精度暂时没有处理
             }
         }
@@ -584,7 +589,8 @@ public class CouponService {
         for(MarketingCoupon rule : marketingCoupons){
             MarketingCouponAmoutAndDateVo ruleVo = new MarketingCouponAmoutAndDateVo();
             ruleVo.setCouponAmount(rule.getCouponAmount());
-            ruleVo.setDeductionDate(ruleVo.getDeductionDate());
+            ruleVo.setDeductionStartDate(rule.getDeductionStartDate());
+            ruleVo.setDeductionEndDate(rule.getDeductionEndDate());
             couponAmoutAndDateVos.add(ruleVo);
         }
         couponRules.setCouponAmoutAndDateVo(couponAmoutAndDateVos);

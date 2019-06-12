@@ -12,18 +12,19 @@ import java.util.List;
 public interface MarketingCouponMapperExt extends MarketingCouponMapper, CommonSql {
     String bizField = " ActivitySetId, CouponAmount, DeductionDate, DeductionProductType, DeductionChannelType ";
     @Insert(startScript +
-            " insert into marketing_coupon ( ActivitySetId, " +
-            " CouponAmount, DeductionDate, "+
-            " DeductionProductType, DeductionChannelType ) values " +
-            " <foreach collection='list' item='channel' index='index' separator=','> " +
+            " insert into marketing_coupon ( ActivitySetId, "+
+            " CouponAmount, DeductionStartDate, DeductionEndDate, "+
+            " DeductionProductType, DeductionChannelType ) values "+
+            " <foreach collection='list' item='channel' index='index' separator=','>"+
             " (" +
-            " #{channel.activitySetId}, " +
-            " #{channel.couponAmount}, " +
-            " #{channel.deductionDate}, " +
-            " #{channel.deductionProductType}, " +
-            " #{channel.deductionChannelType} " +
-            " ) " +
-            " </foreach> " +
+            " #{channel.activitySetId}," +
+            " #{channel.couponAmount}," +
+            " #{channel.deductionStartDate}," +
+            " #{channel.deductionEndDate}," +
+            " #{channel.deductionProductType}," +
+            " #{channel.deductionChannelType}" +
+            ")"+
+            "</foreach>"+
             endScript)
     int batchInsert(@Param("list") List<MarketingCoupon> list);
 

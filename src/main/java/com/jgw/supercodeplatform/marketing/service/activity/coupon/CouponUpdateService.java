@@ -257,7 +257,8 @@ public class CouponUpdateService {
         for(MarketingCouponAmoutAndDateVo vo: couponAmoutAndDateVo){
             MarketingCoupon toDbEntity = new MarketingCoupon();
             toDbEntity.setActivitySetId(activitySetId);
-            toDbEntity.setDeductionDate(vo.getDeductionDate());
+            toDbEntity.setDeductionStartDate(vo.getDeductionStartDate());
+            toDbEntity.setDeductionEndDate(vo.getDeductionEndDate());
             toDbEntity.setCouponAmount(vo.getCouponAmount());
             toDbEntity.setDeductionChannelType(couponRules.getDeductionChannelType());
             toDbEntity.setDeductionProductType(couponRules.getDeductionProductType());
@@ -424,9 +425,12 @@ public class CouponUpdateService {
         for(MarketingCouponAmoutAndDateVo couponAmoutAndDateVo : couponRules.getCouponAmoutAndDateVo()){
             if(couponAmoutAndDateVo.getCouponAmount() == null || couponAmoutAndDateVo.getCouponAmount() <= 0 ){
                 throw new SuperCodeException("金额非法...");
-
             }
-            if(couponAmoutAndDateVo.getDeductionDate() == null || couponAmoutAndDateVo.getDeductionDate().before(date)){
+
+            if(couponAmoutAndDateVo.getDeductionStartDate() == null
+                    || couponAmoutAndDateVo.getDeductionEndDate() == null
+                    || couponAmoutAndDateVo.getDeductionEndDate().before(date)
+                    || couponAmoutAndDateVo.getDeductionEndDate().before(couponAmoutAndDateVo.getDeductionStartDate())){
                 throw new SuperCodeException("时间录入错误..."); // 时间精度暂时没有处理
             }
 
