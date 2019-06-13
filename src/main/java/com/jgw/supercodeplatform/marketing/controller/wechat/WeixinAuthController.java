@@ -199,6 +199,8 @@ public class WeixinAuthController {
 		String orgnazationName="";
 		H5LoginVO h5LoginVO=new H5LoginVO();
 		h5LoginVO.setMemberType(members.getMemberType());
+		h5LoginVO.setCustomerId(members.getCustomerId());
+		h5LoginVO.setCustomerName(members.getCustomerName());
 		h5LoginVO.setHaveIntegral(members.getHaveIntegral());
 		h5LoginVO.setMemberId(members.getId());
 		h5LoginVO.setMobile(members.getMobile());
