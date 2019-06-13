@@ -39,5 +39,13 @@ public enum CouponAcquireConditionEnum {
 			return conditionEnum.condition;
 		return null;
 	}
+
+	public int getType() {
+		return type;
+	}
+
+	public String getCondition() {
+		return condition;
+	}
 	
 }

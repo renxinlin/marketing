@@ -600,6 +600,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		h5LoginVO.setMemberId(trueMember.getId());
 		h5LoginVO.setHaveIntegral(trueMember.getHaveIntegral()==null?0:trueMember.getHaveIntegral());
 		h5LoginVO.setRegistered(trueMember.getIsRegistered().intValue());
+		h5LoginVO.setCustomerId(trueMember.getCustomerId());
+		h5LoginVO.setCustomerName(trueMember.getCustomerName());
 		return h5LoginVO;
 	}
 	

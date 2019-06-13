@@ -2,6 +2,8 @@ package com.jgw.supercodeplatform.marketing.pojo.integral;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -38,14 +40,28 @@ public class MarketingMemberCoupon {
     @ApiModelProperty(hidden = true)
     private Date deductionEndDate;
     @ApiModelProperty("获得时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     @ApiModelProperty(hidden = true)
     private String verifyCustomerId;
     @ApiModelProperty("核销渠道名称")
     private String verifyCustomerName;
+    @ApiModelProperty(hidden = true)
+    private Long verifyMemberId;
     @ApiModelProperty("核销人员姓名")
     private String verifyPersonName;
-    
+	@ApiModelProperty("核销人员手机")
+    private String verifyPersonPhone;
+    @ApiModelProperty("核销时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date verifyTime;
+    @ApiModelProperty(hidden = true)
+    private Byte verifyPersonType;
+    @ApiModelProperty(hidden = true)
+    private Byte used;
+    /***********获得条件，根据活动条件设置获取*************/
+    @ApiModelProperty("获得条件")
+    private String obtainCondition;
     public Date getDeductionStartDate() {
 		return deductionStartDate;
 	}
@@ -61,18 +77,6 @@ public class MarketingMemberCoupon {
 	public void setDeductionEndDate(Date deductionEndDate) {
 		this.deductionEndDate = deductionEndDate;
 	}
-
-	@ApiModelProperty("核销人员手机")
-    private String verifyPersonPhone;
-    @ApiModelProperty("核销时间")
-    private Date verifyTime;
-    @ApiModelProperty(hidden = true)
-    private Byte verifyPersonType;
-    @ApiModelProperty(hidden = true)
-    private Byte used;
-    /***********获得条件，根据活动条件设置获取*************/
-    @ApiModelProperty("获得条件")
-    private String obtainCondition;
 
     public Long getId() {
         return id;
@@ -248,5 +252,13 @@ public class MarketingMemberCoupon {
 
 	public void setObtainCondition(String obtainCondition) {
 		this.obtainCondition = obtainCondition;
+	}
+
+	public Long getVerifyMemberId() {
+		return verifyMemberId;
+	}
+
+	public void setVerifyMemberId(Long verifyMemberId) {
+		this.verifyMemberId = verifyMemberId;
 	}
 }
