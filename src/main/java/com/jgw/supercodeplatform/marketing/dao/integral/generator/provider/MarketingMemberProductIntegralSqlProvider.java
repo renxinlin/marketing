@@ -51,4 +51,49 @@ public class MarketingMemberProductIntegralSqlProvider {
         
         return sql.toString();
     }
+
+    public String updateByPrimaryKeySelective(MarketingMemberProductIntegral record) {
+        SQL sql = new SQL();
+        sql.UPDATE("marketing_member_product_integral");
+        
+        if (record.getMemberId() != null) {
+            sql.SET("MemberId = #{memberId,jdbcType=BIGINT}");
+        }
+        
+        if (record.getProductId() != null) {
+            sql.SET("ProductId = #{productId,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getProductBatchId() != null) {
+            sql.SET("ProductBatchId = #{productBatchId,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getSbatchId() != null) {
+            sql.SET("SbatchId = #{sbatchId,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getAccrueIntegral() != null) {
+            sql.SET("AccrueIntegral = #{accrueIntegral,jdbcType=BIGINT}");
+        }
+        
+        if (record.getOrganizationId() != null) {
+            sql.SET("OrganizationId = #{organizationId,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getOrganizationName() != null) {
+            sql.SET("OrganizationName = #{organizationName,jdbcType=VARCHAR}");
+        }
+        
+        if (record.getCreateTime() != null) {
+            sql.SET("CreateTime = #{createTime,jdbcType=TIMESTAMP}");
+        }
+        
+        if (record.getUpdateTime() != null) {
+            sql.SET("UpdateTime = #{updateTime,jdbcType=TIMESTAMP}");
+        }
+        
+        sql.WHERE("Id = #{id,jdbcType=BIGINT}");
+        
+        return sql.toString();
+    }
 }

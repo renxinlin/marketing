@@ -1,12 +1,16 @@
 package com.jgw.supercodeplatform.marketing.dao.coupon;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dao.integral.generator.mapper.MarketingCouponMapper;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
-import org.apache.ibatis.annotations.*;
-
-import java.util.List;
 
 @Mapper
 public interface MarketingCouponMapperExt extends MarketingCouponMapper, CommonSql {

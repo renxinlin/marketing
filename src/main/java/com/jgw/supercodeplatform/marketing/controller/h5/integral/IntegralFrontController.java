@@ -25,6 +25,8 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
+import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberProductIntegral;
+import com.jgw.supercodeplatform.marketing.service.activity.coupon.MarketingMemberProductIntegralService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleProductService;
@@ -64,6 +66,9 @@ public class IntegralFrontController {
 	
 	@Autowired
 	private RedisLockUtil lockUtil;
+	
+	@Autowired
+	private MarketingMemberProductIntegralService productIntegralService;
 	/**
 	 * 领取积分
 	 * 
@@ -144,9 +149,19 @@ public class IntegralFrontController {
 		    memberService.update(members);
 		    List<IntegralRecord> inRecords= (List<IntegralRecord>) data.get("integralRecords");
 		    if (null!=inRecords && !inRecords.isEmpty()) {
-			  integralRecordService.batchInsert(inRecords);
+		    	integralRecordService.batchInsert(inRecords);
 		    }
 		    result.setResults(dataList);
+		    //添加产品积分记录并获取优惠券
+		    if(sum != null && sum.longValue() > 0) {
+		    	MarketingMemberProductIntegral productIntegral = new MarketingMemberProductIntegral();
+		    	productIntegral.setAccrueIntegral(sum.longValue());
+		    	productIntegral.setMemberId(memberId);
+		    	productIntegral.setOrganizationId(organizationId);
+		    	productIntegral.setProductBatchId(productBatchId);
+		    	productIntegral.setProductId(productId);
+		    	productIntegralService.obtainCoupon(productIntegral, members, inRuleProduct.getProductName());
+		    }
 			// 7.把当前码存入积分ES。注意6,7是一个事务保证一致性且需在redis的同步锁里以防多个用户同时操作
 			esService.addCodeIntegral(members.getId(), outerCodeId, codeTypeId, productId, productBatchId, organizationId, staticESSafeFormat.parse(nowTime).getTime());
 		}else {

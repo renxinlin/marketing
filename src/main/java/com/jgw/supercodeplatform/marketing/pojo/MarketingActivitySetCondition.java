@@ -68,22 +68,5 @@ public class MarketingActivitySetCondition {
         }
         return objectString;
     }
-
-    // 测试
-    public static void main(String[] args) {
-        MarketingActivitySetCondition object = new MarketingActivitySetCondition();
-         String s = JSONObject.toJSONString(object);
-        System.out.println(s);
-
-        MarketingActivitySetCondition marketingActivitySetCondition = JSONObject.parseObject(s, MarketingActivitySetCondition.class);
-        System.out.println(marketingActivitySetCondition);
-
-        String s1 = object.toJsonString();
-
-
-        MarketingActivitySetCondition marketingActivitySetCondition1 = JSONObject.parseObject(s1, MarketingActivitySetCondition.class);
-        System.out.println(marketingActivitySetCondition1);
-    }
-
     
 }

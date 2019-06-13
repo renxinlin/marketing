@@ -5,101 +5,102 @@ import java.util.Date;
 public class MarketingMemberProductIntegral {
     private Long id;
 
-    private Long memberId;
+	private Long memberId;
 
-    private String productId;
+	private String productId;
 
-    private String productBatchId;
+	private String productBatchId;
 
-    private String sbatchId;
+	private String sbatchId;
 
-    private Long accrueIntegral;
+	private Long accrueIntegral;
 
-    private String organizationId;
+	private String organizationId;
 
-    private String organizationName;
+	private String organizationName;
 
-    private Date createTime;
+	private Date createTime;
 
-    private Date updateTime;
+	private Date updateTime;
 
-    public Long getId() {
-        return id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Long getMemberId() {
-        return memberId;
-    }
+	public Long getMemberId() {
+		return memberId;
+	}
 
-    public void setMemberId(Long memberId) {
-        this.memberId = memberId;
-    }
+	public void setMemberId(Long memberId) {
+		this.memberId = memberId;
+	}
 
-    public String getProductId() {
-        return productId;
-    }
+	public String getProductId() {
+		return productId;
+	}
 
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
 
-    public String getProductBatchId() {
-        return productBatchId;
-    }
+	public String getProductBatchId() {
+		return productBatchId;
+	}
 
-    public void setProductBatchId(String productBatchId) {
-        this.productBatchId = productBatchId;
-    }
+	public void setProductBatchId(String productBatchId) {
+		this.productBatchId = productBatchId;
+	}
 
-    public String getSbatchId() {
-        return sbatchId;
-    }
+	public String getSbatchId() {
+		return sbatchId;
+	}
 
-    public void setSbatchId(String sbatchId) {
-        this.sbatchId = sbatchId;
-    }
+	public void setSbatchId(String sbatchId) {
+		this.sbatchId = sbatchId;
+	}
 
-    public Long getAccrueIntegral() {
-        return accrueIntegral;
-    }
+	public Long getAccrueIntegral() {
+		return accrueIntegral;
+	}
 
-    public void setAccrueIntegral(Long accrueIntegral) {
-        this.accrueIntegral = accrueIntegral;
-    }
+	public void setAccrueIntegral(Long accrueIntegral) {
+		this.accrueIntegral = accrueIntegral;
+	}
 
-    public String getOrganizationId() {
-        return organizationId;
-    }
+	public String getOrganizationId() {
+		return organizationId;
+	}
 
-    public void setOrganizationId(String organizationId) {
-        this.organizationId = organizationId;
-    }
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
+	}
 
-    public String getOrganizationName() {
-        return organizationName;
-    }
+	public String getOrganizationName() {
+		return organizationName;
+	}
 
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
-    }
+	public void setOrganizationName(String organizationName) {
+		this.organizationName = organizationName;
+	}
 
-    public Date getCreateTime() {
-        return createTime;
-    }
+	public Date getCreateTime() {
+		return createTime;
+	}
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
+	public Date getUpdateTime() {
+		return updateTime;
+	}
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
+
 }

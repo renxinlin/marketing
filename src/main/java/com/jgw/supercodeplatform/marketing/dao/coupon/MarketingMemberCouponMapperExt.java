@@ -2,7 +2,9 @@ package com.jgw.supercodeplatform.marketing.dao.coupon;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -94,6 +96,16 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 	
 	@Select("select count(*) from marketing_member_coupon where VerifyMemberId = #{verifyMemberId} and VerifyCustomerId = #{verifyCustomerId}")
 	int CustomerVerifyCouponCout(CouponCustmerVerifyPageParam searchParams);
+	
+	@Insert({"<script>insert into marketing_member_coupon ",
+		"(MemberId,CouponId,CouponAmount,MemberPhone,ProductId,ProductName,ObtainCustomerId,DeductionStartDate,DeductionEndDate,ObtainCustmerName,CreateTime,Used)",
+		"values <foreach collection='memberCouponList' item='memberCoupon' index='index' separator=','>",
+		"(#{memberCoupon.memberId},#{memberCoupon.couponId},#{memberCoupon.couponAmount},#{memberCoupon.memberPhone},#{memberCoupon.productId},#{memberCoupon.productName},#{memberCoupon.obtainCustomerId},",
+		"#{memberCoupon.deductionStartDate},#{memberCoupon.deductionEndDate},#{memberCoupon.obtainCustmerName},#{memberCoupon.createTime},#{memberCoupon.used})",
+		"</foreach>",
+		"</script>"})
+	@Options(useGeneratedKeys=true, keyColumn="Id",keyProperty="id")
+	int insertList(@Param("memberCouponList")List<MarketingMemberCoupon> memberCouponList);
 	
 	
 }

@@ -19,7 +19,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageR
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingCouponPageParam;
-import com.jgw.supercodeplatform.marketing.enums.market.CouponAcquireConditionEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
 import com.jgw.supercodeplatform.marketing.exception.base.ExcelException;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
@@ -73,14 +73,14 @@ public class ActivityCouponController extends CommonUtil{
 		MarketingActivitySetCondition marketingActivitySetCondition = JSON.parseObject(validCondition, MarketingActivitySetCondition.class);
 		Byte acquireCondition = marketingActivitySetCondition.getAcquireCondition();
 		if(acquireCondition != null) {
-			int acquireConditionInt = acquireCondition.intValue();
+			byte acquireConditionByte = acquireCondition.byteValue();
 			List<MarketingMemberCoupon> memberCouponList = couponResult.getList();
 			if(memberCouponList != null) {
 				memberCouponList.forEach(marketingMemberCoupon -> {
-					String condtion = CouponAcquireConditionEnum.getConditionByType(acquireConditionInt);
-					if(acquireConditionInt == 2 || acquireConditionInt == 3)
-						condtion = condtion + marketingActivitySetCondition.getAcquireConditionIntegral();
-					marketingMemberCoupon.setObtainCondition(condtion);
+					String desc = CouponAcquireConditionEnum.getConditionDescByType(acquireConditionByte);
+					if(acquireConditionByte == 2 || acquireConditionByte == 3)
+						desc = desc + marketingActivitySetCondition.getAcquireConditionIntegral();
+					marketingMemberCoupon.setObtainCondition(desc);
 				});
 			}
 		}
@@ -102,14 +102,14 @@ public class ActivityCouponController extends CommonUtil{
 		Byte acquireCondition = marketingActivitySetCondition.getAcquireCondition();
 		if(acquireCondition == null)
 			throw new SuperCodeException("抵扣券获得条件类型为空", 500);
-		int acquireConditionInt = acquireCondition.intValue();
+		byte acquireConditionByte = acquireCondition.byteValue();
 		if(marketingMemberCouponList == null)
 			throw new ExcelException("抵扣券列表为空", 500);
 		marketingMemberCouponList.forEach(marketingMemberCoupon -> {
-			String condtion = CouponAcquireConditionEnum.getConditionByType(acquireConditionInt);
-			if(acquireConditionInt == 2 || acquireConditionInt == 3)
-				condtion = condtion + marketingActivitySetCondition.getAcquireConditionIntegral();
-			marketingMemberCoupon.setObtainCondition(condtion);
+			String desc = CouponAcquireConditionEnum.getConditionDescByType(acquireConditionByte);
+			if(acquireConditionByte == 2 || acquireConditionByte == 3)
+				desc = desc + marketingActivitySetCondition.getAcquireConditionIntegral();
+			marketingMemberCoupon.setObtainCondition(desc);
 		});
 		ExcelUtils.listToExcel(marketingMemberCouponList, FILED_MAP, "核销记录", response);
 	}

@@ -1,8 +1,5 @@
 package com.jgw.supercodeplatform.marketing.enums.market.coupon;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * 优惠券获得条件枚举
  */
@@ -26,20 +23,48 @@ public enum CouponAcquireConditionEnum {
      */
     SHOPPING((byte)4,"参加获得抵扣券的产品");
 
-    @Getter
-    @Setter
     private Byte condition;
 
-
-
-    @Getter
-    @Setter
     private String desc;
 
-    CouponAcquireConditionEnum(Byte condition, String desc){
+    CouponAcquireConditionEnum(byte condition, String desc){
         this.condition=condition;
         this.desc=desc;
 
     }
+    
+	/**
+	 * 根据type获得对应的枚举类型
+	 * @param type
+	 * @return
+	 */
+	public static CouponAcquireConditionEnum getConditionEnumByType(byte condition) {
+		CouponAcquireConditionEnum[] conditionEnums = CouponAcquireConditionEnum.values();
+		for(CouponAcquireConditionEnum conditionEnum : conditionEnums) {
+			if(conditionEnum.condition.byteValue() == condition)
+				return conditionEnum;
+		}
+		return null;
+	}
+	
+	/**
+	 * 根据type获得对应的枚举类型解释
+	 * @param type
+	 * @return
+	 */
+	public static String getConditionDescByType(byte type) {
+		CouponAcquireConditionEnum conditionEnum = getConditionEnumByType(type);
+		if(conditionEnum != null)
+			return conditionEnum.desc;
+		return null;
+	}
+
+	public Byte getCondition() {
+		return condition;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
 
 }
