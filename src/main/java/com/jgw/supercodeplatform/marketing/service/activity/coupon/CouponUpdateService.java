@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
 import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
@@ -16,6 +17,7 @@ import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
+import com.jgw.supercodeplatform.marketing.dto.codemanagerservice.CouponActivity;
 import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAddParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponAmoutAndDateVo;
@@ -24,10 +26,7 @@ import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityStatusEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.AutoGetEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponWithAllChannelEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.coupon.DeductionChannelTypeEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.coupon.DeductionProductTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.*;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
@@ -79,7 +78,7 @@ public class CouponUpdateService {
 
 
     @Autowired
-    private ModelMapper modelMapper;
+    private RestTemplateUtil restTemplateUtil;
 
     @Autowired
     private MarketingChannelMapper channelMapper;
@@ -95,10 +94,10 @@ public class CouponUpdateService {
         validateBasicByUpdate(copyVO);
         validateBizByUpdate(copyVO);
         // 删除子表信息
-        doBizBeforeUpdate(copyVO);
+        // doBizBeforeUpdate(copyVO);
         // 更新活动设置表
         MarketingActivitySet activitySet = changeVoToDtoForMarketingActivitySet(copyVO);
-        setMapper.deleteById(activitySet.getId());
+        // setMapper.deleteById(activitySet.getId());
         // 更新了Id
         setMapper.insert(activitySet);
 
@@ -269,6 +268,19 @@ public class CouponUpdateService {
 
         // TODO 等待建强那边处理交互协议
         if(send){
+            // TODO 处理优惠券获取
+            List<CouponActivity>  couponActivitys = new ArrayList<>();
+            mList.forEach(product ->{
+                CouponActivity couponActivity = new CouponActivity();
+                couponActivity.setProductId(product.getProductId());
+                couponActivity.setProductBatchId(product.getProductBatchId());
+                couponActivity.setStatus(BindCouponRelationToCodeManagerEnum.BIND.getBinding());
+                couponActivitys.add(couponActivity);
+            });
+            String jsonData=JSONObject.toJSONString(couponActivitys);
+            Map<String,String> headerMap=new HashMap<>();
+            headerMap.put(ActivityDefaultConstant.superToken, commonUtil.getSuperToken());
+            restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, headerMap);
 
         }
         //插入对应活动产品数据

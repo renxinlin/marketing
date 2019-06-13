@@ -1,9 +1,14 @@
 package com.jgw.supercodeplatform.marketing.mq.receiver.bizchain;
 
+import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 所有活动自动获取的处理方式
  */
 public abstract class AutoFetchChainAbs<T> {
+    private Logger logger = LoggerFactory.getLogger(AutoFetchChainAbs.class);
     private AutoFetchChainAbs<T> next;
     /**
      * 是否传播执行; 默认传播
@@ -25,9 +30,17 @@ public abstract class AutoFetchChainAbs<T> {
 
     public  void  boBizAndSend(T datafromMq){
         if( shouldProcess(datafromMq)){
-            ifDoBiz(datafromMq);
+            try {
+                ifDoBiz(datafromMq);
+            } catch (Exception e) {
+                logger.error("{}调用 ifDoBiz({})异常{}", this.getClass().getName(), JSONObject.toJSONString(datafromMq),e.getMessage());
+            }
         }else {
-            ifNotBiz(datafromMq);
+            try {
+                ifNotBiz(datafromMq);
+            } catch (Exception e) {
+                logger.error("{}调用 ifNotBiz({})异常{}", this.getClass().getName(), JSONObject.toJSONString(datafromMq),e.getMessage());
+            }
 
         }
         if(next != null && transfer){

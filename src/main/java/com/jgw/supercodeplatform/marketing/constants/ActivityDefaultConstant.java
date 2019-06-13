@@ -14,4 +14,5 @@ public class ActivityDefaultConstant {
      * 默认的活动结束时间
      */
     public static final String activityEndDate ="2099-01-01";
+    public static final String superToken ="super-token";
 }

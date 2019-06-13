@@ -273,7 +273,9 @@ public class CommonService {
 		params.put("organizationIds", JSONObject.toJSONString(orgIds));
 		Map<String,String>headerMap=new HashMap<String, String>();
 		headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForBaseInfo());
-		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, null);
+		HashMap superToken = new HashMap();
+		superToken.put("super-token",commonUtil.getSuperToken());
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, superToken);
 		String body=responseEntity.getBody();
 		logger.info("请求基础平台批量获取组织信息接口返回信息："+body);
 

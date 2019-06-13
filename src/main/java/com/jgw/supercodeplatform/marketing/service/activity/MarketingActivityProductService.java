@@ -100,7 +100,10 @@ public class MarketingActivityProductService {
 		params.put("current",current);
 		Map<String, String> headerMap=new HashMap<>();
 		headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
-		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, null);
+        HashMap superToken = new HashMap();
+        superToken.put("super-token",commonUtil.getSuperToken());
+
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
 		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
 		String body=responseEntity.getBody();
 		JSONObject json=JSONObject.parseObject(body);
