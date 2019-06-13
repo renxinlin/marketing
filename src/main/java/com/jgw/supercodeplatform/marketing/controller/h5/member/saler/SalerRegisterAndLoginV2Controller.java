@@ -122,6 +122,8 @@ public class SalerRegisterAndLoginV2Controller {
                 jwtUser.setMemberId(user.getId());
                 jwtUser.setOrganizationId(loginUser.getOrganizationId());
                 jwtUser.setMemberType(MemberTypeEnums.SALER.getType());
+                jwtUser.setCustomerId(user.getCustomerId());
+                jwtUser.setCustomerName(user.getCustomerName());
                 // TODO 可能存在其他登录信息需要设置
 
                 String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);
