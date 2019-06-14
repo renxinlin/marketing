@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.h5.coupon;
+package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -10,7 +10,7 @@ import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +21,6 @@ import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponPageParam;
 import com.jgw.supercodeplatform.marketing.enums.market.CouponVerifyEnum;
@@ -62,7 +61,7 @@ public class CouponController {
 	@GetMapping("/listCoupon")
 	@ApiOperation("抵扣券记录")
 	@ApiImplicitParams(@ApiImplicitParam(paramType="header",value = "新平台token",name="super-token"))
-	public RestResult<PageResults<List<CouponPageVo>>> listCoupon(CouponPageParam couponPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
+	public RestResult<PageResults<List<CouponPageVo>>> listCoupon(@RequestBody CouponPageParam couponPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
 		couponPageParam.setMemberId(jwtUser.getMemberId());
 		PageResults<List<CouponPageVo>> couponPageResult = couponMemberService.listSearchViewLike(couponPageParam);
 		return new RestResult<>(HttpStatus.SC_OK, "查询成功", couponPageResult);
@@ -105,7 +104,7 @@ public class CouponController {
 		return RestResult.success();
 	}
 	
-	@GetMapping("/couponVerify")
+	@PostMapping("/couponVerify")
 	@ApiOperation("抵扣券核销")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="super-token")
 	,@ApiImplicitParam(paramType="body",value = "用户会员手机号",name="memberPhone")
@@ -148,7 +147,7 @@ public class CouponController {
 	@GetMapping("/listVerify")
 	@ApiOperation("核销人员核销列表")
 	@ApiImplicitParams(@ApiImplicitParam(paramType="header",value = "新平台token",name="super-token"))
-	public RestResult<PageResults<List<CouponVerifyVo>>> listVerify(CouponCustmerVerifyPageParam verifyPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
+	public RestResult<PageResults<List<CouponVerifyVo>>> listVerify(@RequestBody CouponCustmerVerifyPageParam verifyPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
 		verifyPageParam.setVerifyCustomerId(jwtUser.getCustomerId());
 		verifyPageParam.setVerifyMemberId(jwtUser.getMemberId());
 		PageResults<List<CouponVerifyVo>> verifyResult = couponCustmerVerifyService.listSearchViewLike(verifyPageParam);

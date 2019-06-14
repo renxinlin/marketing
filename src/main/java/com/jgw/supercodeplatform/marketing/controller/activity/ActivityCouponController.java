@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/marketing/coupon/verify")
-@Api(tags = "抵扣券核销")
+@Api(tags = "抵扣券核销管理")
 public class ActivityCouponController extends CommonUtil{
 	
 	private static final Map<String, String> FILED_MAP = new HashMap<>();
