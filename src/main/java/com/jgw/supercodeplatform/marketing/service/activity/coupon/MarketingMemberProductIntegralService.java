@@ -1,13 +1,20 @@
 package com.jgw.supercodeplatform.marketing.service.activity.coupon;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
@@ -22,6 +29,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberProductIntegral;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
 @Service
 public class MarketingMemberProductIntegralService {
@@ -44,8 +52,10 @@ public class MarketingMemberProductIntegralService {
 	/**
 	 * 添加产品积分记录并判断参加的活动获取抵扣券
 	 * @param productIntegral
+	 * @throws ParseException 
 	 */
-	public void obtainCoupon(MarketingMemberProductIntegral productIntegral, MarketingMembers members, String productName) {
+	@Transactional(rollbackFor = Exception.class)
+	public void obtainCoupon(MarketingMemberProductIntegral productIntegral, MarketingMembers members, String productName) throws ParseException {
 		//添加或者更新累计积分
 		MarketingMemberProductIntegral marketingMemberProductIntegral = productIntegralMapper.selectProductIntegralByMemberIdAndProductId(productIntegral.getMemberId(), productIntegral.getProductId());
 		long sumIntegral = productIntegral.getAccrueIntegral();
@@ -65,7 +75,14 @@ public class MarketingMemberProductIntegralService {
 		MarketingActivityProduct marketingActivityProduct = marketingActivityProductMapper.selectByProductAndProductBatchIdWithReferenceRole(productId, productBatchId, MemberTypeEnums.VIP.getType());
 		if(marketingActivityProduct != null) {
 			MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(marketingActivityProduct.getActivitySetId());
-			if(marketingActivitySet.getActivityId().intValue() == 4) {
+			int activityStatus = marketingActivitySet.getActivityStatus() == null?0:marketingActivitySet.getActivityStatus().intValue();
+			int activityId = marketingActivitySet.getActivityId().intValue();
+			String activityStartDateStr = marketingActivitySet.getActivityStartDate();
+			String activityEndDateStr = marketingActivitySet.getActivityEndDate();
+			long currentMills = System.currentTimeMillis();
+			long activityStartMills = StringUtils.isBlank(activityStartDateStr)?0L:DateUtils.parseDate(activityStartDateStr, new String[]{"yyyy-MM-dd HH:mm:ss"}).getTime();
+			long activityEndMills = StringUtils.isBlank(activityEndDateStr)?0L:DateUtils.parseDate(activityEndDateStr, new String[]{"yyyy-MM-dd HH:mm:ss"}).getTime();
+			if(activityId == 4 && activityStatus == 1 && ((activityStartMills < currentMills && currentMills < activityEndMills)||(activityStartMills == 0 && activityEndMills == 0))) {
 				String validCondition = marketingActivitySet.getValidCondition();
 				MarketingActivitySetCondition activityCondtion = JSON.parseObject(validCondition, MarketingActivitySetCondition.class);
 				Byte acquireCondition = activityCondtion.getAcquireCondition();
@@ -138,5 +155,29 @@ public class MarketingMemberProductIntegralService {
 			marketingMemberCouponMapper.updateByPrimaryKeySelective(marketingMemberCoupon);
 		});
 	}
+	
+	/**
+	 * 用户扫码指定产品领取抵扣券
+	 * @param activitySetId
+	 * @param productId
+	 * @param jwtUser
+	 * @throws SuperCodeException
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public void obtainCouponShopping(Long activitySetId, String productId, H5LoginVO jwtUser) throws SuperCodeException {
+		MarketingMembers member = new MarketingMembers();
+		member.setId(jwtUser.getMemberId());
+		member.setMobile(jwtUser.getMobile());
+		member.setCustomerId(jwtUser.getCustomerId());
+		member.setCustomerName(jwtUser.getCustomerName());
+		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(productId, MemberTypeEnums.VIP.getType());
+		if(CollectionUtils.isEmpty(marketingActivityProductList))
+			throw new SuperCodeException("‘活动产品为空’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		String productName = marketingActivityProductList.get(0).getProductName();
+		List<MarketingCoupon> marketingCouponList = marketingCouponMapper.selectByActivitySetId(activitySetId);
+		addMarketingMemberCoupon(marketingCouponList, member, productId, productName);
+	}
+	
+	
 	
 }
