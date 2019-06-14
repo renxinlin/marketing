@@ -207,6 +207,8 @@ public class WeixinAuthController {
 		h5LoginVO.setWechatHeadImgUrl(members.getWechatHeadImgUrl());
 		h5LoginVO.setMemberName(members.getUserName()==null?members.getWxName():members.getUserName());
 		h5LoginVO.setOrganizationId(members.getOrganizationId());
+		h5LoginVO.setCustomerId(members.getCustomerId());
+		h5LoginVO.setCustomerName(members.getCustomerName());
 		try {
 			orgnazationName=commonService.getOrgNameByOrgId(members.getOrganizationId());
 
@@ -333,6 +335,8 @@ public class WeixinAuthController {
 					jwtUser.setMemberId(marketingUser.getId());
 					jwtUser.setOrganizationId(marketingUser.getOrganizationId());
 					jwtUser.setMemberType(MemberTypeEnums.SALER.getType());
+					jwtUser.setCustomerId(marketingUser.getCustomerId());
+					jwtUser.setCustomerName(marketingUser.getCustomerName());
 					// TODO 可能存在其他登录信息需要设置
 
 					String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);
