@@ -21,12 +21,14 @@ import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
+import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponPageParam;
 import com.jgw.supercodeplatform.marketing.enums.market.CouponVerifyEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
+import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.activity.coupon.MarketingMemberProductIntegralService;
@@ -55,6 +57,8 @@ public class CouponController {
 	private MarketingActivitySetService marketingActivitySetService;
 	@Autowired
 	private MarketingMemberProductIntegralService marketingMemberProductIntegralService;
+	@Autowired
+	private MarketingCouponMapperExt marketingCouponMapper;
 	@Autowired
 	private GlobalRamCache globalRamCache;
 	
@@ -127,7 +131,9 @@ public class CouponController {
 		if(deductionEndDate != null && deductionEndDate.getTime() < currentMills)
 			throw new SuperCodeException("‘抵扣券已过期’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		String obtainCustomerId = marketingMemberCoupon.getObtainCustomerId();
-		if(!StringUtils.equals(obtainCustomerId, jwtUser.getCustomerId()))
+		MarketingCoupon marketingCoupon = marketingCouponMapper.selectByPrimaryKey(marketingMemberCoupon.getCouponId());
+		int deductionChannelType = marketingCoupon.getDeductionChannelType().intValue();
+		if(deductionChannelType == 1 && !StringUtils.equals(obtainCustomerId, jwtUser.getCustomerId())) 
 			throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		//填充抵扣券核销信息
 		MarketingMemberCoupon memberCoupon = new MarketingMemberCoupon();
