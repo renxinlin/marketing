@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dto.coupon;
 
+import javax.validation.constraints.NotNull;
+
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 
 import io.swagger.annotations.ApiModel;
@@ -11,6 +13,7 @@ public class CouponPageParam extends DaoSearch {
 	@ApiModelProperty(hidden = true)
 	private Long memberId;
 	@ApiModelProperty("查询类型：1.未使用，2.已使用，3.已过期")
+	@NotNull(message = "查询使用类型不能为空")
 	private Integer useType;
 
 	public Long getMemberId() {

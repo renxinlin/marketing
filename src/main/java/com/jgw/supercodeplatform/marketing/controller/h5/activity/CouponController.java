@@ -8,9 +8,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -64,8 +64,8 @@ public class CouponController {
 	
 	@GetMapping("/listCoupon")
 	@ApiOperation("抵扣券记录")
-	@ApiImplicitParams(@ApiImplicitParam(paramType="header",value = "新平台token",name="super-token"))
-	public RestResult<PageResults<List<CouponPageVo>>> listCoupon(@RequestBody CouponPageParam couponPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
+	@ApiImplicitParams(@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token"))
+	public RestResult<PageResults<List<CouponPageVo>>> listCoupon(@Validated CouponPageParam couponPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
 		couponPageParam.setMemberId(jwtUser.getMemberId());
 		PageResults<List<CouponPageVo>> couponPageResult = couponMemberService.listSearchViewLike(couponPageParam);
 		return new RestResult<>(HttpStatus.SC_OK, "查询成功", couponPageResult);
@@ -73,7 +73,7 @@ public class CouponController {
 	
 	@PostMapping("/obtainCoupon")
 	@ApiOperation("用户领取抵扣券")
-	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="super-token")
+	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
 	,@ApiImplicitParam(paramType="body",value = "活动ID",name="activitySetId")})
 	public RestResult<?> obtainCoupon(@RequestParam String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException{
 		ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
@@ -110,7 +110,7 @@ public class CouponController {
 	
 	@PostMapping("/couponVerify")
 	@ApiOperation("抵扣券核销")
-	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="super-token")
+	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
 	,@ApiImplicitParam(paramType="body",value = "用户会员手机号",name="memberPhone")
 	,@ApiImplicitParam(paramType="body",value = "抵扣券码",name="couponCode")})
 	public RestResult<Double> couponVerify(@RequestParam String memberPhone, @RequestParam String couponCode, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException{
@@ -152,8 +152,8 @@ public class CouponController {
 	
 	@GetMapping("/listVerify")
 	@ApiOperation("核销人员核销列表")
-	@ApiImplicitParams(@ApiImplicitParam(paramType="header",value = "新平台token",name="super-token"))
-	public RestResult<PageResults<List<CouponVerifyVo>>> listVerify(@RequestBody CouponCustmerVerifyPageParam verifyPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
+	@ApiImplicitParams(@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token"))
+	public RestResult<PageResults<List<CouponVerifyVo>>> listVerify(CouponCustmerVerifyPageParam verifyPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
 		verifyPageParam.setVerifyCustomerId(jwtUser.getCustomerId());
 		verifyPageParam.setVerifyMemberId(jwtUser.getMemberId());
 		PageResults<List<CouponVerifyVo>> verifyResult = couponCustmerVerifyService.listSearchViewLike(verifyPageParam);

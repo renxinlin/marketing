@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,7 +62,7 @@ public class ActivityCouponController extends CommonUtil{
 	@GetMapping("/list")
 	@ApiOperation("核销记录")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="super-token")})
-	public RestResult<PageResults<List<MarketingMemberCoupon>>> listCouponVerify(@RequestBody MarketingCouponPageParam marketingCouponPageParam) throws Exception{
+	public RestResult<PageResults<List<MarketingMemberCoupon>>> listCouponVerify(@Validated MarketingCouponPageParam marketingCouponPageParam) throws Exception{
 		marketingCouponPageParam.setOrganizationId(getOrganizationId());
 		marketingCouponPageParam.setUsed((byte)1);
 		MarketingActivitySet marketingActivitySet = marketingActivitySetService.selectById(marketingCouponPageParam.getActivitySetId());
@@ -90,7 +91,7 @@ public class ActivityCouponController extends CommonUtil{
 	@GetMapping("/export")
 	@ApiOperation("导出核销记录")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="super-token")})
-	public void exportExcel(@RequestBody MarketingCouponPageParam marketingCouponPageParam) throws SuperCodeException {
+	public void exportExcel(@Validated MarketingCouponPageParam marketingCouponPageParam) throws SuperCodeException {
 		marketingCouponPageParam.setOrganizationId(getOrganizationId());
 		marketingCouponPageParam.setUsed((byte)1);
 		MarketingActivitySet marketingActivitySet = marketingActivitySetService.selectById(marketingCouponPageParam.getActivitySetId());
