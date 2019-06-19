@@ -45,7 +45,7 @@ public interface MarketingActivityMapper extends CommonSql{
 	List<MarketingActivity> selectAll(@Param("activityType") Integer activityType);
 
 	@Select(startScript
-			+ " select aset.Id id, ac.ActivityName activityName,aset.ActivityTitle activityTitle, "
+			+ " select aset.Id id, aset.ActivityId activityId, ac.ActivityName activityName,aset.ActivityTitle activityTitle, "
 			+ " DATE_FORMAT(aset.ActivityStartDate,'%Y-%m-%d') as activityStartDate, "
 			+ " DATE_FORMAT(aset.ActivityEndDate,'%Y-%m-%d') as activityEndDate, "
 			+ " aset.UpdateUserName updateUserName, "
@@ -65,6 +65,7 @@ public interface MarketingActivityMapper extends CommonSql{
 			+endScript)
     @Results({
         @Result(column = "Id", property = "id", jdbcType = JdbcType.BIGINT),
+        @Result(column = "ActivityId", property = "activityId", jdbcType = JdbcType.BIGINT),
         @Result(column = "ActivityName", property = "activityName", jdbcType = JdbcType.VARCHAR),
         @Result(column = "ActivityTitle", property = "activityTitle", jdbcType = JdbcType.VARCHAR),
         @Result(column = "ActivityStartDate", property = "activityStartDate", jdbcType = JdbcType.DATE),
