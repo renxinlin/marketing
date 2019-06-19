@@ -207,45 +207,7 @@ public class CouponService {
                 productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
             }
         }
-        // 营销绑定生码批次
-        if (autoFecth == AutoGetEnum.BY_NOT_AUTO.getAuto()) {
-            String superToken = commonUtil.getSuperToken();
-            String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
-                    WechatConstants.code_relation_getBatchInfoWithoutType);
-            JSONObject obj = JSONObject.parseObject(body);
-            int state = obj.getInteger("state");
-            if (200 == state) {
-                // 生码批次数组
-                Map<String,Set<String> > productSbathIds = new HashMap<>();
-                JSONArray arr = obj.getJSONArray("results");
-
-                mList.forEach(marketingActivityProduct -> {
-                    Set<String> sbathIds = new HashSet();
-                    for(int i=0;i<arr.size();i++) {
-                        String globalBacthId = arr.getJSONObject(i).getString("globalBacthId");
-                        String productId = arr.getJSONObject(i).getString("productId");
-                        String productBatchId = arr.getJSONObject(i).getString("productBatchId");
-                        sbathIds.add(globalBacthId);
-                        if(marketingActivityProduct.getProductId().equals(productId)
-                                && marketingActivityProduct.getProductBatchId().equals(productBatchId)){
-                            sbathIds.add(globalBacthId);
-                            productSbathIds.put(productId+productBatchId,sbathIds);
-                        }
-                    }
-                    Set<String> sbathIdsDto = productSbathIds.get(marketingActivityProduct.getProductId() + marketingActivityProduct.getProductBatchId());
-                    if(!CollectionUtils.isEmpty(sbathIdsDto)){
-                        String[] sbathIdsDtoArray = new String[sbathIdsDto.size()];
-                        //Set-->数组
-                        sbathIdsDto.toArray(sbathIdsDtoArray);
-                        String sbatchId = StringUtils.join(sbathIdsDtoArray, SPILT);
-                        marketingActivityProduct.setSbatchId(sbatchId);
-                    }
-
-                });
-            } else {
-                throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
-            }
-        }
+        getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
 
         // TODO 等待建强那边处理交互协议
        if(send){
@@ -273,6 +235,53 @@ public class CouponService {
         productMapper.batchDeleteByProBatchsAndRole(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
         productMapper.activityProductInsert(mList);
     }
+
+    /**
+     * 根据产品和产品批次查询生码批次
+     * @param productAndBatchGetCodeMOs
+     * @param mList
+     * @throws SuperCodeException
+     */
+    public void getProductBatchSbatchId(List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs, List<MarketingActivityProduct> mList) throws SuperCodeException {
+        // 营销绑定生码批次
+        String superToken = commonUtil.getSuperToken();
+        String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
+                WechatConstants.code_relation_getBatchInfoWithoutType);
+        JSONObject obj = JSONObject.parseObject(body);
+        int state = obj.getInteger("state");
+        if (200 == state) {
+            // 生码批次数组
+            Map<String, Set<String>> productSbathIds = new HashMap<>();
+            JSONArray arr = obj.getJSONArray("results");
+
+            mList.forEach(marketingActivityProduct -> {
+                Set<String> sbathIds = new HashSet();
+                for(int i=0;i<arr.size();i++) {
+                    // 码管理回参类型
+                    String globalBacthId = arr.getJSONObject(i).getString("globalBacthId");
+                    String productId = arr.getJSONObject(i).getString("productId");
+                    String productBatchId = arr.getJSONObject(i).getString("productBatchId");
+                    sbathIds.add(globalBacthId);
+                    if(marketingActivityProduct.getProductId().equals(productId)
+                            && marketingActivityProduct.getProductBatchId().equals(productBatchId)){
+                        sbathIds.add(globalBacthId);
+                        productSbathIds.put(productId+productBatchId,sbathIds);
+                    }
+                }
+                Set<String> sbathIdsDto = productSbathIds.get(marketingActivityProduct.getProductId() + marketingActivityProduct.getProductBatchId());
+                if(!CollectionUtils.isEmpty(sbathIdsDto)){
+                    String[] sbathIdsDtoArray = new String[sbathIdsDto.size()];
+                    sbathIdsDto.toArray(sbathIdsDtoArray);
+                    String sbatchId = StringUtils.join(sbathIdsDtoArray, SPILT);
+                    marketingActivityProduct.setSbatchId(sbatchId);
+                }
+
+            });
+        } else {
+            throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
+        }
+    }
+
     private void saveChannels(List<MarketingChannelParam> channelParams, Long activitySetId) {
         List<MarketingChannel> mList=new ArrayList<MarketingChannel>();
         //遍历顶层

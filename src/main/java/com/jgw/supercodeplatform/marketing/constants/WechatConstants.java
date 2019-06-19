@@ -18,7 +18,7 @@ public interface WechatConstants {
     //码管理获取码管理批次信息接口
     String CODEMANAGER_GET_BATCH_CODE_INFO_URL="/code/relation/getBatchInfo";
 
-
+    // 根据产品和产品批次获取其下所有的生码批次
     String code_relation_getBatchInfoWithoutType="/code/relation/getBatchInfoWithoutType";
 
 

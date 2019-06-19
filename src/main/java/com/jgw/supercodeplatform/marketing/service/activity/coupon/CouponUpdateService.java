@@ -69,6 +69,8 @@ public class CouponUpdateService {
 
     @Autowired
     private CommonService commonService;
+    @Autowired
+    private CouponService couponService;
 
     @Autowired
     private MarketingActivityProductMapper productMapper;
@@ -261,28 +263,8 @@ public class CouponUpdateService {
                 productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
             }
         }
-        // 仅当前数量绑定生码批次
-        if (autoFecth == AutoGetEnum.BY_NOT_AUTO.getAuto()) {
-            // copy之前活动的代码
-            // TODO 这里产品和产品批次已经有了？是不是可以不请求 待处理
-            String superToken = commonUtil.getSuperToken();
-            String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
-                    WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
-            JSONObject obj = JSONObject.parseObject(body);
-            int state = obj.getInteger("state");
-            if (200 == state) {
-                JSONArray arr = obj.getJSONArray("results");
-                Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
-                        marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
-                        BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
-                mList.forEach(marketingActivityProduct -> {
-                    String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
-                    marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
-                });
-            } else {
-                throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
-            }
-        }
+        // 绑定绑定生码批次
+        couponService.getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
 
         // TODO 等待建强那边处理交互协议
         if(send){
