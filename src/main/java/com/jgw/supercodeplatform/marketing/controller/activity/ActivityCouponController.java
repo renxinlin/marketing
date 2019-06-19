@@ -9,7 +9,6 @@ import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -67,9 +66,8 @@ public class ActivityCouponController extends CommonUtil{
 		marketingCouponPageParam.setUsed((byte)1);
 		MarketingActivitySet marketingActivitySet = marketingActivitySetService.selectById(marketingCouponPageParam.getActivitySetId());
 		String validCondition = marketingActivitySet.getValidCondition();
-		if(StringUtils.isBlank(validCondition)) {
+		if(StringUtils.isBlank(validCondition)) 
 			throw new SuperCodeException("活动条件为空", 500);
-		}
 		PageResults<List<MarketingMemberCoupon>> couponResult = couponVerifyService.listSearchViewLike(marketingCouponPageParam);
 		MarketingActivitySetCondition marketingActivitySetCondition = JSON.parseObject(validCondition, MarketingActivitySetCondition.class);
 		Byte acquireCondition = marketingActivitySetCondition.getAcquireCondition();

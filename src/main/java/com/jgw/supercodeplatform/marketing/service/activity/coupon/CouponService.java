@@ -31,7 +31,6 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatch
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
-import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
@@ -255,7 +254,7 @@ public class CouponService {
             JSONArray arr = obj.getJSONArray("results");
 
             mList.forEach(marketingActivityProduct -> {
-                Set<String> sbathIds = new HashSet();
+                Set<String> sbathIds = new HashSet<>();
                 for(int i=0;i<arr.size();i++) {
                     // 码管理回参类型
                     String globalBacthId = arr.getJSONObject(i).getString("globalBacthId");
