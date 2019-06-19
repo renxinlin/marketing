@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dto.activity;
 
+import javax.validation.constraints.NotNull;
+
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 
 import io.swagger.annotations.ApiModel;
@@ -11,6 +13,7 @@ public class MarketingCouponPageParam extends DaoSearch {
     @ApiModelProperty(hidden = true)
     private String organizationId;
     @ApiModelProperty("活动ID")
+    @NotNull(message = "活动ID不能为空")
     private Long activitySetId;
     @ApiModelProperty(hidden = true)
     private Byte used;

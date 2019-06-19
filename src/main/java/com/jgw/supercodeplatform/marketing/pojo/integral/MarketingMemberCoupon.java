@@ -39,7 +39,7 @@ public class MarketingMemberCoupon {
     private Date deductionStartDate;
     @ApiModelProperty(hidden = true)
     private Date deductionEndDate;
-    @ApiModelProperty("获得时间")
+    @ApiModelProperty(value = "获得时间", dataType = "java.lang.String")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
     @ApiModelProperty(hidden = true)
@@ -52,7 +52,7 @@ public class MarketingMemberCoupon {
     private String verifyPersonName;
 	@ApiModelProperty("核销人员手机")
     private String verifyPersonPhone;
-    @ApiModelProperty("核销时间")
+    @ApiModelProperty(value = "核销时间", dataType = "java.lang.String")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date verifyTime;
     @ApiModelProperty(hidden = true)

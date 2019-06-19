@@ -83,4 +83,7 @@ public interface MarketingActivityProductMapper extends CommonSql{
     int deleteOldProducts(@Param("list") List<MarketingActivityProductParam> maProductParams);
 	@Update(" update marketing_activity_product set SbatchId = #{marketingActivityProduct.sbatchId} where id = #{marketingActivityProduct.id}")
 	int updateWhenAutoFetch(@Param("marketingActivityProduct") MarketingActivityProduct marketingActivityProduct);
+
+	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ReferenceRole=#{referenceRole}")
+	List<MarketingActivityProduct> selectByProductWithReferenceRole(@Param("productId") String productId, @Param("referenceRole") byte referenceRole);
 }

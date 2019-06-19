@@ -16,7 +16,7 @@ public class CouponVerifyVo {
 	private Double couponAmount;
 	@ApiModelProperty("抵扣券码")
 	private String couponCode;
-	@ApiModelProperty("核销时间")
+	@ApiModelProperty(value = "核销时间", dataType = "java.lang.String")
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date verifyTime;
 

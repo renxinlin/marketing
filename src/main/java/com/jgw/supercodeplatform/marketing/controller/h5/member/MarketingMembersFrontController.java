@@ -210,7 +210,8 @@ public class MarketingMembersFrontController extends CommonUtil {
 			hVo.setOrganizationName(orgnazationName);
 			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
 			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());
-			
+			hVo.setCustomerId(marketingMembers.getCustomerId());
+			hVo.setCustomerName(marketingMembers.getCustomerName());
 			String jwtToken=JWTUtil.createTokenWithClaim(hVo);
 			Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
 			// jwt有效期为2小时，保持一致
@@ -262,6 +263,8 @@ public class MarketingMembersFrontController extends CommonUtil {
 			hVo.setOrganizationName(orgnazationName);
 			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
 			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());
+			hVo.setCustomerId(marketingMembers.getCustomerId());
+			hVo.setCustomerName(marketingMembers.getCustomerName());
 			restResult.setState(200);
 			restResult.setResults(hVo);
 		} catch (Exception e) {

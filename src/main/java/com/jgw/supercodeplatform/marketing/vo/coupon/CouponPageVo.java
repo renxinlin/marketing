@@ -16,10 +16,10 @@ public class CouponPageVo {
 	private String couponCode;
 	@ApiModelProperty("用户抵扣券金额")
 	private Double couponAmount;
-	@ApiModelProperty("抵扣开始时间")
+	@ApiModelProperty(value = "抵扣开始时间", dataType = "java.lang.String")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date deductionStartDate;
-	@ApiModelProperty("抵扣结束时间")
+	@ApiModelProperty(value = "抵扣结束时间", dataType = "java.lang.String")
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date deductionEndDate;
 

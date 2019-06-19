@@ -25,7 +25,7 @@ public class Receiver {
 	@Autowired
 	private CommonMqTaskService service;
 	@Autowired
-	private AutoFatchChainCompoment autoFecthProcess;
+	private AutoFatchChainCompoment<List<Map<String, Object>>> autoFecthProcess;
 	/**
 	 * 抵扣券自动追加处理
 	 */
