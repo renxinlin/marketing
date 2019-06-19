@@ -168,7 +168,7 @@ public class CouponService {
             toDbEntity.setDeductionStartDate(vo.getDeductionStartDate());
             toDbEntity.setDeductionChannelType(couponRules.getDeductionChannelType());
             toDbEntity.setDeductionProductType(couponRules.getDeductionProductType());
-             toDbEntitys.add(toDbEntity);
+            toDbEntitys.add(toDbEntity);
         }
         couponMapper.batchInsert(toDbEntitys);
 
