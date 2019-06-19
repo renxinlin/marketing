@@ -65,7 +65,7 @@ public class ActivityCouponController extends CommonUtil{
 		marketingCouponPageParam.setOrganizationId(getOrganizationId());
 		marketingCouponPageParam.setUsed((byte)1);
 		MarketingActivitySet marketingActivitySet = marketingActivitySetService.selectById(marketingCouponPageParam.getActivitySetId());
-		String validCondition = marketingActivitySet.getValidCondition();
+		String validCondition = marketingActivitySet == null? null : marketingActivitySet.getValidCondition();
 		if(StringUtils.isBlank(validCondition)) 
 			throw new SuperCodeException("活动条件为空", 500);
 		PageResults<List<MarketingMemberCoupon>> couponResult = couponVerifyService.listSearchViewLike(marketingCouponPageParam);
@@ -93,7 +93,7 @@ public class ActivityCouponController extends CommonUtil{
 		marketingCouponPageParam.setOrganizationId(getOrganizationId());
 		marketingCouponPageParam.setUsed((byte)1);
 		MarketingActivitySet marketingActivitySet = marketingActivitySetService.selectById(marketingCouponPageParam.getActivitySetId());
-		String validCondition = marketingActivitySet.getValidCondition();
+		String validCondition = marketingActivitySet == null? null : marketingActivitySet.getValidCondition();
 		if(StringUtils.isBlank(validCondition))
 			throw new SuperCodeException("活动条件为空", 500);
 		List<MarketingMemberCoupon> marketingMemberCouponList = couponVerifyService.searchVerfiyList(marketingCouponPageParam);

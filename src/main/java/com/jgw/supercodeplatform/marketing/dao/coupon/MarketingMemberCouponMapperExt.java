@@ -28,7 +28,7 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 			"<if test='activitySetId !=null and activitySetId != &apos;&apos; '> AND mas.ActivitySetId = #{activitySetId}</if>"+
 			"<if test='used !=null'> AND mmc.Used = #{used}</if>"+
 			"<if test='search !=null and search != &apos;&apos;'>"+
-			"AND ("+
+			" AND ("+
 			" mmc.couponCode LIKE CONCAT('%',#{search},'%') "+
 			" OR mmc.memberPhone LIKE CONCAT('%',#{search},'%') "+
 			" OR mmc.productName LIKE CONCAT('%',#{search},'%') "+
@@ -40,7 +40,7 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 	
 	@Select({"<script>",
 		"select",allFields,
-		"from marketing_member_coupon mmc inner join marketing_activity_set mas ",
+		"from marketing_member_coupon mmc inner join marketing_coupon mas ",
 		"on mmc.CouponId = mas.Id ",
 		whereSearch,
 		"<if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>",
@@ -49,7 +49,7 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 
 	@Select({"<script>",
 		"select count(*) ",
-		"from marketing_member_coupon mmc inner join marketing_activity_set mas ",
+		"from marketing_member_coupon mmc inner join marketing_coupon mas ",
 		"on mmc.CouponId = mas.Id ",
 		whereSearch,
 	"</script>"})
