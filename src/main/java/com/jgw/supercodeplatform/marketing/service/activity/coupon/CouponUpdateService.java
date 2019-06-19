@@ -152,8 +152,26 @@ public class CouponUpdateService {
         return RestResult.success();
     }
 
-    private void doBizBeforeUpdate(MarketingActivityCouponUpdateParam setVo) {
+    private void doBizBeforeUpdate(MarketingActivityCouponUpdateParam setVo) throws SuperCodeException {
         Long id = setVo.getId();
+        // 删除码平台的绑定
+        List<MarketingActivityProduct> marketingActivityProducts = productMapper.selectByActivitySetId(id);
+        List<CouponActivity>  couponActivitys = new ArrayList<>();
+        marketingActivityProducts.forEach(product ->{
+            // 产品都删了，就不用细到生码批次,码平台直接删除所有
+            CouponActivity couponActivity = new CouponActivity();
+            couponActivity.setProductId(product.getProductId());
+            couponActivity.setProductBatchId(product.getProductBatchId());
+            couponActivity.setStatus(BindCouponRelationToCodeManagerEnum.UNBIND.getBinding());
+            couponActivitys.add(couponActivity);
+        });
+        String jsonData=JSONObject.toJSONString(couponActivitys);
+        Map<String,String> headerMap=new HashMap<>();
+        headerMap.put(ActivityDefaultConstant.superToken, commonUtil.getSuperToken());
+        restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, headerMap);
+
+
+
         productMapper.deleteByActivitySetId(id);
         channelMapper.deleteByActivitySetId(id);
         couponMapper.deleteByActivitySetId(id);

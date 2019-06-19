@@ -57,7 +57,10 @@ import java.util.stream.Collectors;
  */
 @Service
 public class CouponService {
-
+    /**
+     * 批次ID中的分隔符
+     */
+    private static final String SPILT ="," ;
     private static Logger logger = LoggerFactory.getLogger(CouponService.class);
 
     private static SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
@@ -203,17 +206,36 @@ public class CouponService {
         if (autoFecth == AutoGetEnum.BY_NOT_AUTO.getAuto()) {
             String superToken = commonUtil.getSuperToken();
             String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
-                    WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+                    WechatConstants.code_relation_getBatchInfoWithoutType);
             JSONObject obj = JSONObject.parseObject(body);
             int state = obj.getInteger("state");
             if (200 == state) {
+                // 生码批次数组
+                Map<String,Set<String> > productSbathIds = new HashMap<>();
                 JSONArray arr = obj.getJSONArray("results");
-                Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
-                        marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
-                        BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+
                 mList.forEach(marketingActivityProduct -> {
-                    String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
-                    marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
+                    Set<String> sbathIds = new HashSet();
+                    for(int i=0;i<arr.size();i++) {
+                        String globalBacthId = arr.getJSONObject(i).getString("globalBacthId");
+                        String productId = arr.getJSONObject(i).getString("productId");
+                        String productBatchId = arr.getJSONObject(i).getString("productBatchId");
+                        sbathIds.add(globalBacthId);
+                        if(marketingActivityProduct.getProductId().equals(productId)
+                                && marketingActivityProduct.getProductBatchId().equals(productBatchId)){
+                            sbathIds.add(globalBacthId);
+                            productSbathIds.put(productId+productBatchId,sbathIds);
+                        }
+                    }
+                    Set<String> sbathIdsDto = productSbathIds.get(marketingActivityProduct.getProductId() + marketingActivityProduct.getProductBatchId());
+                    if(!CollectionUtils.isEmpty(sbathIdsDto)){
+                        String[] sbathIdsDtoArray = new String[sbathIdsDto.size()];
+                        //Set-->数组
+                        sbathIdsDto.toArray(sbathIdsDtoArray);
+                        String sbatchId = StringUtils.join(sbathIdsDtoArray, SPILT);
+                        marketingActivityProduct.setSbatchId(sbatchId);
+                    }
+
                 });
             } else {
                 throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
@@ -223,6 +245,11 @@ public class CouponService {
         // TODO 等待建强那边处理交互协议
        if(send){
        // TODO 处理优惠券获取
+           /**
+            * 删除原来覆盖的产品存于码管理的绑定信息
+            * 在新增绑定
+            * 由于覆盖式可忽略删除
+            */
           List<CouponActivity>  couponActivitys = new ArrayList<>();
            mList.forEach(product ->{
                CouponActivity couponActivity = new CouponActivity();
@@ -234,7 +261,6 @@ public class CouponService {
            String jsonData=JSONObject.toJSONString(couponActivitys);
            Map<String,String> headerMap=new HashMap<>();
            headerMap.put(ActivityDefaultConstant.superToken, commonUtil.getSuperToken());
-           restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, headerMap);
            restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, headerMap);
 
        }

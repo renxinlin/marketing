@@ -19,8 +19,6 @@ public class CouponActivity implements Serializable {
      * 0 删除绑定 1 添加绑定
      */
     private Byte status;
-    public void say(String ... say ){
 
-    }
 
 }
