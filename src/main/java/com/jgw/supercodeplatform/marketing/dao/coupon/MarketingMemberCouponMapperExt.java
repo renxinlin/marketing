@@ -57,7 +57,7 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 	
 	@Select({"<script>",
 		"select",allFields,
-		"from marketing_member_coupon mmc inner join marketing_activity_set mas ",
+		"from marketing_member_coupon mmc inner join marketing_coupon mas ",
 		"on mmc.CouponId = mas.Id ",
 		whereSearch,
 	"</script>"})
