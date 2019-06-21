@@ -1,6 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.activity.coupon;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -8,8 +7,6 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatch
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
-import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
@@ -34,7 +31,6 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +65,7 @@ public class CouponUpdateService {
 
     @Autowired
     private CommonService commonService;
+
     @Autowired
     private CouponService couponService;
 
@@ -263,12 +260,11 @@ public class CouponUpdateService {
                 productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
             }
         }
-        // 绑定绑定生码批次
+        // 绑定绑定生码批次到mlist
         couponService.getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
 
-        // TODO 等待建强那边处理交互协议
+        // TODO 等待建强提供url
         if(send){
-            // TODO 处理优惠券获取
             List<CouponActivity>  couponActivitys = new ArrayList<>();
             mList.forEach(product ->{
                 CouponActivity couponActivity = new CouponActivity();
