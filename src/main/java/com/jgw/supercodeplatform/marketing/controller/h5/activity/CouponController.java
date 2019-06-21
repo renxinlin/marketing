@@ -74,7 +74,7 @@ public class CouponController {
 	@PostMapping("/obtainCoupon")
 	@ApiOperation("用户领取抵扣券")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
-	,@ApiImplicitParam(paramType="body",value = "活动ID",name="activitySetId")})
+	,@ApiImplicitParam(paramType="body",value = "微信state",name="wxstate")})
 	public RestResult<?> obtainCoupon(@RequestParam String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException{
 		ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
 		Long activitySetId = scanCodeInfoMO.getActivitySetId();

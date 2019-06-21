@@ -273,7 +273,7 @@ public class CommonService {
 		params.put("organizationIds", JSONObject.toJSONString(orgIds));
 		Map<String,String>headerMap=new HashMap<String, String>();
 		headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForBaseInfo());
-		HashMap superToken = new HashMap();
+		HashMap<String, String> superToken = new HashMap<>();
 		superToken.put("super-token",commonUtil.getSuperToken());
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, superToken);
 		String body=responseEntity.getBody();

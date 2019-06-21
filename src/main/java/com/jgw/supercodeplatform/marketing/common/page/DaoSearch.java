@@ -20,7 +20,7 @@ import java.util.Map;
 public class DaoSearch {
     @ApiModelProperty(name = "flag", value = "搜索标记;0-高级搜索-使用and连接；1-普通搜索-使用or连接,为空时表示无条件查询", example = "1", required = false,hidden=true)
     private Integer flag;
-    @ApiModelProperty(name = "search", value = "普通搜索值", example = "dsad")
+    @ApiModelProperty(name = "search", value = "普通搜索值")
     private String search;
     @ApiModelProperty(name = "params", value = "高级查询，或删除/更新条件参数，即sql语句中where子句参数，多参数目前只支持and连接", example = "\"{\"Id\":\"1\"}\"",hidden=false)
     private Map<String, String> params;
