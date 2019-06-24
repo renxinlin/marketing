@@ -8,15 +8,15 @@ public enum CouponAcquireConditionEnum {
     /**
      * 首次积分
      */
-    FIRST((byte)0,"首次积分"),
+    FIRST((byte)1,"首次积分"),
     /**
      * 一次积分达到
      */
-    ONCE_LIMIT((byte)1,"一次积分达到"),
+    ONCE_LIMIT((byte)2,"一次积分达到"),
     /**
      * 累计积分达到
      */
-    LIMIT((byte)2,"累计积分达到"),
+    LIMIT((byte)3,"累计积分达到"),
 
     /**
      * 购买商品
