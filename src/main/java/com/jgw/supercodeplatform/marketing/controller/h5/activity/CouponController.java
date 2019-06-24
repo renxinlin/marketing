@@ -65,10 +65,10 @@ public class CouponController {
 	@GetMapping("/listCoupon")
 	@ApiOperation("抵扣券记录")
 	@ApiImplicitParams(@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token"))
-	public RestResult<PageResults<List<CouponPageVo>>> listCoupon(@Validated CouponPageParam couponPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
+	public RestResult<List<CouponPageVo>> listCoupon(@Validated CouponPageParam couponPageParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
 		couponPageParam.setMemberId(jwtUser.getMemberId());
-		PageResults<List<CouponPageVo>> couponPageResult = couponMemberService.listSearchViewLike(couponPageParam);
-		return new RestResult<>(HttpStatus.SC_OK, "查询成功", couponPageResult);
+		List<CouponPageVo> couponList = couponMemberService.searchResult(couponPageParam);
+		return new RestResult<>(HttpStatus.SC_OK, "查询成功", couponList);
 	}
 	
 	@PostMapping("/obtainCoupon")
