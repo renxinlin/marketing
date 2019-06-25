@@ -104,12 +104,12 @@ public class MarketingActivityChannelService {
     private void getSonByFatherWithAllData(List<MarketingChannel> rootTree, List<MarketingChannel> currentRoots, List<MarketingChannel> newDatas) {
 
         // 总的未分配数据
-        List<MarketingChannel> currentNewDatas = new LinkedList();
+        List<MarketingChannel> currentNewDatas = new LinkedList<>();
         // 当前所有子节点|下次所有根节点
-        List<MarketingChannel> newCurrentRoot  = new LinkedList();
+        List<MarketingChannel> newCurrentRoot  = new LinkedList<>();
         // 当前父节点
         for(MarketingChannel everyRoot :currentRoots){
-            List<MarketingChannel> children  = new LinkedList();
+            List<MarketingChannel> children  = new LinkedList<>();
             // 当前节点增加子节点
             for(MarketingChannel maybeSon : newDatas){
                 if(!StringUtils.isEmpty(everyRoot.getCustomerId())

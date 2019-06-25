@@ -100,7 +100,7 @@ public class MarketingActivityProductService {
 		params.put("current",current);
 		Map<String, String> headerMap=new HashMap<>();
 		headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
-        HashMap superToken = new HashMap();
+        HashMap<String, String> superToken = new HashMap<>();
         superToken.put("super-token",commonUtil.getSuperToken());
 
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);

@@ -1,6 +1,22 @@
 package com.jgw.supercodeplatform.marketing.service.activity.coupon;
 
-import com.alibaba.fastjson.JSONArray;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -8,8 +24,6 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatch
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
-import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
@@ -26,26 +40,16 @@ import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityStatusEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.AutoGetEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.coupon.*;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.BindCouponRelationToCodeManagerEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponWithAllChannelEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.DeductionChannelTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.DeductionProductTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
-import com.jgw.supercodeplatform.marketing.service.common.CommonService;
-import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Service
 public class CouponUpdateService {
@@ -67,8 +71,6 @@ public class CouponUpdateService {
     @Autowired
     private CommonUtil commonUtil;
 
-    @Autowired
-    private CommonService commonService;
     @Autowired
     private CouponService couponService;
 
@@ -115,7 +117,7 @@ public class CouponUpdateService {
         // 覆盖: 去除重复
         saveProductBatchsWhenUpdate(copyVO.getProductParams(),activitySet.getId(), copyVO.getAutoFetch(),send);
         // 保存抵扣券规则
-        saveCouponRulesWhenUpdate(copyVO.getCouponRules(),activitySet.getId());
+        saveCouponRulesWhenUpdate(copyVO.getCoupon(),activitySet.getId());
 
         return RestResult.success();
     }
@@ -149,7 +151,7 @@ public class CouponUpdateService {
         // 覆盖: 去除重复
         saveProductBatchsWhenUpdate(updateVo.getProductParams(),activitySet.getId(), updateVo.getAutoFetch(),send);
         // 保存抵扣券规则
-        saveCouponRulesWhenUpdate(updateVo.getCouponRules(),activitySet.getId());
+        saveCouponRulesWhenUpdate(updateVo.getCoupon(),activitySet.getId());
 
         return RestResult.success();
     }
@@ -433,7 +435,7 @@ public class CouponUpdateService {
         // 渠道校验
         validateBasicByUpdateForChannels(updateVo.getChannelParams());
         // 优惠券规则校验
-        validateBasicByUpdateForCouponRules(updateVo.getCouponRules());
+        validateBasicByUpdateForCouponRules(updateVo.getCoupon());
 
     }
 

@@ -57,6 +57,6 @@ public class MarketingActivityCouponAddParam {
 
 
     @ApiModelProperty(value = "抵扣券规则")
-    private MarketingCouponVo couponRules;
+    private MarketingCouponVo coupon;
 
 }
