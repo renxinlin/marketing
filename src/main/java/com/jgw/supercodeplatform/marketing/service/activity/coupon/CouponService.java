@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +32,8 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatch
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
+import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
@@ -207,28 +210,40 @@ public class CouponService {
 			}
 		}
 		getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
-
-		// TODO 等待建强那边处理交互协议
-		if(send){
-			// TODO 处理优惠券获取
-			/**
-			 * 删除原来覆盖的产品存于码管理的绑定信息
-			 * 在新增绑定
-			 * 由于覆盖式可忽略删除
-			 */
-			List<CouponActivity>  couponActivitys = new ArrayList<>();
-			mList.forEach(product ->{
-				CouponActivity couponActivity = new CouponActivity();
-				couponActivity.setProductId(product.getProductId());
-				couponActivity.setProductBatchId(product.getProductBatchId());
-				couponActivity.setStatus(BindCouponRelationToCodeManagerEnum.BIND.getBinding());
-				couponActivitys.add(couponActivity);
-			});
-			String jsonData=JSONObject.toJSONString(couponActivitys);
-			Map<String,String> headerMap=new HashMap<>();
-			headerMap.put(ActivityDefaultConstant.superToken, commonUtil.getSuperToken());
-			restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, headerMap);
-
+		//如果是会员活动需要去绑定扫码连接到批次号
+		if(send) {
+			String superToken = commonUtil.getSuperToken();
+			String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+			JSONObject obj = JSONObject.parseObject(body);
+			int state = obj.getInteger("state");
+			if (HttpStatus.SC_OK == state) {
+				JSONArray arr = obj.getJSONArray("results");
+				List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
+						BusinessTypeEnum.MARKETING_COUPON.getBusinessType());
+				if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
+					String delbatchBody = commonService.deleteUrlToBatch(deleteProductBatchList, superToken);
+					JSONObject delBatchobj = JSONObject.parseObject(delbatchBody);
+					Integer delBatchstate = delBatchobj.getInteger("state");
+					if (null != delBatchstate && delBatchstate.intValue() != HttpStatus.SC_OK) {
+						throw new SuperCodeException("请求码删除生码批次和url错误：" + delbatchBody, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+					}
+				}
+				// 绑定生码批次到url
+				String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
+				JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
+				Integer batchstate = bindBatchobj.getInteger("state");
+				if (null != batchstate && batchstate.intValue() != HttpStatus.SC_OK) {
+					throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+				}
+				Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
+						BusinessTypeEnum.MARKETING_COUPON.getBusinessType());
+				mList.forEach(marketingActivityProduct -> {
+					String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
+					marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
+				});
+			} else {
+				throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+			}
 		}
 		//插入对应活动产品数据
 		productMapper.batchDeleteByProBatchsAndRole(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());

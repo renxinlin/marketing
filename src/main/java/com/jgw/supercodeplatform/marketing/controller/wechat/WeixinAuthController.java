@@ -111,7 +111,7 @@ public class WeixinAuthController {
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
     		// 2表示导购
-    		if(AccessProtocol.ACTIVITY_SALER.getType()==statecode){
+    		if(AccessProtocol.ACTIVITY_SALER.getType() == statecode){
     			redirectUrl =doBizBySaler(statearr,state,code,userInfo,redirectUrl,response);
     			return redirectUrl;
     		}
