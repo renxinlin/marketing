@@ -362,10 +362,6 @@ public class CouponUpdateService {
         if(updateVo == null){
             throw new SuperCodeException("优惠券新建参数异常001");
         }
-        if(updateVo.getId() == null ){
-            throw new SuperCodeException("活动id不存在...");
-        }
-
         // 活动标题
         if(updateVo.getActivityTitle() == null){
             throw new SuperCodeException("优惠券新建参数异常002");
@@ -427,7 +423,7 @@ public class CouponUpdateService {
         }else{
             // 校验用户时间合法性
             if(updateVo.getActivityStartDate().after( updateVo.getActivityEndDate() )){
-                throw new SuperCodeException("岂止时间错误...");
+                throw new SuperCodeException("起止时间错误...");
             }
         }
         // 产品校验
