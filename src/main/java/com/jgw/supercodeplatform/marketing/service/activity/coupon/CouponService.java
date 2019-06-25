@@ -156,7 +156,7 @@ public class CouponService {
 
 	private void saveCouponRules(MarketingCouponVo couponRules, Long activitySetId) {
 		List<MarketingCoupon> toDbEntitys = new ArrayList<>(5);
-		List<MarketingCouponAmoutAndDateVo> couponAmoutAndDateVo = couponRules.getCouponAmoutAndDateVo();
+		List<MarketingCouponAmoutAndDateVo> couponAmoutAndDateVo = couponRules.getCouponRules();
 		for(MarketingCouponAmoutAndDateVo vo: couponAmoutAndDateVo){
 			MarketingCoupon toDbEntity = new MarketingCoupon();
 			toDbEntity.setActivitySetId(activitySetId);
@@ -495,7 +495,7 @@ public class CouponService {
 			throw new SuperCodeException("优惠券规则未指定");
 		}
 
-		if(CollectionUtils.isEmpty(couponRules.getCouponAmoutAndDateVo())){
+		if(CollectionUtils.isEmpty(couponRules.getCouponRules())){
 			throw new SuperCodeException("优惠券规则不可为空...");
 		}
 
@@ -513,7 +513,7 @@ public class CouponService {
 		}
 
 		Date date = new Date();
-		for(MarketingCouponAmoutAndDateVo couponAmoutAndDateVo : couponRules.getCouponAmoutAndDateVo()){
+		for(MarketingCouponAmoutAndDateVo couponAmoutAndDateVo : couponRules.getCouponRules()){
 			if(couponAmoutAndDateVo.getCouponAmount() == null || couponAmoutAndDateVo.getCouponAmount() <= 0 ){
 				throw new SuperCodeException("金额非法...");
 			}
@@ -656,7 +656,7 @@ public class CouponService {
 			ruleVo.setDeductionEndDate(rule.getDeductionEndDate());
 			couponAmoutAndDateVos.add(ruleVo);
 		}
-		couponRules.setCouponAmoutAndDateVo(couponAmoutAndDateVos);
+		couponRules.setCouponRules(couponAmoutAndDateVos);
 		couponRules.setDeductionChannelType(marketingCoupons.get(0).getDeductionChannelType());
 		couponRules.setDeductionProductType(marketingCoupons.get(0).getDeductionProductType());
 		// TODO 抽取成公共方法 end

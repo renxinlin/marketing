@@ -293,7 +293,7 @@ public class CouponUpdateService {
 
     private void saveCouponRulesWhenUpdate(MarketingCouponVo couponRules, Long activitySetId) {
         List<MarketingCoupon> toDbEntitys = new ArrayList<>(5);
-        List<MarketingCouponAmoutAndDateVo> couponAmoutAndDateVo = couponRules.getCouponAmoutAndDateVo();
+        List<MarketingCouponAmoutAndDateVo> couponAmoutAndDateVo = couponRules.getCouponRules();
         for(MarketingCouponAmoutAndDateVo vo: couponAmoutAndDateVo){
             MarketingCoupon toDbEntity = new MarketingCoupon();
             toDbEntity.setActivitySetId(activitySetId);
@@ -445,7 +445,7 @@ public class CouponUpdateService {
             throw new SuperCodeException("优惠券规则未指定");
         }
 
-        if(CollectionUtils.isEmpty(couponRules.getCouponAmoutAndDateVo())){
+        if(CollectionUtils.isEmpty(couponRules.getCouponRules())){
             throw new SuperCodeException("优惠券规则不可为空...");
         }
 
@@ -462,7 +462,7 @@ public class CouponUpdateService {
         }
 
         Date date = new Date();
-        for(MarketingCouponAmoutAndDateVo couponAmoutAndDateVo : couponRules.getCouponAmoutAndDateVo()){
+        for(MarketingCouponAmoutAndDateVo couponAmoutAndDateVo : couponRules.getCouponRules()){
             if(couponAmoutAndDateVo.getCouponAmount() == null || couponAmoutAndDateVo.getCouponAmount() <= 0 ){
                 throw new SuperCodeException("金额非法...");
             }
