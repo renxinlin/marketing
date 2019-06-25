@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -24,6 +25,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatch
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
@@ -172,10 +174,12 @@ public class CouponUpdateService {
         String jsonData=JSONObject.toJSONString(couponActivitys);
         Map<String,String> headerMap=new HashMap<>();
         headerMap.put(ActivityDefaultConstant.superToken, commonUtil.getSuperToken());
-        restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, headerMap);
-
-
-
+        ResponseEntity<String> bindBatchresponse = restTemplateUtil.postJsonDataAndReturnJosn(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL, jsonData, headerMap);
+        JSONObject delBatchobj = JSONObject.parseObject(bindBatchresponse.getBody());
+		Integer delBatchstate = delBatchobj.getInteger("state");
+		if (null != delBatchstate && delBatchstate.intValue() != 200) {
+			throw new SuperCodeException("请求码删除生码批次和url错误：" + bindBatchresponse.getBody(), 500);
+		}
         productMapper.deleteByActivitySetId(id);
         channelMapper.deleteByActivitySetId(id);
         couponMapper.deleteByActivitySetId(id);
