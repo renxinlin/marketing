@@ -429,7 +429,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	private void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int referenceRole) throws SuperCodeException {
+	public void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int referenceRole) throws SuperCodeException {
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
