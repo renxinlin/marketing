@@ -174,7 +174,7 @@ public class CouponUpdateService {
         String jsonData=JSONObject.toJSONString(couponActivitys);
         Map<String,String> headerMap=new HashMap<>();
         headerMap.put(ActivityDefaultConstant.superToken, commonUtil.getSuperToken());
-        ResponseEntity<String> bindBatchresponse = restTemplateUtil.postJsonDataAndReturnJosn(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL, jsonData, headerMap);
+        ResponseEntity<String> bindBatchresponse = restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_DELETE_BATCH_TO_URL, jsonData, headerMap);
         JSONObject delBatchobj = JSONObject.parseObject(bindBatchresponse.getBody());
 		Integer delBatchstate = delBatchobj.getInteger("state");
 		if (null != delBatchstate && delBatchstate.intValue() != 200) {
