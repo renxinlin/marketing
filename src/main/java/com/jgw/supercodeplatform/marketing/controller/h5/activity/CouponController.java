@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.http.HttpStatus;
@@ -17,15 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponPageParam;
 import com.jgw.supercodeplatform.marketing.enums.market.CouponVerifyEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
@@ -60,7 +62,7 @@ public class CouponController {
 	@Autowired
 	private MarketingCouponMapperExt marketingCouponMapper;
 	@Autowired
-	private GlobalRamCache globalRamCache;
+	private MarketingActivityProductMapper marketingActivityProductMapper;
 	
 	@GetMapping("/listCoupon")
 	@ApiOperation("抵扣券记录")
@@ -74,10 +76,13 @@ public class CouponController {
 	@PostMapping("/obtainCoupon")
 	@ApiOperation("用户领取抵扣券")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
-	,@ApiImplicitParam(paramType="body",value = "微信state",name="wxstate")})
-	public RestResult<?> obtainCoupon(@RequestParam String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException{
-		ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
-		Long activitySetId = scanCodeInfoMO.getActivitySetId();
+	,@ApiImplicitParam(paramType="body",value = "产品ID",name="productId")})
+	public RestResult<?> obtainCoupon(@RequestParam String productId, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException{
+		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(productId, MemberTypeEnums.VIP.getType());
+		if(CollectionUtils.isEmpty(marketingActivityProductList))
+			throw new SuperCodeException("‘活动产品为空’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		String productName = marketingActivityProductList.get(0).getProductName();
+		Long activitySetId = marketingActivityProductList.get(0).getActivitySetId();
 		MarketingActivitySet marketingActivitySet = marketingActivitySetService.selectById(activitySetId);
 		if(marketingActivitySet == null)
 			throw new SuperCodeException("‘活动设置不存在’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
@@ -104,7 +109,7 @@ public class CouponController {
 		if(!CouponAcquireConditionEnum.SHOPPING.getCondition().equals(acquireCondition)) {
 			throw new SuperCodeException("‘优惠券获得条件不对’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		}
-		marketingMemberProductIntegralService.obtainCouponShopping(activitySetId, scanCodeInfoMO.getProductId(), jwtUser);
+		marketingMemberProductIntegralService.obtainCouponShopping(activitySetId, productId,productName, jwtUser);
 		return RestResult.success();
 	}
 	
