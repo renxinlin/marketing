@@ -1,35 +1,14 @@
 package com.jgw.supercodeplatform.marketing.service.activity.coupon;
 
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
-import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
-import com.jgw.supercodeplatform.marketing.dto.codemanagerservice.CouponActivity;
-import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAddParam;
-import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponAmoutAndDateVo;
-import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponVo;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityStatusEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.AutoGetEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.coupon.*;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
-import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +18,40 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
+import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
+import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAddParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponAmoutAndDateVo;
+import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponVo;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityStatusEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.AutoGetEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponWithAllChannelEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.DeductionChannelTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.DeductionProductTypeEnum;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
+import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 
 @Service
 public class CouponUpdateService {
@@ -64,9 +74,6 @@ public class CouponUpdateService {
     private CommonUtil commonUtil;
 
     @Autowired
-    private CommonService commonService;
-
-    @Autowired
     private CouponService couponService;
 
     @Autowired
@@ -75,9 +82,11 @@ public class CouponUpdateService {
     @Autowired
     private MarketingCouponMapperExt couponMapper;
 
-
     @Autowired
-    private RestTemplateUtil restTemplateUtil;
+    private CommonService commonService;
+
+	@Autowired
+	private MarketingActivityProductMapper mProductMapper;
 
     @Autowired
     private MarketingChannelMapper channelMapper;
@@ -92,8 +101,6 @@ public class CouponUpdateService {
     public RestResult<String> copy(MarketingActivityCouponUpdateParam copyVO) throws SuperCodeException {
         validateBasicByUpdate(copyVO);
         validateBizByUpdate(copyVO);
-        // 删除子表信息
-        // doBizBeforeUpdate(copyVO);
         // 更新活动设置表
         MarketingActivitySet activitySet = changeVoToDtoForMarketingActivitySet(copyVO);
         // setMapper.deleteById(activitySet.getId());
@@ -110,9 +117,9 @@ public class CouponUpdateService {
             send = true;
         }
         // 覆盖: 去除重复
-        saveProductBatchsWhenUpdate(copyVO.getProductParams(),activitySet.getId(), copyVO.getAutoFetch(),send);
+        saveProductBatchsWhenUpdate(copyVO.getProductParams(),null,activitySet.getId(), copyVO.getAutoFetch(),send);
         // 保存抵扣券规则
-        saveCouponRulesWhenUpdate(copyVO.getCouponRules(),activitySet.getId());
+        saveCouponRulesWhenUpdate(copyVO.getCoupon(),activitySet.getId());
 
         return RestResult.success();
     }
@@ -132,8 +139,22 @@ public class CouponUpdateService {
         doBizBeforeUpdate(updateVo);
         // 更新活动设置表
         MarketingActivitySet activitySet = changeVoToDtoForMarketingActivitySet(updateVo);
+        activitySet.setId(updateVo.getId());
         setMapper.update(activitySet);
 
+		//获取活动实体
+		List<MarketingActivityProduct> marketActivityProductList = mProductMapper.selectByActivitySetId(activitySet.getId());
+		List<Map<String, Object>> delBatchProductList = null;
+		if(!CollectionUtils.isEmpty(marketActivityProductList)) {
+			delBatchProductList = marketActivityProductList.stream()
+			.filter(product -> StringUtils.isNotBlank(product.getSbatchId())).map(product -> {
+				Map<String, Object> delMap = new HashMap<>();
+				delMap.put("batchId", product.getSbatchId());
+				delMap.put("businessType", BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+				delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+				return delMap;
+			}).collect(Collectors.toList());
+		}
 
         // 保存渠道 TODO copy 以前活动的代码 检查有没有坑
         saveChannelsWhenUpdate(updateVo.getChannelParams(),activitySet.getId());
@@ -144,9 +165,9 @@ public class CouponUpdateService {
             send = true;
         }
         // 覆盖: 去除重复
-        saveProductBatchsWhenUpdate(updateVo.getProductParams(),activitySet.getId(), updateVo.getAutoFetch(),send);
+        saveProductBatchsWhenUpdate(updateVo.getProductParams(),delBatchProductList,activitySet.getId(), updateVo.getAutoFetch(),send);
         // 保存抵扣券规则
-        saveCouponRulesWhenUpdate(updateVo.getCouponRules(),activitySet.getId());
+        saveCouponRulesWhenUpdate(updateVo.getCoupon(),activitySet.getId());
 
         return RestResult.success();
     }
@@ -154,23 +175,6 @@ public class CouponUpdateService {
     private void doBizBeforeUpdate(MarketingActivityCouponUpdateParam setVo) throws SuperCodeException {
         Long id = setVo.getId();
         // 删除码平台的绑定
-        List<MarketingActivityProduct> marketingActivityProducts = productMapper.selectByActivitySetId(id);
-        List<CouponActivity>  couponActivitys = new ArrayList<>();
-        marketingActivityProducts.forEach(product ->{
-            // 产品都删了，就不用细到生码批次,码平台直接删除所有
-            CouponActivity couponActivity = new CouponActivity();
-            couponActivity.setProductId(product.getProductId());
-            couponActivity.setProductBatchId(product.getProductBatchId());
-            couponActivity.setStatus(BindCouponRelationToCodeManagerEnum.UNBIND.getBinding());
-            couponActivitys.add(couponActivity);
-        });
-        String jsonData=JSONObject.toJSONString(couponActivitys);
-        Map<String,String> headerMap=new HashMap<>();
-        headerMap.put(ActivityDefaultConstant.superToken, commonUtil.getSuperToken());
-        restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, headerMap);
-
-
-
         productMapper.deleteByActivitySetId(id);
         channelMapper.deleteByActivitySetId(id);
         couponMapper.deleteByActivitySetId(id);
@@ -230,7 +234,7 @@ public class CouponUpdateService {
     }
 
 
-    private void saveProductBatchsWhenUpdate(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int autoFecth,boolean send) throws SuperCodeException {
+    private void saveProductBatchsWhenUpdate(List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int autoFecth,boolean send) throws SuperCodeException {
         List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
         List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
         for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
@@ -260,23 +264,46 @@ public class CouponUpdateService {
                 productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
             }
         }
-        // 绑定绑定生码批次到mlist
+        // 绑定绑定生码批次
         couponService.getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
 
-        // TODO 等待建强提供url
+        // TODO 等待建强那边处理交互协议
         if(send){
-            List<CouponActivity>  couponActivitys = new ArrayList<>();
-            mList.forEach(product ->{
-                CouponActivity couponActivity = new CouponActivity();
-                couponActivity.setProductId(product.getProductId());
-                couponActivity.setProductBatchId(product.getProductBatchId());
-                couponActivity.setStatus(BindCouponRelationToCodeManagerEnum.BIND.getBinding());
-                couponActivitys.add(couponActivity);
-            });
-            String jsonData=JSONObject.toJSONString(couponActivitys);
-            Map<String,String> headerMap=new HashMap<>();
-            headerMap.put(ActivityDefaultConstant.superToken, commonUtil.getSuperToken());
-            restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, headerMap);
+        	String superToken = commonUtil.getSuperToken();
+			String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
+					WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+			JSONObject obj = JSONObject.parseObject(body);
+			int state = obj.getInteger("state");
+			if (200 == state) {
+				JSONArray arr = obj.getJSONArray("results");
+				List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr,
+						marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
+						BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+				if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
+					String delbatchBody = commonService.deleteUrlToBatch(deleteProductBatchList, superToken);
+					JSONObject delBatchobj = JSONObject.parseObject(delbatchBody);
+					Integer delBatchstate = delBatchobj.getInteger("state");
+					if (null != delBatchstate && delBatchstate.intValue() != 200) {
+						throw new SuperCodeException("请求码删除生码批次和url错误：" + delbatchBody, 500);
+					}
+				}
+				// 绑定生码批次到url
+				String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
+				JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
+				Integer batchstate = bindBatchobj.getInteger("state");
+				if (null != batchstate && batchstate.intValue() != 200) {
+					throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, 500);
+				}
+				Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
+						marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
+						BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+				mList.forEach(marketingActivityProduct -> {
+					String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
+					marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
+				});
+			} else {
+				throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
+			}
 
         }
         //插入对应活动产品数据
@@ -287,7 +314,7 @@ public class CouponUpdateService {
 
     private void saveCouponRulesWhenUpdate(MarketingCouponVo couponRules, Long activitySetId) {
         List<MarketingCoupon> toDbEntitys = new ArrayList<>(5);
-        List<MarketingCouponAmoutAndDateVo> couponAmoutAndDateVo = couponRules.getCouponAmoutAndDateVo();
+        List<MarketingCouponAmoutAndDateVo> couponAmoutAndDateVo = couponRules.getCouponRules();
         for(MarketingCouponAmoutAndDateVo vo: couponAmoutAndDateVo){
             MarketingCoupon toDbEntity = new MarketingCoupon();
             toDbEntity.setActivitySetId(activitySetId);
@@ -356,10 +383,6 @@ public class CouponUpdateService {
         if(updateVo == null){
             throw new SuperCodeException("优惠券新建参数异常001");
         }
-        if(updateVo.getId() == null ){
-            throw new SuperCodeException("活动id不存在...");
-        }
-
         // 活动标题
         if(updateVo.getActivityTitle() == null){
             throw new SuperCodeException("优惠券新建参数异常002");
@@ -421,7 +444,7 @@ public class CouponUpdateService {
         }else{
             // 校验用户时间合法性
             if(updateVo.getActivityStartDate().after( updateVo.getActivityEndDate() )){
-                throw new SuperCodeException("岂止时间错误...");
+                throw new SuperCodeException("起止时间错误...");
             }
         }
         // 产品校验
@@ -429,7 +452,7 @@ public class CouponUpdateService {
         // 渠道校验
         validateBasicByUpdateForChannels(updateVo.getChannelParams());
         // 优惠券规则校验
-        validateBasicByUpdateForCouponRules(updateVo.getCouponRules());
+        validateBasicByUpdateForCouponRules(updateVo.getCoupon());
 
     }
 
@@ -439,7 +462,7 @@ public class CouponUpdateService {
             throw new SuperCodeException("优惠券规则未指定");
         }
 
-        if(CollectionUtils.isEmpty(couponRules.getCouponAmoutAndDateVo())){
+        if(CollectionUtils.isEmpty(couponRules.getCouponRules())){
             throw new SuperCodeException("优惠券规则不可为空...");
         }
 
@@ -456,7 +479,7 @@ public class CouponUpdateService {
         }
 
         Date date = new Date();
-        for(MarketingCouponAmoutAndDateVo couponAmoutAndDateVo : couponRules.getCouponAmoutAndDateVo()){
+        for(MarketingCouponAmoutAndDateVo couponAmoutAndDateVo : couponRules.getCouponRules()){
             if(couponAmoutAndDateVo.getCouponAmount() == null || couponAmoutAndDateVo.getCouponAmount() <= 0 ){
                 throw new SuperCodeException("金额非法...");
             }

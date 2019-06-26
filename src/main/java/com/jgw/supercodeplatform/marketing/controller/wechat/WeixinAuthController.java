@@ -111,7 +111,7 @@ public class WeixinAuthController {
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
     		// 2表示导购
-    		if(AccessProtocol.ACTIVITY_SALER.getType()==statecode){
+    		if(AccessProtocol.ACTIVITY_SALER.getType() == statecode){
     			redirectUrl =doBizBySaler(statearr,state,code,userInfo,redirectUrl,response);
     			return redirectUrl;
     		}
@@ -120,13 +120,17 @@ public class WeixinAuthController {
     		openid=userInfo.getString("openid");
     		StringBuffer h5BUf=new StringBuffer();
     		h5BUf.append("redirect:");
-    		h5BUf.append(integralH5Pages.split(",")[statecode]);
+    		if(statecode != null && statecode.intValue() == AccessProtocol.ACTIVITY_COUPON.getType()) 
+    			h5BUf.append(integralH5Pages.split(",")[0]);
+    		else
+    			h5BUf.append(integralH5Pages.split(",")[statecode]);
     		h5BUf.append("?openid="+openid);
     		if (null!=statecode && 0==statecode.intValue()) {
     			h5BUf.append("&uuid="+statearr[2]);
 			}
     		h5BUf.append("&organizationId="+organizationId);
-
+    		if(statecode != null && statecode.intValue() == AccessProtocol.ACTIVITY_COUPON.getType()) 
+    			h5BUf.append("&type=").append(statecode);
     	 	members=marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
     		Long memberParamId = loginMemberId(members);
             if (memberParamId.intValue()!=-1) {

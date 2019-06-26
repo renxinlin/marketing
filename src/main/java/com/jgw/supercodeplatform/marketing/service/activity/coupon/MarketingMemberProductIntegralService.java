@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -164,16 +162,12 @@ public class MarketingMemberProductIntegralService {
 	 * @throws SuperCodeException
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void obtainCouponShopping(Long activitySetId, String productId, H5LoginVO jwtUser) throws SuperCodeException {
+	public void obtainCouponShopping(Long activitySetId, String productId,String productName, H5LoginVO jwtUser) throws SuperCodeException {
 		MarketingMembers member = new MarketingMembers();
 		member.setId(jwtUser.getMemberId());
 		member.setMobile(jwtUser.getMobile());
 		member.setCustomerId(jwtUser.getCustomerId());
 		member.setCustomerName(jwtUser.getCustomerName());
-		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(productId, MemberTypeEnums.VIP.getType());
-		if(CollectionUtils.isEmpty(marketingActivityProductList))
-			throw new SuperCodeException("‘活动产品为空’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-		String productName = marketingActivityProductList.get(0).getProductName();
 		List<MarketingCoupon> marketingCouponList = marketingCouponMapper.selectByActivitySetId(activitySetId);
 		addMarketingMemberCoupon(marketingCouponList, member, productId, productName);
 	}

@@ -1,7 +1,5 @@
 package com.jgw.supercodeplatform.marketing.constants;
 
-import java.util.Date;
-
 /**
  * 活动默认值参数
  */

@@ -11,7 +11,7 @@ import lombok.Data;
 public class MarketingCouponVo {
 
 
-    private List<MarketingCouponAmoutAndDateVo> couponAmoutAndDateVo;
+    private List<MarketingCouponAmoutAndDateVo> couponRules;
 
     private Byte deductionProductType = 1;
     @ApiModelProperty("支持被抵扣的渠道 1仅获得抵扣券的门店 0不限制")

@@ -67,11 +67,11 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 		"select Id id,CouponCode couponCode, CouponAmount couponAmount,DeductionStartDate deductionStartDate, DeductionEndDate, deductionEndDate ",
 		"from marketing_member_coupon ",
 		"<where> MemberId = #{memberId}",
-		"<if test='useType == 1'> and Used = 0 and DeductionEndDate gt now()</if>",
+		"<if test='useType == 1'> and Used = 0 and DeductionEndDate &gt; now() </if>",
 		"<if test='useType == 2'> and Used = 1</if>",
-		"<if test='useType == 3'> and Used = 0 and DeductionEndDate lte now() </if>",
+		"<if test='useType == 3'> and Used = 0 and DeductionEndDate &lt;= now() </if>",
 		"</where>",
-		"<if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>",
+//		"<if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>",
 		"</script>"})
 	List<CouponPageVo> listCoupon(CouponPageParam couponPageParam);
 	
@@ -79,9 +79,9 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 		"select count(*) ",
 		"from marketing_member_coupon",
 		"<where> MemberId = #{memberId}",
-		"<if test='useType == 1'> and Used = 0 and DeductionEndDate gt now()</if>",
+		"<if test='useType == 1'> and Used = 0 and DeductionEndDate &gt; now()</if>",
 		"<if test='useType == 2'> and Used = 1</if>",
-		"<if test='useType == 3'> and Used = 0 and DeductionEndDate lte now() </if>",
+		"<if test='useType == 3'> and Used = 0 and DeductionEndDate &lt;= now() </if>",
 		"</where>",
 		"</script>"})
 	int couponCount(CouponPageParam couponPageParam);

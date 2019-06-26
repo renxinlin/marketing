@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel("用户H5抵扣券分页查询")
-public class CouponPageParam extends DaoSearch {
+public class CouponPageParam {
 
 	@ApiModelProperty(hidden = true)
 	private Long memberId;

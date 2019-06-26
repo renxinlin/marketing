@@ -1,7 +1,8 @@
 package com.jgw.supercodeplatform.marketing.constants;
 
 public enum BusinessTypeEnum {
-	INTEGRAL(1, "积分"), TRACE(2, "溯源"), FAKE(3, "防伪"), LOGISTICS(4, "物流"), MARKETING_ACTIVITY(5, "营销活动");
+	INTEGRAL(1, "积分"), TRACE(2, "溯源"), FAKE(3, "防伪"), LOGISTICS(4, "物流"), MARKETING_ACTIVITY(5, "营销活动"),
+	MARKETING_COUPON(6, "优惠券");
 
 	private Integer businessType;
 
