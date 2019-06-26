@@ -117,7 +117,9 @@ public class CommonService {
 
 
 	public String getBatchInfo(List<ProductAndBatchGetCodeMO>productAndBatchGetCodeMOs,String superToken,String url) throws SuperCodeException {
-		String jsonData=JSONObject.toJSONString(productAndBatchGetCodeMOs);
+		Map<String, Object> getBatchInfoDtosMap = new HashMap<>();
+		getBatchInfoDtosMap.put("getBatchInfoDtoList", productAndBatchGetCodeMOs);
+		String jsonData=JSONObject.toJSONString(getBatchInfoDtosMap);
 		Map<String,String> headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
 		ResponseEntity<String>  response=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+url, jsonData, headerMap);
@@ -139,7 +141,7 @@ public class CommonService {
 			String productId=batchobj.getString("productId");
 			String productBatchId=batchobj.getString("productBatchId");
 			Long codeTotal=batchobj.getLong("codeTotal");
-			String codeBatch=batchobj.getString("codeBatch");
+			String codeBatch=batchobj.getString("globalBatchId");
 			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
 				throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
 			}

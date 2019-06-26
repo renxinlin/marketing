@@ -207,7 +207,7 @@ public class CouponService {
 		//如果是会员活动需要去绑定扫码连接到批次号
 		if(send) {
 			String superToken = commonUtil.getSuperToken();
-			String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+			String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
 			JSONObject obj = JSONObject.parseObject(body);
 			int state = obj.getInteger("state");
 			if (HttpStatus.SC_OK == state) {
@@ -254,7 +254,7 @@ public class CouponService {
 		// 营销绑定生码批次
 		String superToken = commonUtil.getSuperToken();
 		String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
-				WechatConstants.code_relation_getBatchInfoWithoutType);
+				WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
 		JSONObject obj = JSONObject.parseObject(body);
 		int state = obj.getInteger("state");
 		if (200 == state) {

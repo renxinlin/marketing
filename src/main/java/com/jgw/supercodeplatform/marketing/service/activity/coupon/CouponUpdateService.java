@@ -271,7 +271,7 @@ public class CouponUpdateService {
         if(send){
         	String superToken = commonUtil.getSuperToken();
 			String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
-					WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+					WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
 			JSONObject obj = JSONObject.parseObject(body);
 			int state = obj.getInteger("state");
 			if (200 == state) {
