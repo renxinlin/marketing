@@ -1,17 +1,21 @@
 package com.jgw.supercodeplatform.marketing.dto.coupon;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
-import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponVo;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Range;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * 新增优惠券活动参数
@@ -33,6 +37,8 @@ public class MarketingActivityCouponAddParam {
     private Integer autoFetch;//是否自动获取(1、自动获取 2、仅此一次 )
 
     @ApiModelProperty(name = "acquireCondition", value = "获得条件: 1首次积分,2一次积分达到,3累计积分达到,4参加获得抵扣券的产品", example = "1")
+    @NotNull(message = "获得条件不能为空")
+    @Range(min = 1,max = 4, message = "数值必须在1到4之间")
     private Byte acquireCondition;
     @ApiModelProperty(name = "acquireCondition", value = "累计积分或者一次积分数值", example = "1")
     private Integer acquireConditionIntegral;
