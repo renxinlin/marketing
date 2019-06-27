@@ -417,7 +417,10 @@ public class CouponService {
 
 
 	private void validateBasicByAdd(MarketingActivityCouponAddParam addVO) throws SuperCodeException {
-
+		MarketingActivitySet existmActivitySet =setMapper.selectByTitleOrgId(addVO.getActivityTitle(), commonUtil.getOrganizationId());
+		if (null!=existmActivitySet) {
+			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
+		}
 		// 每人每天限量
 		if(addVO.getEachDayNumber() == null){
 			addVO.setEachDayNumber(ActivityDefaultConstant.eachDayNum);
