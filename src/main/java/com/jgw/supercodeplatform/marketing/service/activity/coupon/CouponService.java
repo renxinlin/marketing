@@ -291,25 +291,26 @@ public class CouponService {
 	}
 
 	private void saveChannels(List<MarketingChannelParam> channelParams, Long activitySetId) {
-		List<MarketingChannel> mList=new ArrayList<MarketingChannel>();
 		//遍历顶层
-		for (MarketingChannelParam marketingChannelParam : channelParams) {
-			Byte customerType=marketingChannelParam.getCustomerType();
-			// 将基础信息的customerId插入customerCode
-			MarketingChannel mChannel=new MarketingChannel();
-			mList.add(mChannel);
-			mChannel.setCustomerType(customerType);
-			mChannel.setActivitySetId(activitySetId);
-			String customerId=marketingChannelParam.getCustomerId();
-			mChannel.setCustomerId(marketingChannelParam.getCustomerId());
-			mChannel.setCustomerName(marketingChannelParam.getCustomerName());
-			mChannel.setCustomerSuperior(marketingChannelParam.getCustomerSuperior());
-			List<MarketingChannelParam> childrens=marketingChannelParam.getChildrens();
-			mChannel.setCustomerSuperiorType(marketingChannelParam.getCustomerSuperiorType());
-			recursiveCreateChannel(customerId,customerType,activitySetId,childrens,mList);
+		if(!CollectionUtils.isEmpty(channelParams)) {
+			List<MarketingChannel> mList=new ArrayList<MarketingChannel>();
+			for (MarketingChannelParam marketingChannelParam : channelParams) {
+				Byte customerType=marketingChannelParam.getCustomerType();
+				// 将基础信息的customerId插入customerCode
+				MarketingChannel mChannel=new MarketingChannel();
+				mList.add(mChannel);
+				mChannel.setCustomerType(customerType);
+				mChannel.setActivitySetId(activitySetId);
+				String customerId=marketingChannelParam.getCustomerId();
+				mChannel.setCustomerId(marketingChannelParam.getCustomerId());
+				mChannel.setCustomerName(marketingChannelParam.getCustomerName());
+				mChannel.setCustomerSuperior(marketingChannelParam.getCustomerSuperior());
+				List<MarketingChannelParam> childrens=marketingChannelParam.getChildrens();
+				mChannel.setCustomerSuperiorType(marketingChannelParam.getCustomerSuperiorType());
+				recursiveCreateChannel(customerId,customerType,activitySetId,childrens,mList);
+			}
+			channelMapper.batchInsert(mList);
 		}
-		channelMapper.batchInsert(mList);
-
 	}
 
 	/**

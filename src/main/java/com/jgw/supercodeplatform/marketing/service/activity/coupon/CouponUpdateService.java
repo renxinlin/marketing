@@ -182,24 +182,26 @@ public class CouponUpdateService {
     }
 
     private void saveChannelsWhenUpdate(List<MarketingChannelParam> channelParams, Long activitySetId) {
-        List<MarketingChannel> mList=new ArrayList<MarketingChannel>();
-        //遍历顶层
-        for (MarketingChannelParam marketingChannelParam : channelParams) {
-            Byte customerType=marketingChannelParam.getCustomerType();
-            // 将基础信息的customerId插入customerCode
-            String customerId=marketingChannelParam.getCustomerId();
-            MarketingChannel mChannel=new MarketingChannel();
-            mChannel.setActivitySetId(activitySetId);
-            mChannel.setCustomerId(marketingChannelParam.getCustomerId());
-            mChannel.setCustomerName(marketingChannelParam.getCustomerName());
-            mChannel.setCustomerSuperior(marketingChannelParam.getCustomerSuperior());
-            mChannel.setCustomerSuperiorType(marketingChannelParam.getCustomerSuperiorType());
-            mChannel.setCustomerType(customerType);
-            mList.add(mChannel);
-            List<MarketingChannelParam> childrens=marketingChannelParam.getChildrens();
-            recursiveCreateChannel(customerId,customerType,activitySetId,childrens,mList);
-        }
-        channelMapper.batchInsert(mList);
+    	if(!CollectionUtils.isEmpty(channelParams)) {
+	    	List<MarketingChannel> mList=new ArrayList<MarketingChannel>();
+	        //遍历顶层
+	        for (MarketingChannelParam marketingChannelParam : channelParams) {
+	            Byte customerType=marketingChannelParam.getCustomerType();
+	            // 将基础信息的customerId插入customerCode
+	            String customerId=marketingChannelParam.getCustomerId();
+	            MarketingChannel mChannel=new MarketingChannel();
+	            mChannel.setActivitySetId(activitySetId);
+	            mChannel.setCustomerId(marketingChannelParam.getCustomerId());
+	            mChannel.setCustomerName(marketingChannelParam.getCustomerName());
+	            mChannel.setCustomerSuperior(marketingChannelParam.getCustomerSuperior());
+	            mChannel.setCustomerSuperiorType(marketingChannelParam.getCustomerSuperiorType());
+	            mChannel.setCustomerType(customerType);
+	            mList.add(mChannel);
+	            List<MarketingChannelParam> childrens=marketingChannelParam.getChildrens();
+	            recursiveCreateChannel(customerId,customerType,activitySetId,childrens,mList);
+	        }
+	        channelMapper.batchInsert(mList);
+    	}
     }
 
     /**
