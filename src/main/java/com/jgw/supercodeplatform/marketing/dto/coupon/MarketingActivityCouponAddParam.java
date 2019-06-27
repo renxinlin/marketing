@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,11 +50,11 @@ public class MarketingActivityCouponAddParam {
 
 
     @ApiModelProperty(value = "活动设置产品参数")
-    private List<MarketingActivityProductParam> productParams;
+    private List<MarketingActivityProductParam> productParams = new ArrayList<>();
 
 
     @ApiModelProperty(value = "渠道")
-    private List<MarketingChannelParam> channelParams;
+    private List<MarketingChannelParam> channelParams = new ArrayList<>();
 
 
     @ApiModelProperty(value = "抵扣券规则")

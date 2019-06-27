@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.dto.activity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @ApiModel(value = "活动门店或经销商")
@@ -24,7 +25,7 @@ public class MarketingChannelParam {
 	@ApiModelProperty(value = "父类唯一编码")
 	private String customerSuperior;// 父类唯一编码
 	@ApiModelProperty(value = "下级门店参数")
-	private List<MarketingChannelParam> childrens;
+	private List<MarketingChannelParam> childrens = new ArrayList<>();
 
 	public String getCustomerId() {
 		return customerId;

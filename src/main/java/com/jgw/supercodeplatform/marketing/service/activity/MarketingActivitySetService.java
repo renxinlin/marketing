@@ -870,7 +870,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			List<MarketingChannelParam> childList = parentChannel.getChildrens();
 			//如果父级的children为空，则说明第一次添加，需递归调用，如果不为空，则说明不是第一次添加，
 			//以前已经递归调用过，父级以上的关系已添加过，不用再次递归，也无需返回实例。
-			if(childList == null) {
+			if(CollectionUtils.isEmpty(childList)) {
 				parentChannel.setChildrens(Lists.newArrayList(channel));
 				reChannel = putChildrenChannel(marketingChannelMap, parentChannel);
 			} else {

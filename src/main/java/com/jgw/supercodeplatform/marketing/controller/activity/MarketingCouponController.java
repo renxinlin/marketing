@@ -52,7 +52,9 @@ public class MarketingCouponController {
     @ApiOperation("编辑优惠券活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> couponActivityUpdate(@Valid @RequestBody MarketingActivityCouponUpdateParam updateVo) throws SuperCodeException {
-        return updateService.update(updateVo);
+        if(updateVo.getId() == null)
+        	throw new SuperCodeException("ID不能为空");
+    	return updateService.update(updateVo);
     }
 
     @PostMapping("/copy")
