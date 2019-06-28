@@ -8,7 +8,9 @@ public class CommonConstants {
      * 前端header key ,jwt-token存储jwt处理后的JwtUser信息
      */
     public static final String JWT_TOKEN = "jwt-token";
-
+    
+    /** 日期格式转换 */
+    public static final String[] DATE_PATTERNS = {"yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss.S", "yyyy-MM-dd"};
     
     /**
      * 请求码管理进行码关联过的产品路径

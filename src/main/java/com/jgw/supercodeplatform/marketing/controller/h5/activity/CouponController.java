@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
@@ -95,8 +96,8 @@ public class CouponController {
 		String activityStartDateStr = marketingActivitySet.getActivityStartDate();
 		String activityEndDateStr = marketingActivitySet.getActivityEndDate();
 		long currentMills = System.currentTimeMillis();
-		long activityStartMills = StringUtils.isBlank(activityStartDateStr)?0L:DateUtils.parseDate(activityStartDateStr, new String[]{"yyyy-MM-dd HH:mm:ss"}).getTime();
-		long activityEndMills = StringUtils.isBlank(activityEndDateStr)?0L:DateUtils.parseDate(activityEndDateStr, new String[]{"yyyy-MM-dd HH:mm:ss"}).getTime();
+		long activityStartMills = StringUtils.isBlank(activityStartDateStr)?0L:DateUtils.parseDate(activityStartDateStr, CommonConstants.DATE_PATTERNS).getTime();
+		long activityEndMills = StringUtils.isBlank(activityEndDateStr)?0L:DateUtils.parseDate(activityEndDateStr, CommonConstants.DATE_PATTERNS).getTime();
 		if(activityStartMills != 0 && activityEndMills != 0) {
 			if(activityStartMills > currentMills)
 				throw new SuperCodeException("‘活动未开始’", HttpStatus.SC_INTERNAL_SERVER_ERROR);

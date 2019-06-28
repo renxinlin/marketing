@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
@@ -78,8 +79,8 @@ public class MarketingMemberProductIntegralService {
 			String activityStartDateStr = marketingActivitySet.getActivityStartDate();
 			String activityEndDateStr = marketingActivitySet.getActivityEndDate();
 			long currentMills = System.currentTimeMillis();
-			long activityStartMills = StringUtils.isBlank(activityStartDateStr)?0L:DateUtils.parseDate(activityStartDateStr, new String[]{"yyyy-MM-dd HH:mm:ss"}).getTime();
-			long activityEndMills = StringUtils.isBlank(activityEndDateStr)?0L:DateUtils.parseDate(activityEndDateStr, new String[]{"yyyy-MM-dd HH:mm:ss"}).getTime();
+			long activityStartMills = StringUtils.isBlank(activityStartDateStr)?0L:DateUtils.parseDate(activityStartDateStr, CommonConstants.DATE_PATTERNS).getTime();
+			long activityEndMills = StringUtils.isBlank(activityEndDateStr)?0L:DateUtils.parseDate(activityEndDateStr, CommonConstants.DATE_PATTERNS).getTime();
 			if(activityId == 4 && activityStatus == 1 && ((activityStartMills < currentMills && currentMills < activityEndMills)||(activityStartMills == 0 && activityEndMills == 0))) {
 				String validCondition = marketingActivitySet.getValidCondition();
 				MarketingActivitySetCondition activityCondtion = JSON.parseObject(validCondition, MarketingActivitySetCondition.class);
