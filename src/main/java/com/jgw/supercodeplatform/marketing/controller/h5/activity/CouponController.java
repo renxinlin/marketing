@@ -85,7 +85,7 @@ public class CouponController {
 	@ApiOperation("用户领取抵扣券")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
 	,@ApiImplicitParam(paramType="body",value = "产品ID",name="productId")})
-	public RestResult<?> obtainCoupon(@Valid CouponObtainParam couponObtainParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
+	public RestResult<?> obtainCoupon(@Valid @RequestBody CouponObtainParam couponObtainParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
 		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(couponObtainParam.getProductId(), MemberTypeEnums.VIP.getType());
 		if(CollectionUtils.isEmpty(marketingActivityProductList))
 			throw new SuperCodeException("‘活动产品为空’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
