@@ -5,14 +5,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
@@ -28,10 +33,13 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberProductIntegral;
+import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
 @Service
 public class MarketingMemberProductIntegralService {
+	
+	private static Logger log = LoggerFactory.getLogger(MarketingMemberProductIntegralService.class);
 	
 	@Autowired
 	private MarketingCouponMapperExt marketingCouponMapper;
@@ -48,6 +56,12 @@ public class MarketingMemberProductIntegralService {
 	@Autowired
 	private MarketingMemberCouponMapperExt marketingMemberCouponMapper;
 
+	@Autowired
+	private CodeEsService codeEsService;
+	
+	@Autowired
+	private RedisLockUtil lock;
+	
 	/**
 	 * 添加产品积分记录并判断参加的活动获取抵扣券
 	 * @param productIntegral
@@ -130,29 +144,33 @@ public class MarketingMemberProductIntegralService {
 	
 	//添加抵扣券
 	private void addMarketingMemberCoupon(List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName) {
-		List<MarketingMemberCoupon> memberCouponList = new ArrayList<>();
-		marketingCouponList.forEach(marketingCoupon -> {
-			MarketingMemberCoupon marketingMemberCoupon = new MarketingMemberCoupon();
-			marketingMemberCoupon.setCouponAmount(marketingCoupon.getCouponAmount());
-			marketingMemberCoupon.setCreateTime(new Date());
-			marketingMemberCoupon.setDeductionStartDate(marketingCoupon.getDeductionStartDate());
-			marketingMemberCoupon.setDeductionEndDate(marketingCoupon.getDeductionEndDate());
-			marketingMemberCoupon.setMemberId(member.getId());
-			marketingMemberCoupon.setMemberPhone(member.getMobile());
-			marketingMemberCoupon.setObtainCustmerName(member.getCustomerName());
-			marketingMemberCoupon.setObtainCustomerId(member.getCustomerId());
-			marketingMemberCoupon.setProductId(productId);
-			marketingMemberCoupon.setProductName(productName);
-			marketingMemberCoupon.setUsed((byte)0);
-		});
-		marketingMemberCouponMapper.insertList(memberCouponList);
-		//用id拼接0得到CouponCode
-		memberCouponList.forEach(marketingCoupon -> {
-			MarketingMemberCoupon marketingMemberCoupon = new MarketingMemberCoupon();
-			marketingMemberCoupon.setId(marketingCoupon.getId());
-			marketingMemberCoupon.setCouponCode(String.format("%06d", marketingCoupon.getId()));
-			marketingMemberCouponMapper.updateByPrimaryKeySelective(marketingMemberCoupon);
-		});
+		if(CollectionUtils.isNotEmpty(marketingCouponList)) {
+			List<MarketingMemberCoupon> memberCouponList = new ArrayList<>();
+			marketingCouponList.forEach(marketingCoupon -> {
+				MarketingMemberCoupon marketingMemberCoupon = new MarketingMemberCoupon();
+				marketingMemberCoupon.setCouponId(marketingCoupon.getId());
+				marketingMemberCoupon.setCouponAmount(marketingCoupon.getCouponAmount());
+				marketingMemberCoupon.setCreateTime(new Date());
+				marketingMemberCoupon.setDeductionStartDate(marketingCoupon.getDeductionStartDate());
+				marketingMemberCoupon.setDeductionEndDate(marketingCoupon.getDeductionEndDate());
+				marketingMemberCoupon.setMemberId(member.getId());
+				marketingMemberCoupon.setMemberPhone(member.getMobile());
+				marketingMemberCoupon.setObtainCustmerName(member.getCustomerName());
+				marketingMemberCoupon.setObtainCustomerId(member.getCustomerId());
+				marketingMemberCoupon.setProductId(productId);
+				marketingMemberCoupon.setProductName(productName);
+				marketingMemberCoupon.setUsed((byte)0);
+				memberCouponList.add(marketingMemberCoupon);
+			});
+			marketingMemberCouponMapper.insertList(memberCouponList);
+			//用id拼接0得到CouponCode
+			memberCouponList.forEach(marketingCoupon -> {
+				MarketingMemberCoupon marketingMemberCoupon = new MarketingMemberCoupon();
+				marketingMemberCoupon.setId(marketingCoupon.getId());
+				marketingMemberCoupon.setCouponCode(String.format("%06d", marketingCoupon.getId()));
+				marketingMemberCouponMapper.updateByPrimaryKeySelective(marketingMemberCoupon);
+			});
+		}
 	}
 	
 	/**
@@ -160,19 +178,41 @@ public class MarketingMemberProductIntegralService {
 	 * @param activitySetId
 	 * @param productId
 	 * @param jwtUser
+	 * @throws Exception 
 	 * @throws SuperCodeException
 	 */
-	@Transactional(rollbackFor = Exception.class)
-	public void obtainCouponShopping(Long activitySetId, String productId,String productName, H5LoginVO jwtUser) throws SuperCodeException {
-		MarketingMembers member = new MarketingMembers();
-		member.setId(jwtUser.getMemberId());
-		member.setMobile(jwtUser.getMobile());
-		member.setCustomerId(jwtUser.getCustomerId());
-		member.setCustomerName(jwtUser.getCustomerName());
-		List<MarketingCoupon> marketingCouponList = marketingCouponMapper.selectByActivitySetId(activitySetId);
-		addMarketingMemberCoupon(marketingCouponList, member, productId, productName);
+	public void obtainCouponShopping(ScanCodeInfoMO scanCodeInfoMO, String productName, H5LoginVO jwtUser) throws Exception {
+		String lockKey = "marketing:coupon:" + scanCodeInfoMO.getCodeTypeId() + ":" + scanCodeInfoMO.getCodeId();
+		boolean lockFlag = false;
+		try {
+			lockFlag = lock.lock(lockKey, 6);
+			if(lockFlag) {
+				//查询该码是否被扫过
+				int codeScanNum = codeEsService.countCodeIdScanNum(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId());
+				if(codeScanNum > 0) {
+					throw new SuperCodeException("您已经扫过此码啦！");
+				}
+				codeEsService.indexScanInfo(scanCodeInfoMO);
+				MarketingMembers member = new MarketingMembers();
+				member.setId(jwtUser.getMemberId());
+				member.setMobile(jwtUser.getMobile());
+				member.setCustomerId(jwtUser.getCustomerId());
+				member.setCustomerName(jwtUser.getCustomerName());
+				List<MarketingCoupon> marketingCouponList = marketingCouponMapper.selectByActivitySetId(scanCodeInfoMO.getActivitySetId());
+				addMarketingMemberCoupon(marketingCouponList, member, scanCodeInfoMO.getProductId(), productName);
+			}
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			if(lockFlag){
+				try{
+					lock.releaseLock(lockKey);
+				}catch (Exception e){
+					log.error("锁释放失败:"+lockKey, e);
+					e.printStackTrace();
+				}
+			}
+		}
 	}
-	
-	
 	
 }

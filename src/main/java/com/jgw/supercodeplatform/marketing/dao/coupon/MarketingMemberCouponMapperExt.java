@@ -99,13 +99,13 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 	
 	@Insert({"<script>insert into marketing_member_coupon ",
 		"(MemberId,CouponId,CouponAmount,MemberPhone,ProductId,ProductName,ObtainCustomerId,DeductionStartDate,DeductionEndDate,ObtainCustmerName,CreateTime,Used)",
-		"values <foreach collection='memberCouponList' item='memberCoupon' index='index' separator=','>",
+		"values <foreach collection='list' item='memberCoupon' index='index' separator=','>",
 		"(#{memberCoupon.memberId},#{memberCoupon.couponId},#{memberCoupon.couponAmount},#{memberCoupon.memberPhone},#{memberCoupon.productId},#{memberCoupon.productName},#{memberCoupon.obtainCustomerId},",
 		"#{memberCoupon.deductionStartDate},#{memberCoupon.deductionEndDate},#{memberCoupon.obtainCustmerName},#{memberCoupon.createTime},#{memberCoupon.used})",
 		"</foreach>",
 		"</script>"})
 	@Options(useGeneratedKeys=true, keyColumn="Id",keyProperty="id")
-	int insertList(@Param("memberCouponList")List<MarketingMemberCoupon> memberCouponList);
+	int insertList(List<MarketingMemberCoupon> memberCouponList);
 	
 	
 }

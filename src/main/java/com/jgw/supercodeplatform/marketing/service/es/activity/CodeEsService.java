@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import javax.validation.constraints.NotNull;
+
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
@@ -432,6 +434,26 @@ public class CodeEsService extends AbstractEsSearch {
 		return  (int)aggs.getCount();
 
     }
+    
+    public int countCodeIdScanNum(String codeId, String codeTypeId) throws SuperCodeException {
+    	if(codeId == null || codeId == null){
+    		throw new SuperCodeException("码Id和码类型不能为空");
+		}
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes(EsType.INFO.getType());
+		QueryBuilder termOrgIdQuery = new TermQueryBuilder("codeId",codeId);
+		QueryBuilder termUserIdQuery = new TermQueryBuilder("codeTypeId",codeTypeId);
+		StatsAggregationBuilder aggregation =
+				AggregationBuilders
+						.stats(AggregationName)
+						// 聚和字段：码
+						.field("scanCodeTime");
+		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		searchRequestBuilder.addAggregation(aggregation);
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+		return (int)aggs.getCount();
+    }
+    
 
     /**
      * 统计活动扫码量

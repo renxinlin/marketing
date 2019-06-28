@@ -6,12 +6,14 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,12 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponPageParam;
+import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.CouponVerifyEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
@@ -78,7 +82,8 @@ public class CouponController {
 	@ApiOperation("用户领取抵扣券")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
 	,@ApiImplicitParam(paramType="body",value = "产品ID",name="productId")})
-	public RestResult<?> obtainCoupon(@RequestParam String productId, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException, ParseException{
+	public RestResult<?> obtainCoupon(@RequestBody String productId, @RequestBody String codeTypeId, 
+			@RequestBody String outerCodeId, @RequestBody String productBatchId, @ApiIgnore H5LoginVO jwtUser) throws Exception{
 		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(productId, MemberTypeEnums.VIP.getType());
 		if(CollectionUtils.isEmpty(marketingActivityProductList))
 			throw new SuperCodeException("‘活动产品为空’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
@@ -110,7 +115,20 @@ public class CouponController {
 		if(!CouponAcquireConditionEnum.SHOPPING.getCondition().equals(acquireCondition)) {
 			throw new SuperCodeException("‘优惠券获得条件不对’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		}
-		marketingMemberProductIntegralService.obtainCouponShopping(activitySetId, productId,productName, jwtUser);
+		ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
+		scanCodeInfoMO.setActivitySetId(activitySetId);
+		scanCodeInfoMO.setActivityId(ActivityIdEnum.ACTIVITY_COUPON.getId().longValue());
+		scanCodeInfoMO.setActivityType(ActivityIdEnum.ACTIVITY_COUPON.getType());
+		scanCodeInfoMO.setCodeId(outerCodeId);
+		scanCodeInfoMO.setCodeTypeId(codeTypeId);
+		scanCodeInfoMO.setCreateTime(DateFormatUtils.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
+		scanCodeInfoMO.setOrganizationId(jwtUser.getOrganizationId());
+		scanCodeInfoMO.setProductBatchId(productBatchId);
+		scanCodeInfoMO.setProductId(productId);
+		scanCodeInfoMO.setScanCodeTime(new Date());
+		scanCodeInfoMO.setMobile(jwtUser.getMobile());
+		scanCodeInfoMO.setUserId(jwtUser.getMemberId());
+		marketingMemberProductIntegralService.obtainCouponShopping(scanCodeInfoMO ,productName, jwtUser);
 		return RestResult.success();
 	}
 	
@@ -119,7 +137,7 @@ public class CouponController {
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
 	,@ApiImplicitParam(paramType="body",value = "用户会员手机号",name="memberPhone")
 	,@ApiImplicitParam(paramType="body",value = "抵扣券码",name="couponCode")})
-	public RestResult<Double> couponVerify(@RequestParam String memberPhone, @RequestParam String couponCode, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException{
+	public RestResult<Double> couponVerify(@RequestBody String memberPhone, @RequestBody String couponCode, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException{
 		MarketingMemberCoupon marketingMemberCoupon = couponMemberService.getMarketingMemberCouponByCouponCode(couponCode);
 		if(marketingMemberCoupon == null)
 			throw new SuperCodeException("‘抵扣券不存在’（输入错误）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
