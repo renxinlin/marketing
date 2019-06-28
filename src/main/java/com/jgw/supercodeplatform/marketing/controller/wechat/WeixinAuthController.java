@@ -130,7 +130,7 @@ public class WeixinAuthController {
 			}
     		h5BUf.append("&organizationId="+organizationId);
     		if(statecode != null && statecode.intValue() == AccessProtocol.ACTIVITY_COUPON.getType()) 
-    			h5BUf.append("&type=").append(statecode);
+    			h5BUf.append("&uuid=").append(statearr[2]).append("&type=").append(statecode);
     	 	members=marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
     		Long memberParamId = loginMemberId(members);
             if (memberParamId.intValue()!=-1) {
