@@ -2,9 +2,6 @@ package com.jgw.supercodeplatform.marketing.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-
-import java.util.List;
 
 @ApiModel("注册参数")
 public class MarketingSaleMembersAddParam {
