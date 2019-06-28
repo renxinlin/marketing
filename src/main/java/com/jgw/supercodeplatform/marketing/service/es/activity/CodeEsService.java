@@ -338,7 +338,8 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termOrgIdQuery = new TermQueryBuilder("organizationId",toEsVo.getOrganizationId());
 		QueryBuilder termUserIdQuery = new TermQueryBuilder("userId",toEsVo.getUserId());
-		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termOrgIdQuery).must(termUserIdQuery);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		SearchHit[] hits = searchResponse.getHits().getHits();
 		if(hits!=null && hits.length>0){
@@ -378,7 +379,8 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termOrgIdQuery = new TermQueryBuilder("organizationId",toEsVo.getOrganizationId());
 		QueryBuilder termUserIdQuery = new TermQueryBuilder("userId",toEsVo.getUserId());
-		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termOrgIdQuery).must(termUserIdQuery);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		SearchHits hits = searchResponse.getHits();
 		String id =null;

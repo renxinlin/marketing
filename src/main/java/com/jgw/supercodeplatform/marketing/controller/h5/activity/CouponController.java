@@ -1,6 +1,5 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
@@ -31,6 +29,7 @@ import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponObtainParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponPageParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.CouponVerifyPram;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.CouponVerifyEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
@@ -84,7 +83,10 @@ public class CouponController {
 	@PostMapping("/obtainCoupon")
 	@ApiOperation("用户领取抵扣券")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
-	,@ApiImplicitParam(paramType="body",value = "产品ID",name="productId")})
+	,@ApiImplicitParam(paramType="body",value = "产品ID",name="productId")
+	,@ApiImplicitParam(paramType="body",value = "码制",name="codeTypeId")
+	,@ApiImplicitParam(paramType="body",value = "外码",name="outerCodeId")
+	,@ApiImplicitParam(paramType="body",value = "产品批次ID",name="productBatchId")})
 	public RestResult<?> obtainCoupon(@Valid @RequestBody CouponObtainParam couponObtainParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
 		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(couponObtainParam.getProductId(), MemberTypeEnums.VIP.getType());
 		if(CollectionUtils.isEmpty(marketingActivityProductList))
@@ -139,12 +141,12 @@ public class CouponController {
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
 	,@ApiImplicitParam(paramType="body",value = "用户会员手机号",name="memberPhone")
 	,@ApiImplicitParam(paramType="body",value = "抵扣券码",name="couponCode")})
-	public RestResult<Double> couponVerify(@RequestBody String memberPhone, @RequestBody String couponCode, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException{
-		MarketingMemberCoupon marketingMemberCoupon = couponMemberService.getMarketingMemberCouponByCouponCode(couponCode);
+	public RestResult<Double> couponVerify(@Valid @RequestBody CouponVerifyPram couponVerifyPram, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException{
+		MarketingMemberCoupon marketingMemberCoupon = couponMemberService.getMarketingMemberCouponByCouponCode(couponVerifyPram.getCouponCode());
 		if(marketingMemberCoupon == null)
 			throw new SuperCodeException("‘抵扣券不存在’（输入错误）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		String phone = marketingMemberCoupon.getMemberPhone();
-		if(!memberPhone.equals(phone))
+		if(!couponVerifyPram.getMemberPhone().equals(phone))
 			throw new SuperCodeException("‘会员手机号与抵扣券不匹配’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		Byte used = marketingMemberCoupon.getUsed();
 		if(used != null && used.intValue() == 1)
