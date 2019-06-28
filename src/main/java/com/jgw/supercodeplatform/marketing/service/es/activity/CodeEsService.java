@@ -24,6 +24,7 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.document.DocumentField;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
@@ -307,7 +308,8 @@ public class CodeEsService extends AbstractEsSearch {
 						// 聚和字段：码
 						.field("scanCodeTime");
 		// 添加查询条件
-		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate).must(queryBuilderOrg);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(aggregation);
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
@@ -427,7 +429,8 @@ public class CodeEsService extends AbstractEsSearch {
 						.stats(AggregationName)
 						// 聚和字段：码
 						.field("scanCodeTime");
-		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termOrgIdQuery).must(termUserIdQuery);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(aggregation);
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		Stats aggs = searchResponse.getAggregations().get(AggregationName);
@@ -442,12 +445,13 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termOrgIdQuery = new TermQueryBuilder("codeId",codeId);
 		QueryBuilder termUserIdQuery = new TermQueryBuilder("codeTypeId",codeTypeId);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termOrgIdQuery).must(termUserIdQuery);
 		StatsAggregationBuilder aggregation =
 				AggregationBuilders
 						.stats(AggregationName)
 						// 聚和字段：码
 						.field("scanCodeTime");
-		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(aggregation);
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		Stats aggs = searchResponse.getAggregations().get(AggregationName);
@@ -481,12 +485,13 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SALER_INFO.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termIdQuery = new TermQueryBuilder("codeId",codeId);
 		QueryBuilder termTypeQuery = new TermQueryBuilder("codeTypeId",codeTypeId);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termIdQuery).must(termTypeQuery);
 		StatsAggregationBuilder aggregation =
 				AggregationBuilders
 						.stats(AggregationName)
 						// 聚和字段：码
 						.field("scanCodeTime");
-		searchRequestBuilder.setQuery(termIdQuery).setQuery(termTypeQuery);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(aggregation);
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		Stats aggs = searchResponse.getAggregations().get(AggregationName);
@@ -533,8 +538,8 @@ public class CodeEsService extends AbstractEsSearch {
 						.stats(AggregationName)
 						// 聚和字段：码
 						.field("scanCodeTime");
-		// 添加查询条件
-		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate).setQuery(memberType);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate).must(queryBuilderOrg).must(memberType);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(aggregation);
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
