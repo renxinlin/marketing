@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -27,6 +29,7 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
+import com.jgw.supercodeplatform.marketing.dto.coupon.CouponObtainParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponPageParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.CouponVerifyEnum;
@@ -82,9 +85,8 @@ public class CouponController {
 	@ApiOperation("用户领取抵扣券")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")
 	,@ApiImplicitParam(paramType="body",value = "产品ID",name="productId")})
-	public RestResult<?> obtainCoupon(@RequestBody String productId, @RequestBody String codeTypeId, 
-			@RequestBody String outerCodeId, @RequestBody String productBatchId, @ApiIgnore H5LoginVO jwtUser) throws Exception{
-		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(productId, MemberTypeEnums.VIP.getType());
+	public RestResult<?> obtainCoupon(@Valid CouponObtainParam couponObtainParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
+		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(couponObtainParam.getProductId(), MemberTypeEnums.VIP.getType());
 		if(CollectionUtils.isEmpty(marketingActivityProductList))
 			throw new SuperCodeException("‘活动产品为空’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		String productName = marketingActivityProductList.get(0).getProductName();
@@ -119,12 +121,12 @@ public class CouponController {
 		scanCodeInfoMO.setActivitySetId(activitySetId);
 		scanCodeInfoMO.setActivityId(ActivityIdEnum.ACTIVITY_COUPON.getId().longValue());
 		scanCodeInfoMO.setActivityType(ActivityIdEnum.ACTIVITY_COUPON.getType());
-		scanCodeInfoMO.setCodeId(outerCodeId);
-		scanCodeInfoMO.setCodeTypeId(codeTypeId);
+		scanCodeInfoMO.setCodeId(couponObtainParam.getOuterCodeId());
+		scanCodeInfoMO.setCodeTypeId(couponObtainParam.getCodeTypeId());
 		scanCodeInfoMO.setCreateTime(DateFormatUtils.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
 		scanCodeInfoMO.setOrganizationId(jwtUser.getOrganizationId());
-		scanCodeInfoMO.setProductBatchId(productBatchId);
-		scanCodeInfoMO.setProductId(productId);
+		scanCodeInfoMO.setProductBatchId(couponObtainParam.getProductBatchId());
+		scanCodeInfoMO.setProductId(couponObtainParam.getProductId());
 		scanCodeInfoMO.setScanCodeTime(new Date());
 		scanCodeInfoMO.setMobile(jwtUser.getMobile());
 		scanCodeInfoMO.setUserId(jwtUser.getMemberId());
