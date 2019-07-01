@@ -107,7 +107,8 @@ public class MarketingMemberProductIntegralService {
 					CouponAcquireConditionEnum couponAcquireConditionEnum = CouponAcquireConditionEnum.getConditionEnumByType(activityCondtion.getAcquireCondition());
 					switch (couponAcquireConditionEnum) {
 					case FIRST:
-						addMarketingMemberCoupon(marketingCouponList, members, productId, productName);
+						if(marketingMemberProductIntegral == null)
+							addMarketingMemberCoupon(marketingCouponList, members, productId, productName);
 						break;
 					case ONCE_LIMIT:
 						onceLimit(acquireConditionIntegral, accrueIntegral, marketingCouponList, members, productId, productName);
