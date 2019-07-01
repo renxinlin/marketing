@@ -87,9 +87,4 @@ public interface MarketingActivityProductMapper extends CommonSql{
 	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ReferenceRole=#{referenceRole}")
 	List<MarketingActivityProduct> selectByProductWithReferenceRole(@Param("productId") String productId, @Param("referenceRole") byte referenceRole);
 
-	/***************************************************************************/
-	@Select("SELECT "+selectSql+" FROM marketing_activity_product a INNER JOIN marketing_activity_set b ON a.ActivitySetId = b.Id WHERE b.ActivityId != 4 AND ValidCondition NOT LIKE '{\"acquireCondition\":4%' ")
-	List<MarketingActivityProduct> selectActivityProductList();
-	/***************************************************************************/
-	
 }
