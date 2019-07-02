@@ -364,14 +364,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
             throw new SuperCodeException("保存用户失败001...");
         }
 
-
-        if(userInfo == null){
-            throw new SuperCodeException("保存用户失败001...");
-        }
-
-
-
-		if(StringUtils.isBlank(userInfo.getOrganizationId())){
+        if(StringUtils.isBlank(userInfo.getOrganizationId())){
 			throw new SuperCodeException("组织信息获取失败...");
 		}
 		if(StringUtils.isBlank(userInfo.getMobile())){
