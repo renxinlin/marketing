@@ -14,7 +14,7 @@ import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 
 @Mapper
 public interface MarketingCouponMapperExt extends MarketingCouponMapper, CommonSql {
-    String bizField = " ActivitySetId, CouponAmount, DeductionStartDate,DeductionEndDate, DeductionProductType, DeductionChannelType ";
+    String bizField = "Id, ActivitySetId, CouponAmount, DeductionStartDate,DeductionEndDate, DeductionProductType, DeductionChannelType ";
     @Insert(startScript +
             " insert into marketing_coupon ( ActivitySetId, "+
             " CouponAmount, DeductionStartDate, DeductionEndDate, "+
