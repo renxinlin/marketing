@@ -63,6 +63,7 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPagePa
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
@@ -457,6 +458,44 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				productAndBatchGetCodeMO.setProductBatchList(productBatchList);
 				productAndBatchGetCodeMO.setProductId(productId);
 				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
+			}
+		}
+		List<MarketingActivityProduct> marketingActivityProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
+			List<Long> activitySetIds = new ArrayList<>();
+			marketingActivityProductList.forEach(product -> {if(!activitySetIds.contains(product.getActivitySetId())) activitySetIds.add(product.getActivitySetId());});
+			List<MarketingActivitySet> marketingActivitySetList = mSetMapper.selectMarketingActivitySetByIds(activitySetIds);
+			if(!CollectionUtils.isEmpty(marketingActivitySetList)) {
+				Map<Long, MarketingActivitySet> marketingActivitySetMap = marketingActivitySetList.stream().collect(Collectors.toMap(MarketingActivitySet::getId, mas -> mas));
+				deleteProductBatchList = new ArrayList<>();
+				for(MarketingActivityProduct marketingActivityProduct : marketingActivityProductList) {
+					Long aSetId = marketingActivityProduct.getActivitySetId();
+					MarketingActivitySet mas = marketingActivitySetMap.get(aSetId);
+					if(mas != null) {
+						Long activityId = mas.getActivityId();
+						Integer bizType = null;
+						if(activityId.intValue() == 4) {
+							MarketingActivitySetCondition validCondition = JSON.parseObject(mas.getValidCondition(), MarketingActivitySetCondition.class);
+							validCondition.getAcquireCondition();
+							if(CouponAcquireConditionEnum.SHOPPING.getCondition().equals(validCondition.getAcquireCondition())){
+								bizType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
+							}
+						} else {
+							bizType = BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType();
+						}
+						if (bizType != null) {
+							String sbatchIds = marketingActivityProduct.getSbatchId();
+							String[] sbatchIdArray = sbatchIds.split(",");
+							for(String sbatchId : sbatchIdArray) {
+								Map<String, Object> delMap = new HashMap<>();
+								delMap.put("batchId", sbatchId);
+								delMap.put("businessType", bizType);
+								delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+								deleteProductBatchList.add(delMap);
+							}
+						}
+					}
+				};
 			}
 		}
 		//如果是会员活动需要去绑定扫码连接到批次号

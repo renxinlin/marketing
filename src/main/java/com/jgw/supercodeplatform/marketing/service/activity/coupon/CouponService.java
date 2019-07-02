@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
@@ -95,8 +96,7 @@ public class CouponService {
 
 	@Autowired
 	private MarketingChannelMapper channelMapper;
-
-
+	
 	/**
 	 * 抵扣券查看详情
 	 * @param id
@@ -147,6 +147,11 @@ public class CouponService {
 		if(addVO.getAcquireCondition().intValue() == CouponAcquireConditionEnum.SHOPPING.getCondition().intValue() ){
 			send = true;
 		}
+		
+		
+//		delMap.put("batchId", product.getSbatchId());
+//		delMap.put("businessType", BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+//		delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
 		saveProductBatchs(addVO.getProductParams(),null,activitySet.getId(),addVO.getAutoFetch(),send);
 		// 保存抵扣券规则
 		saveCouponRules(addVO.getCoupon(),activitySet.getId());
@@ -178,6 +183,7 @@ public class CouponService {
 	private void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int autoFecth,boolean send) throws SuperCodeException {
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
+
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
@@ -205,6 +211,44 @@ public class CouponService {
 				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
 		}
+		List<MarketingActivityProduct> marketingActivityProductList = productMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
+			List<Long> activitySetIds = new ArrayList<>();
+			marketingActivityProductList.forEach(product -> {if(!activitySetIds.contains(product.getActivitySetId())) activitySetIds.add(product.getActivitySetId());});
+			List<MarketingActivitySet> marketingActivitySetList = setMapper.selectMarketingActivitySetByIds(activitySetIds);
+			if(!CollectionUtils.isEmpty(marketingActivitySetList)) {
+				Map<Long, MarketingActivitySet> marketingActivitySetMap = marketingActivitySetList.stream().collect(Collectors.toMap(MarketingActivitySet::getId, mas -> mas));
+				deleteProductBatchList = new ArrayList<>();
+				for(MarketingActivityProduct marketingActivityProduct : marketingActivityProductList) {
+					Long aSetId = marketingActivityProduct.getActivitySetId();
+					MarketingActivitySet mas = marketingActivitySetMap.get(aSetId);
+					if(mas != null) {
+						Long activityId = mas.getActivityId();
+						Integer bizType = null;
+						if(activityId.intValue() == 4) {
+							MarketingActivitySetCondition validCondition = JSON.parseObject(mas.getValidCondition(), MarketingActivitySetCondition.class);
+							validCondition.getAcquireCondition();
+							if(CouponAcquireConditionEnum.SHOPPING.getCondition().equals(validCondition.getAcquireCondition())){
+								bizType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
+							}
+						} else {
+							bizType = BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType();
+						}
+						if (bizType != null) {
+							String sbatchIds = marketingActivityProduct.getSbatchId();
+							String[] sbatchIdArray = sbatchIds.split(",");
+							for(String sbatchId : sbatchIdArray) {
+								Map<String, Object> delMap = new HashMap<>();
+								delMap.put("batchId", sbatchId);
+								delMap.put("businessType", bizType);
+								delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+								deleteProductBatchList.add(delMap);
+							}
+						}
+					}
+				};
+			}
+		}
 		getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
 		//如果是会员活动需要去绑定扫码连接到批次号
 		String superToken = commonUtil.getSuperToken();
@@ -213,9 +257,6 @@ public class CouponService {
 		int state = obj.getInteger("state");
 		if (HttpStatus.SC_OK == state) {
 			JSONArray arr = obj.getJSONArray("results");
-			int businessType = BusinessTypeEnum.INTEGRAL.getBusinessType();
-			if(send) businessType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
-			List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,businessType);
 			if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
 				String delbatchBody = commonService.deleteUrlToBatch(deleteProductBatchList, superToken);
 				JSONObject delBatchobj = JSONObject.parseObject(delbatchBody);
@@ -224,12 +265,16 @@ public class CouponService {
 					throw new SuperCodeException("请求码删除生码批次和url错误：" + delbatchBody, HttpStatus.SC_INTERNAL_SERVER_ERROR);
 				}
 			}
-			// 绑定生码批次到url
-			String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
-			JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
-			Integer batchstate = bindBatchobj.getInteger("state");
-			if (null != batchstate && batchstate.intValue() != HttpStatus.SC_OK) {
-				throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+			if(send) {
+				int businessType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
+				List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,businessType);
+				// 绑定生码批次到url
+				String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
+				JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
+				Integer batchstate = bindBatchobj.getInteger("state");
+				if (null != batchstate && batchstate.intValue() != HttpStatus.SC_OK) {
+					throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+				}
 			}
 			Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
 					BusinessTypeEnum.MARKETING_COUPON.getBusinessType());

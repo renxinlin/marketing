@@ -87,4 +87,13 @@ public interface MarketingActivityProductMapper extends CommonSql{
 	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ReferenceRole=#{referenceRole}")
 	List<MarketingActivityProduct> selectByProductWithReferenceRole(@Param("productId") String productId, @Param("referenceRole") byte referenceRole);
 
+	@Select({startScript,
+		"select ",selectSql,"from marketing_activity_product where ReferenceRole=#{referenceRole} and (",
+		" <foreach item='item' collection='list' separator='or' open='(' close=')' index=''>",
+		" ProductId=#{item.productId} and ProductBatchId=#{item.productBatchId}",
+		" </foreach>)",
+		endScript})
+	List<MarketingActivityProduct> selectByProductAndBatch( @Param(value="list")List<MarketingActivityProduct> mList, @Param(value="referenceRole")int referenceRole);
+
+	
 }

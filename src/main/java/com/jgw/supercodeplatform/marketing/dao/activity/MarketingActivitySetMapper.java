@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface MarketingActivitySetMapper extends CommonSql {
@@ -177,4 +178,13 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
     @Delete(" delete from marketing_activity_set where id = #{activitySetId} ")
     int deleteById(@Param("activitySetId") Long activitySetId);
+    
+    @Select({startScript,
+    		"select ",allFields," from marketing_activity_set where Id in (",
+    		"<foreach collection='idList' item='activitySetId' index='index' separator=','>",
+			"#{activitySetId}",
+			")</foreach>",
+    		endScript})
+    List<MarketingActivitySet> selectMarketingActivitySetByIds(@Param("idList") List<Long> idList);
+    
 }
