@@ -17,10 +17,10 @@ public interface MarketingUserMapperExt extends MarketingUserMapper , CommonSql 
 
     String selectSql = " a.Id as id, a.WxName as wxName,a.Openid as openid,a.Mobile as mobile, "
             + " a.UserId as userId,a.UserName as userName, "
-            + " a.Sex as sex,DATE_FORMAT(a.Birthday ,'%Y-%m-%d') as birthday, "
+            + " a.Sex as sex,a.Birthday as birthday, "
             + " a.ProvinceCode, a.CountyCode,a.CityCode, a.ProvinceName,a.CountyName, a.CityName, "
             + " a.OrganizationId as organizationId,"
-            + " DATE_FORMAT(a.CreateDate,'%Y-%m-%d') as createDate,DATE_FORMAT(a.UpdateDate,'%Y-%m-%d') as updateDate, "
+            + " a.CreateDate as createDate,a.UpdateDate as updateDate, "
             + " a.CustomerName as customerName,a.CustomerId as customerId,"
             + " a.PCCcode as pCCcode, a.WechatHeadImgUrl as wechatHeadImgUrl, "
             + " a.MemberType memberType, "

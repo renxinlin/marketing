@@ -154,11 +154,13 @@ public class CouponService {
 		return RestResult.success();
 	}
 
-	private void saveCouponRules(MarketingCouponVo couponRules, Long activitySetId) {
+	private void saveCouponRules(MarketingCouponVo couponRules, Long activitySetId) throws SuperCodeException {
 		List<MarketingCoupon> toDbEntitys = new ArrayList<>(5);
 		List<MarketingCouponAmoutAndDateVo> couponAmoutAndDateVo = couponRules.getCouponRules();
 		for(MarketingCouponAmoutAndDateVo vo: couponAmoutAndDateVo){
 			MarketingCoupon toDbEntity = new MarketingCoupon();
+			toDbEntity.setOrganizationId(commonUtil.getOrganizationId());
+			toDbEntity.setOrganizationName(commonUtil.getOrganizationName());
 			toDbEntity.setActivitySetId(activitySetId);
 			toDbEntity.setCouponAmount(vo.getCouponAmount());
 			toDbEntity.setDeductionEndDate(vo.getDeductionEndDate());
