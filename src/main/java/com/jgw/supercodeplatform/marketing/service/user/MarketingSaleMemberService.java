@@ -1,28 +1,32 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.dao.activity.*;
-import com.jgw.supercodeplatform.marketing.dto.*;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
-import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
-import com.jgw.supercodeplatform.marketing.pojo.*;
-import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersAddParam;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.SaleMemberBatchStatusParam;
+import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 
 @Service
 public class MarketingSaleMemberService extends AbstractPageService<MarketingMembersListParam> {
@@ -38,7 +42,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 
 	protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberService.class);
-	@Value("亲爱的{{user}}，您已通过审核，可登录红包中心{{url}}")
+	@Value("亲爱的{{user}}，您已通过审核，可登录销售员中心{{url}}")
 	private String SHORT_MSG ;
 	@Autowired
 	private MarketingUserMapperExt mapper;

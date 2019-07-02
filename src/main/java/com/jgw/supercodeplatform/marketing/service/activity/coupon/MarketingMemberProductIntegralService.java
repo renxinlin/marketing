@@ -70,6 +70,7 @@ public class MarketingMemberProductIntegralService {
 	@Transactional(rollbackFor = Exception.class)
 	public void obtainCoupon(MarketingMemberProductIntegral productIntegral, MarketingMembers members, String productName) throws ParseException {
 		//添加或者更新累计积分
+		long accrueIntegral = productIntegral.getAccrueIntegral();
 		MarketingMemberProductIntegral marketingMemberProductIntegral = productIntegralMapper.selectProductIntegralByMemberIdAndProductId(productIntegral.getMemberId(), productIntegral.getProductId());
 		long sumIntegral = productIntegral.getAccrueIntegral();
 		if(marketingMemberProductIntegral == null) {
@@ -103,7 +104,6 @@ public class MarketingMemberProductIntegralService {
 					Long activitySetId = marketingActivityProduct.getActivitySetId();
 					List<MarketingCoupon> marketingCouponList = marketingCouponMapper.selectByActivitySetId(activitySetId);
 					Integer acquireConditionIntegral = activityCondtion.getAcquireConditionIntegral();
-					Long accrueIntegral = productIntegral.getAccrueIntegral();
 					CouponAcquireConditionEnum couponAcquireConditionEnum = CouponAcquireConditionEnum.getConditionEnumByType(activityCondtion.getAcquireCondition());
 					switch (couponAcquireConditionEnum) {
 					case FIRST:
@@ -134,7 +134,7 @@ public class MarketingMemberProductIntegralService {
 	
 	//累计积分达到限定值
 	private void limt(Long memberProductIntegralId, long acquireConditionIntegral,long sumIntegral,List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName) {
-		if(sumIntegral > acquireConditionIntegral) {
+		if(sumIntegral >= acquireConditionIntegral) {
 			addMarketingMemberCoupon(marketingCouponList, member, productId, productName);
 			MarketingMemberProductIntegral productIntegral = new MarketingMemberProductIntegral();
 			productIntegral.setId(memberProductIntegralId);
