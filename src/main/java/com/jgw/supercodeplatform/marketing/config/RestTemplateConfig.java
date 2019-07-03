@@ -21,7 +21,7 @@ public class RestTemplateConfig {
 		return restTemplate;
 	}*/
 	
-	//@LoadBalanced
+	@LoadBalanced
     @Bean
 	public RestTemplate restTemplate() {
 		/*RestTemplate restTemplate = new RestTemplate();
