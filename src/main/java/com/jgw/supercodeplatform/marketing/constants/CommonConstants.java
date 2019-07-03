@@ -33,6 +33,9 @@ public class CommonConstants {
      */
     public static final String USER_REQUEST_ORGANIZATION_BATCH = "/org/ids";
     
+    /** 查询码的客户信息 */
+    public static final String OUTERCODE_CUSTOMER = "/logistics/purchasesale/customer";
+    
     /**
      * 请求基础平台，批量更新产品营销信息接口
      */

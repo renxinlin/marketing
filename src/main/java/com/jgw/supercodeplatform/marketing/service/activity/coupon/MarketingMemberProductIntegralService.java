@@ -21,6 +21,7 @@ import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingMemberCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingMemberProductIntegralMapperExt;
@@ -40,6 +41,9 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 public class MarketingMemberProductIntegralService {
 	
 	private static Logger log = LoggerFactory.getLogger(MarketingMemberProductIntegralService.class);
+	
+	@Autowired
+	private MarketingChannelMapper marketingChannelMapper;
 	
 	@Autowired
 	private MarketingCouponMapperExt marketingCouponMapper;
@@ -138,7 +142,7 @@ public class MarketingMemberProductIntegralService {
 			addMarketingMemberCoupon(marketingCouponList, member, productId, productName);
 			MarketingMemberProductIntegral productIntegral = new MarketingMemberProductIntegral();
 			productIntegral.setId(memberProductIntegralId);
-			productIntegral.setAccrueIntegral(sumIntegral - acquireConditionIntegral);
+			productIntegral.setAccrueIntegral(0L);
 			productIntegralMapper.updateByPrimaryKeySelective(productIntegral);
 		}
 	}
