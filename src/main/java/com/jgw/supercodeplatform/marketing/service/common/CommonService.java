@@ -64,6 +64,9 @@ public class CommonService {
 
     @Value("${rest.user.url}")
     private String restUserUrl;
+    
+    @Value("${rest.logistics.url}")
+    private String logisticsUrl;
 
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
@@ -462,7 +465,7 @@ public class CommonService {
     public Map<String, String> queryCurrentCustomer(String outerCodeId) throws SuperCodeException {
     	Map<String, Object> params = new HashMap<>();
     	params.put("outerCodeId", outerCodeId);
-    	ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.OUTERCODE_CUSTOMER, params, null);
+    	ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(logisticsUrl+CommonConstants.OUTERCODE_CUSTOMER, params, null);
     	String body = responseEntity.getBody();
 		JSONObject jsonObject=JSONObject.parseObject(body);
 		Integer state=jsonObject.getInteger("state");
