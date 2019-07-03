@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -325,7 +326,6 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, headerMap);
 		String body = responseEntity.getBody();
 		logger.info("接收到码管理进行过码关联的产品信息："+body);
-		
 		JSONObject json=JSONObject.parseObject(body);
 		int state=json.getInteger("state");
 		List<IntegralRuleProduct> ruleproductList=new ArrayList<IntegralRuleProduct>();
@@ -334,11 +334,14 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			JSONArray arry=json.getJSONObject("results").getJSONArray("list");
   			for (int i=0 ;i<arry.size();i++) {
  				JSONObject ruleProduct=arry.getJSONObject(i);
-				IntegralRuleProduct product=new IntegralRuleProduct();
- 				product.setId(ruleProduct.getLong("id"));
- 				product.setProductId(ruleProduct.getString("objectId"));
-				product.setProductName(ruleProduct.getString("objectName"));
-				ruleproductList.add(product);
+ 				String prductId = ruleProduct.getString("productId");
+ 				if(productIds == null || !productIds.contains(prductId)) {
+					IntegralRuleProduct product=new IntegralRuleProduct();
+	 				product.setId(ruleProduct.getString("esId"));
+	 				product.setProductId(prductId);
+					product.setProductName(ruleProduct.getString("productName"));
+					ruleproductList.add(product);
+ 				}
 			}
 			String pagination_str=json.getJSONObject("results").getString("pagination");
 			com.jgw.supercodeplatform.marketing.common.page.Page page=JSONObject.parseObject(pagination_str, com.jgw.supercodeplatform.marketing.common.page.Page.class);

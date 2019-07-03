@@ -16,11 +16,7 @@ public interface WechatConstants {
    String SEND_PHONE_CODE_URL="/sms/send/phone/code";
     
     //码管理获取码管理批次信息接口
-    String CODEMANAGER_GET_BATCH_CODE_INFO_URL="/code/relation/getBatchInfo";
-
-    // 根据产品和产品批次获取其下所有的生码批次
-    String code_relation_getBatchInfoWithoutType="/code/relation/getBatchInfoWithoutType";
-
+    //String CODEMANAGER_GET_BATCH_CODE_INFO_URL="/code/relation/getBatchInfo";
 
     //码管理获取批次信息，不局限与任何一种绑定关系信息接口
     String CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE="/code/relation/getBatchInfoWithoutType";

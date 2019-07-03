@@ -1,15 +1,17 @@
 package com.jgw.supercodeplatform.marketing.pojo.integral;
 
+import javax.validation.constraints.NotBlank;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.validation.constraints.NotNull;
+import lombok.Data;
 @ApiModel(value = "积分通用规则产品")
+@Data
 public class IntegralRuleProduct {
 	 /** 主键 */
     @ApiModelProperty(value = "主键")
-    @NotNull
-    private Long id;
+    @NotBlank
+    private String id;
 
     /** 产品id */
     @ApiModelProperty(value = "产品id")
@@ -46,85 +48,4 @@ public class IntegralRuleProduct {
     @ApiModelProperty(value = "企业id",hidden=true)
     private String organizationId;
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getProductId() {
-		return productId;
-	}
-
-	public void setProductId(String productId) {
-		this.productId = productId;
-	}
-
-	public String getProductName() {
-		return productName;
-	}
-
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
-
-	public Float getProductPrice() {
-		return productPrice;
-	}
-
-	public void setProductPrice(Float productPrice) {
-		this.productPrice = productPrice;
-	}
-
-	public Byte getMemberType() {
-		return memberType;
-	}
-
-	public void setMemberType(Byte memberType) {
-		this.memberType = memberType;
-	}
-
-	public Byte getRewardRule() {
-		return rewardRule;
-	}
-
-	public void setRewardRule(Byte rewardRule) {
-		this.rewardRule = rewardRule;
-	}
-
-	public Float getPerConsume() {
-		return perConsume;
-	}
-
-	public void setPerConsume(Float perConsume) {
-		this.perConsume = perConsume;
-	}
-
-	public Integer getRewardIntegral() {
-		return rewardIntegral;
-	}
-
-	public void setRewardIntegral(Integer rewardIntegral) {
-		this.rewardIntegral = rewardIntegral;
-	}
-
-	public Long getIntegralRuleId() {
-		return integralRuleId;
-	}
-
-	public void setIntegralRuleId(Long integralRuleId) {
-		this.integralRuleId = integralRuleId;
-	}
-
-	public String getOrganizationId() {
-		return organizationId;
-	}
-
-	public void setOrganizationId(String organizationId) {
-		this.organizationId = organizationId;
-	}
-
-   
 }

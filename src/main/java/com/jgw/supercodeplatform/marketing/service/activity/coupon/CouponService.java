@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
@@ -95,8 +96,7 @@ public class CouponService {
 
 	@Autowired
 	private MarketingChannelMapper channelMapper;
-
-
+	
 	/**
 	 * 抵扣券查看详情
 	 * @param id
@@ -147,6 +147,11 @@ public class CouponService {
 		if(addVO.getAcquireCondition().intValue() == CouponAcquireConditionEnum.SHOPPING.getCondition().intValue() ){
 			send = true;
 		}
+		
+		
+//		delMap.put("batchId", product.getSbatchId());
+//		delMap.put("businessType", BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+//		delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
 		saveProductBatchs(addVO.getProductParams(),null,activitySet.getId(),addVO.getAutoFetch(),send);
 		// 保存抵扣券规则
 		saveCouponRules(addVO.getCoupon(),activitySet.getId());
@@ -154,11 +159,13 @@ public class CouponService {
 		return RestResult.success();
 	}
 
-	private void saveCouponRules(MarketingCouponVo couponRules, Long activitySetId) {
+	private void saveCouponRules(MarketingCouponVo couponRules, Long activitySetId) throws SuperCodeException {
 		List<MarketingCoupon> toDbEntitys = new ArrayList<>(5);
 		List<MarketingCouponAmoutAndDateVo> couponAmoutAndDateVo = couponRules.getCouponRules();
 		for(MarketingCouponAmoutAndDateVo vo: couponAmoutAndDateVo){
 			MarketingCoupon toDbEntity = new MarketingCoupon();
+			toDbEntity.setOrganizationId(commonUtil.getOrganizationId());
+			toDbEntity.setOrganizationName(commonUtil.getOrganizationName());
 			toDbEntity.setActivitySetId(activitySetId);
 			toDbEntity.setCouponAmount(vo.getCouponAmount());
 			toDbEntity.setDeductionEndDate(vo.getDeductionEndDate());
@@ -176,6 +183,7 @@ public class CouponService {
 	private void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int autoFecth,boolean send) throws SuperCodeException {
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
+
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
@@ -203,25 +211,63 @@ public class CouponService {
 				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
 		}
+		List<MarketingActivityProduct> marketingActivityProductList = productMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
+			List<Long> activitySetIds = new ArrayList<>();
+			marketingActivityProductList.forEach(product -> {if(!activitySetIds.contains(product.getActivitySetId())) activitySetIds.add(product.getActivitySetId());});
+			List<MarketingActivitySet> marketingActivitySetList = setMapper.selectMarketingActivitySetByIds(activitySetIds);
+			if(!CollectionUtils.isEmpty(marketingActivitySetList)) {
+				Map<Long, MarketingActivitySet> marketingActivitySetMap = marketingActivitySetList.stream().collect(Collectors.toMap(MarketingActivitySet::getId, mas -> mas));
+				deleteProductBatchList = new ArrayList<>();
+				for(MarketingActivityProduct marketingActivityProduct : marketingActivityProductList) {
+					Long aSetId = marketingActivityProduct.getActivitySetId();
+					MarketingActivitySet mas = marketingActivitySetMap.get(aSetId);
+					if(mas != null) {
+						Long activityId = mas.getActivityId();
+						Integer bizType = null;
+						if(activityId.intValue() == 4) {
+							MarketingActivitySetCondition validCondition = JSON.parseObject(mas.getValidCondition(), MarketingActivitySetCondition.class);
+							validCondition.getAcquireCondition();
+							if(CouponAcquireConditionEnum.SHOPPING.getCondition().equals(validCondition.getAcquireCondition())){
+								bizType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
+							}
+						} else {
+							bizType = BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType();
+						}
+						if (bizType != null) {
+							String sbatchIds = marketingActivityProduct.getSbatchId();
+							String[] sbatchIdArray = sbatchIds.split(",");
+							for(String sbatchId : sbatchIdArray) {
+								Map<String, Object> delMap = new HashMap<>();
+								delMap.put("batchId", sbatchId);
+								delMap.put("businessType", bizType);
+								delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+								deleteProductBatchList.add(delMap);
+							}
+						}
+					}
+				};
+			}
+		}
 		getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
 		//如果是会员活动需要去绑定扫码连接到批次号
-		if(send) {
-			String superToken = commonUtil.getSuperToken();
-			String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
-			JSONObject obj = JSONObject.parseObject(body);
-			int state = obj.getInteger("state");
-			if (HttpStatus.SC_OK == state) {
-				JSONArray arr = obj.getJSONArray("results");
-				List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
-						BusinessTypeEnum.MARKETING_COUPON.getBusinessType());
-				if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
-					String delbatchBody = commonService.deleteUrlToBatch(deleteProductBatchList, superToken);
-					JSONObject delBatchobj = JSONObject.parseObject(delbatchBody);
-					Integer delBatchstate = delBatchobj.getInteger("state");
-					if (null != delBatchstate && delBatchstate.intValue() != HttpStatus.SC_OK) {
-						throw new SuperCodeException("请求码删除生码批次和url错误：" + delbatchBody, HttpStatus.SC_INTERNAL_SERVER_ERROR);
-					}
+		String superToken = commonUtil.getSuperToken();
+		String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
+		JSONObject obj = JSONObject.parseObject(body);
+		int state = obj.getInteger("state");
+		if (HttpStatus.SC_OK == state) {
+			JSONArray arr = obj.getJSONArray("results");
+			if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
+				String delbatchBody = commonService.deleteUrlToBatch(deleteProductBatchList, superToken);
+				JSONObject delBatchobj = JSONObject.parseObject(delbatchBody);
+				Integer delBatchstate = delBatchobj.getInteger("state");
+				if (null != delBatchstate && delBatchstate.intValue() != HttpStatus.SC_OK) {
+					throw new SuperCodeException("请求码删除生码批次和url错误：" + delbatchBody, HttpStatus.SC_INTERNAL_SERVER_ERROR);
 				}
+			}
+			if(send) {
+				int businessType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
+				List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,businessType);
 				// 绑定生码批次到url
 				String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
 				JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
@@ -229,15 +275,15 @@ public class CouponService {
 				if (null != batchstate && batchstate.intValue() != HttpStatus.SC_OK) {
 					throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, HttpStatus.SC_INTERNAL_SERVER_ERROR);
 				}
-				Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
-						BusinessTypeEnum.MARKETING_COUPON.getBusinessType());
-				mList.forEach(marketingActivityProduct -> {
-					String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
-					marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
-				});
-			} else {
-				throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, HttpStatus.SC_INTERNAL_SERVER_ERROR);
 			}
+			Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
+					BusinessTypeEnum.MARKETING_COUPON.getBusinessType());
+			mList.forEach(marketingActivityProduct -> {
+				String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
+				marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
+			});
+		} else {
+			throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		}
 		//插入对应活动产品数据
 		productMapper.batchDeleteByProBatchsAndRole(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
@@ -254,7 +300,7 @@ public class CouponService {
 		// 营销绑定生码批次
 		String superToken = commonUtil.getSuperToken();
 		String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
-				WechatConstants.code_relation_getBatchInfoWithoutType);
+				WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
 		JSONObject obj = JSONObject.parseObject(body);
 		int state = obj.getInteger("state");
 		if (200 == state) {
@@ -291,25 +337,26 @@ public class CouponService {
 	}
 
 	private void saveChannels(List<MarketingChannelParam> channelParams, Long activitySetId) {
-		List<MarketingChannel> mList=new ArrayList<MarketingChannel>();
 		//遍历顶层
-		for (MarketingChannelParam marketingChannelParam : channelParams) {
-			Byte customerType=marketingChannelParam.getCustomerType();
-			// 将基础信息的customerId插入customerCode
-			MarketingChannel mChannel=new MarketingChannel();
-			mList.add(mChannel);
-			mChannel.setCustomerType(customerType);
-			mChannel.setActivitySetId(activitySetId);
-			String customerId=marketingChannelParam.getCustomerId();
-			mChannel.setCustomerId(marketingChannelParam.getCustomerId());
-			mChannel.setCustomerName(marketingChannelParam.getCustomerName());
-			mChannel.setCustomerSuperior(marketingChannelParam.getCustomerSuperior());
-			List<MarketingChannelParam> childrens=marketingChannelParam.getChildrens();
-			mChannel.setCustomerSuperiorType(marketingChannelParam.getCustomerSuperiorType());
-			recursiveCreateChannel(customerId,customerType,activitySetId,childrens,mList);
+		if(!CollectionUtils.isEmpty(channelParams)) {
+			List<MarketingChannel> mList=new ArrayList<MarketingChannel>();
+			for (MarketingChannelParam marketingChannelParam : channelParams) {
+				Byte customerType=marketingChannelParam.getCustomerType();
+				// 将基础信息的customerId插入customerCode
+				MarketingChannel mChannel=new MarketingChannel();
+				mList.add(mChannel);
+				mChannel.setCustomerType(customerType);
+				mChannel.setActivitySetId(activitySetId);
+				String customerId=marketingChannelParam.getCustomerId();
+				mChannel.setCustomerId(marketingChannelParam.getCustomerId());
+				mChannel.setCustomerName(marketingChannelParam.getCustomerName());
+				mChannel.setCustomerSuperior(marketingChannelParam.getCustomerSuperior());
+				List<MarketingChannelParam> childrens=marketingChannelParam.getChildrens();
+				mChannel.setCustomerSuperiorType(marketingChannelParam.getCustomerSuperiorType());
+				recursiveCreateChannel(customerId,customerType,activitySetId,childrens,mList);
+			}
+			channelMapper.batchInsert(mList);
 		}
-		channelMapper.batchInsert(mList);
-
 	}
 
 	/**
@@ -416,7 +463,10 @@ public class CouponService {
 
 
 	private void validateBasicByAdd(MarketingActivityCouponAddParam addVO) throws SuperCodeException {
-
+		MarketingActivitySet existmActivitySet =setMapper.selectByTitleOrgId(addVO.getActivityTitle(), commonUtil.getOrganizationId());
+		if (null!=existmActivitySet) {
+			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
+		}
 		// 每人每天限量
 		if(addVO.getEachDayNumber() == null){
 			addVO.setEachDayNumber(ActivityDefaultConstant.eachDayNum);
@@ -449,7 +499,12 @@ public class CouponService {
 		if((addVO.getAcquireCondition().intValue() == CouponAcquireConditionEnum.ONCE_LIMIT.getCondition().intValue()
 				|| addVO.getAcquireCondition().intValue() == CouponAcquireConditionEnum.LIMIT.getCondition().intValue())
 				&& (addVO.getAcquireConditionIntegral() ==null || addVO.getAcquireConditionIntegral() <= 0  )){
-			throw new SuperCodeException("一次积分数输入错误...");
+			String messe = "积分数值输入错误";
+			if(addVO.getAcquireCondition().intValue() == 2)
+				messe = "一次积分达到数值输入错误";
+			if(addVO.getAcquireCondition().intValue() == 3)
+				messe = "累计积分达到数值输入错误";
+			throw new SuperCodeException(messe);
 		}
 
 		// 活动时间
@@ -751,7 +806,7 @@ public class CouponService {
 			List<MarketingChannelParam> childList = parentChannel.getChildrens();
 			//如果父级的children为空，则说明第一次添加，需递归调用，如果不为空，则说明不是第一次添加，
 			//以前已经递归调用过，父级以上的关系已添加过，不用再次递归，也无需返回实例。
-			if(childList == null) {
+			if(CollectionUtils.isEmpty(childList)) {
 				parentChannel.setChildrens(Lists.newArrayList(channel));
 				reChannel = putChildrenChannel(marketingChannelMap, parentChannel);
 			} else {

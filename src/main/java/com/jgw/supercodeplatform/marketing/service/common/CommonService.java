@@ -1,5 +1,30 @@
 package com.jgw.supercodeplatform.marketing.service.common;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.BarcodeFormat;
@@ -24,30 +49,6 @@ import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
-import org.apache.commons.lang.StringUtils;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.xcontent.XContentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
 
 @Service
 public class CommonService {
@@ -139,7 +140,7 @@ public class CommonService {
 			String productId=batchobj.getString("productId");
 			String productBatchId=batchobj.getString("productBatchId");
 			Long codeTotal=batchobj.getLong("codeTotal");
-			String codeBatch=batchobj.getString("codeBatch");
+			String codeBatch=batchobj.getString("globalBatchId");
 			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
 				throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
 			}
@@ -166,7 +167,7 @@ public class CommonService {
 			String productId=batchobj.getString("productId");
 			String productBatchId=batchobj.getString("productBatchId");
 			Long codeTotal=batchobj.getLong("codeTotal");
-			String codeBatch=batchobj.getString("codeBatch");
+			String codeBatch=batchobj.getString("globalBatchId");
 			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
 				throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
 			}
@@ -450,4 +451,34 @@ public class CommonService {
 			throw new SuperCodeException("index 扫码信息失败");
 		}
 	}
+    
+    /**
+     * 
+     * @param outerCodeId
+     * @param customerIds
+     * @return
+     * @throws SuperCodeException
+     */
+    public boolean verifyCurrentCustomer(String outerCodeId, String ... customerIds) throws SuperCodeException {
+    	Map<String, Object> params = new HashMap<>();
+    	params.put("outerCodeId", outerCodeId);
+    	ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.OUTERCODE_CUSTOMER, params, null);
+    	String body = responseEntity.getBody();
+		JSONObject jsonObject=JSONObject.parseObject(body);
+		Integer state=jsonObject.getInteger("state");
+		if (null == state || state.intValue()!=200) {
+			throw new SuperCodeException("码查询客户信息出错:"+body, 500);
+		}
+		JSONObject resultJson = jsonObject.getJSONObject("results");
+		if(resultJson != null) {
+			String customerId = resultJson.getString("customerId");
+			if(customerId != null) {
+				for(String cid : customerIds) {
+					if(cid.equals(customerId))
+						return true;
+				}
+			}
+		}
+    	return false;
+    }
 }

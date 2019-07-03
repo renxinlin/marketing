@@ -14,20 +14,23 @@ import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 
 @Mapper
 public interface MarketingCouponMapperExt extends MarketingCouponMapper, CommonSql {
-    String bizField = " ActivitySetId, CouponAmount, DeductionStartDate,DeductionEndDate, DeductionProductType, DeductionChannelType ";
+    String bizField = "Id, ActivitySetId, CouponAmount, DeductionStartDate,DeductionEndDate, DeductionProductType, DeductionChannelType ";
     @Insert(startScript +
             " insert into marketing_coupon ( ActivitySetId, "+
+    		" OrganizationId, OrganizationName, "+
             " CouponAmount, DeductionStartDate, DeductionEndDate, "+
-            " DeductionProductType, DeductionChannelType ) values "+
+            " DeductionProductType, DeductionChannelType, CreateTime) values "+
             " <foreach collection='list' item='channel' index='index' separator=','>"+
             " (" +
             " #{channel.activitySetId}," +
+            " #{channel.organizationId},"+
+            " #{channel.organizationName},"+
             " #{channel.couponAmount}," +
             " #{channel.deductionStartDate}," +
             " #{channel.deductionEndDate}," +
             " #{channel.deductionProductType}," +
-            " #{channel.deductionChannelType}" +
-            ")"+
+            " #{channel.deductionChannelType}," +
+            " NOW())"+
             "</foreach>"+
             endScript)
     int batchInsert(@Param("list") List<MarketingCoupon> list);

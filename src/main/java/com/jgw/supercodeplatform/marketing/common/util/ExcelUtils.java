@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.exception.base.ExcelException;
 import jxl.Cell;
 import jxl.Sheet;
@@ -221,6 +222,7 @@ public class ExcelUtils {
             for (int i = 0; i < enFields.length; i++) {
                 Object objValue = getFieldValueByNameSequence(enFields[i], item);
                 String fieldValue = objValue == null ? "" : objValue.toString();
+                if(objValue instanceof Date) fieldValue = DateFormatUtils.format((Date)objValue, CommonConstants.DATE_PATTERNS[0]);
                 Label label = new Label(i, rowNo, fieldValue);
                 sheet.addCell(label);
             }

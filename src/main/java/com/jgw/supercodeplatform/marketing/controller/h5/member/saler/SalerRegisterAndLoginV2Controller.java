@@ -113,9 +113,11 @@ public class SalerRegisterAndLoginV2Controller {
                         return RestResult.error("您的微信已经绑定其他手机号...",null,500);
                     }
                 }
-                if(user.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
+                if(user.getState().intValue() == SaleUserStatus.AUDITED.getStatus().intValue()){
+                    return RestResult.error("您的正在审核，通过后可登录，会短信告知",null,500);
+                }
+                if(user.getState().intValue() == SaleUserStatus.DISABLE.getStatus().intValue()){
                     return RestResult.error("您已经被禁用",null,500);
-
                 }
                 H5LoginVO jwtUser = new H5LoginVO();
                 jwtUser.setMobile(loginUser.getMobile());

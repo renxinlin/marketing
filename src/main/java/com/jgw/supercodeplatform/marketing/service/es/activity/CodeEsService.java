@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import javax.validation.constraints.NotNull;
+
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
@@ -22,6 +24,7 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.document.DocumentField;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
@@ -305,7 +308,8 @@ public class CodeEsService extends AbstractEsSearch {
 						// 聚和字段：码
 						.field("scanCodeTime");
 		// 添加查询条件
-		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate).must(queryBuilderOrg);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(aggregation);
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
@@ -334,7 +338,8 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termOrgIdQuery = new TermQueryBuilder("organizationId",toEsVo.getOrganizationId());
 		QueryBuilder termUserIdQuery = new TermQueryBuilder("userId",toEsVo.getUserId());
-		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termOrgIdQuery).must(termUserIdQuery);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		SearchHit[] hits = searchResponse.getHits().getHits();
 		if(hits!=null && hits.length>0){
@@ -374,7 +379,8 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_DIAGRAM_REMBER.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termOrgIdQuery = new TermQueryBuilder("organizationId",toEsVo.getOrganizationId());
 		QueryBuilder termUserIdQuery = new TermQueryBuilder("userId",toEsVo.getUserId());
-		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termOrgIdQuery).must(termUserIdQuery);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		SearchHits hits = searchResponse.getHits();
 		String id =null;
@@ -425,13 +431,35 @@ public class CodeEsService extends AbstractEsSearch {
 						.stats(AggregationName)
 						// 聚和字段：码
 						.field("scanCodeTime");
-		searchRequestBuilder.setQuery(termOrgIdQuery).setQuery(termUserIdQuery);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termOrgIdQuery).must(termUserIdQuery);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(aggregation);
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		Stats aggs = searchResponse.getAggregations().get(AggregationName);
 		return  (int)aggs.getCount();
 
     }
+    
+    public int countCodeIdScanNum(String codeId, String codeTypeId) throws SuperCodeException {
+    	if(codeId == null || codeId == null){
+    		throw new SuperCodeException("码Id和码类型不能为空");
+		}
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes(EsType.INFO.getType());
+		QueryBuilder termOrgIdQuery = new TermQueryBuilder("codeId",codeId);
+		QueryBuilder termUserIdQuery = new TermQueryBuilder("codeTypeId",codeTypeId);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termOrgIdQuery).must(termUserIdQuery);
+		StatsAggregationBuilder aggregation =
+				AggregationBuilders
+						.stats(AggregationName)
+						// 聚和字段：码
+						.field("scanCodeTime");
+		searchRequestBuilder.setQuery(boolQueryBuilder);
+		searchRequestBuilder.addAggregation(aggregation);
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+		return (int)aggs.getCount();
+    }
+    
 
     /**
      * 统计活动扫码量
@@ -459,12 +487,13 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SALER_INFO.getIndex()).setTypes(EsType.INFO.getType());
 		QueryBuilder termIdQuery = new TermQueryBuilder("codeId",codeId);
 		QueryBuilder termTypeQuery = new TermQueryBuilder("codeTypeId",codeTypeId);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(termIdQuery).must(termTypeQuery);
 		StatsAggregationBuilder aggregation =
 				AggregationBuilders
 						.stats(AggregationName)
 						// 聚和字段：码
 						.field("scanCodeTime");
-		searchRequestBuilder.setQuery(termIdQuery).setQuery(termTypeQuery);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(aggregation);
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		Stats aggs = searchResponse.getAggregations().get(AggregationName);
@@ -511,8 +540,8 @@ public class CodeEsService extends AbstractEsSearch {
 						.stats(AggregationName)
 						// 聚和字段：码
 						.field("scanCodeTime");
-		// 添加查询条件
-		searchRequestBuilder.setQuery(queryBuilderOrg).setQuery(queryBuilderDate).setQuery(memberType);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate).must(queryBuilderOrg).must(memberType);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(aggregation);
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();

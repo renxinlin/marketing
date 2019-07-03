@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class MarketingReceivingPageService {
-@Autowired
-private MarketingReceivingPageMapper mReceivingPageMapper;
+	@Autowired
+	private MarketingReceivingPageMapper mReceivingPageMapper;
 
-public MarketingReceivingPage selectByActivitySetId(Long activitySetId) {
-	return mReceivingPageMapper.getByActivityId(activitySetId);
-}
+	public MarketingReceivingPage selectByActivitySetId(Long activitySetId) {
+		return mReceivingPageMapper.getByActivityId(activitySetId);
+	}
 
 }
