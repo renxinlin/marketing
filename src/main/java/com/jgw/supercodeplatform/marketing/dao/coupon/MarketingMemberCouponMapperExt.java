@@ -22,10 +22,10 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 	String allFields = "mmc.Id, mmc.MemberId memberId, mmc.CouponId couponId, mmc.CouponCode couponCode,mmc.CouponAmount couponAmount, mmc.MemberPhone memberPhone, mmc.ProductId productId, mmc.ProductBatchId productBatchId,"+
 	        "mmc.ProductBatchName productBatchName, mmc.SbatchId sbatchId, mmc.ProductName productName, mmc.ObtainCustomerId obtainCustomerId, mmc.DeductionStartDate deductionStartDate, mmc.DeductionEndDate deductionEndDate,"+
 	        "mmc.CreateTime createTime,mmc.ObtainCustmerName obtainCustmerName,mmc.VerifyCustomerId verifyCustomerId, mmc.VerifyCustomerName verifyCustomerName,mmc.VerifyMemberId verifyMemberId, mmc.VerifyPersonName verifyPersonName,"+
-	        "mmc.VerifyPersonPhone verifyPersonPhone,mmc.VerifyTime verifyTime,mmc.VerifyPersonType verifyPersonType, mmc.Used used,mmc.CustomerId customerId, mmc.CustomerName customerName ";
+	        "mmc.VerifyPersonPhone verifyPersonPhone,mmc.VerifyTime verifyTime,mmc.VerifyPersonType verifyPersonType, mmc.Used used,mmc.CustomerId customerId, mmc.CustomerName customerName, mmc.ActivitySetId activitySetId, mmc.CouponCondition couponCondition ";
 	String whereSearch = "<where>"+
 			"<if test='organizationId !=null and organizationId != &apos;&apos; '> AND mas.OrganizationId = #{organizationId}</if>"+
-			"<if test='activitySetId !=null and activitySetId != &apos;&apos; '> AND mas.ActivitySetId = #{activitySetId}</if>"+
+			"<if test='activitySetId !=null and activitySetId != &apos;&apos; '> AND mas.Id = #{activitySetId}</if>"+
 			"<if test='used !=null'> AND mmc.Used = #{used}</if>"+
 			"<if test='search !=null and search != &apos;&apos;'>"+
 			" AND ("+
@@ -40,8 +40,8 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 	
 	@Select({"<script>",
 		"select",allFields,
-		"from marketing_member_coupon mmc inner join marketing_coupon mas ",
-		"on mmc.CouponId = mas.Id ",
+		"from marketing_member_coupon mmc inner join marketing_activity_set mas ",
+		"on mmc.ActivitySetId = mas.Id ",
 		whereSearch,
 		"<if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>",
 	"</script>"})
@@ -49,16 +49,16 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 
 	@Select({"<script>",
 		"select count(*) ",
-		"from marketing_member_coupon mmc inner join marketing_coupon mas ",
-		"on mmc.CouponId = mas.Id ",
+		"from marketing_member_coupon mmc inner join marketing_activity_set mas ",
+		"on mmc.ActivitySetId = mas.Id ",
 		whereSearch,
 	"</script>"})
 	int count(MarketingCouponPageParam marketingCouponPageParam);
 	
 	@Select({"<script>",
 		"select",allFields,
-		"from marketing_member_coupon mmc inner join marketing_coupon mas ",
-		"on mmc.CouponId = mas.Id ",
+		"from marketing_member_coupon mmc inner join marketing_activity_set mas ",
+		"on mmc.ActivitySetId = mas.Id ",
 		whereSearch,
 	"</script>"})
 	List<MarketingMemberCoupon> searchVerfiyList(MarketingCouponPageParam marketingCouponPageParam);
@@ -98,10 +98,10 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 	int CustomerVerifyCouponCout(CouponCustmerVerifyPageParam searchParams);
 	
 	@Insert({"<script>insert into marketing_member_coupon ",
-		"(MemberId,CouponId,CouponAmount,MemberPhone,ProductId,ProductName,ObtainCustomerId,DeductionStartDate,DeductionEndDate,ObtainCustmerName,CreateTime,Used,CustomerId,CustomerName)",
+		"(MemberId,CouponId,CouponAmount,MemberPhone,ProductId,ProductName,ObtainCustomerId,DeductionStartDate,DeductionEndDate,ObtainCustmerName,CreateTime,Used,CustomerId,CustomerName,ActivitySetId,CouponCondition)",
 		"values <foreach collection='list' item='memberCoupon' index='index' separator=','>",
 		"(#{memberCoupon.memberId},#{memberCoupon.couponId},#{memberCoupon.couponAmount},#{memberCoupon.memberPhone},#{memberCoupon.productId},#{memberCoupon.productName},#{memberCoupon.obtainCustomerId},",
-		"#{memberCoupon.deductionStartDate},#{memberCoupon.deductionEndDate},#{memberCoupon.obtainCustmerName},#{memberCoupon.createTime},#{memberCoupon.used},#{memberCoupon.customerId},#{memberCoupon.customerName})",
+		"#{memberCoupon.deductionStartDate},#{memberCoupon.deductionEndDate},#{memberCoupon.obtainCustmerName},#{memberCoupon.createTime},#{memberCoupon.used},#{memberCoupon.customerId},#{memberCoupon.customerName},#{memberCoupon.activitySetId},#{memberCoupon.couponCondition})",
 		"</foreach>",
 		"</script>"})
 	@Options(useGeneratedKeys=true, keyColumn="Id",keyProperty="id")

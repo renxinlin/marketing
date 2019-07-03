@@ -63,6 +63,10 @@ public class MarketingMemberCoupon {
     private String customerId;
     
     private String customerName;
+    
+    private Long activitySetId;
+    
+    private String couponCondition;
     /***********获得条件，根据活动条件设置获取*************/
     @ApiModelProperty("获得条件")
     private String obtainCondition;
@@ -281,4 +285,21 @@ public class MarketingMemberCoupon {
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
 	}
+
+	public Long getActivitySetId() {
+		return activitySetId;
+	}
+
+	public void setActivitySetId(Long activitySetId) {
+		this.activitySetId = activitySetId;
+	}
+
+	public String getCouponCondition() {
+		return couponCondition;
+	}
+
+	public void setCouponCondition(String couponCondition) {
+		this.couponCondition = couponCondition;
+	}
+	
 }

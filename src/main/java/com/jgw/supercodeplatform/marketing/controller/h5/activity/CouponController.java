@@ -3,7 +3,6 @@ package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
@@ -28,7 +27,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageR
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
-import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
+import com.jgw.supercodeplatform.marketing.dto.coupon.CouponConditionDto;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponObtainParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponPageParam;
@@ -41,7 +40,6 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.activity.coupon.MarketingMemberProductIntegralService;
@@ -70,8 +68,6 @@ public class CouponController {
 	private MarketingActivitySetService marketingActivitySetService;
 	@Autowired
 	private MarketingMemberProductIntegralService marketingMemberProductIntegralService;
-	@Autowired
-	private MarketingCouponMapperExt marketingCouponMapper;
 	@Autowired
 	private MarketingChannelMapper marketingChannelMapper;
 	@Autowired
@@ -158,24 +154,23 @@ public class CouponController {
 		Date deductionEndDate = marketingMemberCoupon.getDeductionEndDate();
 		if(deductionEndDate != null && deductionEndDate.getTime() < currentMills)
 			throw new SuperCodeException("‘抵扣券已过期’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-		//String obtainCustomerId = marketingMemberCoupon.getObtainCustomerId();
-		MarketingCoupon marketingCoupon = marketingCouponMapper.selectByPrimaryKey(marketingMemberCoupon.getCouponId());
-		if(marketingCoupon == null) {
-			throw new SuperCodeException("‘抵扣券规则错误’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-		}
-		int deductionChannelType = marketingCoupon.getDeductionChannelType().intValue();
-		String customerId = marketingMemberCoupon.getCustomerId();
-		if(StringUtils.isNotBlank(customerId)) {
-			if(deductionChannelType == 1 && !StringUtils.equals(customerId, jwtUser.getCustomerId())) 
-				throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-			if(deductionChannelType == 0) {
-				List<MarketingChannel> channelList = marketingChannelMapper.selectByCustomerId(customerId);
-				if(!CollectionUtils.isEmpty(channelList)) {
-					List<MarketingChannel> li = channelList.stream().filter(channel -> channel.getCustomerId().equals(jwtUser.getCustomerId())).collect(Collectors.toList());
-					if(li.size() == 0)
-						throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-				} else {
+		String marketingCouponStr = marketingMemberCoupon.getCouponCondition();
+		CouponConditionDto marketingCoupon = StringUtils.isBlank(marketingCouponStr)?null:JSON.parseObject(marketingCouponStr,CouponConditionDto.class);
+		if(marketingCoupon != null) {
+			int deductionChannelType = marketingCoupon.getDeductionChannelType().intValue();
+			String customerId = marketingMemberCoupon.getCustomerId();
+			if(StringUtils.isNotBlank(customerId)) {
+				if(deductionChannelType == 1 && !StringUtils.equals(customerId, jwtUser.getCustomerId())) 
 					throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+				if(deductionChannelType == 0) {
+					List<MarketingChannel> channelList = marketingChannelMapper.selectByCustomerId(customerId);
+					if(!CollectionUtils.isEmpty(channelList)) {
+						List<MarketingChannel> li = channelList.stream().filter(channel -> channel.getCustomerId().equals(jwtUser.getCustomerId())).collect(Collectors.toList());
+						if(li.size() == 0)
+							throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+					} else {
+						throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+					}
 				}
 			}
 		}
