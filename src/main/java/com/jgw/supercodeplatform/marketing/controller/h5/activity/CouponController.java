@@ -160,6 +160,9 @@ public class CouponController {
 			throw new SuperCodeException("‘抵扣券已过期’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		//String obtainCustomerId = marketingMemberCoupon.getObtainCustomerId();
 		MarketingCoupon marketingCoupon = marketingCouponMapper.selectByPrimaryKey(marketingMemberCoupon.getCouponId());
+		if(marketingCoupon == null) {
+			throw new SuperCodeException("‘抵扣券规则错误’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		}
 		int deductionChannelType = marketingCoupon.getDeductionChannelType().intValue();
 		String customerId = marketingMemberCoupon.getCustomerId();
 		if(StringUtils.isNotBlank(customerId)) {
