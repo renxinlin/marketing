@@ -25,4 +25,8 @@ public interface MarketingChannelMapper {
 	
 	@Delete(" delete from  marketing_channel where   ActivitySetId = #{activitySetId}")
 	void deleteByActivitySetId(Long id);
+	
+	@Select("select "+allFields+" from marketing_channel where CustomerId=#{customerId}")
+	List<MarketingChannel> selectByCustomerId(@Param("customerId")String customerId);
+	
 }

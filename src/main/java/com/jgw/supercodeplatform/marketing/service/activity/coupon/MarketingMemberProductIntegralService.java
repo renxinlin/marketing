@@ -4,8 +4,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -34,6 +36,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberProductIntegral;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 
@@ -64,15 +67,19 @@ public class MarketingMemberProductIntegralService {
 	private CodeEsService codeEsService;
 	
 	@Autowired
+	private CommonService commonService;
+	
+	@Autowired
 	private RedisLockUtil lock;
 	
 	/**
 	 * 添加产品积分记录并判断参加的活动获取抵扣券
 	 * @param productIntegral
 	 * @throws ParseException 
+	 * @throws SuperCodeException 
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void obtainCoupon(MarketingMemberProductIntegral productIntegral, MarketingMembers members, String productName) throws ParseException {
+	public void obtainCoupon(MarketingMemberProductIntegral productIntegral, MarketingMembers members, String productName, String outerCodeId) throws ParseException, SuperCodeException {
 		//添加或者更新累计积分
 		long accrueIntegral = productIntegral.getAccrueIntegral();
 		MarketingMemberProductIntegral marketingMemberProductIntegral = productIntegralMapper.selectProductIntegralByMemberIdAndProductId(productIntegral.getMemberId(), productIntegral.getProductId());
@@ -112,13 +119,13 @@ public class MarketingMemberProductIntegralService {
 					switch (couponAcquireConditionEnum) {
 					case FIRST:
 						if(marketingMemberProductIntegral == null)
-							addMarketingMemberCoupon(marketingCouponList, members, productId, productName);
+							addMarketingMemberCoupon(marketingCouponList, members, productId, productName,outerCodeId);
 						break;
 					case ONCE_LIMIT:
-						onceLimit(acquireConditionIntegral, accrueIntegral, marketingCouponList, members, productId, productName);
+						onceLimit(acquireConditionIntegral, accrueIntegral, marketingCouponList, members, productId, productName,outerCodeId);
 						break;
 					case LIMIT:
-						limt(productIntegral.getId(), acquireConditionIntegral, sumIntegral, marketingCouponList, members, productId, productName);
+						limt(productIntegral.getId(), acquireConditionIntegral, sumIntegral, marketingCouponList, members, productId, productName,outerCodeId);
 						break;
 					default:
 						break;
@@ -130,16 +137,16 @@ public class MarketingMemberProductIntegralService {
 	
 	
 	//一次积分达到限定值获得优惠券
-	private void onceLimit(long acquireConditionIntegral,long accrueIntegral, List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName) {
+	private void onceLimit(long acquireConditionIntegral,long accrueIntegral, List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName,String outerCodeId) throws SuperCodeException {
 		if(accrueIntegral >= acquireConditionIntegral) {
-			addMarketingMemberCoupon(marketingCouponList, member, productId, productName);
+			addMarketingMemberCoupon(marketingCouponList, member, productId, productName, outerCodeId);
 		}
 	}
 	
 	//累计积分达到限定值
-	private void limt(Long memberProductIntegralId, long acquireConditionIntegral,long sumIntegral,List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName) {
+	private void limt(Long memberProductIntegralId, long acquireConditionIntegral,long sumIntegral,List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName, String outerCodeId) throws SuperCodeException {
 		if(sumIntegral >= acquireConditionIntegral) {
-			addMarketingMemberCoupon(marketingCouponList, member, productId, productName);
+			addMarketingMemberCoupon(marketingCouponList, member, productId, productName, outerCodeId);
 			MarketingMemberProductIntegral productIntegral = new MarketingMemberProductIntegral();
 			productIntegral.setId(memberProductIntegralId);
 			productIntegral.setAccrueIntegral(0L);
@@ -148,7 +155,11 @@ public class MarketingMemberProductIntegralService {
 	}
 	
 	//添加抵扣券
-	private void addMarketingMemberCoupon(List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName) {
+	private void addMarketingMemberCoupon(List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName, String outerCodeId) throws SuperCodeException {
+		Map<String, String> customerMap = commonService.queryCurrentCustomer(outerCodeId);
+		log.info("查询获取门店客户信息：{},{}", outerCodeId,customerMap);
+		if(MapUtils.isEmpty(customerMap))
+			return;
 		if(CollectionUtils.isNotEmpty(marketingCouponList)) {
 			List<MarketingMemberCoupon> memberCouponList = new ArrayList<>();
 			marketingCouponList.forEach(marketingCoupon -> {
@@ -165,6 +176,8 @@ public class MarketingMemberProductIntegralService {
 				marketingMemberCoupon.setProductId(productId);
 				marketingMemberCoupon.setProductName(productName);
 				marketingMemberCoupon.setUsed((byte)0);
+				marketingMemberCoupon.setCustomerId(customerMap.get("customerId"));
+				marketingMemberCoupon.setCustomerName(customerMap.get("customerName"));
 				memberCouponList.add(marketingMemberCoupon);
 			});
 			marketingMemberCouponMapper.insertList(memberCouponList);
@@ -186,7 +199,7 @@ public class MarketingMemberProductIntegralService {
 	 * @throws Exception 
 	 * @throws SuperCodeException
 	 */
-	public void obtainCouponShopping(ScanCodeInfoMO scanCodeInfoMO, String productName, H5LoginVO jwtUser) throws Exception {
+	public void obtainCouponShopping(ScanCodeInfoMO scanCodeInfoMO, String productName, H5LoginVO jwtUser, String outerCodeId) throws Exception {
 		String lockKey = "marketing:coupon:" + scanCodeInfoMO.getCodeTypeId() + ":" + scanCodeInfoMO.getCodeId();
 		boolean lockFlag = false;
 		try {
@@ -204,7 +217,7 @@ public class MarketingMemberProductIntegralService {
 				member.setCustomerId(jwtUser.getCustomerId());
 				member.setCustomerName(jwtUser.getCustomerName());
 				List<MarketingCoupon> marketingCouponList = marketingCouponMapper.selectByActivitySetId(scanCodeInfoMO.getActivitySetId());
-				addMarketingMemberCoupon(marketingCouponList, member, scanCodeInfoMO.getProductId(), productName);
+				addMarketingMemberCoupon(marketingCouponList, member, scanCodeInfoMO.getProductId(), productName, outerCodeId);
 			}
 		} catch (Exception e) {
 			throw e;

@@ -459,7 +459,7 @@ public class CommonService {
      * @return
      * @throws SuperCodeException
      */
-    public boolean verifyCurrentCustomer(String outerCodeId, String ... customerIds) throws SuperCodeException {
+    public Map<String, String> queryCurrentCustomer(String outerCodeId) throws SuperCodeException {
     	Map<String, Object> params = new HashMap<>();
     	params.put("outerCodeId", outerCodeId);
     	ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.OUTERCODE_CUSTOMER, params, null);
@@ -472,13 +472,12 @@ public class CommonService {
 		JSONObject resultJson = jsonObject.getJSONObject("results");
 		if(resultJson != null) {
 			String customerId = resultJson.getString("customerId");
-			if(customerId != null) {
-				for(String cid : customerIds) {
-					if(cid.equals(customerId))
-						return true;
-				}
-			}
+			String customerName = resultJson.getString("customerName");
+			Map<String, String> customerMap = new HashMap<>();
+			customerMap.put("customerId", customerId);
+			customerMap.put("customerName", customerName);
+			return customerMap;
 		}
-    	return false;
+    	return null;
     }
 }

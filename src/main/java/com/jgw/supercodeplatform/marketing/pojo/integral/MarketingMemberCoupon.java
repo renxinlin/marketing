@@ -59,6 +59,10 @@ public class MarketingMemberCoupon {
     private Byte verifyPersonType;
     @ApiModelProperty(hidden = true)
     private Byte used;
+    
+    private String customerId;
+    
+    private String customerName;
     /***********获得条件，根据活动条件设置获取*************/
     @ApiModelProperty("获得条件")
     private String obtainCondition;
@@ -260,5 +264,21 @@ public class MarketingMemberCoupon {
 
 	public void setVerifyMemberId(Long verifyMemberId) {
 		this.verifyMemberId = verifyMemberId;
+	}
+
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
 	}
 }

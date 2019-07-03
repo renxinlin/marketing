@@ -2,6 +2,8 @@ package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
@@ -25,6 +27,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingCouponMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponObtainParam;
@@ -37,6 +40,7 @@ import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireCond
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
@@ -68,6 +72,8 @@ public class CouponController {
 	private MarketingMemberProductIntegralService marketingMemberProductIntegralService;
 	@Autowired
 	private MarketingCouponMapperExt marketingCouponMapper;
+	@Autowired
+	private MarketingChannelMapper marketingChannelMapper;
 	@Autowired
 	private MarketingActivityProductMapper marketingActivityProductMapper;
 	
@@ -128,7 +134,7 @@ public class CouponController {
 		scanCodeInfoMO.setScanCodeTime(new Date());
 		scanCodeInfoMO.setMobile(jwtUser.getMobile());
 		scanCodeInfoMO.setUserId(jwtUser.getMemberId());
-		marketingMemberProductIntegralService.obtainCouponShopping(scanCodeInfoMO ,productName, jwtUser);
+		marketingMemberProductIntegralService.obtainCouponShopping(scanCodeInfoMO ,productName, jwtUser, couponObtainParam.getOuterCodeId());
 		return RestResult.success();
 	}
 	
@@ -152,11 +158,24 @@ public class CouponController {
 		Date deductionEndDate = marketingMemberCoupon.getDeductionEndDate();
 		if(deductionEndDate != null && deductionEndDate.getTime() < currentMills)
 			throw new SuperCodeException("‘抵扣券已过期’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-		String obtainCustomerId = marketingMemberCoupon.getObtainCustomerId();
+		//String obtainCustomerId = marketingMemberCoupon.getObtainCustomerId();
 		MarketingCoupon marketingCoupon = marketingCouponMapper.selectByPrimaryKey(marketingMemberCoupon.getCouponId());
 		int deductionChannelType = marketingCoupon.getDeductionChannelType().intValue();
-		if(deductionChannelType == 1 && !StringUtils.equals(obtainCustomerId, jwtUser.getCustomerId())) 
-			throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		String customerId = marketingMemberCoupon.getCustomerId();
+		if(StringUtils.isNotBlank(customerId)) {
+			if(deductionChannelType == 1 && !StringUtils.equals(customerId, jwtUser.getCustomerId())) 
+				throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+			if(deductionChannelType == 0) {
+				List<MarketingChannel> channelList = marketingChannelMapper.selectByCustomerId(customerId);
+				if(!CollectionUtils.isEmpty(channelList)) {
+					List<MarketingChannel> li = channelList.stream().filter(channel -> channel.getCustomerId().equals(jwtUser.getCustomerId())).collect(Collectors.toList());
+					if(li.size() == 0)
+						throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+				} else {
+					throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+				}
+			}
+		}
 		//填充抵扣券核销信息
 		MarketingMemberCoupon memberCoupon = new MarketingMemberCoupon();
 		memberCoupon.setId(marketingMemberCoupon.getId());
