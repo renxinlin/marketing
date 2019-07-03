@@ -471,7 +471,12 @@ public class CouponUpdateService {
         if((updateVo.getAcquireCondition().intValue() == CouponAcquireConditionEnum.ONCE_LIMIT.getCondition().intValue()
                 || updateVo.getAcquireCondition().intValue() == CouponAcquireConditionEnum.LIMIT.getCondition().intValue())
                 && (updateVo.getAcquireConditionIntegral() ==null || updateVo.getAcquireConditionIntegral() <= 0  )){
-            throw new SuperCodeException("一次积分数输入错误...");
+			String messe = "积分数值输入错误";
+			if(updateVo.getAcquireCondition().intValue() == 2)
+				messe = "一次积分达到数值输入错误";
+			if(updateVo.getAcquireCondition().intValue() == 3)
+				messe = "累计积分达到数值输入错误";
+			throw new SuperCodeException(messe);
         }
 
         // 活动时间
