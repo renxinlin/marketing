@@ -12,7 +12,7 @@ public interface MarketingActivityProductMapper extends CommonSql{
 
 	String selectSql = " Id as id, ActivitySetId as activitySetId,CodeType as codeType,ProductBatchId as productBatchId,"
 			+ " ProductBatchName as productBatchName,ProductId as productId,ReferenceRole referenceRole,"
-			+ " ProductName as productName,CodeTotalAmount as codeTotalAmount,CreateDate createDate,UpdateDate updateDate,SbatchId sbatchId";
+			+ " ProductName as productName,CodeTotalAmount as codeTotalAmount,CreateDate as createDate,UpdateDate as updateDate,SbatchId as sbatchId";
 
 
 
@@ -87,13 +87,13 @@ public interface MarketingActivityProductMapper extends CommonSql{
 	@Select("SELECT "+selectSql+" FROM marketing_activity_product  WHERE ProductId = #{productId} AND ReferenceRole=#{referenceRole}")
 	List<MarketingActivityProduct> selectByProductWithReferenceRole(@Param("productId") String productId, @Param("referenceRole") byte referenceRole);
 
-	@Select({startScript,
-		"select ",selectSql," from marketing_activity_product where ReferenceRole=#{referenceRole} and ",
-		" <foreach item='item' collection='list' separator='or' open='(' close=')'>",
-		" (ProductId=#{item.productId} and ProductBatchId=#{item.productBatchId}) ",
-		" </foreach>",
-		endScript})
-	List<MarketingActivityProduct> selectByProductAndBatch( @Param(value="list")List<MarketingActivityProduct> mList, @Param(value="referenceRole")int referenceRole);
+	@Select(startScript+
+		" select "+selectSql+" from marketing_activity_product where ReferenceRole=0 and "+
+		" <foreach item='product' collection='list' separator='or' open='(' close=')'>"+
+		" (ProductId=#{product.productId} and ProductBatchId=#{product.productBatchId}) "+
+		" </foreach>"+
+		endScript)
+	List<MarketingActivityProduct> selectByProductAndBatch(@Param("list") List<MarketingActivityProduct> mList, @Param("referenceRole")int referenceRole);
 
 	
 }

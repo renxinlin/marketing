@@ -119,7 +119,7 @@ public class CouponUpdateService {
             send = true;
         }
         // 覆盖: 去除重复
-        saveProductBatchsWhenUpdate(copyVO.getProductParams(),new ArrayList<>(),activitySet.getId(), copyVO.getAutoFetch(),send);
+        saveProductBatchsWhenUpdate(null, copyVO.getProductParams(),new ArrayList<>(),activitySet.getId(), copyVO.getAutoFetch(),send);
         // 保存抵扣券规则
         saveCouponRulesWhenUpdate(copyVO.getCoupon(),activitySet.getId());
 
@@ -137,8 +137,6 @@ public class CouponUpdateService {
     public RestResult<String> update(MarketingActivityCouponUpdateParam updateVo) throws SuperCodeException {
         validateBasicByUpdate(updateVo);
         validateBizByUpdate(updateVo);
-        // 删除子表信息
-        doBizBeforeUpdate(updateVo);
         // 更新活动设置表
         MarketingActivitySet activitySet = changeVoToDtoForMarketingActivitySet(updateVo);
         activitySet.setId(updateVo.getId());
@@ -171,7 +169,7 @@ public class CouponUpdateService {
             send = true;
         }
         // 覆盖: 去除重复
-        saveProductBatchsWhenUpdate(updateVo.getProductParams(),delBatchProductList,activitySet.getId(), updateVo.getAutoFetch(),send);
+        saveProductBatchsWhenUpdate(updateVo.getId(),updateVo.getProductParams(),delBatchProductList,activitySet.getId(), updateVo.getAutoFetch(),send);
         // 保存抵扣券规则
         saveCouponRulesWhenUpdate(updateVo.getCoupon(),activitySet.getId());
 
@@ -242,7 +240,7 @@ public class CouponUpdateService {
     }
 
 
-    private void saveProductBatchsWhenUpdate(List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int autoFecth,boolean send) throws SuperCodeException {
+    private void saveProductBatchsWhenUpdate(Long setVoId ,List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int autoFecth,boolean send) throws SuperCodeException {
         List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
         List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
         for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
@@ -273,6 +271,11 @@ public class CouponUpdateService {
             }
         }
         List<MarketingActivityProduct> marketingActivityProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+        if(setVoId != null && setVoId > 0) {
+	        productMapper.deleteByActivitySetId(setVoId);
+	        channelMapper.deleteByActivitySetId(setVoId);
+	        couponMapper.deleteByActivitySetId(setVoId);
+        }
         if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
 			List<Long> activitySetIds = new ArrayList<>();
 			marketingActivityProductList.forEach(product -> {if(!activitySetIds.contains(product.getActivitySetId())) activitySetIds.add(product.getActivitySetId());});

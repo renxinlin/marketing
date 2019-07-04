@@ -248,9 +248,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				}
 			});
 		}
-		mPrizeTypeMapper.deleteByActivitySetId(mActivitySet.getId());
-		mProductMapper.deleteByActivitySetId(mActivitySet.getId());
-		mChannelMapper.deleteByActivitySetId(mActivitySet.getId());
+
 		updatePage(mReceivingPageParam);
 		
 		//检查奖次类型
@@ -267,7 +265,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		//保存奖次
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
 		//保存商品批次活动总共批次参与的码总数
-		saveProductBatchs(maProductParams,delBatchProductList,activitySetId,0);
+		saveProductBatchs(mActivitySet.getId(), maProductParams,delBatchProductList,activitySetId,0);
 		RestResult<String> restResult=new RestResult<String>();
 		restResult.setState(200);
 		restResult.setMsg("成功");
@@ -433,7 +431,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int referenceRole) throws SuperCodeException {
+	public void saveProductBatchs(Long setVoId, List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int referenceRole) throws SuperCodeException {
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
@@ -464,6 +462,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			}
 		}
 		List<MarketingActivityProduct> marketingActivityProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+        if(setVoId != null && setVoId > 0) {
+    		mPrizeTypeMapper.deleteByActivitySetId(setVoId);
+    		mProductMapper.deleteByActivitySetId(setVoId);
+    		mChannelMapper.deleteByActivitySetId(setVoId);
+        }
 		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
 			List<Long> activitySetIds = new ArrayList<>();
 			marketingActivityProductList.forEach(product -> {if(!activitySetIds.contains(product.getActivitySetId())) activitySetIds.add(product.getActivitySetId());});
@@ -554,7 +557,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 
 	private void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int referenceRole) throws SuperCodeException {
-		saveProductBatchs(maProductParams, new ArrayList<>(), activitySetId, referenceRole);
+		saveProductBatchs(null, maProductParams, new ArrayList<>(), activitySetId, referenceRole);
 	}
 
 	/**
