@@ -464,12 +464,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
     		mProductMapper.deleteByActivitySetId(setVoId);
     		mChannelMapper.deleteByActivitySetId(setVoId);
         }
-		if (null==mActivitySet.getId()) {
-			mSetMapper.insert(mActivitySet);
-		}else {
-			mSetMapper.update(mActivitySet);
-		}
-		mList.forEach(prd -> prd.setActivitySetId(mActivitySet.getId()));
 		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
 			List<Long> activitySetIds = new ArrayList<>();
 			marketingActivityProductList.forEach(product -> {if(!activitySetIds.contains(product.getActivitySetId())) activitySetIds.add(product.getActivitySetId());});
@@ -516,6 +510,12 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				deleteProductBatchList.addAll(deleteBatchList);
 			}
 		}
+		if (null==mActivitySet.getId()) {
+			mSetMapper.insert(mActivitySet);
+		}else {
+			mSetMapper.update(mActivitySet);
+		}
+		mList.forEach(prd -> prd.setActivitySetId(mActivitySet.getId()));
 		//如果是会员活动需要去绑定扫码连接到批次号
 		if (referenceRole == RoleTypeEnum.MEMBER.getMemberType()) {
 			String superToken = commonUtil.getSuperToken();

@@ -276,11 +276,6 @@ public class CouponUpdateService {
 	        channelMapper.deleteByActivitySetId(setVoId);
 	        couponMapper.deleteByActivitySetId(setVoId);
         }
-        activitySet.setId(activitySet.getId());
-        setMapper.update(activitySet);
-        mList.forEach(prod -> prod.setActivitySetId(activitySet.getId()));
-        // 保存渠道 TODO copy 以前活动的代码 检查有没有坑
-        saveChannelsWhenUpdate(copyVO.getChannelParams(),activitySet.getId());
         if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
 			List<Long> activitySetIds = new ArrayList<>();
 			marketingActivityProductList.forEach(product -> {if(!activitySetIds.contains(product.getActivitySetId())) activitySetIds.add(product.getActivitySetId());});
@@ -327,6 +322,11 @@ public class CouponUpdateService {
 				deleteProductBatchList.addAll(deleteBatchList);
 			}
 		}
+        activitySet.setId(activitySet.getId());
+        setMapper.update(activitySet);
+        mList.forEach(prod -> prod.setActivitySetId(activitySet.getId()));
+        // 保存渠道 TODO copy 以前活动的代码 检查有没有坑
+        saveChannelsWhenUpdate(copyVO.getChannelParams(),activitySet.getId());
         // 绑定绑定生码批次
         couponService.getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
         

@@ -207,10 +207,6 @@ public class CouponService {
 			}
 		}
 		List<MarketingActivityProduct> marketingActivityProductList = productMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
-		setMapper.insert(activitySet);
-		// 保存渠道 TODO copy 以前活动的代码 检查有没有坑
-		saveChannels(addVO.getChannelParams(),activitySet.getId());
-		mList.forEach(prd -> prd.setActivitySetId(activitySet.getId()));
 		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
 			List<Long> activitySetIds = new ArrayList<>();
 			marketingActivityProductList.forEach(product -> {if(!activitySetIds.contains(product.getActivitySetId())) activitySetIds.add(product.getActivitySetId());});
@@ -248,6 +244,10 @@ public class CouponService {
 				};
 			}
 		}
+		setMapper.insert(activitySet);
+		// 保存渠道 TODO copy 以前活动的代码 检查有没有坑
+		saveChannels(addVO.getChannelParams(),activitySet.getId());
+		mList.forEach(prd -> prd.setActivitySetId(activitySet.getId()));
 		getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
 		//如果是会员活动需要去绑定扫码连接到批次号
 		String superToken = commonUtil.getSuperToken();
