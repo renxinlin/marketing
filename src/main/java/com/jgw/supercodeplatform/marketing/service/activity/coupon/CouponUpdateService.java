@@ -160,8 +160,7 @@ public class CouponUpdateService {
 				});
 			}
 		}
-        // 保存渠道 TODO copy 以前活动的代码 检查有没有坑
-        saveChannelsWhenUpdate(updateVo.getChannelParams(),activitySet.getId());
+
 
         // 保存产品 TODO copy 以前活动的代码 检查有没有坑 以及处理如何保存到码管理来确保领券问题
         boolean send = false;
@@ -172,7 +171,9 @@ public class CouponUpdateService {
         saveProductBatchsWhenUpdate(updateVo.getId(),updateVo.getProductParams(),delBatchProductList,activitySet.getId(), updateVo.getAutoFetch(),send);
         // 保存抵扣券规则
         saveCouponRulesWhenUpdate(updateVo.getCoupon(),activitySet.getId());
-
+        // 保存渠道 TODO
+        saveChannelsWhenUpdate(updateVo.getChannelParams(),activitySet.getId());
+        
         return RestResult.success();
     }
 

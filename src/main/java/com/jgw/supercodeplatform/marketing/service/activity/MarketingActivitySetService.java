@@ -258,14 +258,15 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	    standActicityParamCheck.baseProductBatchCheck(maProductParams);
 
 		Long activitySetId= mActivitySet.getId();
+		
+		//保存商品批次活动总共批次参与的码总数
+		saveProductBatchs(mActivitySet.getId(), maProductParams,delBatchProductList,activitySetId,0);
 		if (null!=mChannelParams && mChannelParams.size()!=0) {
 			//保存渠道
 			saveChannels(mChannelParams,activitySetId);
 		}
 		//保存奖次
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
-		//保存商品批次活动总共批次参与的码总数
-		saveProductBatchs(mActivitySet.getId(), maProductParams,delBatchProductList,activitySetId,0);
 		RestResult<String> restResult=new RestResult<String>();
 		restResult.setState(200);
 		restResult.setMsg("成功");
