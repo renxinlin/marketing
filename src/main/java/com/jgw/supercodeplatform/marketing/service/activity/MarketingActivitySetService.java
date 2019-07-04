@@ -206,7 +206,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		//保存奖次
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
 		//保存商品批次活动总共批次参与的码总数
-		saveProductBatchs(maProductParams,mActivitySet,ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+		saveProductBatchs(maProductParams,activitySetId,ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
 		return mActivitySet;
 	}
 	/**
@@ -257,9 +257,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		//检查产品
 	    standActicityParamCheck.baseProductBatchCheck(maProductParams);
 
-		
-		//保存商品批次活动总共批次参与的码总数
-		saveProductBatchs(mActivitySet.getId(), maProductParams,delBatchProductList,mActivitySet,0);
 		Long activitySetId= mActivitySet.getId();
 		if (null!=mChannelParams && mChannelParams.size()!=0) {
 			//保存渠道
@@ -267,6 +264,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		//保存奖次
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
+		//保存商品批次活动总共批次参与的码总数
+		saveProductBatchs(mActivitySet.getId(), maProductParams,delBatchProductList,activitySetId,0);
 		RestResult<String> restResult=new RestResult<String>();
 		restResult.setState(200);
 		restResult.setMsg("成功");
@@ -306,7 +305,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mSet.setActivityStatus(1);
 		mSet.setOrganizationId(organizationId);
 		mSet.setOrganizatioIdlName(organizationName);
-
+		if (null==id) {
+			mSetMapper.insert(mSet);
+		}else {
+			mSetMapper.update(mSet);
+		}
 		
 		return mSet;
 	}
@@ -428,7 +431,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void saveProductBatchs(Long setVoId, List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, MarketingActivitySet mActivitySet, int referenceRole) throws SuperCodeException {
+	public void saveProductBatchs(Long setVoId, List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int referenceRole) throws SuperCodeException {
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
@@ -440,7 +443,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				for (ProductBatchParam prBatchParam : batchParams) {
 					String productBatchId = prBatchParam.getProductBatchId();
 					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
-					//mActivityProduct.setActivitySetId(activitySetId);
+					mActivityProduct.setActivitySetId(activitySetId);
 					mActivityProduct.setProductBatchId(productBatchId);
 					mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
 					mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
@@ -510,12 +513,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				deleteProductBatchList.addAll(deleteBatchList);
 			}
 		}
-		if (null==mActivitySet.getId()) {
-			mSetMapper.insert(mActivitySet);
-		}else {
-			mSetMapper.update(mActivitySet);
-		}
-		mList.forEach(prd -> prd.setActivitySetId(mActivitySet.getId()));
 		//如果是会员活动需要去绑定扫码连接到批次号
 		if (referenceRole == RoleTypeEnum.MEMBER.getMemberType()) {
 			String superToken = commonUtil.getSuperToken();
@@ -559,8 +556,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mProductMapper.activityProductInsert(mList);
 	}
 
-	private void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, MarketingActivitySet mActivitySet, int referenceRole) throws SuperCodeException {
-		saveProductBatchs(null, maProductParams, new ArrayList<>(), mActivitySet, referenceRole);
+	private void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int referenceRole) throws SuperCodeException {
+		saveProductBatchs(null, maProductParams, new ArrayList<>(), activitySetId, referenceRole);
 	}
 
 	/**

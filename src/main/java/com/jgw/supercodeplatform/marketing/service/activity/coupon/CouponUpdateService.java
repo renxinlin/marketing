@@ -107,11 +107,11 @@ public class CouponUpdateService {
         MarketingActivitySet activitySet = changeVoToDtoForMarketingActivitySet(copyVO);
         // setMapper.deleteById(activitySet.getId());
         // 更新了Id
-        /*setMapper.insert(activitySet);
+        setMapper.insert(activitySet);
 
-        
+
         // 保存渠道 TODO copy 以前活动的代码 检查有没有坑
-        saveChannelsWhenUpdate(copyVO.getChannelParams(),activitySet.getId());*/
+        saveChannelsWhenUpdate(copyVO.getChannelParams(),activitySet.getId());
 
         // 保存产品 TODO copy 以前活动的代码 检查有没有坑 以及处理如何保存到码管理来确保领券问题
         boolean send = false;
@@ -119,7 +119,7 @@ public class CouponUpdateService {
             send = true;
         }
         // 覆盖: 去除重复
-        saveProductBatchsWhenUpdate(null, copyVO,new ArrayList<>(),activitySet, copyVO.getAutoFetch(),send);
+        saveProductBatchsWhenUpdate(null, copyVO.getProductParams(),new ArrayList<>(),activitySet.getId(), copyVO.getAutoFetch(),send);
         // 保存抵扣券规则
         saveCouponRulesWhenUpdate(copyVO.getCoupon(),activitySet.getId());
 
@@ -139,8 +139,8 @@ public class CouponUpdateService {
         validateBizByUpdate(updateVo);
         // 更新活动设置表
         MarketingActivitySet activitySet = changeVoToDtoForMarketingActivitySet(updateVo);
-/*        activitySet.setId(updateVo.getId());
-        setMapper.update(activitySet);*/
+        activitySet.setId(updateVo.getId());
+        setMapper.update(activitySet);
         List<Map<String, Object>> delBatchProductList = new ArrayList<>();;
         MarketingActivitySetCondition vasCondition = JSON.parseObject(activitySet.getValidCondition(), MarketingActivitySetCondition.class);
 		if(CouponAcquireConditionEnum.SHOPPING.getCondition().equals(vasCondition.getAcquireCondition())) {
@@ -160,18 +160,18 @@ public class CouponUpdateService {
 				});
 			}
 		}
-        
+        // 保存渠道 TODO copy 以前活动的代码 检查有没有坑
+        saveChannelsWhenUpdate(updateVo.getChannelParams(),activitySet.getId());
+
         // 保存产品 TODO copy 以前活动的代码 检查有没有坑 以及处理如何保存到码管理来确保领券问题
         boolean send = false;
         if(updateVo.getAcquireCondition().intValue() == CouponAcquireConditionEnum.SHOPPING.getCondition().intValue() ){
             send = true;
         }
         // 覆盖: 去除重复
-        saveProductBatchsWhenUpdate(updateVo.getId(),updateVo,delBatchProductList,activitySet, updateVo.getAutoFetch(),send);
+        saveProductBatchsWhenUpdate(updateVo.getId(),updateVo.getProductParams(),delBatchProductList,activitySet.getId(), updateVo.getAutoFetch(),send);
         // 保存抵扣券规则
         saveCouponRulesWhenUpdate(updateVo.getCoupon(),activitySet.getId());
-     // 保存渠道 TODO copy 以前活动的代码 检查有没有坑
-        saveChannelsWhenUpdate(updateVo.getChannelParams(),activitySet.getId());
 
         return RestResult.success();
     }
@@ -240,10 +240,10 @@ public class CouponUpdateService {
     }
 
 
-    private void saveProductBatchsWhenUpdate(Long setVoId ,MarketingActivityCouponUpdateParam copyVO, List<Map<String,Object>> deleteProductBatchList, MarketingActivitySet activitySet, int autoFecth,boolean send) throws SuperCodeException {
+    private void saveProductBatchsWhenUpdate(Long setVoId ,List<MarketingActivityProductParam> maProductParams, List<Map<String,Object>> deleteProductBatchList, Long activitySetId, int autoFecth,boolean send) throws SuperCodeException {
         List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
         List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
-        for (MarketingActivityProductParam marketingActivityProductParam : copyVO.getProductParams()) {
+        for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
             String productId = marketingActivityProductParam.getProductId();
             List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
             if (null != batchParams && !batchParams.isEmpty()) {
@@ -252,7 +252,7 @@ public class CouponUpdateService {
                 for (ProductBatchParam prBatchParam : batchParams) {
                     String productBatchId = prBatchParam.getProductBatchId();
                     MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
-                    //mActivityProduct.setActivitySetId(activitySetId);
+                    mActivityProduct.setActivitySetId(activitySetId);
                     mActivityProduct.setProductBatchId(productBatchId);
                     mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
                     mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
@@ -322,11 +322,6 @@ public class CouponUpdateService {
 				deleteProductBatchList.addAll(deleteBatchList);
 			}
 		}
-        activitySet.setId(activitySet.getId());
-        setMapper.update(activitySet);
-        mList.forEach(prod -> prod.setActivitySetId(activitySet.getId()));
-        // 保存渠道 TODO copy 以前活动的代码 检查有没有坑
-        saveChannelsWhenUpdate(copyVO.getChannelParams(),activitySet.getId());
         // 绑定绑定生码批次
         couponService.getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
         
