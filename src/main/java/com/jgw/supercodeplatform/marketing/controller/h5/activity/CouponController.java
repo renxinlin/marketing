@@ -159,20 +159,20 @@ public class CouponController {
 		if(marketingCoupon != null) {
 			int deductionChannelType = marketingCoupon.getDeductionChannelType().intValue();
 			String customerId = marketingMemberCoupon.getCustomerId();
-			if(StringUtils.isNotBlank(customerId)) {
-				if(deductionChannelType == 1 && !StringUtils.equals(customerId, jwtUser.getCustomerId())) 
-					throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-				if(deductionChannelType == 0) {
-					List<MarketingChannel> channelList = marketingChannelMapper.selectByCustomerId(customerId);
-					if(!CollectionUtils.isEmpty(channelList)) {
-						List<MarketingChannel> li = channelList.stream().filter(channel -> channel.getCustomerId().equals(jwtUser.getCustomerId())).collect(Collectors.toList());
-						if(li.size() == 0)
-							throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-					} else {
-						throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-					}
-				}
-			}
+//			if(StringUtils.isNotBlank(customerId)) {
+//				if(deductionChannelType == 1 && !StringUtils.equals(customerId, jwtUser.getCustomerId())) 
+//					throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+//				if(deductionChannelType == 0) {
+//					List<MarketingChannel> channelList = marketingChannelMapper.selectByCustomerId(customerId);
+//					if(!CollectionUtils.isEmpty(channelList)) {
+//						List<MarketingChannel> li = channelList.stream().filter(channel -> channel.getCustomerId().equals(jwtUser.getCustomerId())).collect(Collectors.toList());
+//						if(li.size() == 0)
+//							throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+//					} else {
+//						throw new SuperCodeException("‘抵扣券无法使用’ （不在该门店）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+//					}
+//				}
+//			}
 		}
 		//填充抵扣券核销信息
 		MarketingMemberCoupon memberCoupon = new MarketingMemberCoupon();

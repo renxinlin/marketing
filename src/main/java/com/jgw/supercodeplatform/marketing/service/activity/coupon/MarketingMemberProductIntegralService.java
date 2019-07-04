@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
@@ -33,6 +32,7 @@ import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireCond
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
@@ -101,6 +101,7 @@ public class MarketingMemberProductIntegralService {
 		MarketingActivityProduct marketingActivityProduct = marketingActivityProductMapper.selectByProductAndProductBatchIdWithReferenceRole(productId, productBatchId, MemberTypeEnums.VIP.getType());
 		if(marketingActivityProduct != null) {
 			MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(marketingActivityProduct.getActivitySetId());
+			List<MarketingChannel> marketingChannelList = marketingChannelMapper.selectByActivitySetId(marketingActivitySet.getId());
 			int activityStatus = marketingActivitySet.getActivityStatus() == null?0:marketingActivitySet.getActivityStatus().intValue();
 			int activityId = marketingActivitySet.getActivityId().intValue();
 			String activityStartDateStr = marketingActivitySet.getActivityStartDate();
@@ -120,7 +121,7 @@ public class MarketingMemberProductIntegralService {
 					switch (couponAcquireConditionEnum) {
 					case FIRST:
 						if(marketingMemberProductIntegral == null)
-							addMarketingMemberCoupon(marketingCouponList, members, productId, productName,outerCodeId);
+							addMarketingMemberCoupon( marketingCouponList, members, productId, productName,outerCodeId);
 						break;
 					case ONCE_LIMIT:
 						onceLimit(acquireConditionIntegral, accrueIntegral, marketingCouponList, members, productId, productName,outerCodeId);
@@ -159,8 +160,6 @@ public class MarketingMemberProductIntegralService {
 	private void addMarketingMemberCoupon(List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName, String outerCodeId) throws SuperCodeException {
 		Map<String, String> customerMap = commonService.queryCurrentCustomer(outerCodeId);
 		log.info("查询获取门店客户信息：{},{}", outerCodeId,customerMap);
-		if(MapUtils.isEmpty(customerMap))
-			return;
 		if(CollectionUtils.isNotEmpty(marketingCouponList)) {
 			List<MarketingMemberCoupon> memberCouponList = new ArrayList<>();
 			marketingCouponList.forEach(marketingCoupon -> {

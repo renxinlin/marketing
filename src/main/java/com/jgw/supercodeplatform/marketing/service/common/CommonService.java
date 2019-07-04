@@ -472,15 +472,15 @@ public class CommonService {
 		if (null == state || state.intValue()!=200) {
 			throw new SuperCodeException("码查询客户信息出错:"+body, 500);
 		}
+		Map<String, String> customerMap = new HashMap<>();
 		JSONObject resultJson = jsonObject.getJSONObject("results");
 		if(resultJson != null) {
 			String customerId = resultJson.getString("customerId");
 			String customerName = resultJson.getString("customerName");
-			Map<String, String> customerMap = new HashMap<>();
 			customerMap.put("customerId", customerId);
 			customerMap.put("customerName", customerName);
 			return customerMap;
 		}
-    	return null;
+    	return customerMap;
     }
 }
