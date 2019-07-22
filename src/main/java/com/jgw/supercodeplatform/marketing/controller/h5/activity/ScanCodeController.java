@@ -4,6 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -14,12 +18,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.AsyncRestTemplate;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.IpUtils;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
@@ -29,6 +36,7 @@ import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsSe
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+@SuppressWarnings("deprecation")
 @Controller
 @RequestMapping("/marketing/front/scan")
 @Api(tags = "h5接收码管理跳转路径")
@@ -41,11 +49,16 @@ public class ScanCodeController {
 
     @Autowired
     private MarketingWxMerchantsService mWxMerchantsService;
+    
+    @Autowired
+    private AsyncRestTemplate asyncRestTemplate;
 
     @Value("${marketing.domain.url}")
     private String wxauthRedirectUri;
 
-
+    @Value("${rest.antismashinggoods.url}")
+    private String antismashinggoodsUrl;
+    
     @Value("${marketing.activity.h5page.url}")
     private String h5pageUrl;
 
@@ -81,7 +94,14 @@ public class ScanCodeController {
      */
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
-    public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId) throws Exception {
+    public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId, HttpServletRequest request) throws Exception {
+    	Map<String, String> uriVariables = new HashMap<>();
+    	uriVariables.put("judgeType", "2");
+    	uriVariables.put("outerCodeId", outerCodeId);
+    	uriVariables.put("codeTypeId",codeTypeId);
+    	uriVariables.put("ipAddr",IpUtils.getClientIpAddr(request));
+    	asyncRestTemplate.postForEntity(antismashinggoodsUrl, null, JSONObject.class, uriVariables);
+    	
     	String wxstate=commonUtil.getUUID();
         logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+",sBatchId="+sBatchId);
     	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0, sBatchId);

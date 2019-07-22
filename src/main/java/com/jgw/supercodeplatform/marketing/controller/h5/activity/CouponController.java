@@ -1,9 +1,11 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -12,21 +14,24 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.AsyncRestTemplate;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
+import com.jgw.supercodeplatform.marketing.common.util.IpUtils;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponConditionDto;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponCustmerVerifyPageParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponObtainParam;
@@ -39,7 +44,6 @@ import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireCond
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.activity.coupon.MarketingMemberProductIntegralService;
@@ -55,6 +59,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import springfox.documentation.annotations.ApiIgnore;
 
+@SuppressWarnings("deprecation")
 @RestController
 @RequestMapping("/marketing/front/coupon")
 @Api(tags = "抵扣券H5")
@@ -69,10 +74,12 @@ public class CouponController {
 	@Autowired
 	private MarketingMemberProductIntegralService marketingMemberProductIntegralService;
 	@Autowired
-	private MarketingChannelMapper marketingChannelMapper;
-	@Autowired
 	private MarketingActivityProductMapper marketingActivityProductMapper;
-	
+	@Autowired
+	private AsyncRestTemplate asyncRestTemplate;
+    @Value("${rest.antismashinggoods.url}")
+    private String antismashinggoodsUrl;
+    
 	@GetMapping("/listCoupon")
 	@ApiOperation("抵扣券记录")
 	@ApiImplicitParams(@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token"))
@@ -82,10 +89,25 @@ public class CouponController {
 		return new RestResult<>(HttpStatus.SC_OK, "查询成功", couponList);
 	}
 	
+	/**
+	 * 领取抵扣券，以后需添加领取条件判断，如果领取时发现对应的产品的渠道信息不吻合，则不发放券给该用户
+	 * @param couponObtainParam
+	 * @param jwtUser
+	 * @param request
+	 * @return
+	 * @throws Exception
+	 */
 	@PostMapping("/obtainCoupon")
 	@ApiOperation("用户领取抵扣券")
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")})
-	public RestResult<?> obtainCoupon(@Valid @RequestBody CouponObtainParam couponObtainParam, @ApiIgnore H5LoginVO jwtUser) throws Exception{
+	public RestResult<?> obtainCoupon(@Valid @RequestBody CouponObtainParam couponObtainParam, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception{
+    	Map<String, String> uriVariables = new HashMap<>();
+    	uriVariables.put("judgeType", "2");
+    	uriVariables.put("outerCodeId", couponObtainParam.getOuterCodeId());
+    	uriVariables.put("codeTypeId",couponObtainParam.getCodeTypeId());
+    	uriVariables.put("ipAddr",IpUtils.getClientIpAddr(request));
+    	asyncRestTemplate.postForEntity(antismashinggoodsUrl, null, JSONObject.class, uriVariables);
+    	
 		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(couponObtainParam.getProductId(), MemberTypeEnums.VIP.getType());
 		if(CollectionUtils.isEmpty(marketingActivityProductList))
 			throw new SuperCodeException("‘活动产品为空’", HttpStatus.SC_INTERNAL_SERVER_ERROR);

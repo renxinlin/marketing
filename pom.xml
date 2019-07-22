@@ -100,12 +100,12 @@
 			<version>3.4.0</version>
 		</dependency>
 
-		<!-- fastjson 依赖 -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.8</version>
-		</dependency>
+        <!-- fastjson 依赖 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.58</version>
+        </dependency>
 		<!-- mybatis依赖 -->
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
