@@ -180,11 +180,11 @@ public interface MarketingActivitySetMapper extends CommonSql {
     int deleteById(@Param("activitySetId") Long activitySetId);
     
     @Select({startScript,
-    		"select ",allFields," from marketing_activity_set where Id in (",
+    		"select ",allFields," from marketing_activity_set where OrganizationId = #{organizationId} AND Id in (",
     		"<foreach collection='idList' item='activitySetId' index='index' separator=','>",
 			"#{activitySetId}",
 			")</foreach>",
     		endScript})
-    List<MarketingActivitySet> selectMarketingActivitySetByIds(@Param("idList") List<Long> idList);
+    List<MarketingActivitySet> selectMarketingActivitySetByIds(@Param("organizationId")String organizationId, @Param("idList") List<Long> idList);
     
 }

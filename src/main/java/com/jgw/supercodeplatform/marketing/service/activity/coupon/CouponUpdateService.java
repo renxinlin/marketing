@@ -152,7 +152,7 @@ public class CouponUpdateService {
 		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
 			Set<Long> activityIdsSet = marketingActivityProductList.stream().map(prd -> prd.getActivitySetId()).collect(Collectors.toSet());
 			//得到绑定过url的product对应的活动
-			List<MarketingActivitySet> marketingActivitySetList = setMapper.selectMarketingActivitySetByIds(new ArrayList<>(activityIdsSet));
+			List<MarketingActivitySet> marketingActivitySetList = setMapper.selectMarketingActivitySetByIds(commonUtil.getOrganizationId(), new ArrayList<>(activityIdsSet));
 			Map<Long, MarketingActivitySet> marketingActivitySetMap = marketingActivitySetList.stream().collect(Collectors.toMap(MarketingActivitySet::getId, marketingActivitySet -> marketingActivitySet));
 			for(MarketingActivityProduct marketingActivityProduct : marketingActivityProductList) {
 				Long aSetId = marketingActivityProduct.getActivitySetId();
