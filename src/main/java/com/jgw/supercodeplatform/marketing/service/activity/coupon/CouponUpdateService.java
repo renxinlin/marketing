@@ -323,9 +323,6 @@ public class CouponUpdateService {
 
 
     private MarketingActivitySet changeVoToDtoForMarketingActivitySet(MarketingActivityCouponAddParam addVO) throws SuperCodeException {
-        // 前置参数
-        Date date = new Date();
-        String formatDate          = format.format(date);
         String organizationId         = commonUtil.getOrganizationId();
         String organizationName     = commonUtil.getOrganizationName();
         String userId     = commonUtil.getUserLoginCache().getUserId();
@@ -334,7 +331,6 @@ public class CouponUpdateService {
 
         // 活动设置参数
         activitySet                                                        .setUpdateUserId(userId);
-        activitySet                                                      .setUpdateDate(formatDate);
         activitySet                                                    .setUpdateUserName(username);
         activitySet                                              .setOrganizationId(organizationId);
         activitySet                                             .setAutoFetch(addVO.getAutoFetch());

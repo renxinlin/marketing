@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 public class RestTemplateConfig {
 	
 	@SuppressWarnings("deprecation")
+	@LoadBalanced
 	@Bean
 	public AsyncRestTemplate asyncRestTemplate() {
 		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
