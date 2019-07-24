@@ -15,6 +15,9 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -106,7 +109,13 @@ public class CouponController {
     	uriVariables.put("outerCodeId", couponObtainParam.getOuterCodeId());
     	uriVariables.put("codeTypeId",couponObtainParam.getCodeTypeId());
     	uriVariables.put("ipAddr",IpUtils.getClientIpAddr(request));
-    	asyncRestTemplate.postForEntity(antismashinggoodsUrl, null, JSONObject.class, uriVariables);
+        HttpHeaders requestHeaders = new HttpHeaders();
+        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+        requestHeaders.setContentType(type);
+        requestHeaders.add("Accept", MediaType.APPLICATION_JSON.toString());
+        //body
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(uriVariables), requestHeaders);
+    	asyncRestTemplate.postForEntity(antismashinggoodsUrl+CommonConstants.JUDGE_FLEE_GOOD, requestEntity, JSONObject.class);
     	
 		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(couponObtainParam.getProductId(), MemberTypeEnums.VIP.getType());
 		if(CollectionUtils.isEmpty(marketingActivityProductList))

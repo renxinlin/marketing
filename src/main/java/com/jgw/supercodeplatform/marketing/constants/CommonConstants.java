@@ -65,4 +65,9 @@ public class CommonConstants {
      * 非登录下基于组织获取组织信息
      */
     public static final String ORGANIZATION_NAME ="/getByOrganizationId"  ;
+    
+    /**
+     * 窜货
+     */
+    public static final String JUDGE_FLEE_GOOD = "/goods/query/judgeFleeGood";
 }
