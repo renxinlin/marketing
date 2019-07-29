@@ -1,6 +1,16 @@
 package com.jgw.supercodeplatform.marketing.weixinpay;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
+import static com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.USER_AGENT;
+
+import java.io.InputStream;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.security.KeyStore;
+import java.security.SecureRandom;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -17,19 +27,11 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import java.io.InputStream;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.security.KeyStore;
-import java.security.SecureRandom;
-
-import static com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.USER_AGENT;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 
 public class WXPayRequest {
-    private WXPayConfig config;
-    public WXPayRequest(WXPayConfig config) throws Exception{
+    private WXPayMarketingConfig config;
+    public WXPayRequest(WXPayMarketingConfig config) throws Exception{
 
         this.config = config;
     }
@@ -53,7 +55,7 @@ public class WXPayRequest {
         try {
             if (useCert) {
                 // 证书
-                char[] password = config.getMchID().toCharArray();
+                char[] password = config.getCertificatePassword().toCharArray();
                 certStream = config.getCertStream();
                 KeyStore ks = KeyStore.getInstance("PKCS12");
                 ks.load(certStream, password);

@@ -15,7 +15,7 @@ public class WXPayMarketingConfig extends WXPayConfig{
 	private String mchId;
 	private String key;
 	private String certificatePath;//证书路径为完整绝对路径
-	
+	private String certificatePassword;//证书密码
 
 	public void setAppId(String appId) {
 		this.appId = appId;
@@ -48,6 +48,16 @@ public class WXPayMarketingConfig extends WXPayConfig{
 	String getKey() {
 		return key;
 	}
+
+	public String getCertificatePassword() {
+		return certificatePassword;
+	}
+
+
+	public void setCertificatePassword(String certificatePassword) {
+		this.certificatePassword = certificatePassword;
+	}
+
 
 	@Override
 	InputStream getCertStream() {
