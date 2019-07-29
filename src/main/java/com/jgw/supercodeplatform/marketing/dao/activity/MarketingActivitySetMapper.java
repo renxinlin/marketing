@@ -114,7 +114,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " <if test='activityEndDate !=null and activityEndDate != &apos;&apos; '> ActivityEndDate = #{activityEndDate} ,</if> "
             + " <if test='updateUserId !=null and updateUserId != &apos;&apos; '> UpdateUserId = #{updateUserId} ,</if> "
             + " <if test='updateUserName !=null and updateUserName != &apos;&apos; '> UpdateUserName = #{updateUserName} ,</if> "
-            + " <if test='updateDate !=null and updateDate != &apos;&apos; '> UpdateDate = #{updateDate} ,</if> "
+            + "  UpdateDate = NOW() , "
             + " <if test='activityStatus !=null and activityStatus != &apos;&apos; '> ActivityStatus = #{activityStatus} ,</if> "
             + " <if test='activityRangeMark !=null and activityRangeMark != &apos;&apos; '> ActivityRangeMark = #{activityRangeMark} ,</if> "
             + " <if test='autoFetch !=null and autoFetch != &apos;&apos; '> autoFetch = #{autoFetch} ,</if> "
@@ -180,11 +180,11 @@ public interface MarketingActivitySetMapper extends CommonSql {
     int deleteById(@Param("activitySetId") Long activitySetId);
     
     @Select({startScript,
-    		"select ",allFields," from marketing_activity_set where Id in (",
+    		"select ",allFields," from marketing_activity_set where OrganizationId = #{organizationId} AND Id in (",
     		"<foreach collection='idList' item='activitySetId' index='index' separator=','>",
 			"#{activitySetId}",
 			")</foreach>",
     		endScript})
-    List<MarketingActivitySet> selectMarketingActivitySetByIds(@Param("idList") List<Long> idList);
+    List<MarketingActivitySet> selectMarketingActivitySetByIds(@Param("organizationId")String organizationId, @Param("idList") List<Long> idList);
     
 }

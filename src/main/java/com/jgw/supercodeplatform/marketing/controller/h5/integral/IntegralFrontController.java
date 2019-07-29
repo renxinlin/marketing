@@ -8,17 +8,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.AsyncRestTemplate;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.IpUtils;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.SystemLabelEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
@@ -42,6 +53,7 @@ import io.swagger.annotations.ApiOperation;
  * 积分记录controller
  *
  */
+@SuppressWarnings("deprecation")
 @RestController
 @RequestMapping("/marketing/front/integral")
 @Api(tags = "积分h5")
@@ -69,6 +81,12 @@ public class IntegralFrontController {
 	
 	@Autowired
 	private MarketingMemberProductIntegralService productIntegralService;
+	
+	@Autowired
+	private AsyncRestTemplate asyncRestTemplate;
+	
+    @Value("${rest.antismashinggoods.url}")
+    private String antismashinggoodsUrl;
 	/**
 	 * 领取积分
 	 * 
@@ -78,7 +96,7 @@ public class IntegralFrontController {
 	 * @throws ParseException 
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/receive", method = RequestMethod.GET)
 	@ApiOperation(value = "积分领取", notes = "")
 	@ApiImplicitParams(value = { @ApiImplicitParam(paramType = "query", value = "码", name = "outerCodeId",required=true),
@@ -91,8 +109,22 @@ public class IntegralFrontController {
 			@RequestParam(name = "codeTypeId") String codeTypeId,
 			@RequestParam(name = "productId") String productId,
 			@RequestParam(name = "productBatchId") String productBatchId,
-			@RequestParam(name = "memberId", required = true) Long memberId)
+			@RequestParam(name = "memberId", required = true) Long memberId,
+			HttpServletRequest request)
 			throws SuperCodeException, ParseException {
+    	Map<String, String> uriVariables = new HashMap<>();
+    	uriVariables.put("judgeType", "2");
+    	uriVariables.put("outerCodeId", outerCodeId);
+    	uriVariables.put("codeTypeId",codeTypeId);
+    	uriVariables.put("ipAddr",IpUtils.getClientIpAddr(request));
+        HttpHeaders requestHeaders = new HttpHeaders();
+        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+        requestHeaders.setContentType(type);
+        requestHeaders.add("Accept", MediaType.APPLICATION_JSON.toString());
+        //body
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(uriVariables), requestHeaders);
+    	asyncRestTemplate.postForEntity(antismashinggoodsUrl+CommonConstants.JUDGE_FLEE_GOOD, requestEntity, JSONObject.class);
+    	
 		RestResult<List<String>> result = new RestResult<List<String>>();
 		// 1.如果openid不为空那根据openid和组织id查用户，否则肯定是进行了手机登录那就必须传手机号验证码和用户主键id
 		logger.info("领取积分获取到参数codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+",memberId="+memberId);
