@@ -515,7 +515,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 						BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
 				mList.forEach(marketingActivityProduct -> {
 					String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
-					marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
+					Map<String, Object> batchMap = paramsMap.get(key);
+					if(batchMap != null)
+						marketingActivityProduct.setSbatchId((String)batchMap.get("batchId"));
 				});
 			} else {
 				throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);

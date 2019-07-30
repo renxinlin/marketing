@@ -2,26 +2,78 @@ package com.jgw.supercodeplatform;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.ListenableFutureCallback;
+import org.springframework.web.client.AsyncRestTemplate;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.marketing.common.util.IpUtils;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes=SuperCodeMarketingApplication.class)
 public class SupercodeplatformApplicationTests {
 
+	@SuppressWarnings("deprecation")
+	@Autowired
+	AsyncRestTemplate asyncRestTemplate;
+	
 	@Test
 	public void contextLoads() {
+		
+		Map<String, String> uriVariables = new HashMap<>();
+		uriVariables.put("judgeType", "3");
+    	uriVariables.put("outerCodeId", "15617069648739002741");
+    	uriVariables.put("codeTypeId","20");
+    	uriVariables.put("ipAddr","61.164.59.252");
+        HttpHeaders requestHeaders = new HttpHeaders();
+        MediaType type = MediaType.parseMediaType("application/json; charset=UTF-8");
+        requestHeaders.setContentType(type);
+        requestHeaders.add("Accept", MediaType.APPLICATION_JSON.toString());
+        //body
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(uriVariables), requestHeaders);
+        ListenableFuture<ResponseEntity<JSONObject>> rel = asyncRestTemplate.postForEntity("http://PLATFORM-ANTISMASHINGGOODS-SUPERCODE-DEV"+CommonConstants.JUDGE_FLEE_GOOD, requestEntity, JSONObject.class);
+		//ListenableFuture<ResponseEntity<String>> rel = asyncRestTemplate.getForEntity("http://PLATFORM-LOGISTICS-SUPERCODE-TEST/logistics/sweep/out/product?outerCodeIds=[15617069648739002741]", String.class);
+		rel.addCallback(new ListenableFutureCallback<ResponseEntity<JSONObject>>() {
+
+			@Override
+			public void onFailure(Throwable ex) {
+				ex.printStackTrace();
+				
+			}
+
+			@Override
+			public void onSuccess(ResponseEntity<JSONObject> result) {
+				// TODO Auto-generated method stub
+				System.err.println("----->"+result);
+			}
+
+			
+		});
+		
+		try {
+			Thread.sleep(Integer.MAX_VALUE);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	

@@ -1,15 +1,24 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Many;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.type.JdbcType;
+
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.JdbcType;
-
-import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface MarketingActivitySetMapper extends CommonSql {
@@ -183,7 +192,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
     		"select ",allFields," from marketing_activity_set where OrganizationId = #{organizationId} AND Id in (",
     		"<foreach collection='idList' item='activitySetId' index='index' separator=','>",
 			"#{activitySetId}",
-			")</foreach>",
+			"</foreach>) ",
     		endScript})
     List<MarketingActivitySet> selectMarketingActivitySetByIds(@Param("organizationId")String organizationId, @Param("idList") List<Long> idList);
     
