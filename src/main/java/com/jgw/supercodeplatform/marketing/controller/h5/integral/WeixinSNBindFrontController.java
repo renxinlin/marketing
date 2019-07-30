@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
@@ -41,14 +42,14 @@ public class WeixinSNBindFrontController extends CommonUtil {
     	RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
     	restResult.setState(200);
     	Map<String, String> data=new HashMap<String, String>();
-    	if (null!=mWxMerchants) {
-    		data.put("appId", mWxMerchants.getMchAppid());
-        	//微信授权需要对redirect_uri进行urlencode
-            String wholeUrl=wxauthRedirectUri+"/marketing/front/auth/code";
-        	String encoderedirectUri=URLEncoder.encode(wholeUrl, "utf-8");
-    		data.put("redriectUrl", encoderedirectUri);
-    		restResult.setResults(data);
-		}
+    	if (null==mWxMerchants) 
+    		throw new SuperCodeException("公众号信息不存在");
+    	data.put("appId", mWxMerchants.getMchAppid());
+    	//微信授权需要对redirect_uri进行urlencode
+        String wholeUrl=wxauthRedirectUri+"/marketing/front/auth/code";
+    	String encoderedirectUri=URLEncoder.encode(wholeUrl, "utf-8");
+		data.put("redriectUrl", encoderedirectUri);
+		restResult.setResults(data);
         return restResult;
     }
     

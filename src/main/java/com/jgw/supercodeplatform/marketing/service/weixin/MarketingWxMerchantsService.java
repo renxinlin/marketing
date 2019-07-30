@@ -51,14 +51,12 @@ public class MarketingWxMerchantsService {
 	}
 
 	public int updateWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam){
-		return dao.updateWxMerchants(marketingWxMerchantsParam);
+		int er = dao.updateWxMerchants(marketingWxMerchantsParam);
+		return er;
 	}
 
 	public MarketingWxMerchants selectByOrganizationId(String organizationId) {
 		MarketingWxMerchants mWxMerchants=dao.selectByOrganizationId(organizationId);
-		if (null==mWxMerchants) {
-			mWxMerchants=dao.selectDefault();
-		}
 		return mWxMerchants;
 	}
 	
