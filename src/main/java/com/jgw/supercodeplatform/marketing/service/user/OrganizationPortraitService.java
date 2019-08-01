@@ -42,7 +42,7 @@ public class OrganizationPortraitService extends CommonUtil {
 		}
     	List<MarketingOrganizationPortraitListParam> portraitList = organizationPortraitMapper.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
     	MarketingUnitcode marketingUnitcode = organizationPortraitMapper.getMobilePortrait();
-    	if(marketingUnitcode != null && portraitList != null) {
+    	if(marketingUnitcode != null) {
     		if(!portraitList.stream().anyMatch(portrait -> ObjectUtils.equals(marketingUnitcode.getCodeId(), portrait.getCodeId()))) {
     			MarketingOrganizationPortrait organizationPortrait = new MarketingOrganizationPortrait();
     	    	organizationPortrait.setFieldWeight(0);
