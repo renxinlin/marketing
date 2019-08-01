@@ -1,5 +1,18 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
@@ -9,24 +22,12 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPort
 import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class OrganizationPortraitService extends CommonUtil {
 
     @Autowired
     private OrganizationPortraitMapper organizationPortraitMapper;
-
-
-
 
     /**
      * 根据组织id获取已选画像关系
@@ -39,7 +40,23 @@ public class OrganizationPortraitService extends CommonUtil {
     	if (StringUtils.isBlank(organizationId)) {
     		 organizationId =getOrganizationId();
 		}
-        return organizationPortraitMapper.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
+    	List<MarketingOrganizationPortraitListParam> portraitList = organizationPortraitMapper.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
+    	MarketingUnitcode marketingUnitcode = organizationPortraitMapper.getMobilePortrait();
+    	if(marketingUnitcode != null && portraitList != null) {
+    		if(!portraitList.stream().anyMatch(portrait -> ObjectUtils.equals(marketingUnitcode.getCodeId(), portrait.getCodeId()))) {
+    			MarketingOrganizationPortrait organizationPortrait = new MarketingOrganizationPortrait();
+    	    	organizationPortrait.setFieldWeight(0);
+    	    	organizationPortrait.setOrganizationFullName(getOrganizationName());
+    	    	organizationPortrait.setOrganizationId(organizationId);
+    	    	organizationPortrait.setUnitCodeId((long)marketingUnitcode.getId());
+    	    	organizationPortraitMapper.addOrgPortrait(organizationPortrait);
+    	    	MarketingOrganizationPortraitListParam portraitParam = new MarketingOrganizationPortraitListParam();
+    	    	BeanUtils.copyProperties(marketingUnitcode, portraitParam);
+    	    	BeanUtils.copyProperties(organizationPortrait, portraitParam);
+    	    	portraitList.add(0, portraitParam);
+    		}
+    	}
+        return portraitList;
     }
 
 
@@ -55,10 +72,8 @@ public class OrganizationPortraitService extends CommonUtil {
     	if (StringUtils.isBlank(organizationId)) {
    		 organizationId =getOrganizationId();
 		}
-
-        List<MarketingUnitcode>unselectList=organizationPortraitMapper.getUnselectedPortrait(organizationId,PortraitTypeEnum.PORTRAIT.getTypeId());
-
-     return unselectList;
+        List<MarketingUnitcode> unselectList = organizationPortraitMapper.getUnselectedPortrait(organizationId,PortraitTypeEnum.PORTRAIT.getTypeId());
+        return unselectList.stream().filter(predicate -> !"Mobile".equals(predicate.getCodeId())).collect(Collectors.toList());
     }
 
 

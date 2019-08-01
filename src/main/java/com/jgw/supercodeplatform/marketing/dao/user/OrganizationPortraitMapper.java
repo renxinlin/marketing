@@ -32,6 +32,7 @@ public interface OrganizationPortraitMapper extends CommonSql{
             + " UnitCodeId,FieldWeight) "
             + " VALUES(#{organizationId},#{organizationFullName},#{unitCodeId},#{fieldWeight} "
             + ")")
+    @Options(useGeneratedKeys=true, keyProperty="id", keyColumn="Id")
     int addOrgPortrait(MarketingOrganizationPortrait organizationPortrait);
 
 
