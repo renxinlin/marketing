@@ -37,8 +37,10 @@ public class OrganizationPortraitService extends CommonUtil {
      * @throws SuperCodeException 
      */
     public List<MarketingOrganizationPortraitListParam> getSelectedPortrait(String organizationId) throws SuperCodeException{
+    	String organizationName = null;
     	if (StringUtils.isBlank(organizationId)) {
-    		 organizationId =getOrganizationId();
+    		 organizationId = getOrganizationId();
+    		 organizationName = getOrganizationName();
 		}
     	List<MarketingOrganizationPortraitListParam> portraitList = organizationPortraitMapper.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
     	MarketingUnitcode marketingUnitcode = organizationPortraitMapper.getMobilePortrait();
@@ -46,7 +48,7 @@ public class OrganizationPortraitService extends CommonUtil {
     		if(!portraitList.stream().anyMatch(portrait -> ObjectUtils.equals(marketingUnitcode.getCodeId(), portrait.getCodeId()))) {
     			MarketingOrganizationPortrait organizationPortrait = new MarketingOrganizationPortrait();
     	    	organizationPortrait.setFieldWeight(0);
-    	    	organizationPortrait.setOrganizationFullName(getOrganizationName());
+    	    	organizationPortrait.setOrganizationFullName(organizationName);
     	    	organizationPortrait.setOrganizationId(organizationId);
     	    	organizationPortrait.setUnitCodeId((long)marketingUnitcode.getId());
     	    	organizationPortraitMapper.addOrgPortrait(organizationPortrait);
