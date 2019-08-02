@@ -1,6 +1,5 @@
 package com.jgw.supercodeplatform;
 
-import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -9,12 +8,14 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableEurekaClient
 @EnableAsync//允许异步
 @EnableScheduling
 @EnableTransactionManagement
-//@EnableHystrix  //断路器，对服务的延迟和容错进行兜底处理|超时机制/信号灯，线程
+@EnableApolloConfig
 public class SuperCodeMarketingApplication {
 
 
