@@ -6,7 +6,7 @@ apollo:
     enabled: true
     eagerLoad: 
       enabled: true
-    namespaces: application,public.conf
+    namespaces: application,dev.public.conf
 logging: 
   level: 
     com:

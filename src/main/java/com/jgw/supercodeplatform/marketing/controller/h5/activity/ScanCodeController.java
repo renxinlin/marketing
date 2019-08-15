@@ -111,8 +111,11 @@ public class ScanCodeController {
         requestHeaders.add("Accept", MediaType.APPLICATION_JSON.toString());
         //body
         HttpEntity<String> requestEntity = new HttpEntity<>(JSON.toJSONString(uriVariables), requestHeaders);
-    	asyncRestTemplate.postForEntity(antismashinggoodsUrl+CommonConstants.JUDGE_FLEE_GOOD, requestEntity, JSONObject.class);
-    	
+    	try {
+    		asyncRestTemplate.postForEntity(antismashinggoodsUrl+CommonConstants.JUDGE_FLEE_GOOD, requestEntity, JSONObject.class);
+    	} catch (Exception e) {
+			logger.error("窜货接口错误", e);
+		}
     	String wxstate=commonUtil.getUUID();
         logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+",sBatchId="+sBatchId);
     	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0, sBatchId);
