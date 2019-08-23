@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.service.weixin;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
@@ -24,6 +25,9 @@ public class MarketingWxMerchantsService {
 	
 	@Autowired
 	private MarketingWxMerchantsMapper dao;
+
+	@Autowired
+	private GlobalRamCache globalRamCache;
 	
     @Value("${weixin.certificate.path}")
     private String certificateUrl;
@@ -51,6 +55,7 @@ public class MarketingWxMerchantsService {
 	}
 
 	public int updateWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam){
+		globalRamCache.delWXMerchants(marketingWxMerchantsParam.getOrganizationId());
 		int er = dao.updateWxMerchants(marketingWxMerchantsParam);
 		return er;
 	}
