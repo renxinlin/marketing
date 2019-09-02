@@ -151,6 +151,36 @@ public class Swagger2Config {
 
 
 
+    @Bean("销售员积分模块")
+    public Docket salerIntegralApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("销售员积分模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketingsaler.integral"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+
+
+
+    @Bean("订货模块")
+    public Docket orderApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("订货模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketingsaler.order"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+
+
+
+
+
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("新超级码系统平台营销系统接口文档")
