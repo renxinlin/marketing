@@ -1,13 +1,20 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.pojo;
+package com.jgw.supercodeplatform.marketingsaler.integral.dto;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jgw.supercodeplatform.marketingsaler.integral.constants.ExchangeUpDownStatus;
+import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.beans.BeanUtils;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -22,120 +29,95 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_saler_rule_exchange")
-public class SalerRuleExchange implements Serializable {
+public class SalerRuleExchangeDto implements Serializable {
 
 
-    @TableId(value = "Id", type = IdType.AUTO)
     private Long id;
 
     /**
      * 兑换积分
      */
-    @TableField("ExchangeIntegral")
+    @NotNull
+    @Min(value = 0,message = "兑换积分大于0")
     private Integer exchangeIntegral;
 
     /**
      * 兑换库存[活动总共参与数量]
      */
-    @TableField("ExchangeStock")
     private Integer exchangeStock;
 
-    /**
-     * 预剩余库存
-     */
-    @TableField("PreHaveStock")
-    private Integer preHaveStock;
 
     /**
      * 剩余库存
      */
-    @TableField("HaveStock")
     private Integer haveStock;
 
     /**
      * 每人限兑
      */
-    @TableField("CustomerLimitNum")
     private Integer customerLimitNum;
 
     /**
      * 兑换活动状态0上架1手动下架2自动下架
      */
-    @TableField("Status")
     private Byte status;
 
-    /**
-     * 支付手段：0积分
-     */
-    @TableField("PayWay")
-    private Boolean payWay;
 
     /**
      * 自动下架设置0库存为0，1时间范围
      */
-    @TableField("UndercarriageSetWay")
     private Boolean undercarriageSetWay;
 
     /**
      * 自动下架时间
      */
-    @TableField("UnderCarriage")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date underCarriage;
 
-    /**
-     * 库存预警0不发出警告1发出警告
-     */
-    @TableField("StockWarning")
-    private Boolean stockWarning;
 
-    /**
-     * 库存预警数量
-     */
-    @TableField("StockWarningNum")
-    private Integer stockWarningNum;
 
-    @TableField("OrganizationId")
     private String organizationId;
 
-    @TableField("OrganizationName")
     private String organizationName;
 
     /**
      * 中奖金额
      */
-    @TableField("PrizeAmount")
     private Float prizeAmount;
 
     /**
      * 中奖概率
      */
-    @TableField("PrizeProbability")
+    @NotNull
+    @Min(value = 0,message = "中奖概率大于0")
     private Integer prizeProbability;
 
     /**
      * 是否随机金额，1是 0不是
      */
-    @TableField("IsRrandomMoney")
+    @NotNull
+    @Min(value = 0,message = "是否随机金额，1是 0不是")
+    @Max(value = 1,message = "是否随机金额，1是 0不是")
     private Integer isRrandomMoney;
 
     /**
      * 中奖金额随机下限
      */
-    @TableField("LowRand")
     private Float lowRand;
 
     /**
      * 中奖金额随机上限
      */
-    @TableField("HighRand")
     private Float highRand;
 
-
-    public static SalerRuleExchange toUpdateStatus(Long id,Byte status){
-        ;SalerRuleExchange salerRuleExchange = new SalerRuleExchange();
-        salerRuleExchange.id = id;
-        salerRuleExchange.status = status;
+    public SalerRuleExchange toPojo(String organizationId,String organizationName){
+        SalerRuleExchange salerRuleExchange = new SalerRuleExchange();
+        BeanUtils.copyProperties(this,salerRuleExchange);
+        salerRuleExchange.setOrganizationId(organizationId);
+        salerRuleExchange.setOrganizationName(organizationName);
+        salerRuleExchange.setPreHaveStock(this.exchangeStock);
+        salerRuleExchange.setHaveStock(this.exchangeStock);
+        salerRuleExchange.setStatus(ExchangeUpDownStatus.up);
         return salerRuleExchange;
     }
 

@@ -2,7 +2,9 @@ package com.jgw.supercodeplatform.marketingsaler.base.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketingsaler.base.mapper.CommonMapper;
 import com.jgw.supercodeplatform.user.UserInfoUtil;
 import com.jgw.supercodeplatform.utils.SpringContextUtil;
@@ -29,10 +31,14 @@ public class SalerCommonService<M extends CommonMapper<T>, T>   extends ServiceI
 
     @Autowired
     protected UserInfoUtil userInfoUtil;
-
+    @Autowired
+    protected CommonService commonService;
 
     @Autowired
     protected CommonUtil commonUtil;
+
+    @Autowired
+    protected RestTemplateUtil restTemplateUtil;
 
 
 

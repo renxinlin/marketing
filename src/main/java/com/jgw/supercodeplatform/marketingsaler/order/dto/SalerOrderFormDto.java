@@ -1,13 +1,16 @@
-package com.jgw.supercodeplatform.marketingsaler.order.pojo;
+package com.jgw.supercodeplatform.marketingsaler.order.dto;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -23,58 +26,51 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_saler_order_form")
-public class SalerOrderForm implements Serializable {
+public class SalerOrderFormDto implements Serializable {
 
 
     /**
      * 主键
      */
-    @TableId(value = "Id", type = IdType.AUTO)
     private Long id;
 
     /**
      * 表单名称
      */
     @NotEmpty(message = "表单名称不可为空")
-    @TableField("FormName")
     private String formName;
 
     /**
      * 表单类型1文本2下拉框
      */
-    @TableField("FormType")
+    @ApiModelProperty("1文本2下拉框")
     @NotNull(message = "表单类型不可为空")
+    @Min(value = 1,message = "表单类型不合法")
+    @Max(value = 1,message = "表单类型不合法")
     private Byte formType;
 
     /**
      * 表单值
      */
-    @TableField("Value")
     private String value;
 
     /**
      * 动态表表名[组织名+id]
      */
-    @TableField("TableName")
     private String tableName;
 
     /**
      * 数据库类型
      */
-    @TableField("ColumnType")
     private String columnType;
 
-    @TableField("OrganizationId")
     private String organizationId;
 
-    @TableField("OrganizationName")
     private String organizationName;
 
     /**
      * 数据库类型varchar bigint
      */
-    @TableField("ColumnName")
     private String columnName;
 
 

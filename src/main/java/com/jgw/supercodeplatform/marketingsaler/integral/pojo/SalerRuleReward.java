@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.jgw.supercodeplatform.marketing.dto.integral.Product;
+import com.jgw.supercodeplatform.marketingsaler.integral.dto.BatchSalerRuleRewardDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.http.util.Asserts;
+import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.*;
 
 /**
  * <p>
@@ -35,6 +40,7 @@ public class SalerRuleReward implements Serializable {
     /**
      * 产品id
      */
+    @NotNull
     @TableField("ProductId")
     private String productId;
 
@@ -54,13 +60,13 @@ public class SalerRuleReward implements Serializable {
      * 奖励对象0会员
      */
     @TableField("MemberType")
-    private Boolean memberType;
+    private Byte memberType;
 
     /**
      * 0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分）
      */
     @TableField("RewardRule")
-    private Boolean rewardRule;
+    private Byte rewardRule;
 
     /**
      * 每消费多少元
@@ -87,4 +93,28 @@ public class SalerRuleReward implements Serializable {
     private Date createDate;
 
 
+    public static List<SalerRuleReward> toSaveBatch(BatchSalerRuleRewardDto bProductRuleParam,String organizationId) {
+        Asserts.check(bProductRuleParam!=null,"toSaveBatch(BatchSalerRuleRewardDto bProductRuleParam) 批量设置导购积分数据不存在");
+        List<SalerRuleReward> batchRule = new ArrayList<>();
+        List<Product> products = bProductRuleParam.getProducts();
+        Asserts.check(!CollectionUtils.isEmpty(products),"批量设置导购积分错误：产品不存在");
+        Float perConsume=bProductRuleParam.getPerConsume();
+        Float productPrice=bProductRuleParam.getProductPrice();
+        Integer rewardIntegral=bProductRuleParam.getRewardIntegral();
+        Byte rewardRule=bProductRuleParam.getRewardRule();
+        for (Product product : products) {
+            String productId=product.getProductId();
+            SalerRuleReward ruleProduct=new SalerRuleReward();
+            ruleProduct.setOrganizationId(organizationId);
+            ruleProduct.setPerConsume(perConsume);
+            ruleProduct.setProductPrice(productPrice);
+            ruleProduct.setRewardIntegral(rewardIntegral);
+            ruleProduct.setRewardRule(rewardRule);
+            ruleProduct.setProductId(productId);
+            ruleProduct.setProductName(product.getProductName());
+            batchRule.add(ruleProduct);
+
+        }
+        return batchRule;
+    }
 }
