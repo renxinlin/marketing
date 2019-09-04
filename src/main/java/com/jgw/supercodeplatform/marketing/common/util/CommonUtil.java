@@ -164,14 +164,17 @@ public class CommonUtil extends UserInfoUtil {
     }
     
 	@Override
-	public String getOrganizationId() throws SuperCodeException {
-		try {
-			return super.getOrganizationId();
-		} catch (Exception e) {
-			throw new SuperCodeException("无组织信息，请确认当前用户为普通角色用户", 500);
-		}
+    public String getOrganizationId()  {
+        return super.getOrganizationId();
 	}
 
+    public String getOrganizationIdNew() throws SuperCodeException {
+        try {
+            return super.getOrganizationId();
+        } catch (Exception e) {
+            throw new SuperCodeException("无组织信息，请确认当前用户为普通角色用户", 500);
+        }
+    }
     /**
      * @return
      * @Author corbett
