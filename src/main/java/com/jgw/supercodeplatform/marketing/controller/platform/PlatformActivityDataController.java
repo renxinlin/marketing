@@ -2,7 +2,8 @@ package com.jgw.supercodeplatform.marketing.controller.platform;
 
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.pojo.platform.*;
+import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
+import com.jgw.supercodeplatform.marketing.vo.platform.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;

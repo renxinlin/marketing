@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.pojo.platform;
+package com.jgw.supercodeplatform.marketing.dto.platform;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.pojo.platform;
+package com.jgw.supercodeplatform.marketing.dto.platform;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;

@@ -40,6 +40,12 @@ public class MarketingActivitySetParam {
     @ApiModelProperty("红包发放审核（0:不审核，1：需要审核）")
 	private Byte sendAudit;
 
+	@ApiModelProperty("公众号Secret")
+    private String merchantSecret;
+
+	@ApiModelProperty("公众号Appid")
+    private String mchAppid;
+
 	public Byte getParticipationCondition() {
 		return participationCondition;
 	}
@@ -132,5 +138,21 @@ public class MarketingActivitySetParam {
 
 	public Byte getSendAudit() {
 		return sendAudit;
+	}
+
+	public void setMchAppid(String mchAppid) {
+		this.mchAppid = mchAppid;
+	}
+
+	public String getMchAppid() {
+		return mchAppid;
+	}
+
+	public void setMerchantSecret(String merchantSecret) {
+		this.merchantSecret = merchantSecret;
+	}
+
+	public String getMerchantSecret() {
+		return merchantSecret;
 	}
 }

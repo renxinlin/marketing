@@ -4,14 +4,19 @@ package com.jgw.supercodeplatform.marketing.controller.platform;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
-import com.jgw.supercodeplatform.marketing.pojo.platform.*;
+import com.jgw.supercodeplatform.marketing.dto.platform.JoinResultPage;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityDisable;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
+import com.jgw.supercodeplatform.marketing.vo.platform.JoinPrizeRecordVo;
+import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
+import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
