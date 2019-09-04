@@ -61,9 +61,9 @@ public class PlatformActivityController {
         return RestResult.success();
     }
 
-    @ApiOperation("平台组织信息")
+    @ApiOperation("平台组织信息分页列表")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
-    @PostMapping("/platformOrganization")
+    @PostMapping("/platformOrganizationPage")
     public RestResult<PageResults<List<PlatformOrganizationDataVo>>> platformOrganization(@RequestBody @Valid DaoSearch daoSearch){
         return RestResult.success();
     }
