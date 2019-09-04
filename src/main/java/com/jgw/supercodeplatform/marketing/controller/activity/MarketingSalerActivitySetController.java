@@ -7,6 +7,7 @@ import java.util.concurrent.BrokenBarrierException;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateNewParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySendAuditStatusParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusBatchUpdateParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySalerSetService;
 import org.slf4j.Logger;
@@ -171,6 +172,13 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     public RestResult<MarketingSalerActivityCreateParam> activityInfo(@RequestParam Long activitySetId) throws Exception {
     	MarketingSalerActivityCreateParam marketingSalerActivityCreateParam = service.activityInfo(activitySetId);
     	return new RestResult<>(200, "查询成功", marketingSalerActivityCreateParam);
+    }
+
+    @ApiOperation("导购活动复制")
+    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
+    @PostMapping("/enableOrDisableSendAudit")
+    public RestResult<?> enableOrDisableSendAudit(@RequestBody MarketingActivitySendAuditStatusParam marketingActivitySendAuditStatusParam){
+        return RestResult.success();
     }
 
 
