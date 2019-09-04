@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.controller.activity;
+package com.jgw.supercodeplatform.marketing.controller.platform;
 
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
