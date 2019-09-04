@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketingsaler.dynamic.mapper;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -46,4 +47,15 @@ public interface DynamicMapper extends CommonSql {
 
     @Select(" select * from ${tableName} limit #{current},#{pageSize}")
     List<Map<String, Object>> selectPageData(@Param("tableName") String tableName,@Param("current") int current,@Param("pageSize")int pageSize);
+    @Insert(startScript
+            + " insert into ${tableName} "
+            + " <foreach collection='columnnameAndValues' item='item' index='index'  open=' ( ' close=' ) ' separator=',' >  "
+            + " ${item.columnName} "
+            + " </foreach> "
+            + " values "
+            + " <foreach collection='columnnameAndValues' item='item' index='index'  open=' ( ' close=' ) ' separator=',' >  "
+            + " ${item.columnValue} "
+            + " </foreach> "
+            + endScript)
+    void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, String tableName);
 }

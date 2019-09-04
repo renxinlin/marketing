@@ -1,13 +1,25 @@
 package com.jgw.supercodeplatform.marketingsaler.order.transfer;
 
+import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.order.constants.FormType;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
+import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
+import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
 import com.jgw.supercodeplatform.marketingsaler.util.HanzhiToPinyinUtil;
+import org.modelmapper.ModelMapper;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class SalerOrderTransfer {
+    private static final String TEXT_AREA_LABEL_SYMBOL = "\\n" ;
+    private static final String COLUMN_DEFAULT_VALUE = "";
     public static List<String> deafultColumnNames = Arrays.asList(new String[]{"id","shouhuodizhi", "dinghuoren", "dinghuorendianhua", "suoshumendian", "suoshumendianid","dinghuoshijian"});
     public static List<String> deafultFormNames = Arrays.asList(new String[]{"id","收货地址", "订货人", "订货人电话", "所属门店","所属门店id", "订货时间"});
     public static String deafultColumnType = "varchar";
@@ -58,5 +70,53 @@ public class SalerOrderTransfer {
     public static String initTableName(String organizationId){
         // 一个企业暂时只有一个模板
         return "templateId_" + organizationId +"_"+"0000001";
+    }
+
+    public static List<SalerOrderForm> modelMapper(ModelMapper modelMapper, List<SalerOrderFormDto> withDefaultsalerOrderFormDtos) {
+        List<SalerOrderForm> pojos = new ArrayList<>(withDefaultsalerOrderFormDtos.size());
+        if(!CollectionUtils.isEmpty(withDefaultsalerOrderFormDtos)){
+            withDefaultsalerOrderFormDtos.forEach(withDefaultsalerOrderFormDto->{
+                SalerOrderForm pojo = modelMapper.map(withDefaultsalerOrderFormDto, SalerOrderForm.class);
+                pojos.add(pojo);
+            });        }
+
+        return pojos;
+    }
+
+
+    public static List<H5SalerOrderFormVo> modelMapperVo(ModelMapper modelMapper, List<SalerOrderForm> pojos) {
+        List<H5SalerOrderFormVo> vos = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(pojos)){
+            pojos.forEach(pojo->{
+                H5SalerOrderFormVo vo = modelMapper.map(pojo, H5SalerOrderFormVo.class);
+                if(pojo.getFormType().intValue() == FormType.xiala){
+                    if(!StringUtils.isEmpty(pojo.getValue())){
+                        // 下拉框的值
+                        List<String> strings = Arrays.asList(pojo.getValue().split(TEXT_AREA_LABEL_SYMBOL));
+                        vo.setValue(strings);
+                    }
+                }
+                pojos.add(pojo);
+            });        }
+
+        return vos;
+    }
+
+    public static void initDefaultColumnValue(List<ColumnnameAndValueDto> columnnameAndValues, H5LoginVO user,String address) {
+        // 默认字段id自增，无须处理
+        ColumnnameAndValueDto columnnameAndValue1 = new ColumnnameAndValueDto("shouhuodizhi",StringUtils.isEmpty(address)? COLUMN_DEFAULT_VALUE:address);
+        ColumnnameAndValueDto columnnameAndValue2 = new ColumnnameAndValueDto("dinghuoren",StringUtils.isEmpty(user.getMemberName())? COLUMN_DEFAULT_VALUE:user.getMemberName());
+        ColumnnameAndValueDto columnnameAndValue3 = new ColumnnameAndValueDto("dinghuorendianhua",StringUtils.isEmpty(user.getMobile())? COLUMN_DEFAULT_VALUE:user.getMobile());
+        ColumnnameAndValueDto columnnameAndValue4 = new ColumnnameAndValueDto("suoshumendian",StringUtils.isEmpty(user.getCustomerName())? COLUMN_DEFAULT_VALUE:user.getCustomerName());
+        ColumnnameAndValueDto columnnameAndValue5 = new ColumnnameAndValueDto("suoshumendianid",StringUtils.isEmpty(user.getCustomerId())? COLUMN_DEFAULT_VALUE:user.getCustomerId());
+        ColumnnameAndValueDto columnnameAndValue6 = new ColumnnameAndValueDto("dinghuoshijian"
+                , DateUtil.dateFormat(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        columnnameAndValues.add(columnnameAndValue1);
+        columnnameAndValues.add(columnnameAndValue2);
+        columnnameAndValues.add(columnnameAndValue3);
+        columnnameAndValues.add(columnnameAndValue4);
+        columnnameAndValues.add(columnnameAndValue5);
+        columnnameAndValues.add(columnnameAndValue6);
+
     }
 }

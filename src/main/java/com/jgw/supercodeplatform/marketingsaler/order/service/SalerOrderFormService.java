@@ -5,20 +5,28 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.page.Page;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueListDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.mapper.SalerOrderFormMapper;
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.transfer.SalerOrderTransfer;
+import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,11 +66,13 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         // 数据库数据
         List<SalerOrderForm> createsMetadatas = baseMapper.selectList(query().eq("OrganizationId", commonUtil.getOrganizationId()));
         // 网页数据
-        List<SalerOrderForm> pojos = modelMapper.map(withDefaultsalerOrderFormDtos, List.class);
-        // TODO 检查有没有浅拷贝
+        List<SalerOrderForm> pojos = SalerOrderTransfer.modelMapper(modelMapper,withDefaultsalerOrderFormDtos);
+
+        //  检查有没有浅拷贝->结论：虽然是浅拷贝但不会影响list
         if(CollectionUtils.isEmpty(createsMetadatas)){
             // 第一次新建表单
             List<String> newColumns = withDefaultsalerOrderFormDtos.stream().map(dto -> dto.getColumnName()).collect(Collectors.toList());
+            // 主键特殊处理
             newColumns.removeIf(column-> column.equalsIgnoreCase(SalerOrderTransfer.PrimaryKey));
             dynamicMapper.createTable(withDefaultsalerOrderFormDtos.get(0).getTableName(),newColumns);
         }else{
@@ -107,5 +117,23 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         AbstractPageService.PageResults<List<Map<String,Object>>> pageResult =
                 new AbstractPageService.PageResults<List<Map<String,Object>>>(pageData,pageInfo);
         return pageResult;
+    }
+
+    public  List<H5SalerOrderFormVo> showOrder(H5LoginVO user) {
+        Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()),"未获取对应组织");
+        // 待优化:剔除 notin
+        List<SalerOrderForm> salerOrderForms = baseMapper.selectList(query().eq("OrganizationId", user.getOrganizationId())
+                .notIn("ColumnName", SalerOrderTransfer.deafultColumnNames));
+        List<H5SalerOrderFormVo> vos = SalerOrderTransfer.modelMapperVo(modelMapper,salerOrderForms);
+        return vos;
+    }
+
+
+    public void saveOrder(ColumnnameAndValueListDto columnnameAndValueListDto, H5LoginVO user) {
+        List<ColumnnameAndValueDto> columnnameAndValues = columnnameAndValueListDto.getDatas();
+        Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()),"未获取对应组织");
+        String address = null; // todo 获取基础信息门店地址;
+        SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues,user,address);
+        dynamicMapper.saveOrder(columnnameAndValues,SalerOrderTransfer.initTableName(user.getOrganizationId()));
     }
 }

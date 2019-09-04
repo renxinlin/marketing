@@ -69,13 +69,13 @@ public class SalerRuleExchange implements Serializable {
      * 支付手段：0积分
      */
     @TableField("PayWay")
-    private Boolean payWay;
+    private Byte payWay;
 
     /**
      * 自动下架设置0库存为0，1时间范围
      */
     @TableField("UndercarriageSetWay")
-    private Boolean undercarriageSetWay;
+    private Byte undercarriageSetWay;
 
     /**
      * 自动下架时间
@@ -87,7 +87,7 @@ public class SalerRuleExchange implements Serializable {
      * 库存预警0不发出警告1发出警告
      */
     @TableField("StockWarning")
-    private Boolean stockWarning;
+    private Byte stockWarning;
 
     /**
      * 库存预警数量
