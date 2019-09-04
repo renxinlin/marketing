@@ -18,11 +18,11 @@ public class MemberPortraitDataVo {
     @ApiModelProperty("女比率")
     private String womanRate;
     @ApiModelProperty("微信数量")
-    private Long WeChatNum;
+    private Long weChatNum;
     @ApiModelProperty("浏览器数量")
     private Long browser;
     @ApiModelProperty("微信比率")
-    private String WeChatNumRate;
+    private String weChatNumRate;
     @ApiModelProperty("浏览器比率")
     private String browserRate;
     @ApiModelProperty("低年龄数量")
