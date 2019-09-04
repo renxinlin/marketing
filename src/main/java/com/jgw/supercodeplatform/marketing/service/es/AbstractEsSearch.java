@@ -187,7 +187,7 @@ public abstract class AbstractEsSearch extends CommonUtil {
      * @param esSearch
      * @return
      */
-    public Long getCount(EsSearch esSearch) {
+    public long getCount(EsSearch esSearch) {
         TransportClient eClient = SpringContextUtil.getBean("elClient");
 
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();

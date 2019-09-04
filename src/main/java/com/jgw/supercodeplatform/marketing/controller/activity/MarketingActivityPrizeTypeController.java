@@ -9,10 +9,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 中奖规则
@@ -31,8 +28,11 @@ public class MarketingActivityPrizeTypeController {
     @RequestMapping(value = "/getPrizeInfo",method = RequestMethod.GET)
     @ApiOperation(value = "编辑活动： 获取活动奖次信息", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token"),@ApiImplicitParam(paramType="query",value = "活动设置主键id",name="activitySetId")})
-    public RestResult<MarketingPrizeType> getActivityPrizeInfoByeditPage(@RequestParam(required=true) Long activitySetId){
+    public RestResult<MarketingPrizeType> getActivityPrizeInfoByeditPage(@RequestParam Long activitySetId){
         return service.getActivityPrizeInfoByeditPage(activitySetId);
 
     }
+
+
+
 }

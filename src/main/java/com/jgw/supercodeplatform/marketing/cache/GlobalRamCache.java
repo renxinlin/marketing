@@ -28,29 +28,29 @@ public class GlobalRamCache {
 
 
 
-	public  ScanCodeInfoMO getScanCodeInfoMO(String wxsate) throws SuperCodeException {
+	public  ScanCodeInfoMO getScanCodeInfoMO(String wxsate) {
 		if (StringUtils.isBlank(wxsate)) {
-			throw new SuperCodeException("获取扫码缓存信息时参数wxsate不能为空", 500);
+			throw new SuperCodeExtException("获取扫码缓存信息时参数wxsate不能为空", 500);
 		}
 		String json = redisUtil.get(MARKETING_GLOBAL_SCAN_CODE_INFO+":"+wxsate);
 		ScanCodeInfoMO scanCodeInfoMO = JSONObject.parseObject(json, ScanCodeInfoMO.class);
 		return scanCodeInfoMO;
 	}
 
-	public void putScanCodeInfoMO(String wxsate, ScanCodeInfoMO scanCodeInfoMO) throws SuperCodeException {
+	public void putScanCodeInfoMO(String wxsate, ScanCodeInfoMO scanCodeInfoMO) {
 		if (StringUtils.isBlank(wxsate)) {
-			throw new SuperCodeException("wxstae为空", 500);
+			throw new SuperCodeExtException("wxstae为空", 500);
 		}
 		if(scanCodeInfoMO == null){
-			throw new SuperCodeException("扫码信息为空", 500);
+			throw new SuperCodeExtException("扫码信息为空", 500);
 		}
 		redisUtil.set(MARKETING_GLOBAL_SCAN_CODE_INFO + ":" + wxsate, JSON.toJSONString(scanCodeInfoMO), expireMills);
 	}
 
 
-	public void deleteScanCodeInfoMO(String wxsate) throws SuperCodeException {
+	public void deleteScanCodeInfoMO(String wxsate) {
 		if (StringUtils.isBlank(wxsate)) {
-			throw new SuperCodeException("wxstae为空", 500);
+			throw new SuperCodeExtException("wxstae为空", 500);
 		}
 		redisUtil.remove(MARKETING_GLOBAL_SCAN_CODE_INFO + ":" + wxsate);
 
@@ -58,9 +58,9 @@ public class GlobalRamCache {
 
 
 
-	public MarketingWxMerchants getWXMerchants(String organizationId) throws SuperCodeException {
+	public MarketingWxMerchants getWXMerchants(String organizationId) {
 		if (StringUtils.isBlank(organizationId)) {
-			throw new SuperCodeException("GlobalRamCache获取MarketingWxMerchants缓存时参数组织id不能为空", 500);
+			throw new SuperCodeExtException("GlobalRamCache获取MarketingWxMerchants缓存时参数组织id不能为空", 500);
 		}
 		MarketingWxMerchants mWxMerchants=null;
 		String json = (String) redisUtil.hmGet(MARKETING_GLOBAL_CACHE, organizationId);
@@ -77,7 +77,7 @@ public class GlobalRamCache {
 			mWxMerchants=JSONObject.parseObject(json, MarketingWxMerchants.class);
 		}
 		if (null==mWxMerchants) {
-			throw new SuperCodeException("无法根据组织id="+organizationId+"获取组织商户公众号信息", 500);
+			throw new SuperCodeExtException("无法根据组织id="+organizationId+"获取组织商户公众号信息", 500);
 		}
 		return mWxMerchants;
 	}

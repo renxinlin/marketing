@@ -4,6 +4,9 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +53,9 @@ public class LotteryController extends CommonUtil {
     @Autowired
     private IntegralOrderExcelService integralOrderExcelService;
 
+    @Autowired
+    private GlobalRamCache globalRamCache;
+
     @Value("${cookie.domain}")
 	private String cookieDomain;
 	/**
@@ -61,13 +67,23 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/lottery")
     @ApiOperation(value = "用户点击领奖方法", notes = "")
     public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
-    	RestResult<LotteryResultMO> restResult = null;
-    	try {
-    		restResult = service.lottery(wxstate, request.getRemoteAddr());
-    	} catch (Exception e) {
-			logger.error("中奖方法出错", e);
-			throw new LotteryException(e.getMessage(), 200);
-		}
+        ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
+        LotteryOprationDto lotteryOprationDto = new LotteryOprationDto();
+        //检查抽奖的初始条件是否符合
+        service.checkLotteryCondition(lotteryOprationDto, scanCodeInfoMO);
+        RestResult<LotteryResultMO> restResult = lotteryOprationDto.getRestResult();
+        if(restResult != null){
+            return restResult;
+        }
+        //营销码判断
+        service.holdLockJudgeES(lotteryOprationDto);
+        if(lotteryOprationDto.getSuccessLottory() == 0) {
+            return lotteryOprationDto.getRestResult();
+        }
+        //抽奖
+        service.drawLottery(lotteryOprationDto);
+        //保存抽奖数据
+        restResult = service.saveLottory(lotteryOprationDto, request.getRemoteAddr());
         return restResult;
     }
     

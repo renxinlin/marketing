@@ -18,7 +18,12 @@ public class WXPayTradeOrder {
 	private Byte tradeStatus;// 0未支付 1支付成功 2支付失败
 	
 	private String organizationId;//组织id
-    /**
+
+	private String RemoteAddr;
+
+	private String winningCode;
+
+	/**
      * SUCCESS/FAIL
                    此字段是通信标识，非交易标识，交易是否成功需要查看result_code来判断
      */
@@ -44,7 +49,10 @@ public class WXPayTradeOrder {
 	 * 结果信息描述
 	 */
 	private String errCodeDes;
-	
+
+	public WXPayTradeOrder() {
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -141,4 +149,19 @@ public class WXPayTradeOrder {
 		this.errCodeDes = errCodeDes;
 	}
 
+	public void setRemoteAddr(String remoteAddr) {
+		RemoteAddr = remoteAddr;
+	}
+
+	public String getRemoteAddr() {
+		return RemoteAddr;
+	}
+
+	public void setWinningCode(String winningCode) {
+		this.winningCode = winningCode;
+	}
+
+	public String getWinningCode() {
+		return winningCode;
+	}
 }
