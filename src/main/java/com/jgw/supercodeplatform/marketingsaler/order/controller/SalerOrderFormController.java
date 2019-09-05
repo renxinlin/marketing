@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.service.SalerOrderFormService;
 import io.swagger.annotations.Api;
@@ -43,7 +44,7 @@ public class SalerOrderFormController extends SalerCommonController {
     @PostMapping("/save")
     @ApiOperation(value = "设置表单", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@Valid @RequestBody List<SalerOrderFormDto> salerOrderFormDtos) throws CommonException {
+    public RestResult save(@Valid @RequestBody List<SalerOrderFormSettingDto> salerOrderFormDtos) throws CommonException {
 
         service.alterOrCreateTableAndUpdateMetadata(salerOrderFormDtos);
         return success();
@@ -89,7 +90,7 @@ public class SalerOrderFormController extends SalerCommonController {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> openIntegralStatus(String status) throws Exception {
-        Asserts.check(StringUtils.isEmpty(status)
+        Asserts.check(!StringUtils.isEmpty(status)
                 && (OpenIntegralStatus.close.equals(status)  || OpenIntegralStatus.open.equals(status))  ,"状态不合法");
         redisUtil.set(UserConstants.MARKETING_ORDER_BUTTON+commonUtil.getOrganizationId(),status);
         return success();

@@ -12,6 +12,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueListDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
 import com.jgw.supercodeplatform.marketingsaler.order.mapper.SalerOrderFormMapper;
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.transfer.SalerOrderTransfer;
@@ -58,7 +59,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
      * @param salerOrderForms
      */
     // TODO 需要分布式事务
-    public void alterOrCreateTableAndUpdateMetadata(List<SalerOrderFormDto> salerOrderForms) {
+    public void alterOrCreateTableAndUpdateMetadata(List<SalerOrderFormSettingDto> salerOrderForms) {
         Asserts.check(!CollectionUtils.isEmpty(salerOrderForms),"表单设置失败");
         List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setDefaultForms(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
         Set<@NotEmpty(message = "表单名称不可为空") String> formNames = salerOrderForms.stream().map(salerOrderForm -> salerOrderForm.getFormName()).collect(Collectors.toSet());
@@ -86,7 +87,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             List<String> deleteColumns = modelMapper.map(createsMetadatasColumnName,List.class);
             deleteColumns.removeIf(deleteColumn->withDefaultsalerOrderFormColumnNames.contains(deleteColumn));
             // 删除字段和新增字段
-            dynamicMapper.alterTableAndDropOrAddColumns(salerOrderForms.get(0).getTableName(),deleteColumns,addColumns);
+            dynamicMapper.alterTableAndDropOrAddColumns(withDefaultsalerOrderFormDtos.get(0).getTableName(),deleteColumns,addColumns);
 
         }
         baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).getWrapper());
@@ -94,7 +95,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     }
 
     public List<SalerOrderForm> detail() {
-        List<SalerOrderForm> salerOrderForms = baseMapper.selectList(query().eq("OrganizationId", commonUtil.getOrganizationId()));
+        List<SalerOrderForm> salerOrderForms = baseMapper.selectList(query().eq("OrganizationId", commonUtil.getOrganizationId()).getWrapper());
         if(CollectionUtils.isEmpty(salerOrderForms)){
             return new ArrayList<SalerOrderForm>();
         }else{

@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.order.constants.FormType;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
 import com.jgw.supercodeplatform.marketingsaler.util.HanzhiToPinyinUtil;
@@ -30,7 +31,7 @@ public class SalerOrderTransfer {
     public static String deafultColumnType = "varchar";
     public static String PrimaryKey = "id";
 
-    public static List<SalerOrderFormDto> setDefaultForms(List<SalerOrderFormDto> salerOrderForms,String organizationId,String organizationName) {
+    public static List<SalerOrderFormDto> setDefaultForms(List<SalerOrderFormSettingDto> salerOrderForms, String organizationId, String organizationName) {
         // 赋值网页字段
         salerOrderForms.forEach(salerOrderFormDto -> {
             salerOrderFormDto.setTableName(initTableName(organizationId));
