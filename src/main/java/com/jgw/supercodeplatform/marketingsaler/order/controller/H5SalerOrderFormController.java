@@ -29,7 +29,7 @@ import javax.validation.Valid;
  */
 @RestController
 @RequestMapping("h5/salerOrderForm")
-@Api(value = "", tags = "订货管理")
+@Api(value = "", tags = "H5订货管理")
 public class H5SalerOrderFormController extends SalerCommonController {
 
     private static final String MARKETING_ORDER_BUTTON ="marketing:order:button:" ;
