@@ -43,8 +43,7 @@ public class SalerRecordTransfer extends CommonTransfer{
         QueryWrapper<SalerRecord> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("OrganizationId",organizationId);
         if(daoSearch != null && !StringUtils.isEmpty(daoSearch.getSearch())){
-            queryWrapper.and(query ->query.like("",daoSearch.getSearch())
-                    .or().like("SalerName",daoSearch.getSearch())
+            queryWrapper.and(query ->query.like("SalerName",daoSearch.getSearch())
                     .or().like("SalerMobile",daoSearch.getSearch())
                     .or().like("CustomerName",daoSearch.getSearch())
                     .or().like("IntegralReason",daoSearch.getSearch())
