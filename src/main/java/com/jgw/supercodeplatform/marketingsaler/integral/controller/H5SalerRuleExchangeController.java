@@ -33,7 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/h5salerRuleExchange")
-@Api(value = "", tags = "销售员积分兑换")
+@Api(value = "", tags = "h5销售员积分兑换")
 public class H5SalerRuleExchangeController extends SalerCommonController {
 
     @Autowired
@@ -41,11 +41,44 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
     @CheckRole(role = Role.salerRole)
     @PostMapping("/save")
     @ApiOperation(value = "兑换", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult exchange(@Valid @RequestBody H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) throws CommonException {
         service.exchange(salerRuleExchangeDto,user);
         return success();
     }
+
+
+
+    @PostMapping("/list")
+    @ApiOperation(value = "兑换列表", notes = "")
+    public RestResult list(@Valid @RequestBody H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) throws CommonException {
+        return success();
+    }
+
+
+
+
+    @CheckRole(role = Role.salerRole)
+    @PostMapping("/reward")
+    @ApiOperation(value = "积分领取", notes = "")
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult reward(@Valid @RequestBody H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) throws CommonException {
+
+        return success();
+    }
+
+
+    @CheckRole(role = Role.salerRole)
+    @PostMapping("/record")
+    @ApiOperation(value = "积分记录", notes = "")
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult record() throws CommonException {
+
+        return success();
+    }
+
+
+
 
 
 
