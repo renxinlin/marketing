@@ -12,6 +12,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.constants.Undercarriage
 import com.jgw.supercodeplatform.marketingsaler.integral.dto.H5SalerRuleExchangeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.infrastructure.MoneyCalculator;
 import com.jgw.supercodeplatform.marketingsaler.integral.mapper.SalerRuleExchangeMapper;
+import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerExchangeNum;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.User;
 import com.jgw.supercodeplatform.marketingsaler.integral.transfer.H5SalerRuleExchangeTransfer;
@@ -65,7 +66,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         // 检测用户域数据是否可以执行
         User userPojo = marketingUserService.canExchange(user, salerRuleExchange.getExchangeIntegral());
         // 检测兑换上限
-        salerExchangeNumService.canExchange(user,salerRuleExchange);
+        salerExchangeNumService.canExchange(userPojo,salerRuleExchange);
         // 根据抽奖概率计算金额
         double money = calculatorSalerExcgange(salerRuleExchange);
 
@@ -73,9 +74,12 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         // 预减库存
         SalerRuleExchange updateDo = new SalerRuleExchange();
         baseMapper.update(updateDo,H5SalerRuleExchangeTransfer.reducePreStock(updateDo,salerRuleExchange));
+
         // 减导购用户积分
         marketingUserService.reduceIntegral(salerRuleExchange.getExchangeIntegral(),userPojo);
 
+        // 兑换次数
+        salerExchangeNumService.save(new SalerExchangeNum(null,userPojo.getId(),userPojo.getOrganizationId(),salerRuleExchange.getId()));
         // 订单[虚拟订单]
         recordService.save(SalerRecordTransfer.buildRecord(salerRuleExchange,user,money));
         // 支付
