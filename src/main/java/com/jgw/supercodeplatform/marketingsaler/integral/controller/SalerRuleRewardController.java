@@ -68,13 +68,12 @@ public class SalerRuleRewardController extends SalerCommonController {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> batchSetRule(@Valid @RequestBody BatchSalerRuleRewardDto bProductRuleParam) throws Exception {
-        RestResult<String>  restResult=new RestResult<String>();
         service.batchSetSalerRule(bProductRuleParam);
         return success();
     }
 
     @RequestMapping(value = "/singleSetRule",method = RequestMethod.POST)
-    @ApiOperation(value = "单个设置已设置过产品规则的产品", notes = "")
+    @ApiOperation(value = "单个设置已设置过产品规则的产品:已经设置的重新设置需要携带id", notes = "")
     @ApiImplicitParams(value= {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })

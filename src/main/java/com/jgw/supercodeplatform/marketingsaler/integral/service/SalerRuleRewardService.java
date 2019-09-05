@@ -121,7 +121,7 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
 
     public void deleteByProductIds(List<String> productIds)  {
         Asserts.check(!CollectionUtils.isEmpty(productIds),"产品id不能为空");
-        baseMapper.delete(query().in("ProductId",productIds));
+        baseMapper.delete(query().in("ProductId",productIds).eq("OrganizationId",commonUtil.getOrganizationId()).getWrapper());
     }
 
     /**
@@ -141,21 +141,21 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
                         .in("ProductId", products.stream().map(product -> product.getProductId()).collect(Collectors.toList()))
                 .getWrapper());
         Asserts.check(settedCount == null || settedCount <= 0,"已设置过无法继续设置");
-
-
-        //根据产品id集合去基础平台请求对应的产品批次 TODO 检查是否需要修改 如url,导购角色等
-        JSONArray jsonArray= commonService.requestPriductBatchIds(products.stream().map(product -> product.getProductId()).collect(Collectors.toList()), commonUtil.getSuperToken());
-        //构建请求生码批次参数
-        List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = SalerRuleRewardParamTransfer.constructProductAndBatchMOByPPArr(jsonArray);
-        //请求生码批次及积分url绑定批次 TODO 检查是否需要修改 如跳转url,导购角色等
-        salerRuleRewardRestInterface.integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
-
-        // 保存积分设置数据
         List<SalerRuleReward> batchRule = SalerRuleReward.toSaveBatch(bProductRuleParam,commonUtil.getOrganizationId());
         this.saveBatch(batchRule);
 
+        //根据产品id集合去基础平台请求对应的产品批次 TODO 检查是否需要修改 如url,导购角色等
+//        JSONArray jsonArray= commonService.requestPriductBatchIds(products.stream().map(product -> product.getProductId()).collect(Collectors.toList()), commonUtil.getSuperToken());
+        //构建请求生码批次参数
+//        List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = SalerRuleRewardParamTransfer.constructProductAndBatchMOByPPArr(jsonArray);
+        //请求生码批次及积分url绑定批次 TODO 检查是否需要修改 如跳转url,导购角色等
+//        salerRuleRewardRestInterface.integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
+
+        // 保存积分设置数据
+
+
         //更新基础数据产品营销信息
-        salerRuleRewardRestInterface.updateBaseProductPriceBatch(products,bProductRuleParam,superToken);
+//        salerRuleRewardRestInterface.updateBaseProductPriceBatch(products,bProductRuleParam,superToken);
     }
 
     /**
@@ -175,14 +175,15 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
 
             // 数据保存
             baseMapper.insert(inRuleProduct);
+
             //根据产品id集合去基础平台请求对应的产品批次
-            JSONArray jsonArray= commonService.requestPriductBatchIds(Arrays.asList(inRuleProduct.getProductId()), commonUtil.getSuperToken());
+//            JSONArray jsonArray= commonService.requestPriductBatchIds(Arrays.asList(inRuleProduct.getProductId()), commonUtil.getSuperToken());
             //构建请求生码批次参数
-            List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
-            salerRuleRewardRestInterface.integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
+//            List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+//            salerRuleRewardRestInterface.integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
 
             //更新产品营销信息
-            salerRuleRewardRestInterface.updateBaseProductPrice(inRuleProduct,superToken);
+//            salerRuleRewardRestInterface.updateBaseProductPrice(inRuleProduct,superToken);
 
         }else {
             // copy 会员代码
