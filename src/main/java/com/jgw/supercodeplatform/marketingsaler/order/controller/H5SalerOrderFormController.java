@@ -50,7 +50,7 @@ public class H5SalerOrderFormController extends SalerCommonController {
     @PostMapping("/saveOrder")
     @ApiOperation(value = "h5订货", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@Valid ColumnnameAndValueListDto columnnameAndValueListDto, @ApiIgnore H5LoginVO user) throws CommonException {
+    public RestResult save(@Valid @RequestBody ColumnnameAndValueListDto columnnameAndValueListDto, @ApiIgnore H5LoginVO user) throws CommonException {
         service.saveOrder(columnnameAndValueListDto,user);
         return success();
     }
