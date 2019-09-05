@@ -72,8 +72,8 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
         params.put("organizationId",organizationId );
         params.put("search", daoSearch.getSearch());
 
-        List<String> productIds = baseMapper.selectList(query().select("ProductId").eq("",commonUtil.getOrganizationId()))
-                .stream().map(element->element.getProductId()).collect(Collectors.toList());
+        List<SalerRuleReward> salerRuleRewards = baseMapper.selectList(query().select("ProductId").eq("OrganizationId", commonUtil.getOrganizationId()).getWrapper());
+        List<String> productIds =salerRuleRewards.stream().map(element->element.getProductId()).collect(Collectors.toList());
         if (null!=productIds && !productIds.isEmpty()) {
             params.put("excludeProductIds",String.join(",", productIds));
         }
