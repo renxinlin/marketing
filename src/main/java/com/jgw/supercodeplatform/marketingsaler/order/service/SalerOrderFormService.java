@@ -113,7 +113,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         int count = dynamicMapper.selectCount(tableName);
         // 表名即组织
         Integer pageSize = daoSearch.getPageSize();
-        int current = daoSearch.getCurrent() * (-1);
+        int current = (daoSearch.getCurrent() -1)*pageSize;
         List<Map<String,Object>> pageData = dynamicMapper.selectPageData(tableName,current, pageSize);
         Page pageInfo = new Page(pageSize,daoSearch.getCurrent(),count);
         AbstractPageService.PageResults<List<Map<String,Object>>> pageResult =
