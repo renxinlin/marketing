@@ -26,7 +26,7 @@ public interface DynamicMapper extends CommonSql {
 
             " PRIMARY KEY (`id`) " +
             " )")
-    int createTable(String tableName, List<String> newColumns);
+    int createTable(@Param("tableName") String tableName, @Param("newColumns") List<String> newColumns);
 
 
 
