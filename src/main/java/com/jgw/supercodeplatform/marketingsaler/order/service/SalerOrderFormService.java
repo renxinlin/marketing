@@ -46,10 +46,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     @Autowired
     private DynamicMapper dynamicMapper;
 
-    public int test(){
-       return dynamicMapper
-               .alterTableAndDropOrAddColumns("18265r", Arrays.asList(new String[]{"CreateDate"}),Arrays.asList(new String[]{"UPDAVXTE"}));
-    }
+
 
     /**
      * 相关非空校验

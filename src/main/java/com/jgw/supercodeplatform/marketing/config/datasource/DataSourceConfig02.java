@@ -31,7 +31,7 @@ public class DataSourceConfig02 {
     private PaginationInterceptor paginationInterceptor;
 
     @Bean("marketingsalerdynamicSqlSessionFactory")
-    public SqlSessionFactory getMarketingsalerSqlSessionFactory(@Qualifier("dataSource") DataSource dataSource) throws Exception {
+    public SqlSessionFactory getMarketingsalerSqlSessionFactory(@Qualifier("dynamicDataSource") DataSource dataSource) throws Exception {
         MybatisSqlSessionFactoryBean factory = new MybatisSqlSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setPlugins(new Interceptor[]{paginationInterceptor});
