@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.marketingsaler.integral.constants.ExchangeUpDownStatus;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
 import org.springframework.util.StringUtils;
 
@@ -45,6 +46,17 @@ public class SalerRuleExchangeTransfer extends CommonTransfer {
         }
         return queryWrapper;
     }
+
+
+    public static Wrapper<SalerRuleExchange> getH5PageParam(String organizationId) {
+        QueryWrapper<SalerRuleExchange> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("OrganizationId",organizationId);
+        queryWrapper.eq("Status", ExchangeUpDownStatus.up);
+
+        return queryWrapper;
+    }
+
+
 
     /**
      * 转换分页结果

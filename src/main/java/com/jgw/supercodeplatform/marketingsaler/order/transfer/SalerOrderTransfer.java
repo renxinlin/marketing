@@ -18,10 +18,15 @@ import java.util.Date;
 import java.util.List;
 
 public class SalerOrderTransfer {
+    // TODO 分隔符是否正确
     private static final String TEXT_AREA_LABEL_SYMBOL = "\\n" ;
     private static final String COLUMN_DEFAULT_VALUE = "";
-    public static List<String> deafultColumnNames = Arrays.asList(new String[]{"id","shouhuodizhi", "dinghuoren", "dinghuorendianhua", "suoshumendian", "suoshumendianid","dinghuoshijian"});
-    public static List<String> deafultFormNames = Arrays.asList(new String[]{"id","收货地址", "订货人", "订货人电话", "所属门店","所属门店id", "订货时间"});
+//    public static List<String> deafultColumnNames = Arrays.asList(new String[]{"id","shouhuodizhi", "dinghuoren", "dinghuorendianhua", "suoshumendian", "suoshumendianid","dinghuoshijian"});
+//    public static List<String> deafultFormNames = Arrays.asList(new String[]{"id","收货地址", "订货人", "订货人电话", "所属门店","所属门店id", "订货时间"});
+
+    public static List<String> deafultColumnNames = Arrays.asList(new String[]{"shouhuodizhi", "dinghuoren", "dinghuorendianhua", "suoshumendian","dinghuoshijian"});
+    public static List<String> deafultFormNames = Arrays.asList(new String[]{"收货地址", "订货人", "订货人电话", "所属门店", "订货时间"});
+
     public static String deafultColumnType = "varchar";
     public static String PrimaryKey = "id";
 

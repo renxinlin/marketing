@@ -3,7 +3,6 @@ package com.jgw.supercodeplatform.marketingsaler.integral.controller;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.config.aop.CheckRole;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
@@ -11,11 +10,11 @@ import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
 import com.jgw.supercodeplatform.marketingsaler.common.Role;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
+import com.jgw.supercodeplatform.marketingsaler.integral.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.marketingsaler.integral.dto.H5SalerRuleExchangeDto;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.SalerRuleExchangeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
 import com.jgw.supercodeplatform.marketingsaler.integral.service.H5SalerRuleExchangeService;
-import com.jgw.supercodeplatform.marketingsaler.integral.service.SalerRuleExchangeService;
+import com.jgw.supercodeplatform.marketingsaler.integral.service.SalerRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -42,6 +41,8 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
 
     @Autowired
     private H5SalerRuleExchangeService service;
+    @Autowired
+    private SalerRecordService recordService;
     @CheckRole(role = Role.salerRole)
     @PostMapping("/save")
     @ApiOperation(value = "兑换", notes = "")
@@ -54,9 +55,9 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
 
 
     @PostMapping("/list")
-    @ApiOperation(value = "兑换列表", notes = "")
-    public RestResult list(@Valid @RequestBody H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) throws CommonException {
-        return success();
+    @ApiOperation(value = "兑换分页列表", notes = "")
+    public RestResult<AbstractPageService.PageResults<List<SalerRuleExchange>>> list(DaoSearchWithOrganizationId daoSearch) throws CommonException {
+        return success(service.h5PageList(daoSearch));
     }
 
 
@@ -74,11 +75,10 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
 
     @CheckRole(role = Role.salerRole)
     @PostMapping("/record")
-    @ApiOperation(value = "积分记录", notes = "")
+    @ApiOperation(value = "积分记录 type 1 奖励 2 消耗 不传表示所有", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult record() throws CommonException {
-
-        return success();
+    public RestResult record(int type,H5LoginVO user) throws CommonException {
+        return success(recordService.seletLastThreeMonth(type,user));
     }
 
 

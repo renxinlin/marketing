@@ -2,6 +2,9 @@ package com.jgw.supercodeplatform.marketingsaler.integral.service;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
@@ -9,6 +12,7 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.ExchangeUpDownStatus;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.UndercarriageSetWayConstant;
+import com.jgw.supercodeplatform.marketingsaler.integral.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.marketingsaler.integral.dto.H5SalerRuleExchangeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.infrastructure.MoneyCalculator;
 import com.jgw.supercodeplatform.marketingsaler.integral.mapper.SalerRuleExchangeMapper;
@@ -28,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static com.jgw.supercodeplatform.marketingsaler.integral.infrastructure.MoneyCalculator.*;
@@ -73,8 +78,8 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         // 支付流程
         // 预减库存
         SalerRuleExchange updateDo = new SalerRuleExchange();
-        baseMapper.update(updateDo,H5SalerRuleExchangeTransfer.reducePreStock(updateDo,salerRuleExchange));
-
+        int update = baseMapper.update(updateDo, H5SalerRuleExchangeTransfer.reducePreStock(updateDo, salerRuleExchange));
+        Asserts.check(update == 1,"扣减库存失败");
         // 减导购用户积分
         marketingUserService.reduceIntegral(salerRuleExchange.getExchangeIntegral(),userPojo);
 
@@ -90,7 +95,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
             // TODO 补偿
             log.error("积分换红包支付失败.........................");
         }
-        // 减实际库存
+        // TODO 减实际库存
         baseMapper.update(updateDo,H5SalerRuleExchangeTransfer.reduceStock(updateDo,salerRuleExchange));
 
 
@@ -128,4 +133,12 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
             throw new RuntimeException("当前兑换正在下架中...");
         }
     }
+
+    public AbstractPageService.PageResults<List<SalerRuleExchange>>  h5PageList(DaoSearchWithOrganizationId daoSearch) {
+        IPage<SalerRuleExchange> salerRuleExchangeIPage = baseMapper.selectPage(SalerRuleExchangeTransfer.getPage(daoSearch),
+                SalerRuleExchangeTransfer.getH5PageParam(daoSearch.getOrganizationId()));
+        return SalerRuleExchangeTransfer.toPageResults(salerRuleExchangeIPage);
+    }
+
+
 }

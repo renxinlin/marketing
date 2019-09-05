@@ -97,6 +97,9 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         List<SalerOrderForm> salerOrderForms = baseMapper.selectList(query().eq("OrganizationId", commonUtil.getOrganizationId()));
         if(CollectionUtils.isEmpty(salerOrderForms)){
             return new ArrayList<SalerOrderForm>();
+        }else{
+            // 移除预定义字段
+            salerOrderForms.removeIf(salerOrderForm -> SalerOrderTransfer.deafultColumnNames.contains(salerOrderForm.getColumnName()));
         }
         return salerOrderForms;
     }
