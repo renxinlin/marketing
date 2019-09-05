@@ -108,8 +108,9 @@ public class SalerOrderTransfer {
                         vo.setValue(strings);
                     }
                 }
-                pojos.add(pojo);
-            });        }
+                vos.add(vo);
+            });
+        }
 
         return vos;
     }

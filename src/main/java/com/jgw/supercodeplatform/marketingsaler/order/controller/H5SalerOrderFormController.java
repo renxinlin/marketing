@@ -61,7 +61,7 @@ public class H5SalerOrderFormController extends SalerCommonController {
     public RestResult<String> getIntegralStatusByH5(@RequestParam String organizationId) throws Exception {
         String status = redisUtil.get(UserConstants.MARKETING_ORDER_BUTTON + organizationId);
         if( StringUtils.isEmpty(status)){
-            // 默认状态
+            // 默认状态saveOrder
             return success(OpenIntegralStatus.open);
         }else {
             return success(status);

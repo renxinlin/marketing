@@ -31,7 +31,7 @@ public class CheckUserRole  implements Ordered {
 
 
     @Around(value = "pointCut()")
-    public void beforeBiz(ProceedingJoinPoint pj) throws Throwable {
+    public Object beforeBiz(ProceedingJoinPoint pj) throws Throwable {
         Signature signature = pj.getSignature();
         MethodSignature methodSignature = (MethodSignature) signature;
         Method targetMethod = methodSignature.getMethod();
@@ -50,8 +50,8 @@ public class CheckUserRole  implements Ordered {
             if (annotationPresent) {
                 CheckRole annotation = targetMethod.getAnnotation(CheckRole.class);
                 if (!StringUtils.isEmpty(annotation.role())) {
-                    if (annotation.role().equals(user.getMemberType().toString())) {
-                        pj.proceed();
+                    if (!annotation.role().equals(user.getMemberType().toString())) {
+                        throw new SuperCodeException("角色鉴定失败");
                     }
                 }else {
                     throw new SuperCodeException("角色鉴定失败");
@@ -61,6 +61,7 @@ public class CheckUserRole  implements Ordered {
             throwable.printStackTrace();
             throw new SuperCodeException("角色鉴定失败");
         }
+        return pj.proceed();
     }
 
     @Override
