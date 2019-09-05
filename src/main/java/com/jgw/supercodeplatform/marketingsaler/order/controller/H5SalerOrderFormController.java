@@ -17,6 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 
@@ -38,9 +39,9 @@ public class H5SalerOrderFormController extends SalerCommonController {
 
     @CheckRole(role = "1")
     @PostMapping("/showOrder")
-    @ApiOperation(value = "h5订货字段展示", notes = "")
+    @ApiOperation(value = "h5订货字段展示 不需要传递数据", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult showOrder(H5LoginVO user)   {
+    public RestResult showOrder(  @ApiIgnore H5LoginVO user)   {
         return success(service.showOrder(user));
     }
 
@@ -49,13 +50,12 @@ public class H5SalerOrderFormController extends SalerCommonController {
     @PostMapping("/saveOrder")
     @ApiOperation(value = "h5订货", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@Valid ColumnnameAndValueListDto columnnameAndValueListDto, H5LoginVO user) throws CommonException {
+    public RestResult save(@Valid ColumnnameAndValueListDto columnnameAndValueListDto, @ApiIgnore H5LoginVO user) throws CommonException {
         service.saveOrder(columnnameAndValueListDto,user);
         return success();
     }
 
 
-    @CheckRole(role = "1")
     @GetMapping(value = "/getIntegralStatusByH5")
     @ApiOperation(value = "H5查看开启页面按钮", notes = "")
     public RestResult<String> getIntegralStatusByH5(@RequestParam String organizationId) throws Exception {
