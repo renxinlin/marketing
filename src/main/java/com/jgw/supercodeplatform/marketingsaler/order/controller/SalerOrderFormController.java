@@ -120,7 +120,7 @@ public class SalerOrderFormController extends SalerCommonController {
             @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> getIntegralStatusByH5(@RequestParam String organizationId) throws Exception {
-        String status = redisUtil.get(MARKETING_ORDER_BUTTON + organizationId);
+        String status = redisUtil.get(UserConstants.MARKETING_ORDER_BUTTON + organizationId);
         if( StringUtils.isEmpty(status)){
             // 默认状态
             return success(OpenIntegralStatus.open);
