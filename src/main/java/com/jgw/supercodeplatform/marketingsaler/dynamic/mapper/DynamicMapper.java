@@ -19,14 +19,14 @@ public interface DynamicMapper extends CommonSql {
     @Update("CREATE TABLE `jgw_marketing_dynamic`.`${tableName}`  ( " +
             " `Id` bigint(20) NOT NULL AUTO_INCREMENT , " +
 
-            " <foreach collection='newColumns' item='item' index='index'  open='  ' close='  ' separator=' ' > " +
-            " ${item} varchar(255) NULL, " +
+            " <foreach collection='list' item='item' index='index'  open='  ' close='  ' separator=' ' > " +
+            " `${item}` varchar(255) NULL , " +
 
             " </foreach> " +
 
             " PRIMARY KEY (`id`) " +
             " )")
-    int createTable(@Param("tableName") String tableName, @Param("newColumns") List<String> newColumns);
+    int createTable(@Param("tableName") String tableName, @Param("list") List<String> newColumns);
 
 
 
