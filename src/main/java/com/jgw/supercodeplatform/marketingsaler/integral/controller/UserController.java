@@ -25,35 +25,35 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "", tags = "")
 public class UserController extends SalerCommonController {
 
-    @Autowired
-    private UserService service;
-
-    @PostMapping("/save")
-    @ApiOperation(value = "", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@RequestBody User obj) throws CommonException {
-        return RestResult.success();
-    }
-
-    @PostMapping("/update")
-    @ApiOperation(value = "", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult update(@RequestBody User obj) throws CommonException {
-        return RestResult.success();
-    }
-
-    @GetMapping("/{id}")
-    @ApiOperation(value = "", notes = "")
-    public RestResult getById(@PathVariable("id") String id) throws CommonException {
-        return null;
-    }
-
-    @GetMapping("/list")
-    @ApiOperation(value = "", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult list(User obj) throws CommonException {
-        return null;
-    }
+//    @Autowired
+//    private UserService service;
+//
+//    @PostMapping("/save")
+//    @ApiOperation(value = "", notes = "")
+//    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+//    public RestResult save(@RequestBody User obj) throws CommonException {
+//        return RestResult.success();
+//    }
+//
+//    @PostMapping("/update")
+//    @ApiOperation(value = "", notes = "")
+//    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+//    public RestResult update(@RequestBody User obj) throws CommonException {
+//        return RestResult.success();
+//    }
+//
+//    @GetMapping("/{id}")
+//    @ApiOperation(value = "", notes = "")
+//    public RestResult getById(@PathVariable("id") String id) throws CommonException {
+//        return null;
+//    }
+//
+//    @GetMapping("/list")
+//    @ApiOperation(value = "", notes = "")
+//    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+//    public RestResult list(User obj) throws CommonException {
+//        return null;
+//    }
 
 
 }

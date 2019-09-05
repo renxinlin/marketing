@@ -34,7 +34,7 @@ public class SalerRecordController extends SalerCommonController {
 
 
     @GetMapping("/list")
-    @ApiOperation(value = "积分记录分页", notes = "")
+    @ApiOperation(value = "后台积分记录分页", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult< AbstractPageService.PageResults<List<SalerRecord>>> list(DaoSearch daoSearch) throws CommonException {
         return success(service.selectPage(daoSearch));
