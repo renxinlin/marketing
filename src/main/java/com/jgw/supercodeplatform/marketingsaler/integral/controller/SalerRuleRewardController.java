@@ -26,7 +26,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/salerRuleReward")
+@RequestMapping("marketing/salerRuleReward")
 @Api(value = "", tags = "销售员积分领取")
 public class SalerRuleRewardController extends SalerCommonController {
 

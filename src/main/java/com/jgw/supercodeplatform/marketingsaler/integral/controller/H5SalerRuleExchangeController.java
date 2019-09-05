@@ -45,7 +45,7 @@ import java.util.List;
  * @since 2019-09-02
  */
 @RestController
-@RequestMapping("/h5salerRuleExchange")
+@RequestMapping("marketing/h5/salerRuleExchange")
 @Api(value = "", tags = "h5销售员积分兑换")
 public class H5SalerRuleExchangeController extends SalerCommonController {
 

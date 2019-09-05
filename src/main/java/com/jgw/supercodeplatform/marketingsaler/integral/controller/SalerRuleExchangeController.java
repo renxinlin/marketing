@@ -28,7 +28,7 @@ import java.util.List;
  * @since 2019-09-02
  */
 @RestController
-@RequestMapping("/salerRuleExchange")
+@RequestMapping("marketing/salerRuleExchange")
 @Api(value = "", tags = "销售员积分兑换")
 public class SalerRuleExchangeController extends SalerCommonController {
 

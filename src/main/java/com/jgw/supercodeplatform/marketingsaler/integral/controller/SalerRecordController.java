@@ -25,7 +25,7 @@ import java.util.List;
  * @since 2019-09-02
  */
 @RestController
-@RequestMapping("/salerRecord")
+@RequestMapping("marketing/salerRecord")
 @Api(value = "", tags = "销售员积分记录")
 public class SalerRecordController extends SalerCommonController {
 

@@ -33,7 +33,7 @@ import java.util.List;
  * @since 2019-09-02
  */
 @RestController
-@RequestMapping("salerOrderForm")
+@RequestMapping("marketing/salerOrderForm")
 @Api(value = "", tags = "订货管理")
 public class SalerOrderFormController extends SalerCommonController {
 

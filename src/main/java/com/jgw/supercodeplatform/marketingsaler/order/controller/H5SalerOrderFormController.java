@@ -29,7 +29,7 @@ import javax.validation.Valid;
  * @since 2019-09-02
  */
 @RestController
-@RequestMapping("h5/salerOrderForm")
+@RequestMapping("marketing/h5/salerOrderForm")
 @Api(value = "", tags = "H5订货管理")
 public class H5SalerOrderFormController extends SalerCommonController {
 
