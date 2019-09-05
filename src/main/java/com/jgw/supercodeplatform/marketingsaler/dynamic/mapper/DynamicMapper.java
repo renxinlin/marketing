@@ -58,7 +58,7 @@ public interface DynamicMapper extends CommonSql {
             + " </foreach> "
             + " values "
             + " <foreach collection='columnnameAndValues' item='item' index='index'  open=' ( ' close=' ) ' separator=',' >  "
-            + " ${item.columnValue} "
+            + " #{item.columnValue} "
             + " </foreach> "
             + endScript)
     void saveOrder(@Param("columnnameAndValues") List<ColumnnameAndValueDto> columnnameAndValues,@Param("tableName") String tableName);
