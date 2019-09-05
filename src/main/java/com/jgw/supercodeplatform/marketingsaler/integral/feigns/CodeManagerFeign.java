@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Map;
 
-@FeignClient(name = "${platform.user.mircosoft.name:platform-user-supercode-test}",fallback = CodeManagerFallbackFeign.class )
+@FeignClient(name = "${platform.codemanager.mircosoft.name:platform-user-supercode-dev}",fallback = CodeManagerFallbackFeign.class )
 public interface CodeManagerFeign {
     @RequestMapping(value = "/code/query/product",method = RequestMethod.GET)
     RestResult<ProductInfoByCodeDto> getProductByCode(OutCodeInfoDto outCodeInfoDto);
