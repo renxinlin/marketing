@@ -90,7 +90,7 @@ public class SalerRuleRewardController extends SalerCommonController {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> openIntegralStatus(String status) throws Exception {
-        Asserts.check(StringUtils.isEmpty(status)
+        Asserts.check(!StringUtils.isEmpty(status)
                 && (OpenIntegralStatus.close.equals(status)  || OpenIntegralStatus.open.equals(status))  ,"状态不合法");
         redisUtil.set(UserConstants.MARKETING_SALER_INTEGRAL_BUTTON+commonUtil.getOrganizationId(),status);
         return success();
