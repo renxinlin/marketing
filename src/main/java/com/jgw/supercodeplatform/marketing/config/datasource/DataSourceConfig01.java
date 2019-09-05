@@ -26,7 +26,9 @@ import javax.sql.DataSource;
  * @date 2017年12月13日
  */
 @Configuration
-@MapperScan(basePackages ={ "com.jgw.supercodeplatform.marketingsaler.integral","com.jgw.supercodeplatform.marketingsaler.order"},sqlSessionFactoryRef="marketingsalerSqlSessionFactory")
+@MapperScan(basePackages ={ "com.jgw.supercodeplatform.marketingsaler.integral",
+        "com.jgw.supercodeplatform.marketingsaler.base",
+        "com.jgw.supercodeplatform.marketingsaler.order"},sqlSessionFactoryRef="marketingsalerSqlSessionFactory")
 public class DataSourceConfig01 {
 
     @Autowired
