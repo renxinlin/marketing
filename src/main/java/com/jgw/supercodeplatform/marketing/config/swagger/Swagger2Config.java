@@ -163,8 +163,6 @@ public class Swagger2Config {
                 .enable(enable);
     }
 
-
-
     @Bean("订货模块")
     public Docket orderApis() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -177,10 +175,6 @@ public class Swagger2Config {
                 .enable(enable);
     }
 
-
-
-
-
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("新超级码系统平台营销系统接口文档")
@@ -189,5 +183,16 @@ public class Swagger2Config {
                 .version("0.1")
                 .build();
     }
-    
+
+    @Bean("全平台活动模块")
+    public Docket platformApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("全平台活动模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.platform"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
 }

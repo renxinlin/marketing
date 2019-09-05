@@ -54,6 +54,9 @@ public class MarketingActivitySet {
     @ApiModelProperty(name = "validCondition", value = "门槛", example = "红包活动")
     private String validCondition;
 
+    @ApiModelProperty("红包发放审核（0:不审核，1：需要审核）")
+    private byte sendAudit;
+
 
     public String getValidCondition() {
 		return validCondition;
@@ -189,5 +192,12 @@ public class MarketingActivitySet {
 	public void setActivityDesc(String activityDesc) {
 		this.activityDesc = activityDesc;
 	}
-    
+
+    public void setSendAudit(byte sendAudit) {
+        this.sendAudit = sendAudit;
+    }
+
+    public byte getSendAudit() {
+        return sendAudit;
+    }
 }

@@ -363,7 +363,7 @@ public class CommonService {
 	 * @throws SuperCodeException
 	 */
 	public void checkCodeValid(String codeId, String codeTypeId) throws SuperCodeException {
-		Map<String, String>headerparams=new HashMap<String, String>();
+		Map<String, String> headerparams = new HashMap<String, String>();
 		headerparams.put("token",commonUtil.getCodePlatformToken() );
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
 		logger.info("根据码和码制获取码平台码信息："+responseEntity.toString());

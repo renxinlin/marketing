@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
 /**
  * 与中将码数无关的抽奖
@@ -32,15 +33,15 @@ public class LotteryUtilWithOutCodeNum {
 				probabilityLowRan=1;
 				probabilityHighRan=prizeProbability;
 			}else {
-				probabilityLowRan=probabilityHighRan;
-				probabilityHighRan=probabilityHighRan+prizeProbability;
+				probabilityLowRan = 1 + probabilityHighRan;
+				probabilityHighRan = probabilityHighRan+prizeProbability;
 			}
 			//如果随机数在当前的概率范围内就直接返回不需要继续循环
 			if (rand>=probabilityLowRan && rand<=probabilityHighRan) {
 				return mTypeMO;
 			}
 		}
-		throw new SuperCodeException("抽奖算法更新中，暂时无法抽奖请稍后再试", 500);
+		throw new SuperCodeExtException("抽奖算法更新中，暂时无法抽奖请稍后再试", 500);
 	}
 
 

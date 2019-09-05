@@ -27,5 +27,7 @@ public class MarketingActivitySalerSetAddParam {
 	@ApiModelProperty(name = "participationCondition", value = "0无条件 1协助领红包 2协助领积分", example = "1")
 	private Byte participationCondition;
 
+	@ApiModelProperty("红包发放审核（0:不审核，1：需要审核）")
+	private byte sendAudit;
     
 }
