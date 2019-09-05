@@ -63,7 +63,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         Asserts.check(!CollectionUtils.isEmpty(salerOrderForms),"表单设置失败");
         List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setDefaultForms(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
         Set<@NotEmpty(message = "表单名称不可为空") String> formNames = salerOrderForms.stream().map(salerOrderForm -> salerOrderForm.getFormName()).collect(Collectors.toSet());
-        Asserts.check(salerOrderForms.size() == withDefaultsalerOrderFormDtos.size(),"存在重名表单名，或表单名与预定义表单名冲突");
+        Asserts.check(formNames.size() == withDefaultsalerOrderFormDtos.size(),"存在重名表单名，或表单名与预定义表单名冲突");
         // 数据库数据
         List<SalerOrderForm> createsMetadatas = baseMapper.selectList(query().eq("OrganizationId", commonUtil.getOrganizationId()));
         // 网页数据
