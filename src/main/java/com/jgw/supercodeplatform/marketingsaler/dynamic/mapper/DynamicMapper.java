@@ -16,15 +16,15 @@ import java.util.Map;
  */
 public interface DynamicMapper extends CommonSql {
 
-    @Update("CREATE TABLE `jgw_marketing_dynamic`.`${tableName}`  ( " +
+    @Update(startScript +
+            " CREATE TABLE `jgw_marketing_dynamic`.`${tableName}`  ( " +
             " `Id` bigint(20) NOT NULL AUTO_INCREMENT , " +
-//            " <foreach collection='list' item='item1' index='index'  open='  ' close='  ' separator=' ' > " +
-            "  <foreach collection='list' item='item' open=' ' separator= ' 'close= ' '> " +
-            " ${item} varchar(255) NULL , " +
-            " </foreach> " +
-
-            " PRIMARY KEY (`id`) " +
-            " )")
+            " <foreach collection='list' item='item' index='index'  open='  ' close='  ' separator=' ' > " +
+            "  ${item} varchar(255) NULL ,  " +
+            "  </foreach>  " +
+            " PRIMARY KEY (`id`)  " +
+            " )"
+            + endScript)
     int createTable(@Param("tableName") String tableName, @Param("list") List<String> list);
 
 
