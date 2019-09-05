@@ -12,6 +12,6 @@ import java.util.Map;
 @FeignClient(name = "${platform.codemanager.mircosoft.name:platform-user-supercode-dev}",fallback = CodeManagerFallbackFeign.class )
 public interface CodeManagerFeign {
     @RequestMapping(value = "/code/query/product",method = RequestMethod.GET)
-    RestResult<ProductInfoByCodeDto> getProductByCode(OutCodeInfoDto outCodeInfoDto);
+    RestResult<Object> getProductByCode(OutCodeInfoDto outCodeInfoDto);
 
 }

@@ -7,8 +7,9 @@ import com.jgw.supercodeplatform.marketingsaler.integral.outservice.group.dto.Pr
 import java.util.Map;
 
 public class CodeManagerFallbackFeign implements CodeManagerFeign{
+    // 返回对象和boolean两种格式
     @Override
-    public RestResult<ProductInfoByCodeDto> getProductByCode(OutCodeInfoDto outCodeInfoDto) {
+    public RestResult<Object> getProductByCode(OutCodeInfoDto outCodeInfoDto) {
         return null;
     }
 }
