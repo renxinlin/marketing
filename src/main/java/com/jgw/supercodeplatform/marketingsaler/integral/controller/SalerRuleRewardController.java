@@ -73,7 +73,7 @@ public class SalerRuleRewardController extends SalerCommonController {
     }
 
     @RequestMapping(value = "/singleSetRule",method = RequestMethod.POST)
-    @ApiOperation(value = "单个设置已设置过产品规则的产品:已经设置的重新设置需要携带id", notes = "")
+    @ApiOperation(value = "单个设置已设置或者未设置过产品规则的产品:已经设置的重新设置需要携带id", notes = "")
     @ApiImplicitParams(value= {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })

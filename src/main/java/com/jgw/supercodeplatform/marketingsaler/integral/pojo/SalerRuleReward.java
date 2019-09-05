@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jgw.supercodeplatform.marketing.dto.integral.Product;
 import com.jgw.supercodeplatform.marketingsaler.integral.dto.BatchSalerRuleRewardDto;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -28,6 +30,7 @@ import java.util.*;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("marketing_saler_rule_reward")
+@ApiModel("销售员积分实体")
 public class SalerRuleReward implements Serializable {
 
 
@@ -65,6 +68,7 @@ public class SalerRuleReward implements Serializable {
     /**
      * 0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分）
      */
+    @ApiModelProperty("0直接按产品，1按消费金额：（价格）除以（ 每消费X元）乘以 （积分）")
     @TableField("RewardRule")
     private Byte rewardRule;
 
