@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
 import com.jgw.supercodeplatform.marketingsaler.base.config.aop.CheckRole;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueListDto;
 import com.jgw.supercodeplatform.marketingsaler.order.service.SalerOrderFormService;
 import io.swagger.annotations.Api;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -50,8 +52,8 @@ public class H5SalerOrderFormController extends SalerCommonController {
     @PostMapping("/saveOrder")
     @ApiOperation(value = "h5订货", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@Valid @RequestBody ColumnnameAndValueListDto columnnameAndValueListDto, @ApiIgnore H5LoginVO user) throws CommonException {
-        service.saveOrder(columnnameAndValueListDto,user);
+    public RestResult save(@Valid @RequestBody List<ColumnnameAndValueDto> columnnameAndValueDto, @ApiIgnore H5LoginVO user) throws CommonException {
+        service.saveOrder(columnnameAndValueDto,user);
         return success();
     }
 
