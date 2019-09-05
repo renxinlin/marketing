@@ -42,7 +42,7 @@ public class UserService extends SalerCommonService<UserMapper, User> {
         User value = new User();
         Wrapper<User> updateWrapper = new UpdateWrapper<>(value);
         ((UpdateWrapper<User>) updateWrapper).apply("haveIntegral = haveIntegral - {0}",exchangeIntegral).set("Id",userPojo.getId()).set("OrganizationId",userPojo.getOrganizationId());
-        int update = baseMapper.update(value, updateWrapper); // 默认是匹配的行数
+        int update = baseMapper.update(value, updateWrapper); // TODO 默认是匹配的行数 useAffectRow
         Asserts.check(update==1,"减少导购积分失败");
     }
 }
