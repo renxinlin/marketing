@@ -33,12 +33,18 @@ public class SalerOrderTransfer {
 
     public static List<SalerOrderFormDto> setDefaultForms(List<SalerOrderFormSettingDto> salerOrderForms, String organizationId, String organizationName) {
         // 赋值网页字段
+        List<SalerOrderFormDto>  salerOrderFormsResults = new ArrayList<SalerOrderFormDto>();
         salerOrderForms.forEach(salerOrderFormDto -> {
-            salerOrderFormDto.setTableName(initTableName(organizationId));
-            salerOrderFormDto.setColumnName(HanzhiToPinyinUtil.getPingYin(salerOrderFormDto.getFormName()));
-            salerOrderFormDto.setColumnType(deafultColumnType);
-            salerOrderFormDto.setOrganizationId(organizationId);
-            salerOrderFormDto.setOrganizationName(organizationName);
+            SalerOrderFormDto salerOrderFormsResult = new SalerOrderFormDto();
+            salerOrderFormsResult.setFormName(salerOrderFormDto.getFormName());
+            salerOrderFormsResult.setFormType(salerOrderFormDto.getFormType());
+            salerOrderFormsResult.setValue(salerOrderFormDto.getValue());
+            salerOrderFormsResult.setTableName(initTableName(organizationId));
+            salerOrderFormsResult.setColumnName(HanzhiToPinyinUtil.getPingYin(salerOrderFormDto.getFormName()));
+            salerOrderFormsResult.setColumnType(deafultColumnType);
+            salerOrderFormsResult.setOrganizationId(organizationId);
+            salerOrderFormsResult.setOrganizationName(organizationName);
+            salerOrderFormsResults.add(salerOrderFormsResult);
         });
         // 赋值默认字段
         for(int i = 0;i<deafultColumnNames.size();i++) {
@@ -51,9 +57,9 @@ public class SalerOrderTransfer {
             deafultElement   .setColumnName(deafultColumnNames.get(i));
             deafultElement.setTableName(initTableName(organizationId));
             deafultElement.setFormType(FormType.wenben);
-            salerOrderForms                       .add(deafultElement);
+            salerOrderFormsResults                       .add(deafultElement);
         }
-        return salerOrderForms;
+        return salerOrderFormsResults;
     }
 
 
