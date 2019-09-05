@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
+import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
 import com.jgw.supercodeplatform.marketingsaler.integral.dto.BatchSalerRuleRewardDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
@@ -29,8 +30,7 @@ import java.util.List;
 @Api(value = "", tags = "销售员积分领取")
 public class SalerRuleRewardController extends SalerCommonController {
 
-    private static final String MARKETING_SALER_INTEGRAL_BUTTON = "MARKETING:SALER:INTEGRAL:BUTTON";
-    @Autowired
+     @Autowired
     private SalerRuleRewardService service;
 
     @RequestMapping(value = "/page",method = RequestMethod.GET)
@@ -92,7 +92,7 @@ public class SalerRuleRewardController extends SalerCommonController {
     public RestResult<String> openIntegralStatus(String status) throws Exception {
         Asserts.check(StringUtils.isEmpty(status)
                 && (OpenIntegralStatus.close.equals(status)  || OpenIntegralStatus.open.equals(status))  ,"状态不合法");
-        redisUtil.set(MARKETING_SALER_INTEGRAL_BUTTON+commonUtil.getOrganizationId(),status);
+        redisUtil.set(UserConstants.MARKETING_SALER_INTEGRAL_BUTTON+commonUtil.getOrganizationId(),status);
         return success();
     }
 
@@ -105,7 +105,7 @@ public class SalerRuleRewardController extends SalerCommonController {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> getIntegralStatus() throws Exception {
-        String status = redisUtil.get(MARKETING_SALER_INTEGRAL_BUTTON + commonUtil.getOrganizationId());
+        String status = redisUtil.get(UserConstants.MARKETING_SALER_INTEGRAL_BUTTON + commonUtil.getOrganizationId());
         if( StringUtils.isEmpty(status)){
             // 默认状态
             return success(OpenIntegralStatus.open);
@@ -117,22 +117,6 @@ public class SalerRuleRewardController extends SalerCommonController {
     }
 
 
-
-    @GetMapping(value = "/getIntegralStatusByH5")
-    @ApiOperation(value = "H5查看开启页面领积分按钮", notes = "")
-    @ApiImplicitParams(value= {
-            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-    })
-    public RestResult<String> getIntegralStatusByH5(@RequestParam String organizationId) throws Exception {
-        String status = redisUtil.get(MARKETING_SALER_INTEGRAL_BUTTON + organizationId);
-        if( StringUtils.isEmpty(status)){
-            // 默认状态
-            return success(OpenIntegralStatus.open);
-        }else {
-            return success(status);
-
-        }
-     }
 
 
 }

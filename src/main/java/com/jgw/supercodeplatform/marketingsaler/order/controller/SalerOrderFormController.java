@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
+import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
@@ -36,8 +37,7 @@ import java.util.List;
 @Api(value = "", tags = "订货管理")
 public class SalerOrderFormController extends SalerCommonController {
 
-    private static final String MARKETING_ORDER_BUTTON ="marketing:order:button:" ;
-    @Autowired
+     @Autowired
     private SalerOrderFormService service;
 
     @PostMapping("/save")
@@ -88,7 +88,7 @@ public class SalerOrderFormController extends SalerCommonController {
     public RestResult<String> openIntegralStatus(String status) throws Exception {
         Asserts.check(StringUtils.isEmpty(status)
                 && (OpenIntegralStatus.close.equals(status)  || OpenIntegralStatus.open.equals(status))  ,"状态不合法");
-        redisUtil.set(MARKETING_ORDER_BUTTON+commonUtil.getOrganizationId(),status);
+        redisUtil.set(UserConstants.MARKETING_ORDER_BUTTON+commonUtil.getOrganizationId(),status);
         return success();
     }
 
@@ -101,7 +101,7 @@ public class SalerOrderFormController extends SalerCommonController {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> getIntegralStatus() throws Exception {
-        String status = redisUtil.get(MARKETING_ORDER_BUTTON + commonUtil.getOrganizationId());
+        String status = redisUtil.get(UserConstants.MARKETING_ORDER_BUTTON + commonUtil.getOrganizationId());
         if( StringUtils.isEmpty(status)){
             // 默认状态
             return success(OpenIntegralStatus.open);
