@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketingsaler.order.controller;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -75,9 +77,14 @@ public class SalerOrderFormController extends SalerCommonController {
     @GetMapping("/list")
     @ApiOperation(value = "获取动态表单分页数据", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult list(DaoSearch daoSearch) throws SuperCodeException {
+    public RestResult<AbstractPageService.PageResults<List<Map<String,Object>>>>  list(DaoSearch daoSearch) throws SuperCodeException {
         // todo处理表不存在
-        return success(service.selectPage(daoSearch));
+        try {
+            return success(service.selectPage(daoSearch));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RestResult.error("获取数据失败",null,500);
+        }
     }
 
 
