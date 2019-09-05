@@ -46,15 +46,20 @@ public class CheckUserRole  implements Ordered {
         if (user == null) {
             throw new SuperCodeException("角色鉴定失败");
         }
-        if (annotationPresent) {
-            CheckRole annotation = targetMethod.getAnnotation(CheckRole.class);
-            if (!StringUtils.isEmpty(annotation.role())) {
-                if (annotation.role().equals(user.getMemberType().toString())) {
-                    pj.proceed();
+        try {
+            if (annotationPresent) {
+                CheckRole annotation = targetMethod.getAnnotation(CheckRole.class);
+                if (!StringUtils.isEmpty(annotation.role())) {
+                    if (annotation.role().equals(user.getMemberType().toString())) {
+                        pj.proceed();
+                    }
+                }else {
+                    throw new SuperCodeException("角色鉴定失败");
                 }
-            }else {
-                throw new SuperCodeException("角色鉴定失败");
             }
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+            throw new SuperCodeException("角色鉴定失败");
         }
     }
 
