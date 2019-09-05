@@ -32,6 +32,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -93,9 +94,9 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
 
     @CheckRole(role = Role.salerRole)
     @PostMapping("/record")
-    @ApiOperation(value = "积分记录 type 1 奖励 2 消耗 不传表示所有", notes = "")
+    @ApiOperation(value = "积分记录 type 1 奖励 2 消耗 3表示所有", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult record(int type,H5LoginVO user) throws CommonException {
+    public RestResult record(int type,@ApiIgnore  H5LoginVO user) throws CommonException {
         return success(recordService.seletLastThreeMonth(type,user));
     }
 
