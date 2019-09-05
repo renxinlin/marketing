@@ -125,7 +125,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()),"未获取对应组织");
         // 待优化:剔除 notin
         List<SalerOrderForm> salerOrderForms = baseMapper.selectList(query().eq("OrganizationId", user.getOrganizationId())
-                .notIn("ColumnName", SalerOrderTransfer.deafultColumnNames));
+                .notIn("ColumnName", SalerOrderTransfer.deafultColumnNames).getWrapper());
         List<H5SalerOrderFormVo> vos = SalerOrderTransfer.modelMapperVo(modelMapper,salerOrderForms);
         return vos;
     }
