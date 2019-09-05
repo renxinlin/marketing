@@ -60,7 +60,7 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
     private CodeManagerService codeManagerService;
 
     @CheckRole(role = Role.salerRole)
-    @PostMapping("/save")
+    @PostMapping("/exchange")
     @ApiOperation(value = "兑换", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult exchange(@Valid @RequestBody H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) throws CommonException {
@@ -104,9 +104,6 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
 
     @GetMapping(value = "/getIntegralStatusByH5")
     @ApiOperation(value = "H5查看开启页面领积分按钮", notes = "")
-    @ApiImplicitParams(value= {
-            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-    })
     public RestResult<String> getIntegralStatusByH5(@RequestParam String organizationId) throws Exception {
         String status = redisUtil.get(UserConstants.MARKETING_SALER_INTEGRAL_BUTTON + organizationId);
         if( StringUtils.isEmpty(status)){

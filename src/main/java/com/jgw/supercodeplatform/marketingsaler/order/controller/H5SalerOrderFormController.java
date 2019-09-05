@@ -40,7 +40,7 @@ public class H5SalerOrderFormController extends SalerCommonController {
     @PostMapping("/showOrder")
     @ApiOperation(value = "h5订货字段展示", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult showOrder(H5LoginVO user) throws CommonException {
+    public RestResult showOrder(H5LoginVO user)   {
         return success(service.showOrder(user));
     }
 
@@ -58,9 +58,6 @@ public class H5SalerOrderFormController extends SalerCommonController {
     @CheckRole(role = "1")
     @GetMapping(value = "/getIntegralStatusByH5")
     @ApiOperation(value = "H5查看开启页面按钮", notes = "")
-    @ApiImplicitParams(value= {
-            @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-    })
     public RestResult<String> getIntegralStatusByH5(@RequestParam String organizationId) throws Exception {
         String status = redisUtil.get(UserConstants.MARKETING_ORDER_BUTTON + organizationId);
         if( StringUtils.isEmpty(status)){
@@ -71,5 +68,8 @@ public class H5SalerOrderFormController extends SalerCommonController {
 
         }
     }
+
+
+
 }
 

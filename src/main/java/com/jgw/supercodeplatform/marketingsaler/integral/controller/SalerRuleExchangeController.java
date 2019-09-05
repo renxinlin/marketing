@@ -53,6 +53,7 @@ public class SalerRuleExchangeController extends SalerCommonController {
 
     @GetMapping("/getById")
     @ApiOperation(value = "兑换详情", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult getById(@RequestParam("id") Long id) throws CommonException {
         SalerRuleExchange byId = service.getByIdWithOrg(id);
         return success(byId);
@@ -61,6 +62,7 @@ public class SalerRuleExchangeController extends SalerCommonController {
 
     @GetMapping("/updateStatus")
     @ApiOperation(value = "兑换上下架:0上架1手动下架2自动下架", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult updateStatus(@RequestParam("status") Byte status,@RequestParam("id") Long id) throws CommonException {
         service.updateStatus(id,status);
         return success();
@@ -70,6 +72,7 @@ public class SalerRuleExchangeController extends SalerCommonController {
 
     @GetMapping("/delete")
     @ApiOperation(value = "删除兑换", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult deleteById(@RequestParam("id") Long id) throws CommonException {
         service.deleteById(id);
         return success();

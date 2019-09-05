@@ -52,6 +52,7 @@ public class SalerOrderFormController extends SalerCommonController {
 
     @GetMapping("/detail")
     @ApiOperation(value = "获取表单详情", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult getById()   {
         return success(service.detail());
     }
@@ -59,6 +60,7 @@ public class SalerOrderFormController extends SalerCommonController {
 
     @GetMapping("/pageHeader")
     @ApiOperation(value = "获取分页表头", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult pageHeader()   {
         return success(service.detail());
     }
@@ -115,20 +117,5 @@ public class SalerOrderFormController extends SalerCommonController {
 
 
 
-    @GetMapping(value = "/getIntegralStatusByH5")
-    @ApiOperation(value = "H5查看开启页面按钮", notes = "")
-    @ApiImplicitParams(value= {
-            @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-    })
-    public RestResult<String> getIntegralStatusByH5(@RequestParam String organizationId) throws Exception {
-        String status = redisUtil.get(UserConstants.MARKETING_ORDER_BUTTON + organizationId);
-        if( StringUtils.isEmpty(status)){
-            // 默认状态
-            return success(OpenIntegralStatus.open);
-        }else {
-            return success(status);
-
-        }
-    }
 }
 
