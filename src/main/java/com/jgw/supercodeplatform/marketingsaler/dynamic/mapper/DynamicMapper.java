@@ -20,7 +20,7 @@ public interface DynamicMapper extends CommonSql {
             " `Id` bigint(20) NOT NULL AUTO_INCREMENT , " +
 
             " <foreach collection='newColumns' item='item' index='index'  open='  ' close='  ' separator=',' > " +
-            " `${item}` varchar(255) NULL, " +
+            " ${item} varchar(255) NULL, " +
 
             " </foreach> " +
 
@@ -62,5 +62,5 @@ public interface DynamicMapper extends CommonSql {
             + " ${item.columnValue} "
             + " </foreach> "
             + endScript)
-    void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, String tableName);
+    void saveOrder(@Param("columnnameAndValues") List<ColumnnameAndValueDto> columnnameAndValues,@Param("tableName") String tableName);
 }
