@@ -51,7 +51,7 @@ public class SalerRuleRewardController extends SalerCommonController {
         return service.unSelectPage(daoSearch);
     }
 
-    @RequestMapping(value = "/emptyRule",method = RequestMethod.GET)
+    @RequestMapping(value = "/emptyRule",method = RequestMethod.POST)
     @ApiOperation(value = "批量或单个清空规则设置产品", notes = "")
     @ApiImplicitParams(value= {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
