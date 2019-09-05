@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.service;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
@@ -10,6 +11,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.constants.UserState;
 import com.jgw.supercodeplatform.marketingsaler.integral.mapper.UserMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.User;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
  * @since 2019-09-04
  */
 @Service
+@Slf4j
 public class UserService extends SalerCommonService<UserMapper, User> {
 
 
@@ -44,5 +47,27 @@ public class UserService extends SalerCommonService<UserMapper, User> {
         ((UpdateWrapper<User>) updateWrapper).apply("haveIntegral = haveIntegral - {0}",exchangeIntegral).set("Id",userPojo.getId()).set("OrganizationId",userPojo.getOrganizationId());
         int update = baseMapper.update(value, updateWrapper); // TODO 默认是匹配的行数 useAffectRow
         Asserts.check(update==1,"减少导购积分失败");
+    }
+
+
+
+    public void addIntegral(Integer addIntegral,  User userPojo) {
+        User value = new User();
+        Wrapper<User> updateWrapper = new UpdateWrapper<>(value);
+        ((UpdateWrapper<User>) updateWrapper).apply("haveIntegral = haveIntegral + {0}",addIntegral).set("Id",userPojo.getId()).set("OrganizationId",userPojo.getOrganizationId());
+        int update = baseMapper.update(value, updateWrapper); // TODO 默认是匹配的行数 useAffectRow
+        Asserts.check(update==1,"新增积分失败");
+    }
+
+
+    public User exists(H5LoginVO user) {
+        User userPojo = null;
+        try {
+            userPojo = baseMapper.selectOne(query().eq("Id", user.getMemberId()).eq("OrganizationId", user.getOrganizationId()));
+        } catch (Exception e) {
+            log.error("领取积分获取导购用户信息失败{}", JSONObject.toJSONString(user));
+            e.printStackTrace();
+        }
+        return userPojo;
     }
 }

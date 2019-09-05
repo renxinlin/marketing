@@ -3,7 +3,9 @@ package com.jgw.supercodeplatform.marketingsaler.integral.transfer;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.dto.SalerRuleExchangeAutoUndercarriageEvent;
+import com.jgw.supercodeplatform.marketingsaler.integral.outservice.group.dto.ProductInfoByCodeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
+import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.User;
 
 public class H5SalerRuleExchangeTransfer {
@@ -27,5 +29,12 @@ public class H5SalerRuleExchangeTransfer {
         // 减一个库存
         updateWrapper.apply("HaveStock = HaveStock - {0} where HaveStock > 0 ",1).set("Id",params.getId());
         return updateWrapper;
+    }
+
+    public static SalerRuleReward getRewardValueObject(ProductInfoByCodeDto productByCode) {
+        SalerRuleReward reward = new SalerRuleReward();
+        reward.setProductId(productByCode.getProductId());
+        reward.setProductName(productByCode.getProductName());
+        return reward;
     }
 }

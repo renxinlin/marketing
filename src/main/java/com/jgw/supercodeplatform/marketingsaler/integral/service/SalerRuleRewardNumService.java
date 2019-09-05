@@ -18,4 +18,12 @@ import org.springframework.stereotype.Service;
 public class SalerRuleRewardNumService extends SalerCommonService<SalerRuleRewardNumMapper, SalerRuleRewardNum> {
 
 
+    public boolean exists(String outCodeId) {
+        Integer integer = baseMapper.selectCount(query().eq("OutCodeId", outCodeId).getWrapper());
+        if(integer == null || integer == 0 ){
+            return false;
+        }
+        return true;
+
+    }
 }

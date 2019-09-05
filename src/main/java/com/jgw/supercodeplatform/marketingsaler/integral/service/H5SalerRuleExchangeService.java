@@ -18,6 +18,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.infrastructure.MoneyCal
 import com.jgw.supercodeplatform.marketingsaler.integral.mapper.SalerRuleExchangeMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerExchangeNum;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
+import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.User;
 import com.jgw.supercodeplatform.marketingsaler.integral.transfer.H5SalerRuleExchangeTransfer;
 import com.jgw.supercodeplatform.marketingsaler.integral.transfer.SalerRecordTransfer;
