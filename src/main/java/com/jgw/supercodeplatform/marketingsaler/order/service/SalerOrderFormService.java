@@ -88,10 +88,11 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             deleteColumns.removeIf(deleteColumn->withDefaultsalerOrderFormColumnNames.contains(deleteColumn));
             // 删除字段和新增字段
             dynamicMapper.alterTableAndDropOrAddColumns(withDefaultsalerOrderFormDtos.get(0).getTableName(),deleteColumns,addColumns);
+            baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).getWrapper());
 
         }
-        baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).getWrapper());
         this.saveBatch(pojos);
+
     }
 
     public List<SalerOrderForm> detail() {
