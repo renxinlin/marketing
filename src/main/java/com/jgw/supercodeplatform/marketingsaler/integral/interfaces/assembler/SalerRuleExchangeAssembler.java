@@ -35,7 +35,7 @@ public class SalerRuleExchangeAssembler {
         prizeRulesVo.setHighRand(pojo.getHighRand());
         prizeRulesVo.setLowRand(pojo.getLowRand());
         prizeRulesVo.setIsRrandomMoney(pojo.getIsRrandomMoney());
-        prizeRulesVo.setPrizeAmount(prizeRulesVo.getPrizeAmount());
+        prizeRulesVo.setPrizeAmount(pojo.getPrizeAmount());
         vo.setPrizeRulesVo(prizeRulesVo);
         return vo;
     }
