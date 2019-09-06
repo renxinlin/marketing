@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.ExchangeUpDownStatus;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.SalerRuleExchangeDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.SalerRuleExchangeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.transfer.SalerRuleExchangeTransfer;
 import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;

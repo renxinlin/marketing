@@ -1,11 +1,8 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.controller;
+package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.controller;
 
 
-import com.alipay.api.domain.CodeInfo;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.dto.integral.Product;
-import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.config.aop.CheckRole;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
@@ -13,20 +10,18 @@ import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
 import com.jgw.supercodeplatform.marketingsaler.common.Role;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.DaoSearchWithOrganizationId;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.H5SalerRuleExchangeDto;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.OutCodeInfoDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.H5SalerRuleExchangeDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.outservice.group.CodeManagerService;
 import com.jgw.supercodeplatform.marketingsaler.integral.outservice.group.dto.ProductInfoByCodeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
-import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
 import com.jgw.supercodeplatform.marketingsaler.integral.service.H5SalerRuleExchangeService;
 import com.jgw.supercodeplatform.marketingsaler.integral.service.H5SalerRuleRewardService;
 import com.jgw.supercodeplatform.marketingsaler.integral.service.SalerRecordService;
 import com.jgw.supercodeplatform.marketingsaler.integral.transfer.H5SalerRuleExchangeTransfer;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.util.Asserts;
@@ -39,7 +34,7 @@ import java.util.List;
 
 /**
  * <p>
- * 前端控制器
+ * facede
  * </p>
  *
  * @author renxinlin

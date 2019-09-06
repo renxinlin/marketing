@@ -1,7 +1,7 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.service;
 
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.SalerRuleExchangeAutoUndercarriageEvent;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.SalerRuleExchangeAutoUndercarriageEvent;
 import com.jgw.supercodeplatform.marketingsaler.integral.mapper.SalerRuleExchangeMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
 import org.springframework.stereotype.Service;

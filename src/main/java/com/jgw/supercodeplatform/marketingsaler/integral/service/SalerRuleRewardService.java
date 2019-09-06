@@ -3,21 +3,15 @@ package com.jgw.supercodeplatform.marketingsaler.integral.service;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
-import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.Product;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.BatchSalerRuleRewardDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.BatchSalerRuleRewardDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.mapper.SalerRuleRewardMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
 import com.jgw.supercodeplatform.marketingsaler.integral.transfer.SalerRuleRewardParamTransfer;
@@ -33,9 +27,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant.superToken;
-import static com.jgw.supercodeplatform.marketingsaler.integral.transfer.SalerRuleRewardParamTransfer.constructProductAndBatchMOByPPArr;
 
 /**
  * <p>

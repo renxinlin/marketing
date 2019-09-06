@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.controller;
+package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.controller;
 
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -6,9 +6,10 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.SalerRuleExchangeDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.assembler.SalerRuleExchangeAssembler;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.SalerRuleExchangeDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.SalerRuleExchangeVo;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
-import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
 import com.jgw.supercodeplatform.marketingsaler.integral.service.SalerRuleExchangeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,11 +35,16 @@ public class SalerRuleExchangeController extends SalerCommonController {
 
     @Autowired
     private SalerRuleExchangeService service;
-
+    @Autowired
+    SalerRuleExchangeAssembler assembler;
+    // ##facede##
     @PostMapping("/save")
     @ApiOperation(value = "新增兑换", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@Valid @RequestBody SalerRuleExchangeDto salerRuleExchangeDto) throws CommonException {
+    public RestResult save(@Valid @RequestBody SalerRuleExchangeVo salerRuleExchangeVo) throws CommonException {
+        // ##assembler##
+        SalerRuleExchangeDto salerRuleExchangeDto = assembler.fromWeb(salerRuleExchangeVo);
+        // ##application##
         service.addExchange(salerRuleExchangeDto);
         return success();
     }
@@ -46,7 +52,10 @@ public class SalerRuleExchangeController extends SalerCommonController {
     @PostMapping("/update")
     @ApiOperation(value = "更新兑换", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult update(@Valid @RequestBody SalerRuleExchangeDto salerRuleExchangeDto) throws CommonException {
+    public RestResult update(@Valid @RequestBody SalerRuleExchangeVo salerRuleExchangeVo) throws CommonException {
+        // ##assembler##
+        SalerRuleExchangeDto salerRuleExchangeDto = assembler.fromWeb(salerRuleExchangeVo);
+        // ##application##
         service.updateExchange(salerRuleExchangeDto);
         return success();
     }
@@ -54,9 +63,9 @@ public class SalerRuleExchangeController extends SalerCommonController {
     @GetMapping("/getById")
     @ApiOperation(value = "兑换详情", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult getById(@RequestParam("id") Long id) throws CommonException {
+    public RestResult<SalerRuleExchangeVo> getById(@RequestParam("id") Long id) throws CommonException {
         SalerRuleExchange byId = service.getByIdWithOrg(id);
-        return success(byId);
+        return success(assembler.toWeb(byId));
     }
 
 

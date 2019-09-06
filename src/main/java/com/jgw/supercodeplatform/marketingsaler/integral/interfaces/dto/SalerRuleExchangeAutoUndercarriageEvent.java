@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.dto;
+package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

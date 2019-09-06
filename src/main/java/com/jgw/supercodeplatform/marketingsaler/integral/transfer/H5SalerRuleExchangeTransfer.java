@@ -2,11 +2,10 @@ package com.jgw.supercodeplatform.marketingsaler.integral.transfer;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.SalerRuleExchangeAutoUndercarriageEvent;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.SalerRuleExchangeAutoUndercarriageEvent;
 import com.jgw.supercodeplatform.marketingsaler.integral.outservice.group.dto.ProductInfoByCodeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
-import com.jgw.supercodeplatform.marketingsaler.integral.pojo.User;
 
 public class H5SalerRuleExchangeTransfer {
 

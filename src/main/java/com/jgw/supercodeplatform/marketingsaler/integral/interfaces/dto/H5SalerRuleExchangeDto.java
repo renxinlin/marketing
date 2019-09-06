@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.dto;
+package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.ExchangeUpDownStatus;

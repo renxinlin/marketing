@@ -9,7 +9,7 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dto.integral.Product;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.BatchSalerRuleRewardDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.BatchSalerRuleRewardDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

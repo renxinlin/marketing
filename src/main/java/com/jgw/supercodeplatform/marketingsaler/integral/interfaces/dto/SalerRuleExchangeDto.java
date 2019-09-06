@@ -1,9 +1,5 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.dto;
+package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.ExchangeUpDownStatus;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
@@ -129,8 +125,9 @@ public class SalerRuleExchangeDto implements Serializable {
         BeanUtils.copyProperties(this,salerRuleExchange);
         salerRuleExchange.setOrganizationId(organizationId);
         salerRuleExchange.setOrganizationName(organizationName);
-        salerRuleExchange.setPreHaveStock(this.exchangeStock);
-        salerRuleExchange.setHaveStock(this.exchangeStock);
+        salerRuleExchange.setPreHaveStock(this.haveStock);
+        salerRuleExchange.setHaveStock(this.haveStock);
+        salerRuleExchange.setExchangeStock(this.haveStock);
         salerRuleExchange.setStatus(ExchangeUpDownStatus.up);
         return salerRuleExchange;
     }

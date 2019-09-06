@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.controller;
+package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.controller;
 
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;

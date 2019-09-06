@@ -1,13 +1,10 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.feigns;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.OutCodeInfoDto;
-import com.jgw.supercodeplatform.marketingsaler.integral.outservice.group.dto.ProductInfoByCodeDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.Map;
 
 @FeignClient(name = "${platform.codemanager.mircosoft.name:platform-user-supercode-dev}",fallback = CodeManagerFallbackFeign.class )
 public interface CodeManagerFeign {

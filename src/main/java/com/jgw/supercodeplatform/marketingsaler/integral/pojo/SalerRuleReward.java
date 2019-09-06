@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jgw.supercodeplatform.marketing.dto.integral.Product;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.BatchSalerRuleRewardDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.BatchSalerRuleRewardDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
