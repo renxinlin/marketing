@@ -38,7 +38,7 @@ public class SalerRuleExchangeService extends SalerCommonService<SalerRuleExchan
     }
 
     public int deleteById(Long id) {
-        int delete = baseMapper.delete(query().eq("OrganizationId", commonUtil.getOrganizationId()).eq("Id", id));
+        int delete = baseMapper.delete(query().eq("OrganizationId", commonUtil.getOrganizationId()).eq("Id", id).getWrapper());
         Asserts.check(delete == 1,"删除销售员兑换失败");
         return delete;
     }

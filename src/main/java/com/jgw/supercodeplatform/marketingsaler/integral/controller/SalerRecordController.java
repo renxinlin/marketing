@@ -2,6 +2,8 @@ package com.jgw.supercodeplatform.marketingsaler.integral.controller;
 
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRecord;
@@ -12,6 +14,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * <p>
  * 前端控制器
@@ -21,41 +25,19 @@ import org.springframework.web.bind.annotation.*;
  * @since 2019-09-02
  */
 @RestController
-@RequestMapping("/salerRecord")
+@RequestMapping("marketing/salerRecord")
 @Api(value = "", tags = "销售员积分记录")
 public class SalerRecordController extends SalerCommonController {
 
     @Autowired
     private SalerRecordService service;
 
-    @PostMapping("/save")
-    @ApiOperation(value = "积分记录:保存", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@RequestBody SalerRecord obj) throws CommonException {
-        SalerRecord entity = new SalerRecord();
-        entity.setCodeTypeId("21");
-        service.save(entity);
-        return success();
-    }
-
-    @PostMapping("/update")
-    @ApiOperation(value = "", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult update(@RequestBody SalerRecord obj) throws CommonException {
-        return success();
-    }
-
-    @GetMapping("/{id}")
-    @ApiOperation(value = "", notes = "")
-    public RestResult getById(@PathVariable("id") String id) throws CommonException {
-        return null;
-    }
 
     @GetMapping("/list")
-    @ApiOperation(value = "", notes = "")
+    @ApiOperation(value = "后台积分记录分页", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult list(SalerRecord obj) throws CommonException {
-        return null;
+    public RestResult< AbstractPageService.PageResults<List<SalerRecord>>> list(DaoSearch daoSearch) throws CommonException {
+        return success(service.selectPage(daoSearch));
     }
 
 

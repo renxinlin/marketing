@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
+import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
 import com.jgw.supercodeplatform.marketingsaler.integral.dto.BatchSalerRuleRewardDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
@@ -25,12 +26,11 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/salerRuleReward")
+@RequestMapping("marketing/salerRuleReward")
 @Api(value = "", tags = "销售员积分领取")
 public class SalerRuleRewardController extends SalerCommonController {
 
-    private static final String MARKETING_SALER_INTEGRAL_BUTTON = "MARKETING:SALER:INTEGRAL:BUTTON";
-    @Autowired
+     @Autowired
     private SalerRuleRewardService service;
 
     @RequestMapping(value = "/page",method = RequestMethod.GET)
@@ -51,7 +51,7 @@ public class SalerRuleRewardController extends SalerCommonController {
         return service.unSelectPage(daoSearch);
     }
 
-    @RequestMapping(value = "/emptyRule",method = RequestMethod.GET)
+    @RequestMapping(value = "/emptyRule",method = RequestMethod.POST)
     @ApiOperation(value = "批量或单个清空规则设置产品", notes = "")
     @ApiImplicitParams(value= {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
@@ -68,13 +68,12 @@ public class SalerRuleRewardController extends SalerCommonController {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> batchSetRule(@Valid @RequestBody BatchSalerRuleRewardDto bProductRuleParam) throws Exception {
-        RestResult<String>  restResult=new RestResult<String>();
         service.batchSetSalerRule(bProductRuleParam);
         return success();
     }
 
     @RequestMapping(value = "/singleSetRule",method = RequestMethod.POST)
-    @ApiOperation(value = "单个设置已设置过产品规则的产品", notes = "")
+    @ApiOperation(value = "单个设置已设置或者未设置过产品规则的产品:已经设置的重新设置需要携带id", notes = "")
     @ApiImplicitParams(value= {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
@@ -90,9 +89,9 @@ public class SalerRuleRewardController extends SalerCommonController {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> openIntegralStatus(String status) throws Exception {
-        Asserts.check(StringUtils.isEmpty(status)
+        Asserts.check(!StringUtils.isEmpty(status)
                 && (OpenIntegralStatus.close.equals(status)  || OpenIntegralStatus.open.equals(status))  ,"状态不合法");
-        redisUtil.set(MARKETING_SALER_INTEGRAL_BUTTON+commonUtil.getOrganizationId(),status);
+        redisUtil.set(UserConstants.MARKETING_SALER_INTEGRAL_BUTTON+commonUtil.getOrganizationId(),status);
         return success();
     }
 
@@ -105,7 +104,7 @@ public class SalerRuleRewardController extends SalerCommonController {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
     public RestResult<String> getIntegralStatus() throws Exception {
-        String status = redisUtil.get(MARKETING_SALER_INTEGRAL_BUTTON + commonUtil.getOrganizationId());
+        String status = redisUtil.get(UserConstants.MARKETING_SALER_INTEGRAL_BUTTON + commonUtil.getOrganizationId());
         if( StringUtils.isEmpty(status)){
             // 默认状态
             return success(OpenIntegralStatus.open);
@@ -117,22 +116,6 @@ public class SalerRuleRewardController extends SalerCommonController {
     }
 
 
-
-    @GetMapping(value = "/getIntegralStatusByH5")
-    @ApiOperation(value = "H5查看开启页面领积分按钮", notes = "")
-    @ApiImplicitParams(value= {
-            @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-    })
-    public RestResult<String> getIntegralStatusByH5(@RequestParam String organizationId) throws Exception {
-        String status = redisUtil.get(MARKETING_SALER_INTEGRAL_BUTTON + organizationId);
-        if( StringUtils.isEmpty(status)){
-            // 默认状态
-            return success(OpenIntegralStatus.open);
-        }else {
-            return success(status);
-
-        }
-     }
 
 
 }
