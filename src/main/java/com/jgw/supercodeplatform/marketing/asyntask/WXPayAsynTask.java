@@ -1,8 +1,11 @@
 package com.jgw.supercodeplatform.marketing.asyntask;
 
 import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
+import com.jgw.supercodeplatform.marketing.enums.market.SalerAmountStatusEnum;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
+import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
 import org.apache.commons.lang.StringUtils;
@@ -39,15 +42,15 @@ public class WXPayAsynTask implements Runnable{
 				logger.error("支付时订单号partner_trade_no为空未能发起支付");
 			}
 			WXPayTradeOrderMapper wxTradeNoMapper=SpringContextUtil.getBean(WXPayTradeOrderMapper.class);
-			
+			IntegralRecordMapperExt integralRecordMapper=SpringContextUtil.getBean(IntegralRecordMapperExt.class);
 			WXPayTradeOrder wXTradeNo=wxTradeNoMapper.selectByTradeNo(partner_trade_no);
 			if (null==wXTradeNo) {
 				logger.error("根据订单号partner_trade_no="+partner_trade_no+" 无法查询到订单");
 				return ;
 			}
 			
-			if (!wXTradeNo.getTradeStatus().equals((byte)0)) {
-				logger.error("根据订单号partner_trade_no="+partner_trade_no+" 查询到订单状态不是未支付，");
+			if (wXTradeNo.getTradeStatus().equals((byte)1)) {
+				logger.error("根据订单号partner_trade_no="+partner_trade_no+" 查询到订单状态已经是支付成功，");
 				return ;
 			}
 			wXTradeNo.setTradeStatus((byte)2);
@@ -58,6 +61,7 @@ public class WXPayAsynTask implements Runnable{
 			String return_msg=mapResult.get("return_msg");
 			wXTradeNo.setReturnCode(return_code);
 			wXTradeNo.setReturnMsg(return_msg);
+			String status = SalerAmountStatusEnum.SEND_FAIL.status;
 			//先判断return_code和return_msg
 			if ("SUCCESS".equals(return_code) ) {
 				if (StringUtils.isBlank(return_msg)) {
@@ -66,7 +70,7 @@ public class WXPayAsynTask implements Runnable{
 					if ("SUCCESS".equals(result_code)) {
 						wXTradeNo.setTradeStatus((byte)1);
 						//保存中奖纪录
-
+						status = SalerAmountStatusEnum.SEND_SUCCESS.status;
 					}else if ("FAIL".equals(result_code)) {
 						wXTradeNo.setTradeStatus((byte)2);
 						String err_code=mapResult.get("err_code");
@@ -85,6 +89,8 @@ public class WXPayAsynTask implements Runnable{
 			}else {
 				wXTradeNo.setTradeStatus((byte)2);
 			}
+			//更新导购红包
+			integralRecordMapper.updateSalerPrizeRecord(status,wXTradeNo.getWinningCode(),wXTradeNo.getOrganizationId());
 			wxTradeNoMapper.update(wXTradeNo);
 		} catch (Exception e) {
 			e.printStackTrace();

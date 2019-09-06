@@ -12,6 +12,9 @@ public class MarketingWxMerchants {
     private String organizationId;//组织id
     private String organizatioIdlName;//组织
     private String merchantSecret;//公众号secret微信授权获取token时需要用到
+    private byte merchantType;
+    private byte belongToJgw;
+
     public String getId() {
 		return id;
 	}
@@ -93,4 +96,19 @@ public class MarketingWxMerchants {
 		this.merchantSecret = merchantSecret;
 	}
 
+    public void setBelongToJgw(byte belongToJgw) {
+        this.belongToJgw = belongToJgw;
+    }
+
+    public byte getBelongToJgw() {
+        return belongToJgw;
+    }
+
+    public void setMerchantType(byte merchantType) {
+        this.merchantType = merchantType;
+    }
+
+    public byte getMerchantType() {
+        return merchantType;
+    }
 }

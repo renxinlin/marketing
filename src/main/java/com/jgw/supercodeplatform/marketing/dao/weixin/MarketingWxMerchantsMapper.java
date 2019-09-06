@@ -7,10 +7,13 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface MarketingWxMerchantsMapper {
 	static String allFields="Id id,Mchid mchid,MchAppid mchAppid,MerchantName merchantName,MerchantKey merchantKey,CertificateAddress certificateAddress,"
-			+ "OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,MerchantSecret merchantSecret";
+			+ "OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,MerchantSecret merchantSecret, MerchantType merchantType, BelongToJgw belongToJgw";
 	
     @Select("select "+allFields+" from marketing_wx_merchants where OrganizationId=#{organizationId}")
 	MarketingWxMerchants get(@Param("organizationId") String organizationId);
+
+	@Select("select "+allFields+" from marketing_wx_merchants where BelongToJgw = 1")
+	MarketingWxMerchants getJgw();
 
 	@Insert(" INSERT INTO marketing_wx_merchants(Mchid,MchAppid,MerchantName,MerchantKey,"
 			+ " CertificateAddress,CertificatePassword,OrganizationId,OrganizatioIdlName,MerchantSecret) "
@@ -44,6 +47,11 @@ public interface MarketingWxMerchantsMapper {
 	@Select("select "+allFields+" from marketing_wx_merchants where MerchantName='甲骨文'")
 	MarketingWxMerchants selectDefault();
 
+	@Insert({"INSERT INTO marketing_wx_merchants(OrganizationId,OrganizatioIdlName,MerchantType) ",
+			 "VALUES (#{organizationId},#{organizatioIdlName},1)"})
+	int insertNoMerchant(@Param("organizationId") String organizationId, @Param("organizatioIdlName") String organizatioIdlName);
 
+	@Update("UPDATE marketing_wx_merchants SET MerchantType = #{merchantType} WHERE OrganizationId = #{organizationId}")
+	int updateNoMerchant(@Param("organizationId") String organizationId, @Param("merchantType") byte merchantType);
 
 }

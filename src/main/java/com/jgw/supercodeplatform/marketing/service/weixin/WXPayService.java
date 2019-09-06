@@ -52,6 +52,9 @@ public class WXPayService {
 		if (null==mWxMerchants) {
 			throw new SuperCodeException("当前企业"+organizationId+"未绑定公众号数据", 500);
 		}
+		if (mWxMerchants.getMerchantType() == 1) {
+			mWxMerchants = mWxMerchantsMapper.getJgw();
+		}
 		String mechid=mWxMerchants.getMchid();
 		String mechappid=mWxMerchants.getMchAppid();
 		if (StringUtils.isBlank(mechid) || StringUtils.isBlank(mechappid)) {

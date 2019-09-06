@@ -433,7 +433,7 @@ public class MarketingActivitySalerSetService   {
 		mSet.setActivityStatus(1);
 		mSet.setOrganizationId(organizationId);
 		mSet.setOrganizatioIdlName(organizationName);
-
+		mSet.setSendAudit(activitySetParam.getSendAudit());
 		return mSet;
 	}
 
@@ -553,6 +553,7 @@ public class MarketingActivitySalerSetService   {
 		mSet.setActivityStatus(1);
 		mSet.setOrganizationId(organizationId);
 		mSet.setOrganizatioIdlName(organizationName);
+		mSet.setSendAudit(activitySetParam.getSendAudit());
 		return mSet;
 	}
 

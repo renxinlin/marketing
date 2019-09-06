@@ -1,40 +1,34 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
 
-import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
-
 import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateNewParam;
-import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySendAuditStatusParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusBatchUpdateParam;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySalerSetService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateNewParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySendAuditStatusParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusBatchUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySalerSetService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
-
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingWxTradeOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
 
 @RestController
 @RequestMapping("/marketing/saler/activity/set")
@@ -47,6 +41,7 @@ public class MarketingSalerActivitySetController extends CommonUtil {
 
     @Autowired
     private MarketingActivitySalerSetService marketingActivitySalerSetService;
+
 
     /**
      * 获取销售活动列表
@@ -107,7 +102,7 @@ public class MarketingSalerActivitySetController extends CommonUtil {
      * 活动创建:
      * 注意:线程使用时,一定要注意事务的回滚,提交,死锁释放问题
      * 本期已经测试完:回滚正常,提交正常
-     * @param marketingActivityParam
+     * @param
      * @return
      * @throws Exception
      */
@@ -128,7 +123,7 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     /**
      * 导购更新
      * 复制与编辑的区别在与,编辑是修改主表,复制是新增主表活动
-     * @param marketingActivityParam
+     * @param
      * @return
      * @throws Exception
      */
@@ -146,7 +141,7 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     /**
      * 导购复制
      * 复制与编辑的区别在与,编辑是修改主表,复制是新增主表活动
-     * @param marketingActivityParam
+     * @param
      * @return
      * @throws Exception
      */
@@ -160,7 +155,7 @@ public class MarketingSalerActivitySetController extends CommonUtil {
 
     /**
      * 活动编辑
-     * @param marketingActivityParam
+     * @param
      * @return
      * @throws Exception
      */
@@ -174,10 +169,11 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     	return new RestResult<>(200, "查询成功", marketingSalerActivityCreateParam);
     }
 
-    @ApiOperation("导购活动复制")
+    @ApiOperation("设置手动发送")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/enableOrDisableSendAudit")
     public RestResult<?> enableOrDisableSendAudit(@RequestBody MarketingActivitySendAuditStatusParam marketingActivitySendAuditStatusParam){
+
         return RestResult.success();
     }
 
