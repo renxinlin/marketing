@@ -1,16 +1,13 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.controller;
+package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.controller;
 
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
-import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
-import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
-import com.jgw.supercodeplatform.marketingsaler.integral.dto.BatchSalerRuleRewardDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.BatchSalerRuleRewardDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
 import com.jgw.supercodeplatform.marketingsaler.integral.service.SalerRuleRewardService;
 import io.swagger.annotations.Api;
@@ -57,7 +54,7 @@ public class SalerRuleRewardController extends SalerCommonController {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "productIds", paramType = "query", defaultValue = "1,2", value = "产品id集合", required = true)
     })
-    public RestResult<String> emptyRule(@RequestParam List<String> productIds) throws Exception {
+    public RestResult<String> emptyRule(@RequestBody List<String> productIds) throws Exception {
         service.deleteByProductIds(productIds);
         return success();
     }
