@@ -70,7 +70,7 @@ public class SalerRuleExchangeDto implements Serializable {
      * 自动下架设置0库存为0，1时间范围
      */
     @ApiModelProperty("自动下架设置0库存为0，1时间范围")
-    private Boolean undercarriageSetWay;
+    private Byte undercarriageSetWay;
 
     /**
      * 自动下架时间
