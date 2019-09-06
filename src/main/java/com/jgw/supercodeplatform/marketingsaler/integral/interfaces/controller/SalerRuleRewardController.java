@@ -52,7 +52,6 @@ public class SalerRuleRewardController extends SalerCommonController {
     @ApiOperation(value = "批量或单个清空规则设置产品", notes = "")
     @ApiImplicitParams(value= {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-            @ApiImplicitParam(name = "productIds", paramType = "query", defaultValue = "1,2", value = "产品id集合", required = true)
     })
     public RestResult<String> emptyRule(@RequestBody List<String> productIds) throws Exception {
         service.deleteByProductIds(productIds);
