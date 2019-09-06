@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketingsaler.util;
+package com.jgw.supercodeplatform.marketingsaler.integral.infrastructure.util;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;

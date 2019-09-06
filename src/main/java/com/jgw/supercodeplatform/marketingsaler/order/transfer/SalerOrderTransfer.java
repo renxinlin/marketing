@@ -8,7 +8,7 @@ import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
-import com.jgw.supercodeplatform.marketingsaler.util.HanzhiToPinyinUtil;
+import com.jgw.supercodeplatform.marketingsaler.integral.infrastructure.util.HanzhiToPinyinUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;

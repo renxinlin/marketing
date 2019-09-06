@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.assembler;
 
+import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.SalerRuleExchangeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.PrizeRulesVo;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.SalerRuleExchangeVo;
@@ -22,6 +23,9 @@ public class SalerRuleExchangeAssembler {
          dto.setHighRand(vo.getPrizeRulesVo().getHighRand());
          dto.setLowRand(vo.getPrizeRulesVo().getLowRand());
          dto.setPrizeAmount(vo.getPrizeRulesVo().getPrizeAmount());
+         if(vo.getExchangeStock() ==null){
+             dto.setHaveStock(UserConstants.defaultStock);
+         }
          return dto;
     }
 

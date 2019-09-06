@@ -35,13 +35,14 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             if(!lock){
                 throw new RuntimeException("哎呀,被别人抢啦!请稍后重试...");
             }
+            // 有没有被扫
             boolean exists = salerRuleRewardNumService.exists(outCodeId);
             if(exists){
                 throw new RuntimeException("该码已经被领取");
             }
             Asserts.check(user.getMemberId()!=null,"用户id不存在");
             Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()),"组织信息不存在");
-            // 码有没有被扫
+            // 扫码信息保存
             salerRuleRewardNumService.save(new SalerRuleRewardNum(null, user.getMemberId(), user.getOrganizationId(), outCodeId));
             // 领取完成
             User userPojo = userService.exists(user);

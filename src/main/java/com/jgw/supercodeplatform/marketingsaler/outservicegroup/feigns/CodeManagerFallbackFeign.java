@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.feigns;
+package com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;

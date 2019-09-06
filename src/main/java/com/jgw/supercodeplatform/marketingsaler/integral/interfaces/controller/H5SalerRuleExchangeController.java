@@ -80,6 +80,7 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
     @ApiOperation(value = "积分领取", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult reward(@Valid @RequestBody OutCodeInfoDto codeInfo, H5LoginVO user) throws Exception {
+        // TODO 拉到application层
         ProductInfoByCodeDto productByCode = codeManagerService.getProductByCode(codeInfo);
         Asserts.check(productByCode!=null ,"码关联信息查询数据失败...");
         rewardService.getIntegral(codeInfo.getCodeTypeId(),H5SalerRuleExchangeTransfer.getRewardValueObject(productByCode),user);
@@ -91,7 +92,7 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
     @PostMapping("/record")
     @ApiOperation(value = "积分记录 type 1 奖励 2 消耗 3表示所有", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult record(int type,@ApiIgnore  H5LoginVO user) throws CommonException {
+    public RestResult record(int type,@ApiIgnore  H5LoginVO user)   {
         return success(recordService.seletLastThreeMonth(type,user));
     }
 

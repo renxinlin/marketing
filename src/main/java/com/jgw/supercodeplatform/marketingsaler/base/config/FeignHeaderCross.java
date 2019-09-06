@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns;
+package com.jgw.supercodeplatform.marketingsaler.base.config;
 
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import feign.RequestInterceptor;
