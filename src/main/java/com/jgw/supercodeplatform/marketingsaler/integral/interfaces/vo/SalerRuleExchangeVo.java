@@ -105,9 +105,6 @@ public class SalerRuleExchangeVo implements Serializable {
     /**
      * 是否随机金额，1是 0不是
      */
-    @NotNull
-    @Min(value = 0,message = "是否随机金额，1是 0不是")
-    @Max(value = 1,message = "是否随机金额，1是 0不是")
     @ApiModelProperty("是否随机金额，1是 0不是")
     private Integer isRrandomMoney;
 
