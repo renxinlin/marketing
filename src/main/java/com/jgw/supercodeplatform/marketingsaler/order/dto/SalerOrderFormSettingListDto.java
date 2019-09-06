@@ -1,6 +1,5 @@
-package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto;
+package com.jgw.supercodeplatform.marketingsaler.order.dto;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +9,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel("产品id集合")
-public class ProductDto {
-    List<String> productIds;
+@ApiModel("表单集合")
+public class SalerOrderFormSettingListDto {
+    List<SalerOrderFormSettingDto> salerOrderFormSettingDto;
 }
