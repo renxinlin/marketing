@@ -98,10 +98,10 @@ public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMap
 	int CustomerVerifyCouponCout(CouponCustmerVerifyPageParam searchParams);
 	
 	@Insert({"<script>insert into marketing_member_coupon ",
-		"(MemberId,CouponId,CouponAmount,MemberPhone,ProductId,ProductName,ObtainCustomerId,DeductionStartDate,DeductionEndDate,ObtainCustmerName,CreateTime,Used,CustomerId,CustomerName,ActivitySetId,CouponCondition)",
+		"(MemberId,CouponId,CouponAmount,MemberPhone,ProductId,ProductName,ObtainCustomerId,DeductionStartDate,DeductionEndDate,ObtainCustmerName,CreateTime,Used,CustomerId,CustomerName,ActivitySetId,CouponCondition,OuterCodeId)",
 		"values <foreach collection='list' item='memberCoupon' index='index' separator=','>",
 		"(#{memberCoupon.memberId},#{memberCoupon.couponId},#{memberCoupon.couponAmount},#{memberCoupon.memberPhone},#{memberCoupon.productId},#{memberCoupon.productName},#{memberCoupon.obtainCustomerId},",
-		"#{memberCoupon.deductionStartDate},#{memberCoupon.deductionEndDate},#{memberCoupon.obtainCustmerName},#{memberCoupon.createTime},#{memberCoupon.used},#{memberCoupon.customerId},#{memberCoupon.customerName},#{memberCoupon.activitySetId},#{memberCoupon.couponCondition})",
+		"#{memberCoupon.deductionStartDate},#{memberCoupon.deductionEndDate},#{memberCoupon.obtainCustmerName},#{memberCoupon.createTime},#{memberCoupon.used},#{memberCoupon.customerId},#{memberCoupon.customerName},#{memberCoupon.activitySetId},#{memberCoupon.couponCondition},#{memberCoupon.outerCodeId})",
 		"</foreach>",
 		"</script>"})
 	@Options(useGeneratedKeys=true, keyColumn="Id",keyProperty="id")

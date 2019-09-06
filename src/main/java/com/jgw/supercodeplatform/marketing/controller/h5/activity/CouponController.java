@@ -6,6 +6,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
@@ -58,7 +61,11 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/marketing/front/coupon")
 @Api(tags = "抵扣券H5")
 public class CouponController {
-	
+
+	@Autowired
+	private CommonService commonService;
+	@Autowired
+	private MarketingActivityChannelService marketingActivityChannelService;
 	@Autowired
 	private CouponMemberService couponMemberService;
 	@Autowired
@@ -102,7 +109,7 @@ public class CouponController {
 		Integer activityStatus = marketingActivitySet.getActivityStatus();
 		if(activityStatus == null || activityStatus.intValue() != 1)
 			throw new SuperCodeException("‘活动已下架’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-		int activityId = marketingActivitySet.getActivityId().intValue();
+		long activityId = marketingActivitySet.getActivityId();
 		if(activityId != 4)
 			throw new SuperCodeException("‘非抵扣券活动’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		String activityStartDateStr = marketingActivitySet.getActivityStartDate();
@@ -122,12 +129,21 @@ public class CouponController {
 		if(!CouponAcquireConditionEnum.SHOPPING.getCondition().equals(acquireCondition)) {
 			throw new SuperCodeException("‘优惠券获得条件不对’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 		}
+		String codeId = couponObtainParam.getOuterCodeId();
+		String codeTypeId = couponObtainParam.getCodeTypeId();
+		commonService.checkCodeValid(codeId, codeTypeId);
+		commonService.checkCodeTypeValid(Long.valueOf(codeTypeId));
+		//检查是渠道信息
+		MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(codeId, activityId);
+		if (marketingChannel == null){
+			return RestResult.fail("渠道信息不正确",null);
+		}
 		ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
 		scanCodeInfoMO.setActivitySetId(activitySetId);
 		scanCodeInfoMO.setActivityId(ActivityIdEnum.ACTIVITY_COUPON.getId().longValue());
 		scanCodeInfoMO.setActivityType(ActivityIdEnum.ACTIVITY_COUPON.getType());
-		scanCodeInfoMO.setCodeId(couponObtainParam.getOuterCodeId());
-		scanCodeInfoMO.setCodeTypeId(couponObtainParam.getCodeTypeId());
+		scanCodeInfoMO.setCodeId(codeId);
+		scanCodeInfoMO.setCodeTypeId(codeTypeId);
 		scanCodeInfoMO.setCreateTime(DateFormatUtils.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
 		scanCodeInfoMO.setOrganizationId(jwtUser.getOrganizationId());
 		scanCodeInfoMO.setProductBatchId(couponObtainParam.getProductBatchId());
@@ -135,7 +151,7 @@ public class CouponController {
 		scanCodeInfoMO.setScanCodeTime(new Date());
 		scanCodeInfoMO.setMobile(jwtUser.getMobile());
 		scanCodeInfoMO.setUserId(jwtUser.getMemberId());
-		marketingMemberProductIntegralService.obtainCouponShopping(scanCodeInfoMO ,productName, jwtUser, couponObtainParam.getOuterCodeId());
+		marketingMemberProductIntegralService.obtainCouponShopping(scanCodeInfoMO ,productName, jwtUser, couponObtainParam.getOuterCodeId(), marketingChannel);
 		return RestResult.success();
 	}
 	

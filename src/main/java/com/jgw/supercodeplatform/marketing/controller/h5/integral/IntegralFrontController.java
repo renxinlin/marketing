@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,9 @@ public class IntegralFrontController {
 	
 	@Autowired
 	private MarketingMemberProductIntegralService productIntegralService;
+
+	@Autowired
+	private MarketingActivityChannelService marketingActivityChannelService;
 	
 	/**
 	 * 领取积分

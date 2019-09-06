@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -458,19 +459,19 @@ public class CommonService {
     /**
      * 
      * @param outerCodeId
-     * @param customerIds
+     * @param
      * @return
      * @throws SuperCodeException
      */
-    public Map<String, String> queryCurrentCustomer(String outerCodeId) throws SuperCodeException {
+    public Map<String, String> queryCurrentCustomer(String outerCodeId) {
     	Map<String, Object> params = new HashMap<>();
-    	params.put("outerCodeId", outerCodeId);
+    	params.put("outerCodeIds", outerCodeId);
     	ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(logisticsUrl+CommonConstants.OUTERCODE_CUSTOMER, params, null);
     	String body = responseEntity.getBody();
 		JSONObject jsonObject=JSONObject.parseObject(body);
 		Integer state=jsonObject.getInteger("state");
 		if (null == state || state.intValue()!=200) {
-			throw new SuperCodeException("码查询客户信息出错:"+body, 500);
+			throw new SuperCodeExtException("码查询客户信息出错:"+body, 500);
 		}
 		Map<String, String> customerMap = new HashMap<>();
 		JSONObject resultJson = jsonObject.getJSONObject("results");

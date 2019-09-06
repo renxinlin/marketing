@@ -54,6 +54,8 @@ public class WXPayService {
 		}
 		if (mWxMerchants.getMerchantType() == 1) {
 			mWxMerchants = mWxMerchantsMapper.getJgw();
+		} else if (StringUtils.isBlank(mWxMerchants.getCertificateAddress())) {
+			throw new SuperCodeException("当前企业"+organizationId+"没有上传公众号证书", 500);
 		}
 		String mechid=mWxMerchants.getMchid();
 		String mechappid=mWxMerchants.getMchAppid();

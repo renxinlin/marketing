@@ -54,4 +54,11 @@ public interface MarketingWxMerchantsMapper {
 	@Update("UPDATE marketing_wx_merchants SET MerchantType = #{merchantType} WHERE OrganizationId = #{organizationId}")
 	int updateNoMerchant(@Param("organizationId") String organizationId, @Param("merchantType") byte merchantType);
 
+	@Insert({"INSERT INTO marketing_wx_merchants(OrganizationId,OrganizatioIdlName,MchAppid,MerchantSecret) ",
+			"VALUES (#{organizationId},#{organizatioIdlName},#{mchAppid},#{merchantSecret})"})
+	int insertAppidAndSecret(@Param("mchAppid")String mchAppid, @Param("merchantSecret")String merchantSecret, @Param("organizationId") String organizationId, @Param("organizatioIdlName") String organizatioIdlName);
+
+	@Update("UPDATE marketing_wx_merchants SET MchAppid = #{mchAppid}, MerchantSecret = #{merchantSecret} WHERE OrganizationId = #{organizationId}")
+	int updateAppidAndSecret(@Param("mchAppid")String mchAppid, @Param("merchantSecret")String merchantSecret, @Param("organizationId") String organizationId);
+
 }

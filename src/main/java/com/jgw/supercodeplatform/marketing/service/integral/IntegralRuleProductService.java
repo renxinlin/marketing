@@ -113,7 +113,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		if (null==integralRule) {
 			throw new SuperCodeException("当前企业未设置同意积分规则，请先设置通用积分规则", 500);
 		}
-		Byte memberType=bProductRuleParam.getMemberType();
+		Byte memberType=0;
 		Float perConsume=bProductRuleParam.getPerConsume();
 		Float productPrice=bProductRuleParam.getProductPrice();
 		Integer rewardIntegral=bProductRuleParam.getRewardIntegral();
@@ -172,6 +172,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
     
 	@Transactional
 	public void singleSetRuleProduct( IntegralRuleProduct inRuleProduct) throws SuperCodeException {
+		inRuleProduct.setMemberType((byte)0);
 		if (null==inRuleProduct.getId()) {
 			
 			String organizationId=commonUtil.getOrganizationId();

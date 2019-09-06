@@ -101,13 +101,13 @@ public class SalerLotteryService {
      * 现在开始所有的扫码信息都要录入到marketingscan
      * 每个领奖码信息录入到自己的业务索引
      * todo 后期需要考虑渠道处理，本期不加
-     * @param wxstate
+     * @param scanCodeInfoMO
      * @param jwtUser
      * @return
      * @throws SuperCodeException
      */
     @Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
-    public LotteryResultMO salerlottery(String wxstate, H5LoginVO jwtUser,HttpServletRequest request) throws Exception {
+    public LotteryResultMO salerlottery(ScanCodeInfoMO scanCodeInfoMO, H5LoginVO jwtUser,HttpServletRequest request) throws Exception {
         /**
          * 扫码条件:
          *  1 活动规则
@@ -136,8 +136,6 @@ public class SalerLotteryService {
          *
          *  备注:多人同时扫码的并发处理
          */
-        // step-1 活动主体和用户基本校验:
-        ScanCodeInfoMO scanCodeInfoMO = validateBasicBySalerlottery(wxstate, jwtUser);
 
         // step-2 活动主体数据获取
         String productId           = scanCodeInfoMO.getProductId();
@@ -472,7 +470,7 @@ public class SalerLotteryService {
         return marketingUser;
     }
 
-    private ScanCodeInfoMO validateBasicBySalerlottery(String wxstate, H5LoginVO jwtUser) throws SuperCodeException {
+    public ScanCodeInfoMO validateBasicBySalerlottery(String wxstate, H5LoginVO jwtUser) throws SuperCodeException {
         // 第一部分
         if(StringUtils.isBlank(jwtUser.getOrganizationId())){
             // 系统写token丢失参数

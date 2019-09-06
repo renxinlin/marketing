@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -40,9 +41,9 @@ public class RestTemplateUtil {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public ResponseEntity<String> getRequestAndReturnJosn(String url,Map<String, Object> params,Map<String, String> headerMap) throws SuperCodeException {
+	public ResponseEntity<String> getRequestAndReturnJosn(String url,Map<String, Object> params,Map<String, String> headerMap) {
 		if (StringUtils.isBlank(url)) {
-			throw new SuperCodeException("sendGetRequestAndReturnJosn参数url不能为空", 500);
+			throw new SuperCodeExtException("sendGetRequestAndReturnJosn参数url不能为空", 500);
 		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);

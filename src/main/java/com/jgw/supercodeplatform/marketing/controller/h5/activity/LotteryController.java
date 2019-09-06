@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,9 @@ public class LotteryController extends CommonUtil {
     private IntegralOrderExcelService integralOrderExcelService;
 
     @Autowired
+    private MarketingActivityChannelService marketingActivityChannelService;
+
+    @Autowired
     private GlobalRamCache globalRamCache;
 
     @Value("${cookie.domain}")
@@ -69,6 +74,10 @@ public class LotteryController extends CommonUtil {
     public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
         ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
         LotteryOprationDto lotteryOprationDto = new LotteryOprationDto();
+        MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
+        if (marketingChannel == null){
+            return RestResult.successWithData(new LotteryResultMO("渠道信息不对"));
+        }
         //检查抽奖的初始条件是否符合
         service.checkLotteryCondition(lotteryOprationDto, scanCodeInfoMO);
         RestResult<LotteryResultMO> restResult = lotteryOprationDto.getRestResult();
@@ -108,12 +117,14 @@ public class LotteryController extends CommonUtil {
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<LotteryResultMO> salerLottery( String codeId,Long codeTypeId ,String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
         // 是不是营销码制，不是不可通过
-        if(codeTypeId == null|| codeTypeId != 12){
-            throw new SuperCodeException("非营销码...");
-        }
         commonService.checkCodeTypeValid(codeTypeId);
         commonService.checkCodeValid(codeId,codeTypeId+"");
-        LotteryResultMO lotteryResultMO = salerLotteryService.salerlottery(wxstate,jwtUser,request);
+        ScanCodeInfoMO scanCodeInfoMO = salerLotteryService.validateBasicBySalerlottery(wxstate, jwtUser);
+        MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
+        if (marketingChannel == null){
+            return RestResult.successWithData(new LotteryResultMO("渠道信息不对"));
+        }
+        LotteryResultMO lotteryResultMO = salerLotteryService.salerlottery(scanCodeInfoMO,jwtUser,request);
         return RestResult.successWithData(lotteryResultMO);
     }
     

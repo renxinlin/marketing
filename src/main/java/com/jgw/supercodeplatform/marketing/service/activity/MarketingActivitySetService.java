@@ -14,7 +14,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.*;
+import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,13 +58,6 @@ import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingReceivingPage;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingWinningPage;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 import com.jgw.supercodeplatform.pojo.cache.AccountCache;
@@ -103,6 +99,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	@Autowired
 	private MarketingActivityChannelService channelService;
 
+	@Autowired
+	private MarketingWxMerchantsMapper marketingWxMerchantsMapper;
 
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
@@ -175,8 +173,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
 		//获取奖次参数
 		List<MarketingPrizeTypeParam>mPrizeTypeParams=activitySetParam.getMarketingPrizeTypeParams();
-		
-		MarketingActivitySet existmActivitySet =mSetMapper.selectByTitleOrgId(activitySetParam.getmActivitySetParam().getActivityTitle(),organizationId);
+		MarketingActivitySetParam setParam = activitySetParam.getmActivitySetParam();
+		MarketingActivitySet existmActivitySet =mSetMapper.selectByTitleOrgId(setParam.getActivityTitle(),organizationId);
 		if (null!=existmActivitySet) {
 			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
 		}
@@ -197,6 +195,13 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		//保存奖次
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
+		//保存公众号信息
+		MarketingWxMerchants marketingWxMerchants = marketingWxMerchantsMapper.selectByOrganizationId(organizationId);
+		if (marketingWxMerchants == null) {
+			marketingWxMerchantsMapper.insertAppidAndSecret(setParam.getMchAppid(), setParam.getMerchantSecret(), organizationId, organizationName);
+		} else {
+			marketingWxMerchantsMapper.updateAppidAndSecret(setParam.getMchAppid(), setParam.getMerchantSecret(),organizationId);
+		}
 		return mActivitySet;
 	}
 	/**
