@@ -47,6 +47,8 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "h5接收码管理跳转路径")
 public class ScanCodeController {
 	protected static Logger logger = LoggerFactory.getLogger(ScanCodeController.class);
+    //导购活动跳跳前端后缀
+	private final static String salerUrlsuffix = "#/salesRedBag/index";
     @Autowired
     private CommonUtil commonUtil;
     @Autowired
@@ -88,7 +90,7 @@ public class ScanCodeController {
     private CodeEsService es;
     /**
      * 客户扫码码平台跳转到营销系统地址接口
-     * @param codeId
+     * @param outerCodeId
      * @param codeTypeId
      * @param productId
      * @param productBatchId
@@ -99,7 +101,7 @@ public class ScanCodeController {
      */
     @RequestMapping(value = "/",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
-    public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId, HttpServletRequest request) throws Exception {
+    public String bind(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId, HttpServletRequest request) throws Exception {
     	Map<String, String> uriVariables = new HashMap<>();
     	uriVariables.put("judgeType", "2");
     	uriVariables.put("outerCodeId", outerCodeId);
@@ -144,12 +146,12 @@ public class ScanCodeController {
      */
     @RequestMapping(value = "/saler",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统导购路径", notes = "")
-    public String daogou(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam(name="codeTypeId")String codeTypeId,@RequestParam(name="productId")String productId,@RequestParam(name="productBatchId")String productBatchId) throws Exception {
-    	logger.info("导购扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId);
+    public String daogou(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId,@RequestParam String sBatchId) throws Exception {
+    	logger.info("导购扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+"sBatchId="+sBatchId);
     	String	wxstate=commonUtil.getUUID();
-    	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId, wxstate, ReferenceRoleEnum.ACTIVITY_SALER.getType());
+    	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId,sBatchId, wxstate, ReferenceRoleEnum.ACTIVITY_SALER.getType());
         // 领取按钮对应的前端URL
-        return "redirect:"+SALER_LOTTERY_URL+"?wxstate="+wxstate;
+        return "redirect:"+h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate;
     }
 
     /**
@@ -165,23 +167,23 @@ public class ScanCodeController {
      * @throws UnsupportedEncodingException
      * @throws ParseException
      */
-    private String activityJudegeBySaler(String outerCodeId, String codeTypeId, String productId, String productBatchId, String wxstate, byte referenceRole) throws SuperCodeException, UnsupportedEncodingException, ParseException {
+    private String activityJudegeBySaler(String outerCodeId, String codeTypeId, String productId, String productBatchId,String sBatchId, String wxstate, byte referenceRole) throws SuperCodeException, UnsupportedEncodingException, ParseException {
 
         RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole);
         if (restResult.getState()==500) {
             logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
-            return SALER_LOTTERY_URL+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
+            return h5pageUrl+salerUrlsuffix+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
         }
 
         ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
-
+        sCodeInfoMO.setSbatchId(sBatchId);
         //在校验产品及产品批次时可以从活动设置表中获取组织id
         String organizationId=sCodeInfoMO.getOrganizationId();
         sCodeInfoMO.setOrganizationId(organizationId);
         globalRamCache.putScanCodeInfoMO(wxstate,sCodeInfoMO);
 
         logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
-        String url=SALER_LOTTERY_URL+"?wxstate="+wxstate;
+        String url=h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate;
         return url;
 
 

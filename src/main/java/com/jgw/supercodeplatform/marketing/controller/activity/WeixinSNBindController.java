@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 /**
  * 商户公众号绑定
@@ -66,8 +68,7 @@ public class WeixinSNBindController extends CommonUtil {
 	@RequestMapping(value = "/bind", method = RequestMethod.POST)
 	@ApiOperation(value = "微信商户信息绑定", notes = "")
 	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-	public RestResult<String> bind(@RequestBody MarketingWxMerchantsParam wxMerchantsParam, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
+	public RestResult<String> bind(@RequestBody @Valid MarketingWxMerchantsParam wxMerchantsParam) throws Exception {
 
 		// 校验组织ID
 		String organizationId = getOrganizationId();
@@ -106,5 +107,14 @@ public class WeixinSNBindController extends CommonUtil {
     public RestResult<MarketingWxMerchants> get() throws Exception {
         return marketingWxMerchantsService.get();
     }
-    
+
+    @PostMapping("/setUseType")
+	@ApiOperation("设置使用公众号方式<0:使用公司自己的，1：使用甲骨文的>")
+	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+	public RestResult<?> setUseType(@RequestParam Byte useType){
+		marketingWxMerchantsService.setUseType(useType);
+		return RestResult.success();
+	}
+
+
 }

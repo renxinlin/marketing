@@ -10,10 +10,8 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecor
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
 import com.jgw.supercodeplatform.marketing.pojo.pay.RedPackageParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingMembersWinRecordService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingWxTradeOrderService;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +32,8 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 	@Autowired
 	private MarketingMembersWinRecordService service;
 
+	@Autowired
+	private MarketingWxTradeOrderService marketingWxTradeOrderService;
 
 
 	// 	@Value("${marketing.winRecord.sheetHead}")
@@ -94,8 +94,12 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 	@ApiOperation("发送中奖红包")
 	@PostMapping("/sendRedPackage")
 	@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")
-	public RestResult<?> sendWxTrade(@RequestBody @Valid RedPackageParam redPackageParam){
-		return RestResult.success();
+	public RestResult<?> sendWxTrade(@RequestBody @Valid RedPackageParam redPackageParam) throws Exception {
+		String res = marketingWxTradeOrderService.sendPayTradeOrder(redPackageParam.getOpenId(), redPackageParam.getWinningCode());
+		if (res == null) {
+			return RestResult.success();
+		}
+		return RestResult.fail(res, null);
 	}
 
 }

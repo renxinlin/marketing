@@ -106,14 +106,15 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/salerLottery")
     @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
-    public RestResult<String> salerLottery( String codeId,Long codeTypeId ,String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
+    public RestResult<LotteryResultMO> salerLottery( String codeId,Long codeTypeId ,String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
         // 是不是营销码制，不是不可通过
         if(codeTypeId == null|| codeTypeId != 12){
             throw new SuperCodeException("非营销码...");
         }
         commonService.checkCodeTypeValid(codeTypeId);
         commonService.checkCodeValid(codeId,codeTypeId+"");
-        return salerLotteryService.salerlottery(wxstate,jwtUser,request);
+        LotteryResultMO lotteryResultMO = salerLotteryService.salerlottery(wxstate,jwtUser,request);
+        return RestResult.successWithData(lotteryResultMO);
     }
     
     

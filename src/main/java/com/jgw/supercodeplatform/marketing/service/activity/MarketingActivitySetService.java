@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.jgw.supercodeplatform.marketing.dto.activity.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,16 +52,6 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMa
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityCreateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusBatchUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingChannelParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingReceivingPageParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
@@ -331,7 +322,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
 
 
-	private MarketingActivitySet convertActivitySet(MarketingActivitySetParam activitySetParam, String organizationId, String organizationName) throws SuperCodeException {
+	public MarketingActivitySet convertActivitySet(MarketingActivitySetParam activitySetParam, String organizationId, String organizationName) throws SuperCodeException {
 		String title=activitySetParam.getActivityTitle();
 		if (StringUtils.isBlank(title)) {
 			throw new SuperCodeException("添加的活动设置标题不能为空", 500);
@@ -528,7 +519,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mProductMapper.activityProductInsert(mList);
 	}
 
-	private void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, MarketingActivitySet activitySet, int referenceRole) throws SuperCodeException {
+	public void saveProductBatchs(List<MarketingActivityProductParam> maProductParams, MarketingActivitySet activitySet, int referenceRole) throws SuperCodeException {
 		/************************查询需要去码平台删除关联关系的产品批次************************/
 		//绑定生码批次列表
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
