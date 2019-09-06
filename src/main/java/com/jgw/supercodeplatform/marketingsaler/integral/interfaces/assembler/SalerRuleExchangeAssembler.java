@@ -23,7 +23,7 @@ public class SalerRuleExchangeAssembler {
          dto.setHighRand(vo.getPrizeRulesVo().getHighRand());
          dto.setLowRand(vo.getPrizeRulesVo().getLowRand());
          dto.setPrizeAmount(vo.getPrizeRulesVo().getPrizeAmount());
-         if(vo.getExchangeStock() ==null){
+         if(vo.getHaveStock() ==null){
              dto.setHaveStock(UserConstants.defaultStock);
          }
          return dto;
