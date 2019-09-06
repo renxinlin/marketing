@@ -4,7 +4,7 @@ import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.SalerRuleExchangeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.PrizeRulesVo;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.SalerRuleExchangeVo;
-import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleExchange;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

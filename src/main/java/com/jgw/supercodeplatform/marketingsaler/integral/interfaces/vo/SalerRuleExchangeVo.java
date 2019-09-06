@@ -2,7 +2,7 @@ package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.ExchangeUpDownStatus;
-import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleExchange;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

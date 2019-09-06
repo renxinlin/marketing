@@ -8,9 +8,7 @@ import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
-import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
-import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueListDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
 import com.jgw.supercodeplatform.marketingsaler.order.mapper.SalerOrderFormMapper;
@@ -19,15 +17,12 @@ import com.jgw.supercodeplatform.marketingsaler.order.transfer.SalerOrderTransfe
 import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 

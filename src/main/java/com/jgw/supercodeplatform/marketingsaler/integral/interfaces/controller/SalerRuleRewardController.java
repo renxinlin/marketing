@@ -8,8 +8,9 @@ import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonContr
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.BatchSalerRuleRewardDto;
-import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleReward;
-import com.jgw.supercodeplatform.marketingsaler.integral.service.SalerRuleRewardService;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleReward;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.service.SalerRuleRewardService;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.ProductDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -53,8 +54,8 @@ public class SalerRuleRewardController extends SalerCommonController {
     @ApiImplicitParams(value= {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
     })
-    public RestResult<String> emptyRule(@RequestBody List<String> productIds) throws Exception {
-        service.deleteByProductIds(productIds);
+    public RestResult<String> emptyRule(@RequestBody ProductDto  productIds) throws Exception {
+        service.deleteByProductIds(productIds.getProductIds());
         return success();
     }
 
