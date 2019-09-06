@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -13,7 +14,9 @@ import lombok.experimental.Accessors;
 public class SalerRuleExchangeAutoUndercarriageEvent {
     private Long id;
     /**
-     * 兑换活动状态0上架1手动下架2自动下架
+     * 兑换活动状态3上架1手动下架2自动下架
      */
+    @ApiModelProperty(value = "兑换活动状态3上架1手动下架2自动下架")
+
     private Byte status = 2;
 }

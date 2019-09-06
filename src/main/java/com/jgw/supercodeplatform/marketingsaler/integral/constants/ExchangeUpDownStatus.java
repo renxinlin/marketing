@@ -7,7 +7,7 @@ public interface ExchangeUpDownStatus {
     /**
      * 上架
      */
-    byte up =0 ;
+    byte up =3 ;
     /**
      * 下架
      */

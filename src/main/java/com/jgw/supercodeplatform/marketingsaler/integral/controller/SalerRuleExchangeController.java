@@ -61,7 +61,7 @@ public class SalerRuleExchangeController extends SalerCommonController {
 
 
     @GetMapping("/updateStatus")
-    @ApiOperation(value = "兑换上下架:0上架1手动下架2自动下架", notes = "")
+    @ApiOperation(value = "兑换上下架:3上架1手动下架2自动下架", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult updateStatus(@RequestParam("status") Byte status,@RequestParam("id") Long id) throws CommonException {
         service.updateStatus(id,status);

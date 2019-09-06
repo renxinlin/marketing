@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.dto;
 
 import com.jgw.supercodeplatform.marketing.dto.integral.Product;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@ApiModel("批量积分奖励规则值对象")
 public class BatchSalerRuleRewardDto {
     /** 产品价格 */
     @ApiModelProperty(value = "产品价格",example="10")
@@ -29,7 +31,7 @@ public class BatchSalerRuleRewardDto {
     @NotNull
     @ApiModelProperty(value = "奖励积分",example="10")
     private Integer rewardIntegral;
-    
+
     @ApiModelProperty(value = "设置的产品集合")
     private List<Product> products;
 

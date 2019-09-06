@@ -37,6 +37,7 @@ public class SalerRuleReward implements Serializable {
     /**
      * 主键
      */
+    @ApiModelProperty("主键")
     @TableId(value = "Id", type = IdType.AUTO)
     private Long id;
 
@@ -50,6 +51,7 @@ public class SalerRuleReward implements Serializable {
     /**
      * 产品名称|注意基础信息可以发生改变
      */
+    @ApiModelProperty("产品名称")
     @TableField("ProductName")
     private String productName;
 
@@ -57,12 +59,15 @@ public class SalerRuleReward implements Serializable {
      * 产品价
      */
     @TableField("ProductPrice")
+    @ApiModelProperty("产品价")
+
     private Float productPrice;
 
     /**
      * 奖励对象0会员
      */
     @TableField("MemberType")
+    @ApiModelProperty("废弃:奖励对象1导购")
     private Byte memberType;
 
     /**
@@ -76,24 +81,30 @@ public class SalerRuleReward implements Serializable {
      * 每消费多少元
      */
     @TableField("PerConsume")
+    @ApiModelProperty("每消费多少元")
     private Float perConsume;
 
     /**
      * 奖励积分
      */
+    @ApiModelProperty("奖励积分")
     @TableField("RewardIntegral")
     private Integer rewardIntegral;
 
+    @ApiModelProperty("OrganizationId")
     @TableField("OrganizationId")
     private String organizationId;
 
+    @ApiModelProperty("OrganizationName")
     @TableField("OrganizationName")
     private String organizationName;
 
     @TableField("UpdateDate")
+    @ApiModelProperty("updateDate")
     private Date updateDate;
 
     @TableField("CreateDate")
+    @ApiModelProperty("CreateDate")
     private Date createDate;
 
 
