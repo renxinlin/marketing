@@ -11,6 +11,7 @@ import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingListDto;
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.service.SalerOrderFormService;
 import io.swagger.annotations.Api;
@@ -46,9 +47,9 @@ public class SalerOrderFormController extends SalerCommonController {
     @PostMapping("/save")
     @ApiOperation(value = "设置表单", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@Valid @RequestBody List<SalerOrderFormSettingDto> salerOrderFormDtos) throws CommonException {
+    public RestResult save(@Valid @RequestBody SalerOrderFormSettingListDto salerOrderFormDtos) throws CommonException {
 
-        service.alterOrCreateTableAndUpdateMetadata(salerOrderFormDtos);
+        service.alterOrCreateTableAndUpdateMetadata(salerOrderFormDtos.getSalerOrderFormSettingDto());
         return success();
     }
 

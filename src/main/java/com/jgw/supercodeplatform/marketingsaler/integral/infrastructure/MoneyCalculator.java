@@ -1,6 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.infrastructure;
 
-import com.jgw.supercodeplatform.marketingsaler.integral.pojo.SalerRuleExchange;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleExchange;
 import org.apache.http.util.Asserts;
 
 import java.math.BigDecimal;
