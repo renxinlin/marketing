@@ -6,8 +6,10 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageR
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
+import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.pay.RedPackageParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingMembersWinRecordService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingWxTradeOrderService;
@@ -31,6 +33,9 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 
 	@Autowired
 	private MarketingMembersWinRecordService service;
+
+	@Autowired
+	private MarketingUserMapper marketingUserMapper;
 
 	@Autowired
 	private MarketingWxTradeOrderService marketingWxTradeOrderService;
@@ -95,7 +100,7 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 	@PostMapping("/sendRedPackage")
 	@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")
 	public RestResult<?> sendWxTrade(@RequestBody @Valid RedPackageParam redPackageParam) throws Exception {
-		String res = marketingWxTradeOrderService.sendPayTradeOrder(redPackageParam.getOpenId(), redPackageParam.getWinningCode());
+		String res = marketingWxTradeOrderService.sendPayTradeOrder(redPackageParam.getTradeNo(), redPackageParam.getWinningCode());
 		if (res == null) {
 			return RestResult.success();
 		}

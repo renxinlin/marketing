@@ -29,6 +29,9 @@ public interface WechatConstants {
     
     //码管理跳转到营销系统路径
     String SCAN_CODE_JUMP_URL="/marketing/front/scan/";
+
+    //码管理跳转到营销系统路径
+    String SALER_SCAN_CODE_JUMP_URL="/marketing/front/scan/saler";
     
     //获取accesstoken
     String ACCESS_TOKEN_URL="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential";

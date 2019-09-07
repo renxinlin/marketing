@@ -115,11 +115,13 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/salerLottery")
     @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
-    public RestResult<LotteryResultMO> salerLottery( String codeId,Long codeTypeId ,String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
+    public RestResult<LotteryResultMO> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
+        ScanCodeInfoMO scanCodeInfoMO = salerLotteryService.validateBasicBySalerlottery(wxstate, jwtUser);
+        Long codeTypeId = Long.valueOf(scanCodeInfoMO.getCodeTypeId());
+        String codeId = scanCodeInfoMO.getCodeId();
         // 是不是营销码制，不是不可通过
         commonService.checkCodeTypeValid(codeTypeId);
         commonService.checkCodeValid(codeId,codeTypeId+"");
-        ScanCodeInfoMO scanCodeInfoMO = salerLotteryService.validateBasicBySalerlottery(wxstate, jwtUser);
         MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
         if (marketingChannel == null){
             return RestResult.successWithData(new LotteryResultMO("渠道信息不对"));

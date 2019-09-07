@@ -85,18 +85,27 @@ public class MarketingMemberProductIntegralService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void obtainCoupon(MarketingMemberProductIntegral productIntegral, MarketingMembers members, String productName, String outerCodeId) throws ParseException, SuperCodeException {
+		String integralMsg = JSON.toJSONString(productIntegral);
 		String productId = productIntegral.getProductId();
 		String productBatchId = productIntegral.getProductBatchId();
 		MarketingActivityProduct marketingActivityProduct = marketingActivityProductMapper.selectByProductAndProductBatchIdWithReferenceRole(productId, productBatchId, MemberTypeEnums.VIP.getType());
 		if (marketingActivityProduct == null) {
+			log.info("该产品未参加优惠券活动：{}", integralMsg);
+			return;
+		}
+		String sBatchIds = marketingActivityProduct.getSbatchId();
+		if (StringUtils.isBlank(sBatchIds) || sBatchIds.contains(productIntegral.getSbatchId())) {
+			log.info("该生码批次未参加优惠券活动：{}", integralMsg);
 			return;
 		}
 		MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(marketingActivityProduct.getActivitySetId());
 		if(marketingActivitySet == null){
+			log.info("该产品未参加优惠券活动：{}", integralMsg);
 			return;
 		}
 		MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(outerCodeId, marketingActivityProduct.getActivitySetId());
 		if (marketingChannel == null) {
+			log.info("该产品渠道未参加优惠券活动：{}", integralMsg);
 			return;
 		}
 		//添加或者更新累计积分

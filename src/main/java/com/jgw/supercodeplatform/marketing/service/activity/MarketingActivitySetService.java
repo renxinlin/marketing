@@ -480,44 +480,44 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 */
 	public void saveProductBatchs(List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs, List<Map<String,Object>> deleteProductBatchList, List<MarketingActivityProduct> mList, int referenceRole) throws SuperCodeException {
 		//如果是会员活动需要去绑定扫码连接到批次号
-		if (referenceRole == RoleTypeEnum.MEMBER.getMemberType()) {
-			String superToken = commonUtil.getSuperToken();
-			String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
-					WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
-			JSONObject obj = JSONObject.parseObject(body);
-			int state = obj.getInteger("state");
-			if (200 == state) {
-				JSONArray arr = obj.getJSONArray("results");
-				List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr,
-						marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
-						BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
-				if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
-					String delbatchBody = commonService.deleteUrlToBatch(deleteProductBatchList, superToken);
-					JSONObject delBatchobj = JSONObject.parseObject(delbatchBody);
-					Integer delBatchstate = delBatchobj.getInteger("state");
-					if (null != delBatchstate && delBatchstate.intValue() != 200) {
-						throw new SuperCodeException("请求码删除生码批次和url错误：" + delbatchBody, 500);
-					}
-				}
-				// 绑定生码批次到url
-				String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
-				JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
-				Integer batchstate = bindBatchobj.getInteger("state");
-				if (null != batchstate && batchstate.intValue() != 200) {
-					throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, 500);
-				}
-				Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
-						marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
-						BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
-				mList.forEach(marketingActivityProduct -> {
-					String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
-					Map<String, Object> batchMap = paramsMap.get(key);
-					if(batchMap != null)
-						marketingActivityProduct.setSbatchId((String)batchMap.get("batchId"));
-				});
-			} else {
-				throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
+		String superToken = commonUtil.getSuperToken();
+		String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
+				WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
+		JSONObject obj = JSONObject.parseObject(body);
+		int state = obj.getInteger("state");
+		if (200 == state) {
+			String bindUrl = marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL;
+			if (referenceRole == ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue()) {
+				bindUrl = marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL;
 			}
+			JSONArray arr = obj.getJSONArray("results");
+			List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr,bindUrl,
+					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType(), referenceRole);
+			if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
+				String delbatchBody = commonService.deleteUrlToBatch(deleteProductBatchList, superToken);
+				JSONObject delBatchobj = JSONObject.parseObject(delbatchBody);
+				Integer delBatchstate = delBatchobj.getInteger("state");
+				if (null != delBatchstate && delBatchstate.intValue() != 200) {
+					throw new SuperCodeException("请求码删除生码批次和url错误：" + delbatchBody, 500);
+				}
+			}
+			// 绑定生码批次到url
+			String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
+			JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
+			Integer batchstate = bindBatchobj.getInteger("state");
+			if (null != batchstate && batchstate.intValue() != 200) {
+				throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, 500);
+			}
+			Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,bindUrl,
+					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+			mList.forEach(marketingActivityProduct -> {
+				String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
+				Map<String, Object> batchMap = paramsMap.get(key);
+				if(batchMap != null)
+					marketingActivityProduct.setSbatchId((String)batchMap.get("batchId"));
+			});
+		} else {
+			throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
 		}
 		//插入对应活动产品数据
 		mProductMapper.batchDeleteByProBatchsAndRole(mList, referenceRole);

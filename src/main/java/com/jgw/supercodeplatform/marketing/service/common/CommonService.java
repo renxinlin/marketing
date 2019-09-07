@@ -132,12 +132,12 @@ public class CommonService {
 	}
     /**
      * 获取绑定批次和url的请求参数
-     * @param obj：通过产品和产品批次获取的码管理平台生码批次信息
+     * @param clientRole：0为消费者，1为销售员
      * @param url
      * @return
      * @throws SuperCodeException
      */
-	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
+	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType, Integer clientRole) throws SuperCodeException {
 		List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
 		for(int i=0;i<array.size();i++) {
 			JSONObject batchobj=array.getJSONObject(i);
@@ -152,9 +152,16 @@ public class CommonService {
 			batchMap.put("batchId", codeBatch);
 			batchMap.put("businessType", businessType);
 			batchMap.put("url",  url);
+			if (clientRole != null) {
+				batchMap.put("clientRole",  clientRole);
+			}
 			bindBatchList.add(batchMap);
 		}
 		return bindBatchList;
+	}
+
+	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
+		return getUrlToBatchParam(array, url, businessType, null);
 	}
 
     /**
@@ -215,7 +222,7 @@ public class CommonService {
 
 	/**
 	 * 删除生码批次绑定url
-	 * @param url
+	 * @param
 	 * @param superToken
 	 * @return
 	 * @throws SuperCodeException

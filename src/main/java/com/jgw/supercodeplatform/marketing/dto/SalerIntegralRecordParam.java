@@ -60,8 +60,8 @@ public class SalerIntegralRecordParam {
     @ApiModelProperty(value = "手机")
     private String mobile;
 
-
-
+    @ApiModelProperty("订单号")
+    private String tradeNo;
 
 
 

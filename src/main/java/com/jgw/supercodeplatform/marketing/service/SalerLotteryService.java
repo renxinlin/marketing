@@ -203,6 +203,7 @@ public class SalerLotteryService {
             String strAmount=decimalFormat.format(init);//format 返回的是字符串
             amount = Float.valueOf(strAmount);
         }
+        Map<String, Object> map = new HashMap<>();
         Float finalAmount = amount * 100;//金额转化为分
         // TODO 改成枚举
         String success = SalerAmountStatusEnum.ACQUIRE_FAIL.status;
@@ -237,8 +238,8 @@ public class SalerLotteryService {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            map.put("tradeNo", partner_trade_no);
         }
-        Map<String, Object> map = new HashMap<>();
         map.put("amount",amount);
         map.put("success",success);
         return map;
@@ -316,7 +317,6 @@ public class SalerLotteryService {
                 record                                           .setOuterCodeId(scanInfo.getCodeId());
                 record                                        .setCodeTypeId(scanInfo.getCodeTypeId());
                 record                                      .setSalerMobile(marketingUser.getMobile());
-                record                                      .setSalerMobile(marketingUser.getMobile());
                 record                                      .setSalerName(marketingUser.getUserName());
                 record                                   .setCustomerId(marketingUser.getCustomerId());
                 record                                   .setMemberType(marketingUser.getMemberType());
@@ -325,6 +325,7 @@ public class SalerLotteryService {
                 record                           .setOrganizationId(marketingUser.getOrganizationId());
                 record                          .setProductId(marketingActivityProduct.getProductId());
                 record                      .setProductName(marketingActivityProduct.getProductName());
+                record.setTradeNo((String) floatMoneyAndSuccessFlag.get("tradeNo"));
                 // 参与条件
                 Byte participationCondition = marketingActivitySetCondition.getParticipationCondition();
 

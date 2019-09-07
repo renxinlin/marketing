@@ -24,15 +24,15 @@ public class MarketingWxTradeOrderService {
 
     /**
      * 发送红包
-     * @param openId 用户的微信ID
+     * @param tradeNo 订单号
      * @param winningCode 中奖码
      * @return
      * @throws Exception
      */
-    public String sendPayTradeOrder(String openId, String winningCode) throws Exception {
+    public String sendPayTradeOrder(String tradeNo, String winningCode) throws Exception {
         Map<String, Object> resMap = new HashMap<>();
         String organizationId = commonUtil.getOrganizationId();
-        WXPayTradeOrder payTradeOrder = payTradeOrderMapper.selectByCodeId(winningCode, openId);
+        WXPayTradeOrder payTradeOrder = payTradeOrderMapper.selectByCodeId(winningCode, tradeNo);
         if(payTradeOrder == null){
             return "找不到该码对应的订单";
         }

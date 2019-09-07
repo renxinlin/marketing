@@ -103,8 +103,10 @@ public class IntegralRecord  extends DaoSearch {
     private String status;
 
     /** 导购员红包金额 */
+    @ApiModelProperty("导购红包金额")
     private Float salerAmount;
-
+    @ApiModelProperty("订单号")
+    private String tradeNo;
 
 
     /** 活动设置ID,导购细分到活动 */
@@ -316,5 +318,13 @@ public class IntegralRecord  extends DaoSearch {
 
     public void setIntegralNum(Integer integralNum) {
         this.integralNum = integralNum;
+    }
+
+    public void setTradeNo(String tradeNo) {
+        this.tradeNo = tradeNo;
+    }
+
+    public String getTradeNo() {
+        return tradeNo;
     }
 }

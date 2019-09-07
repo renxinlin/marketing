@@ -199,16 +199,18 @@ public class MarketingActivityChannelService {
      */
 
     public MarketingChannel checkCodeIdConformChannel(String codeId, Long activitySetId) {
-        Map<String, String> customerMap = commonService.queryCurrentCustomer(codeId);
-        if (customerMap.isEmpty()){
-            return null;
-        }
-        String customerId = customerMap.get("customerId");
-        List<MarketingChannel> marketChannelList = mapper.selectByCustomerIdAndActivitySetId(customerId, activitySetId);
-        if (CollectionUtils.isEmpty(marketChannelList)){
-            return null;
-        }
-        return marketChannelList.get(0);
+        // TODO 先直接返回，等到物流系统和码平台那边功能完成后，再启用
+        return new MarketingChannel();
+//        Map<String, String> customerMap = commonService.queryCurrentCustomer(codeId);
+//        if (customerMap.isEmpty()){
+//            return null;
+//        }
+//        String customerId = customerMap.get("customerId");
+//        List<MarketingChannel> marketChannelList = mapper.selectByCustomerIdAndActivitySetId(customerId, activitySetId);
+//        if (CollectionUtils.isEmpty(marketChannelList)){
+//            return null;
+//        }
+//        return marketChannelList.get(0);
     }
 
 

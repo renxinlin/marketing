@@ -65,8 +65,8 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
 			" and TradeDate between #{startDate} and #{endDate} ")
 	Integer getOrganizationIdAmoutByDate(String organizationId, Date startDate, Date endDate);
 
-	@Select("SELECT "+allFields+" FROM marketing_wx_trade_order WHERE WinningCode = #{winningCode} AND OpenId = #{openId}")
-	WXPayTradeOrder selectByCodeId(@Param("openId") String openId, @Param("winningCode") String winningCode);
+	@Select("SELECT "+allFields+" FROM marketing_wx_trade_order WHERE WinningCode = #{winningCode} AND PartnerTradeNo = #{tradeNo}")
+	WXPayTradeOrder selectByCodeId(@Param("tradeNo") String tradeNo, @Param("winningCode") String winningCode);
 
 
 }

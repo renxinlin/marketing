@@ -64,6 +64,8 @@ public class MarketingActivitySalerSetService   {
 	@Autowired
 	private MarketingActivitySetMapper mSetMapper;
 
+	@Autowired
+	private MarketingActivitySetService marketingActivitySetService;
 
 	@Autowired
 	private MarketingPrizeTypeMapper mPrizeTypeMapper;
@@ -694,10 +696,7 @@ public class MarketingActivitySalerSetService   {
 				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
 		}
-
-		//插入对应活动产品数据
-		mProductMapper.batchDeleteByProBatchsAndRole(mList, MemberTypeEnums.SALER.getType());
-		mProductMapper.activityProductInsert(mList);
+		marketingActivitySetService.saveProductBatchs(productAndBatchGetCodeMOs, null,mList, MemberTypeEnums.SALER.getType());
 	}
 
 	/**
