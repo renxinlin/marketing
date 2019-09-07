@@ -439,50 +439,17 @@ public class MarketingActivitySalerSetService   {
 		return mSet;
 	}
 
-	private void saveProductBatchsWithThread(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int intValue, CyclicBarrier cb, AtomicInteger successNum) {
-		taskExecutor.execute(new Runnable() {
-			@Override
-			public void run() {
-				// 初始化事务
-				initTx();
-				//==================================buziness-start===========================
-				try {
-					// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
-					saveProductBatchsWithSaler(maProductParams,activitySetId);
-					// 计数器成功加1
-					successNum.addAndGet(1);
-				} catch (SuperCodeException e) {
-					logger.error("[保存导购活动奖次信息失败:{}]",e.getMessage());
-					e.printStackTrace();
-				}
-				//==================================buziness-end=============================
-				// 事务处理
-				transControl(cb,successNum);
-			}
-		});
+	private void saveProductBatchsWithThread(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int intValue, CyclicBarrier cb, AtomicInteger successNum) throws SuperCodeException {
+
+		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
+		saveProductBatchsWithSaler(maProductParams,activitySetId);
+
 	}
 
-	private void savePrizeTypesWithThread(List<MarketingPrizeTypeParam> mPrizeTypeParams, Long activitySetId, CyclicBarrier cb, AtomicInteger successNum) {
-		taskExecutor.execute(new Runnable() {
-			@Override
-			public void run() {
-				// 初始化事务
-				initTx();
+	private void savePrizeTypesWithThread(List<MarketingPrizeTypeParam> mPrizeTypeParams, Long activitySetId, CyclicBarrier cb, AtomicInteger successNum) throws SuperCodeException {
 
-				//==================================buziness-start===========================
-				try {
-					savePrizeTypes(mPrizeTypeParams,activitySetId);
-					// 计数器成功加1
-					successNum.addAndGet(1);
-				} catch (SuperCodeException e) {
-					logger.error("[保存导购活动奖次信息失败:{}]",e.getMessage());
-					e.printStackTrace();
-				}
-				//==================================buziness-end=============================
-				// 事务处理
-				transControl(cb,successNum);
-			}
-		});
+		savePrizeTypes(mPrizeTypeParams,activitySetId);
+
 	}
 
 	/**
@@ -790,9 +757,6 @@ public class MarketingActivitySalerSetService   {
 
 
 	}
-
-	@Autowired
-	private TaskExecutor taskExecutor;
 	/**
 	 * 事务管理器
 	 */
