@@ -1,42 +1,28 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
-import com.google.zxing.WriterException;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.check.activity.StandActicityParamCheck;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
-import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
-import com.jgw.supercodeplatform.marketing.constants.RedisKey;
-import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.*;
-import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateNewParam;
-import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.*;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.*;
-import com.jgw.supercodeplatform.marketing.service.common.CommonService;
-import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 import com.jgw.supercodeplatform.pojo.cache.AccountCache;
 import com.jgw.supercodeplatform.utils.SpringContextUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
@@ -48,14 +34,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.util.CollectionUtils;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Service
 public class MarketingActivitySalerSetService   {
@@ -120,10 +103,6 @@ public class MarketingActivitySalerSetService   {
 		String organizationName=commonUtil.getOrganizationName();
 
 
-		AtomicInteger successNum = new AtomicInteger(0);
-		// 事务参与计量器
-		CyclicBarrier cb = new CyclicBarrier(TX_THREAD_NUM);
-// step-1：获取实体
 		// 获取非前端参数
 
 		// 1 产品参数
@@ -152,29 +131,15 @@ public class MarketingActivitySalerSetService   {
 			saveChannels(mChannelParams,activitySetId);
 		}
 		//保存奖次
-		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
+		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId);
 
 		//保存商品批次 [导购不像码平台发起调用]
 		saveProductBatchsWithThread(maProductParams,activitySetId,
-				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue());
 //		savePrizeTypes(mPrizeTypeParams,activitySetId);
 //		saveProductBatchsWithSaler(maProductParams,activitySetId);
 
-
-
-		// ****************************************end****************************************
-
-
-		// 保存导购活动结果
-		successNum.addAndGet(1);
-		cb.await();
-        int finalSuccessNum = successNum.get();
-		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
-		if(finalSuccessNum == TX_THREAD_NUM){
-			return RestResult.success();
-		}else{
-			throw  new SuperCodeException("保存数据失败...");
-		}
+		return RestResult.success();
 
 
 	}
@@ -207,10 +172,6 @@ public class MarketingActivitySalerSetService   {
 		// 返回客户端
 		// 子线程手动事务处理事务处理
 		// *******************************
-		// 事务计数器
-		AtomicInteger successNum = new AtomicInteger(0);
-		// 事务参与计量器
-		CyclicBarrier cb = new CyclicBarrier(TX_THREAD_NUM);
 // step-1：获取实体
 		// 获取非前端参数
 		String organizationId=commonUtil.getOrganizationId();
@@ -240,27 +201,12 @@ public class MarketingActivitySalerSetService   {
 			saveChannels(mChannelParams,activitySetId);
 		}
 		//保存奖次
-		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
+		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId);
 		//保存商品批次活动总共批次参与的码总数【像码平台和营销库操作】
 		saveProductBatchsWithThread(maProductParams,activitySetId,
-				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue());
+		return RestResult.success();
 
-
-
-		// ****************************************end****************************************
-
-
-		// 保存导购活动结果
-		successNum.addAndGet(1);
-		cb.await();
-        int finalSuccessNum = successNum.get();
-
-        logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
-		if(finalSuccessNum == TX_THREAD_NUM){
-			return RestResult.success();
-		}else{
-			throw  new SuperCodeException("保存数据失败...");
-		}
 	}
 
 	/**
@@ -308,10 +254,6 @@ public class MarketingActivitySalerSetService   {
 		String organizationName=commonUtil.getOrganizationName();
 
 
-		// 事务预提交结果计数器
-		AtomicInteger successNum = new AtomicInteger(0);
-		// 事务参与计量器
-		CyclicBarrier cb = new CyclicBarrier(TX_THREAD_NUM);
 // step-1：获取实体
 		// 1 产品参数
 		List<MarketingActivityProductParam> maProductParams=activitySetParam.getmProductParams();
@@ -342,31 +284,14 @@ public class MarketingActivitySalerSetService   {
 			saveChannels(mChannelParams,activitySetId);
 		}
 		//保存奖次
-		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId,cb,successNum);
+		savePrizeTypesWithThread(mPrizeTypeParams,activitySetId);
 		//保存商品批次 【导购不像码平台发起产品业务绑定】
 		saveProductBatchsWithThread(maProductParams,activitySetId,
-				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue(),cb,successNum );
+				ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue());
 //		savePrizeTypes(mPrizeTypeParams,activitySetId);
 //		saveProductBatchsWithSaler(maProductParams,activitySetId);
+		return RestResult.success();
 
-
-
-
-		// ****************************************end****************************************
-
-
-		// 保存导购活动结果
-
-		// 保存导购活动结果
-		successNum.addAndGet(1);
-		cb.await();
-        int finalSuccessNum =successNum.get();
-		logger.error("新增产品活动子线程事务预提交数目{}",finalSuccessNum);
-		if(finalSuccessNum == TX_THREAD_NUM){
-			return RestResult.success();
-		}else{
-			throw  new SuperCodeException("保存数据失败...");
-		}
 
 	}
 
@@ -439,14 +364,14 @@ public class MarketingActivitySalerSetService   {
 		return mSet;
 	}
 
-	private void saveProductBatchsWithThread(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int intValue, CyclicBarrier cb, AtomicInteger successNum) throws SuperCodeException {
+	private void saveProductBatchsWithThread(List<MarketingActivityProductParam> maProductParams, Long activitySetId, int intValue) throws SuperCodeException {
 
 		// 判断新选择的产品是否存在,存在则删除[覆盖式操作]
 		saveProductBatchsWithSaler(maProductParams,activitySetId);
 
 	}
 
-	private void savePrizeTypesWithThread(List<MarketingPrizeTypeParam> mPrizeTypeParams, Long activitySetId, CyclicBarrier cb, AtomicInteger successNum) throws SuperCodeException {
+	private void savePrizeTypesWithThread(List<MarketingPrizeTypeParam> mPrizeTypeParams, Long activitySetId) throws SuperCodeException {
 
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
 
@@ -783,23 +708,7 @@ public class MarketingActivitySalerSetService   {
 		logger.error("开启事务");
 
 	}
-	/**
-	 * 多线程事务提交/回滚
-	 * @param cb
-	 * @param num
-	 */
-	private void transControl(  CyclicBarrier cb ,AtomicInteger successNum){
-		try {
-			logger.error("事务等待ing");
-			cb.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (BrokenBarrierException e) {
-			e.printStackTrace();
-		}finally {
-			commitOrRollback(successNum);
-		}
-	}
+
 	private void commitOrRollback(AtomicInteger successNum) {
 		logger.error("事务预提交数目{}",successNum.get());
 		PlatformTransactionManager txManager = transm.get();
