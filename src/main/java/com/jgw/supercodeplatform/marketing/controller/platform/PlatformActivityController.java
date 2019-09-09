@@ -52,6 +52,15 @@ public class PlatformActivityController {
         return RestResult.success();
     }
 
+
+    @ApiOperation("平台组织信息分页列表")
+    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
+    @PostMapping("/platformOrganizationPage")
+    public RestResult<PageResults<List<PlatformOrganizationDataVo>>> platformOrganization(@RequestBody @Valid DaoSearch daoSearch){
+        return RestResult.success();
+    }
+
+
     @ApiOperation("启用或停止活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/disOrEnable")
@@ -63,13 +72,6 @@ public class PlatformActivityController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/joinResultPage")
     public RestResult<PageResults<List<JoinPrizeRecordVo>>> joinResultPage(@RequestBody @Valid JoinResultPage joinResultPage){
-        return RestResult.success();
-    }
-
-    @ApiOperation("平台组织信息分页列表")
-    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
-    @PostMapping("/platformOrganizationPage")
-    public RestResult<PageResults<List<PlatformOrganizationDataVo>>> platformOrganization(@RequestBody @Valid DaoSearch daoSearch){
         return RestResult.success();
     }
 

@@ -20,10 +20,12 @@ public class SalerIntegralRecordParam {
 
 
     /** 导购员名称 */
+    @ApiModelProperty("导购员名称")
     private String salerName;
 
 
     /** 导购员手机 */
+    @ApiModelProperty("导购员手机")
     private String salerMobile;
     /** 会员id */
     @ApiModelProperty(value = "会员id")
@@ -45,6 +47,7 @@ public class SalerIntegralRecordParam {
 
 
     /** 导购员红包金额 */
+    @ApiModelProperty("导购红包金额")
     private Float salerAmount;
 
 
@@ -74,8 +77,8 @@ public class SalerIntegralRecordParam {
     private String createDateStr;
 
 
-
     /** 扫码状态1获得2未获得 */
+    @ApiModelProperty("红包状态<1:获得红包未发送，2:未获得，3:红包发送中，4:发送失败，5:发送成功>")
     private String status;
 
 }
