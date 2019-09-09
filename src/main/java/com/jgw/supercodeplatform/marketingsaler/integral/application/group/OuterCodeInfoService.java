@@ -27,7 +27,7 @@ public class OuterCodeInfoService {
         log.info("准备调用码服务获取层级{}",outCodeInfoDto);
         RestResult<Object> currentLevel = outerCodeInfoFeign.getCurrentLevel(outCodeInfoDto);
         if(currentLevel!=null && currentLevel.getState() == 200){
-            if((Long) currentLevel.getResults()!=null &&  (Long) currentLevel.getResults()== UserConstants.SINGLE_CODE){
+            if( currentLevel.getResults()!=null &&  currentLevel.getResults() instanceof Long){
                 // 单码
                 return RestResult.success(currentLevel.getMsg(), (Long) currentLevel.getResults());
             }
