@@ -32,7 +32,7 @@ public class MarketingWxTradeOrderService {
     public String sendPayTradeOrder(String tradeNo, String winningCode) throws Exception {
         Map<String, Object> resMap = new HashMap<>();
         String organizationId = commonUtil.getOrganizationId();
-        WXPayTradeOrder payTradeOrder = payTradeOrderMapper.selectByCodeId(winningCode, tradeNo);
+        WXPayTradeOrder payTradeOrder = payTradeOrderMapper.selectByCodeId(tradeNo, winningCode);
         if(payTradeOrder == null){
             return "找不到该码对应的订单";
         }
