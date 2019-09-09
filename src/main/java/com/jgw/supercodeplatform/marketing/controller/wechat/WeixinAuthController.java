@@ -213,6 +213,7 @@ public class WeixinAuthController {
 		h5LoginVO.setOrganizationId(members.getOrganizationId());
 		h5LoginVO.setCustomerId(members.getCustomerId());
 		h5LoginVO.setCustomerName(members.getCustomerName());
+		h5LoginVO.setOpenid(members.getOpenid());
 		try {
 			orgnazationName=commonService.getOrgNameByOrgId(members.getOrganizationId());
 
@@ -475,7 +476,7 @@ public class WeixinAuthController {
 			marketingUserDo.setOpenid(userInfo.getString("openid"));
 			marketingUserDo.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
 			marketingUserDo.setWxName(userInfo.getString("nickname"));
-			marketingSaleMemberService.updateWxInfo(marketingUser);
+			marketingSaleMemberService.updateWxInfo(marketingUserDo);
 			// 说明用户存在,需要自动登录
 			logger.error("user =>{} define =>{}", marketingUser.getState().intValue(),SaleUserStatus.ENABLE.getStatus().intValue());
 			if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
