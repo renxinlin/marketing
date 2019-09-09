@@ -10,6 +10,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.constants.UserState;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.mapper.UserMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,8 @@ public class UserService extends SalerCommonService<UserMapper, User> {
         Asserts.check(salerUser.getState() == UserState.enable    ,"用户未启动");
         Asserts.check(salerUser.getHaveIntegral()!=null ,"积分不足");
         Asserts.check(salerUser.getHaveIntegral().intValue()>= exchangeIntegral.intValue() ,"积分不足");
+        Asserts.check(StringUtils.isEmpty(salerUser.getOpenid()),"未绑定微信无法发红包");
+
         return salerUser;
 
     }

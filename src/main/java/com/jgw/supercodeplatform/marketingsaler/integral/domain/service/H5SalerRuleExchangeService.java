@@ -64,6 +64,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         checkExchangeStatus(salerRuleExchange);
         // 检测用户域数据是否可以执行
         User userPojo = marketingUserService.canExchange(user, salerRuleExchange.getExchangeIntegral());
+
         // 检测兑换上限
         salerExchangeNumService.canExchange(userPojo,salerRuleExchange);
         // 根据抽奖概率计算金额

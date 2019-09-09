@@ -23,14 +23,13 @@ public class SalerExchangeNumService extends SalerCommonService<SalerExchangeNum
 
 
     public void canExchange(User user, SalerRuleExchange salerRuleExchange) {
-        Asserts.check(user !=null,"你已达到兑换上限");
+        Asserts.check(user !=null,"用户数据获取失败");
 
         if(salerRuleExchange!=null && salerRuleExchange.getCustomerLimitNum() !=null ){
             int exchangeNum = baseMapper.selectCount(query().eq("OrganizationId", salerRuleExchange.getOrganizationId())
                     .eq("UserId", user.getId())
                     .eq("exchangeId", salerRuleExchange.getOrganizationId()));
             Asserts.check(salerRuleExchange.getCustomerLimitNum().intValue() > exchangeNum ,"你已达到兑换上限");
-            Asserts.check(StringUtils.isEmpty(user.getOpenid()),"未绑定微信无法发红包");
         }
 
     }
