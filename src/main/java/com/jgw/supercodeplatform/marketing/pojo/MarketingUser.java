@@ -75,6 +75,16 @@ public class MarketingUser {
     /** 扫码设备类型 */
     private Byte deviceType;
 
+    private Integer haveIntegral;
+
+    public Integer getHaveIntegral() {
+        return haveIntegral;
+    }
+
+    public void setHaveIntegral(Integer haveIntegral) {
+        this.haveIntegral = haveIntegral;
+    }
+
     public Long getId() {
         return id;
     }

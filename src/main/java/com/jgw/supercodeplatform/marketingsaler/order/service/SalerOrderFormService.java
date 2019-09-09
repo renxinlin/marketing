@@ -129,7 +129,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, H5LoginVO user) {
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()),"未获取对应组织");
         Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues),"未获取对应组织");
-        String address = null; // todo 获取基础信息门店地址;
+        String address = user.getCustomerName(); // 门店
         SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues,user,address);
         dynamicMapper.saveOrder(columnnameAndValues,SalerOrderTransfer.initTableName(user.getOrganizationId()));
     }

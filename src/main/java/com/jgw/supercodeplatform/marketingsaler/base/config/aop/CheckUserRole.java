@@ -1,14 +1,19 @@
 package com.jgw.supercodeplatform.marketingsaler.base.config.aop;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.Asserts;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -28,7 +33,8 @@ public class CheckUserRole  implements Ordered {
     public void pointCut() {
 
     }
-
+    @Autowired
+    private UserService userService;
 
     @Around(value = "pointCut()")
     public Object beforeBiz(ProceedingJoinPoint pj) throws Throwable {
@@ -60,6 +66,11 @@ public class CheckUserRole  implements Ordered {
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             throw new SuperCodeException("角色鉴定失败");
+        }
+        // 只校验状态，存在性于业务校验
+        User exists = userService.exists(user);
+        if(exists!=null){
+            Asserts.check(exists.getState()!=null&&exists.getState().intValue() == SaleUserStatus.ENABLE.getStatus().intValue(),"导购员未启用");
         }
         return pj.proceed();
     }

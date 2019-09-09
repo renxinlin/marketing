@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.domain.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -50,7 +51,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
     @Autowired
     private WXPayService wxPayService;
 
-    @Transactional
+    @Transactional // todo 单库干掉预减库存
     public void exchange(H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) {
         // 校验
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()),"用户未注册到相关组织");
@@ -85,8 +86,8 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
             wxPayService.qiyePay(userPojo.getOpenid(),serverIp,(int)(money*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
         } catch (Exception e) {
             e.printStackTrace();
-            // TODO 补偿
-            log.error("积分换红包支付失败.........................");
+            log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,user);
+            throw new RuntimeException("微信支付，支付失败啦！");
         }
         // TODO 减实际库存
         baseMapper.update(updateDo,H5SalerRuleExchangeTransfer.reduceStock(updateDo,salerRuleExchange));

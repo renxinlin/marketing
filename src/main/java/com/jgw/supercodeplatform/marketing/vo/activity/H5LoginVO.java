@@ -24,6 +24,9 @@ public class H5LoginVO {
 
 	private String wechatHeadImgUrl;
 
+	private String openid;
+
+
 	public String getCustomerName() {
 		return customerName;
 	}
@@ -117,4 +120,11 @@ public class H5LoginVO {
 		this.mobile = mobile;
 	}
 
+	public String getOpenid() {
+		return openid;
+	}
+
+	public void setOpenid(String openid) {
+		this.openid = openid;
+	}
 }
