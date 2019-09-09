@@ -82,7 +82,7 @@ public class PlatformActivityController {
         params.put("pageSize", daoSearch.getPageSize());
         params.put("search", daoSearch.getSearch());
         Map<String, String> headerMap = new HashMap<>();
-        headerMap.put("super-token", commonUtil.getOrganizationId());
+        headerMap.put("super-token", commonUtil.getSuperToken());
         ResponseEntity<String> entity = restTemplateUtil.getRequestAndReturnJosn(userUrl+ WechatConstants.ORG_LIST_PLATFORM, params, headerMap);
         if (entity != null && entity.getStatusCodeValue() == HttpStatus.SC_OK){
             String result = entity.getBody();
