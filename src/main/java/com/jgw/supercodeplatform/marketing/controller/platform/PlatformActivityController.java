@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,9 +38,9 @@ public class PlatformActivityController {
 
     @Value("${rest.user.url}")
     private String userUrl;
-
+    @Autowired
     private RestTemplateUtil restTemplateUtil;
-
+    @Autowired
     private CommonUtil commonUtil;
 
     @ApiOperation("添加活动")
