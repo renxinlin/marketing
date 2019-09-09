@@ -75,10 +75,8 @@ public class GlobalExceptionHandler {
 		logger.error("参数验证失败", e);
 		BindingResult result = e.getBindingResult();
 		FieldError error = result.getFieldError();
-		String field = error.getField();
 		String code = error.getDefaultMessage();
-		String message = String.format("%s:%s", field, code);
-		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), message, null);
+		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), code, null);
 		return RestResult;
 	}
 
@@ -91,10 +89,8 @@ public class GlobalExceptionHandler {
 		logger.error("参数绑定失败", e);
 		BindingResult result = e.getBindingResult();
 		FieldError error = result.getFieldError();
-		String field = error.getField();
 		String code = error.getDefaultMessage();
-		String message = String.format("%s:%s", field, code);
-		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), message, null);
+		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), code, null);
 		return RestResult;
 	}
 

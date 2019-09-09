@@ -238,10 +238,8 @@ public class SalerLotteryService {
                 // 目前的中奖逻辑是补偿用户相关中奖金额
                 if (sendAudit == 0) {
                     wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partner_trade_no, organizationId);
-                    success = SalerAmountStatusEnum.SEND_ING.status;
-                } else {
-                    success = SalerAmountStatusEnum.ACQUIRE_SUCCESS.status;
                 }
+                success = SalerAmountStatusEnum.ACQUIRE_SUCCESS.status;
             } catch (Exception e) {
                 e.printStackTrace();
             }

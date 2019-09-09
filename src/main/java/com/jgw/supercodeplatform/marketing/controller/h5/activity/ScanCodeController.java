@@ -183,7 +183,7 @@ public class ScanCodeController {
         globalRamCache.putScanCodeInfoMO(wxstate,sCodeInfoMO);
 
         logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
-        String url=h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate;
+        String url=h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate+"&organizationId="+sCodeInfoMO.getOrganizationId();
         return url;
 
 
