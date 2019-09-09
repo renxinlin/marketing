@@ -65,7 +65,7 @@ public class PlatformActivityController {
 
     @ApiOperation("查询活动列表")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
-    @PostMapping("/page")
+    @GetMapping("/page")
     public RestResult<PageResults<List<PlatformActivityVo>>> page(@RequestBody @Valid DaoSearch daoSearch){
         return RestResult.success();
     }
@@ -73,7 +73,7 @@ public class PlatformActivityController {
 
     @ApiOperation("平台组织信息分页列表")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
-    @PostMapping("/platformOrganizationPage")
+    @GetMapping("/platformOrganizationPage")
     public RestResult<PageResults<List<PlatformOrganizationDataVo>>> platformOrganization(@RequestBody @Valid DaoSearch daoSearch){
         PageResults<List<PlatformOrganizationDataVo>> pageResults = new PageResults<>();
         Map<String, Object> params = new HashMap<>();
@@ -113,7 +113,7 @@ public class PlatformActivityController {
 
     @ApiOperation("参与记录")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
-    @PostMapping("/joinResultPage")
+    @GetMapping("/joinResultPage")
     public RestResult<PageResults<List<JoinPrizeRecordVo>>> joinResultPage(@RequestBody @Valid JoinResultPage joinResultPage){
         return RestResult.success();
     }
