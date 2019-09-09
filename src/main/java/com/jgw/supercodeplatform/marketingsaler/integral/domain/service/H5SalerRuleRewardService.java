@@ -4,11 +4,13 @@ import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
+import com.jgw.supercodeplatform.marketingsaler.integral.application.group.OuterCodeInfoService;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.mapper.SalerRuleRewardMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleReward;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleRewardNum;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.H5SalerRuleRewardTransfer;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,10 @@ import org.springframework.util.StringUtils;
 
 @Service
 public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewardMapper, SalerRuleReward> {
-    @Autowired private SalerRuleRewardNumService salerRuleRewardNumService;
     @Autowired private UserService userService;
     @Autowired private RedisLockUtil lockUtil;
+    @Autowired private OuterCodeInfoService outerCodeInfoService;
+    @Autowired private SalerRuleRewardNumService salerRuleRewardNumService;
     /**
      * h5领积分:
      * @param reward 只包含产品信息
@@ -33,6 +36,7 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             if(!lock){
                 throw new RuntimeException("哎呀,被别人抢啦!请稍后重试...");
             }
+            outerCodeInfoService.getCurrentLevel(new OutCodeInfoDto(outCodeId,UserConstants.MARKETING_CODE_TYPE));
             // 有没有被扫
             boolean exists = salerRuleRewardNumService.exists(outCodeId);
             if(exists){
