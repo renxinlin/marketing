@@ -84,8 +84,8 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 			+ "#{productId},#{productBatchId})")
 	int addWinRecord(MarketingMembersWinRecord winRecord);
 
-	@Select("SELECT count(1) FROM marketing_members_win WHERE WinningCode = #{winningCode} AND OrganizationId = #{organizationId}")
-	int countRecordByCodeId(@Param("winningCode") String winningCode, @Param("organizationId") String organizationId);
+	@Select("SELECT "+allFields+" FROM marketing_members_win WHERE WinningCode = #{winningCode} AND OrganizationId = #{organizationId}")
+	MarketingMembersWinRecord getRecordByCodeId(@Param("winningCode") String winningCode, @Param("organizationId") String organizationId);
 
 
 }
