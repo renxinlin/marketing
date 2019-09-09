@@ -385,7 +385,6 @@ public class MarketingActivitySalerSetService   {
 	 */
 	private void validateBizBySalerAdd(MarketingSalerActivityCreateNewParam activitySetParam, List<MarketingActivityProductParam> maProductParams, List<MarketingPrizeTypeParam> mPrizeTypeParams) {
 
-
 	}
 
 

@@ -47,6 +47,8 @@ public class PlatformActivityController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/add")
     public RestResult<?> add(@RequestBody @Valid PlatformActivityAdd platformActivityAdd) {
+
+
         return RestResult.success();
     }
 

@@ -16,7 +16,7 @@ public class MarketingWxTradeOrderService {
 
     @Autowired
     private WXPayService payService;
-
+    @Autowired
     private CommonUtil commonUtil;
 
     @Autowired

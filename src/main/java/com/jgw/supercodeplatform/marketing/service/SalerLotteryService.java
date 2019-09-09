@@ -187,67 +187,50 @@ public class SalerLotteryService {
     }
 
 
-
-
-
-
-
-    private Map<String, Object> weixinpayForSaler(byte sendAudit, String winningCode, String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, String remoteAddr)
-            throws SuperCodeException{
-        if (StringUtils.isBlank(openId)) {
-            throw  new SuperCodeException("微信支付openid不能为空",500);
-        }
+    private Float prizeTypeMo(MarketingPrizeTypeMO mPrizeTypeMO) {
         Float amount=mPrizeTypeMO.getPrizeAmount();
         Byte randAmount=mPrizeTypeMO.getIsRrandomMoney();
         //如果是随机金额则生成随机金额
         if (randAmount.equals((byte)1)) {
             float min=mPrizeTypeMO.getLowRand();
             float max=mPrizeTypeMO.getHighRand();
-            //amount=new Random().nextFloat() * (max - min)+min;
-            // 保留两位小数
-            float init = new Random().nextFloat() *((max-min)) +min;
-            DecimalFormat decimalFormat=new DecimalFormat(".00");
-            String strAmount=decimalFormat.format(init);//format 返回的是字符串
-            amount = Float.valueOf(strAmount);
+            amount = new Random().nextFloat() *((max-min)) +min;
         }
-        Map<String, Object> map = new HashMap<>();
-        Float finalAmount = amount * 100;//金额转化为分
+        Float finalAmount = amount;
+        return finalAmount;
+    }
+
+
+    private void weixinpayForSaler(String partnerTradeNo,byte sendAudit, String winningCode, String mobile, String openId, String organizationId, Float finalAmount, String remoteAddr)
+            throws SuperCodeException{
+        if (StringUtils.isBlank(openId)) {
+            throw  new SuperCodeException("微信支付openid不能为空",500);
+        }
         // TODO 改成枚举
-        String success = SalerAmountStatusEnum.ACQUIRE_FAIL.status;
         logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
-        if(finalAmount > 0) {
-            //生成订单号
-            String partner_trade_no = wXPayTradeNoGenerator.tradeNo();
             //保存订单
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            WXPayTradeOrder tradeOrder = new WXPayTradeOrder();
-            tradeOrder.setAmount(finalAmount);
-            tradeOrder.setOpenId(openId);
-            tradeOrder.setTradeStatus((byte) 0);
-            tradeOrder.setPartnerTradeNo(partner_trade_no);
-            tradeOrder.setTradeDate(format.format(new Date()));
-            tradeOrder.setOrganizationId(organizationId);
-            tradeOrder.setWinningCode(winningCode);
-            wXPayTradeOrderMapper.insert(tradeOrder);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        WXPayTradeOrder tradeOrder = new WXPayTradeOrder();
+        tradeOrder.setAmount(finalAmount);
+        tradeOrder.setOpenId(openId);
+        tradeOrder.setTradeStatus((byte) 0);
+        tradeOrder.setPartnerTradeNo(partnerTradeNo);
+        tradeOrder.setTradeDate(format.format(new Date()));
+        tradeOrder.setOrganizationId(organizationId);
+        tradeOrder.setWinningCode(winningCode);
+        wXPayTradeOrderMapper.insert(tradeOrder);
 
-            if (StringUtils.isBlank(remoteAddr)) {
-                remoteAddr = serverIp;
-            }
-
-            try {
-                // 目前的中奖逻辑是补偿用户相关中奖金额
-                if (sendAudit == 0) {
-                    wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partner_trade_no, organizationId);
-                }
-                success = SalerAmountStatusEnum.ACQUIRE_SUCCESS.status;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            map.put("tradeNo", partner_trade_no);
+        if (StringUtils.isBlank(remoteAddr)) {
+            remoteAddr = serverIp;
         }
-        map.put("amount",amount);
-        map.put("success",success);
-        return map;
+        try {
+            // 目前的中奖逻辑是补偿用户相关中奖金额
+            if (sendAudit == 0) {
+                wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partnerTradeNo, organizationId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -307,13 +290,16 @@ public class SalerLotteryService {
                 lock.releaseLock(lockName);
             }
             if(indexSuccess){
-
                 // 保存 微信支付数据
                 // 更新微信回调状态
-                Map<String, Object> floatMoneyAndSuccessFlag = weixinpayForSaler(marketingActivitySet.getSendAudit(),scanInfo.getCodeId(),marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), marketingPrizeType, request.getRemoteAddr());
                 // 中奖记录
-                Float amount                          = (Float) floatMoneyAndSuccessFlag.get("amount");
-                String successFlag                  = (String) floatMoneyAndSuccessFlag.get("success");
+                String successFlag = SalerAmountStatusEnum.ACQUIRE_FAIL.status;
+                String partnerTradeNo = null;
+                Float amount                          = prizeTypeMo(marketingPrizeType);
+                if (amount != null && amount > 0) {
+                    partnerTradeNo = wXPayTradeNoGenerator.tradeNo();
+                    successFlag = SalerAmountStatusEnum.ACQUIRE_SUCCESS.status;
+                }
                 record                                                         .setStatus(successFlag);
                 record                                                         .setSalerAmount(amount);
                 record                                                      .setCreateDate(new Date());
@@ -329,7 +315,7 @@ public class SalerLotteryService {
                 record                           .setOrganizationId(marketingUser.getOrganizationId());
                 record                          .setProductId(marketingActivityProduct.getProductId());
                 record                      .setProductName(marketingActivityProduct.getProductName());
-                record.setTradeNo((String) floatMoneyAndSuccessFlag.get("tradeNo"));
+                record.setTradeNo(partnerTradeNo);
                 // 参与条件
                 Byte participationCondition = marketingActivitySetCondition.getParticipationCondition();
 
@@ -344,8 +330,14 @@ public class SalerLotteryService {
                     record.setIntegralReasonCode(IntegralReasonEnum.SALER_NO_CONDITION.getIntegralReasonCode());
                 }
                 integralRecordMapperExt.insertSelective(record);
+                if (partnerTradeNo == null) {
+                    lotteryResultMO.setMsg("手气不好，没抽中！");
+                    return lotteryResultMO;
+                }
+                weixinpayForSaler(partnerTradeNo,marketingActivitySet.getSendAudit(),scanInfo.getCodeId(),marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), amount*100, request.getRemoteAddr());
                 lotteryResultMO.setWinnOrNot(1);
                 lotteryResultMO.setMsg(amount.toString());
+                return lotteryResultMO;
             }
         }
         lotteryResultMO.setMsg("抽奖失败，请稍后重试!");
