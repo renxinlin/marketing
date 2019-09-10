@@ -90,7 +90,7 @@ public class SaleMemberController {
         saleInfo.setScanAmoutNum((count.intValue()));
         saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum") != null ? (Float) acquireMoneyAndAcquireNums.get("sum"):0F);
         saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
-
+        saleInfo.setHaveIntegral(marketingUser.getHaveIntegral());
 
       return RestResult.success("success",saleInfo);
     }

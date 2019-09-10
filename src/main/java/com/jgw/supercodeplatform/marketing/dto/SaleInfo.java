@@ -25,4 +25,7 @@ public class SaleInfo {
     private String userName;
     @ApiModelProperty("头像")
     private String wechatHeadImgUrl;
+
+    @ApiModelProperty("积分")
+    private Integer haveIntegral;
 }
