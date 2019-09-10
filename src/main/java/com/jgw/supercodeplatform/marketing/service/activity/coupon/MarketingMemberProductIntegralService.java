@@ -94,10 +94,10 @@ public class MarketingMemberProductIntegralService {
 			return;
 		}
 		String sBatchIds = marketingActivityProduct.getSbatchId();
-		if (StringUtils.isBlank(sBatchIds) || sBatchIds.contains(productIntegral.getSbatchId())) {
-			log.info("该生码批次未参加优惠券活动：{}", integralMsg);
-			return;
-		}
+//		if (StringUtils.isBlank(sBatchIds) || sBatchIds.contains(productIntegral.getSbatchId())) {
+//			log.info("该生码批次未参加优惠券活动：{}", integralMsg);
+//			return;
+//		}
 		MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(marketingActivityProduct.getActivitySetId());
 		if(marketingActivitySet == null){
 			log.info("该产品未参加优惠券活动：{}", integralMsg);

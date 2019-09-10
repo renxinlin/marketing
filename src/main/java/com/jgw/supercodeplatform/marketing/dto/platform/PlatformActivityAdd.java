@@ -5,10 +5,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.Valid;
 import javax.validation.constraints.*;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -52,8 +54,10 @@ public class PlatformActivityAdd {
     public static class PrizeType {
         @ApiModelProperty("红包金额")
         @NotNull(message = "红包金额不能为空")
-        @Positive(message = "红包金额必须为一个正数")
-        private Float prizeAmount;
+        @DecimalMin(value = "0.01", message = "红包金额不能小于0")
+        @DecimalMax(value = "5000.00", message = "红包最大金额不能超过5000")
+        @Digits(integer = 4, fraction = 2, message = "小数位和整数位数超过限制")
+        private BigDecimal prizeAmount;
         @ApiModelProperty("中奖概率<不含百分号>")
         @NotNull(message = "中奖概率不能为空")
         @Positive(message = "中奖概率必须为一个正数")

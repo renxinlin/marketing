@@ -195,13 +195,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		//保存奖次
 		savePrizeTypes(mPrizeTypeParams,activitySetId);
-		//保存公众号信息
-		MarketingWxMerchants marketingWxMerchants = marketingWxMerchantsMapper.selectByOrganizationId(organizationId);
-		if (marketingWxMerchants == null) {
-			marketingWxMerchantsMapper.insertAppidAndSecret(setParam.getMchAppid(), setParam.getMerchantSecret(), organizationId, organizationName);
-		} else {
-			marketingWxMerchantsMapper.updateAppidAndSecret(setParam.getMchAppid(), setParam.getMerchantSecret(),organizationId);
-		}
 		return mActivitySet;
 	}
 	/**
@@ -358,6 +351,10 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mSet.setActivityStatus(1);
 		mSet.setOrganizationId(organizationId);
 		mSet.setOrganizatioIdlName(organizationName);
+		JSONObject merchantJson = new JSONObject();
+		merchantJson.put("mchAppid", activitySetParam.getMchAppid());
+		merchantJson.put("merchantSecret", activitySetParam.getMerchantSecret());
+		mSet.setMerchantsInfo(merchantJson.toJSONString());
 		return mSet;
 	}
 
@@ -810,6 +807,12 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			MarketingActivitySetParam.setConsumeIntegralNum(conditonJson.getConsumeIntegral());
 			MarketingActivitySetParam.setEachDayNumber(conditonJson.getEachDayNumber());
 			MarketingActivitySetParam.setParticipationCondition(conditonJson.getParticipationCondition());
+		}
+		String merchantsInfo = marketingActivitySet.getMerchantsInfo();
+		if (StringUtils.isNotBlank(merchantsInfo)) {
+			JSONObject merchantJson = JSON.parseObject(merchantsInfo);
+			MarketingActivitySetParam.setMchAppid(merchantJson.getString("mchAppid"));
+			MarketingActivitySetParam.setMerchantSecret(merchantJson.getString("merchantSecret"));
 		}
 		// 返回
 		restResult.setState(200);

@@ -57,6 +57,8 @@ public class MarketingActivitySet {
     @ApiModelProperty("红包发放审核（0:不审核，1：需要审核）")
     private byte sendAudit;
 
+    private String merchantsInfo;
+
 
     public String getValidCondition() {
 		return validCondition;
@@ -199,5 +201,13 @@ public class MarketingActivitySet {
 
     public byte getSendAudit() {
         return sendAudit;
+    }
+
+    public void setMerchantsInfo(String merchantsInfo) {
+        this.merchantsInfo = merchantsInfo;
+    }
+
+    public String getMerchantsInfo() {
+        return merchantsInfo;
     }
 }
