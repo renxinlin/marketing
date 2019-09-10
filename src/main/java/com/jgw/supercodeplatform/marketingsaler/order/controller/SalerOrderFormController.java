@@ -47,9 +47,14 @@ public class SalerOrderFormController extends SalerCommonController {
     @PostMapping("/save")
     @ApiOperation(value = "设置表单", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@Valid @RequestBody SalerOrderFormSettingListDto salerOrderFormDtos) throws CommonException {
+    public RestResult save(@Valid @RequestBody SalerOrderFormSettingListDto salerOrderFormDtos) throws SuperCodeException {
 
-        service.alterOrCreateTableAndUpdateMetadata(salerOrderFormDtos.getSalerOrderFormSettingDto());
+        try {
+            service.alterOrCreateTableAndUpdateMetadata(salerOrderFormDtos.getSalerOrderFormSettingDto());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SuperCodeException("设置表单失败");
+        }
         return success();
     }
 
