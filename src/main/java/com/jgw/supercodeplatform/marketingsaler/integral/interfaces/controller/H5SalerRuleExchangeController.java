@@ -59,7 +59,7 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
     @PostMapping("/exchange")
     @ApiOperation(value = "兑换", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult exchange(@Valid @RequestBody H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) throws CommonException {
+    public RestResult exchange(@Valid @RequestBody H5SalerRuleExchangeDto salerRuleExchangeDto,@ApiIgnore H5LoginVO user) throws CommonException {
         service.exchange(salerRuleExchangeDto,user);
         return success();
     }
