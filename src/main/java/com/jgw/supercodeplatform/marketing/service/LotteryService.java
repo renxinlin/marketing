@@ -302,7 +302,7 @@ public class LotteryService {
 		}
 		if (amount != null) {
 			//发起微信支付
-			weixinpay(lotteryOprationDto.getSendAudit(),outerCodeId, mobile, openId, organizationId, amount*100, remoteAddr);
+			weixinpay(lotteryOprationDto.getSendAudit(),outerCodeId, mobile, openId, organizationId, amount*100, remoteAddr, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
 		}
 		RestResult restResult = lotteryOprationDto.getRestResult();
 		restResult.setMsg(lotteryResultMO.getMsg());
@@ -406,7 +406,7 @@ public class LotteryService {
 		return finalAmount;
 	}
 
-	private void weixinpay(byte sendAudit, String winningCode, String mobile, String openId, String organizationId, Float finalAmount, String remoteAddr)
+	private void weixinpay(byte sendAudit, String winningCode, String mobile, String openId, String organizationId, Float finalAmount, String remoteAddr, byte referenceRole)
 			throws SuperCodeException, Exception {
 		if (StringUtils.isBlank(openId)) {
 			throw  new SuperCodeException("微信支付openid不能为空",200);
@@ -424,6 +424,7 @@ public class LotteryService {
 		tradeOrder.setTradeDate(format.format(new Date()));
 		tradeOrder.setOrganizationId(organizationId);
 		tradeOrder.setWinningCode(winningCode);
+		tradeOrder.setReferenceRole(referenceRole);
 		if (StringUtils.isBlank(remoteAddr)) {
 			remoteAddr = serverIp;
 		}

@@ -90,7 +90,9 @@ public class WXPayAsynTask implements Runnable{
 				wXTradeNo.setTradeStatus((byte)2);
 			}
 			//更新导购红包
-			integralRecordMapper.updateSalerPrizeRecord(status,wXTradeNo.getWinningCode(),wXTradeNo.getOrganizationId());
+			if (wXTradeNo.getReferenceRole() != null && wXTradeNo.getReferenceRole().intValue() == 1) {
+				integralRecordMapper.updateSalerPrizeRecord(status, wXTradeNo.getWinningCode(), wXTradeNo.getOrganizationId());
+			}
 			wxTradeNoMapper.update(wXTradeNo);
 		} catch (Exception e) {
 			e.printStackTrace();

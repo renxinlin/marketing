@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -164,15 +165,19 @@ public class CommonUtil extends UserInfoUtil {
     }
     
 	@Override
-    public String getOrganizationId()  {
-        return super.getOrganizationId();
+	public String getOrganizationId() {
+		try {
+			return super.getOrganizationId();
+		} catch (Exception e) {
+			throw new SuperCodeExtException("无组织信息，请确认当前用户为普通角色用户", 500);
+		}
 	}
 
-    public String getOrganizationIdNew() throws SuperCodeException {
+    public String getOrganizationIdNew() {
         try {
             return super.getOrganizationId();
         } catch (Exception e) {
-            throw new SuperCodeException("无组织信息，请确认当前用户为普通角色用户", 500);
+            throw new SuperCodeExtException("无组织信息，请确认当前用户为普通角色用户", 500);
         }
     }
     /**

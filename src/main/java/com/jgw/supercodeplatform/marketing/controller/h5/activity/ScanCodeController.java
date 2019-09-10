@@ -214,7 +214,7 @@ public class ScanCodeController {
         String organizationId=sCodeInfoMO.getOrganizationId();
         MarketingWxMerchants mWxMerchants=mWxMerchantsService.selectByOrganizationId(organizationId);
         if (null==mWxMerchants || StringUtils.isBlank(mWxMerchants.getMchAppid())) {
-        	 return "redirect:"+h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId,"utf-8"),"utf-8");
+        	 return h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId,"utf-8"),"utf-8");
 		}
         sCodeInfoMO.setSbatchId(sbatchId);
         sCodeInfoMO.setOrganizationId(organizationId);

@@ -99,7 +99,7 @@ public class CouponService {
 	
 	/**
 	 * 抵扣券查看详情
-	 * @param id
+	 * @param activitySetId
 	 * @return
 	 */
 	public RestResult<MarketingActivityCouponUpdateParam> detail(Long activitySetId) throws SuperCodeException{
@@ -275,7 +275,9 @@ public class CouponService {
 			mList.forEach(marketingActivityProduct -> {
 				String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
 				Map<String, Object> batchMap = paramsMap.get(key);
-				marketingActivityProduct.setSbatchId((String)batchMap.get("batchId"));
+				if (batchMap != null) {
+					marketingActivityProduct.setSbatchId((String) batchMap.get("batchId"));
+				}
 			});
 		} else {
 			throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, HttpStatus.SC_INTERNAL_SERVER_ERROR);
