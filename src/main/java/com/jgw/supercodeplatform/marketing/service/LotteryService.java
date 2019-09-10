@@ -287,7 +287,7 @@ public class LotteryService {
 					addToInteral(marketingMembersInfo, integralRecord);
 					break;
 				case 4:
-					amount = weixinpay(lotteryOprationDto.getSendAudit(),outerCodeId, mobile, openId, organizationId, prizeTypeMO, remoteAddr);
+					amount = prizeTypeMo(prizeTypeMO);
 					DecimalFormat decimalFormat = new DecimalFormat(".00");
 					String strAmount = decimalFormat.format(amount);
 					lotteryResultMO.setData(strAmount);
@@ -300,9 +300,32 @@ public class LotteryService {
 		if (changeIntegral != 0) {
 			marketingMembersMapper.deleteIntegral(0 - changeIntegral, marketingMembersInfo.getId());
 		}
+		if (amount != null) {
+			//发起微信支付
+			weixinpay(lotteryOprationDto.getSendAudit(),outerCodeId, mobile, openId, organizationId, amount*100, remoteAddr);
+		}
 		RestResult restResult = lotteryOprationDto.getRestResult();
 		restResult.setMsg(lotteryResultMO.getMsg());
 		return restResult;
+	}
+
+	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,
+							  MarketingActivity activity, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, Float amount, String productId, String productBatchId) {
+		//插入中奖纪录
+		MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
+		redWinRecord.setActivityId(activity.getId());
+		redWinRecord.setActivityName(activity.getActivityName());
+		redWinRecord.setActivitySetId(activitySetId);
+		redWinRecord.setMobile(mobile);
+		redWinRecord.setOpenid(openId);
+		redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
+		redWinRecord.setWinningAmount(amount );
+		redWinRecord.setProductId(productId);
+		redWinRecord.setWinningCode(outCodeId);
+		redWinRecord.setPrizeName(mPrizeTypeMO.getPrizeTypeName());
+		redWinRecord.setOrganizationId(organizationId);
+		redWinRecord.setProductBatchId(productBatchId);
+		mWinRecordMapper.addWinRecord(redWinRecord);
 	}
 
 	private void addToInteral(MarketingMembers marketingMembersInfo, IntegralRecord integralRecord) {
@@ -316,7 +339,6 @@ public class LotteryService {
 		integralRecord.setStatus("1");
 		integralRecordMapperExt.insertSelective(integralRecord);
 	}
-
 	/////////////////////////////////////////ES判断抽奖码/////////////////////////////////////////////////////
 	public LotteryOprationDto holdLockJudgeES(LotteryOprationDto lotteryOprationDto) {
 		ScanCodeInfoMO scanCodeInfoMO = lotteryOprationDto.getScanCodeInfoMO();
@@ -368,32 +390,10 @@ public class LotteryService {
 			}
 		}
 	}
+
 	/////////////////////////////////////////ES判断抽奖码/////////////////////////////////////////////////////
 
-	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,
-			MarketingActivity activity, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, Float amount, String productId, String productBatchId) {
-		//插入中奖纪录
-		MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
-		redWinRecord.setActivityId(activity.getId());
-		redWinRecord.setActivityName(activity.getActivityName());
-		redWinRecord.setActivitySetId(activitySetId);
-		redWinRecord.setMobile(mobile);
-		redWinRecord.setOpenid(openId);
-		redWinRecord.setPrizeTypeId(mPrizeTypeMO.getId());
-		redWinRecord.setWinningAmount(amount );
-		redWinRecord.setProductId(productId);
-		redWinRecord.setWinningCode(outCodeId);
-		redWinRecord.setPrizeName(mPrizeTypeMO.getPrizeTypeName());
-		redWinRecord.setOrganizationId(organizationId);
-		redWinRecord.setProductBatchId(productBatchId);
-		mWinRecordMapper.addWinRecord(redWinRecord);
-	}
-
-	private Float weixinpay(byte sendAudit, String winningCode, String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, String remoteAddr)
-			throws SuperCodeException, Exception {
-		if (StringUtils.isBlank(openId)) {
-			throw  new SuperCodeException("微信支付openid不能为空",200);
-		}
+	private Float prizeTypeMo(MarketingPrizeTypeMO mPrizeTypeMO) {
 		Float amount=mPrizeTypeMO.getPrizeAmount();
 		Byte randAmount=mPrizeTypeMO.getIsRrandomMoney();
 		//如果是随机金额则生成随机金额
@@ -402,10 +402,16 @@ public class LotteryService {
 			float max=mPrizeTypeMO.getHighRand();
 			amount = new Random().nextFloat() *((max-min)) +min;
 		}
-		Float finalAmount = amount * 100;//金额转化为分
+		Float finalAmount = amount;//金额转化为分
+		return finalAmount;
+	}
 
+	private void weixinpay(byte sendAudit, String winningCode, String mobile, String openId, String organizationId, Float finalAmount, String remoteAddr)
+			throws SuperCodeException, Exception {
+		if (StringUtils.isBlank(openId)) {
+			throw  new SuperCodeException("微信支付openid不能为空",200);
+		}
 		logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
-
 		//生成订单号
 		String partner_trade_no=wXPayTradeNoGenerator.tradeNo();
 		//保存订单
@@ -427,7 +433,6 @@ public class LotteryService {
 		if (sendAudit == 0) {
 			wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partner_trade_no, organizationId);
 		}
-		return amount;
 	}
 
 	public RestResult<LotteryResultMO> previewLottery(String uuid, HttpServletRequest request) throws SuperCodeException {

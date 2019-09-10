@@ -10,7 +10,7 @@ import java.util.Date;
 @Component
 public class WXPayTradeNoGenerator {
 	public static int code = 0;
-	public static SimpleDateFormat formart = new SimpleDateFormat("yyyyMMddHHmmss");
+	public static SimpleDateFormat formart = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 
 	@Autowired

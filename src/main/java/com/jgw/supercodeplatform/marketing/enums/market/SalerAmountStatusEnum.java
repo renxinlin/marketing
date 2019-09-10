@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 public enum SalerAmountStatusEnum {
 
     ACQUIRE_SUCCESS("1","获得"), ACQUIRE_FAIL("2","未获得"),
-    SEND_ING("3","红包发送中"), SEND_FAIL("4","发送失败"), SEND_SUCCESS("5","发送成功");
+    SEND_FAIL("3","发送失败"), SEND_SUCCESS("4","发送成功");
 
     public final String status;
 

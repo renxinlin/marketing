@@ -1020,4 +1020,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		return restResult;
 	}
 
+	/**
+	 *
+	 */
+	public void createPlatformActivitySet(){
+
+	}
+
 }

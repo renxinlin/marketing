@@ -41,7 +41,6 @@ public class WXPayService {
      * @param spbill_create_ip
      * @param amount
      * @param organizationId
-     * @param organizationId2 
      * @throws Exception
      */
 	public void qiyePay(String  openid,String  spbill_create_ip,int amount,String  partner_trade_no, String organizationId) throws Exception {
