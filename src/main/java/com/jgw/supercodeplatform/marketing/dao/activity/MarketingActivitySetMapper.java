@@ -26,7 +26,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
  		+ "ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,CreateDate createDate,UpdateDate UpdateDate,"
  		+ "ActivityStatus ActivityStatus,ActivityRangeMark ActivityRangeMark,"
  		+ "autoFetch autoFetch,CodeTotalNum codeTotalNum,OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,"
- 		+ "ActivityDesc activityDesc, ValidCondition validCondition ";
+ 		+ "ActivityDesc activityDesc, ValidCondition validCondition, SendAudit sendAudit ";
 
     String whereSearch =
                     "<choose>"
@@ -77,10 +77,10 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
    @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle, "
            + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus, "
-           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition ) "
+           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition,SendAudit) "
            + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate}, "
            + " #{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.activityRangeMark}, "
-           + " #{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition} "
+           + " #{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition},#{ma.sendAudit} "
            + " )")
    @Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
    int insert(@Param("ma")MarketingActivitySet marketingActivitySet);
@@ -130,7 +130,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " <if test='codeTotalNum !=null and codeTotalNum != &apos;&apos; '> CodeTotalNum = #{codeTotalNum} ,</if> "
             + " <if test='activityDesc !=null'> ActivityDesc = #{activityDesc} ,</if> "
 		    + " <if test='validCondition !=null and validCondition != &apos;&apos; '> ValidCondition = #{validCondition} ,</if> "
-		    + " </set> "
+		    + " <if test='sendAudit != null'>SendAudit = #{sendAudit}</if>"
+            + " </set> "
             + " where Id = #{id}" +endScript
     )
     int update(MarketingActivitySet mActivitySet);

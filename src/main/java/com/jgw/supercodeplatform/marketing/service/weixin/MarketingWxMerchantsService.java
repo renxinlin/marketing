@@ -118,6 +118,15 @@ public class MarketingWxMerchantsService {
 		return newName;
 	}
 	
-
+	public void setUseType(Byte useType){
+		String organizationId = commonUtil.getOrganizationId();
+		String organizationName = commonUtil.getOrganizationName();
+		MarketingWxMerchants marketingWxMerchants = dao.selectByOrganizationId(organizationId);
+		if (marketingWxMerchants == null){
+			dao.insertNoMerchant(organizationId, organizationName);
+		} else {
+			dao.updateNoMerchant(organizationId, useType);
+		}
+	}
 
 }

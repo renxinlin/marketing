@@ -34,6 +34,14 @@ public class RestResult <T>{
 
 		return new RestResult<T>(200,msg,results);
 	}
+
+
+	public static <T> RestResult<T> success(int state,String msg,T results){
+
+		return new RestResult<T>(state,msg,results);
+	}
+
+
 	public static <T> RestResult<T> fail(String msg,T results){
 
 		return new RestResult<T>(500,msg,results);

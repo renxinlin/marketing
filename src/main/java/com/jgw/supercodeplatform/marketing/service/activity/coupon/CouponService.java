@@ -99,7 +99,7 @@ public class CouponService {
 	
 	/**
 	 * 抵扣券查看详情
-	 * @param id
+	 * @param activitySetId
 	 * @return
 	 */
 	public RestResult<MarketingActivityCouponUpdateParam> detail(Long activitySetId) throws SuperCodeException{

@@ -90,7 +90,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param productBatchId
 	 * @return
 	 */
-	public Long countByUserAndActivityQuantum(String openId, Long activitySetId, long nowTtimeStemp) {
+	public long countByUserAndActivityQuantum(String openId, Long activitySetId, long nowTtimeStemp) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("openId.keyword", openId);
 		addParam.put("scanCodeTime", nowTtimeStemp);
@@ -128,7 +128,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param productBatchId
 	 * @return
 	 */
-	public Long countByCode(String codeId, String codeType,Integer memberType) {
+	public long countByCode(String codeId, String codeType,Integer memberType) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("codeId.keyword", codeId);
 		addParam.put("codeType.keyword", codeType);

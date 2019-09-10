@@ -173,6 +173,13 @@ public class CommonUtil extends UserInfoUtil {
 		}
 	}
 
+    public String getOrganizationIdNew() {
+        try {
+            return super.getOrganizationId();
+        } catch (Exception e) {
+            throw new SuperCodeExtException("无组织信息，请确认当前用户为普通角色用户", 500);
+        }
+    }
     /**
      * @return
      * @Author corbett

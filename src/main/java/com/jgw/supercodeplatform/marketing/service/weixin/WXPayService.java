@@ -41,7 +41,6 @@ public class WXPayService {
      * @param spbill_create_ip
      * @param amount
      * @param organizationId
-     * @param organizationId2 
      * @throws Exception
      */
 	public void qiyePay(String  openid,String  spbill_create_ip,int amount,String  partner_trade_no, String organizationId) throws Exception {
@@ -51,6 +50,11 @@ public class WXPayService {
 		MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.get(organizationId);
 		if (null==mWxMerchants) {
 			throw new SuperCodeException("当前企业"+organizationId+"未绑定公众号数据", 500);
+		}
+		if (mWxMerchants.getMerchantType() == 1) {
+			mWxMerchants = mWxMerchantsMapper.getJgw();
+		} else if (StringUtils.isBlank(mWxMerchants.getCertificateAddress())) {
+			throw new SuperCodeException("当前企业"+organizationId+"没有上传公众号证书", 500);
 		}
 		String mechid=mWxMerchants.getMchid();
 		String mechappid=mWxMerchants.getMchAppid();

@@ -10,6 +10,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +75,9 @@ public class IntegralFrontController {
 	
 	@Autowired
 	private MarketingMemberProductIntegralService productIntegralService;
+
+	@Autowired
+	private GlobalRamCache globalRamCache;
 	
 	/**
 	 * 领取积分
@@ -85,19 +91,16 @@ public class IntegralFrontController {
 	@SuppressWarnings({ "unchecked" })
 	@RequestMapping(value = "/receive", method = RequestMethod.GET)
 	@ApiOperation(value = "积分领取", notes = "")
-	@ApiImplicitParams(value = { @ApiImplicitParam(paramType = "query", value = "码", name = "outerCodeId",required=true),
-			@ApiImplicitParam(paramType = "query", value = "码制", name = "codeTypeId",required=true),
-			@ApiImplicitParam(paramType = "query", value = "产品id", name = "productId",required=true),
-			@ApiImplicitParam(paramType = "query", value = "产品批次id", name = "productBatchId",required=true),
-			@ApiImplicitParam(paramType = "query", value = "产品批次id", name = "memberId",required=true)
-		})
-	public RestResult<List<String>> receive(@RequestParam(name = "outerCodeId") String outerCodeId,
-			@RequestParam(name = "codeTypeId") String codeTypeId,
-			@RequestParam(name = "productId") String productId,
-			@RequestParam(name = "productBatchId") String productBatchId,
-			@RequestParam(name = "memberId", required = true) Long memberId,
-			HttpServletRequest request)
+	@ApiImplicitParams({@ApiImplicitParam(paramType = "query", value = "微信登录state", name = "wxsate",required=true)
+	,@ApiImplicitParam(paramType = "query", value = "产品批次id", name = "memberId",required=true)})
+	public RestResult<List<String>> receive(@RequestParam String wxsate, @RequestParam Long memberId)
 			throws SuperCodeException, ParseException {
+		ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxsate);
+		String outerCodeId = scanCodeInfoMO.getCodeId();
+		String codeTypeId = scanCodeInfoMO.getCodeTypeId();
+		String productId = scanCodeInfoMO.getProductId();
+		String productBatchId = scanCodeInfoMO.getProductBatchId();
+		String sBatchId = scanCodeInfoMO.getSbatchId();
 		RestResult<List<String>> result = new RestResult<List<String>>();
 		// 1.如果openid不为空那根据openid和组织id查用户，否则肯定是进行了手机登录那就必须传手机号验证码和用户主键id
 		logger.info("领取积分获取到参数codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+",memberId="+memberId);
@@ -165,6 +168,7 @@ public class IntegralFrontController {
 		    	productIntegral.setOrganizationId(organizationId);
 		    	productIntegral.setProductBatchId(productBatchId);
 		    	productIntegral.setProductId(productId);
+				productIntegral.setSbatchId(sBatchId);
 		    	productIntegralService.obtainCoupon(productIntegral, members, inRuleProduct.getProductName(),outerCodeId);
 		    }
 			// 7.把当前码存入积分ES。注意6,7是一个事务保证一致性且需在redis的同步锁里以防多个用户同时操作
@@ -174,7 +178,7 @@ public class IntegralFrontController {
 			result.setMsg("扫码人数过多请稍后再试");
 			return result;
 		}
-
+		globalRamCache.deleteScanCodeInfoMO(wxsate);
 		result.setState(200);
 		return result;
 	}

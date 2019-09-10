@@ -10,6 +10,14 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dao.activity.*;
+import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
+import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
+import com.jgw.supercodeplatform.marketing.enums.market.*;
+import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,24 +36,10 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.constants.ParticipationConditionConstant;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.ActivityStatusEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
-import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
 import com.jgw.supercodeplatform.marketing.exception.SalerLotteryException;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
@@ -86,12 +80,15 @@ public class SalerLotteryService {
     private MarketingActivitySetMapper mSetMapper;
     @Autowired
     private  IntegralRecordMapperExt integralRecordMapperExt;
-
-
+    @Autowired
+    private MarketingMembersMapper marketingMembersMapper;
     @Autowired
     private MarketingActivityProductMapper productMapper;
 
-
+    @Autowired
+    private MarketingMembersWinRecordMapper mWinRecordMapper;
+    @Autowired
+    private CommonUtil commonUtil;
 
     @Autowired
     private RedisLockUtil lock;
@@ -103,13 +100,13 @@ public class SalerLotteryService {
      * 现在开始所有的扫码信息都要录入到marketingscan
      * 每个领奖码信息录入到自己的业务索引
      * todo 后期需要考虑渠道处理，本期不加
-     * @param wxstate
+     * @param scanCodeInfoMO
      * @param jwtUser
      * @return
      * @throws SuperCodeException
      */
     @Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
-    public RestResult<String> salerlottery(String wxstate, H5LoginVO jwtUser,HttpServletRequest request) throws Exception {
+    public LotteryResultMO salerlottery(ScanCodeInfoMO scanCodeInfoMO, H5LoginVO jwtUser,HttpServletRequest request) throws Exception {
         /**
          * 扫码条件:
          *  1 活动规则
@@ -138,8 +135,6 @@ public class SalerLotteryService {
          *
          *  备注:多人同时扫码的并发处理
          */
-        // step-1 活动主体和用户基本校验:
-        ScanCodeInfoMO scanCodeInfoMO = validateBasicBySalerlottery(wxstate, jwtUser);
 
         // step-2 活动主体数据获取
         String productId           = scanCodeInfoMO.getProductId();
@@ -157,77 +152,85 @@ public class SalerLotteryService {
         MarketingActivitySetCondition marketingActivitySetCondition = validateSetRule(marketingActivitySet, scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getCodeTypeId(), marketingUser.getOrganizationId(), marketingUser.getId());
         // 中奖金额
         MarketingPrizeTypeMO marketingPrizeTypeMO = LotteryUtilWithOutCodeNum.startLottery(marketingPrizeTypes);
-
-
+        //TODO 需要先判断消费者是否已经领取
+        // 参与条件
+        IntegralRecord record = new IntegralRecord();
+        Byte participationCondition = marketingActivitySetCondition.getParticipationCondition();
+        LotteryResultMO lotteryResultMO = new LotteryResultMO();
+        if (participationCondition.intValue() == ParticipationConditionConstant.activity ){
+            MarketingMembersWinRecord membersWinRecord = mWinRecordMapper.getRecordByCodeId(scanCodeInfoMO.getCodeId(),commonUtil.getOrganizationId());
+            if(membersWinRecord == null) {
+                lotteryResultMO.setWinnOrNot(0);
+                lotteryResultMO.setMsg("请先让消费者扫码领红包");
+                return lotteryResultMO;
+            }
+            MarketingMembers marketingMembers = marketingMembersMapper.selectByMobileAndOrgId(membersWinRecord.getMobile(), membersWinRecord.getOrganizationId());
+            record.setMobile(marketingMembers.getMobile());
+            record.setMemberName(marketingMembers.getUserName());
+            record.setMemberId(marketingMembers.getId());
+        }else if(participationCondition.intValue() ==ParticipationConditionConstant.integral ){
+            IntegralRecord integralRecord = integralRecordMapperExt.getMemberIntegralRecord(scanCodeInfoMO.getCodeId());
+            if(integralRecord == null) {
+                lotteryResultMO.setWinnOrNot(0);
+                lotteryResultMO.setMsg("请先让消费者扫码领取积分");
+                return lotteryResultMO;
+            }
+            record.setMobile(integralRecord.getMobile());
+            record.setMemberName(integralRecord.getMemberName());
+            record.setMemberId(integralRecord.getMemberId());
+        }
 
         // 备注:保存前在原子性校验一次【扫码成功则保存】 es准实时的特性有坑，采用es自带的乐观锁功能解决该问题！！！！
         // 除去备注校验,此处业务在逻辑上可以发送微信红包金额,此外不管微信是否发送红包成功都产生相关正向记录
         // 后期可以通过对账解决为支付红包的中奖记录
-        doSalerlottery(marketingUser,marketingActivitySet,marketingPrizeTypeMO,marketingActivityProduct,scanCodeInfoMO,marketingActivitySetCondition,request);
-
-//        mWinRecordMapper.addWinRecord(salerRecord);
-        return RestResult.success();
+        return doSalerlottery(record,marketingUser,marketingActivitySet,marketingPrizeTypeMO,marketingActivityProduct,scanCodeInfoMO,marketingActivitySetCondition,request);
     }
 
 
-
-
-
-
-
-    private Map<String, Object> weixinpayForSaler(String mobile, String openId, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, HttpServletRequest request)
-            throws SuperCodeException{
-        if (StringUtils.isBlank(openId)) {
-            throw  new SuperCodeException("微信支付openid不能为空",500);
-        }
+    private Float prizeTypeMo(MarketingPrizeTypeMO mPrizeTypeMO) {
         Float amount=mPrizeTypeMO.getPrizeAmount();
         Byte randAmount=mPrizeTypeMO.getIsRrandomMoney();
         //如果是随机金额则生成随机金额
         if (randAmount.equals((byte)1)) {
             float min=mPrizeTypeMO.getLowRand();
             float max=mPrizeTypeMO.getHighRand();
-            //amount=new Random().nextFloat() * (max - min)+min;
-            // 保留两位小数
-            float init = new Random().nextFloat() *((max-min)) +min;
-            DecimalFormat decimalFormat=new DecimalFormat(".00");
-            String strAmount=decimalFormat.format(init);//format 返回的是字符串
-            amount = Float.valueOf(strAmount);
+            amount = new Random().nextFloat() *((max-min)) +min;
         }
-        Float finalAmount = amount * 100;//金额转化为分
+        Float finalAmount = amount;
+        return finalAmount;
+    }
 
-        logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
 
-        //生成订单号
-        String partner_trade_no=wXPayTradeNoGenerator.tradeNo();
-        //保存订单
-        SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        WXPayTradeOrder tradeOrder=new WXPayTradeOrder();
-        tradeOrder.setAmount(finalAmount);
-        tradeOrder.setOpenId(openId);
-        tradeOrder.setTradeStatus((byte)0);
-        tradeOrder.setPartnerTradeNo(partner_trade_no);
-        tradeOrder.setTradeDate(format.format(new Date()));
-        tradeOrder.setOrganizationId(organizationId);
-        wXPayTradeOrderMapper.insert(tradeOrder);
-
-        String remoteAddr = request.getRemoteAddr();
-        if (StringUtils.isBlank(remoteAddr)) {
-            remoteAddr=serverIp;
+    private void weixinpayForSaler(String partnerTradeNo,byte sendAudit, String winningCode, String mobile, String openId, String organizationId, Float finalAmount, String remoteAddr)
+            throws SuperCodeException{
+        if (StringUtils.isBlank(openId)) {
+            throw  new SuperCodeException("微信支付openid不能为空",500);
         }
         // TODO 改成枚举
-        String success = "2";
+        logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
+            //保存订单
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        WXPayTradeOrder tradeOrder = new WXPayTradeOrder();
+        tradeOrder.setAmount(finalAmount);
+        tradeOrder.setOpenId(openId);
+        tradeOrder.setTradeStatus((byte) 0);
+        tradeOrder.setPartnerTradeNo(partnerTradeNo);
+        tradeOrder.setTradeDate(format.format(new Date()));
+        tradeOrder.setOrganizationId(organizationId);
+        tradeOrder.setWinningCode(winningCode);
+        wXPayTradeOrderMapper.insert(tradeOrder);
+
+        if (StringUtils.isBlank(remoteAddr)) {
+            remoteAddr = serverIp;
+        }
         try {
             // 目前的中奖逻辑是补偿用户相关中奖金额
-            wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(),partner_trade_no, organizationId);
-            success = "1";
+            if (sendAudit == 0) {
+                wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partnerTradeNo, organizationId);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("amount",amount);
-        map.put("success",success);
-        return map;
     }
 
 
@@ -241,13 +244,17 @@ public class SalerLotteryService {
      * @param marketingPrizeType 中奖信息
      * @param marketingActivityProduct 产品信息
      */
-    private void doSalerlottery(MarketingUser marketingUser, MarketingActivitySet marketingActivitySet,
+    private LotteryResultMO doSalerlottery(IntegralRecord record, MarketingUser marketingUser, MarketingActivitySet marketingActivitySet,
                                 MarketingPrizeTypeMO marketingPrizeType, MarketingActivityProduct marketingActivityProduct,
                                 ScanCodeInfoMO scanInfo, MarketingActivitySetCondition marketingActivitySetCondition,HttpServletRequest request) throws Exception {
+        LotteryResultMO lotteryResultMO = new LotteryResultMO();
+        lotteryResultMO.setWinnOrNot(0);
+        lotteryResultMO.setSendAudit(marketingActivitySet.getSendAudit());
         // 索引 es saler成功信息
         if(StringUtils.isBlank(marketingUser.getOpenid())){
             throw new SuperCodeException("首次扫码请使用微信...");
         }
+        //TODO 需要判断消费者是否已经领取了积分或者红包
         String lockName = new StringBuffer("saler:").append(scanInfo.getCodeId()).append(":").append(scanInfo.getCodeTypeId()).toString();
         boolean acquireLock = lock.lock(lockName,5000,5,200);
         boolean indexSuccess = false;
@@ -283,21 +290,22 @@ public class SalerLotteryService {
                 lock.releaseLock(lockName);
             }
             if(indexSuccess){
-
                 // 保存 微信支付数据
                 // 更新微信回调状态
-                Map<String, Object> floatMoneyAndSuccessFlag = weixinpayForSaler(marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), marketingPrizeType, request);
                 // 中奖记录
-                IntegralRecord record                                           = new IntegralRecord();
-                Float amount                          = (Float) floatMoneyAndSuccessFlag.get("amount");
-                String successFlag                  = (String) floatMoneyAndSuccessFlag.get("success");
+                String successFlag = SalerAmountStatusEnum.ACQUIRE_FAIL.status;
+                String partnerTradeNo = null;
+                Float amount                          = prizeTypeMo(marketingPrizeType);
+                if (amount != null && amount > 0) {
+                    partnerTradeNo = wXPayTradeNoGenerator.tradeNo();
+                    successFlag = SalerAmountStatusEnum.ACQUIRE_SUCCESS.status;
+                }
                 record                                                         .setStatus(successFlag);
                 record                                                         .setSalerAmount(amount);
                 record                                                      .setCreateDate(new Date());
                 record                                              .setSalerId(marketingUser.getId());
                 record                                           .setOuterCodeId(scanInfo.getCodeId());
                 record                                        .setCodeTypeId(scanInfo.getCodeTypeId());
-                record                                      .setSalerMobile(marketingUser.getMobile());
                 record                                      .setSalerMobile(marketingUser.getMobile());
                 record                                      .setSalerName(marketingUser.getUserName());
                 record                                   .setCustomerId(marketingUser.getCustomerId());
@@ -307,6 +315,7 @@ public class SalerLotteryService {
                 record                           .setOrganizationId(marketingUser.getOrganizationId());
                 record                          .setProductId(marketingActivityProduct.getProductId());
                 record                      .setProductName(marketingActivityProduct.getProductName());
+                record.setTradeNo(partnerTradeNo);
                 // 参与条件
                 Byte participationCondition = marketingActivitySetCondition.getParticipationCondition();
 
@@ -321,14 +330,18 @@ public class SalerLotteryService {
                     record.setIntegralReasonCode(IntegralReasonEnum.SALER_NO_CONDITION.getIntegralReasonCode());
                 }
                 integralRecordMapperExt.insertSelective(record);
+                if (partnerTradeNo == null) {
+                    lotteryResultMO.setMsg("手气不好，没抽中！");
+                    return lotteryResultMO;
+                }
+                weixinpayForSaler(partnerTradeNo,marketingActivitySet.getSendAudit(),scanInfo.getCodeId(),marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), amount*100, request.getRemoteAddr());
+                lotteryResultMO.setWinnOrNot(1);
+                lotteryResultMO.setMsg(amount.toString());
+                return lotteryResultMO;
             }
-
-        }else{
-            throw new SalerLotteryException("请稍后重试!");
         }
-
-
-
+        lotteryResultMO.setMsg("抽奖失败，请稍后重试!");
+        return lotteryResultMO;
     }
 
 
@@ -454,7 +467,7 @@ public class SalerLotteryService {
         return marketingUser;
     }
 
-    private ScanCodeInfoMO validateBasicBySalerlottery(String wxstate, H5LoginVO jwtUser) throws SuperCodeException {
+    public ScanCodeInfoMO validateBasicBySalerlottery(String wxstate, H5LoginVO jwtUser) throws SuperCodeException {
         // 第一部分
         if(StringUtils.isBlank(jwtUser.getOrganizationId())){
             // 系统写token丢失参数

@@ -62,7 +62,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     " <if test='integralType != null and integralType == 1 '> and IntegralNum &lt;  0 </if>"+
                     "</where>";
     @Select(startScript
-            + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, "
+            + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, SalerAmount salerAmount,TradeNo tradeNo,ir.Status status,"
             + " ir.MemberName memberName,ir.Mobile mobile,ir.IntegralReasonCode integralReasonCode,ir.IntegralReason integralReason, "
             + " ir.ProductId productId,ir.ProductName productName,ir.OuterCodeId outerCodeId,ir.CodeTypeId codeTypeId,ir.CustomerName customerName, "
             + " ir.CustomerId customerId,DATE_FORMAT(ir.CreateDate,'%Y-%m-%d %H:%i:%s') createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
@@ -201,4 +201,11 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 			" and Status = 1" +
 			" and SalerAmount is not null ")
     Map getAcquireMoneyAndAcquireNums(Long memberId, Byte memberType, String organizationId);
+
+	@Select("SELECT "+allFileds+" FROM marketing_integral_record WHERE OuterCodeId = #{outerCodeId} AND memberType = 0 AND Status = '1' AND IntegralNum > 0")
+	IntegralRecord getMemberIntegralRecord(@Param("outerCodeId") String outerCodeId);
+
+	@Update("UPDATE marketing_integral_record SET Status = #{status} WHERE OuterCodeId = #{outerCodeId} AND OrganizationId = #{organizationId} AND MemberType = 1 AND SalerAmount > 0 AND Status != '2'")
+	int updateSalerPrizeRecord(@Param("status") String status, @Param("outerCodeId") String outerCodeId, @Param("organizationId") String organizationId);
+
 }

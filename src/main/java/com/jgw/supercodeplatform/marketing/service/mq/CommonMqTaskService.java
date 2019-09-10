@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
+import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,15 +73,15 @@ public class CommonMqTaskService {
 			    for (MarketingActivityProduct mProduct : mProducts) {
 			    	//只有会员活动需要跳转公共h5页面才需要绑定
 			    	Byte referenceRole=mProduct.getReferenceRole();
-			    	if (null!=referenceRole && referenceRole.intValue()==RoleTypeEnum.MEMBER.getMemberType()) {
+			    	if (null!=referenceRole) {
 				    	Long activitySetId=mProduct.getActivitySetId();
 						MarketingActivitySet mActivitySet=mSetMapper.selectById(activitySetId);
 						if (null==mActivitySet ) {
-							return;
+							continue;
 						}
 						Integer autoFecth=mActivitySet.getAutoFetch();
 						if (null==autoFecth || autoFecth.intValue()==2) {
-							return;
+							continue;
 						}
 						Long activityCodeSum=activityCodeSumMap.get(activitySetId);
 						if (null==activityCodeSum) {
@@ -86,12 +89,33 @@ public class CommonMqTaskService {
 						}else {
 							activityCodeSumMap.put(activitySetId,  codeTotalLon+activityCodeSum);
 						}
-
-						Map<String, Object> batchMap=new HashMap<String, Object>();
-						batchMap.put("batchId", codeBatch);
-						batchMap.put("businessType", BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
-						batchMap.put("url", marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL);
-						bindBatchList.add(batchMap);
+						mProduct.setSbatchId((String) codeBatch+","+mProduct.getSbatchId());
+						mProductMapper.updateWhenAutoFetch(mProduct);
+						int activityId = mActivitySet.getActivityId().intValue();
+						Integer bizType = null;
+						//如果是抵扣券，则需要看情况，如果是扫商品领取则需要绑定，如果是领取积分则不需要
+						if(activityId == 4) {
+							MarketingActivitySetCondition validCondition = JSON.parseObject(mActivitySet.getValidCondition(), MarketingActivitySetCondition.class);
+							validCondition.getAcquireCondition();
+							if(CouponAcquireConditionEnum.SHOPPING.getCondition().equals(validCondition.getAcquireCondition())){
+								bizType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
+							}
+						} else {
+							bizType = BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType();
+						}
+						if (bizType != null) {
+							Map<String, Object> batchMap = new HashMap<String, Object>();
+							//导购红包
+							if (activityId == 3) {
+								batchMap.put("clientRole", 1);
+								batchMap.put("url", marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL);
+							} else {
+								batchMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+							}
+							batchMap.put("batchId", codeBatch);
+							batchMap.put("businessType", bizType);
+							bindBatchList.add(batchMap);
+						}
 					}
 				}
 			}
