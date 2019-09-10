@@ -19,9 +19,11 @@ public class WXPayTradeOrder {
 	
 	private String organizationId;//组织id
 
-	private String RemoteAddr;
+	private String remoteAddr;
 
 	private String winningCode;
+
+	private Byte ReferenceRole;
 
 	/**
      * SUCCESS/FAIL
@@ -150,11 +152,11 @@ public class WXPayTradeOrder {
 	}
 
 	public void setRemoteAddr(String remoteAddr) {
-		RemoteAddr = remoteAddr;
+		this.remoteAddr = remoteAddr;
 	}
 
 	public String getRemoteAddr() {
-		return RemoteAddr;
+		return remoteAddr;
 	}
 
 	public void setWinningCode(String winningCode) {
@@ -163,5 +165,13 @@ public class WXPayTradeOrder {
 
 	public String getWinningCode() {
 		return winningCode;
+	}
+
+	public void setReferenceRole(Byte referenceRole) {
+		ReferenceRole = referenceRole;
+	}
+
+	public Byte getReferenceRole() {
+		return ReferenceRole;
 	}
 }

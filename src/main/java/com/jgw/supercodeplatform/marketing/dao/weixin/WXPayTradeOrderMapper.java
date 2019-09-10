@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface WXPayTradeOrderMapper extends CommonSql{
-static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amount amount,TradeDate tradeDate,TradeStatus tradeStatus,"
+static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amount amount,TradeDate tradeDate,TradeStatus tradeStatus,ReferenceRole referenceRole,"
 		+ "OrganizationId organizationId,RemoteAddr remoteAddr,WinningCode winningCode,ReturnCode returnCode,ReturnMsg returnMsg,ResultCode resultCode,ErrCode errCode,ErrCodeDes errCodeDes";
 
     @Select("select "+allFields+" from marketing_wx_trade_order where PartnerTradeNo=#{partner_trade_no}")
@@ -18,9 +18,9 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
 	
 	
     @Insert(" INSERT INTO marketing_wx_trade_order(PartnerTradeNo,OpenId,Amount,TradeDate,TradeStatus,"
-            + " OrganizationId,RemoteAddr,WinningCode,ReturnCode,ReturnMsg,ResultCode,ErrCode,ErrCodeDes) "
+            + " OrganizationId,RemoteAddr,WinningCode,ReturnCode,ReturnMsg,ResultCode,ErrCode,ErrCodeDes,ReferenceRole) "
             + " VALUES(#{partnerTradeNo},#{openId},#{amount},now(),#{tradeStatus},#{organizationId},#{remoteAddr},#{winningCode},#{returnCode},#{returnMsg},"
-            + "#{resultCode},#{errCode},#{errCodeDes}"
+            + "#{resultCode},#{errCode},#{errCodeDes},#{referenceRole}"
             + ")")
 	int insert(WXPayTradeOrder tradeOrder);
 

@@ -201,7 +201,7 @@ public class SalerLotteryService {
     }
 
 
-    private void weixinpayForSaler(String partnerTradeNo,byte sendAudit, String winningCode, String mobile, String openId, String organizationId, Float finalAmount, String remoteAddr)
+    private void weixinpayForSaler(String partnerTradeNo,byte sendAudit, String winningCode, String mobile, String openId, String organizationId, Float finalAmount, String remoteAddr, byte referenceRole)
             throws SuperCodeException{
         if (StringUtils.isBlank(openId)) {
             throw  new SuperCodeException("微信支付openid不能为空",500);
@@ -218,6 +218,7 @@ public class SalerLotteryService {
         tradeOrder.setTradeDate(format.format(new Date()));
         tradeOrder.setOrganizationId(organizationId);
         tradeOrder.setWinningCode(winningCode);
+        tradeOrder.setReferenceRole(referenceRole);
         wXPayTradeOrderMapper.insert(tradeOrder);
 
         if (StringUtils.isBlank(remoteAddr)) {
@@ -334,7 +335,7 @@ public class SalerLotteryService {
                     lotteryResultMO.setMsg("手气不好，没抽中！");
                     return lotteryResultMO;
                 }
-                weixinpayForSaler(partnerTradeNo,marketingActivitySet.getSendAudit(),scanInfo.getCodeId(),marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), amount*100, request.getRemoteAddr());
+                weixinpayForSaler(partnerTradeNo,marketingActivitySet.getSendAudit(),scanInfo.getCodeId(),marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), amount*100, request.getRemoteAddr(), ReferenceRoleEnum.ACTIVITY_SALER.getType());
                 lotteryResultMO.setWinnOrNot(1);
                 lotteryResultMO.setMsg(amount.toString());
                 return lotteryResultMO;
