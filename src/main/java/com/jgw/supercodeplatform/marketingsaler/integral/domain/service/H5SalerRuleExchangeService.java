@@ -84,7 +84,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         recordService.save(SalerRecordTransfer.buildRecord(salerRuleExchange,user,money));
         // 支付
         try {
-            wxPayService.qiyePay(userPojo.getOpenid(),serverIp,(int)(money*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
+            wxPayService.qiyePaySync(userPojo.getOpenid(),serverIp,(int)(money*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
         } catch (Exception e) {
             e.printStackTrace();
             log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,user);

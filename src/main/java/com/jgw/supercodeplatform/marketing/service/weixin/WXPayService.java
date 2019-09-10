@@ -4,7 +4,9 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.asyntask.WXPayAsynTask;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
+import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayMarketingConfig;
@@ -18,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -33,9 +37,11 @@ public class WXPayService {
     private String certificatePath;
     
     private static ExecutorService exec=Executors.newFixedThreadPool(20);
-    
-    
-    /**
+	@Autowired
+	private WXPayTradeOrderMapper wXPayTradeOrderMapper;
+
+
+	/**
      * 企业付款到零钱
      * @param openid
      * @param spbill_create_ip
@@ -103,6 +109,8 @@ public class WXPayService {
 	 * @throws Exception
 	 */
 	public void qiyePaySync(String  openid,String  spbill_create_ip,int amount,String  partner_trade_no, String organizationId) throws Exception {
+
+
 		if (StringUtils.isBlank(openid) || StringUtils.isBlank(spbill_create_ip)|| StringUtils.isBlank(partner_trade_no)|| StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("发起微信支付参数不能为空,openid="+openid+",spbill_create_ip="+spbill_create_ip+",partner_trade_no="+partner_trade_no+spbill_create_ip+",organizationId="+organizationId, 500);
 		}
@@ -120,6 +128,19 @@ public class WXPayService {
 		if (StringUtils.isBlank(mechid) || StringUtils.isBlank(mechappid)) {
 			throw new SuperCodeException("获取到的企业公众号支付参数有空值，mechid="+mechid+",mechappid="+mechappid, 500);
 		}
+
+		//保存订单
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		WXPayTradeOrder tradeOrder = new WXPayTradeOrder();
+		tradeOrder.setAmount((float)amount);
+		tradeOrder.setOpenId(openid);
+		tradeOrder.setTradeStatus((byte) 0);
+		tradeOrder.setPartnerTradeNo(partner_trade_no);
+		tradeOrder.setTradeDate(format.format(new Date()));
+		tradeOrder.setOrganizationId(organizationId);
+		wXPayTradeOrderMapper.insert(tradeOrder);
+
+
 
 		String key=mWxMerchants.getMerchantKey();
 		//设置配置类
@@ -149,7 +170,7 @@ public class WXPayService {
 
 		WXPay wxPay=new WXPay(config);
 		WXPayAsynTask wxPayAsynTask = new WXPayAsynTask(wxPay, WechatConstants.ORGANIZATION_PAY_CHANGE_Suffix_URL, signMap, 1000, 5000);
-		wxPayAsynTask.run();
+		wxPayAsynTask.pay();
 
 	}
 	
