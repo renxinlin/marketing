@@ -7,6 +7,8 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dto.SaleInfo;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
@@ -28,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +67,9 @@ public class SaleMemberController {
 
     @Autowired
     private MarketingSaleMemberService marketingSaleMemberService;
+
+    @Value("${cookie.domain}")
+    private String cookieDomain;
 
     @GetMapping("info")
     @ApiOperation(value = "销售员中心", notes = "")
@@ -128,7 +136,7 @@ public class SaleMemberController {
      */
     @GetMapping("getOrgName")
     @ApiOperation(value = "获取组织名称并且传递wxstate", notes = "")
-    public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException {
+    public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId , @RequestParam("wxstate")String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletResponse response) throws SuperCodeException {
         // 数据埋点
         taskExecutor.execute(new Runnable() {
             @Override
@@ -148,11 +156,16 @@ public class SaleMemberController {
                     logger.info("扫码信息插入失败");
                     logger.info(e.getMessage(), e);
                 }
-
-
             }
         });
         // 业务处理: 获取企业名称
+        String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);
+        Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
+        // jwt有效期为2小时，保持一致
+        jwtTokenCookie.setMaxAge(60*60*2);
+        jwtTokenCookie.setPath("/");
+        jwtTokenCookie.setDomain(cookieDomain);
+        response.addCookie(jwtTokenCookie);
         boolean haveOrgId = validateParam(orgId, wxstate);
         return getNameByIdWithDefaultWhenError(orgId,haveOrgId);
     }
