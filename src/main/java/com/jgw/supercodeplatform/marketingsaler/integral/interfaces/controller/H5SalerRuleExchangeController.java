@@ -66,9 +66,11 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
 
 
 
-    @PostMapping("/list")
+    @GetMapping("/list")
     @ApiOperation(value = "兑换分页列表", notes = "")
     public RestResult<AbstractPageService.PageResults<List<SalerRuleExchange>>> list(DaoSearchWithOrganizationId daoSearch) throws CommonException {
+        daoSearch.setCurrent(1);
+        daoSearch.setPageSize(Integer.MAX_VALUE);
         return success(service.h5PageList(daoSearch));
     }
 

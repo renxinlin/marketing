@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.ExchangeUpDownStatus;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleExchange;
+import org.apache.http.util.Asserts;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -50,6 +51,7 @@ public class SalerRuleExchangeTransfer extends CommonTransfer {
 
     public static Wrapper<SalerRuleExchange> getH5PageParam(String organizationId) {
         QueryWrapper<SalerRuleExchange> queryWrapper = new QueryWrapper<>();
+        Asserts.check(!StringUtils.isEmpty(organizationId),"组织id不可为null");
         queryWrapper.eq("OrganizationId",organizationId);
         queryWrapper.eq("Status", ExchangeUpDownStatus.up);
 

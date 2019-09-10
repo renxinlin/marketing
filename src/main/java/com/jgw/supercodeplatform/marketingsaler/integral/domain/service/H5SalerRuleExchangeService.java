@@ -73,6 +73,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         // 支付流程
         // 预减库存
         SalerRuleExchange updateDo = new SalerRuleExchange();
+        // TODO 检查这段是否只是减库存
         int update = baseMapper.update(updateDo, H5SalerRuleExchangeTransfer.reducePreStock(updateDo, salerRuleExchange));
         Asserts.check(update == 1,"扣减库存失败");
         // 减导购用户积分
@@ -90,7 +91,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
             log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,user);
             throw new RuntimeException("微信支付，支付失败啦！");
         }
-        // TODO 减实际库存
+        // TODO 减实际库存 [检查这段是否只是减库存]
         baseMapper.update(updateDo,H5SalerRuleExchangeTransfer.reduceStock(updateDo,salerRuleExchange));
 
 
