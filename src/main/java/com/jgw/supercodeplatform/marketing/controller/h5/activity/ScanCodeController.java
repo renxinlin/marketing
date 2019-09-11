@@ -79,7 +79,7 @@ public class ScanCodeController {
      * @throws ParseException
      * @throws Exception
      */
-    @RequestMapping(value = "/",method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(@RequestParam(name="outerCodeId")String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId) throws Exception {
     	String wxstate=commonUtil.getUUID();
