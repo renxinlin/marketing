@@ -107,11 +107,15 @@ public class MarketingUserSqlProvider {
         if (record.getState() != null) {
             VALUES("State", "#{state,jdbcType=TINYINT}");
         }
-        
+
         if (record.getDeviceType() != null) {
             VALUES("DeviceType", "#{deviceType,jdbcType=TINYINT}");
         }
-        
+
+        if (record.getHaveIntegral() != null) {
+            VALUES("HaveIntegral", "#{haveIntegral,jdbcType=INTEGER}");
+        }
+
         return SQL();
     }
 
@@ -210,7 +214,9 @@ public class MarketingUserSqlProvider {
         if (record.getDeviceType() != null) {
             SET("DeviceType = #{deviceType,jdbcType=TINYINT}");
         }
-        
+        if (record.getHaveIntegral() != null) {
+            SET("HaveIntegral = #{haveIntegral,jdbcType=INTEGER}");
+        }
         WHERE("Id = #{id,jdbcType=BIGINT}");
         
         return SQL();

@@ -135,11 +135,11 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
         List<SalerRuleReward> batchRule = SalerRuleReward.toSaveBatch(bProductRuleParam,commonUtil.getOrganizationId());
         this.saveBatch(batchRule);
 
-        //根据产品id集合去基础平台请求对应的产品批次 TODO 检查是否需要修改 如url,导购角色等
+        //根据产品id集合去基础平台请求对应的产品批次
 //        JSONArray jsonArray= commonService.requestPriductBatchIds(products.stream().map(product -> product.getProductId()).collect(Collectors.toList()), commonUtil.getSuperToken());
         //构建请求生码批次参数
 //        List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = SalerRuleRewardParamTransfer.constructProductAndBatchMOByPPArr(jsonArray);
-        //请求生码批次及积分url绑定批次 TODO 检查是否需要修改 如跳转url,导购角色等
+        //请求生码批次及积分url绑定批次
 //        salerRuleRewardRestInterface.integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
 
         // 保存积分设置数据

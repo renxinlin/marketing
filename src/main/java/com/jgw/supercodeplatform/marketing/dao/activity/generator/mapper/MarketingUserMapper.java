@@ -32,7 +32,7 @@ public interface MarketingUserMapper {
         "UpdateDate, CustomerName, ",
         "CustomerId, PCCcode, ",
         "WechatHeadImgUrl, MemberType, ",
-        "State, DeviceType)",
+        "State, DeviceType,HaveIntegral)",
         "values (#{id,jdbcType=BIGINT}, #{wxName,jdbcType=VARCHAR}, ",
         "#{openid,jdbcType=VARCHAR}, #{mobile,jdbcType=VARCHAR}, ",
         "#{userId,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, ",
@@ -44,7 +44,7 @@ public interface MarketingUserMapper {
         "#{updateDate,jdbcType=TIMESTAMP}, #{customerName,jdbcType=VARCHAR}, ",
         "#{customerId,jdbcType=VARCHAR}, #{pCCcode,jdbcType=VARCHAR}, ",
         "#{wechatHeadImgUrl,jdbcType=VARCHAR}, #{memberType,jdbcType=TINYINT}, ",
-        "#{state,jdbcType=TINYINT}, #{deviceType,jdbcType=TINYINT})"
+            "#{state,jdbcType=TINYINT}, #{deviceType,jdbcType=TINYINT}, #{haveIntegral,jdbcType=INTEGER})"
     })
     int insert(MarketingUser record);
 
@@ -55,7 +55,7 @@ public interface MarketingUserMapper {
         "select",
         "Id, WxName, Openid, Mobile, UserId, UserName, Sex, Birthday, ProvinceCode, CountyCode, ",
         "CityCode, ProvinceName, CountyName, CityName, OrganizationId, CreateDate, UpdateDate, ",
-        "CustomerName, CustomerId, PCCcode, WechatHeadImgUrl, MemberType, State, DeviceType",
+        "CustomerName, CustomerId, PCCcode, WechatHeadImgUrl, MemberType, State, DeviceType,HaveIntegral",
         "from marketing_user",
         "where Id = #{id,jdbcType=BIGINT}"
     })
@@ -83,7 +83,8 @@ public interface MarketingUserMapper {
         @Result(column="WechatHeadImgUrl", property="wechatHeadImgUrl", jdbcType=JdbcType.VARCHAR),
         @Result(column="MemberType", property="memberType", jdbcType=JdbcType.TINYINT),
         @Result(column="State", property="state", jdbcType=JdbcType.TINYINT),
-        @Result(column="DeviceType", property="deviceType", jdbcType=JdbcType.TINYINT)
+        @Result(column="DeviceType", property="deviceType", jdbcType=JdbcType.TINYINT),
+        @Result(column="HaveIntegral", property="haveIntegral", jdbcType=JdbcType.INTEGER)
     })
     MarketingUser selectByPrimaryKey(Long id);
 
@@ -117,6 +118,7 @@ public interface MarketingUserMapper {
             + " <if test='memberType !=null  '> MemberType = #{memberType} ,</if> "
             + " <if test='state !=null  '> State = #{state} ,</if> "
             + " <if test='deviceType !=null '> DeviceType = #{deviceType} ,</if> "
+            + " <if test='haveIntegral !=null '> HaveIntegral = #{haveIntegral} ,</if> "
             + " UpdateDate = NOW() "
             + " </set>"
             + " <where> "
@@ -149,7 +151,8 @@ public interface MarketingUserMapper {
           "WechatHeadImgUrl = #{wechatHeadImgUrl,jdbcType=VARCHAR},",
           "MemberType = #{memberType,jdbcType=TINYINT},",
           "State = #{state,jdbcType=TINYINT},",
-          "DeviceType = #{deviceType,jdbcType=TINYINT}",
+          "DeviceType = #{deviceType,jdbcType=TINYINT},",
+          "HaveIntegral = #{haveIntegral,jdbcType=INTEGER}",
         "where Id = #{id,jdbcType=BIGINT}"
     })
     int updateByPrimaryKey(MarketingUser record);
