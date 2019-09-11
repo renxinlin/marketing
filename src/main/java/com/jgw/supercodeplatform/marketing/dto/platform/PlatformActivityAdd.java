@@ -18,6 +18,9 @@ import java.util.List;
 @Setter
 @ApiModel("添加活动")
 public class PlatformActivityAdd {
+    @ApiModelProperty("活动ID")
+    @NotNull(message = "活动ID不能为空")
+    private Long activityId;
     @ApiModelProperty("活动标题<不可重复>")
     @NotBlank(message = "活动标题不能为空")
     private String activityTitle;

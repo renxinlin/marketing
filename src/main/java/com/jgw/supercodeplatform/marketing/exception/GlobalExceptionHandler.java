@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.exception.base.UserSqlException;
@@ -191,6 +192,17 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(SuperCodeException.class)
 	public RestResult codePlatformException(SuperCodeException e) {
+		logger.error("自义定异常：" + e.getClass().getName(), e);
+		RestResult RestResult = new RestResult(e.getStatus() == 0 ? HttpStatus.INTERNAL_SERVER_ERROR.value() : e.getStatus(), e.getMessage(), null);
+		return RestResult;
+	}
+
+	/**
+	 * 自定义异常
+	 */
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(SuperCodeExtException.class)
+	public RestResult codePlatformException(SuperCodeExtException e) {
 		logger.error("自义定异常：" + e.getClass().getName(), e);
 		RestResult RestResult = new RestResult(e.getStatus() == 0 ? HttpStatus.INTERNAL_SERVER_ERROR.value() : e.getStatus(), e.getMessage(), null);
 		return RestResult;

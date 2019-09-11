@@ -33,7 +33,7 @@ public class PlatformActivityCheck {
             totalPrizeProbability = totalPrizeProbability + prizeType.getPrizeProbability();
         }
         if (totalPrizeProbability > 100) {
-            throw new SuperCodeExtException("活动概率总和大于100%");
+            throw new SuperCodeExtException("活动概率总和不能大于100%");
         }
         MarketingActivitySet existmActivitySet = marketingActivitySetMapper.selectByTitleOrgId(platformActivityAdd.getActivityTitle(),commonUtil.getOrganizationId());
         if (existmActivitySet != null) {
