@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.SalerRul
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.PrizeRulesVo;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.SalerRuleExchangeVo;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleExchange;
+import org.apache.http.util.Asserts;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,17 @@ public class SalerRuleExchangeAssembler {
     @Autowired
     private ModelMapper modelMapper;
      public SalerRuleExchangeDto fromWeb(SalerRuleExchangeVo vo) {
+         if(vo.getHaveStock() == null ){
+             vo.setHaveStock(UserConstants.defaultStock);
+         }
+         if(vo.getCustomerLimitNum() == null){
+             vo.setCustomerLimitNum(UserConstants.defaulttCustomerLimitNum);
+
+         }
+         Asserts.check(vo.getHaveStock()!= 0,"库存必须大于0");
+         Asserts.check(vo.getCustomerLimitNum()!= 0,"限兑次数大于0");
          SalerRuleExchangeDto dto = modelMapper.map(vo, SalerRuleExchangeDto.class);
+
          dto.setIsRrandomMoney(vo.getPrizeRulesVo().getIsRrandomMoney());
          dto.setHighRand(vo.getPrizeRulesVo().getHighRand());
          dto.setLowRand(vo.getPrizeRulesVo().getLowRand());
