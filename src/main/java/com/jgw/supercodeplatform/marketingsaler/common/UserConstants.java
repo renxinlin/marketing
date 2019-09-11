@@ -9,6 +9,7 @@ public interface UserConstants {
     String MARKETING_CODE_TYPE = "12";
     // 默认导购兑换库存
     Integer defaultStock = 99999 ;
+    // 导购兑换上限
     Integer defaulttCustomerLimitNum = 1000000 ;
     // 单码
     Long SINGLE_CODE = 0L;
