@@ -14,8 +14,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.*;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.*;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -47,12 +51,6 @@ import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingReceivingPageMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingWinningPageMapper;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
@@ -99,10 +97,10 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	@Autowired
 	private MarketingActivityChannelService channelService;
 
-	@Autowired
-	private MarketingWxMerchantsMapper marketingWxMerchantsMapper;
+    @Autowired
+    private MarketingPlatformOrganizationService marketingPlatformOrganizationService;
 
-	@Value("${rest.codemanager.url}")
+    @Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
 
 	@Value("${marketing.domain.url}")
@@ -1026,8 +1024,31 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	/**
 	 *
 	 */
-	public void createPlatformActivitySet(){
-
+	public void createPlatformActivitySet(PlatformActivityAdd platformActivityAdd){
+        MarketingActivitySet marketingActivitySet = new MarketingActivitySet();
+        BeanUtils.copyProperties(platformActivityAdd, marketingActivitySet);
+        JSONObject validConditionJson = new JSONObject();
+        validConditionJson.put("eachDayNumber", platformActivityAdd.getMaxJoinNum());
+        validConditionJson.put("sourceLink", platformActivityAdd.getSourceLink());
+        marketingActivitySet.setValidCondition(validConditionJson.toJSONString());
+        //中奖奖次列表转换
+        List<MarketingPrizeType> marketingPrizeTypeList = platformActivityAdd.getPrizeTypeList()
+                .stream().map(prizeType -> {
+                    MarketingPrizeType marketingPrizeType = new MarketingPrizeType();
+                    BeanUtils.copyProperties(prizeType, marketingPrizeType);
+                    marketingPrizeType.setPrizeAmount(prizeType.getPrizeAmount().floatValue());
+                    return marketingPrizeType;
+                }).collect(Collectors.toList());
+        //使用公司列表转换
+        List<MarketingPlatformOrganization> platformOrganizationList = platformActivityAdd.getJoinOrganizationList()
+                .stream().map(joinOrganization -> {
+                    MarketingPlatformOrganization platformOrganization = new MarketingPlatformOrganization();
+                    BeanUtils.copyProperties(joinOrganization, platformOrganization);
+                    return platformOrganization;
+                }).collect(Collectors.toList());
+        mSetMapper.insert(marketingActivitySet);
+        mPrizeTypeMapper.batchInsert(marketingPrizeTypeList);
+        marketingPlatformOrganizationService.insertPlatformOrganizationList(platformOrganizationList);
 	}
 
 }

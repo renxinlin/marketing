@@ -18,10 +18,10 @@ public interface MarketingPrizeTypeMapper {
 	@Insert({
 			"<script>",
 			"INSERT INTO marketing_prize_type(ActivitySetId,PrizeTypeName,PrizeAmount,PrizeProbability,IsRrandomMoney,WiningNum,RealPrize,LowRand,HighRand,AwardType, RemainingStock,"
-			+ "CardLink,AwardIntegralNum) VALUES ",
+			+ "CardLink,AwardIntegralNum,AwardGrade) VALUES ",
 			"<foreach collection='mList' item='mPrize' index='index' separator=','>",
 			"(#{mPrize.activitySetId},#{mPrize.prizeTypeName},#{mPrize.prizeAmount},#{mPrize.prizeProbability},#{mPrize.isRrandomMoney},#{mPrize.winingNum},"
-			+ "#{mPrize.realPrize},#{mPrize.lowRand},#{mPrize.highRand},#{mPrize.awardType},#{mPrize.remainingStock},#{mPrize.cardLink},#{mPrize.awardIntegralNum})",
+			+ "#{mPrize.realPrize},#{mPrize.lowRand},#{mPrize.highRand},#{mPrize.awardType},#{mPrize.remainingStock},#{mPrize.cardLink},#{mPrize.awardIntegralNum},#{mPrize.awardGrade})",
 			"</foreach>",
 			"</script>"
 	})

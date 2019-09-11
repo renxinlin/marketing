@@ -93,7 +93,7 @@ public class SalerRegisterAndLoginV2Controller {
     @ResponseBody
     @GetMapping("login")
     @ApiOperation(value = "手机号登录", notes = "")
-    public RestResult<MarketingUser> login(SalerLoginParam loginUser ,HttpServletResponse response) throws SuperCodeException{
+    public RestResult<Long> login(SalerLoginParam loginUser ,HttpServletResponse response) throws SuperCodeException{
             // 或者 微信回调携带openid登录
             // 手机登录
             // TODO  验证码
@@ -152,10 +152,8 @@ public class SalerRegisterAndLoginV2Controller {
                 return RestResult.error("请前往注册后登录",null,401);
 
             }
-
-
         // 异步授权openid
-        return RestResult.success("success",null);
+        return RestResult.success("success",user.getId());
     }
 
 

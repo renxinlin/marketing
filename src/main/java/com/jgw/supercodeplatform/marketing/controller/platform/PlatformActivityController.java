@@ -12,6 +12,8 @@ import com.jgw.supercodeplatform.marketing.dto.platform.JoinResultPage;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityDisable;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingPlatformOrganizationService;
 import com.jgw.supercodeplatform.marketing.vo.platform.JoinPrizeRecordVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
@@ -42,6 +44,10 @@ public class PlatformActivityController {
     private RestTemplateUtil restTemplateUtil;
     @Autowired
     private CommonUtil commonUtil;
+    @Autowired
+    private MarketingPlatformOrganizationService marketingPlatformOrganizationService;
+    @Autowired
+    private MarketingActivitySetService marketingActivitySetService;
 
     @ApiOperation("添加活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)

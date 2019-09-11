@@ -86,8 +86,8 @@ public abstract class BaseActivityParamCheck {
 						if (null==lowrand || null==highrand || lowrand >=highrand) {
 							throw new SuperCodeException("随机金额取值范围不能为空且低取值不能大于等于高取值", 500);
 						}
-						if (lowrand<1 || highrand>5000) {
-							throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在1-5000以内", 500);
+						if (lowrand<=0 || highrand>5000) {
+							throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在0-5000以内", 500);
 						}
 					}
 				}else {
