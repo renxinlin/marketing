@@ -127,6 +127,9 @@ public class SalerRuleReward implements Serializable {
             ruleProduct.setRewardRule(rewardRule);
             ruleProduct.setProductId(productId);
             ruleProduct.setProductName(product.getProductName());
+            Date date = new Date();
+            ruleProduct.setCreateDate(date);
+            ruleProduct.setUpdateDate(date);
             batchRule.add(ruleProduct);
 
         }

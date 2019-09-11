@@ -41,12 +41,13 @@ public class SalerRuleRewardParamTransfer extends CommonTransfer{
         QueryWrapper<SalerRuleReward> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("OrganizationId",organizationId);
         if(daoSearch != null && !StringUtils.isEmpty(daoSearch.getSearch())){
-            queryWrapper.and(query ->query.like("",daoSearch.getSearch())
-                    .or().like("ProductName",daoSearch.getSearch())
+            queryWrapper.and(query ->
+                    query.like("ProductName",daoSearch.getSearch())
                     .or().like("ProductPrice",daoSearch.getSearch())
                     .or().like("RewardIntegral",daoSearch.getSearch())
             );
         }
+        queryWrapper.orderByDesc("UpdateDate");
         return queryWrapper;
     }
 

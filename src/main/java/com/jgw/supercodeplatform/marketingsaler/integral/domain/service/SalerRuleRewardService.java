@@ -123,6 +123,7 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
         // 规则设置数据校验
         List<Product> products=bProductRuleParam.getProducts();
         Asserts.check(!CollectionUtils.isEmpty(products),"产品不能为空");
+        Asserts.check(bProductRuleParam.getRewardIntegral()!=null&&bProductRuleParam.getRewardIntegral()>0 ,"奖励积分大于0");
 
         products.forEach(product ->Asserts.check(!StringUtils.isEmpty(product.getProductId()),"产品id不能为空"));
         Asserts.check(!CollectionUtils.isEmpty(products),"产品id不能为空");
@@ -157,6 +158,7 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
     public void singleSetRuleProduct(SalerRuleReward inRuleProduct) throws SuperCodeException {
         if (null==inRuleProduct.getId()) {
             // 基础业务校验
+            Asserts.check(inRuleProduct.getRewardIntegral()!=null&&inRuleProduct.getRewardIntegral()>0 ,"奖励积分大于0");
             Asserts.check(inRuleProduct!= null && inRuleProduct.getProductId() != null,"导购员积分单个设置参数不全");
             Integer settedCount = baseMapper.selectCount(
                     query().eq("OrganizationId", commonUtil.getOrganizationId())
@@ -165,7 +167,7 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
             Asserts.check(settedCount == null || settedCount <= 0,"该产品已经设置请携带主键");
 
             // 数据保存
-            baseMapper.insert(inRuleProduct);
+            baseMapper.insert(inRuleProduct.setCreateDate(new Date()).setUpdateDate(new Date()));
 
             //根据产品id集合去基础平台请求对应的产品批次
 //            JSONArray jsonArray= commonService.requestPriductBatchIds(Arrays.asList(inRuleProduct.getProductId()), commonUtil.getSuperToken());
