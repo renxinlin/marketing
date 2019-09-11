@@ -1032,6 +1032,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
         validConditionJson.put("eachDayNumber", platformActivityAdd.getMaxJoinNum());
         validConditionJson.put("sourceLink", platformActivityAdd.getSourceLink());
         marketingActivitySet.setValidCondition(validConditionJson.toJSONString());
+        mSetMapper.insert(marketingActivitySet);
         //中奖奖次列表转换
         List<MarketingPrizeType> marketingPrizeTypeList = platformActivityAdd.getPrizeTypeList()
                 .stream().map(prizeType -> {
@@ -1045,9 +1046,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
                 .stream().map(joinOrganization -> {
                     MarketingPlatformOrganization platformOrganization = new MarketingPlatformOrganization();
                     BeanUtils.copyProperties(joinOrganization, platformOrganization);
+                    platformOrganization.setActivityId(marketingActivitySet.getId());
                     return platformOrganization;
                 }).collect(Collectors.toList());
-        mSetMapper.insert(marketingActivitySet);
         mPrizeTypeMapper.batchInsert(marketingPrizeTypeList);
         marketingPlatformOrganizationService.insertPlatformOrganizationList(platformOrganizationList);
 	}

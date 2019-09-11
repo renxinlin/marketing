@@ -13,4 +13,6 @@ public class MarketingPlatformOrganization {
 
     private String organizationFullName;
 
+    private Long activityId;
+
 }
