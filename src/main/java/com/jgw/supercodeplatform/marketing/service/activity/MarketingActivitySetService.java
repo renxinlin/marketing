@@ -1032,6 +1032,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
         validConditionJson.put("eachDayNumber", platformActivityAdd.getMaxJoinNum());
         validConditionJson.put("sourceLink", platformActivityAdd.getSourceLink());
         marketingActivitySet.setValidCondition(validConditionJson.toJSONString());
+        marketingActivitySet.setOrganizationId(commonUtil.getOrganizationId());
+        marketingActivitySet.setOrganizatioIdlName(commonUtil.getOrganizationName());
+        marketingActivitySet.setActivityStatus(1);
+        marketingActivitySet.setUpdateUserId(commonUtil.getUserLoginCache().getUserId());
+        marketingActivitySet.setUpdateUserName(commonUtil.getUserLoginCache().getUserName());
         mSetMapper.insert(marketingActivitySet);
         //中奖奖次列表转换
         List<MarketingPrizeType> marketingPrizeTypeList = platformActivityAdd.getPrizeTypeList()
@@ -1039,6 +1044,13 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
                     MarketingPrizeType marketingPrizeType = new MarketingPrizeType();
                     BeanUtils.copyProperties(prizeType, marketingPrizeType);
                     marketingPrizeType.setPrizeAmount(prizeType.getPrizeAmount().floatValue());
+                    if (prizeType.getAwardGrade() == null) {
+                        marketingPrizeType.setRealPrize((byte)0);
+                    } else {
+                        marketingPrizeType.setRealPrize((byte)1);
+                    }
+                    marketingPrizeType.setIsRrandomMoney((byte)0);
+                    marketingPrizeType.setActivitySetId(marketingActivitySet.getId());
                     return marketingPrizeType;
                 }).collect(Collectors.toList());
         //使用公司列表转换
