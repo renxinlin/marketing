@@ -15,7 +15,7 @@ public interface MarketingPlatformOrganizationMapper {
             "VALUES <foreach collection='platformOrganizationList' item='platformOrganization' separator=','>",
             "(#{platformOrganization.organizationId}, #{platformOrganization.organizationFullName}, #{platformOrganization.activitySetId})",
             "</foreach>",
-    "<script>"})
+    "</script>"})
     int insertList(@Param("platformOrganizationList") List<MarketingPlatformOrganization> platformOrganizationList);
 
 }

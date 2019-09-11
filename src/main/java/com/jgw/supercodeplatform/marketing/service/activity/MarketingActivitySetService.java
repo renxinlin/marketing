@@ -1024,6 +1024,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	/**
 	 *
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public void createPlatformActivitySet(PlatformActivityAdd platformActivityAdd){
         MarketingActivitySet marketingActivitySet = new MarketingActivitySet();
         BeanUtils.copyProperties(platformActivityAdd, marketingActivitySet);
