@@ -45,6 +45,7 @@ public class SalerRuleExchangeTransfer extends CommonTransfer {
                     .or().like("CustomerLimitNum",daoSearch.getSearch())
             );
         }
+        queryWrapper.orderByDesc("ID");
         return queryWrapper;
     }
 
@@ -54,7 +55,7 @@ public class SalerRuleExchangeTransfer extends CommonTransfer {
         Asserts.check(!StringUtils.isEmpty(organizationId),"组织id不可为null");
         queryWrapper.eq("OrganizationId",organizationId);
         queryWrapper.eq("Status", ExchangeUpDownStatus.up);
-
+        queryWrapper.orderByDesc("ID");
         return queryWrapper;
     }
 
