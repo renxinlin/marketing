@@ -47,6 +47,7 @@ public class SalerRuleRewardParamTransfer extends CommonTransfer{
                     .or().like("RewardIntegral",daoSearch.getSearch())
             );
         }
+        queryWrapper.orderByDesc("UpdateDate");
         return queryWrapper;
     }
 
