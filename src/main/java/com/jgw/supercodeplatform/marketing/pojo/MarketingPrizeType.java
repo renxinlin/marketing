@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import org.apache.commons.lang.builder.EqualsBuilder;
 
@@ -46,6 +47,9 @@ public class MarketingPrizeType implements Comparable<MarketingPrizeType>{
     
     @ApiModelProperty(value = "奖励的积分",name = "awardIntegralNum",  example = "21")
     private Integer awardIntegralNum;
+
+    @ApiModelProperty("奖品等级<1:一等奖，2：二等奖，3：三等奖。。。。>")
+	private Byte awardGrade;
     
  	public long getTotalNum() {
 		return totalNum;
@@ -138,6 +142,15 @@ public class MarketingPrizeType implements Comparable<MarketingPrizeType>{
 	public void setAwardIntegralNum(Integer awardIntegralNum) {
 		this.awardIntegralNum = awardIntegralNum;
 	}
+
+	public void setAwardGrade(Byte awardGrade) {
+		this.awardGrade = awardGrade;
+	}
+
+	public Byte getAwardGrade() {
+		return awardGrade;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		   if (obj == null) { return false;}

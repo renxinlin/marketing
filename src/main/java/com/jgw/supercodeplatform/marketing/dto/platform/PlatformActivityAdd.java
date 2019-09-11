@@ -21,13 +21,12 @@ public class PlatformActivityAdd {
     @ApiModelProperty("活动标题<不可重复>")
     @NotBlank(message = "活动标题不能为空")
     private String activityTitle;
-    @ApiModelProperty(value = "活动开始时间", dataType = "java.lang.String")
+    @ApiModelProperty(value = "活动开始时间", dataType = "String")
     @NotNull(message = "活动开始时间不能为空")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @FutureOrPresent(message = "时间必须为当前时间或者未来的时间")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date activityStartDate;
-    @ApiModelProperty(value = "活动结束时间", dataType = "java.lang.String")
+    @ApiModelProperty(value = "活动结束时间", dataType = "String")
     @NotNull(message = "活动结束时间不能为空")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Future(message = "时间必须为未来的时间")
@@ -52,6 +51,13 @@ public class PlatformActivityAdd {
     @Getter
     @ApiModel("奖品红包")
     public static class PrizeType {
+        @ApiModelProperty("奖次名称<一等奖，二等奖。。。。。>")
+        @NotBlank(message = "奖次信息不能为空")
+        private String prizeTypeName;
+        @ApiModelProperty("中奖等级<1:一等奖，2：二等奖，3：三等奖。。。。。>")
+        @NotNull(message = "中奖等级信息不能为空")
+        @Positive(message = "中奖等级必须为正数")
+        private Byte awardGrade;
         @ApiModelProperty("红包金额")
         @NotNull(message = "红包金额不能为空")
         @DecimalMin(value = "0.01", message = "红包金额不能小于0")
@@ -60,11 +66,11 @@ public class PlatformActivityAdd {
         private BigDecimal prizeAmount;
         @ApiModelProperty("中奖概率<不含百分号>")
         @NotNull(message = "中奖概率不能为空")
-        @Positive(message = "中奖概率必须为一个正数")
+        @Positive(message = "中奖概率必须为正数")
         private Integer prizeProbability;
         @ApiModelProperty("该奖项剩余次数")
         @NotNull(message = "剩余中奖次数不能为空")
-        @Positive(message = "剩余中奖次数必须为一个正数")
+        @Positive(message = "剩余中奖次数必须为正数")
         private Integer remainingNumber;
 
     }
