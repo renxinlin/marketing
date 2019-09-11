@@ -77,10 +77,10 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
    @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle, "
            + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus, "
-           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition,SendAudit) "
+           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition,SendAudit,MerchantsInfo) "
            + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate}, "
            + " #{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.activityRangeMark}, "
-           + " #{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition},#{ma.sendAudit} "
+           + " #{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition},#{ma.sendAudit},#{merchantsInfo} "
            + " )")
    @Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
    int insert(@Param("ma")MarketingActivitySet marketingActivitySet);
