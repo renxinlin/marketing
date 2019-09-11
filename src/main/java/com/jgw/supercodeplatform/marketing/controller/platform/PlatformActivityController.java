@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.platform;
 
 import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.common.AbstractPageService.PageResults;
+import com.jgw.supercodeplatform.marketing.check.activity.platform.PlatformActivityCheck;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
@@ -45,7 +46,7 @@ public class PlatformActivityController {
     @Autowired
     private CommonUtil commonUtil;
     @Autowired
-    private MarketingPlatformOrganizationService marketingPlatformOrganizationService;
+    private PlatformActivityCheck platformActivityCheck;
     @Autowired
     private MarketingActivitySetService marketingActivitySetService;
 
@@ -53,8 +54,8 @@ public class PlatformActivityController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/add")
     public RestResult<?> add(@RequestBody @Valid PlatformActivityAdd platformActivityAdd) {
-
-
+        platformActivityCheck.platformActivityAddCheck(platformActivityAdd);
+        marketingActivitySetService.createPlatformActivitySet(platformActivityAdd);
         return RestResult.success();
     }
 
