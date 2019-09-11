@@ -1046,7 +1046,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
                 .stream().map(joinOrganization -> {
                     MarketingPlatformOrganization platformOrganization = new MarketingPlatformOrganization();
                     BeanUtils.copyProperties(joinOrganization, platformOrganization);
-                    platformOrganization.setActivityId(marketingActivitySet.getId());
+                    platformOrganization.setActivitySetId(marketingActivitySet.getId());
                     return platformOrganization;
                 }).collect(Collectors.toList());
         mPrizeTypeMapper.batchInsert(marketingPrizeTypeList);
