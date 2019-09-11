@@ -2,19 +2,21 @@ package com.jgw.supercodeplatform.marketing.controller.platform;
 
 
 import com.alibaba.fastjson.JSON;
-import com.jgw.supercodeplatform.common.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.check.activity.platform.PlatformActivityCheck;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.*;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.platform.JoinResultPage;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityDisable;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingPlatformOrganizationService;
+import com.jgw.supercodeplatform.marketing.service.activity.PlatformActivityService;
 import com.jgw.supercodeplatform.marketing.vo.platform.JoinPrizeRecordVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
@@ -22,13 +24,17 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpStatus;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +45,8 @@ import java.util.stream.Collectors;
 @Api(tags = "全平台活动")
 public class PlatformActivityController {
 
+    private final static String DATE_FORMATE = "yyyy-MM-dd";
+
     @Value("${rest.user.url}")
     private String userUrl;
     @Autowired
@@ -48,14 +56,14 @@ public class PlatformActivityController {
     @Autowired
     private PlatformActivityCheck platformActivityCheck;
     @Autowired
-    private MarketingActivitySetService marketingActivitySetService;
+    private PlatformActivityService platformActivityService;
 
     @ApiOperation("添加活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/add")
     public RestResult<?> add(@RequestBody @Valid PlatformActivityAdd platformActivityAdd) {
         platformActivityCheck.platformActivityAddCheck(platformActivityAdd);
-        marketingActivitySetService.createPlatformActivitySet(platformActivityAdd);
+        platformActivityService.createPlatformActivitySet(platformActivityAdd);
         return RestResult.success();
     }
 
@@ -76,8 +84,15 @@ public class PlatformActivityController {
     @ApiOperation("查询活动列表")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/page")
-    public RestResult<PageResults<List<PlatformActivityVo>>> page(@Valid DaoSearch daoSearch){
-        return RestResult.success();
+    public RestResult<PageResults<List<PlatformActivityVo>>> page(@Valid DaoSearchWithOrganizationIdParam daoSearch) throws Exception {
+        daoSearch.setOrganizationId(commonUtil.getOrganizationId());
+        PageResults<List<PlatformActivityVo>> platformActivityVoResult = platformActivityService.listSearchViewLike(daoSearch);
+        platformActivityVoResult.getList().stream().forEach(platformActivityVo -> {
+            Date startDate = platformActivityVo.getActivityStartDate();
+            Date endDate = platformActivityVo.getActivityEndDate();
+            platformActivityVo.setActivityDate(DateFormatUtils.format(startDate,DATE_FORMATE) + " ~ " + DateFormatUtils.format(endDate,DATE_FORMATE));
+        });
+        return RestResult.successWithData(platformActivityVoResult);
     }
 
 
