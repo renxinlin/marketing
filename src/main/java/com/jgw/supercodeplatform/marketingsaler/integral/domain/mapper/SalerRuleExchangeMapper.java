@@ -1,6 +1,8 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.domain.mapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleExchange;
 import com.jgw.supercodeplatform.marketingsaler.base.mapper.CommonMapper;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * <p>
@@ -12,5 +14,8 @@ import com.jgw.supercodeplatform.marketingsaler.base.mapper.CommonMapper;
  */
 public interface SalerRuleExchangeMapper extends CommonMapper<SalerRuleExchange> {
 
-
-        }
+    @Update(" update marketing_saler_rule_exchange set HaveStock = HaveStock - 1  where HaveStock - 1 > 0  and id = #{salerRuleExchange.id} ")
+    int reduceHaveStock(SalerRuleExchange salerRuleExchange);
+    @Update(" update marketing_saler_rule_exchange set PreHaveStock = PreHaveStock - 1  where PreHaveStock - 1 > 0  and id = #{salerRuleExchange.id} ")
+    int updateReduceHaveStock(SalerRuleExchange salerRuleExchange);
+}

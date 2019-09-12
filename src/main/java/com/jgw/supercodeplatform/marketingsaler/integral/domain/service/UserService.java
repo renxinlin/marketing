@@ -12,6 +12,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.util.Asserts;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,7 +26,8 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class UserService extends SalerCommonService<UserMapper, User> {
-
+    @Autowired
+    private UserMapper userMapper;
 
     public User canExchange(H5LoginVO user, Integer exchangeIntegral) {
         User salerUser = baseMapper.selectById(user.getMemberId());
@@ -43,10 +45,7 @@ public class UserService extends SalerCommonService<UserMapper, User> {
     }
 
     public void reduceIntegral(Integer exchangeIntegral,  User userPojo) {
-        User value = new User();
-        Wrapper<User> updateWrapper = new UpdateWrapper<>(value);
-        ((UpdateWrapper<User>) updateWrapper).apply("haveIntegral = haveIntegral - {0}",exchangeIntegral).set("Id",userPojo.getId()).set("OrganizationId",userPojo.getOrganizationId());
-        int update = baseMapper.update(value, updateWrapper); // TODO 默认是匹配的行数 useAffectRow
+        int update = userMapper.reduceIntegral(exchangeIntegral,userPojo.getId(),userPojo.getOrganizationId());
         Asserts.check(update==1,"减少导购积分失败");
     }
 

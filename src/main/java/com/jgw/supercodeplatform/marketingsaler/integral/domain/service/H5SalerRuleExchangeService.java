@@ -52,6 +52,12 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
     @Autowired
     private WXPayService wxPayService;
 
+
+    @Autowired
+    private SalerRuleExchangeMapper salerRuleExchangeMapper;
+
+
+
     @Transactional // todo 单库干掉预减库存
     public RestResult exchange(H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) {
         // 校验
@@ -81,13 +87,10 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
        if(money != 0D){
            // 支付流程
            // 预减库存
-           SalerRuleExchange updateDo = new SalerRuleExchange();
-           // TODO 检查这段是否只是减库存 affectRow
-           int update = baseMapper.update(updateDo, H5SalerRuleExchangeTransfer.reducePreStock(updateDo, salerRuleExchange));
-           Asserts.check(update == 1,"扣减库存失败");
+           int update = salerRuleExchangeMapper.updateReduceHaveStock(salerRuleExchange);
+           Asserts.check(update==1,"扣减库存失败");
            // 减导购用户积分
            marketingUserService.reduceIntegral(salerRuleExchange.getExchangeIntegral(),userPojo);
-
            // 兑换次数
            salerExchangeNumService.save(new SalerExchangeNum(null,userPojo.getId(),userPojo.getOrganizationId(),salerRuleExchange.getId()));
            // 订单[虚拟订单]
@@ -100,8 +103,8 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
                log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,user);
                throw new RuntimeException("微信支付，支付失败啦！");
            }
-           // TODO 减实际库存 [检查这段是否只是减库存]
-           baseMapper.update(updateDo,H5SalerRuleExchangeTransfer.reduceStock(updateDo,salerRuleExchange));
+           int i = salerRuleExchangeMapper.reduceHaveStock(salerRuleExchange);
+           Asserts.check(i==1,"扣减库存失败");
 
        }
        return RestResult.success();
