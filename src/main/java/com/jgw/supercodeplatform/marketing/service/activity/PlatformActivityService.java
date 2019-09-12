@@ -4,11 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPlatformOrganizationMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithUser;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.*;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
@@ -16,23 +20,35 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPlatformOrganization;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
+import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.http.HttpStatus;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-public class PlatformActivityService extends AbstractPageService<DaoSearchWithOrganizationIdParam> {
+public class PlatformActivityService extends AbstractPageService<DaoSearchWithUser> {
+
+    @Value("${rest.user.url}")
+    private String userUrl;
+
+    @Autowired
+    private RestTemplateUtil restTemplateUtil;
 
     @Autowired
     private MarketingActivitySetMapper mSetMapper;
@@ -50,12 +66,12 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithOr
     private MarketingPlatformOrganizationService marketingPlatformOrganizationService;
 
     @Override
-    protected List<PlatformActivityVo> searchResult(DaoSearchWithOrganizationIdParam searchParams) throws Exception {
+    protected List<PlatformActivityVo> searchResult(DaoSearchWithUser searchParams) throws Exception {
         return mSetMapper.listPlatform(searchParams);
     }
 
     @Override
-    protected int count(DaoSearchWithOrganizationIdParam searchParams) throws Exception {
+    protected int count(DaoSearchWithUser searchParams) throws Exception {
         return mSetMapper.countPlatform(searchParams);
     }
 
@@ -67,8 +83,6 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithOr
         validConditionJson.put("eachDayNumber", platformActivityAdd.getMaxJoinNum());
         validConditionJson.put("sourceLink", platformActivityAdd.getSourceLink());
         marketingActivitySet.setValidCondition(validConditionJson.toJSONString());
-        marketingActivitySet.setOrganizationId(commonUtil.getOrganizationId());
-        marketingActivitySet.setOrganizatioIdlName(commonUtil.getOrganizationName());
         marketingActivitySet.setActivityStatus(1);
         marketingActivitySet.setActivityStartDate(DateFormatUtils.format(platformActivityAdd.getActivityStartDate(), "yyyy-MM-dd"));
         marketingActivitySet.setActivityEndDate(DateFormatUtils.format(platformActivityAdd.getActivityEndDate(), "yyyy-MM-dd"));
@@ -149,6 +163,35 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithOr
         }
         platformActivityUpdate.setJoinOrganizationList(joinOrganizationList);
         return platformActivityUpdate;
+    }
+
+    public PageResults<List<PlatformOrganizationDataVo>> platformOrganization(DaoSearch daoSearch) {
+        PageResults<List<PlatformOrganizationDataVo>> pageResults = new PageResults<>();
+        Map<String, Object> params = new HashMap<>();
+        params.put("current", daoSearch.getCurrent());
+        params.put("pageSize", daoSearch.getPageSize());
+        params.put("search", daoSearch.getSearch());
+        Map<String, String> headerMap = new HashMap<>();
+        headerMap.put("super-token", commonUtil.getSuperToken());
+        ResponseEntity<String> entity = restTemplateUtil.getRequestAndReturnJosn(userUrl+ WechatConstants.ORG_LIST_PLATFORM, params, headerMap);
+        if (entity != null && entity.getStatusCodeValue() == HttpStatus.SC_OK){
+            String result = entity.getBody();
+            if (org.apache.commons.lang.StringUtils.isNotBlank(result) && JSON.parseObject(result).getIntValue("state") == HttpStatus.SC_OK) {
+                PageResults<List<Object>> pageMapResults = JSON.parseObject(result).getObject("results", PageResults.class);
+                List<PlatformOrganizationDataVo> resList = pageMapResults.getList().stream().map(obj -> {
+                    Map sorMap = (Map)obj;
+                    String organizationId = (String) sorMap.get("organizationId");
+                    String organizationName = (String)sorMap.get("organizationFullName");
+                    PlatformOrganizationDataVo platformOrganizationDataVo = new PlatformOrganizationDataVo();
+                    platformOrganizationDataVo.setOrganizationId(organizationId);
+                    platformOrganizationDataVo.setOrganizationFullName(organizationName);
+                    return platformOrganizationDataVo;
+                }).collect(Collectors.toList());
+                pageResults.setList(resList);
+                pageResults.setPagination(pageMapResults.getPagination());
+            }
+        }
+        return pageResults;
     }
 
 

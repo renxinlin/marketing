@@ -2,6 +2,8 @@ package com.jgw.supercodeplatform.marketing.dao.activity;
 
 import java.util.List;
 
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithUser;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
@@ -199,7 +201,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
 
     @Select({startScript,
-            "SELECT "+allFields+" FROM marketing_activity_set WHERE OrganizationId = #{organizationId} ",
+            "SELECT "+allFields+" FROM marketing_activity_set WHERE UpdateUserId = #{userId} ",
             " AND ActivityId = 5 ",
             "<if test = 'search != null and search != &apos;&apos;'> AND (",
             " OR ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
@@ -208,16 +210,16 @@ public interface MarketingActivitySetMapper extends CommonSql {
             " ORDER BY UpdateDate ",
             " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>",
             endScript})
-    List<PlatformActivityVo> listPlatform(DaoSearchWithOrganizationIdParam searchParams);
+    List<PlatformActivityVo> listPlatform(DaoSearchWithUser searchParams);
 
     @Select({startScript,
-            "SELECT COUNT(1) FROM marketing_activity_set WHERE OrganizationId = #{organizationId} ",
+            "SELECT COUNT(1) FROM marketing_activity_set WHERE UpdateUserId = #{userId} ",
             " AND ActivityId = 5 ",
             "<if test = 'search != null and search != &apos;&apos;'> AND (",
             " OR ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
             " OR UpdateUserName LIKE CONCAT('%', #{updateUserName}, '%')",
             ") </if>",
             endScript})
-    int countPlatform(DaoSearchWithOrganizationIdParam searchParams);
+    int countPlatform(DaoSearchWithUser searchParams);
 
 }

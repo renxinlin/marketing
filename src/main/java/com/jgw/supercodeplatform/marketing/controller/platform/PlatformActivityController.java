@@ -10,6 +10,8 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithUser;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.platform.JoinResultPage;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityDisable;
@@ -48,16 +50,14 @@ public class PlatformActivityController {
 
     private final static String DATE_FORMATE = "yyyy-MM-dd";
 
-    @Value("${rest.user.url}")
-    private String userUrl;
-    @Autowired
-    private RestTemplateUtil restTemplateUtil;
     @Autowired
     private CommonUtil commonUtil;
     @Autowired
     private PlatformActivityCheck platformActivityCheck;
     @Autowired
     private PlatformActivityService platformActivityService;
+    @Autowired
+    private MarketingActivitySetService marketingActivitySetService;
 
     @ApiOperation("添加活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
@@ -68,7 +68,7 @@ public class PlatformActivityController {
         return RestResult.success();
     }
 
-    @ApiOperation("根据ID活动活动信息")
+    @ApiOperation("根据ID获取活动信息")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/get")
     public RestResult<PlatformActivityUpdate> getActivity(@RequestParam Long id) throws ParseException {
@@ -88,8 +88,8 @@ public class PlatformActivityController {
     @ApiOperation("查询活动列表")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/page")
-    public RestResult<PageResults<List<PlatformActivityVo>>> page(@Valid DaoSearchWithOrganizationIdParam daoSearch) throws Exception {
-        daoSearch.setOrganizationId(commonUtil.getOrganizationId());
+    public RestResult<PageResults<List<PlatformActivityVo>>> page(@Valid DaoSearchWithUser daoSearch) throws Exception {
+        daoSearch.setUserId(commonUtil.getUserLoginCache().getUserId());
         PageResults<List<PlatformActivityVo>> platformActivityVoResult = platformActivityService.listSearchViewLike(daoSearch);
         platformActivityVoResult.getList().stream().forEach(platformActivityVo -> {
             Date startDate = platformActivityVo.getActivityStartDate();
@@ -104,31 +104,7 @@ public class PlatformActivityController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/platformOrganizationPage")
     public RestResult<PageResults<List<PlatformOrganizationDataVo>>> platformOrganization(@Valid DaoSearch daoSearch){
-        PageResults<List<PlatformOrganizationDataVo>> pageResults = new PageResults<>();
-        Map<String, Object> params = new HashMap<>();
-        params.put("current", daoSearch.getCurrent());
-        params.put("pageSize", daoSearch.getPageSize());
-        params.put("search", daoSearch.getSearch());
-        Map<String, String> headerMap = new HashMap<>();
-        headerMap.put("super-token", commonUtil.getSuperToken());
-        ResponseEntity<String> entity = restTemplateUtil.getRequestAndReturnJosn(userUrl+ WechatConstants.ORG_LIST_PLATFORM, params, headerMap);
-        if (entity != null && entity.getStatusCodeValue() == HttpStatus.SC_OK){
-            String result = entity.getBody();
-            if (StringUtils.isNotBlank(result) && JSON.parseObject(result).getIntValue("state") == HttpStatus.SC_OK) {
-                PageResults<List<Object>> pageMapResults = JSON.parseObject(result).getObject("results", PageResults.class);
-                List<PlatformOrganizationDataVo> resList = pageMapResults.getList().stream().map(obj -> {
-                    Map sorMap = (Map)obj;
-                    String organizationId = (String) sorMap.get("organizationId");
-                    String organizationName = (String)sorMap.get("organizationFullName");
-                    PlatformOrganizationDataVo platformOrganizationDataVo = new PlatformOrganizationDataVo();
-                    platformOrganizationDataVo.setOrganizationId(organizationId);
-                    platformOrganizationDataVo.setOrganizationFullName(organizationName);
-                    return platformOrganizationDataVo;
-                }).collect(Collectors.toList());
-                pageResults.setList(resList);
-                pageResults.setPagination(pageMapResults.getPagination());
-            }
-        }
+        PageResults<List<PlatformOrganizationDataVo>> pageResults = platformActivityService.platformOrganization(daoSearch);
         return RestResult.successWithData(pageResults);
     }
 
@@ -137,7 +113,10 @@ public class PlatformActivityController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/disOrEnable")
     public RestResult<?> disOrEnable(@RequestBody @Valid PlatformActivityDisable platformActivityDisable){
-        return RestResult.success();
+        MarketingActivitySetStatusUpdateParam mUpdateStatus = new MarketingActivitySetStatusUpdateParam();
+        mUpdateStatus.setActivitySetId(platformActivityDisable.getId());
+        mUpdateStatus.setActivityStatus(platformActivityDisable.getActivityStatus());
+        return marketingActivitySetService.updateActivitySetStatus(mUpdateStatus);
     }
 
     @ApiOperation("参与记录")
