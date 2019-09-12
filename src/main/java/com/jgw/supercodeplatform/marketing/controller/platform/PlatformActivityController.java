@@ -34,6 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,8 +71,9 @@ public class PlatformActivityController {
     @ApiOperation("根据ID活动活动信息")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/get")
-    public RestResult<PlatformActivityUpdate> getActivity(@RequestParam Long id) {
-        return RestResult.success();
+    public RestResult<PlatformActivityUpdate> getActivity(@RequestParam Long id) throws ParseException {
+        PlatformActivityUpdate platformActivityUpdate = platformActivityService.getActivityBySetId(id);
+        return RestResult.successWithData(platformActivityUpdate);
     }
 
     @ApiOperation("编辑修改活动")
