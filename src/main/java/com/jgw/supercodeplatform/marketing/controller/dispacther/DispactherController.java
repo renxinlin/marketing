@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.controller.SalerRuleRewardController;
 import com.jgw.supercodeplatform.marketingsaler.order.controller.SalerOrderFormController;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +27,7 @@ import java.util.List;
  *
  */
 
+@Api(tags = "后台系统管理按钮")
 @RestController
 @RequestMapping("marketing/button/dispacther")
 public class DispactherController {

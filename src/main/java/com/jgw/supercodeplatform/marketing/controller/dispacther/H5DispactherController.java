@@ -12,6 +12,7 @@ import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.controller.H5SalerRuleExchangeController;
 import com.jgw.supercodeplatform.marketingsaler.order.controller.H5SalerOrderFormController;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ import java.util.List;
 /**
  *
  */
-
+@Api(tags = "H5页面查看按钮")
 @RestController
 @RequestMapping("marketing/h5/button/dispacther")
 public class H5DispactherController {
@@ -47,5 +48,4 @@ public class H5DispactherController {
         List<ButtonStatusVo> buttonStatusList = Lists.newArrayList(redBagButtonStatus, salerIntegralButtonStatus, salerOrderButtonStatus);
         return RestResult.successWithData(buttonStatusList);
     }
-
 }
