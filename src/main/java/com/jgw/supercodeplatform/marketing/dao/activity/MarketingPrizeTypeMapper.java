@@ -11,7 +11,7 @@ public interface MarketingPrizeTypeMapper {
 
 	String allFields =" Id id,ActivitySetId activitySetId,PrizeTypeName prizeTypeName,PrizeAmount prizeAmount,PrizeProbability prizeProbability,IsRrandomMoney isRrandomMoney,"
 			+"WiningNum winingNum,RealPrize realPrize,LowRand lowRand,HighRand highRand,AwardType awardType,RemainingStock remainingStock,CardLink cardLink,"
-			+ "AwardIntegralNum awardIntegralNum";
+			+ "AwardIntegralNum awardIntegralNum, AwardGrade awardGrade";
 
 
 

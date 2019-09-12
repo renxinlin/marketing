@@ -201,7 +201,7 @@ public class Swagger2Config {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("活动显示开关模块")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.dispacher"))
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.dispacther"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo())
