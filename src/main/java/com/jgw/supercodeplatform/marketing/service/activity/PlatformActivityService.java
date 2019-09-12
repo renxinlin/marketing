@@ -1,16 +1,23 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPlatformOrganizationMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.*;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPlatformOrganization;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
@@ -18,6 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +44,9 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithOr
     private CommonUtil commonUtil;
 
     @Autowired
+    private MarketingPlatformOrganizationMapper marketingPlatformOrganizationMapper;
+
+    @Autowired
     private MarketingPlatformOrganizationService marketingPlatformOrganizationService;
 
     @Override
@@ -47,7 +60,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithOr
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void createPlatformActivitySet(PlatformActivityAdd platformActivityAdd){
+    public void createOrUpdatePlatformActivitySet(PlatformActivityAdd platformActivityAdd){
         MarketingActivitySet marketingActivitySet = new MarketingActivitySet();
         BeanUtils.copyProperties(platformActivityAdd, marketingActivitySet);
         JSONObject validConditionJson = new JSONObject();
@@ -61,7 +74,16 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithOr
         marketingActivitySet.setActivityEndDate(DateFormatUtils.format(platformActivityAdd.getActivityEndDate(), "yyyy-MM-dd"));
         marketingActivitySet.setUpdateUserId(commonUtil.getUserLoginCache().getUserId());
         marketingActivitySet.setUpdateUserName(commonUtil.getUserLoginCache().getUserName());
-        mSetMapper.insert(marketingActivitySet);
+        if (platformActivityAdd instanceof PlatformActivityUpdate) {
+            PlatformActivityUpdate platformActivityUpdate = (PlatformActivityUpdate)platformActivityAdd;
+            Long activityId = platformActivityUpdate.getId();
+            marketingActivitySet.setId(activityId);
+            mSetMapper.update(marketingActivitySet);
+            mPrizeTypeMapper.deleteByActivitySetId(activityId);
+            marketingPlatformOrganizationMapper.delteByActivitySetId(activityId);
+        } else {
+            mSetMapper.insert(marketingActivitySet);
+        }
         //中奖奖次列表转换
         List<MarketingPrizeType> marketingPrizeTypeList = platformActivityAdd.getPrizeTypeList()
                 .stream().map(prizeType -> {
@@ -88,4 +110,46 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithOr
         mPrizeTypeMapper.batchInsert(marketingPrizeTypeList);
         marketingPlatformOrganizationService.insertPlatformOrganizationList(platformOrganizationList);
     }
+
+
+    public PlatformActivityUpdate getActivityBySetId(Long activitySetId) throws ParseException {
+        MarketingActivitySet marketingActivitySet = mSetMapper.selectById(activitySetId);
+        if (marketingActivitySet == null) {
+            throw new SuperCodeExtException("找到不到该ID对应的活动");
+        }
+        List<MarketingPrizeType> marketingPrizeTypeList = mPrizeTypeMapper.selectByActivitySetId(activitySetId);
+        List<MarketingPlatformOrganization> marketingPlatformOrganizationList = marketingPlatformOrganizationMapper.selectByActivitySetId(activitySetId);
+        PlatformActivityUpdate platformActivityUpdate = new PlatformActivityUpdate();
+        BeanUtils.copyProperties(marketingActivitySet,platformActivityUpdate);
+        platformActivityUpdate.setActivityStartDate(DateUtils.parseDate(marketingActivitySet.getActivityStartDate(), "yyyy-MM-dd"));
+        platformActivityUpdate.setActivityEndDate(DateUtils.parseDate(marketingActivitySet.getActivityEndDate(), "yyyy-MM-dd"));
+        String validation = marketingActivitySet.getValidCondition();
+        if (StringUtils.isNotBlank(validation)) {
+            JSONObject validConditionJson = JSON.parseObject(validation);
+            platformActivityUpdate.setSourceLink(validConditionJson.getString("sourceLink"));
+            platformActivityUpdate.setMaxJoinNum(validConditionJson.getInteger("eachDayNumber"));
+        }
+        List<PrizeType> prizeTypeList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(marketingPrizeTypeList)) {
+            prizeTypeList = marketingPrizeTypeList.stream().filter(pr -> pr.getAwardGrade() != null).map(marketingPrizeType -> {
+                PrizeType prizeType = new PrizeType();
+                BeanUtils.copyProperties(marketingPrizeType, prizeType);
+                prizeType.setPrizeAmount(new BigDecimal(marketingPrizeType.getPrizeAmount()));
+                return prizeType;
+            }).collect(Collectors.toList());
+        }
+        platformActivityUpdate.setPrizeTypeList(prizeTypeList);
+        List<JoinOrganization> joinOrganizationList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(marketingPlatformOrganizationList)) {
+            joinOrganizationList = marketingPlatformOrganizationList.stream().map(marketingPlatformOrganization -> {
+                JoinOrganization joinOrganization = new JoinOrganization();
+                BeanUtils.copyProperties(marketingPlatformOrganization, joinOrganization);
+                return joinOrganization;
+            }).collect(Collectors.toList());
+        }
+        platformActivityUpdate.setJoinOrganizationList(joinOrganizationList);
+        return platformActivityUpdate;
+    }
+
+
 }

@@ -63,7 +63,7 @@ public class PlatformActivityController {
     @PostMapping("/add")
     public RestResult<?> add(@RequestBody @Valid PlatformActivityAdd platformActivityAdd) {
         platformActivityCheck.platformActivityAddCheck(platformActivityAdd);
-        platformActivityService.createPlatformActivitySet(platformActivityAdd);
+        platformActivityService.createOrUpdatePlatformActivitySet(platformActivityAdd);
         return RestResult.success();
     }
 
@@ -78,6 +78,8 @@ public class PlatformActivityController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/update")
     public RestResult<?> update(@RequestBody @Valid PlatformActivityUpdate platformActivityUpdate) {
+        platformActivityCheck.platformActivityAddCheck(platformActivityUpdate);
+        platformActivityService.createOrUpdatePlatformActivitySet(platformActivityUpdate);
         return RestResult.success();
     }
 

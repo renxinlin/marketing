@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.dto.platform;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +11,7 @@ import javax.validation.constraints.Positive;
 
 @Setter
 @Getter
+@ApiModel("设置活动状态")
 public class PlatformActivityDisable {
     @ApiModelProperty("活动主键Id")
     @NotNull(message = "活动主键ID不能为空")
