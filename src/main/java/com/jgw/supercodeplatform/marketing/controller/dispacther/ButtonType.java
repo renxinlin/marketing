@@ -5,15 +5,15 @@ public interface ButtonType {
     /**
      * 红包
      */
-    final static int RED_BAG = 1;
+    final static String RED_BAG = "redBag";
     /**
      * 积分
      */
-    final static int INTEGRAL = 2;
+    final static String SALER_INTEGRAL = "salerIntegral";
     /**
      *订货
      */
-    final static int ORDER = 3;
+    final static String SALER_ORDER = "salerOrder";
 
 
 }

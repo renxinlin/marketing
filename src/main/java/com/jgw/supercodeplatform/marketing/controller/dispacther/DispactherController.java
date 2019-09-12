@@ -42,19 +42,21 @@ public class DispactherController {
 
     @GetMapping("/openCloseStatus")
     @ApiOperation("开启关闭页面按钮 1开启2 关闭")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<String> openIntegralStatus(@RequestParam Integer buttonType, @RequestParam Integer status) throws Exception {
+    @ApiImplicitParams({@ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true),
+    @ApiImplicitParam(name = "buttonType", paramType = "query", value = "按钮类型<红包:redBag,积分:salerIntegral,订货:salerOrder>", required = true),
+    @ApiImplicitParam(name = "status", paramType = "query", value = "按钮值<1:启用，2：关闭>", required = true)})
+    public RestResult<String> openIntegralStatus(@RequestParam String buttonType, @RequestParam Integer status) throws Exception {
         if (status != ButtonStatus.openInt && status != ButtonStatus.closeInt){
             throw new SuperCodeExtException("状态输入不合法，必须为1或者2");
         }
         String organizationId = commonUtil.getOrganizationId();
-        if (buttonType == ButtonType.RED_BAG) {
+        if (buttonType.equals(ButtonType.RED_BAG)) {
             redisUtil.set(UserConstants.MARKETING_RED_BAG + organizationId,status.toString());
         }
-        if (buttonType == ButtonType.INTEGRAL) {
+        if (buttonType.equals(ButtonType.SALER_INTEGRAL)) {
             redisUtil.set(UserConstants.MARKETING_SALER_INTEGRAL_BUTTON + organizationId,status.toString());
         }
-        if (buttonType == ButtonType.ORDER) {
+        if (buttonType.equals(ButtonType.SALER_ORDER)) {
             redisUtil.set(UserConstants.MARKETING_ORDER_BUTTON + organizationId,status.toString());
         }
         return RestResult.success();
