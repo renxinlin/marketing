@@ -36,7 +36,7 @@ public class UserService extends SalerCommonService<UserMapper, User> {
         Asserts.check(salerUser.getState() == UserState.enable    ,"用户未启动");
         Asserts.check(salerUser.getHaveIntegral()!=null ,"积分不足");
         Asserts.check(salerUser.getHaveIntegral().intValue()>= exchangeIntegral.intValue() ,"积分不足");
-        Asserts.check(StringUtils.isEmpty(salerUser.getOpenid()),"未绑定微信无法发红包");
+        Asserts.check(!StringUtils.isEmpty(salerUser.getOpenid()),"未绑定微信无法发红包");
 
         return salerUser;
 
