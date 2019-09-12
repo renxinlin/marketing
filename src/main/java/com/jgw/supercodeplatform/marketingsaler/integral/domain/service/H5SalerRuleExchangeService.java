@@ -75,7 +75,8 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         } catch (Exception e) {
             marketingUserService.reduceIntegral(salerRuleExchange.getExchangeIntegral(),userPojo);
             e.printStackTrace();
-            return RestResult.error(e.getMessage(),"");
+            // 积分消耗 获取0元
+            return RestResult.error(e.getMessage(),null);
         }
        if(money != 0D){
            // 支付流程
