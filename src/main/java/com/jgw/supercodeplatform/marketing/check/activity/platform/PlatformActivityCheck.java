@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.PrizeType;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,11 @@ public class PlatformActivityCheck {
         if (totalPrizeProbability > 100) {
             throw new SuperCodeExtException("活动概率总和不能大于100%");
         }
-        MarketingActivitySet existmActivitySet = marketingActivitySetMapper.selectByTitleOrgId(platformActivityAdd.getActivityTitle(),commonUtil.getOrganizationId());
-        if (existmActivitySet != null) {
-            throw new SuperCodeExtException("您已设置过相同标题的活动不可重复设置");
+        if (!(platformActivityAdd instanceof PlatformActivityUpdate)) {
+            MarketingActivitySet existmActivitySet = marketingActivitySetMapper.selectByTitleOrgId(platformActivityAdd.getActivityTitle(), commonUtil.getOrganizationId());
+            if (existmActivitySet != null) {
+                throw new SuperCodeExtException("您已设置过相同标题的活动不可重复设置");
+            }
         }
         if (totalPrizeProbability < 100) {
             PrizeType prizeType = new PrizeType();

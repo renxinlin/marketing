@@ -2,6 +2,9 @@ package com.jgw.supercodeplatform.marketing.dao.activity;
 
 import java.util.List;
 
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithUser;
+import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Many;
@@ -176,7 +179,6 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " LEFT JOIN marketing_channel mc ON mc.ActivitySetId = mas.Id "
             + " WHERE mas.OrganizationId = #{organizationId} "
             + whereSearch
-            + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>"
             + endScript
     )
     int count(DaoSearchWithOrganizationIdParam searchParams);
@@ -196,5 +198,28 @@ public interface MarketingActivitySetMapper extends CommonSql {
 			"</foreach>) ",
     		endScript})
     List<MarketingActivitySet> selectMarketingActivitySetByIds(@Param("organizationId")String organizationId, @Param("idList") List<Long> idList);
-    
+
+
+    @Select({startScript,
+            "SELECT "+allFields+" FROM marketing_activity_set WHERE UpdateUserId = #{userId} ",
+            " AND ActivityId = 5 ",
+            "<if test = 'search != null and search != &apos;&apos;'> AND (",
+            " OR ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
+            " OR UpdateUserName LIKE CONCAT('%', #{updateUserName}, '%')",
+            ") </if>",
+            " ORDER BY UpdateDate ",
+            " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>",
+            endScript})
+    List<PlatformActivityVo> listPlatform(DaoSearchWithUser searchParams);
+
+    @Select({startScript,
+            "SELECT COUNT(1) FROM marketing_activity_set WHERE UpdateUserId = #{userId} ",
+            " AND ActivityId = 5 ",
+            "<if test = 'search != null and search != &apos;&apos;'> AND (",
+            " OR ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
+            " OR UpdateUserName LIKE CONCAT('%', #{updateUserName}, '%')",
+            ") </if>",
+            endScript})
+    int countPlatform(DaoSearchWithUser searchParams);
+
 }

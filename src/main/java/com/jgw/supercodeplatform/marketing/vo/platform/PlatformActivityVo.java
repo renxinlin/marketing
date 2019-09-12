@@ -12,6 +12,10 @@ import java.util.Date;
 @Getter
 @ApiModel("活动")
 public class PlatformActivityVo {
+    @ApiModelProperty(hidden = true)
+    private Date activityStartDate;
+    @ApiModelProperty(hidden = true)
+    private Date activityEndDate;
     @ApiModelProperty("活动id")
     private Long id;
     @ApiModelProperty("活动标题")

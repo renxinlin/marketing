@@ -195,4 +195,16 @@ public class Swagger2Config {
                 .apiInfo(apiInfo())
                 .enable(enable);
     }
+
+    @Bean("活动显示开关模块")
+    public Docket dispacherApis() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("活动显示开关模块")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.dispacther"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
 }

@@ -1,9 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPlatformOrganization;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -17,5 +15,11 @@ public interface MarketingPlatformOrganizationMapper {
             "</foreach>",
     "</script>"})
     int insertList(@Param("platformOrganizationList") List<MarketingPlatformOrganization> platformOrganizationList);
+
+    @Delete("DELETE marketing_platform_organization WHERE ActivitySetId = #{activitySetId}")
+    int delteByActivitySetId(@Param("activitySetId") Long activitySetId);
+
+    @Select("SELECT * FROM marketing_platform_organization WHERE ActivitySetId = #{activitySetId}")
+    List<MarketingPlatformOrganization> selectByActivitySetId(@Param("activitySetId") Long activitySetId);
 
 }

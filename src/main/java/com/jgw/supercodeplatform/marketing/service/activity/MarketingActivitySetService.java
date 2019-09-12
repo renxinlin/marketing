@@ -1021,48 +1021,4 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		return restResult;
 	}
 
-	/**
-	 *
-	 */
-	@Transactional(rollbackFor = Exception.class)
-	public void createPlatformActivitySet(PlatformActivityAdd platformActivityAdd){
-        MarketingActivitySet marketingActivitySet = new MarketingActivitySet();
-        BeanUtils.copyProperties(platformActivityAdd, marketingActivitySet);
-        JSONObject validConditionJson = new JSONObject();
-        validConditionJson.put("eachDayNumber", platformActivityAdd.getMaxJoinNum());
-        validConditionJson.put("sourceLink", platformActivityAdd.getSourceLink());
-        marketingActivitySet.setValidCondition(validConditionJson.toJSONString());
-        marketingActivitySet.setOrganizationId(commonUtil.getOrganizationId());
-        marketingActivitySet.setOrganizatioIdlName(commonUtil.getOrganizationName());
-        marketingActivitySet.setActivityStatus(1);
-        marketingActivitySet.setUpdateUserId(commonUtil.getUserLoginCache().getUserId());
-        marketingActivitySet.setUpdateUserName(commonUtil.getUserLoginCache().getUserName());
-        mSetMapper.insert(marketingActivitySet);
-        //中奖奖次列表转换
-        List<MarketingPrizeType> marketingPrizeTypeList = platformActivityAdd.getPrizeTypeList()
-                .stream().map(prizeType -> {
-                    MarketingPrizeType marketingPrizeType = new MarketingPrizeType();
-                    BeanUtils.copyProperties(prizeType, marketingPrizeType);
-                    marketingPrizeType.setPrizeAmount(prizeType.getPrizeAmount().floatValue());
-                    if (prizeType.getAwardGrade() == null) {
-                        marketingPrizeType.setRealPrize((byte)0);
-                    } else {
-                        marketingPrizeType.setRealPrize((byte)1);
-                    }
-                    marketingPrizeType.setIsRrandomMoney((byte)0);
-                    marketingPrizeType.setActivitySetId(marketingActivitySet.getId());
-                    return marketingPrizeType;
-                }).collect(Collectors.toList());
-        //使用公司列表转换
-        List<MarketingPlatformOrganization> platformOrganizationList = platformActivityAdd.getJoinOrganizationList()
-                .stream().map(joinOrganization -> {
-                    MarketingPlatformOrganization platformOrganization = new MarketingPlatformOrganization();
-                    BeanUtils.copyProperties(joinOrganization, platformOrganization);
-                    platformOrganization.setActivitySetId(marketingActivitySet.getId());
-                    return platformOrganization;
-                }).collect(Collectors.toList());
-        mPrizeTypeMapper.batchInsert(marketingPrizeTypeList);
-        marketingPlatformOrganizationService.insertPlatformOrganizationList(platformOrganizationList);
-	}
-
 }
