@@ -73,7 +73,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         // 支付流程
         // 预减库存
         SalerRuleExchange updateDo = new SalerRuleExchange();
-        // TODO 检查这段是否只是减库存
+        // TODO 检查这段是否只是减库存 affectRow
         int update = baseMapper.update(updateDo, H5SalerRuleExchangeTransfer.reducePreStock(updateDo, salerRuleExchange));
         Asserts.check(update == 1,"扣减库存失败");
         // 减导购用户积分
