@@ -45,13 +45,7 @@ public class H5SalerOrderFormController extends SalerCommonController {
     public RestResult showOrder(  @ApiIgnore H5LoginVO user)   {
         return success(service.showOrder(user));
     }
-    @Autowired
-    private BaseCustomerService baseCustomerService;
-    @GetMapping(value = "/test")
-    public RestResult test(){
-        CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo("1bfff45482e1401ea9383ca88f7c3206");
-        return success(customerInfo);
-    }
+
     @CheckRole(role = "1")
     @PostMapping("/saveOrder")
     @ApiOperation(value = "h5订货", notes = "")
