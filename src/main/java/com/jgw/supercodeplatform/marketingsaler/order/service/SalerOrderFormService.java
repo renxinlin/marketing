@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
+import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
@@ -15,6 +16,7 @@ import com.jgw.supercodeplatform.marketingsaler.order.mapper.SalerOrderFormMappe
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.transfer.SalerOrderTransfer;
 import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -38,9 +43,11 @@ import java.util.stream.Collectors;
 @Service
 public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapper, SalerOrderForm> {
 
+    private static final String NULL_NULL_NULL ="nullnullnull" ;
     @Autowired
     private DynamicMapper dynamicMapper;
-
+    @Autowired
+    private BaseCustomerService baseCustomerService;
 
 
     /**
@@ -127,10 +134,24 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
 
     public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, H5LoginVO user) {
-        Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()),"未获取对应组织");
-        Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues),"未获取对应组织");
-        String address = user.getCustomerName(); // 门店
-        SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues,user,address);
-        dynamicMapper.saveOrder(columnnameAndValues,SalerOrderTransfer.initTableName(user.getOrganizationId()));
+        Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()), "未获取对应组织");
+        Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取对应组织");
+        if (StringUtils.isEmpty(user.getCustomerId())) {
+            CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo(user.getCustomerId());// TODO  门店的地址
+            StringBuffer address = new StringBuffer("");
+            if (customerInfo != null) {
+                if (!StringUtils.isEmpty(customerInfo.getProvinceName())) {
+                    address.append(customerInfo.getProvinceName());
+                }
+                if (!StringUtils.isEmpty(customerInfo.getCityName())) {
+                    address.append(customerInfo.getCityName());
+                }
+                if (!StringUtils.isEmpty(customerInfo.getCountyName())) {
+                    address.append(customerInfo.getCountyName());
+                }
+            }
+            SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues, user, address.toString());
+            dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
+        }
     }
 }

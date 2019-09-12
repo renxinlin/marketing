@@ -3,17 +3,17 @@ package com.jgw.supercodeplatform.marketingsaler.order.controller;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketingsaler.base.config.aop.CheckRole;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
-import com.jgw.supercodeplatform.marketingsaler.base.config.aop.CheckRole;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
+import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
-import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueListDto;
 import com.jgw.supercodeplatform.marketingsaler.order.service.SalerOrderFormService;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * <p>
@@ -46,8 +45,13 @@ public class H5SalerOrderFormController extends SalerCommonController {
     public RestResult showOrder(  @ApiIgnore H5LoginVO user)   {
         return success(service.showOrder(user));
     }
-
-
+    @Autowired
+    private BaseCustomerService baseCustomerService;
+    @GetMapping(value = "/test")
+    public RestResult test(){
+        CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo("1bfff45482e1401ea9383ca88f7c3206");
+        return success(customerInfo);
+    }
     @CheckRole(role = "1")
     @PostMapping("/saveOrder")
     @ApiOperation(value = "h5订货", notes = "")
