@@ -14,8 +14,8 @@ import org.apache.ibatis.annotations.Update;
  */
 public interface SalerRuleExchangeMapper extends CommonMapper<SalerRuleExchange> {
 
-    @Update(" update marketing_saler_rule_exchange set HaveStock = HaveStock - 1  where HaveStock - 1 > 0  and id = #{salerRuleExchange.id} ")
+    @Update(" update marketing_saler_rule_exchange set HaveStock = HaveStock - 1  where HaveStock - 1 > 0  and id = #{id} ")
     int reduceHaveStock(SalerRuleExchange salerRuleExchange);
-    @Update(" update marketing_saler_rule_exchange set PreHaveStock = PreHaveStock - 1  where PreHaveStock - 1 > 0  and id = #{salerRuleExchange.id} ")
+    @Update(" update marketing_saler_rule_exchange set PreHaveStock = PreHaveStock - 1  where PreHaveStock - 1 > 0  and id = #{id} ")
     int updateReduceHaveStock(SalerRuleExchange salerRuleExchange);
 }
