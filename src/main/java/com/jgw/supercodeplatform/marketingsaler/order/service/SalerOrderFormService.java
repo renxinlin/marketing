@@ -158,16 +158,16 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     public  AbstractPageService.PageResults<List<Map<String,Object>>> selectPage(DaoSearch daoSearch) throws SuperCodeException {
         // 传入表名
         String tableName = SalerOrderTransfer.initTableName(commonUtil.getOrganizationId());
-        int count = dynamicMapper.selectCount(tableName);
         // 表名即组织
         Integer pageSize = daoSearch.getPageSize();
         int current = (daoSearch.getCurrent() -1)*pageSize;
         List<SalerOrderForm> columnConfigs = getColumnNamesByOrganizationId(commonUtil.getOrganizationId());
         List<String> columnNames = columnConfigs.stream().map(columnconfig -> columnconfig.getColumnName()).collect(Collectors.toList());
+        int count = dynamicMapper.selectCount(tableName,columnNames,daoSearch.getSearch());
         List<Map<String,Object>> pageData = dynamicMapper.selectPageData(tableName,current, pageSize,columnNames,daoSearch.getSearch());
         Page pageInfo = new Page(pageSize,daoSearch.getCurrent(),count);
         AbstractPageService.PageResults<List<Map<String,Object>>> pageResult =
-                new AbstractPageService.PageResults<List<Map<String,Object>>>(pageData,pageInfo);
+                new AbstractPageService.PageResults<>(pageData,pageInfo);
         return pageResult;
     }
 

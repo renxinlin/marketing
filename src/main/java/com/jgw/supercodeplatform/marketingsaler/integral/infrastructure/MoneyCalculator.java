@@ -37,4 +37,20 @@ public class MoneyCalculator {
         Asserts.check(money>0.00D,"抽中0元");
         return money;
     }
+
+    public static void main(String[] args) {
+        long prizeProbability = 5;
+        int i = 0;
+        while (i<100){
+            i++;
+            double random = Math.random(); // [0,1)
+
+            long round = Math.round(random * 100.0D);//[0,100) -> [0,100] 0-prizeProbability 中奖 prizeProbability-100 未中奖
+            System.out.println("============="+round);
+            if(round > prizeProbability){
+                System.out.println("同学,没中奖!");
+            }
+        }
+
+    }
 }

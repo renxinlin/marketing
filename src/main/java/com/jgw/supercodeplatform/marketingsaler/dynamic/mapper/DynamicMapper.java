@@ -65,8 +65,18 @@ public interface DynamicMapper extends CommonSql {
 
 
 
-    @Select(" select count(1) from ${tableName}")
-    int selectCount(@Param("tableName") String tableName);
+    @Select(startScript
+            + " select count(1) from ${tableName}"
+            + " <if test='search !=null and search != &apos;&apos;'> "
+            + " where 1=1 and "
+            + " <foreach collection='columns' item='item' index='index'  open=' ' close=' ' separator=' ' >  "
+            + " ${item} = #{search}  and "
+            + " </foreach> "
+
+            + " 1 = 1"
+            + "</if>"
+            + endScript)
+    int selectCount(@Param("tableName") String tableName, @Param("columns") List<String> columns , @Param("search") String search );
 
     @Select(startScript
             + " select * from ${tableName} "
