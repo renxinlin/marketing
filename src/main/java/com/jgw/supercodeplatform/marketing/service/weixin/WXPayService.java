@@ -67,14 +67,18 @@ public class WXPayService {
 		if (StringUtils.isBlank(mechid) || StringUtils.isBlank(mechappid)) {
 			throw new SuperCodeException("获取到的企业公众号支付参数有空值，mechid="+mechid+",mechappid="+mechappid, 500);
 		}
-
+		String certificatePassword = mWxMerchants.getCertificatePassword();
 		String key=mWxMerchants.getMerchantKey();
 		//设置配置类
 		WXPayMarketingConfig config=new WXPayMarketingConfig();
 		config.setAppId(mechappid);
 		config.setKey(key);
 		config.setMchId(mechid);
-
+		if (StringUtils.isBlank(certificatePassword)) {
+			config.setCertificatePassword(mWxMerchants.getMchid());
+		} else {
+			config.setCertificatePassword(certificatePassword);
+		}
 		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getCertificateAddress();
 		logger.info("微信企业支付到零钱证书完整路径："+wholePath);
 		config.setCertificatePath(wholePath);
@@ -141,14 +145,18 @@ public class WXPayService {
 		wXPayTradeOrderMapper.insert(tradeOrder);
 
 
-
+		String certificatePassword = mWxMerchants.getCertificatePassword();
 		String key=mWxMerchants.getMerchantKey();
 		//设置配置类
 		WXPayMarketingConfig config=new WXPayMarketingConfig();
 		config.setAppId(mechappid);
 		config.setKey(key);
 		config.setMchId(mechid);
-
+		if (StringUtils.isBlank(certificatePassword)) {
+			config.setCertificatePassword(mWxMerchants.getMchid());
+		} else {
+			config.setCertificatePassword(certificatePassword);
+		}
 		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getCertificateAddress();
 		logger.info("微信企业支付到零钱证书完整路径："+wholePath);
 		config.setCertificatePath(wholePath);
