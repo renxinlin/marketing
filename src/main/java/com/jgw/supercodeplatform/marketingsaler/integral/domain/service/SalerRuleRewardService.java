@@ -71,6 +71,7 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
 
         Map<String, String> headerMap = new HashMap<>();
         headerMap.put("super-token", commonUtil.getSuperToken());
+        log.info("传递到码管理已经设置的产品Id信息{}", JSONObject.toJSONString(params));
         ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl+ CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, headerMap);
         String body = responseEntity.getBody();
         log.info("接收到码管理进行过码关联的产品信息："+body);
