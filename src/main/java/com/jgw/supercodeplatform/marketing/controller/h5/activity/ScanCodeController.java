@@ -148,12 +148,13 @@ public class ScanCodeController {
      */
     @RequestMapping(value = "/saler",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统导购路径", notes = "")
-    public String daogou(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId,@RequestParam String sBatchId, @RequestParam String memberId) throws Exception {
+    //public String daogou(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId,@RequestParam String sBatchId, @RequestParam String memberId) throws Exception {
+    public String daogou(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId,@RequestParam String sBatchId) throws Exception {
     	logger.info("导购扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+"sBatchId="+sBatchId);
     	String	wxstate=commonUtil.getUUID();
     	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId,sBatchId, wxstate, ReferenceRoleEnum.ACTIVITY_SALER.getType());
         // 领取按钮对应的前端URL
-        return "redirect:"+h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate+"&memberId="+memberId;
+        return "redirect:"+h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate+"&memberId="+56;
     }
 
     /**
