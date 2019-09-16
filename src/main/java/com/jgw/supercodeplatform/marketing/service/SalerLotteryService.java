@@ -363,17 +363,17 @@ public class SalerLotteryService {
         String activityEndDate = marketingActivitySet.getActivityEndDate();
 
         Integer activityStatus = marketingActivitySet.getActivityStatus();
-        if(activityStatus != null || activityStatus != ActivityStatusEnum.UP.getType()){
+        if(activityStatus == null || activityStatus != ActivityStatusEnum.UP.getType()){
             throw new SuperCodeException("活动未开启...");
         }
 
 
-        if(activityEndDate != null && nowStr.compareTo(activityStartDate) < 0){
+        if(activityStartDate != null && nowStr.compareTo(activityStartDate) < 0){
             // todo 检查日期比较
             throw new SuperCodeException("活动没有开始...");
         }
 
-        if(activityStartDate != null || nowStr.compareTo(activityEndDate) > 0){
+        if(activityEndDate != null || nowStr.compareTo(activityEndDate) > 0){
             // todo 检查日期比较
             throw new SuperCodeException("活动已经结束...");
 
@@ -400,14 +400,14 @@ public class SalerLotteryService {
            case ParticipationConditionConstant.activity:
                Long vipscanNum = codeEsService.countByCode(codeId, codeTypeId, (int) MemberTypeEnums.VIP.getType());
                if(vipscanNum ==null || vipscanNum <= 0){
-                   throw new SuperCodeException("活动参与条件未符合...");
+                   throw new SuperCodeException("请先协助会员领取红包");
                }
                // 是否有会员领取活动
            case ParticipationConditionConstant.integral:
                 // 是否有会员领取积分
                Long memberscanNum = codeEsService.countCodeIntegral(codeId, codeTypeId);
                if(memberscanNum ==null || memberscanNum <= 0){
-                   throw new SuperCodeException("积分参与条件未符合...");
+                   throw new SuperCodeException("请先协助会员领取积分");
                }
            case ParticipationConditionConstant.noCondition:
                break;
@@ -417,7 +417,7 @@ public class SalerLotteryService {
 
         // 规则校验2
         int todayScanNum = codeEsService.countSalerNumByUserIdAndDate(organizationId, userId, "","");
-        if(todayScanNum >= marketingActivitySetCondition.getEachDayNumber()){
+        if(todayScanNum > marketingActivitySetCondition.getEachDayNumber()){
             throw new SalerLotteryException("扫码虽好,可不要贪多哦!欢迎明天在试");
         }
         // 规则校验3
