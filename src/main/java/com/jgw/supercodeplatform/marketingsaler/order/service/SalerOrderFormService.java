@@ -9,7 +9,6 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
-import com.jgw.supercodeplatform.marketingsaler.order.dto.ChangeColumDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
@@ -48,7 +47,6 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     private DynamicMapper dynamicMapper;
     @Autowired
     private BaseCustomerService baseCustomerService;
-
 
     /**
      * 相关非空校验
@@ -131,11 +129,18 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         // 表名即组织
         Integer pageSize = daoSearch.getPageSize();
         int current = (daoSearch.getCurrent() -1)*pageSize;
-        List<Map<String,Object>> pageData = dynamicMapper.selectPageData(tableName,current, pageSize);
+        List<SalerOrderForm> columnConfigs = getColumnNamesByOrganizationId(commonUtil.getOrganizationId());
+        List<String> columnNames = columnConfigs.stream().map(columnconfig -> columnconfig.getColumnName()).collect(Collectors.toList());
+        List<Map<String,Object>> pageData = dynamicMapper.selectPageData(tableName,current, pageSize,columnNames);
         Page pageInfo = new Page(pageSize,daoSearch.getCurrent(),count);
         AbstractPageService.PageResults<List<Map<String,Object>>> pageResult =
                 new AbstractPageService.PageResults<List<Map<String,Object>>>(pageData,pageInfo);
         return pageResult;
+    }
+
+    private List<SalerOrderForm> getColumnNamesByOrganizationId(String organizationId) {
+        List<SalerOrderForm> columnConfigs = baseMapper.selectList(query().eq("organizationId", organizationId).getWrapper());
+        return  columnConfigs;
     }
 
     public  List<H5SalerOrderFormVo> showOrder(H5LoginVO user) {

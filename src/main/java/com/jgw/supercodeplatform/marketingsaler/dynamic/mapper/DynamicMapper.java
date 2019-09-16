@@ -1,7 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.dynamic.mapper;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -52,8 +51,20 @@ public interface DynamicMapper extends CommonSql {
     @Select(" select count(1) from ${tableName}")
     int selectCount(@Param("tableName") String tableName);
 
-    @Select(" select * from ${tableName} order by dinghuoshijian limit #{current},#{pageSize}")
-    List<Map<String, Object>> selectPageData(@Param("tableName") String tableName,@Param("current") int current,@Param("pageSize")int pageSize);
+    @Select(startScript
+            + " select * from ${tableName} "
+            + " <if test='search !=null and search != &apos;&apos;'> "
+            + " where 1=1 and "
+            + " <foreach collection='columns' item='item' index='index'  open=' ' close=' ' separator=' ' >  "
+            + " ${item} = #{search}  and "
+            + " </foreach> "
+
+            + " 1 = 1"
+            + "</if>"
+            + "order by dinghuoshijian "
+            + "limit #{current},#{pageSize} "
+            +endScript)
+    List<Map<String, Object>> selectPageData(@Param("tableName") String tableName, @Param("current") int current, @Param("pageSize")int pageSize, @Param("columns") List<String> columns );
     @Insert(startScript
             + " insert into ${tableName} "
             + " <foreach collection='columnnameAndValues' item='item' index='index'  open=' ( ' close=' ) ' separator=',' >  "
