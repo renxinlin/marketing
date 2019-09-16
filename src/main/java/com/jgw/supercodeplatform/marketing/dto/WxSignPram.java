@@ -17,4 +17,7 @@ public class WxSignPram {
     @ApiModelProperty("微信账户appSecret")
     @NotBlank(message = "微信账户appSecret不能为空")
     private String appSecret;
+    @ApiModelProperty("当前签名页面的URL")
+    @NotBlank(message = "当前签名页面的URL不能为空")
+    private String url;
 }

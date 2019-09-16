@@ -130,6 +130,7 @@ public class CommonController extends CommonUtil {
     public RestResult<WxSignVo> get(@RequestBody @Valid WxSignPram wxSignPram) throws Exception {
         String appId = wxSignPram.getAppId();
         String appSecret = wxSignPram.getAppSecret();
+        String url = wxSignPram.getUrl();
         logger.info("签名信息,appid:{}，appsecret:{}", wxSignPram.getAppId(), wxSignPram.getAppSecret());
         String access_token_url ="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appId+"&secret="+appSecret;
         HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(access_token_url);
@@ -148,13 +149,7 @@ public class CommonController extends CommonUtil {
         // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
         String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
         long timestamp=WXPayUtil.getCurrentTimestamp();
-        Map<String, String>sinMap=new HashMap<String, String>();
-        sinMap.put("noncestr", noncestr);
-        sinMap.put("jsapi_ticket", ticket);
-
-        sinMap.put("timestamp", timestamp+"");
-        //
-        String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp;
+        String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
         String signature=CommonUtil.sha1Encrypt(sha1String1);
         logger.error("==================start log=====================");
         logger.error(sha1String1);
