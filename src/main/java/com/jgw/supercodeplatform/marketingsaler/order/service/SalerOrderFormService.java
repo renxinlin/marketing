@@ -64,13 +64,13 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
         List<SalerOrderFormSettingDto> updateOrderForms = new ArrayList<>();
         List<SalerOrderFormSettingDto> deleteOrAddForms = new ArrayList<>();
-        salerOrderForms.forEach(salerOrderForm->{
+        for(SalerOrderFormSettingDto salerOrderForm : salerOrderForms){
             if(salerOrderForm.getId() != null || salerOrderForm.getId() > 0 ){
                 updateOrderForms.add(salerOrderForm);
             }else {
                 deleteOrAddForms.add(salerOrderForm);
             }
-        });
+        };
         updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
         deleteOrAdd(deleteOrAddForms);
 
