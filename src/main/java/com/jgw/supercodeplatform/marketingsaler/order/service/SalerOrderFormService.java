@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.ChangeColumDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
@@ -59,6 +60,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     // TODO 需要分布式事务
     public void alterOrCreateTableAndUpdateMetadata(List<SalerOrderFormSettingDto> salerOrderForms) {
         Asserts.check(!CollectionUtils.isEmpty(salerOrderForms),"表单设置失败");
+        // 赋值默认表单和结构化名称补充
         List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setDefaultForms(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
         Set<@NotEmpty(message = "表单名称不可为空") String> formNames = withDefaultsalerOrderFormDtos.stream().map(salerOrderForm -> salerOrderForm.getFormName()).collect(Collectors.toSet());
         Asserts.check(formNames.size() == withDefaultsalerOrderFormDtos.size(),"存在重名表单名，或表单名与预定义表单名冲突");
@@ -73,9 +75,18 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             List<String> newColumns = withDefaultsalerOrderFormDtos.stream().map(dto -> dto.getColumnName()).collect(Collectors.toList());
             // 主键特殊处理
             newColumns.removeIf(column-> column.equalsIgnoreCase(SalerOrderTransfer.PrimaryKey));
-            dynamicMapper.createTable(withDefaultsalerOrderFormDtos.get(0).getTableName(),newColumns);
+            try {
+                dynamicMapper.createTable(withDefaultsalerOrderFormDtos.get(0).getTableName(),newColumns);
+            } catch (Exception e) {
+                e.printStackTrace();
+                // 产品需求
+                throw new RuntimeException("请输入中文或英文");
+            }
         }else{
             // 不是第一次新建表单 修改表 删除旧的元数据 新增新的元数据
+// todo 有id的列进行修改
+//            List<ChangeColumDto> changeColums = new ArrayList();
+//            salerOrderForms.forEach(salerOrderForm->changeColums.add(new ChangeColumDto(salerOrderForm.getId(),null,null,null,null)));
             List<String> createsMetadatasColumnName = createsMetadatas.stream().map(createsMetadata -> createsMetadata.getColumnName()).collect(Collectors.toList());
             List<String> withDefaultsalerOrderFormColumnNames = withDefaultsalerOrderFormDtos.stream().map(withDefaultsalerOrderFormDto -> withDefaultsalerOrderFormDto.getColumnName()).collect(Collectors.toList());
 
@@ -85,7 +96,12 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             List<String> deleteColumns = modelMapper.map(createsMetadatasColumnName,List.class);
             deleteColumns.removeIf(deleteColumn->withDefaultsalerOrderFormColumnNames.contains(deleteColumn));
             // 删除字段和新增字段
-            dynamicMapper.alterTableAndDropOrAddColumns(withDefaultsalerOrderFormDtos.get(0).getTableName(),deleteColumns,addColumns);
+            try {
+                dynamicMapper.alterTableAndDropOrAddColumns(withDefaultsalerOrderFormDtos.get(0).getTableName(),deleteColumns,addColumns);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("请输入中文或英文");
+            }
             baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).getWrapper());
 
         }

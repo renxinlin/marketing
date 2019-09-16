@@ -86,7 +86,9 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
             // 积分消耗 获取0元
             return RestResult.error(e.getMessage(),null);
         }
-       if(money != 0D){
+        log.info("销售员兑换红包 => money{} USER{} salerRuleExchangeDto{}",money,userPojo,salerRuleExchange);
+
+        if(money != 0D){
            // 支付流程
            // 预减库存
            int update = salerRuleExchangeMapper.updateReduceHaveStock(salerRuleExchange);
@@ -135,6 +137,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
      * @param salerRuleExchange
      */
     private void checkExchangeStatus(SalerRuleExchange salerRuleExchange) {
+        log.info("checkExchangeStatus参数{}",salerRuleExchange);
         Asserts.check(salerRuleExchange !=null,"兑换不存在");
         Asserts.check(salerRuleExchange.getStatus().intValue() == ExchangeUpDownStatus.up ,"当前兑换已经下架");
         Asserts.check(salerRuleExchange.getPreHaveStock()!=null&& salerRuleExchange.getPreHaveStock()>0,"兑换库存不足");
