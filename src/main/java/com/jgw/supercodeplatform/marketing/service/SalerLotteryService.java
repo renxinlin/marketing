@@ -368,12 +368,12 @@ public class SalerLotteryService {
         }
 
 
-        if(activityStartDate != null && nowStr.compareTo(activityStartDate) < 0){
+        if(activityStartDate == null || nowStr.compareTo(activityStartDate) < 0){
             // todo 检查日期比较
             throw new SuperCodeException("活动没有开始...");
         }
 
-        if(activityEndDate != null || nowStr.compareTo(activityEndDate) > 0){
+        if(activityEndDate == null || nowStr.compareTo(activityEndDate) > 0){
             // todo 检查日期比较
             throw new SuperCodeException("活动已经结束...");
 

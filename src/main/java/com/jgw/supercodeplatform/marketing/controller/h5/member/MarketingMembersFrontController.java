@@ -188,15 +188,15 @@ public class MarketingMembersFrontController extends CommonUtil {
     @ApiImplicitParams(value= {
     		@ApiImplicitParam(name = "memberId", paramType = "query", defaultValue = "1", value = "会员id")
     })
-    public void getJwtToken(@RequestParam Long memberId) throws Exception {
+    public void getJwtToken(@RequestParam Object memberId) throws Exception {
     	try {
-			
-			MarketingMembers marketingMembers=marketingMembersService.selectById(memberId);
+			Long mId = Long.valueOf(memberId.toString());
+			MarketingMembers marketingMembers=marketingMembersService.selectById(mId);
 			if (null==marketingMembers) {
 				throw new SuperCodeException("无此用户", 500);
 			}
 			H5LoginVO hVo=new H5LoginVO();
-			hVo.setMemberId(memberId);
+			hVo.setMemberId(mId);
 			String userName=marketingMembers.getUserName();
 			hVo.setMemberName(userName==null?marketingMembers.getWxName():userName);
 			hVo.setMobile(marketingMembers.getMobile());
