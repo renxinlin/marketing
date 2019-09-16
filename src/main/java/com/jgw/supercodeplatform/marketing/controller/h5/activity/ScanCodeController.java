@@ -74,7 +74,8 @@ public class ScanCodeController {
     @Value("${rest.user.url}")
     private String restUserUrl;
 
-
+    @Value("${rest.user.domain}")
+    private String restUserDomain;
 
     /**
      * 导购前端领奖页
@@ -148,13 +149,12 @@ public class ScanCodeController {
      */
     @RequestMapping(value = "/saler",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统导购路径", notes = "")
-    //public String daogou(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId,@RequestParam String sBatchId, @RequestParam String memberId) throws Exception {
-    public String daogou(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId,@RequestParam String sBatchId) throws Exception {
+    public String daogou(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId,@RequestParam String sBatchId, @RequestParam String memberId) throws Exception {
     	logger.info("导购扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+"sBatchId="+sBatchId);
     	String	wxstate=commonUtil.getUUID();
     	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId,sBatchId, wxstate, ReferenceRoleEnum.ACTIVITY_SALER.getType());
         // 领取按钮对应的前端URL
-        return "redirect:"+h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate+"&memberId="+56;
+        return "redirect:"+h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate+"&memberId="+memberId;
     }
 
     /**
@@ -241,7 +241,7 @@ public class ScanCodeController {
             throw new SuperCodeExtException("state不能为空", 500);
         }
         try {
-            return "redirect:" + restUserUrl + "/wechat/org/info?code=" + code + "&state=" + state;
+            return "redirect:" + restUserDomain + "/wechat/org/info?code=" + code + "&state=" + state;
         } catch (Exception e) {
             throw new SuperCodeExtException("回调参数不正确");
         }
