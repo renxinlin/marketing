@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.platform;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
+import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
 import com.jgw.supercodeplatform.marketing.service.activity.PlatformStatisticsService;
 import com.jgw.supercodeplatform.marketing.vo.platform.*;
 import io.swagger.annotations.Api;
@@ -27,23 +28,25 @@ public class PlatformActivityDataController {
     @ApiOperation("获取扫码率")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/scanCodeRate")
-    public RestResult<ScanCodeDataVo> scanCodeRate(@Valid ActivityDataParam activityDataParam) {
-        ScanCodeDataVo scanCodeDataVo = platformStatisticsService.scanCodeRate(activityDataParam);
-        return RestResult.successWithData(scanCodeDataVo);
+    public RestResult<List<PieChartVo>> scanCodeRate(@Valid ActivityDataParam activityDataParam) {
+        List<PieChartVo> scanCodeDataVoList = platformStatisticsService.scanCodeRate(activityDataParam);
+        return RestResult.successWithData(scanCodeDataVoList);
     }
 
     @ApiOperation("获取中奖率")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/winningPrizeRate")
-    public RestResult<WinningPrizeDataVo> winningPrize(@Valid ActivityDataParam activityDataParam){
-        return RestResult.success();
+    public RestResult<List<PieChartVo>> winningPrize(@Valid ActivityDataParam activityDataParam){
+        List<PieChartVo> scanCodeDataVoList = platformStatisticsService.winningPrize(activityDataParam);
+        return RestResult.successWithData(scanCodeDataVoList);
     }
 
     @ApiOperation("获取活动参与率")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/activityJoinRate")
-    public RestResult<ActivityJoinDataVo> activityJoin(@Valid ActivityDataParam activityDataParam){
-        return RestResult.success();
+    public RestResult<List<PieChartVo>> activityJoin(@Valid ActivityDataParam activityDataParam){
+        List<PieChartVo> scanCodeDataVoList = platformStatisticsService.activityJoin(activityDataParam);
+        return RestResult.successWithData(scanCodeDataVoList);
     }
 
     @ApiOperation("获取活动企业排行")
