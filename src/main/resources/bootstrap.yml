@@ -7,11 +7,7 @@ apollo:
     eagerLoad: 
       enabled: true
     namespaces: application,dev.public.conf
-logging: 
-  level: 
-    com:
-      gf: 
-        controller: debug
+
 server: 
   port: 9071
   tomcat:

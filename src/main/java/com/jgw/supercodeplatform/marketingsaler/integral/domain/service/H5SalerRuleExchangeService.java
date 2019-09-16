@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketingsaler.integral.domain.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -51,8 +52,14 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
     @Autowired
     private WXPayService wxPayService;
 
+
+    @Autowired
+    private SalerRuleExchangeMapper salerRuleExchangeMapper;
+
+
+
     @Transactional // todo 单库干掉预减库存
-    public void exchange(H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) {
+    public RestResult exchange(H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) {
         // 校验
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()),"用户未注册到相关组织");
         SalerRuleExchange salerRuleExchange = baseMapper.selectOne(query().eq("Id", salerRuleExchangeDto.getId()).getWrapper());
@@ -68,32 +75,39 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         // 检测兑换上限
         salerExchangeNumService.canExchange(userPojo,salerRuleExchange);
         // 根据抽奖概率计算金额
-        double money = calculatorSalerExcgange(salerRuleExchange);
-
-        // 支付流程
-        // 预减库存
-        SalerRuleExchange updateDo = new SalerRuleExchange();
-        // TODO 检查这段是否只是减库存
-        int update = baseMapper.update(updateDo, H5SalerRuleExchangeTransfer.reducePreStock(updateDo, salerRuleExchange));
-        Asserts.check(update == 1,"扣减库存失败");
-        // 减导购用户积分
-        marketingUserService.reduceIntegral(salerRuleExchange.getExchangeIntegral(),userPojo);
-
-        // 兑换次数
-        salerExchangeNumService.save(new SalerExchangeNum(null,userPojo.getId(),userPojo.getOrganizationId(),salerRuleExchange.getId()));
-        // 订单[虚拟订单]
-        recordService.save(SalerRecordTransfer.buildRecord(salerRuleExchange,user,money));
-        // 支付
+        double money = 0D;
         try {
-            wxPayService.qiyePaySync(userPojo.getOpenid(),serverIp,(int)(money*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
+            money = calculatorSalerExcgange(salerRuleExchange);
         } catch (Exception e) {
+            marketingUserService.reduceIntegral(salerRuleExchange.getExchangeIntegral(),userPojo);
             e.printStackTrace();
-            log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,user);
-            throw new RuntimeException("微信支付，支付失败啦！");
+            // 积分消耗 获取0元
+            return RestResult.error(e.getMessage(),null);
         }
-        // TODO 减实际库存 [检查这段是否只是减库存]
-        baseMapper.update(updateDo,H5SalerRuleExchangeTransfer.reduceStock(updateDo,salerRuleExchange));
+       if(money != 0D){
+           // 支付流程
+           // 预减库存
+           int update = salerRuleExchangeMapper.updateReduceHaveStock(salerRuleExchange);
+           Asserts.check(update==1,"扣减库存失败");
+           // 减导购用户积分
+           marketingUserService.reduceIntegral(salerRuleExchange.getExchangeIntegral(),userPojo);
+           // 兑换次数
+           salerExchangeNumService.save(new SalerExchangeNum(null,userPojo.getId(),userPojo.getOrganizationId(),salerRuleExchange.getId()));
+           // 订单[虚拟订单]
+           recordService.save(SalerRecordTransfer.buildRecord(salerRuleExchange,user,money));
+           // 支付
+           try {
+               wxPayService.qiyePaySync(userPojo.getOpenid(),serverIp,(int)(money*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
+           } catch (Exception e) {
+               e.printStackTrace();
+               log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,user);
+               throw new RuntimeException("微信支付，支付失败啦！");
+           }
+           int i = salerRuleExchangeMapper.reduceHaveStock(salerRuleExchange);
+           Asserts.check(i==1,"扣减库存失败");
 
+       }
+       return RestResult.success();
 
     }
 

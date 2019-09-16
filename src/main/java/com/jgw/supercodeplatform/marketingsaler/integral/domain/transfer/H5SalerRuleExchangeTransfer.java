@@ -18,7 +18,7 @@ public class H5SalerRuleExchangeTransfer {
     public static Wrapper<SalerRuleExchange> reduceStock(SalerRuleExchange updateDo ,SalerRuleExchange params) {
         UpdateWrapper<SalerRuleExchange> updateWrapper = new UpdateWrapper<>(updateDo);
         // 预减一个库存
-        updateWrapper.apply("PreHaveStock = PreHaveStock - {0}  where PreHaveStock > 0  ",1).set("Id",params.getId());
+        updateWrapper.apply("  HaveStock -{0} > 0 and Id = #{1} ",1,params.getId()).set("payWay "," 1 , HaveStock = HaveStock - 1" );
         return updateWrapper;
 
     }
@@ -26,7 +26,8 @@ public class H5SalerRuleExchangeTransfer {
     public static Wrapper<SalerRuleExchange> reducePreStock(SalerRuleExchange updateDo, SalerRuleExchange params) {
         UpdateWrapper<SalerRuleExchange> updateWrapper = new UpdateWrapper<>(updateDo);
         // 减一个库存
-        updateWrapper.apply("HaveStock = HaveStock - {0} where HaveStock > 0 ",1).set("Id",params.getId());
+        // update table set x = x -1 where x - 1 > 0 and id  = 1 PreHaveStock = PreHaveStock - {0}
+        updateWrapper.apply("  PreHaveStock -{0} > 0 and Id = #{1} ",1,params.getId()).set("payWay "," 1 , PreHaveStock = PreHaveStock - 1" );
         return updateWrapper;
     }
 

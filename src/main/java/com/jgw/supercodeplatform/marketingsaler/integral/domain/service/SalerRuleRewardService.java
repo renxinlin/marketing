@@ -83,12 +83,12 @@ public class SalerRuleRewardService extends SalerCommonService<SalerRuleRewardMa
             for (int i=0 ;i<arry.size();i++) {
                 JSONObject ruleProduct=arry.getJSONObject(i);
                 String prductId = ruleProduct.getString("productId");
-                if(productIds == null || !productIds.contains(prductId)) {
+//                if(productIds == null || !productIds.contains(prductId)) {
                     SalerRuleReward product=new SalerRuleReward();
                     product.setProductId(prductId);
                     product.setProductName(ruleProduct.getString("productName"));
                     ruleproductList.add(product);
-                }
+//                }
             }
             String pagination_str=json.getJSONObject("results").getString("pagination");
             com.jgw.supercodeplatform.marketing.common.page.Page page=JSONObject.parseObject(pagination_str, com.jgw.supercodeplatform.marketing.common.page.Page.class);

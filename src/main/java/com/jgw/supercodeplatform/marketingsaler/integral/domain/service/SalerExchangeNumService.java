@@ -28,7 +28,7 @@ public class SalerExchangeNumService extends SalerCommonService<SalerExchangeNum
         if(salerRuleExchange!=null && salerRuleExchange.getCustomerLimitNum() !=null ){
             int exchangeNum = baseMapper.selectCount(query().eq("OrganizationId", salerRuleExchange.getOrganizationId())
                     .eq("UserId", user.getId())
-                    .eq("exchangeId", salerRuleExchange.getOrganizationId()));
+                    .eq("exchangeId", salerRuleExchange.getOrganizationId()).getWrapper());
             Asserts.check(salerRuleExchange.getCustomerLimitNum().intValue() > exchangeNum ,"你已达到兑换上限");
         }
 
