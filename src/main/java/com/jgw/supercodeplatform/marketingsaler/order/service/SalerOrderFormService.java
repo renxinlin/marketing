@@ -192,19 +192,28 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         StringBuffer address = new StringBuffer("");
         if (!StringUtils.isEmpty(user.getCustomerId())) {
             CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo(user.getCustomerId());
-            if (customerInfo != null) {
-                if (!StringUtils.isEmpty(customerInfo.getProvinceName())) {
-                    address.append(customerInfo.getProvinceName());
-                }
-                if (!StringUtils.isEmpty(customerInfo.getCityName())) {
-                    address.append(customerInfo.getCityName());
-                }
-                if (!StringUtils.isEmpty(customerInfo.getCountyName())) {
-                    address.append(customerInfo.getCountyName());
-                }
-            }
+            getAddress(address, customerInfo);
         }
         SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues, user, address.toString());
         dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
+    }
+
+    /**
+     * 拼接收货地址
+     * @param address
+     * @param customerInfo
+     */
+    private void getAddress(StringBuffer address, CustomerInfoView customerInfo) {
+        if (customerInfo != null) {
+            if (!StringUtils.isEmpty(customerInfo.getProvinceName())) {
+                address.append(customerInfo.getProvinceName());
+            }
+            if (!StringUtils.isEmpty(customerInfo.getCityName())) {
+                address.append(customerInfo.getCityName());
+            }
+            if (!StringUtils.isEmpty(customerInfo.getCountyName())) {
+                address.append(customerInfo.getCountyName());
+            }
+        }
     }
 }

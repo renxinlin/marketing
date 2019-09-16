@@ -68,9 +68,9 @@ public interface DynamicMapper extends CommonSql {
     @Select(startScript
             + " select count(1) from ${tableName}"
             + " <if test='search !=null and search != &apos;&apos;'> "
-            + " where 1=1 and "
+            + " where 1=1 or "
             + " <foreach collection='columns' item='item' index='index'  open=' ' close=' ' separator=' ' >  "
-            + " ${item} = #{search}  and "
+            + " ${item} = #{search}  or "
             + " </foreach> "
 
             + " 1 = 1"
@@ -81,9 +81,9 @@ public interface DynamicMapper extends CommonSql {
     @Select(startScript
             + " select * from ${tableName} "
             + " <if test='search !=null and search != &apos;&apos;'> "
-            + " where 1=1 and "
+            + " where 1=1 or "
             + " <foreach collection='columns' item='item' index='index'  open=' ' close=' ' separator=' ' >  "
-            + " ${item} = #{search}  and "
+            + " ${item} = #{search}  or "
             + " </foreach> "
 
             + " 1 = 1"
