@@ -134,7 +134,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
     public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, H5LoginVO user) {
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()), "未获取对应组织");
-        Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取对应组织");
+        Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取订货信息");
         StringBuffer address = new StringBuffer("");
         if (!StringUtils.isEmpty(user.getCustomerId())) {
             CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo(user.getCustomerId());
