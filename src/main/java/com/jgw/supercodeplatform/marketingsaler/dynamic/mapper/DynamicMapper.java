@@ -52,7 +52,7 @@ public interface DynamicMapper extends CommonSql {
     @Select(" select count(1) from ${tableName}")
     int selectCount(@Param("tableName") String tableName);
 
-    @Select(" select * from ${tableName} limit #{current},#{pageSize}")
+    @Select(" select * from ${tableName} order by dinghuoshijian limit #{current},#{pageSize}")
     List<Map<String, Object>> selectPageData(@Param("tableName") String tableName,@Param("current") int current,@Param("pageSize")int pageSize);
     @Insert(startScript
             + " insert into ${tableName} "

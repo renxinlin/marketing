@@ -49,7 +49,6 @@ public class SalerRecordTransfer extends CommonTransfer{
                     .or().like("IntegralNum",daoSearch.getSearch())
                     .or().like("ProductName",daoSearch.getSearch())
                     .or().like("OuterCodeId",daoSearch.getSearch())
-                    .or().like("",daoSearch.getSearch())
             );
         }
         queryWrapper.orderByDesc("CreateDate");
