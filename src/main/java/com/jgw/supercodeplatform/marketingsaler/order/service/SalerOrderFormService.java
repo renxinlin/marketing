@@ -64,6 +64,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
         List<SalerOrderFormSettingDto> updateOrderForms = new ArrayList<>();
         List<SalerOrderFormSettingDto> deleteOrAddForms = new ArrayList<>();
+        log.info("接收的参数",salerOrderForms);
         for(SalerOrderFormSettingDto salerOrderForm : salerOrderForms){
             if(salerOrderForm.getId() != null || salerOrderForm.getId() > 0 ){
                 updateOrderForms.add(salerOrderForm);
