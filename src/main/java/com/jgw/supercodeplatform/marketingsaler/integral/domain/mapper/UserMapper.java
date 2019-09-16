@@ -14,7 +14,7 @@ import org.apache.ibatis.annotations.Update;
  */
 public interface UserMapper extends CommonMapper<User> {
 
-    @Update(" update marketing_user set  HaveIntegral = HaveIntegral -  #{exchangeIntegral} where id = #{id} and organizationId = #{organizationId} and HaveIntegral -  #{exchangeIntegral} > 0 ")
+    @Update(" update marketing_user set  HaveIntegral = HaveIntegral -  #{exchangeIntegral} where id = #{id} and organizationId = #{organizationId} and HaveIntegral -  #{exchangeIntegral} >= 0 ")
     int reduceIntegral(Integer exchangeIntegral, Long id, String organizationId);
 
     @Update(" update marketing_user set  HaveIntegral = HaveIntegral +  #{addIntegral} where id = #{id} and organizationId = #{organizationId}  ")
