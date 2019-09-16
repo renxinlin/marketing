@@ -134,7 +134,7 @@ public class SalerOrderTransfer {
         List<ChangeColumDto> updateColumns =  new ArrayList<>();
         for(SalerOrderFormSettingDto newSalerOrderForm :salerOrderForms){
             for(SalerOrderForm oldSalerOrderForm :oldSalerOrderForms){
-                if(oldSalerOrderForm.getId() == newSalerOrderForm.getId()){
+                if(oldSalerOrderForm.getId().longValue() == newSalerOrderForm.getId().longValue()){
                     ChangeColumDto updateColumn = new ChangeColumDto();
                     updateColumn.setId(oldSalerOrderForm.getId());
                     updateColumn.setNewFormName(newSalerOrderForm.getFormName());
