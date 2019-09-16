@@ -80,6 +80,8 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
             money = calculatorSalerExcgange(salerRuleExchange);
         } catch (Exception e) {
             marketingUserService.reduceIntegral(salerRuleExchange.getExchangeIntegral(),userPojo);
+            // 兑换次数
+            salerExchangeNumService.save(new SalerExchangeNum(null,userPojo.getId(),userPojo.getOrganizationId(),salerRuleExchange.getId()));
             e.printStackTrace();
             // 积分消耗 获取0元
             return RestResult.error(e.getMessage(),null);
