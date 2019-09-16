@@ -68,12 +68,11 @@ public interface DynamicMapper extends CommonSql {
     @Select(startScript
             + " select count(1) from ${tableName}"
             + " <if test='search !=null and search != &apos;&apos;'> "
-            + " where 1=1 or "
-            + " <foreach collection='columns' item='item' index='index'  open=' ' close=' ' separator=' ' >  "
-            + " ${item} = #{search}  or "
+            + " where 1=1 and  "
+            + " <foreach collection='columns' item='item' index='index'  open=' ( ' close=' ) ' separator=' or  ' >  "
+            + " ${item} = #{search}   "
             + " </foreach> "
 
-            + " 1 = 1"
             + "</if>"
             + endScript)
     int selectCount(@Param("tableName") String tableName, @Param("columns") List<String> columns , @Param("search") String search );
@@ -81,12 +80,11 @@ public interface DynamicMapper extends CommonSql {
     @Select(startScript
             + " select * from ${tableName} "
             + " <if test='search !=null and search != &apos;&apos;'> "
-            + " where 1=1 or "
-            + " <foreach collection='columns' item='item' index='index'  open=' ' close=' ' separator=' ' >  "
-            + " ${item} = #{search}  or "
+            + " where 1=1 and "
+            + " <foreach collection='columns' item='item' index='index'  open=' ( ' close=' ) ' separator=' or  ' >  "
+            + " ${item} = #{search} "
             + " </foreach> "
 
-            + " 1 = 1"
             + "</if>"
             + "order by dinghuoshijian "
             + "limit #{current},#{pageSize} "
