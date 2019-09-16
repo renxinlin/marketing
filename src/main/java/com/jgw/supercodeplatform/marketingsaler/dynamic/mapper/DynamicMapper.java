@@ -70,7 +70,7 @@ public interface DynamicMapper extends CommonSql {
             + " <if test='search !=null and search != &apos;&apos;'> "
             + " where 1=1 and  "
             + " <foreach collection='columns' item='item' index='index'  open=' ( ' close=' ) ' separator=' or  ' >  "
-            + " ${item} = #{search}   "
+            + " ${item} like &apos;%${search}%&apos; "
             + " </foreach> "
 
             + "</if>"
@@ -82,7 +82,7 @@ public interface DynamicMapper extends CommonSql {
             + " <if test='search !=null and search != &apos;&apos;'> "
             + " where 1=1 and "
             + " <foreach collection='columns' item='item' index='index'  open=' ( ' close=' ) ' separator=' or  ' >  "
-            + " ${item} = #{search} "
+            + " ${item}  like &apos;%${search}%&apos; "
             + " </foreach> "
 
             + "</if>"
