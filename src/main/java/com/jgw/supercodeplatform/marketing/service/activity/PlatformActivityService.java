@@ -9,12 +9,13 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPlatformOrganizationMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
-import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithUser;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
-import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.*;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.JoinOrganization;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.PrizeType;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPlatformOrganization;
@@ -64,6 +65,9 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
 
     @Autowired
     private MarketingPlatformOrganizationService marketingPlatformOrganizationService;
+
+    @Autowired
+    private MarketingMembersWinRecordMapper marketingMembersWinRecordMapper;
 
     @Override
     protected List<PlatformActivityVo> searchResult(DaoSearchWithUser searchParams) throws Exception {

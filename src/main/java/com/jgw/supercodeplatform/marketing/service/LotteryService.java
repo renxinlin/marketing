@@ -112,6 +112,9 @@ public class LotteryService {
 	@Autowired
 	private StringRedisTemplate redisTemplate;
 
+	@Autowired
+	private MarketingPlatformOrganizationMapper marketingPlatformOrganizationMapper;
+
 	/**
 	 * 检查抽奖参数及抽奖逻辑
 	 * @param scanCodeInfoMO
@@ -185,8 +188,16 @@ public class LotteryService {
 		}
 		lotteryOprationDto.setSendAudit(mActivitySet.getSendAudit());
 		lotteryOprationDto.setMarketingMembersInfo(marketingMembersInfo);
-		lotteryOprationDto.setOrganizationId(mActivitySet.getOrganizationId());
-		lotteryOprationDto.setOrganizationName(mActivitySet.getOrganizatioIdlName());
+		lotteryOprationDto.setOrganizationId(scanCodeInfoMO.getOrganizationId());
+		if (mActivitySet.getActivityId() == 5) {
+			MarketingPlatformOrganization marketingPlatformOrganization = marketingPlatformOrganizationMapper.selectByActivitySetIdAndOrganizationId(mActivitySet.getId(), scanCodeInfoMO.getOrganizationId());
+			if (marketingPlatformOrganization != null) {
+				lotteryOprationDto.setOrganizationName(marketingPlatformOrganization.getOrganizationFullName());
+			}
+		}
+		if (lotteryOprationDto.getOrganizationName() == null ) {
+			lotteryOprationDto.setOrganizationName(mActivitySet.getOrganizatioIdlName());
+		}
 		lotteryOprationDto.setConsumeIntegralNum(consumeIntegralNum);
 		lotteryOprationDto.setHaveIntegral(haveIntegral);
 		lotteryOprationDto.setProductName(mActivityProduct.getProductName());
@@ -296,7 +307,7 @@ public class LotteryService {
 					break;
 			}
 		}
-		addWinRecord(outerCodeId, mobile, openId, activitySetId, activity, organizationId, prizeTypeMO, amount, productId, productBatchId);
+		addWinRecord(outerCodeId, mobile, openId, activitySetId, activity, organizationId,lotteryOprationDto.getOrganizationName(), prizeTypeMO, amount, productId, productBatchId);
 		if (changeIntegral != 0) {
 			marketingMembersMapper.deleteIntegral(0 - changeIntegral, marketingMembersInfo.getId());
 		}
@@ -310,7 +321,7 @@ public class LotteryService {
 	}
 
 	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,
-							  MarketingActivity activity, String organizationId, MarketingPrizeTypeMO mPrizeTypeMO, Float amount, String productId, String productBatchId) {
+							  MarketingActivity activity, String organizationId,String organizationFullName, MarketingPrizeTypeMO mPrizeTypeMO, Float amount, String productId, String productBatchId) {
 		//插入中奖纪录
 		MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
 		redWinRecord.setActivityId(activity.getId());
@@ -324,6 +335,7 @@ public class LotteryService {
 		redWinRecord.setWinningCode(outCodeId);
 		redWinRecord.setPrizeName(mPrizeTypeMO.getPrizeTypeName());
 		redWinRecord.setOrganizationId(organizationId);
+		redWinRecord.setOrganizationFullName(organizationFullName);
 		redWinRecord.setProductBatchId(productBatchId);
 		mWinRecordMapper.addWinRecord(redWinRecord);
 	}
