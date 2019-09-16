@@ -52,11 +52,8 @@ public class UserService extends SalerCommonService<UserMapper, User> {
 
 
     public void addIntegral(Integer addIntegral,  User userPojo) {
-        User value = new User();
-        Wrapper<User> updateWrapper = new UpdateWrapper<>(value);
-        ((UpdateWrapper<User>) updateWrapper).apply("haveIntegral = haveIntegral + {0}",addIntegral).set("Id",userPojo.getId()).set("OrganizationId",userPojo.getOrganizationId());
-        int update = baseMapper.update(value, updateWrapper); // TODO 默认是匹配的行数 useAffectRow
-        Asserts.check(update==1,"新增积分失败");
+        int update = userMapper.addIntegral(addIntegral,userPojo.getId(),userPojo.getOrganizationId());
+        Asserts.check(update==1,"导购积分奖励失败");
     }
 
 
