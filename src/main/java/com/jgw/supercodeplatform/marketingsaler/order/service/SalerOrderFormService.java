@@ -164,7 +164,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         int current = (daoSearch.getCurrent() -1)*pageSize;
         List<SalerOrderForm> columnConfigs = getColumnNamesByOrganizationId(commonUtil.getOrganizationId());
         List<String> columnNames = columnConfigs.stream().map(columnconfig -> columnconfig.getColumnName()).collect(Collectors.toList());
-        List<Map<String,Object>> pageData = dynamicMapper.selectPageData(tableName,current, pageSize,columnNames);
+        List<Map<String,Object>> pageData = dynamicMapper.selectPageData(tableName,current, pageSize,columnNames,daoSearch.getSearch());
         Page pageInfo = new Page(pageSize,daoSearch.getCurrent(),count);
         AbstractPageService.PageResults<List<Map<String,Object>>> pageResult =
                 new AbstractPageService.PageResults<List<Map<String,Object>>>(pageData,pageInfo);
