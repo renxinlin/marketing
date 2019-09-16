@@ -26,7 +26,7 @@ public class SalerScanInfo {
     private String mobile;//登录的手机号
     private Byte memberType;  // 默认1导购员,其他员工等
 
-    private String createTime;//将用于定时任务检查清除已经长时间未用的扫码缓存 yyyy-MM-dd HH:mm:ss
+    private long createTime;//将用于定时任务检查清除已经长时间未用的扫码缓存 yyyy-MM-dd HH:mm:ss
 
 
 

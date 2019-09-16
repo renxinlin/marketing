@@ -2,11 +2,7 @@ package com.jgw.supercodeplatform.marketing.service;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -275,7 +271,7 @@ public class SalerLotteryService {
                 param                           .setMobile(marketingUser.getMobile());
                 param                        .setCodeTypeId(scanInfo.getCodeTypeId());
                 param                   .setMemberType(marketingUser.getMemberType());
-                param                  .setCreateTime(sdfWithSec .format(new Date()));
+                param                  .setCreateTime(System.currentTimeMillis());
                 param                 .setActivitySetId(marketingActivitySet.getId());
                 param            .setActivityId(marketingActivitySet.getActivityId());
                 param           .setOrganizationId(marketingUser.getOrganizationId());// 此时一定是同一个组织id
@@ -416,7 +412,15 @@ public class SalerLotteryService {
        }
 
         // 规则校验2
-        int todayScanNum = codeEsService.countSalerNumByUserIdAndDate(organizationId, userId, "","");
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        long startTime = cal.getTimeInMillis();
+        cal.add(Calendar.DATE, 1);
+        long endTime = cal.getTimeInMillis();
+        int todayScanNum = codeEsService.countSalerNumByUserIdAndDate(organizationId, userId, startTime,endTime);
         if(todayScanNum > marketingActivitySetCondition.getEachDayNumber()){
             throw new SalerLotteryException("扫码虽好,可不要贪多哦!欢迎明天在试");
         }

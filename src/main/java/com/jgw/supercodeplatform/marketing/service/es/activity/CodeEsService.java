@@ -519,16 +519,10 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public int countSalerNumByUserIdAndDate(String organizationId, Long userId, String startDate ,String endDate) throws SuperCodeException {
+	public int countSalerNumByUserIdAndDate(String organizationId, Long userId, long startDate ,long endDate) throws SuperCodeException {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		if (null ==userId) {
 			throw new SuperCodeException("userID error");
-		}
-		if (StringUtils.isBlank(startDate)) {
-			throw new SuperCodeException("startDate error");
-		}
-		if (StringUtils.isBlank(endDate)) {
-			throw new SuperCodeException("endDate error");
 		}
 		if (StringUtils.isNotBlank(organizationId)) {
 			throw new SuperCodeException("organizationId error");
