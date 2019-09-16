@@ -1,22 +1,30 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.domain.service;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
+import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.OuterCodeInfoService;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.mapper.SalerRuleRewardMapper;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleReward;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleRewardNum;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.H5SalerRuleRewardTransfer;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.SalerRecordTranser;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Service
 public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewardMapper, SalerRuleReward> {
@@ -24,6 +32,7 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
     @Autowired private RedisLockUtil lockUtil;
     @Autowired private OuterCodeInfoService outerCodeInfoService;
     @Autowired private SalerRuleRewardNumService salerRuleRewardNumService;
+    @Autowired SalerRecordService salerRecordService;
     /**
      * h5领积分:
      * @param reward 只包含产品信息
@@ -63,6 +72,9 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             SalerRuleReward rewardPojo = baseMapper.selectOne(query().eq("ProductId", reward.getProductId()).eq("OrganizationId", user.getOrganizationId()).getWrapper());
             Asserts.check(rewardPojo != null,"系统不存在积分奖励信息");
 
+            // 积分记录
+            SalerRecord salerRecord = SalerRecordTranser.getSalerRecord(outCodeId, reward, user, userPojo, rewardPojo);
+            salerRecordService.save(salerRecord);
             // 导购积分添加
             userService.addIntegral(H5SalerRuleRewardTransfer.computeIntegral(rewardPojo),userPojo);
         } catch (RuntimeException e) {
@@ -72,4 +84,6 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             lockUtil.releaseLock(UserConstants.SALER_INTEGRAL_REWARD_PREFIX + outCodeId);
         }
     }
+
+
 }
