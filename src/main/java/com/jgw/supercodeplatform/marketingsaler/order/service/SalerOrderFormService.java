@@ -136,9 +136,9 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, H5LoginVO user) {
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()), "未获取对应组织");
         Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取对应组织");
-        if (StringUtils.isEmpty(user.getCustomerId())) {
-            CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo(user.getCustomerId());// TODO  门店的地址
-            StringBuffer address = new StringBuffer("");
+        StringBuffer address = new StringBuffer("");
+        if (!StringUtils.isEmpty(user.getCustomerId())) {
+            CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo(user.getCustomerId());
             if (customerInfo != null) {
                 if (!StringUtils.isEmpty(customerInfo.getProvinceName())) {
                     address.append(customerInfo.getProvinceName());
@@ -150,8 +150,8 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                     address.append(customerInfo.getCountyName());
                 }
             }
-            SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues, user, address.toString());
-            dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
         }
+        SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues, user, address.toString());
+        dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
     }
 }
