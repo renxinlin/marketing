@@ -26,6 +26,7 @@ import java.io.Serializable;
 @ApiModel("设置表单实体")
 public class SalerOrderFormSettingDto implements Serializable {
 
+    private Long id;
 
     @ApiModelProperty("表单名称")
     @NotEmpty(message = "表单名称不可为空")

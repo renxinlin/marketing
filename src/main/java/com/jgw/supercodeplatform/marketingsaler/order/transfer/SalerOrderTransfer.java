@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketingsaler.order.transfer;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.order.constants.FormType;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.ChangeColumDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
@@ -13,10 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class SalerOrderTransfer {
     // TODO 分隔符是否正确
@@ -130,5 +128,39 @@ public class SalerOrderTransfer {
 //        columnnameAndValues.add(columnnameAndValue5);
         columnnameAndValues.add(columnnameAndValue6);
 
+    }
+
+    public static List<ChangeColumDto> setColumnInfoWhenUpdate(List<SalerOrderFormSettingDto> salerOrderForms, List<SalerOrderForm> oldSalerOrderForms, String organizationId) {
+        List<ChangeColumDto> updateColumns =  new ArrayList<>();
+        for(SalerOrderFormSettingDto newSalerOrderForm :salerOrderForms){
+            for(SalerOrderForm oldSalerOrderForm :oldSalerOrderForms){
+                if(oldSalerOrderForm.getId() == newSalerOrderForm.getId()){
+                    ChangeColumDto updateColumn = new ChangeColumDto();
+                    updateColumn.setId(oldSalerOrderForm.getId());
+                    updateColumn.setNewFormName(newSalerOrderForm.getFormName());
+                    updateColumn.setNewColumnName(HanzhiToPinyinUtil.getPingYin(newSalerOrderForm.getFormName()));
+
+                    updateColumn.setOldColumnName(oldSalerOrderForm.getColumnName());
+                    updateColumn.setOldFormName(oldSalerOrderForm.getFormName());
+
+                    updateColumn.setTableName(initTableName(organizationId));
+                    updateColumns.add(updateColumn);
+
+                }
+            }
+        }
+        return updateColumns;
+    }
+
+    public static Collection<SalerOrderForm> initUpdateSalerOrderFormInfo(List<ChangeColumDto> updateColumns) {
+        List<SalerOrderForm> list = new ArrayList<>();
+        updateColumns.forEach(updateColumn->{
+            SalerOrderForm salerOrderForm = new SalerOrderForm();
+            salerOrderForm.setId(updateColumn.getId());
+            salerOrderForm.setColumnName(updateColumn.getNewColumnName());
+            salerOrderForm.setFormName(updateColumn.getNewFormName());
+            list.add(salerOrderForm);
+        });
+        return list;
     }
 }

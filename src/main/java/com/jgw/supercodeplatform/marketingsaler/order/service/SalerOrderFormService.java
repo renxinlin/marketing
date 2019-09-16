@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.ChangeColumDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -56,8 +58,41 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
      * @param salerOrderForms
      */
     // TODO 需要分布式事务
+    @Transactional // 对应的是主库事务
     public void alterOrCreateTableAndUpdateMetadata(List<SalerOrderFormSettingDto> salerOrderForms) {
         Asserts.check(!CollectionUtils.isEmpty(salerOrderForms),"表单设置失败");
+
+        List<SalerOrderFormSettingDto> updateOrderForms = new ArrayList<>();
+        List<SalerOrderFormSettingDto> deleteOrAddForms = new ArrayList<>();
+        salerOrderForms.forEach(salerOrderForm->{
+            if(salerOrderForm.getId() != null || salerOrderForm.getId() > 0 ){
+                updateOrderForms.add(salerOrderForm);
+            }else {
+                deleteOrAddForms.add(salerOrderForm);
+            }
+        });
+        updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
+        deleteOrAdd(deleteOrAddForms);
+
+    }
+
+    private void updateName(List<SalerOrderFormSettingDto> salerOrderForms) {
+        if(CollectionUtils.isEmpty(salerOrderForms)){
+            return;
+        }
+        List<Long> ids = salerOrderForms.stream().map(data -> data.getId()).collect(Collectors.toList());
+        List<SalerOrderForm> oldSalerOrderForms = baseMapper.selectBatchIds(ids);
+        Asserts.check(ids.size() == oldSalerOrderForms.size(),"字段id不存在");
+        List<ChangeColumDto> updateColumns =  SalerOrderTransfer.setColumnInfoWhenUpdate(salerOrderForms, oldSalerOrderForms,commonUtil.getOrganizationId());
+        dynamicMapper.alterTableAndUpdateColumns(updateColumns.get(0).getTableName(),updateColumns);
+        this.updateBatchById(SalerOrderTransfer.initUpdateSalerOrderFormInfo(updateColumns));
+     }
+
+
+    private void deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms) {
+        if(CollectionUtils.isEmpty(salerOrderForms)){
+            return;
+        }
         // 赋值默认表单和结构化名称补充
         List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setDefaultForms(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
         Set<@NotEmpty(message = "表单名称不可为空") String> formNames = withDefaultsalerOrderFormDtos.stream().map(salerOrderForm -> salerOrderForm.getFormName()).collect(Collectors.toSet());
@@ -77,14 +112,13 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 dynamicMapper.createTable(withDefaultsalerOrderFormDtos.get(0).getTableName(),newColumns);
             } catch (Exception e) {
                 e.printStackTrace();
-                // 产品需求
+                // 产品需求..........................................
                 throw new RuntimeException("请输入中文或英文");
             }
         }else{
-            // 不是第一次新建表单 修改表 删除旧的元数据 新增新的元数据
-// todo 有id的列进行修改
-//            List<ChangeColumDto> changeColums = new ArrayList();
-//            salerOrderForms.forEach(salerOrderForm->changeColums.add(new ChangeColumDto(salerOrderForm.getId(),null,null,null,null)));
+
+
+
             List<String> createsMetadatasColumnName = createsMetadatas.stream().map(createsMetadata -> createsMetadata.getColumnName()).collect(Collectors.toList());
             List<String> withDefaultsalerOrderFormColumnNames = withDefaultsalerOrderFormDtos.stream().map(withDefaultsalerOrderFormDto -> withDefaultsalerOrderFormDto.getColumnName()).collect(Collectors.toList());
 
@@ -104,7 +138,6 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
         }
         this.saveBatch(pojos);
-
     }
 
     public List<SalerOrderForm> detail() {

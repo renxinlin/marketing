@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketingsaler.dynamic.mapper;
 
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.ChangeColumDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -47,6 +48,22 @@ public interface DynamicMapper extends CommonSql {
 
             + endScript)
     int alterTableAndDropOrAddColumns(@Param("tableName") String tableName, @Param("list") List<String> deleteColumnNames,@Param("list1") List<String> addcolumnNames);
+
+
+
+    @Update(startScript
+            + " ALTER TABLE ${tableName} "
+            + " <foreach collection='list' item='item' index='index'  open='  ' close='  ' separator=',' > "
+            + " CHANGE COLUMN ${item.oldColumnName} ${item.newColumnName}   varchar(255) NULL  DEFAULT NULL "
+            + " </foreach> "
+
+
+
+
+            + endScript)
+    int alterTableAndUpdateColumns(@Param("tableName") String tableName, @Param("list") List<ChangeColumDto> updateColumnNames);
+
+
 
     @Select(" select count(1) from ${tableName}")
     int selectCount(@Param("tableName") String tableName);
