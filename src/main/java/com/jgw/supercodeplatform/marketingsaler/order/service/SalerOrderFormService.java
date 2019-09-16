@@ -134,7 +134,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 e.printStackTrace();
                 throw new RuntimeException("请输入中文或英文");
             }
-            baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).getWrapper());
+            baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",addColumns).getWrapper());
 
         }
         this.saveBatch(pojos);
