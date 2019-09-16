@@ -63,9 +63,9 @@ public class UserService extends SalerCommonService<UserMapper, User> {
     public User exists(H5LoginVO user) {
         User userPojo = null;
         try {
-            userPojo = baseMapper.selectOne(query().eq("Id", user.getMemberId()).eq("OrganizationId", user.getOrganizationId()));
+            userPojo = baseMapper.selectOne(query().eq("Id", user.getMemberId()).eq("OrganizationId", user.getOrganizationId()).getWrapper());
         } catch (Exception e) {
-            log.error("领取积分获取导购用户信息失败{}", JSONObject.toJSONString(user));
+            log.error("获取导购用户信息失败{}", JSONObject.toJSONString(user));
             e.printStackTrace();
         }
         return userPojo;
