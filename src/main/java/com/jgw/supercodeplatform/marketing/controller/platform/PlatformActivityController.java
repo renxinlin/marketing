@@ -19,6 +19,7 @@ import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingPlatformOrganizationService;
 import com.jgw.supercodeplatform.marketing.service.activity.PlatformActivityService;
+import com.jgw.supercodeplatform.marketing.service.activity.PlatformMemberWinService;
 import com.jgw.supercodeplatform.marketing.vo.platform.JoinPrizeRecordVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
@@ -58,6 +59,8 @@ public class PlatformActivityController {
     private PlatformActivityService platformActivityService;
     @Autowired
     private MarketingActivitySetService marketingActivitySetService;
+    @Autowired
+    private PlatformMemberWinService platformMemberWinService;
 
     @ApiOperation("添加活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
@@ -122,8 +125,9 @@ public class PlatformActivityController {
     @ApiOperation("参与记录")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/joinResultPage")
-    public RestResult<PageResults<List<JoinPrizeRecordVo>>> joinResultPage(@Valid JoinResultPage joinResultPage){
-        return RestResult.success();
+    public RestResult<PageResults<List<JoinPrizeRecordVo>>> joinResultPage(@Valid JoinResultPage joinResultPage) throws Exception {
+        PageResults<List<JoinPrizeRecordVo>> pageResults = platformMemberWinService.listJoinPirzeRecord(joinResultPage);
+        return RestResult.successWithData(pageResults);
     }
 
 }

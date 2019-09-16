@@ -97,9 +97,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	@Autowired
 	private MarketingActivityChannelService channelService;
 
-    @Autowired
-    private MarketingPlatformOrganizationService marketingPlatformOrganizationService;
-
     @Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
 

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -99,7 +101,7 @@ public class ScanCodeController {
      * @throws ParseException
      * @throws Exception
      */
-    @RequestMapping(value = "/",method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId, HttpServletRequest request) throws Exception {
     	Map<String, String> uriVariables = new HashMap<>();
@@ -229,5 +231,19 @@ public class ScanCodeController {
         return url;
     }
 
+
+    @GetMapping("/code/callback")
+    @ApiOperation("微信静默授权")
+    public String getWXCode(@RequestParam String code, @RequestParam String state) {
+        logger.info("微信授权回调获取code=" + code + ",state=" + state);
+        if (StringUtils.isBlank(state)) {
+            throw new SuperCodeExtException("state不能为空", 500);
+        }
+        try {
+            return "redirect:" + restUserUrl + "/wechat/org/info?code=" + code + "&state=" + state;
+        } catch (Exception e) {
+            throw new SuperCodeExtException("回调参数不正确");
+        }
+    }
 
 }

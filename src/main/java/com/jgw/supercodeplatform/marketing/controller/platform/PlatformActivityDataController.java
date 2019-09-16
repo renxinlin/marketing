@@ -3,10 +3,12 @@ package com.jgw.supercodeplatform.marketing.controller.platform;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
+import com.jgw.supercodeplatform.marketing.service.activity.PlatformStatisticsService;
 import com.jgw.supercodeplatform.marketing.vo.platform.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,11 +21,15 @@ import java.util.List;
 @Api(tags = "全平台活动数据")
 public class PlatformActivityDataController {
 
+    @Autowired
+    private PlatformStatisticsService platformStatisticsService;
+
     @ApiOperation("获取扫码率")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/scanCodeRate")
     public RestResult<ScanCodeDataVo> scanCodeRate(@Valid ActivityDataParam activityDataParam) {
-        return RestResult.success();
+        ScanCodeDataVo scanCodeDataVo = platformStatisticsService.scanCodeRate(activityDataParam);
+        return RestResult.successWithData(scanCodeDataVo);
     }
 
     @ApiOperation("获取中奖率")

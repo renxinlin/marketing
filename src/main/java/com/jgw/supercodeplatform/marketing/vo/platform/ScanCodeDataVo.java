@@ -2,11 +2,12 @@ package com.jgw.supercodeplatform.marketing.vo.platform;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @ApiModel("扫码率")
 public class ScanCodeDataVo {
     @ApiModelProperty("生码量")

@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.service.es.activity;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -591,4 +592,144 @@ public class CodeEsService extends AbstractEsSearch {
 		return scaned;
 
 	}
+
+	/**
+	 * 添加全网运营红包扫码放弃抽奖的记录
+	 * @param productId
+	 * @param productBatchId
+	 * @param codeId
+	 * @param codeType
+	 * @param activitySetId
+	 * @param scanCodeTime
+	 * @param organizationId
+	 * @throws SuperCodeException
+	 */
+	public void addAbandonPlatformScanCodeRecord(String productId, String productBatchId, String codeId, Long activityId,
+								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId) throws SuperCodeException {
+		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
+				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
+				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
+		}
+
+		logger.info("es保存productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("productId", productId);
+		addParam.put("productBatchId", productBatchId);
+		addParam.put("codeId", codeId);
+		addParam.put("codeType", codeType);
+		addParam.put("activitySetId", activitySetId);
+		addParam.put("activityId", activityId);
+		//addParam.put("openId", openId);
+		addParam.put("scanCodeTime", scanCodeTime);
+		addParam.put("organizationId", organizationId);
+		//addParam.put("memberType", memberType);
+		//addParam.put("userId", userId);
+		//0表示扫码后点击放弃抽奖状态，1表示点击了抽奖
+		addParam.put("status", 0);
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.MARKET_PLATFORM_SCAN_INFO);
+		eSearch.setType(EsType.INFO);
+		add(eSearch,true, addParam);
+	}
+
+	/**
+	 * 添加全网运营红包扫码抽奖的记录
+	 * @param productId
+	 * @param productBatchId
+	 * @param codeId
+	 * @param openId
+	 * @param userId
+	 * @param memberType
+	 * @param codeType
+	 * @param activitySetId
+	 * @param scanCodeTime
+	 * @param organizationId
+	 * @throws SuperCodeException
+	 */
+	public void addPlatformScanCodeRecord(String productId, String productBatchId, String codeId,String openId,String userId, Integer memberType, Long activityId,
+												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId) throws SuperCodeException {
+		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId) || StringUtils.isBlank(openId) || StringUtils.isBlank(userId)
+				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime || memberType == null
+				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
+		}
+
+		logger.info("es保存productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("productId", productId);
+		addParam.put("productBatchId", productBatchId);
+		addParam.put("codeId", codeId);
+		addParam.put("codeType", codeType);
+		addParam.put("activitySetId", activitySetId);
+		addParam.put("activityId", activityId);
+		addParam.put("openId", openId);
+		addParam.put("scanCodeTime", scanCodeTime);
+		addParam.put("organizationId", organizationId);
+		addParam.put("memberType", memberType);
+		addParam.put("userId", userId);
+		//0表示扫码后点击放弃抽奖状态，1表示点击了抽奖
+		addParam.put("status", 1);
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.MARKET_PLATFORM_SCAN_INFO);
+		eSearch.setType(EsType.INFO);
+		add(eSearch,true, addParam);
+	}
+
+
+	/**
+	 * 查询全网运营平台红包该码被扫过次数
+	 *
+	 * @param productId
+	 * @param productBatchId
+	 * @return
+	 */
+	public long countPlatformScanCodeRecord(String codeId, Integer status) {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("codeId.keyword", codeId);
+		if (status != null) {
+			addParam.put("status", status);
+		}
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.MARKET_PLATFORM_SCAN_INFO);
+		eSearch.setType(EsType.INFO);
+		eSearch.setParam(addParam);
+		return getCount(eSearch);
+	}
+
+	/**
+	 * 统计指定时间段内码的数量
+	 * @param timeStart
+	 * @param timeEnd
+	 * @param status
+	 * @return
+	 */
+	public long countPlatformScanCodeRecordByTime(long timeStart, long timeEnd, Integer status) {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
+		// 创建查询条件 >= <=
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lte(timeEnd);
+		StatsAggregationBuilder aggregation =
+				AggregationBuilders
+						.stats(AggregationName)
+						// 聚和字段：码
+						.field("codeId");
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
+		if (status != null) {
+			QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", status);
+			boolQueryBuilder.must(queryBuilderStatus);
+		}
+		searchRequestBuilder.setQuery(boolQueryBuilder);
+		searchRequestBuilder.addAggregation(aggregation);
+		// 获取查询结果
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		// 获取count
+		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+		// 优化方向，其他结果如非必须可剔除
+		// 除去评分机制
+		// 采用过滤而非查询提高查询速度
+		// 取所需结果
+		return aggs.getCount();
+	}
+
 }

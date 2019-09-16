@@ -1,4 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo;
+
+import java.util.Date;
+
 /**
  * 中奖纪录实体
  * @author czm
@@ -15,11 +18,13 @@ public class MarketingMembersWinRecord {
     private Float winningAmount;//中奖金额
     private String winningCode;//中奖码
     private String organizationId;//组织id
+	private String organizationFullName;
     private String mobile;//会员手机号
     private String prizeName;//奖项名称
     private String productId;//产品ID
     private String productBatchId;//产品批次ID
-    
+	private Date createTime;
+	private Date UpdateTime;
     
     public int getId() {
         return id;
@@ -126,5 +131,28 @@ public class MarketingMembersWinRecord {
 	public void setProductBatchId(String productBatchId) {
 		this.productBatchId = productBatchId;
 	}
-    
+
+	public void setOrganizationFullName(String organizationFullName) {
+		this.organizationFullName = organizationFullName;
+	}
+
+	public String getOrganizationFullName() {
+		return organizationFullName;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setUpdateTime(Date updateTime) {
+		UpdateTime = updateTime;
+	}
+
+	public Date getUpdateTime() {
+		return UpdateTime;
+	}
 }

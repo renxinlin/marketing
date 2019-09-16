@@ -1,18 +1,22 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
+import com.jgw.supercodeplatform.marketing.dto.platform.JoinResultPage;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
+import io.swagger.annotations.ApiModelProperty;
 import org.apache.ibatis.annotations.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
 public interface MarketingMembersWinRecordMapper extends CommonSql{
 
-	static String allFields="Id as id,ActivityId as activityId,ActivitySetId as activitySetId,ActivityName as activityName,Openid as openid,PrizeTypeId as prizeTypeId,"
-			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId ,PrizeName prizeName,ProductId productId";
+	static String allFields="Id as id,ActivityId as activityId,ActivitySetId as activitySetId,ActivityName as activityName,Openid as openid,PrizeTypeId as prizeTypeId,CreateTime createTime,UpdateTime updateTime,"
+			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId,OrganizationFullName organizationFullName,PrizeName prizeName,ProductId productId";
 
 	static String allWinFields="mmw.Id as id,mmw.ActivityId as activityId,mmw.ActivitySetId as activitySetId,mmw.ActivityName as activityName,mmw.Openid as openid,mmw.PrizeTypeId as prizeTypeId,"
 			+ " CAST(mmw.WinningAmount AS CHAR) as winningAmount,mmw.PrizeName as prizeName "
@@ -77,15 +81,49 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 		   )
 	List<MarketingMembersWinRecordListReturn> list(MarketingMembersWinRecordListParam searchParams);
 
-	@Insert(" INSERT INTO marketing_members_win(ActivityId,ActivitySetId,ActivityName,Openid,"
-			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,Mobile,PrizeName,ProductId,ProductBatchId)"
-			+ " VALUES(#{activityId},#{activitySetId},#{activityName},#{openid},#{prizeTypeId},"
-			+ "#{winningAmount},#{winningCode},#{organizationId},#{mobile},#{prizeName},"
+	@Insert(" INSERT INTO marketing_members_win(ActivityId,ActivitySetId,ActivityName,Openid,CreateTime,UpdateTime,"
+			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,OrganizationFullName,Mobile,PrizeName,ProductId,ProductBatchId)"
+			+ " VALUES(#{activityId},#{activitySetId},#{activityName},#{openid},NOW(),NOW(),#{prizeTypeId},"
+			+ "#{winningAmount},#{winningCode},#{organizationId},#{organizationFullName},#{mobile},#{prizeName},"
 			+ "#{productId},#{productBatchId})")
 	int addWinRecord(MarketingMembersWinRecord winRecord);
 
 	@Select("SELECT "+allFields+" FROM marketing_members_win WHERE WinningCode = #{winningCode} AND OrganizationId = #{organizationId}")
 	MarketingMembersWinRecord getRecordByCodeId(@Param("winningCode") String winningCode, @Param("organizationId") String organizationId);
+
+
+	@Select({startScript,
+			"SELECT "+allFields+" FROM marketing_members_win ",
+			"<where> ",
+			"ActivitySetId = #{activitySetId} ",
+			"<if test='search !=null and search != &apos;&apos;'> AND (",
+			"WinningCode LIKE CONCAT('%',#{search},'%') OR ",
+			"PrizeName LIKE CONCAT('%',#{search},'%') OR ",
+			"OrganizationFullName LIKE CONCAT('%',#{search},'%') ",
+			") </if></where>",
+			"<if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>",
+			endScript})
+	List<MarketingMembersWinRecord> listWinRecord(JoinResultPage joinResultPage);
+
+	@Select({startScript,
+			"SELECT COUNT(1) FROM marketing_members_win ",
+			"<where> ",
+			"ActivitySetId = #{activitySetId} ",
+			"<if test='search !=null and search != &apos;&apos;'> AND (",
+			"WinningCode LIKE CONCAT('%',#{search},'%') OR ",
+			"PrizeName LIKE CONCAT('%',#{search},'%') OR ",
+			"OrganizationFullName LIKE CONCAT('%',#{search},'%') ",
+			") </if></where>",
+			"<if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>",
+			endScript})
+	int countWinRecord(JoinResultPage joinResultPage);
+
+	@Select("SELECT COUNT(1) FROM marketing_members_win WHERE ActivityId = 5 AND WinningAmount = 0 AND CreateTime &gt;= #{createTimeStart} AND CreateTime &lt;=#{createTimeEnd}")
+	long countPlatformTotal(@Param("createTimeStart") Date createTimeStart, @Param("createTimeEnd") Date createTimeEnd);
+
+	@Select("SELECT COUNT(1) FROM marketing_members_win WHERE ActivityId = 5 AND WinningAmount > 0 AND CreateTime &gt;= #{createTimeStart} AND CreateTime &lt;=#{createTimeEnd}")
+	long countPlatformWining(@Param("createTimeStart") Date createTimeStart, @Param("createTimeEnd") Date createTimeEnd);
+
 
 
 }
