@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 @Service
 public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapper, SalerOrderForm> {
 
-    private static final String NULL_NULL_NULL ="nullnullnull" ;
     @Autowired
     private DynamicMapper dynamicMapper;
     @Autowired
