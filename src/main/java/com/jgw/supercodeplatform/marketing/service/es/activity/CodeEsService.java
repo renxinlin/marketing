@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -29,9 +30,14 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
 import org.slf4j.Logger;
@@ -648,7 +654,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @throws SuperCodeException
 	 */
 	public void addPlatformScanCodeRecord(String productId, String productBatchId, String codeId,String openId,String userId, Integer memberType, Long activityId,
-												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId) throws SuperCodeException {
+												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName) throws SuperCodeException {
 		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId) || StringUtils.isBlank(openId) || StringUtils.isBlank(userId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime || memberType == null
 				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
@@ -666,6 +672,7 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("openId", openId);
 		addParam.put("scanCodeTime", scanCodeTime);
 		addParam.put("organizationId", organizationId);
+		addParam.put("organizationFullName", organizationFullName);
 		addParam.put("memberType", memberType);
 		addParam.put("userId", userId);
 		//0表示扫码后点击放弃抽奖状态，1表示点击了抽奖
@@ -730,6 +737,37 @@ public class CodeEsService extends AbstractEsSearch {
 		// 采用过滤而非查询提高查询速度
 		// 取所需结果
 		return aggs.getCount();
+	}
+
+	/**
+	 * 获取扫码组织排行
+	 * @param timeStart
+	 * @param timeEnd
+	 * @return
+	 */
+	public List<Map<String, String>> scanOrganizationList(long timeStart, long timeEnd){
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
+		// 创建查询条件 >= <=
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lte(timeEnd);
+		Script script = new Script(ScriptType.INLINE, "groovy","doc['organizationId.keyword'].value+','+doc['organizationFullName.keyword'].value", new HashMap<>());
+		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms("orgGroup").script(script).order(BucketOrder.count(false)).size(7);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
+		searchRequestBuilder.addAggregation(callTypeTeamAgg);
+		// 获取查询结果
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		// 获取count
+		StringTerms teamAgg = searchResponse.getAggregations().get(AggregationName);
+		List<StringTerms.Bucket> bucketList = teamAgg.getBuckets();
+		List<Map<String, String>> idAndNameList = bucketList.stream().map(bucket -> {
+			String[] idAndName = bucket.getKeyAsString().split(",");
+			Map<String, String> bucketMap = new HashMap<>();
+			bucketMap.put("organizationId", idAndName[0]);
+			bucketMap.put("organizationFullName", idAndName[1]);
+			return bucketMap;
+		}).collect(Collectors.toList());
+		return idAndNameList;
 	}
 
 }
