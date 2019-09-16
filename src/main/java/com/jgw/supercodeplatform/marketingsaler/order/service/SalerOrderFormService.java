@@ -67,9 +67,9 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         log.info("接收的参数{}",salerOrderForms);
         for(SalerOrderFormSettingDto salerOrderForm : salerOrderForms){
             if(salerOrderForm.getId() == null || salerOrderForm.getId() <= 0 ){
-                updateOrderForms.add(salerOrderForm);
-            }else {
                 deleteOrAddForms.add(salerOrderForm);
+            }else {
+                updateOrderForms.add(salerOrderForm);
             }
         };
         updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
