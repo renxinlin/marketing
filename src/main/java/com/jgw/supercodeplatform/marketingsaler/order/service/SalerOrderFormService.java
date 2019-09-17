@@ -101,7 +101,10 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(ids)){
             return;
         }
-        List<SalerOrderForm> undeleteBecauseofUpdates = baseMapper.selectBatchIds(ids);
+        List<SalerOrderForm> undeleteBecauseofUpdates = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(ids)){
+            undeleteBecauseofUpdates = baseMapper.selectBatchIds(ids);
+        }
         List<String> undeleteBecauseofUpdateColumnNames = undeleteBecauseofUpdates.stream().map(undeleteBecauseofUpdate -> undeleteBecauseofUpdate.getColumnName()).collect(Collectors.toList());
         // 网页新增+默认字段  赋值默认表单和结构化名称补充
         List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setDefaultForms(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
