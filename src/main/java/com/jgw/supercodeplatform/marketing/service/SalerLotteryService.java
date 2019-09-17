@@ -215,11 +215,12 @@ public class SalerLotteryService {
         tradeOrder.setOrganizationId(organizationId);
         tradeOrder.setWinningCode(winningCode);
         tradeOrder.setReferenceRole(referenceRole);
-        wXPayTradeOrderMapper.insert(tradeOrder);
 
         if (StringUtils.isBlank(remoteAddr)) {
             remoteAddr = serverIp;
         }
+        tradeOrder.setRemoteAddr(remoteAddr);
+        wXPayTradeOrderMapper.insert(tradeOrder);
         try {
             // 目前的中奖逻辑是补偿用户相关中奖金额
             if (sendAudit == 0) {

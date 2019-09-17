@@ -444,8 +444,8 @@ public class LotteryService {
 		if (StringUtils.isBlank(remoteAddr)) {
 			remoteAddr = serverIp;
 		}
-		wXPayTradeOrderMapper.insert(tradeOrder);
 		tradeOrder.setRemoteAddr(remoteAddr);
+		wXPayTradeOrderMapper.insert(tradeOrder);
 		//如果该活动时立刻发送红包，则直接调用微信支付发红包
 		if (sendAudit == 0) {
 			wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partner_trade_no, organizationId);

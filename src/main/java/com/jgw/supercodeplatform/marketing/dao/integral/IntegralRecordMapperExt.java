@@ -52,8 +52,9 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     "</otherwise>" +
                     "</choose>" +
                     " <if test='organizationId != null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
-                    " <if test='memberId != null and organizationId != &apos;&apos; '> and MemberId = #{memberId} </if>"+
-                    // 大于
+                    " <if test='memberId != null and memberId != &apos;&apos; '> and MemberId = #{memberId} </if>"+
+                    " <if test='salerId != null and salerId != &apos;&apos; '> and SalerId = #{salerId} </if> "+
+					// 大于
 					" <if test='integralType != null and integralType == 0 '> and IntegralNum &gt; 0 </if>"+
 					// 积分记录区分用户类别
 					// TODO 评估MEMBERTYPE是否可以去除if条件
@@ -70,7 +71,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 
             +whereSearch
             + " ORDER BY CreateDate DESC"
-            + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
+            + " <if test='current != null and pageSize != null and pageSize != 0'> LIMIT #{current},#{pageSize}</if>"
             +endScript)
     List<IntegralRecord> list(IntegralRecord integralRecord);
 
