@@ -271,7 +271,7 @@ public class SalerLotteryService {
                 param                           .setMobile(marketingUser.getMobile());
                 param                        .setCodeTypeId(scanInfo.getCodeTypeId());
                 param                   .setMemberType(marketingUser.getMemberType());
-                param                  .setCreateTime(System.currentTimeMillis());
+                param                  .setScanCodeTime(System.currentTimeMillis());
                 param                 .setActivitySetId(marketingActivitySet.getId());
                 param            .setActivityId(marketingActivitySet.getActivityId());
                 param           .setOrganizationId(marketingUser.getOrganizationId());// 此时一定是同一个组织id
