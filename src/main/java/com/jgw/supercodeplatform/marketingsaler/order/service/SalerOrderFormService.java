@@ -120,7 +120,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         if(CollectionUtils.isEmpty(createsMetadatas)){
             // 默认字段赋值
            withDefaultsalerOrderFormDtos.addAll(SalerOrderTransfer.firstSetDefaultForms(commonUtil.getOrganizationId(), commonUtil.getOrganizationName()));
-
+           pojos = SalerOrderTransfer.modelMapper(modelMapper,withDefaultsalerOrderFormDtos);
             // 第一次新建表单
             List<String> newColumns = withDefaultsalerOrderFormDtos.stream().map(dto -> dto.getColumnName()).collect(Collectors.toList());
             // 主键特殊处理
