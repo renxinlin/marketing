@@ -304,8 +304,7 @@ public class LotteryService {
 					break;
 				case 4:
 					amount = prizeTypeMo(prizeTypeMO);
-					DecimalFormat decimalFormat = new DecimalFormat(".00");
-					String strAmount = decimalFormat.format(amount);
+					String strAmount = String.format("%.2f", amount);
 					lotteryResultMO.setData(strAmount);
 					lotteryResultMO.setMsg(strAmount);
 				default:

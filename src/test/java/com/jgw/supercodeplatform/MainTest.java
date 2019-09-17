@@ -1,9 +1,12 @@
 package com.jgw.supercodeplatform;
 
+import java.text.DecimalFormat;
+
 public class MainTest {
 
     public static void main(String[] args) {
-        System.out.println("------>"+String.format("%.2f", 2.0));
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+        System.out.println("------>"+decimalFormat.format( 0.5));
     }
 
 }
