@@ -27,10 +27,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -61,7 +58,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     @Transactional // 对应的是主库事务
     public void alterOrCreateTableAndUpdateMetadata(List<SalerOrderFormSettingDto> salerOrderForms) {
         Asserts.check(!CollectionUtils.isEmpty(salerOrderForms),"表单设置失败");
-
+        valid(salerOrderForms); 
         List<SalerOrderFormSettingDto> updateOrderForms = new ArrayList<>();
         List<SalerOrderFormSettingDto> deleteOrAddForms = new ArrayList<>();
         log.info("接收的参数{}",salerOrderForms);
@@ -77,6 +74,23 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
         deleteOrAdd(deleteOrAddForms,updateids);
         updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
+
+    }
+
+    /**
+     * 业务开始前的验证
+     * @param salerOrderForms
+     */
+    private void valid(List<SalerOrderFormSettingDto> salerOrderForms) {
+
+        List<SalerOrderFormDto> salerOrderFormDtos = SalerOrderTransfer.defaultForms(commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
+        List<SalerOrderFormDto> salerOrderFormDtos1 = SalerOrderTransfer.setFormsOtherField(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
+        salerOrderFormDtos.addAll(salerOrderFormDtos1);
+        Set<String> columnNames = new HashSet();
+        salerOrderFormDtos.forEach(salerOrderFormDto ->{
+            columnNames.add(salerOrderFormDto.getColumnName());
+        });
+        Asserts.check(columnNames.size() == salerOrderFormDtos.size(),"存在重复表单名或与预定义名称冲突");
 
     }
 
