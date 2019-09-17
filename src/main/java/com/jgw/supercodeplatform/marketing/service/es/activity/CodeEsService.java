@@ -524,7 +524,7 @@ public class CodeEsService extends AbstractEsSearch {
 		if (null ==userId) {
 			throw new SuperCodeException("userID error");
 		}
-		if (StringUtils.isNotBlank(organizationId)) {
+		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("organizationId error");
 		}
 		// 聚合求和;效果同 select count from table where org = and date between a and b
