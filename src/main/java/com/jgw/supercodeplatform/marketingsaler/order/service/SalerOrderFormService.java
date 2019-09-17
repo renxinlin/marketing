@@ -160,7 +160,9 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             StringBuffer sb =new StringBuffer("");
             deleteColumns.forEach(data->sb.append(data).append("  "));
             log.info("delete columns 如下{}" ,sb.toString());
-            baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).getWrapper());
+            if(!CollectionUtils.isEmpty(deleteColumns)){
+                baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).getWrapper());
+            }
 
         }
         this.saveBatch(pojos);
