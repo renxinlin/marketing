@@ -65,17 +65,17 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         List<SalerOrderFormSettingDto> updateOrderForms = new ArrayList<>();
         List<SalerOrderFormSettingDto> deleteOrAddForms = new ArrayList<>();
         log.info("接收的参数{}",salerOrderForms);
-        List ids = new ArrayList();
+        List updateids = new ArrayList();
         for(SalerOrderFormSettingDto salerOrderForm : salerOrderForms){
             if(salerOrderForm.getId() == null || salerOrderForm.getId() <= 0 ){
                 deleteOrAddForms.add(salerOrderForm);
             }else {
                 updateOrderForms.add(salerOrderForm);
-                ids.add(salerOrderForm.getId());
+                updateids.add(salerOrderForm.getId());
             }
         };
 
-        deleteOrAdd(deleteOrAddForms,ids);
+        deleteOrAdd(deleteOrAddForms,updateids);
         updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
 
     }
@@ -95,16 +95,16 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     /**
      *
      * @param salerOrderForms
-     * @param ids 更新的数据不能被删除
+     * @param updateids 更新的数据不能被删除
      */
-    private void deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms,List<Long> ids) {
-        if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(ids)){
+    private void deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms,List<Long> updateids) {
+        if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(updateids)){
             return;
         }
         // 被更新的数据不删除
         List<SalerOrderForm> undeleteBecauseofUpdates = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(ids)){
-            undeleteBecauseofUpdates = baseMapper.selectBatchIds(ids);
+        if(!CollectionUtils.isEmpty(updateids)){
+            undeleteBecauseofUpdates = baseMapper.selectBatchIds(updateids);
         }
 
         // 网页新增  赋值默认表单和结构化名称补充
@@ -134,8 +134,6 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 throw new RuntimeException("请输入中文或英文或其他合法字符");
             }
         }else{
-
-
             // 数据库字段名
             List<String> createsMetadatasColumnName = createsMetadatas.stream().map(createsMetadata -> createsMetadata.getColumnName()).collect(Collectors.toList());
             // 网页新增
@@ -156,9 +154,8 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 e.printStackTrace();
                 throw new RuntimeException("请输入中文或英文或其他合法字符");
             }
-
             if(!CollectionUtils.isEmpty(deleteColumns)){
-                baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).getWrapper());
+                baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).notIn(!CollectionUtils.isEmpty(updateids),"id",updateids).getWrapper());
             }
 
         }
