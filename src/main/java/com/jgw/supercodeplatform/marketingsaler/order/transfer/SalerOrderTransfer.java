@@ -69,19 +69,6 @@ public class SalerOrderTransfer {
 
 
 
-    public static List<SalerOrderFormDto> setForms(List<SalerOrderFormDto> salerOrderForms,String organizationId,String organizationName) {
-        // 赋值网页字段
-        salerOrderForms.forEach(salerOrderFormDto -> {
-            salerOrderFormDto.setTableName(initTableName(organizationId));
-            salerOrderFormDto.setColumnName(HanzhiToPinyinUtil.getPingYin(salerOrderFormDto.getFormName()));
-            salerOrderFormDto.setColumnType(deafultColumnType);
-            salerOrderFormDto.setOrganizationId(organizationId);
-            salerOrderFormDto.setOrganizationName(organizationName);
-        });
-
-        return salerOrderForms;
-    }
-
 
 
     public static String initTableName(String organizationId){
