@@ -207,6 +207,7 @@ public class MarketingMembersFrontController extends CommonUtil {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			hVo.setOrganizationId(marketingMembers.getOrganizationId());
 			hVo.setOrganizationName(orgnazationName);
 			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
 			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());

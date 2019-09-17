@@ -111,7 +111,13 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	public RestResult<ReceivingAndWinningPageVO> getPageInfo(Long activitySetId) {
 		MarketingWinningPage marWinningPage=marWinningPageMapper.getByActivityId(activitySetId);
 		MarketingReceivingPage mReceivingPage=maReceivingPageMapper.getByActivityId(activitySetId);
-
+		MarketingActivitySet marketingActivitySet = mSetMapper.selectById(activitySetId);
+		String merchantsInfo = marketingActivitySet.getMerchantsInfo();
+		if (StringUtils.isNotBlank(merchantsInfo)) {
+			JSONObject merchantJson = JSON.parseObject(merchantsInfo);
+			mReceivingPage.setMchAppid(merchantJson.getString("mchAppid"));
+			mReceivingPage.setMerchantSecret(merchantJson.getString("merchantSecret"));
+		}
 		RestResult<ReceivingAndWinningPageVO> restResult=new RestResult<ReceivingAndWinningPageVO>();
 		ReceivingAndWinningPageVO rePageVO=new ReceivingAndWinningPageVO();
 		rePageVO.setMaReceivingPage(mReceivingPage);
@@ -174,7 +180,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			throw new SuperCodeException("您已设置过相同标题的活动不可重复设置", 500);
 		}
 		//获取活动实体
-		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getmActivitySetParam(),organizationId,organizationName);
+		MarketingActivitySet mActivitySet = convertActivitySet(activitySetParam.getmActivitySetParam(),activitySetParam.getmReceivingPageParam(), organizationId,organizationName);
 		
 		//检查奖次类型
 		standActicityParamCheck.basePrizeTypeCheck(mPrizeTypeParams);
@@ -214,7 +220,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		}
 		MarketingReceivingPageParam mReceivingPageParam=activitySetParam.getmReceivingPageParam();
 		//获取活动实体
-		MarketingActivitySet mActivitySet = convertActivitySet(mSetParam,organizationId,organizationName);
+		MarketingActivitySet mActivitySet = convertActivitySet(mSetParam,activitySetParam.getmReceivingPageParam(),organizationId,organizationName);
 		List<MarketingActivityProduct> upProductList = mProductMapper.selectByActivitySetId(activitySetId);
         if(upProductList == null) upProductList = new ArrayList<>();
 		/************************查询需要去码平台删除关联关系的产品批次************************/
@@ -315,7 +321,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
 
 
-	public MarketingActivitySet convertActivitySet(MarketingActivitySetParam activitySetParam, String organizationId, String organizationName) throws SuperCodeException {
+	public MarketingActivitySet convertActivitySet(MarketingActivitySetParam activitySetParam,MarketingReceivingPageParam marketingReceivingPageParam,  String organizationId, String organizationName) throws SuperCodeException {
 		String title=activitySetParam.getActivityTitle();
 		if (StringUtils.isBlank(title)) {
 			throw new SuperCodeException("添加的活动设置标题不能为空", 500);
@@ -347,8 +353,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mSet.setOrganizationId(organizationId);
 		mSet.setOrganizatioIdlName(organizationName);
 		JSONObject merchantJson = new JSONObject();
-		merchantJson.put("mchAppid", activitySetParam.getMchAppid());
-		merchantJson.put("merchantSecret", activitySetParam.getMerchantSecret());
+		merchantJson.put("mchAppid", marketingReceivingPageParam.getMchAppid());
+		merchantJson.put("merchantSecret", marketingReceivingPageParam.getMerchantSecret());
 		mSet.setMerchantsInfo(merchantJson.toJSONString());
 		return mSet;
 	}
@@ -802,12 +808,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			MarketingActivitySetParam.setConsumeIntegralNum(conditonJson.getConsumeIntegral());
 			MarketingActivitySetParam.setEachDayNumber(conditonJson.getEachDayNumber());
 			MarketingActivitySetParam.setParticipationCondition(conditonJson.getParticipationCondition());
-		}
-		String merchantsInfo = marketingActivitySet.getMerchantsInfo();
-		if (StringUtils.isNotBlank(merchantsInfo)) {
-			JSONObject merchantJson = JSON.parseObject(merchantsInfo);
-			MarketingActivitySetParam.setMchAppid(merchantJson.getString("mchAppid"));
-			MarketingActivitySetParam.setMerchantSecret(merchantJson.getString("merchantSecret"));
 		}
 		// 返回
 		restResult.setState(200);

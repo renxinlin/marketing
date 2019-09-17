@@ -154,7 +154,7 @@ public class ScanCodeController {
     	String	wxstate=commonUtil.getUUID();
     	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId,sBatchId, wxstate, ReferenceRoleEnum.ACTIVITY_SALER.getType());
         // 领取按钮对应的前端URL
-        return "redirect:"+h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate+"&memberId="+memberId;
+        return "redirect:"+url+"&memberId="+memberId;
     }
 
     /**

@@ -239,14 +239,14 @@ public class GlobalExceptionHandler {
 
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(SalerLotteryException.class)
-	public RestResult<String> handlerSalerLotteryException(SalerLotteryException e) {
+	public RestResult<LotteryResultMO> handlerSalerLotteryException(SalerLotteryException e) {
 		logger.error("会员未登录异常{}",e.getMessage());
-		RestResult<String> restResult = new RestResult<>();
+		RestResult<LotteryResultMO> restResult = new RestResult<>();
 		// 前端格式:不可修改
 		restResult.setState(200);
 		restResult.setMsg(e.getMessage());
 		// 前端格式:不可修改
-		restResult.setResults(e.getMessage());
+		restResult.setResults(new LotteryResultMO(e.getMessage()));
 		return restResult;
 	}
 

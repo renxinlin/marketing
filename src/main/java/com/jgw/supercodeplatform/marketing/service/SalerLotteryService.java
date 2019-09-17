@@ -333,7 +333,7 @@ public class SalerLotteryService {
                 }
                 weixinpayForSaler(partnerTradeNo,marketingActivitySet.getSendAudit(),scanInfo.getCodeId(),marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), amount*100, request.getRemoteAddr(), ReferenceRoleEnum.ACTIVITY_SALER.getType());
                 lotteryResultMO.setWinnOrNot(1);
-                lotteryResultMO.setMsg(amount.toString());
+                lotteryResultMO.setMsg(String.format("%.2f", amount));
                 return lotteryResultMO;
             }
         }
