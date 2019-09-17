@@ -109,7 +109,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         List<String> undeleteBecauseofUpdateColumnNames = undeleteBecauseofUpdates.stream().map(undeleteBecauseofUpdate -> undeleteBecauseofUpdate.getColumnName()).collect(Collectors.toList());
 
         // 网页新增  赋值默认表单和结构化名称补充
-        List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setDefaultForms(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
+        List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setFormsOtherField(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
         // 检查表单重复
         checkrepeat(withDefaultsalerOrderFormDtos);
         // 数据库订货字段
@@ -117,9 +117,11 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         // 新增的字段集
         List<SalerOrderForm> pojos = SalerOrderTransfer.modelMapper(modelMapper,withDefaultsalerOrderFormDtos);
 
+
+        List<SalerOrderFormDto> defaultforms = SalerOrderTransfer.defaultForms(commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
         if(CollectionUtils.isEmpty(createsMetadatas)){
             // 默认字段赋值
-           withDefaultsalerOrderFormDtos.addAll(SalerOrderTransfer.firstSetDefaultForms(commonUtil.getOrganizationId(), commonUtil.getOrganizationName()));
+           withDefaultsalerOrderFormDtos.addAll(defaultforms);
            pojos = SalerOrderTransfer.modelMapper(modelMapper,withDefaultsalerOrderFormDtos);
             // 第一次新建表单
             List<String> newColumns = withDefaultsalerOrderFormDtos.stream().map(dto -> dto.getColumnName()).collect(Collectors.toList());
@@ -144,7 +146,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             addColumns.removeIf(addColumn->createsMetadatasColumnName.contains(addColumn));
 
             List<String> deleteColumns = modelMapper.map(createsMetadatasColumnName,List.class);
-            deleteColumns.removeIf(deleteColumn->SalerOrderTransfer.firstSetDefaultForms(commonUtil.getOrganizationId(), commonUtil.getOrganizationName()).contains(deleteColumn)); // 删除不能包含默认
+            deleteColumns.removeIf(deleteColumn-> defaultforms.contains(deleteColumn)); // 删除不能包含默认
             deleteColumns.removeIf(deleteColumn->undeleteBecauseofUpdateColumnNames.contains(deleteColumn)); // 删除不能包含更新
             // 删除字段和新增字段
             StringBuffer sbadd =new StringBuffer("");

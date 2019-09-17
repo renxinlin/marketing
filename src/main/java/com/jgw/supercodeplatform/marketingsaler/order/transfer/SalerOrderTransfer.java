@@ -27,7 +27,7 @@ public class SalerOrderTransfer {
     public static List<String> deafultFormNames = Arrays.asList(new String[]{"收货地址", "订货人", "订货人电话", "所属门店", "订货时间"});
     public static String deafultColumnType = "varchar";
     public static String PrimaryKey = "id";
-    public static List<SalerOrderFormDto> setDefaultForms(List<SalerOrderFormSettingDto> salerOrderForms, String organizationId, String organizationName) {
+    public static List<SalerOrderFormDto> setFormsOtherField(List<SalerOrderFormSettingDto> salerOrderForms, String organizationId, String organizationName) {
         // 赋值网页字段
         List<SalerOrderFormDto>  salerOrderFormsResults = new ArrayList<SalerOrderFormDto>();
         salerOrderForms.forEach(salerOrderFormDto -> {
@@ -47,7 +47,7 @@ public class SalerOrderTransfer {
     }
 
 
-    public static List<SalerOrderFormDto> firstSetDefaultForms(String organizationId, String organizationName) {
+    public static List<SalerOrderFormDto> defaultForms(String organizationId, String organizationName) {
         // 赋值网页字段
         List<SalerOrderFormDto>  salerOrderFormsResults = new ArrayList<>();
 
