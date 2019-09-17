@@ -10,6 +10,9 @@ import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
 import com.jgw.supercodeplatform.marketingsaler.common.Role;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.service.UserService;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.H5SalerRuleExchangeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
@@ -20,6 +23,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.domain.service.H5SalerR
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.service.H5SalerRuleRewardService;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.service.SalerRecordService;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.H5SalerRuleExchangeTransfer;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.SaleRuleRecordVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -51,6 +55,9 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
     private H5SalerRuleRewardService rewardService;
     @Autowired
     private SalerRecordService recordService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private CodeManagerService codeManagerService;
@@ -92,11 +99,20 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
 
 
     @CheckRole(role = Role.salerRole)
-    @PostMapping("/record")
+    @GetMapping("/record")
     @ApiOperation(value = "积分记录 type 1 奖励 2 消耗 3表示所有", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult record(int type,@ApiIgnore  H5LoginVO user)   {
-        return success(recordService.seletLastThreeMonth(type,user));
+        User userPojo = userService.exists(user);
+        int haveIntegral = 0;
+        if( userPojo!= null){
+            haveIntegral =userPojo.getHaveIntegral();
+        }
+        List<SalerRecord> salerRecords = recordService.seletLastThreeMonth(type, user);
+        SaleRuleRecordVo saleRuleRecordVo = new SaleRuleRecordVo();
+        saleRuleRecordVo.setHaveIntegral(haveIntegral);
+        saleRuleRecordVo.setSalerRecord(salerRecords);
+        return success(saleRuleRecordVo);
     }
 
 
