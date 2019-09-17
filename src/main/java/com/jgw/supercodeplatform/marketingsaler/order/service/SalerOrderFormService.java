@@ -75,8 +75,8 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             }
         };
 
-        updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
         deleteOrAdd(deleteOrAddForms,ids);
+        updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
 
     }
 
@@ -144,7 +144,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             addColumns.removeIf(addColumn->createsMetadatasColumnName.contains(addColumn));
 
             List<String> deleteColumns = modelMapper.map(createsMetadatasColumnName,List.class);
-            deleteColumns.removeIf(deleteColumn->withDefaultsalerOrderFormColumnNames.contains(deleteColumn)); // 删除不能包含默认
+            deleteColumns.removeIf(deleteColumn->SalerOrderTransfer.firstSetDefaultForms(commonUtil.getOrganizationId(), commonUtil.getOrganizationName()).contains(deleteColumn)); // 删除不能包含默认
             deleteColumns.removeIf(deleteColumn->undeleteBecauseofUpdateColumnNames.contains(deleteColumn)); // 删除不能包含更新
             // 删除字段和新增字段
             StringBuffer sbadd =new StringBuffer("");
