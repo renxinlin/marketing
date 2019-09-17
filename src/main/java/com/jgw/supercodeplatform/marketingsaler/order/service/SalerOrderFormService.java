@@ -65,15 +65,18 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         List<SalerOrderFormSettingDto> updateOrderForms = new ArrayList<>();
         List<SalerOrderFormSettingDto> deleteOrAddForms = new ArrayList<>();
         log.info("接收的参数{}",salerOrderForms);
+        List ids = new ArrayList();
         for(SalerOrderFormSettingDto salerOrderForm : salerOrderForms){
             if(salerOrderForm.getId() == null || salerOrderForm.getId() <= 0 ){
                 deleteOrAddForms.add(salerOrderForm);
             }else {
                 updateOrderForms.add(salerOrderForm);
+                ids.add(salerOrderForm.getId());
             }
         };
+
         updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
-        deleteOrAdd(deleteOrAddForms);
+        deleteOrAdd(deleteOrAddForms,ids);
 
     }
 
@@ -89,18 +92,24 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         this.updateBatchById(SalerOrderTransfer.initUpdateSalerOrderFormInfo(updateColumns));
      }
 
-
-    private void deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms) {
-        if(CollectionUtils.isEmpty(salerOrderForms)){
+    /**
+     *
+     * @param salerOrderForms
+     * @param ids 更新的数据不能被删除
+     */
+    private void deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms,List<Long> ids) {
+        if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(ids)){
             return;
         }
-        // 赋值默认表单和结构化名称补充
+        List<SalerOrderForm> undeleteBecauseofUpdates = baseMapper.selectBatchIds(ids);
+        List<String> undeleteBecauseofUpdateColumnNames = undeleteBecauseofUpdates.stream().map(undeleteBecauseofUpdate -> undeleteBecauseofUpdate.getColumnName()).collect(Collectors.toList());
+        // 网页新增+默认字段  赋值默认表单和结构化名称补充
         List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setDefaultForms(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
         Set<@NotEmpty(message = "表单名称不可为空") String> formNames = withDefaultsalerOrderFormDtos.stream().map(salerOrderForm -> salerOrderForm.getFormName()).collect(Collectors.toSet());
         Asserts.check(formNames.size() == withDefaultsalerOrderFormDtos.size(),"存在重名表单名，或表单名与预定义表单名冲突");
-        // 数据库数据
+        // 数据库订货字段
         List<SalerOrderForm> createsMetadatas = baseMapper.selectList(query().eq("OrganizationId", commonUtil.getOrganizationId()).getWrapper());
-        // 网页数据
+        // 待保存数据
         List<SalerOrderForm> pojos = SalerOrderTransfer.modelMapper(modelMapper,withDefaultsalerOrderFormDtos);
 
         //  检查有没有浅拷贝->结论：虽然是浅拷贝但不会影响list
@@ -119,16 +128,21 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         }else{
 
 
-
+            // 数据库数据
             List<String> createsMetadatasColumnName = createsMetadatas.stream().map(createsMetadata -> createsMetadata.getColumnName()).collect(Collectors.toList());
+            // 网页新增+默认字段
             List<String> withDefaultsalerOrderFormColumnNames = withDefaultsalerOrderFormDtos.stream().map(withDefaultsalerOrderFormDto -> withDefaultsalerOrderFormDto.getColumnName()).collect(Collectors.toList());
 
             List<String> addColumns = modelMapper.map(withDefaultsalerOrderFormColumnNames,List.class);
             addColumns.removeIf(addColumn->createsMetadatasColumnName.contains(addColumn));
 
             List<String> deleteColumns = modelMapper.map(createsMetadatasColumnName,List.class);
-            deleteColumns.removeIf(deleteColumn->withDefaultsalerOrderFormColumnNames.contains(deleteColumn));
+            deleteColumns.removeIf(deleteColumn->withDefaultsalerOrderFormColumnNames.contains(deleteColumn)); // 删除不能包含默认
+            deleteColumns.removeIf(deleteColumn->undeleteBecauseofUpdateColumnNames.contains(deleteColumn)); // 删除不能包含更新
             // 删除字段和新增字段
+            StringBuffer sbadd =new StringBuffer("");
+            addColumns.forEach(data->sbadd.append(data).append("  "));
+            log.info("add columns 如下{}" ,sbadd.toString());
             try {
                 dynamicMapper.alterTableAndDropOrAddColumns(withDefaultsalerOrderFormDtos.get(0).getTableName(),deleteColumns,addColumns);
             } catch (Exception e) {
