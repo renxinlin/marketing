@@ -75,8 +75,8 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             }
         };
 
-        updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
         deleteOrAdd(deleteOrAddForms,ids);
+        updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
 
     }
 
@@ -101,19 +101,28 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(ids)){
             return;
         }
-        List<SalerOrderForm> undeleteBecauseofUpdates = baseMapper.selectBatchIds(ids);
+        // 被更新的数据不删除
+        List<SalerOrderForm> undeleteBecauseofUpdates = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(ids)){
+            undeleteBecauseofUpdates = baseMapper.selectBatchIds(ids);
+        }
         List<String> undeleteBecauseofUpdateColumnNames = undeleteBecauseofUpdates.stream().map(undeleteBecauseofUpdate -> undeleteBecauseofUpdate.getColumnName()).collect(Collectors.toList());
-        // 网页新增+默认字段  赋值默认表单和结构化名称补充
-        List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setDefaultForms(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
-        Set<@NotEmpty(message = "表单名称不可为空") String> formNames = withDefaultsalerOrderFormDtos.stream().map(salerOrderForm -> salerOrderForm.getFormName()).collect(Collectors.toSet());
-        Asserts.check(formNames.size() == withDefaultsalerOrderFormDtos.size(),"存在重名表单名，或表单名与预定义表单名冲突");
+
+        // 网页新增  赋值默认表单和结构化名称补充
+        List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setFormsOtherField(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
+        // 检查表单重复
+        checkrepeat(withDefaultsalerOrderFormDtos);
         // 数据库订货字段
         List<SalerOrderForm> createsMetadatas = baseMapper.selectList(query().eq("OrganizationId", commonUtil.getOrganizationId()).getWrapper());
-        // 待保存数据
+        // 新增的字段集
         List<SalerOrderForm> pojos = SalerOrderTransfer.modelMapper(modelMapper,withDefaultsalerOrderFormDtos);
 
-        //  检查有没有浅拷贝->结论：虽然是浅拷贝但不会影响list
+
+        List<SalerOrderFormDto> defaultforms = SalerOrderTransfer.defaultForms(commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
         if(CollectionUtils.isEmpty(createsMetadatas)){
+            // 默认字段赋值
+           withDefaultsalerOrderFormDtos.addAll(defaultforms);
+           pojos = SalerOrderTransfer.modelMapper(modelMapper,withDefaultsalerOrderFormDtos);
             // 第一次新建表单
             List<String> newColumns = withDefaultsalerOrderFormDtos.stream().map(dto -> dto.getColumnName()).collect(Collectors.toList());
             // 主键特殊处理
@@ -128,18 +137,17 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         }else{
 
 
-            // 数据库数据
+            // 数据库字段名
             List<String> createsMetadatasColumnName = createsMetadatas.stream().map(createsMetadata -> createsMetadata.getColumnName()).collect(Collectors.toList());
-            // 网页新增+默认字段
+            // 网页新增
             List<String> withDefaultsalerOrderFormColumnNames = withDefaultsalerOrderFormDtos.stream().map(withDefaultsalerOrderFormDto -> withDefaultsalerOrderFormDto.getColumnName()).collect(Collectors.toList());
 
             List<String> addColumns = modelMapper.map(withDefaultsalerOrderFormColumnNames,List.class);
             addColumns.removeIf(addColumn->createsMetadatasColumnName.contains(addColumn));
 
             List<String> deleteColumns = modelMapper.map(createsMetadatasColumnName,List.class);
-            deleteColumns.removeIf(deleteColumn->withDefaultsalerOrderFormColumnNames.contains(deleteColumn)); // 删除不能包含默认
+            deleteColumns.removeIf(deleteColumn-> defaultforms.contains(deleteColumn)); // 删除不能包含默认
             deleteColumns.removeIf(deleteColumn->undeleteBecauseofUpdateColumnNames.contains(deleteColumn)); // 删除不能包含更新
-            pojos.removeIf(pojo->withDefaultsalerOrderFormColumnNames.contains(pojo.getColumnName()));
             // 删除字段和新增字段
             StringBuffer sbadd =new StringBuffer("");
             addColumns.forEach(data->sbadd.append(data).append("  "));
@@ -154,10 +162,26 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             StringBuffer sb =new StringBuffer("");
             deleteColumns.forEach(data->sb.append(data).append("  "));
             log.info("delete columns 如下{}" ,sb.toString());
-            baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).getWrapper());
+            if(!CollectionUtils.isEmpty(deleteColumns)){
+                baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).getWrapper());
+            }
 
         }
         this.saveBatch(pojos);
+    }
+
+    private void checkrepeat(List<SalerOrderFormDto> withDefaultsalerOrderFormDtos) {
+        Set<@NotEmpty(message = "表单名称不可为空") String> formNames = withDefaultsalerOrderFormDtos.stream().map(salerOrderForm -> salerOrderForm.getFormName()).collect(Collectors.toSet());
+        Asserts.check(formNames.size() == withDefaultsalerOrderFormDtos.size(),"存在重名表单名，或表单名与预定义表单名冲突");
+        for(SalerOrderFormDto salerOrderFormDto:withDefaultsalerOrderFormDtos){
+            if(SalerOrderTransfer.deafultColumnNames.contains(salerOrderFormDto.getColumnName())){
+                throw new RuntimeException("该表单名为默认字段");
+            }
+            if(SalerOrderTransfer.PrimaryKey.equalsIgnoreCase(salerOrderFormDto.getColumnName())){
+                throw new RuntimeException("id字段为特殊字段，不可设置");
+            }
+
+        }
     }
 
     public List<SalerOrderForm> detail() {
