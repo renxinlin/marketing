@@ -148,25 +148,30 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             // 去除不需要删除的字段
             removeDefaultAndUpdate(undeleteBecauseofUpdates, defaultforms, deleteColumns);
             // 删除字段和新增字段
-            StringBuffer sbadd =new StringBuffer("");
-            addColumns.forEach(data->sbadd.append(data).append("  "));
-            log.info("add columns 如下{}" ,sbadd.toString());
+            log(addColumns, deleteColumns);
+
             try {
                 dynamicMapper.alterTableAndDropOrAddColumns(withDefaultsalerOrderFormDtos.get(0).getTableName(),deleteColumns,addColumns);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException("请输入中文或英文或其他合法字符");
             }
-            // 删除默认和需要删除
-            StringBuffer sb =new StringBuffer("");
-            deleteColumns.forEach(data->sb.append(data).append("  "));
-            log.info("delete columns 如下{}" ,sb.toString());
+
             if(!CollectionUtils.isEmpty(deleteColumns)){
                 baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).getWrapper());
             }
 
         }
         this.saveBatch(pojos);
+    }
+
+    private void log(List<String> addColumns, List<String> deleteColumns) {
+        StringBuffer sbadd =new StringBuffer("");
+        addColumns.forEach(data->sbadd.append(data).append("  "));
+        log.info("add columns 如下{}" ,sbadd.toString());
+        StringBuffer sb =new StringBuffer("");
+        deleteColumns.forEach(data->sb.append(data).append("  "));
+        log.info("delete columns 如下{}" ,sb.toString());
     }
 
     private void removeDefaultAndUpdate(List<SalerOrderForm> undeleteBecauseofUpdates, List<SalerOrderFormDto> defaultforms, List<String> deleteColumns) {
