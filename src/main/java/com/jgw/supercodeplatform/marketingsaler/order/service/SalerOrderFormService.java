@@ -255,7 +255,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, H5LoginVO user) {
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()), "未获取对应组织");
         Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取订货信息");
-        validAllHaveColumn(columnnameAndValues);
+        validAllHaveColumn(columnnameAndValues,user.getOrganizationId());
         StringBuffer address = new StringBuffer("");
         if (!StringUtils.isEmpty(user.getCustomerId())) {
             CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo(user.getCustomerId());
@@ -266,8 +266,8 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
     }
 
-    private void validAllHaveColumn(List<ColumnnameAndValueDto> columnnameAndValues) {
-        int orderSize = baseMapper.selectCount(query().eq("organizationId", commonUtil.getOrganizationId()).getWrapper());
+    private void validAllHaveColumn(List<ColumnnameAndValueDto> columnnameAndValues,String organizationId) {
+        int orderSize = baseMapper.selectCount(query().eq("organizationId", organizationId).getWrapper());
         int size = orderSize-SalerOrderTransfer.deafultColumnNames.size();
         if(columnnameAndValues.size() != size){
             throw new RuntimeException("数据为必填...");
