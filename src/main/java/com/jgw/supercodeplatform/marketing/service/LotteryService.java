@@ -198,6 +198,7 @@ public class LotteryService {
 		if (lotteryOprationDto.getOrganizationName() == null ) {
 			lotteryOprationDto.setOrganizationName(mActivitySet.getOrganizatioIdlName());
 		}
+		lotteryOprationDto.setScanCodeInfoMO(scanCodeInfoMO);
 		lotteryOprationDto.setConsumeIntegralNum(consumeIntegralNum);
 		lotteryOprationDto.setHaveIntegral(haveIntegral);
 		lotteryOprationDto.setProductName(mActivityProduct.getProductName());
