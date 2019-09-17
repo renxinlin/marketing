@@ -139,6 +139,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             List<String> deleteColumns = modelMapper.map(createsMetadatasColumnName,List.class);
             deleteColumns.removeIf(deleteColumn->withDefaultsalerOrderFormColumnNames.contains(deleteColumn)); // 删除不能包含默认
             deleteColumns.removeIf(deleteColumn->undeleteBecauseofUpdateColumnNames.contains(deleteColumn)); // 删除不能包含更新
+            pojos.removeIf(pojo->withDefaultsalerOrderFormColumnNames.contains(pojo.getColumnName()));
             // 删除字段和新增字段
             StringBuffer sbadd =new StringBuffer("");
             addColumns.forEach(data->sbadd.append(data).append("  "));
