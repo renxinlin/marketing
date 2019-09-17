@@ -43,6 +43,14 @@ public class SalerOrderTransfer {
             salerOrderFormsResults.add(salerOrderFormsResult);
         });
 
+        return salerOrderFormsResults;
+    }
+
+
+    public static List<SalerOrderFormDto> firstSetDefaultForms(String organizationId, String organizationName) {
+        // 赋值网页字段
+        List<SalerOrderFormDto>  salerOrderFormsResults = new ArrayList<>();
+
         // 赋值默认字段
         for(int i = 0;i<deafultColumnNames.size();i++) {
 
