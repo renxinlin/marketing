@@ -244,6 +244,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         StringBuffer address = new StringBuffer("");
         if (!StringUtils.isEmpty(user.getCustomerId())) {
             CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo(user.getCustomerId());
+            log.info("准备从基础信息获取地址customerInfo {}",customerInfo);
             getAddress(address, customerInfo);
         }
         SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues, user, address.toString());
