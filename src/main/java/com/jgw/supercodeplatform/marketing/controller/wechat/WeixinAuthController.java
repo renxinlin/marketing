@@ -57,6 +57,7 @@ public class WeixinAuthController {
 	@Autowired
 	private MarketingMembersService marketingMembersService;
 
+	@Autowired
 	private MarketingActivitySetMapper marketingActivitySetMapper;
 
 	@Autowired

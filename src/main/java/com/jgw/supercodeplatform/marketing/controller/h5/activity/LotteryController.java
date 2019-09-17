@@ -4,6 +4,7 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
@@ -124,10 +125,12 @@ public class LotteryController extends CommonUtil {
         commonService.checkCodeValid(codeId,codeTypeId+"");
         MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
         if (marketingChannel == null){
-            return RestResult.successWithData(new LotteryResultMO("渠道信息不对"));
+            throw new SuperCodeExtException("渠道信息不对");
         }
         LotteryResultMO lotteryResultMO = salerLotteryService.salerlottery(scanCodeInfoMO,jwtUser,request);
-        return RestResult.successWithData(lotteryResultMO);
+        RestResult<LotteryResultMO> restResult = RestResult.success();
+        restResult.setMsg(lotteryResultMO.getMsg());
+        return restResult;
     }
     
     

@@ -37,12 +37,6 @@ public class MarketingActivitySetParam {
     @ApiModelProperty(name = "activityDesc", value = "活动描述", example = "红包活动")
     private String activityDesc;
 
-	@ApiModelProperty("公众号Secret")
-    private String merchantSecret;
-
-	@ApiModelProperty("公众号Appid")
-    private String mchAppid;
-
 	public Byte getParticipationCondition() {
 		return participationCondition;
 	}
@@ -129,19 +123,4 @@ public class MarketingActivitySetParam {
 		this.activityDesc = activityDesc;
 	}
 
-	public void setMchAppid(String mchAppid) {
-		this.mchAppid = mchAppid;
-	}
-
-	public String getMchAppid() {
-		return mchAppid;
-	}
-
-	public void setMerchantSecret(String merchantSecret) {
-		this.merchantSecret = merchantSecret;
-	}
-
-	public String getMerchantSecret() {
-		return merchantSecret;
-	}
 }
