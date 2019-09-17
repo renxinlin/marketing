@@ -58,7 +58,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     @Transactional // 对应的是主库事务
     public void alterOrCreateTableAndUpdateMetadata(List<SalerOrderFormSettingDto> salerOrderForms) {
         Asserts.check(!CollectionUtils.isEmpty(salerOrderForms),"表单设置失败");
-        valid(salerOrderForms); 
+        valid(salerOrderForms);
         List<SalerOrderFormSettingDto> updateOrderForms = new ArrayList<>();
         List<SalerOrderFormSettingDto> deleteOrAddForms = new ArrayList<>();
         log.info("接收的参数{}",salerOrderForms);
@@ -163,7 +163,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             log(addColumns, deleteColumns);
 
             try {
-                dynamicMapper.alterTableAndDropOrAddColumns(withDefaultsalerOrderFormDtos.get(0).getTableName(),deleteColumns,addColumns);
+                dynamicMapper.alterTableAndDropOrAddColumns(SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()),deleteColumns,addColumns);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new RuntimeException("请输入中文或英文或其他合法字符");
