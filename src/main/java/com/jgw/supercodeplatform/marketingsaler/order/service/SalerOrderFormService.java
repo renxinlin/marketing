@@ -65,17 +65,17 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         List<SalerOrderFormSettingDto> updateOrderForms = new ArrayList<>();
         List<SalerOrderFormSettingDto> deleteOrAddForms = new ArrayList<>();
         log.info("接收的参数{}",salerOrderForms);
-        List ids = new ArrayList();
+        List updateids = new ArrayList();
         for(SalerOrderFormSettingDto salerOrderForm : salerOrderForms){
             if(salerOrderForm.getId() == null || salerOrderForm.getId() <= 0 ){
                 deleteOrAddForms.add(salerOrderForm);
             }else {
                 updateOrderForms.add(salerOrderForm);
-                ids.add(salerOrderForm.getId());
+                updateids.add(salerOrderForm.getId());
             }
         };
 
-        deleteOrAdd(deleteOrAddForms,ids);
+        deleteOrAdd(deleteOrAddForms,updateids);
         updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
 
     }
@@ -95,18 +95,17 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     /**
      *
      * @param salerOrderForms
-     * @param ids 更新的数据不能被删除
+     * @param updateids 更新的数据不能被删除
      */
-    private void deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms,List<Long> ids) {
-        if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(ids)){
+    private void deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms,List<Long> updateids) {
+        if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(updateids)){
             return;
         }
         // 被更新的数据不删除
         List<SalerOrderForm> undeleteBecauseofUpdates = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(ids)){
-            undeleteBecauseofUpdates = baseMapper.selectBatchIds(ids);
+        if(!CollectionUtils.isEmpty(updateids)){
+            undeleteBecauseofUpdates = baseMapper.selectBatchIds(updateids);
         }
-        List<String> undeleteBecauseofUpdateColumnNames = undeleteBecauseofUpdates.stream().map(undeleteBecauseofUpdate -> undeleteBecauseofUpdate.getColumnName()).collect(Collectors.toList());
 
         // 网页新增  赋值默认表单和结构化名称补充
         List<SalerOrderFormDto> withDefaultsalerOrderFormDtos = SalerOrderTransfer.setFormsOtherField(salerOrderForms, commonUtil.getOrganizationId(), commonUtil.getOrganizationName());
@@ -132,11 +131,9 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             } catch (Exception e) {
                 e.printStackTrace();
                 // 产品需求..........................................
-                throw new RuntimeException("请输入中文或英文");
+                throw new RuntimeException("请输入中文或英文或其他合法字符");
             }
         }else{
-
-
             // 数据库字段名
             List<String> createsMetadatasColumnName = createsMetadatas.stream().map(createsMetadata -> createsMetadata.getColumnName()).collect(Collectors.toList());
             // 网页新增
@@ -146,28 +143,39 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             addColumns.removeIf(addColumn->createsMetadatasColumnName.contains(addColumn));
 
             List<String> deleteColumns = modelMapper.map(createsMetadatasColumnName,List.class);
-            deleteColumns.removeIf(deleteColumn-> defaultforms.contains(deleteColumn)); // 删除不能包含默认
-            deleteColumns.removeIf(deleteColumn->undeleteBecauseofUpdateColumnNames.contains(deleteColumn)); // 删除不能包含更新
+            // 去除不需要删除的字段
+            removeDefaultAndUpdate(undeleteBecauseofUpdates, defaultforms, deleteColumns);
             // 删除字段和新增字段
-            StringBuffer sbadd =new StringBuffer("");
-            addColumns.forEach(data->sbadd.append(data).append("  "));
-            log.info("add columns 如下{}" ,sbadd.toString());
+            log(addColumns, deleteColumns);
+
             try {
                 dynamicMapper.alterTableAndDropOrAddColumns(withDefaultsalerOrderFormDtos.get(0).getTableName(),deleteColumns,addColumns);
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException("请输入中文或英文");
+                throw new RuntimeException("请输入中文或英文或其他合法字符");
             }
-            // 删除默认和需要删除
-            StringBuffer sb =new StringBuffer("");
-            deleteColumns.forEach(data->sb.append(data).append("  "));
-            log.info("delete columns 如下{}" ,sb.toString());
             if(!CollectionUtils.isEmpty(deleteColumns)){
-                baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).getWrapper());
+                baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).notIn(!CollectionUtils.isEmpty(updateids),"id",updateids).getWrapper());
             }
 
         }
         this.saveBatch(pojos);
+    }
+
+    private void log(List<String> addColumns, List<String> deleteColumns) {
+        StringBuffer sbadd =new StringBuffer("");
+        addColumns.forEach(data->sbadd.append(data).append("  "));
+        log.info("add columns 如下{}" ,sbadd.toString());
+        StringBuffer sb =new StringBuffer("");
+        deleteColumns.forEach(data->sb.append(data).append("  "));
+        log.info("delete columns 如下{}" ,sb.toString());
+    }
+
+    private void removeDefaultAndUpdate(List<SalerOrderForm> undeleteBecauseofUpdates, List<SalerOrderFormDto> defaultforms, List<String> deleteColumns) {
+        List<String> undeleteBecauseofUpdateColumnNames = undeleteBecauseofUpdates.stream().map(undeleteBecauseofUpdate -> undeleteBecauseofUpdate.getColumnName()).collect(Collectors.toList());
+        List<String> defaultformColumnNames = defaultforms.stream().map(defaultform -> defaultform.getColumnName()).collect(Collectors.toList());
+        deleteColumns.removeIf(deleteColumn-> defaultformColumnNames.contains(deleteColumn)); // 删除不能包含默认
+        deleteColumns.removeIf(deleteColumn->undeleteBecauseofUpdateColumnNames.contains(deleteColumn)); // 删除不能包含更新
     }
 
     private void checkrepeat(List<SalerOrderFormDto> withDefaultsalerOrderFormDtos) {

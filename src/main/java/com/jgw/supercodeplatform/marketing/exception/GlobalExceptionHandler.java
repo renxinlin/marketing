@@ -197,6 +197,14 @@ public class GlobalExceptionHandler {
 		return RestResult;
 	}
 
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(RuntimeException.class)
+	public RestResult runtimeException(RuntimeException e) {
+		logger.error("运行时异常：" + e.getClass().getName(), e);
+		RestResult RestResult = new RestResult(500, e.getMessage(), e.getMessage());
+		return RestResult;
+	}
 	/**
 	 * 自定义异常
 	 */
