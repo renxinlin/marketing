@@ -232,6 +232,7 @@ public class LotteryService {
 		if (awardType == null) {
 			awardType = 4;
 			prizeTypeMO.setAwardType(awardType);
+			lotteryOprationDto.setPrizeTypeMO(prizeTypeMO);
 		}
 		//奖品类型为1或者9的表示需要有库存的
 		if (awardType.intValue() == 1 || awardType.intValue() == 9) {
