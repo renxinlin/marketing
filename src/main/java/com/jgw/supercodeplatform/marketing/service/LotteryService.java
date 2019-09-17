@@ -230,7 +230,7 @@ public class LotteryService {
 		Byte awardType = prizeTypeMO.getAwardType();
 		//如果awardType中奖类型为空或者4则表示为红包中奖，这里统一都设置为4
 		if (awardType == null) {
-			awardType = 4;
+			awardType = (byte)4;
 			prizeTypeMO.setAwardType(awardType);
 			lotteryOprationDto.setPrizeTypeMO(prizeTypeMO);
 		}
@@ -272,6 +272,9 @@ public class LotteryService {
 		String productId = scanCodeInfoMO.getProductId();
 		String productBatchId = scanCodeInfoMO.getProductBatchId();
 		Byte awardType = prizeTypeMO.getAwardType();
+		if (awardType == null ) {
+			awardType = (byte)4;
+		}
 		LotteryResultMO lotteryResultMO = lotteryOprationDto.getLotteryResultMO();
 		Float amount = null;
 		//已中奖执行奖品方法中奖纪录保存等逻辑
@@ -301,8 +304,7 @@ public class LotteryService {
 					break;
 				case 4:
 					amount = prizeTypeMo(prizeTypeMO);
-					DecimalFormat decimalFormat = new DecimalFormat(".00");
-					String strAmount = decimalFormat.format(amount);
+					String strAmount = String.format("%.2f", amount);
 					lotteryResultMO.setData(strAmount);
 					lotteryResultMO.setMsg(strAmount);
 				default:

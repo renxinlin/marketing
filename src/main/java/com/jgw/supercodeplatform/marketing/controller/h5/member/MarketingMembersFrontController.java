@@ -6,6 +6,9 @@ import javax.validation.Valid;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -52,11 +55,11 @@ public class MarketingMembersFrontController extends CommonUtil {
 	@Autowired
 	private CommonService commonService;
 
-	
 	@Autowired
 	private ModelMapper modelMapper;
 
-	
+	@Autowired
+	private MarketingSaleMemberService marketingSaleMemberService;
 	
 	@Autowired
 	private RedisUtil redisUtil;
@@ -188,19 +191,25 @@ public class MarketingMembersFrontController extends CommonUtil {
     @ApiImplicitParams(value= {
     		@ApiImplicitParam(name = "memberId", paramType = "query", defaultValue = "1", value = "会员id")
     })
-    public void getJwtToken(@RequestParam Object memberId) throws Exception {
+    public void getJwtToken(@RequestParam Long memberId, Byte memberType) throws Exception {
     	try {
-			Long mId = Long.valueOf(memberId.toString());
-			MarketingMembers marketingMembers=marketingMembersService.selectById(mId);
+			MarketingMembers marketingMembers = null;
+    		if (memberType != null && memberType.intValue() == MemberTypeEnums.SALER.getType().intValue()) {
+				MarketingUser marketingUser = marketingSaleMemberService.selectById(memberId);
+				marketingMembers = modelMapper.map(marketingUser, MarketingMembers.class);
+			} else {
+				marketingMembers = marketingMembersService.selectById(memberId);
+			}
 			if (null==marketingMembers) {
 				throw new SuperCodeException("无此用户", 500);
 			}
 			H5LoginVO hVo=new H5LoginVO();
-			hVo.setMemberId(mId);
+			hVo.setMemberId(memberId);
 			String userName=marketingMembers.getUserName();
 			hVo.setMemberName(userName==null?marketingMembers.getWxName():userName);
 			hVo.setMobile(marketingMembers.getMobile());
 			hVo.setRegistered(1);
+			hVo.setMemberType(marketingMembers.getMemberType());
 			String orgnazationName="";
 			try {
 				orgnazationName=commonService.getOrgNameByOrgId(marketingMembers.getOrganizationId());
