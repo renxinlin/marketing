@@ -377,7 +377,7 @@ public class LotteryService {
 				redisUtil.hmSet("marketing:lock:fail",activitySetId + codeId +codeTypeId,new Date());
 				return lotteryOprationDto.lotterySuccess("扫码人数过多,请稍后再试");
 			}
-			String opneIdNoSpecialChactar = StringUtils.isNotBlank(openId)? null:CommonUtil.replaceSpicialChactar(openId);
+			String opneIdNoSpecialChactar = StringUtils.isBlank(openId)? null:CommonUtil.replaceSpicialChactar(openId);
 			long codeCount = codeEsService.countByCode(codeId, codeTypeId, memberType);
 			if (codeCount > 0) {
 				return lotteryOprationDto.lotterySuccess("您手速太慢，该码已被其它用户领取");
