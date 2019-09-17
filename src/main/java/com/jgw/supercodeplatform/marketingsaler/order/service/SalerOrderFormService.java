@@ -136,7 +136,10 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 throw new RuntimeException("请输入中文或英文");
             }
             // 删除默认和需要删除
-            baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns.addAll(SalerOrderTransfer.deafultColumnNames)).getWrapper());
+            StringBuffer sb =new StringBuffer("");
+            deleteColumns.forEach(data->sb.append(data).append("  "));
+            log.info("delete columns 如下{}" ,sb.toString());
+            baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).getWrapper());
 
         }
         this.saveBatch(pojos);
