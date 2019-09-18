@@ -112,9 +112,9 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
             throw new SuperCodeException("会员不存在");
         }
         // key count sum
-       return recordMapper.getAcquireMoneyAndAcquireNums(memberId,memberType,organizationId);
-
-
-
+        Map<String, Object> statisticMap = recordMapper.getAcquireMoneyAndAcquireNums(memberId,memberType,organizationId);
+        int scanNum = recordMapper.countScanCodeNum(memberId,memberType,organizationId);
+        statisticMap.put("scanNum", scanNum);
+        return statisticMap;
     }
 }
