@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataVo;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -739,8 +740,8 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param timeEnd
 	 * @return
 	 */
-	public List<Map<String, String>> scanOrganizationList(long timeStart, long timeEnd){
-		Map<String, Object> addParam = new HashMap<String, Object>();
+	public List<ActivityOrganizationDataVo> scanOrganizationList(long timeStart, long timeEnd){
+		Map<String, Object> addParam = new HashMap<>();
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lte(timeEnd);
@@ -754,12 +755,13 @@ public class CodeEsService extends AbstractEsSearch {
 		// 获取count
 		StringTerms teamAgg = searchResponse.getAggregations().get(AggregationName);
 		List<StringTerms.Bucket> bucketList = teamAgg.getBuckets();
-		List<Map<String, String>> idAndNameList = bucketList.stream().map(bucket -> {
+		List<ActivityOrganizationDataVo> idAndNameList = bucketList.stream().map(bucket -> {
 			String[] idAndName = bucket.getKeyAsString().split(",");
-			Map<String, String> bucketMap = new HashMap<>();
-			bucketMap.put("organizationId", idAndName[0]);
-			bucketMap.put("organizationFullName", idAndName[1]);
-			return bucketMap;
+			ActivityOrganizationDataVo activityOrganizationDataVo = new ActivityOrganizationDataVo();
+			activityOrganizationDataVo.setOrganizationId(idAndName[0]);
+			activityOrganizationDataVo.setOrganizationFullName(idAndName[1]);
+			activityOrganizationDataVo.setActivityJoinNum(bucket.getDocCount());
+			return activityOrganizationDataVo;
 		}).collect(Collectors.toList());
 		return idAndNameList;
 	}

@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper
 public interface MarketingActivityProductMapper extends CommonSql{
@@ -94,6 +95,14 @@ public interface MarketingActivityProductMapper extends CommonSql{
 		" </foreach>"+
 		endScript)
 	List<MarketingActivityProduct> selectByProductAndBatch(@Param("list") List<MarketingActivityProduct> mList, @Param("referenceRole")int referenceRole);
+
+	@Select(startScript+
+			" select "+selectSql+" from marketing_activity_product where ReferenceRole=0 and "+
+			" <foreach item='batchId' collection='set' separator='or' open='(' close=')'>"+
+			" SbatchId LIKE CONCAT('%', #{batchId}, '%') "+
+			" </foreach>"+
+			endScript)
+	List<MarketingActivityProduct> selectByBatchIds(@Param("set") Set<String> batchIds);
 
 	
 }

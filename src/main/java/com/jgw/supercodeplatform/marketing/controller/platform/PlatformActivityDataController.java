@@ -53,13 +53,14 @@ public class PlatformActivityDataController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/activityOrganization")
     public RestResult<List<ActivityOrganizationDataVo>> activityOrganization(@Valid ActivityDataParam activityDataParam){
-        return RestResult.success();
+        List<ActivityOrganizationDataVo> dataVos = platformStatisticsService.activityOrganization(activityDataParam);
+        return RestResult.successWithData(dataVos);
     }
 
     @ApiOperation("获取日活动参与量与扫码量")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/dayActivityJoin")
-    public RestResult<List<DayActivityJoinQuantityVo>> dayActivityJoin(@Valid ActivityDataParam activityDataParam){
+    public RestResult<DayActivityJoinQuantityVo> dayActivityJoin(@Valid ActivityDataParam activityDataParam){
         return RestResult.success();
     }
 

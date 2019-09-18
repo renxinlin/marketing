@@ -109,20 +109,17 @@ public class SaleMemberController {
     @GetMapping("page")
     @ApiOperation(value = "销售员中心page", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
-    public RestResult<PageResults<IntegralRecord>> page(@ApiIgnore H5LoginVO jwtUser, DaoSearch search) throws Exception {
+    public RestResult<PageResults<IntegralRecord>> page(@ApiIgnore H5LoginVO jwtUser, IntegralRecord search) throws Exception {
         if(jwtUser.getMemberType()==null|| MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
             throw new SuperCodeException("会员角色错误...");
         }
         // 分页信息传递
-        IntegralRecord params = new IntegralRecord();
-        params.setMemberType(MemberTypeEnums.SALER.getType());
+        search.setMemberType(MemberTypeEnums.SALER.getType());
         // 一个导购只能是一个组织
-        params.setOrganizationId(jwtUser.getOrganizationId());
-        params.setSalerId(jwtUser.getMemberId());
-        params.setStartNumber(search.getStartNumber());
-        params.setPageSize(search.getPageSize());
+        search.setOrganizationId(jwtUser.getOrganizationId());
+        search.setSalerId(jwtUser.getMemberId());
         // 查询
-        PageResults<IntegralRecord> objectPageResults = service.listSearchViewLike(params);
+        PageResults<IntegralRecord> objectPageResults = service.listSearchViewLike(search);
         // 4 数据转换
         return RestResult.success("success",objectPageResults);
     }
