@@ -26,9 +26,11 @@ public class SalerRecordTranser {
         salerRecord.setOrganizationName(user.getOrganizationName());
         salerRecord.setProductId(reward.getProductId());
         salerRecord.setProductName(reward.getProductName());
-        salerRecord.setProductPrice(new BigDecimal(rewardPojo.getProductPrice()));
+        salerRecord.setProductPrice(rewardPojo.getProductPrice() ==null ? null:new BigDecimal(rewardPojo.getProductPrice()));
         salerRecord.setIntegralReason(IntegralReasonEnum.SALER_GET_INTEGREL.getIntegralReason());
         salerRecord.setIntegralReasonCode(IntegralReasonEnum.SALER_GET_INTEGREL.getIntegralReasonCode());
         return salerRecord;
     }
+
+
 }

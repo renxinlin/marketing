@@ -113,7 +113,7 @@ public class WXPayService {
 	 * @throws Exception
 	 */
 	public void qiyePaySync(String  openid,String  spbill_create_ip,int amount,String  partner_trade_no, String organizationId) throws Exception {
-
+		logger.info("支付参数 opendid={} spbill_create_ip={} amount={} partner_trade_no={} organizationId={}",openid,spbill_create_ip,amount,partner_trade_no,organizationId);
 
 		if (StringUtils.isBlank(openid) || StringUtils.isBlank(spbill_create_ip)|| StringUtils.isBlank(partner_trade_no)|| StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("发起微信支付参数不能为空,openid="+openid+",spbill_create_ip="+spbill_create_ip+",partner_trade_no="+partner_trade_no+spbill_create_ip+",organizationId="+organizationId, 500);
