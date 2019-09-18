@@ -215,7 +215,7 @@ public class WeixinAuthController {
 		h5LoginVO.setMemberId(members.getId());
 		h5LoginVO.setMobile(members.getMobile());
 		h5LoginVO.setWechatHeadImgUrl(members.getWechatHeadImgUrl());
-		h5LoginVO.setMemberName(members.getUserName()==null?members.getWxName():members.getUserName());
+		h5LoginVO.setMemberName(StringUtils.isEmpty(members.getUserName())?members.getWxName():members.getUserName());
 		h5LoginVO.setOrganizationId(members.getOrganizationId());
 		h5LoginVO.setCustomerId(members.getCustomerId());
 		h5LoginVO.setCustomerName(members.getCustomerName());
