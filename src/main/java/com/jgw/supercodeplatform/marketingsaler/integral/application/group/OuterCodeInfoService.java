@@ -2,18 +2,13 @@ package com.jgw.supercodeplatform.marketingsaler.integral.application.group;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
-import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoVo;
-import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CodeManagerFallbackFeign;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.OutCodeInfoVo;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.OuterCodeInfoFeign;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 @Slf4j
 @Service
