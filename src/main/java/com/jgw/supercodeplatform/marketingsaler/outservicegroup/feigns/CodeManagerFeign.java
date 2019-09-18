@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @FeignClient(name = "${platform.codemanager.mircosoft.name:platform-codemanager-supercode-dev}",fallback = CodeManagerFallbackFeign.class )
 public interface CodeManagerFeign {
+    // object 会返回2种类型
     @RequestMapping(value = "/code/query/product",method = RequestMethod.GET)
     RestResult<Object> getProductByCode(OutCodeInfoDto outCodeInfoDto);
 

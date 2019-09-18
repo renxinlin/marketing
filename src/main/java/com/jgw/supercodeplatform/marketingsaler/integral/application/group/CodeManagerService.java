@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.application.group;
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
@@ -25,7 +27,7 @@ public class CodeManagerService {
         Asserts.check(UserConstants.MARKETING_CODE_TYPE.equals(outCodeInfoDto.getCodeTypeId()),"非营销码");
         RestResult<Object>  restResult = null;
         restResult = codeManagerFeign.getProductByCode(outCodeInfoDto);
-
+        log.info("准备获取外码对应的产品信息返回{}", JSONObject.toJSONString(restResult));
         if(restResult == null ){
             return null;
         }

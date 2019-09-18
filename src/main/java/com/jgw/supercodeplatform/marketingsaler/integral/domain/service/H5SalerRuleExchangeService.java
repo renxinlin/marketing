@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.domain.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -60,6 +61,8 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
 
     @Transactional // todo 单库干掉预减库存
     public RestResult exchange(H5SalerRuleExchangeDto salerRuleExchangeDto, H5LoginVO user) {
+        log.info("销售员积分兑换红包入参 salerRuleExchangeDto{}",salerRuleExchangeDto);
+        log.info("扫码入参 H5LoginVO{}",JSONObject.toJSONString(user));
         // 校验
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()),"用户未注册到相关组织");
         SalerRuleExchange salerRuleExchange = baseMapper.selectOne(query().eq("Id", salerRuleExchangeDto.getId()).getWrapper());

@@ -26,8 +26,8 @@ public class SalerRuleExchangeAssembler {
              vo.setCustomerLimitNum(UserConstants.defaulttCustomerLimitNum);
 
          }
-         Asserts.check(vo.getHaveStock()!= 0,"库存必须大于0");
-         Asserts.check(vo.getCustomerLimitNum()!= 0,"限兑次数大于0");
+         Asserts.check(vo.getHaveStock()>= 0,"库存必须大于0");
+         Asserts.check(vo.getCustomerLimitNum()>= 0,"限兑次数大于0");
          SalerRuleExchangeDto dto = modelMapper.map(vo, SalerRuleExchangeDto.class);
 
          dto.setIsRrandomMoney(vo.getPrizeRulesVo().getIsRrandomMoney());

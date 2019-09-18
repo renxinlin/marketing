@@ -12,5 +12,5 @@ public interface UserConstants {
     // 导购兑换上限
     Integer defaulttCustomerLimitNum = 1000000 ;
     // 单码
-    Long SINGLE_CODE = 0L;
+    Long SINGLE_CODE = 1L;
 }

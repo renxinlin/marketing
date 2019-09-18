@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.application.group;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
@@ -26,9 +27,12 @@ public class OuterCodeInfoService {
     public RestResult<Long> getCurrentLevel(OutCodeInfoDto outCodeInfoDto){
         log.info("准备调用码服务获取层级{}",outCodeInfoDto);
         RestResult<Object> currentLevel = outerCodeInfoFeign.getCurrentLevel(outCodeInfoDto);
+        log.info("准备调用码服务获取层级返回如下{}", JSONObject.toJSONString(currentLevel));
+
         if(currentLevel!=null && currentLevel.getState() == 200){
             if( currentLevel.getResults()!=null &&  currentLevel.getResults() instanceof Long){
                 // 单码
+
                 return RestResult.success(currentLevel.getMsg(), (Long) currentLevel.getResults());
             }
         }
