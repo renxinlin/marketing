@@ -93,8 +93,8 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
         // TODO 拉到application层
         ProductInfoByCodeDto productByCode = codeManagerService.getProductByCode(codeInfo);
         Asserts.check(productByCode!=null ,"码关联信息查询数据失败...");
-        rewardService.getIntegral(codeInfo.getOuterCodeId(),H5SalerRuleExchangeTransfer.getRewardValueObject(productByCode),user);
-        return success();
+        Integer integral = rewardService.getIntegral(codeInfo.getOuterCodeId(), H5SalerRuleExchangeTransfer.getRewardValueObject(productByCode), user);
+        return success("恭喜获得"+integral+"积分");
     }
 
 
