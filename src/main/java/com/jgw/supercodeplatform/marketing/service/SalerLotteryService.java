@@ -192,8 +192,7 @@ public class SalerLotteryService {
             float max=mPrizeTypeMO.getHighRand();
             amount = new Random().nextFloat() *((max-min)) +min;
         }
-        Float finalAmount = amount;
-        return finalAmount;
+        return amount == null? 0:amount;
     }
 
 
