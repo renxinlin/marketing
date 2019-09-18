@@ -7,6 +7,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
@@ -67,7 +68,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
     private MarketingPlatformOrganizationService marketingPlatformOrganizationService;
 
     @Autowired
-    private MarketingMembersWinRecordMapper marketingMembersWinRecordMapper;
+    private RedisUtil redisUtil;
 
     @Override
     protected List<PlatformActivityVo> searchResult(DaoSearchWithUser searchParams) throws Exception {
@@ -198,5 +199,34 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
         return pageResults;
     }
 
+
+    /**
+     * 活动预览
+     * @param platformActivityAdd
+     * @return 预览的key
+     */
+    public String preView(PlatformActivityAdd platformActivityAdd){
+        String key = commonUtil.getUUID();
+        String value = JSON.toJSONString(platformActivityAdd);
+        boolean flag = redisUtil.set(key, value, 60L);
+        if (flag) {
+           return key;
+        }
+        return null;
+    }
+
+    /**
+     * 获取预览数据
+     * @param key
+     * @return
+     */
+    public PlatformActivityAdd getPreViewData(String key){
+        String value = redisUtil.get(key);
+        if (StringUtils.isNotBlank(value)) {
+            PlatformActivityAdd paa = JSON.parseObject(value, PlatformActivityAdd.class);
+            return paa;
+        }
+        return null;
+    }
 
 }

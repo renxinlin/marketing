@@ -150,8 +150,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " LEFT JOIN marketing_channel mc ON mc.ActivitySetId = mas.Id "
             + " WHERE mas.OrganizationId = #{organizationId} "
             + whereSearch
-            + " GROUP BY mas.Id "
-            + " ORDER BY mas.UpdateDate "
+            + " GROUP BY mas.Id DESC"
+            + " ORDER BY mas.UpdateDate DESC "
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>"
             + endScript
     )
@@ -221,5 +221,9 @@ public interface MarketingActivitySetMapper extends CommonSql {
             ") </if>",
             endScript})
     int countPlatform(DaoSearchWithUser searchParams);
+
+    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and ActivityId = #{activityId}")
+    MarketingActivitySet selectByTitlePlatform(@Param("activityTitle")String activityTitle, @Param("activityId") Long activityId);
+
 
 }

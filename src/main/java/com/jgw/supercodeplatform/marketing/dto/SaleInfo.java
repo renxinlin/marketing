@@ -16,7 +16,7 @@ public class SaleInfo {
     @ApiModelProperty("红包个数")
     private Integer scanAmoutNum;
     @ApiModelProperty("红包金额")
-    private Float amoutNum;
+    private Double amoutNum;
     @ApiModelProperty("红包金额字符串")
     private String amoutNumStr;
 //    @ApiModelProperty("分页数据 红包中奖|未中奖记录")

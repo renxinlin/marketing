@@ -57,10 +57,17 @@ public class PlatformActivityDataController {
         return RestResult.successWithData(dataVos);
     }
 
-    @ApiOperation("获取日活动参与量与扫码量")
+    @ApiOperation("获取日活动参量")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/dayActivityJoin")
     public RestResult<DayActivityJoinQuantityVo> dayActivityJoin(@Valid ActivityDataParam activityDataParam){
+        return RestResult.success();
+    }
+
+    @ApiOperation("获取日活动扫码量")
+    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
+    @GetMapping("/dayActivityScan")
+    public RestResult<DayActivityJoinQuantityVo> dayActivityScan(@Valid ActivityDataParam activityDataParam){
         return RestResult.success();
     }
 
@@ -82,7 +89,7 @@ public class PlatformActivityDataController {
     @ApiOperation("会员地域分布")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/memberRegion")
-    public RestResult<List<MemberRegionDataVo>> memberRegion(@Valid ActivityDataParam activityDataParam) {
+    public RestResult<List<PieChartVo>> memberRegion(@Valid ActivityDataParam activityDataParam) {
         return RestResult.success();
     }
 

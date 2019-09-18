@@ -85,18 +85,16 @@ public class SaleMemberController {
         SaleInfo saleInfo = new SaleInfo();
         // 1 获取红包统计信息
         Map acquireMoneyAndAcquireNums = service.getAcquireMoneyAndAcquireNums(jwtUser.getMemberId(), jwtUser.getMemberType(), jwtUser.getOrganizationId());
-        // 3 获取扫码信息
-        Integer scanNum = es.searchScanInfoNum(jwtUser.getMemberId(), MemberTypeEnums.SALER.getType());
         // 4 数据转换
 
 
         MarketingUser marketingUser = marketingSaleMemberService.selectById(jwtUser.getMemberId());
         saleInfo.setUserName(marketingUser != null ? marketingUser.getUserName():null);
         saleInfo.setWechatHeadImgUrl(marketingUser != null ? marketingUser.getWechatHeadImgUrl():null);
-        saleInfo.setScanQRCodeNum(scanNum);
+        saleInfo.setScanQRCodeNum((Integer) acquireMoneyAndAcquireNums.get("scanNum"));
         Long count = (Long) acquireMoneyAndAcquireNums.get("count");
         saleInfo.setScanAmoutNum((count.intValue()));
-        saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum") != null ? (Float) acquireMoneyAndAcquireNums.get("sum"):0F);
+        saleInfo.setAmoutNum(acquireMoneyAndAcquireNums.get("sum") != null ? (Double) acquireMoneyAndAcquireNums.get("sum"):0D);
         saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
         saleInfo.setHaveIntegral(marketingUser.getHaveIntegral());
 

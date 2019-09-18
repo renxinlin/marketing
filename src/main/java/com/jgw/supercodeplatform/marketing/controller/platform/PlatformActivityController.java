@@ -25,6 +25,7 @@ import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -72,7 +73,8 @@ public class PlatformActivityController {
     }
 
     @ApiOperation("根据ID获取活动信息")
-    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
+    @ApiImplicitParams({ @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true),
+    @ApiImplicitParam(name = "id", paramType = "query", value = "活动ID<acitivitySetId>", required = true)})
     @GetMapping("/get")
     public RestResult<PlatformActivityUpdate> getActivity(@RequestParam Long id) throws ParseException {
         PlatformActivityUpdate platformActivityUpdate = platformActivityService.getActivityBySetId(id);
@@ -86,6 +88,30 @@ public class PlatformActivityController {
         platformActivityCheck.platformActivityAddCheck(platformActivityUpdate);
         platformActivityService.createOrUpdatePlatformActivitySet(platformActivityUpdate);
         return RestResult.success();
+    }
+
+    @ApiOperation("预览活动")
+    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
+    @PostMapping("/preView")
+    public RestResult<String> preView(@RequestBody @Valid PlatformActivityAdd platformActivityAdd) {
+        platformActivityCheck.platformActivityAddCheck(platformActivityAdd);
+        String key = platformActivityService.preView(platformActivityAdd);
+        if (key != null) {
+            return RestResult.successWithData(key);
+        }
+        return RestResult.fail("预览失败");
+    }
+
+    @ApiOperation("获取预览数据")
+    @ApiImplicitParams({@ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true),
+    @ApiImplicitParam(name = "key", paramType = "query", value = "预览的key", required = true)})
+    @PostMapping("/getViewData")
+    public RestResult<PlatformActivityAdd> getViewData(@RequestParam String key) {
+        PlatformActivityAdd paa = platformActivityService.getPreViewData(key);
+        if (paa != null) {
+            return RestResult.successWithData(paa);
+        }
+        return RestResult.fail("获取预览数据失败");
     }
 
     @ApiOperation("查询活动列表")
