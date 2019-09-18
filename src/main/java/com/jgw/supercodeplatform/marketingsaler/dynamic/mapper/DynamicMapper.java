@@ -86,7 +86,7 @@ public interface DynamicMapper extends CommonSql {
             + " </foreach> "
 
             + "</if>"
-            + "order by dinghuoshijian "
+            + "order by dinghuoshijian desc "
             + "limit #{current},#{pageSize} "
             +endScript)
     List<Map<String, Object>> selectPageData(@Param("tableName") String tableName, @Param("current") int current, @Param("pageSize")int pageSize, @Param("columns") List<String> columns , @Param("search") String search );

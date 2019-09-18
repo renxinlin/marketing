@@ -38,10 +38,11 @@ public class MoneyCalculator {
         return money;
     }
 
-    public static void main(String[] args) {
-        long prizeProbability = 5;
+    public static void main(String[] args) throws InterruptedException {
+        long prizeProbability = 100;
         int i = 0;
-        while (i<100){
+        int c= 0;
+        while (i<10000){
             i++;
             double random = Math.random(); // [0,1)
 
@@ -49,8 +50,9 @@ public class MoneyCalculator {
             System.out.println("============="+round);
             if(round > prizeProbability){
                 System.out.println("同学,没中奖!");
+                c++;
             }
         }
-
+        System.out.println(c);
     }
 }

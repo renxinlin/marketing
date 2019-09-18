@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.ExchangeUpDownStatus;
+import com.jgw.supercodeplatform.marketingsaler.integral.constants.UndercarriageSetWayConstant;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleExchange;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -129,6 +130,9 @@ public class SalerRuleExchangeDto implements Serializable {
         salerRuleExchange.setHaveStock(this.haveStock);
         salerRuleExchange.setExchangeStock(this.haveStock);
         salerRuleExchange.setStatus(ExchangeUpDownStatus.up);
+        if(this.haveStock == 0 && this.undercarriageSetWay.intValue() == UndercarriageSetWayConstant.zerostork){
+            salerRuleExchange.setStatus(ExchangeUpDownStatus.autoDown);
+        }
         return salerRuleExchange;
     }
 

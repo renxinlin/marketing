@@ -52,6 +52,7 @@ public class SalerRecordService extends SalerCommonService<SalerRecordMapper, Sa
                 .ge("CreateDate", calendar.getTime())
                 .lt(type == RewardSelectType.consume, "IntegralNum", 0)
                 .gt(type == RewardSelectType.reward, "IntegralNum", 0)
+                 .orderByDesc("CreateDate")
                 .getWrapper());
         if(CollectionUtils.isEmpty(records)){
             return new ArrayList<>();
