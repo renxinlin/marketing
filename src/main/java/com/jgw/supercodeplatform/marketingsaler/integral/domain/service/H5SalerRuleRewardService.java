@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.domain.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
@@ -17,6 +18,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.H5Saler
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.SalerRecordTranser;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
+@Slf4j
 @Service
 public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewardMapper, SalerRuleReward> {
     @Autowired private UserService userService;
@@ -40,6 +42,9 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
      */
     @Transactional
     public void getIntegral(String outCodeId,SalerRuleReward reward, H5LoginVO user) throws Exception {
+        log.info("扫码入参 outCodeId{}",outCodeId);
+        log.info("扫码入参 SalerRuleReward{}",reward);
+        log.info("扫码入参 H5LoginVO{}", JSONObject.toJSONString(user));
         // 同步扫码
         try {
             boolean lock = lockUtil.lock(UserConstants.SALER_INTEGRAL_REWARD_PREFIX + outCodeId);
@@ -51,6 +56,7 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
                 RestResult<Long> currentLevel = outerCodeInfoService.getCurrentLevel(new OutCodeInfoDto(outCodeId, UserConstants.MARKETING_CODE_TYPE));
                 Asserts.check(currentLevel!=null && currentLevel.getResults().intValue() == UserConstants.SINGLE_CODE.intValue(),"非单码");
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new RuntimeException("非单码或获取码信息失败");
             }
             // 有没有被扫
@@ -65,18 +71,21 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             User userPojo = userService.exists(user);
             Asserts.check(userPojo != null,"系统不存在该用户信息");
 
-            // 扫码信息保存
-            salerRuleRewardNumService.save(new SalerRuleRewardNum(null, user.getMemberId(), user.getOrganizationId(), outCodeId));
 
             // 积分规则信息校验
             SalerRuleReward rewardPojo = baseMapper.selectOne(query().eq("ProductId", reward.getProductId()).eq("OrganizationId", user.getOrganizationId()).getWrapper());
             Asserts.check(rewardPojo != null,"系统不存在积分奖励信息");
+
+
+            // 扫码信息保存
+            salerRuleRewardNumService.save(new SalerRuleRewardNum(null, user.getMemberId(), user.getOrganizationId(), outCodeId));
 
             // 积分记录
             SalerRecord salerRecord = SalerRecordTranser.getSalerRecord(outCodeId, reward, user, userPojo, rewardPojo);
             salerRecordService.save(salerRecord);
             // 导购积分添加
             userService.addIntegral(H5SalerRuleRewardTransfer.computeIntegral(rewardPojo),userPojo);
+
         } catch (RuntimeException e) {
             e.printStackTrace();
             throw new Exception(e.getMessage());
