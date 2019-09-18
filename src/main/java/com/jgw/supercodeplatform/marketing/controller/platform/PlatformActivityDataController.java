@@ -82,7 +82,7 @@ public class PlatformActivityDataController {
     @ApiOperation("会员地域分布")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/memberRegion")
-    public RestResult<List<MemberRegionDataVo>> memberRegion(@Valid ActivityDataParam activityDataParam) {
+    public RestResult<List<PieChartVo>> memberRegion(@Valid ActivityDataParam activityDataParam) {
         return RestResult.success();
     }
 

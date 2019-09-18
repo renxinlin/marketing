@@ -134,7 +134,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	@Select(" select sum(IntegralNum) from marketing_integral_record where OrganizationId = #{organizationId} " +
 			" and IntegralNum > 0  " +
 			" and CreateDate between #{startDate} and #{endDate} ")
-    Integer sumOrganizationUsingIntegralByDate(String organizationId, Date startDate, Date endDate);
+    Integer sumOrganizationUsingIntegralByDate(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 	/**
 	 * 组织总兑换金额
 	 * @param organizationId
@@ -144,7 +144,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	@Select(" select -sum(IntegralNum) from marketing_integral_record where OrganizationId = #{organizationId} " +
 			" and IntegralNum < 0  " +
 			" and CreateDate between #{startDate} and #{endDate} ")
-	Integer sumOrganizationIntegralExchangeByDate(String organizationId, Date startDate, Date endDate);
+	Integer sumOrganizationIntegralExchangeByDate(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 	/**
 	 * 获取top6产品的兑换消耗的积分； &lt 《
@@ -162,7 +162,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 			" and CreateDate between #{startDate} and #{endDate} " +
  			" group by ProductId,ProductName " +
 			" order by IntegralNum desc limit 0,6 ")
-    List<IntegralRecord> getOrganizationTop6IntegralProduct(String organizationId, Date startDate, Date endDate);
+    List<IntegralRecord> getOrganizationTop6IntegralProduct(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 
 	/**
@@ -178,7 +178,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 			" and OrganizationId = #{organizationId} " +
 			" and IntegralNum < 0 " +
 			" and CreateDate between #{startDate} and #{endDate} " )
-	Integer getOrganizationAllIntegralProduct(String organizationId, Date startDate, Date endDate);
+	Integer getOrganizationAllIntegralProduct(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 	/**
 	 * IntegralReasonEnum PRODUCT_INTEGRAL 4  产品积分
@@ -193,15 +193,15 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 			" and OrganizationId = #{organizationId} " +
 			" and IntegralReasonCode =  4 " +
 			" and CreateDate between #{startDate} and #{endDate} " )
-    List<IntegralRecord> getOrganizationAllSalePrice(String organizationId, Date startDate, Date endDate);
+    List<IntegralRecord> getOrganizationAllSalePrice(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 
 	@Select(" select count(SalerAmount) count, sum(SalerAmount) sum from marketing_integral_record where organizationId = #{organizationId} " +
-			" and memberId = #{memberId}" +
+			" and SalerId = #{salerId}" +
 			" and memberType = #{memberType} " +
 			" and Status = 1" +
 			" and SalerAmount is not null ")
-    Map getAcquireMoneyAndAcquireNums(Long memberId, Byte memberType, String organizationId);
+    Map getAcquireMoneyAndAcquireNums(@Param("salerId") Long salerId, @Param("memberType") Byte memberType, @Param("organizationId") String organizationId);
 
 	@Select("SELECT "+allFileds+" FROM marketing_integral_record WHERE OuterCodeId = #{outerCodeId} AND memberType = 0 AND Status = '1' AND IntegralNum > 0")
 	IntegralRecord getMemberIntegralRecord(@Param("outerCodeId") String outerCodeId);
