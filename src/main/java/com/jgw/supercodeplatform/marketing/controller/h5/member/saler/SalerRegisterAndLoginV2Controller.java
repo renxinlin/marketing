@@ -125,7 +125,7 @@ public class SalerRegisterAndLoginV2Controller {
 
                 H5LoginVO jwtUser = new H5LoginVO();
                 jwtUser.setMobile(loginUser.getMobile());
-                jwtUser.setMemberName(user.getUserName());
+                jwtUser.setMemberName(!StringUtils.isEmpty(user.getUserName()) ?  user.getUserName(): user.getWxName() );
                 jwtUser.setMemberId(user.getId());
                 jwtUser.setOrganizationId(loginUser.getOrganizationId());
                 jwtUser.setMemberType(MemberTypeEnums.SALER.getType());
