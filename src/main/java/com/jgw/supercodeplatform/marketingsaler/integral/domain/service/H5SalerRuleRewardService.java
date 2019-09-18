@@ -41,7 +41,7 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
      * @param user
      */
     @Transactional
-    public void getIntegral(String outCodeId,SalerRuleReward reward, H5LoginVO user) throws Exception {
+    public void getIntegral(String outCodeId,SalerRuleReward reward, H5LoginVO user)   {
         log.info("扫码入参 outCodeId{}",outCodeId);
         log.info("扫码入参 SalerRuleReward{}",reward);
         log.info("扫码入参 H5LoginVO{}", JSONObject.toJSONString(user));
@@ -88,7 +88,7 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
 
         } catch (RuntimeException e) {
             e.printStackTrace();
-            throw new Exception(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         } finally {
             lockUtil.releaseLock(UserConstants.SALER_INTEGRAL_REWARD_PREFIX + outCodeId);
         }
