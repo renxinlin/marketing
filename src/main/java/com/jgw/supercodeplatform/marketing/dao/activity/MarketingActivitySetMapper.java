@@ -150,8 +150,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " LEFT JOIN marketing_channel mc ON mc.ActivitySetId = mas.Id "
             + " WHERE mas.OrganizationId = #{organizationId} "
             + whereSearch
-            + " GROUP BY mas.Id "
-            + " ORDER BY mas.UpdateDate "
+            + " GROUP BY mas.Id DESC"
+            + " ORDER BY mas.UpdateDate DESC "
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>"
             + endScript
     )
