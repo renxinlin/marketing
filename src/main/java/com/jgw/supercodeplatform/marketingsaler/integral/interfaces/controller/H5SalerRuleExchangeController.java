@@ -93,7 +93,7 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
         // TODO 拉到application层
         ProductInfoByCodeDto productByCode = codeManagerService.getProductByCode(codeInfo);
         Asserts.check(productByCode!=null ,"码关联信息查询数据失败...");
-        rewardService.getIntegral(codeInfo.getCodeTypeId(),H5SalerRuleExchangeTransfer.getRewardValueObject(productByCode),user);
+        rewardService.getIntegral(codeInfo.getOuterCodeId(),H5SalerRuleExchangeTransfer.getRewardValueObject(productByCode),user);
         return success();
     }
 
