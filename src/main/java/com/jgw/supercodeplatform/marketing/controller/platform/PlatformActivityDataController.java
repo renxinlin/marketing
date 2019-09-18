@@ -57,10 +57,17 @@ public class PlatformActivityDataController {
         return RestResult.successWithData(dataVos);
     }
 
-    @ApiOperation("获取日活动参与量与扫码量")
+    @ApiOperation("获取日活动参量")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/dayActivityJoin")
     public RestResult<DayActivityJoinQuantityVo> dayActivityJoin(@Valid ActivityDataParam activityDataParam){
+        return RestResult.success();
+    }
+
+    @ApiOperation("获取日活动扫码量")
+    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
+    @GetMapping("/dayActivityScan")
+    public RestResult<DayActivityJoinQuantityVo> dayActivityScan(@Valid ActivityDataParam activityDataParam){
         return RestResult.success();
     }
 
