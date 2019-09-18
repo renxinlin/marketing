@@ -3,15 +3,7 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
@@ -261,6 +253,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		maProductList.addAll(upProductList);
 		List<MarketingActivityProduct> marketingActivityProductList = maProductList.stream().distinct().collect(Collectors.toList());
 		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
+			Set<String> sBatchIdSet = new HashSet<>();
 			Set<Long> activityIdsSet = marketingActivityProductList.stream().map(prd -> prd.getActivitySetId()).collect(Collectors.toSet());
 			//得到绑定过url的product对应的活动
 			List<MarketingActivitySet> marketingActivitySetList = mSetMapper.selectMarketingActivitySetByIds(commonUtil.getOrganizationId(), new ArrayList<>(activityIdsSet));
@@ -285,11 +278,26 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 						String[] sbatchIdArray = sbatchIds.split(",");
 						for(String sbatchId : sbatchIdArray) {
 							Map<String, Object> delMap = new HashMap<>();
+							sBatchIdSet.add(sbatchId);
 							delMap.put("batchId", sbatchId);
 							delMap.put("businessType", bizType);
 							delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
 							deleteProductBatchList.add(delMap);
 						}
+					}
+				}
+			}
+			if (!sBatchIdSet.isEmpty()) {
+				List<MarketingActivityProduct> productBatchList = mProductMapper.selectByBatchIds(sBatchIdSet);
+				productBatchList.removeAll(marketingActivityProductList);
+				Set<String> alBatchIdSet = new HashSet<>();
+				productBatchList.forEach(prod -> alBatchIdSet.addAll(Arrays.asList(prod.getSbatchId().split(","))));
+				Iterator<Map<String, Object>> it = deleteProductBatchList.listIterator();
+				while (it.hasNext()) {
+					Map<String, Object> delMap = it.next();
+					String batchId = (String) delMap.get("batchId");
+					if (alBatchIdSet.contains(batchId)) {
+						it.remove();
 					}
 				}
 			}
@@ -557,6 +565,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		//得到已经绑定过url的product
 		List<MarketingActivityProduct> marketingActivityProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
 		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
+			Set<String> sBatchIdSet = new HashSet<>();
 			Set<Long> activityIdsSet = marketingActivityProductList.stream().map(prd -> prd.getActivitySetId()).collect(Collectors.toSet());
 			//得到绑定过url的product对应的活动
 			List<MarketingActivitySet> marketingActivitySetList = mSetMapper.selectMarketingActivitySetByIds(commonUtil.getOrganizationId(), new ArrayList<>(activityIdsSet));
@@ -580,12 +589,27 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 						String sbatchIds = marketingActivityProduct.getSbatchId();
 						String[] sbatchIdArray = sbatchIds.split(",");
 						for(String sbatchId : sbatchIdArray) {
+							sBatchIdSet.add(sbatchId);
 							Map<String, Object> delMap = new HashMap<>();
 							delMap.put("batchId", sbatchId);
 							delMap.put("businessType", bizType);
 							delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
 							deleteProductBatchList.add(delMap);
 						}
+					}
+				}
+			}
+			if (!sBatchIdSet.isEmpty()) {
+				List<MarketingActivityProduct> productBatchList = mProductMapper.selectByBatchIds(sBatchIdSet);
+				productBatchList.removeAll(marketingActivityProductList);
+				Set<String> alBatchIdSet = new HashSet<>();
+				productBatchList.forEach(prod -> alBatchIdSet.addAll(Arrays.asList(prod.getSbatchId().split(","))));
+				Iterator<Map<String, Object>> it = deleteProductBatchList.listIterator();
+				while (it.hasNext()) {
+					Map<String, Object> delMap = it.next();
+					String batchId = (String) delMap.get("batchId");
+					if (alBatchIdSet.contains(batchId)) {
+						it.remove();
 					}
 				}
 			}

@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecor
 import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
+import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.ScanCodeDataVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.WinningPrizeDataVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +70,20 @@ public class PlatformStatisticsService {
         long scanCodeTotalNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, null);
         PieChartVo scanCodeTotalVo = new PieChartVo("扫码量", scanCodeTotalNum);
         long joinNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, 1);
-        PieChartVo joinVo = new PieChartVo("扫码量", scanCodeTotalNum);
+        PieChartVo joinVo = new PieChartVo("参与量", scanCodeTotalNum);
         return Lists.newArrayList(scanCodeTotalVo, joinVo);
+    }
+
+    /**
+     * 获取扫码企业排行榜，前七位
+     * @param activityDataParam
+     * @return
+     */
+    public List<ActivityOrganizationDataVo> activityOrganization(ActivityDataParam activityDataParam) {
+        long startTime = activityDataParam.getStartDate().getTime();
+        long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
+        List<ActivityOrganizationDataVo> activityOrganizationDataVoList = codeEsService.scanOrganizationList(startTime, endTime);
+        return activityOrganizationDataVoList;
     }
 
 }
