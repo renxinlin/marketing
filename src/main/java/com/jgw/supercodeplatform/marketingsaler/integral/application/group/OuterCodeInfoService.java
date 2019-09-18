@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoVo;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CodeManagerFallbackFeign;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.OuterCodeInfoFeign;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Slf4j
 @Service
 public class OuterCodeInfoService {
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     OuterCodeInfoFeign outerCodeInfoFeign;
 
@@ -28,12 +32,12 @@ public class OuterCodeInfoService {
         log.info("准备调用码服务获取层级{}",outCodeInfoDto);
         RestResult<Object> currentLevel = outerCodeInfoFeign.getCurrentLevel(outCodeInfoDto);
         log.info("准备调用码服务获取层级返回如下{}", JSONObject.toJSONString(currentLevel));
-
         if(currentLevel!=null && currentLevel.getState() == 200){
-            if( currentLevel.getResults()!=null &&  currentLevel.getResults() instanceof Long){
+            if( currentLevel.getResults()!=null){
                 // 单码
+                OutCodeInfoVo outCodeInfoVo = JSONObject.parseObject((JSONObject.toJSONString(currentLevel.getResults())), OutCodeInfoVo.class);
+                return RestResult.success(currentLevel.getMsg(), outCodeInfoVo.getLevel());
 
-                return RestResult.success(currentLevel.getMsg(), (Long) currentLevel.getResults());
             }
         }
         throw new RuntimeException("获取码服务层级信息失败");
