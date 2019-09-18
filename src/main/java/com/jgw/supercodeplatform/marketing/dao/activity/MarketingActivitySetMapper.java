@@ -222,4 +222,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
             endScript})
     int countPlatform(DaoSearchWithUser searchParams);
 
+    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and ActivityId = #{activityId}")
+    MarketingActivitySet selectByTitlePlatform(@Param("activityTitle")String activityTitle, @Param("activityId") Long activityId);
+
+
 }

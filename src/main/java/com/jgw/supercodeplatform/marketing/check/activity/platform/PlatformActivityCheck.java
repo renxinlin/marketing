@@ -19,11 +19,12 @@ import java.util.List;
 public class PlatformActivityCheck {
 
     @Autowired
-    private CommonUtil commonUtil;
-
-    @Autowired
     private MarketingActivitySetMapper marketingActivitySetMapper;
 
+    /**
+     * 创建活动基本条件检查
+     * @param platformActivityAdd
+     */
     public void platformActivityAddCheck(PlatformActivityAdd platformActivityAdd) {
         if (platformActivityAdd.getActivityEndDate().compareTo(platformActivityAdd.getActivityStartDate()) <= 0) {
             throw new SuperCodeExtException("活动结束时间必须大于活动开始时间");
@@ -37,7 +38,7 @@ public class PlatformActivityCheck {
             throw new SuperCodeExtException("活动概率总和不能大于100%");
         }
         if (!(platformActivityAdd instanceof PlatformActivityUpdate)) {
-            MarketingActivitySet existmActivitySet = marketingActivitySetMapper.selectByTitleOrgId(platformActivityAdd.getActivityTitle(), commonUtil.getOrganizationId());
+            MarketingActivitySet existmActivitySet = marketingActivitySetMapper.selectByTitlePlatform(platformActivityAdd.getActivityTitle(), 5L);
             if (existmActivitySet != null) {
                 throw new SuperCodeExtException("您已设置过相同标题的活动不可重复设置");
             }

@@ -40,7 +40,10 @@ public class RestResult <T>{
 
 		return new RestResult<T>(state,msg,results);
 	}
+	public static <T> RestResult<T> fail(String msg){
 
+		return RestResult.fail(msg, null);
+	}
 
 	public static <T> RestResult<T> fail(String msg,T results){
 

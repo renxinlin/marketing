@@ -94,7 +94,7 @@ public class SaleMemberController {
         saleInfo.setScanQRCodeNum((Integer) acquireMoneyAndAcquireNums.get("scanNum"));
         Long count = (Long) acquireMoneyAndAcquireNums.get("count");
         saleInfo.setScanAmoutNum((count.intValue()));
-        saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum") != null ? (Float) acquireMoneyAndAcquireNums.get("sum"):0F);
+        saleInfo.setAmoutNum(acquireMoneyAndAcquireNums.get("sum") != null ? (Double) acquireMoneyAndAcquireNums.get("sum"):0D);
         saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
         saleInfo.setHaveIntegral(marketingUser.getHaveIntegral());
 
