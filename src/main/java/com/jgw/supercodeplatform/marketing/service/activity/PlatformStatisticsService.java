@@ -2,13 +2,19 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 
 import com.google.common.collect.Lists;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
+import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataVo;
+import com.jgw.supercodeplatform.marketing.vo.platform.DayActivityJoinQuantityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.ScanCodeDataVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.WinningPrizeDataVo;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +22,9 @@ import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @Service
 public class PlatformStatisticsService {
@@ -26,6 +35,8 @@ public class PlatformStatisticsService {
     private CodeEsService codeEsService;
     @Autowired
     private MarketingMembersWinRecordMapper marketingMembersWinRecordMapper;
+    @Autowired
+    private MarketingMembersMapper marketingMembersMapper;
 
     /**
      * 扫码率
@@ -84,6 +95,35 @@ public class PlatformStatisticsService {
         long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
         List<ActivityOrganizationDataVo> activityOrganizationDataVoList = codeEsService.scanOrganizationList(startTime, endTime);
         return activityOrganizationDataVoList;
+    }
+
+    /**
+     *
+     * @param activityDataParam
+     * @param status 1为参与活动的，0为扫了码但是拒绝活动的,null查询0和1的情况综合
+     * @return
+     */
+    public DayActivityJoinQuantityVo statiticsDayActivity(ActivityDataParam activityDataParam, Integer status){
+        long startTime = activityDataParam.getStartDate().getTime();
+        long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
+        List<PieChartVo> pieVoList = codeEsService.dayActivityStatistic(startTime, endTime, status);
+        SortedSet<PieChartVo> dayPieSet = new TreeSet<>();
+        dayPieSet.addAll(pieVoList);
+        dayPieSet.addAll(DateUtil.dayFmt(activityDataParam.getStartDate(), activityDataParam.getEndDate()));
+        DayActivityJoinQuantityVo dayActivityJoinQuantityVo = new DayActivityJoinQuantityVo();
+        List<String> nameList = dayPieSet.stream().map(dayPie -> dayPie.getName()).collect(Collectors.toList());
+        List<Long> valueList = dayPieSet.stream().map(dayPie -> dayPie.getVale()).collect(Collectors.toList());
+        dayActivityJoinQuantityVo.setData(nameList);
+        dayActivityJoinQuantityVo.setValue(valueList);
+        long max = valueList.stream().max((v1, v2) -> v1.compareTo(v2)).get();
+        long min = valueList.stream().min((v1, v2) -> v1.compareTo(v2)).get();
+        dayActivityJoinQuantityVo.setMaxValue(max);
+        dayActivityJoinQuantityVo.setMinValue(min);
+        return dayActivityJoinQuantityVo;
+    }
+
+    public List<PieChartVo> scanCodeActMember(ActivityDataParam activityDataParam) {
+        return null;
     }
 
 }

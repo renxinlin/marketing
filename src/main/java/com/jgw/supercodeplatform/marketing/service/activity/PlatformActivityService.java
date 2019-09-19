@@ -2,27 +2,36 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPlatformOrganizationMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithUser;
+import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.JoinOrganization;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.PrizeType;
+import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityDisable;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
+import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPlatformOrganization;
+import com.jgw.supercodeplatform.marketing.pojo.platform.AbandonPlatform;
+import com.jgw.supercodeplatform.marketing.pojo.platform.MarketingPlatformOrganization;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
+import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
+import com.jgw.supercodeplatform.marketing.vo.platform.PlatformScanStatusVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -34,6 +43,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -70,8 +80,15 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private CodeEsService odeEsService;
+
+    @Autowired
+    private MarketingActivityProductMapper marketingActivityProductMapper;
+
     @Override
     protected List<PlatformActivityVo> searchResult(DaoSearchWithUser searchParams) throws Exception {
+        searchParams.setStartNumber((searchParams.getCurrent()-1)*searchParams.getPageSize());
         return mSetMapper.listPlatform(searchParams);
     }
 
@@ -85,7 +102,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
         MarketingActivitySet marketingActivitySet = new MarketingActivitySet();
         BeanUtils.copyProperties(platformActivityAdd, marketingActivitySet);
         JSONObject validConditionJson = new JSONObject();
-        validConditionJson.put("eachDayNumber", platformActivityAdd.getMaxJoinNum());
+        validConditionJson.put("maxJoinNum", platformActivityAdd.getMaxJoinNum());
         validConditionJson.put("sourceLink", platformActivityAdd.getSourceLink());
         marketingActivitySet.setValidCondition(validConditionJson.toJSONString());
         marketingActivitySet.setActivityStatus(1);
@@ -146,7 +163,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
         if (StringUtils.isNotBlank(validation)) {
             JSONObject validConditionJson = JSON.parseObject(validation);
             platformActivityUpdate.setSourceLink(validConditionJson.getString("sourceLink"));
-            platformActivityUpdate.setMaxJoinNum(validConditionJson.getInteger("eachDayNumber"));
+            platformActivityUpdate.setMaxJoinNum(validConditionJson.getInteger("maxJoinNum"));
         }
         List<PrizeType> prizeTypeList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(marketingPrizeTypeList)) {
@@ -227,6 +244,66 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
             return paa;
         }
         return null;
+    }
+
+    /**
+     * 放弃抽奖时调用
+     * @param abandonPlatform
+     */
+    public void addAbandonPlatform(AbandonPlatform abandonPlatform) {
+        MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
+        if (marketingActivitySet == null) {
+            throw new SuperCodeExtException("当前暂无全网运营红包上线");
+        }
+        odeEsService.addAbandonPlatformScanCodeRecord(abandonPlatform.getProductId(), abandonPlatform.getProductBatchId(), abandonPlatform.getCodeId(),
+                marketingActivitySet.getActivityId(),abandonPlatform.getCodeType(), marketingActivitySet.getId(),System.currentTimeMillis(),abandonPlatform.getOrganizationId(), abandonPlatform.getOrganizationFullName());
+    }
+
+
+    /**
+     * 获取扫码状态
+     * @param codeId
+     * @return
+     */
+    public PlatformScanStatusVo getScanStatus(String codeId) {
+        PlatformScanStatusVo platformScanStatusVo = new PlatformScanStatusVo();
+        MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
+        if (marketingActivitySet == null) {
+            //当前不存在全网运营活动，不可用
+            platformScanStatusVo.setPlatformStatus(false);
+        } else {
+            platformScanStatusVo.setPlatformStatus(true);
+        }
+        long count = odeEsService.countPlatformScanCodeRecord(codeId, null);
+        if (count > 0) {
+            //码已经被扫过，不可用
+            platformScanStatusVo.setScanStatus(false);
+        } else {
+            platformScanStatusVo.setScanStatus(true);
+        }
+        return platformScanStatusVo;
+    }
+
+
+    /**
+     * 设置活动状态
+     * @param platformActivityDisable
+     * @return
+     */
+    public boolean updatePlatformStatus (PlatformActivityDisable platformActivityDisable){
+        MarketingActivitySet mas = mSetMapper.selectById(platformActivityDisable.getId());
+        if (mas == null) {
+            throw new SuperCodeExtException("找不到该ID对应的活动");
+        }
+        MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
+        if (platformActivityDisable.getActivityStatus().intValue() == 1 && marketingActivitySet != null){
+            return false;
+        }
+        MarketingActivitySetStatusUpdateParam mUpdateStatus = new MarketingActivitySetStatusUpdateParam();
+        mUpdateStatus.setActivitySetId(platformActivityDisable.getId());
+        mUpdateStatus.setActivityStatus(platformActivityDisable.getActivityStatus());
+        mSetMapper.updateActivitySetStatus(mUpdateStatus);
+        return true;
     }
 
 }

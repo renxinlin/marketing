@@ -1,12 +1,14 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
+import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
 import org.apache.tomcat.jni.Time;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 public class DateUtil
@@ -112,4 +114,53 @@ public class DateUtil
 	    	return sdf.parse(dateString);
 	    	
 	    }
+
+
+	public static SortedSet<PieChartVo> monthFmt(Date monDate) {
+		SortedSet<PieChartVo> valueSet = new TreeSet<>();
+		Calendar cal = Calendar.getInstance();
+		long nowMills = cal.getTimeInMillis();
+		if(monDate.getTime() >= cal.getTimeInMillis())
+			return valueSet;
+		cal.setTime(monDate);
+		int sorYear = cal.get(Calendar.YEAR);
+		int sorMonth = cal.get(Calendar.MONTH) + 1;
+		while(cal.getTimeInMillis() <= nowMills) {
+			String sorMonthStr = "" + sorMonth;
+			if(sorMonth < 10) sorMonthStr = "0" + sorMonth;
+			PieChartVo value = new PieChartVo(sorYear+"-"+sorMonthStr, 0L);
+			valueSet.add(value);
+			cal.add(Calendar.MONTH, 1);
+			sorYear = cal.get(Calendar.YEAR);
+			sorMonth = cal.get(Calendar.MONTH) + 1;
+		}
+		return valueSet;
+	}
+
+	public static SortedSet<PieChartVo> dayFmt(Date dayDate, Date endDate){
+		SortedSet<PieChartVo> valueSet = new TreeSet<>();
+		long endMills = endDate.getTime();
+		if(dayDate.getTime() >= endMills) {
+			return valueSet;
+		}
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dayDate);
+		int sorYear = cal.get(Calendar.YEAR);
+		int sorMonth = cal.get(Calendar.MONTH) + 1;
+		int sorDay = cal.get(Calendar.DATE);
+		while(cal.getTimeInMillis() <= endMills) {
+			String sorMonthStr = "" + sorMonth;
+			if(sorMonth < 10) sorMonthStr = "0" + sorMonth;
+			String sorDayStr = "" + sorDay;
+			if(sorDay < 10) sorDayStr = "0" + sorDay;
+			PieChartVo value = new PieChartVo(sorYear+"-"+sorMonthStr+"-"+sorDayStr, 0L);
+			valueSet.add(value);
+			cal.add(Calendar.DATE, 1);
+			sorYear = cal.get(Calendar.YEAR);
+			sorMonth = cal.get(Calendar.MONTH) + 1;
+			sorDay = cal.get(Calendar.DATE);
+		}
+		return valueSet;
+	}
+
 }

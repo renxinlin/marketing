@@ -12,9 +12,33 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @ApiModel("饼图返回")
-public class PieChartVo {
+public class PieChartVo implements Comparable<PieChartVo> {
     @ApiModelProperty("name")
     private String name;
     @ApiModelProperty("value")
     private Long vale;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj != null) {
+            return name.equals(((PieChartVo)obj).getName());
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        if (name != null) {
+            return name.hashCode();
+        }
+        return super.hashCode();
+    }
+
+    @Override
+    public int compareTo(PieChartVo o) {
+        if (this.name != null && o.name != null) {
+            return this.name.compareTo(o.getName());
+        }
+        return 0;
+    }
 }

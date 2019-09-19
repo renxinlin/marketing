@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.pojo;
+package com.jgw.supercodeplatform.marketing.pojo.platform;
 
 import lombok.Getter;
 import lombok.Setter;

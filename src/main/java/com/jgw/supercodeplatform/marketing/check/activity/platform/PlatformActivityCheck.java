@@ -29,6 +29,16 @@ public class PlatformActivityCheck {
         if (platformActivityAdd.getActivityEndDate().compareTo(platformActivityAdd.getActivityStartDate()) <= 0) {
             throw new SuperCodeExtException("活动结束时间必须大于活动开始时间");
         }
+        if (!(platformActivityAdd instanceof PlatformActivityUpdate)) {
+            MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.getOnlyPlatformActivity();
+            if (marketingActivitySet != null) {
+                throw new SuperCodeExtException("当前已经存在正在运营的活动，不可重复创建");
+            }
+            MarketingActivitySet existmActivitySet = marketingActivitySetMapper.selectByTitlePlatform(platformActivityAdd.getActivityTitle(), 5L);
+            if (existmActivitySet != null) {
+                throw new SuperCodeExtException("您已设置过相同标题的活动不可重复设置");
+            }
+        }
         List<PrizeType> prizeTypeList = platformActivityAdd.getPrizeTypeList();
         int totalPrizeProbability = 0;
         for (PrizeType prizeType : prizeTypeList) {
@@ -36,12 +46,6 @@ public class PlatformActivityCheck {
         }
         if (totalPrizeProbability > 100) {
             throw new SuperCodeExtException("活动概率总和不能大于100%");
-        }
-        if (!(platformActivityAdd instanceof PlatformActivityUpdate)) {
-            MarketingActivitySet existmActivitySet = marketingActivitySetMapper.selectByTitlePlatform(platformActivityAdd.getActivityTitle(), 5L);
-            if (existmActivitySet != null) {
-                throw new SuperCodeExtException("您已设置过相同标题的活动不可重复设置");
-            }
         }
         if (totalPrizeProbability < 100) {
             PrizeType prizeType = new PrizeType();

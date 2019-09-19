@@ -71,7 +71,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 
             +whereSearch
             + " ORDER BY CreateDate DESC"
-            + " <if test='current != null and pageSize != null and pageSize != 0'> LIMIT #{current},#{pageSize}</if>"
+            + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
             +endScript)
     List<IntegralRecord> list(IntegralRecord integralRecord);
 

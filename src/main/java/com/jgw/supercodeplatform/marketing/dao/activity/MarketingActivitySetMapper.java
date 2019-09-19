@@ -201,20 +201,20 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
 
     @Select({startScript,
-            "SELECT "+allFields+" FROM marketing_activity_set WHERE UpdateUserId = #{userId} ",
-            " AND ActivityId = 5 ",
+            "SELECT "+allFields+" FROM marketing_activity_set WHERE ",
+            " ActivityId = 5 ",
             "<if test = 'search != null and search != &apos;&apos;'> AND (",
             " OR ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
             " OR UpdateUserName LIKE CONCAT('%', #{updateUserName}, '%')",
             ") </if>",
-            " ORDER BY UpdateDate ",
+            " ORDER BY UpdateDate DESC",
             " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>",
             endScript})
     List<PlatformActivityVo> listPlatform(DaoSearchWithUser searchParams);
 
     @Select({startScript,
-            "SELECT COUNT(1) FROM marketing_activity_set WHERE UpdateUserId = #{userId} ",
-            " AND ActivityId = 5 ",
+            "SELECT COUNT(1) FROM marketing_activity_set WHERE  ",
+            " ActivityId = 5 ",
             "<if test = 'search != null and search != &apos;&apos;'> AND (",
             " OR ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
             " OR UpdateUserName LIKE CONCAT('%', #{updateUserName}, '%')",
@@ -225,5 +225,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
     @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and ActivityId = #{activityId}")
     MarketingActivitySet selectByTitlePlatform(@Param("activityTitle")String activityTitle, @Param("activityId") Long activityId);
 
+    @Select("select "+allFields+" from marketing_activity_set where ActivityId=5 and ActivityStatus = 1 AND ActivityStartDate < now() and ActivityEndDate > now()")
+    MarketingActivitySet getOnlyPlatformActivity();
 
 }

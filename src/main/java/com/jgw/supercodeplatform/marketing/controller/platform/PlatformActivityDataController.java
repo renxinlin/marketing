@@ -57,24 +57,26 @@ public class PlatformActivityDataController {
         return RestResult.successWithData(dataVos);
     }
 
-    @ApiOperation("获取日活动参量")
+    @ApiOperation("获取日活动参与量")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/dayActivityJoin")
     public RestResult<DayActivityJoinQuantityVo> dayActivityJoin(@Valid ActivityDataParam activityDataParam){
-        return RestResult.success();
+        DayActivityJoinQuantityVo dayActivityJoinQuantityVo = platformStatisticsService.statiticsDayActivity(activityDataParam, 1);
+        return RestResult.successWithData(dayActivityJoinQuantityVo);
     }
 
     @ApiOperation("获取日活动扫码量")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/dayActivityScan")
     public RestResult<DayActivityJoinQuantityVo> dayActivityScan(@Valid ActivityDataParam activityDataParam){
-        return RestResult.success();
+        DayActivityJoinQuantityVo dayActivityJoinQuantityVo = platformStatisticsService.statiticsDayActivity(activityDataParam, null);
+        return RestResult.successWithData(dayActivityJoinQuantityVo);
     }
 
     @ApiOperation("扫码活跃会员")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/scanMemberRate")
-    public RestResult<ScanCodeMemberDataVo> scanMemberRate(@Valid ActivityDataParam activityDataParam){
+    public RestResult<List<PieChartVo>> scanMemberRate(@Valid ActivityDataParam activityDataParam){
         return RestResult.success();
     }
 

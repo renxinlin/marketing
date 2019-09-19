@@ -27,7 +27,7 @@ public enum  EsIndex {
     /**
      *全网平台扫码活动
      */
-    MARKET_PLATFORM_SCAN_INFO("marketingPlatformScan");
+    MARKET_PLATFORM_SCAN_INFO("marketingplatformscan");
 
     private String index;
 
