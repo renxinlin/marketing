@@ -46,6 +46,9 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilde
 import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCount;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregator;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -716,15 +719,11 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @return
 	 */
 	public long countPlatformScanCodeRecordByTime(long timeStart, long timeEnd, Integer status) {
-		Map<String, Object> addParam = new HashMap<String, Object>();
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
-		StatsAggregationBuilder aggregation =
-				AggregationBuilders
-						.stats(AggregationName)
-						// 聚和字段：码
-						.field("codeId");
+		ValueCountAggregationBuilder aggregation =
+				AggregationBuilders.count(AggregationName).field("codeId.keyword");
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
 		if (status != null) {
 			QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", status);
@@ -735,12 +734,12 @@ public class CodeEsService extends AbstractEsSearch {
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		// 获取count
-		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+		ValueCount aggs = searchResponse.getAggregations().get(AggregationName);
 		// 优化方向，其他结果如非必须可剔除
 		// 除去评分机制
 		// 采用过滤而非查询提高查询速度
 		// 取所需结果
-		return aggs.getCount();
+		return aggs.getValue();
 	}
 
 	/**
