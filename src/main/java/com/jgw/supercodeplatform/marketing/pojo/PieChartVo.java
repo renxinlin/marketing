@@ -16,7 +16,7 @@ public class PieChartVo implements Comparable<PieChartVo> {
     @ApiModelProperty("name")
     private String name;
     @ApiModelProperty("value")
-    private Long vale;
+    private Long value;
 
     @Override
     public boolean equals(Object obj) {
