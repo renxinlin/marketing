@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.controller.platform;
 
 
+import com.google.common.collect.Lists;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
@@ -8,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.service.activity.PlatformStatisticsSe
 import com.jgw.supercodeplatform.marketing.vo.platform.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,14 +79,22 @@ public class PlatformActivityDataController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/scanMemberRate")
     public RestResult<List<PieChartVo>> scanMemberRate(@Valid ActivityDataParam activityDataParam){
-        return RestResult.success();
+        List<PieChartVo> scanMemberList = platformStatisticsService.scanCodeActMember(activityDataParam);
+        return RestResult.successWithData(scanMemberList);
     }
 
     @ApiOperation("会员画像")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/memberPortrait")
     public RestResult<MemberPortraitDataVo> memberPortrait(@Valid ActivityDataParam activityDataParam) {
-        return RestResult.success();
+        List<PieChartVo> sex = Lists.newArrayList(new PieChartVo("男",56L), new PieChartVo("女", 63L));
+        List<PieChartVo> age = Lists.newArrayList(new PieChartVo("20-30",71L), new PieChartVo("30-40", 32L));
+        List<PieChartVo> scanSource = Lists.newArrayList(new PieChartVo("微信",561L), new PieChartVo("30-40", 123L));
+        MemberPortraitDataVo memberPortraitDataVo = new MemberPortraitDataVo();
+        memberPortraitDataVo.setAge(age);
+        memberPortraitDataVo.setScanSource(scanSource);
+        memberPortraitDataVo.setSex(sex);
+        return RestResult.successWithData(memberPortraitDataVo);
     }
 
 
