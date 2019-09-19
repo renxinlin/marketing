@@ -112,7 +112,7 @@ public class PlatformStatisticsService {
         dayPieSet.addAll(DateUtil.dayFmt(activityDataParam.getStartDate(), activityDataParam.getEndDate()));
         DayActivityJoinQuantityVo dayActivityJoinQuantityVo = new DayActivityJoinQuantityVo();
         List<String> nameList = dayPieSet.stream().map(dayPie -> dayPie.getName()).collect(Collectors.toList());
-        List<Long> valueList = dayPieSet.stream().map(dayPie -> dayPie.getVale()).collect(Collectors.toList());
+        List<Long> valueList = dayPieSet.stream().map(dayPie -> dayPie.getValue()).collect(Collectors.toList());
         dayActivityJoinQuantityVo.setData(nameList);
         dayActivityJoinQuantityVo.setValue(valueList);
         long max = valueList.stream().max((v1, v2) -> v1.compareTo(v2)).get();
@@ -133,7 +133,7 @@ public class PlatformStatisticsService {
         long allNum = marketingMembersMapper.countAllMemberNum();
         PieChartVo allPie = new PieChartVo("总会员", allNum);
         long actNum = codeEsService.countPlatformScanCodeUserByTime(startTime, endTime, 1);
-        PieChartVo actPie = new PieChartVo("活跃会员", allNum);
+        PieChartVo actPie = new PieChartVo("活跃会员", actNum);
         return Lists.newArrayList(allPie, actPie);
     }
 
