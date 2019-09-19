@@ -5,12 +5,14 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Date;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,7 +54,8 @@ public class ScanCodeController {
     @Value("${rest.user.url}")
     private String restUserUrl;
 
-
+    @Value("${rest.user.domain}")
+    private String restUserDomain;
 
     /**
      * 导购前端领奖页
@@ -191,6 +194,20 @@ public class ScanCodeController {
         logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid()+",h5pageUrl="+h5pageUrl);
         String url=h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1"+"&organizationId="+organizationId;
         return url;
+    }
+
+    @GetMapping("/code/callback")
+    @ApiOperation("微信静默授权")
+    public String getWXCode(@RequestParam String code, @RequestParam String state) {
+        logger.info("微信授权回调获取code=" + code + ",state=" + state);
+        if (StringUtils.isBlank(state)) {
+            throw new SuperCodeExtException("state不能为空", 500);
+        }
+        try {
+            return "redirect:" + restUserDomain + "/wechat/org/info?code=" + code + "&state=" + state;
+        } catch (Exception e) {
+            throw new SuperCodeExtException("回调参数不正确");
+        }
     }
 
 
