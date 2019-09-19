@@ -752,7 +752,7 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
-		Script script = new Script(ScriptType.INLINE, "groovy","doc['organizationId.keyword'].value+','+doc['organizationFullName.keyword'].value", new HashMap<>());
+		Script script = new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG,"doc['organizationId.keyword'].value+','+doc['organizationFullName.keyword'].value", new HashMap<>());
 		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).script(script).order(BucketOrder.count(false)).size(7);
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
 		searchRequestBuilder.setQuery(boolQueryBuilder);
@@ -764,8 +764,8 @@ public class CodeEsService extends AbstractEsSearch {
 		if (team instanceof UnmappedTerms) {
 			return new ArrayList<>();
 		}
-		LongTerms teamAgg = (LongTerms) team;
-		List<LongTerms.Bucket> bucketList = teamAgg.getBuckets();
+		StringTerms teamAgg = (StringTerms) team;
+		List<StringTerms.Bucket> bucketList = teamAgg.getBuckets();
 		List<ActivityOrganizationDataVo> idAndNameList = bucketList.stream().map(bucket -> {
 			String[] idAndName = bucket.getKeyAsString().split(",");
 			ActivityOrganizationDataVo activityOrganizationDataVo = new ActivityOrganizationDataVo();
