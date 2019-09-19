@@ -28,4 +28,5 @@ public class H5SalerRuleRewardTransfer {
         }
         throw new RuntimeException("奖励积分规则未获取成功");
     }
+
 }
