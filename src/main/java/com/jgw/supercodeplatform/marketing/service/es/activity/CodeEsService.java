@@ -3,10 +3,7 @@ package com.jgw.supercodeplatform.marketing.service.es.activity;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -38,10 +35,13 @@ import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
 import org.slf4j.Logger;
@@ -758,8 +758,12 @@ public class CodeEsService extends AbstractEsSearch {
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		// 获取count
-		StringTerms teamAgg = searchResponse.getAggregations().get(AggregationName);
-		List<StringTerms.Bucket> bucketList = teamAgg.getBuckets();
+		Aggregation team = searchResponse.getAggregations().get(AggregationName);
+		if (team instanceof UnmappedTerms) {
+			return new ArrayList<>();
+		}
+		LongTerms teamAgg = (LongTerms) team;
+		List<LongTerms.Bucket> bucketList = teamAgg.getBuckets();
 		List<ActivityOrganizationDataVo> idAndNameList = bucketList.stream().map(bucket -> {
 			String[] idAndName = bucket.getKeyAsString().split(",");
 			ActivityOrganizationDataVo activityOrganizationDataVo = new ActivityOrganizationDataVo();
@@ -793,8 +797,12 @@ public class CodeEsService extends AbstractEsSearch {
 		// 获取查询结果
 		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 		// 获取count
-		StringTerms teamAgg = searchResponse.getAggregations().get(AggregationName);
-		List<StringTerms.Bucket> bucketList = teamAgg.getBuckets();
+		Aggregation team = searchResponse.getAggregations().get(AggregationName);
+		if (team instanceof UnmappedTerms) {
+			return new ArrayList<>();
+		}
+		LongTerms teamAgg = (LongTerms) team;
+		List<LongTerms.Bucket> bucketList = teamAgg.getBuckets();
 		List<PieChartVo> idAndNameList = bucketList.stream().map(bucket -> {
 			PieChartVo pieChartVo = new PieChartVo();
 			String name = bucket.getKeyAsString();
