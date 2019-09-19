@@ -24,7 +24,11 @@ spring:
       max-request-size: 100Mb
   application: 
     name: platform-marketing-supercode
-     
+  zipkin:
+    base-url: http://192.168.10.212:9412
+  sleuth:
+    sampler:
+      probability: 1.0
 eureka: 
   instance:
     prefer-ip-address: true
