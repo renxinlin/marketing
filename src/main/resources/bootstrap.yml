@@ -30,7 +30,7 @@ spring:
       type: web
   sleuth:
     sampler:
-      percentage: 1
+      probability: 1
 
 eureka: 
   instance:
