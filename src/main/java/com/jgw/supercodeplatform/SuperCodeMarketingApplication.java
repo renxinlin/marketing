@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableAsync//允许异步
 @EnableScheduling
 @EnableTransactionManagement
+@EnableApolloConfig
+
 //@EnableHystrix  //断路器，对服务的延迟和容错进行兜底处理|超时机制/信号灯，线程
 public class SuperCodeMarketingApplication {
 
