@@ -48,8 +48,8 @@ public class PlatformH5Controller {
         return RestResult.success();
     }
 
-    public RestResult<?> lottery(){
-
-    }
+//    public RestResult<?> lottery(){
+//
+//    }
 
 }
