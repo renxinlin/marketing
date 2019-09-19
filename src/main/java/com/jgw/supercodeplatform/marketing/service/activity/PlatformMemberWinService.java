@@ -20,6 +20,7 @@ public class PlatformMemberWinService extends AbstractPageService<JoinResultPage
 
     @Override
     protected List<MarketingMembersWinRecord> searchResult(JoinResultPage searchParams) throws Exception {
+        searchParams.setStartNumber((searchParams.getCurrent()-1)*searchParams.getPageSize());
         return marketingMembersWinRecordMapper.listWinRecord(searchParams);
     }
 
