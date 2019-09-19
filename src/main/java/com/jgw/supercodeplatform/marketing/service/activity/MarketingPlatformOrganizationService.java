@@ -1,7 +1,7 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPlatformOrganizationMapper;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPlatformOrganization;
+import com.jgw.supercodeplatform.marketing.pojo.platform.MarketingPlatformOrganization;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

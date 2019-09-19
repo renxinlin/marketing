@@ -16,10 +16,8 @@ import com.jgw.supercodeplatform.marketing.dto.platform.JoinResultPage;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityDisable;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingPlatformOrganizationService;
-import com.jgw.supercodeplatform.marketing.service.activity.PlatformActivityService;
-import com.jgw.supercodeplatform.marketing.service.activity.PlatformMemberWinService;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
+import com.jgw.supercodeplatform.marketing.service.activity.*;
 import com.jgw.supercodeplatform.marketing.vo.platform.JoinPrizeRecordVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
@@ -59,9 +57,21 @@ public class PlatformActivityController {
     @Autowired
     private PlatformActivityService platformActivityService;
     @Autowired
-    private MarketingActivitySetService marketingActivitySetService;
-    @Autowired
     private PlatformMemberWinService platformMemberWinService;
+
+    private MarketingActivityService marketingActivityService;
+
+    /**
+     *  获取所有活动 activityType为3
+     * @return
+     * @throws Exception
+     */
+    @GetMapping("/selectAll")
+    @ApiOperation("获取所有活动")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<List<MarketingActivity>> selectAll() throws Exception {
+        return marketingActivityService.selectAll(3);
+    }
 
     @ApiOperation("添加活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
@@ -141,11 +151,12 @@ public class PlatformActivityController {
     @ApiOperation("启用或停止活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/disOrEnable")
-    public RestResult<?> disOrEnable(@RequestBody @Valid PlatformActivityDisable platformActivityDisable){
-        MarketingActivitySetStatusUpdateParam mUpdateStatus = new MarketingActivitySetStatusUpdateParam();
-        mUpdateStatus.setActivitySetId(platformActivityDisable.getId());
-        mUpdateStatus.setActivityStatus(platformActivityDisable.getActivityStatus());
-        return marketingActivitySetService.updateActivitySetStatus(mUpdateStatus);
+    public RestResult<Boolean> disOrEnable(@RequestBody @Valid PlatformActivityDisable platformActivityDisable){
+        boolean flag = platformActivityService.updatePlatformStatus(platformActivityDisable);
+        if (flag) {
+            return RestResult.success("设置成功", flag);
+        }
+        return RestResult.success("设置失败，当前可能存在正在启用的全平台运营活动", flag);
     }
 
     @ApiOperation("参与记录")

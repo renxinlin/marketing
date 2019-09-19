@@ -12,7 +12,7 @@ public enum ReferenceRoleEnum {
      */
     ACTIVITY_MEMBER((byte)0,"活动"),
     ACTIVITY_SALER((byte)1,"导购活动"),
-
+    ACITVITY_PLATFROM((byte)3,"全平台运营活动"),
 
     Min((byte)0,""),
 

@@ -17,9 +17,9 @@ public class MarketingActivityService extends AbstractPageService<MarketingActiv
     private MarketingActivityMapper dao;
     
     
-	public RestResult<List<MarketingActivity>> selectAll() {
+	public RestResult<List<MarketingActivity>> selectAll(int activityType) {
 
-		List<MarketingActivity> list=dao.selectAll(1);
+		List<MarketingActivity> list=dao.selectAll(activityType);
 		RestResult<List<MarketingActivity>> restResult=new RestResult<List<MarketingActivity>>();
 		restResult.setState(200);
 		restResult.setResults(list);

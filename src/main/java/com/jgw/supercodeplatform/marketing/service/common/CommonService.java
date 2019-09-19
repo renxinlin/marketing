@@ -370,7 +370,7 @@ public class CommonService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void checkCodeValid(String codeId, String codeTypeId) throws SuperCodeException {
+	public void checkCodeValid(String codeId, String codeTypeId) {
 		Map<String, String> headerparams = new HashMap<String, String>();
 		headerparams.put("token",commonUtil.getCodePlatformToken() );
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
@@ -379,7 +379,7 @@ public class CommonService {
 		JSONObject jsonCodeBody=JSONObject.parseObject(codeBody);
 		String sBatchId=jsonCodeBody.getJSONObject("results").getString("sBatchId");
 		if (StringUtils.isBlank(sBatchId)) {
-			throw  new SuperCodeException("对不起,该码不存在",500);
+			throw  new SuperCodeExtException("对不起,该码不存在",500);
 		}
 	}
 
@@ -391,12 +391,12 @@ public class CommonService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void checkCodeTypeValid( Long codeTypeId) throws SuperCodeException {
+	public void checkCodeTypeValid( Long codeTypeId) {
 		if(codeTypeId == null){
-			throw  new SuperCodeException("对不起,非营销码制");
+			throw  new SuperCodeExtException("对不起,非营销码制");
 		}
 		if (SystemLabelEnum.MARKETING.getCodeTypeId().intValue() != codeTypeId.intValue()) {
-            throw  new SuperCodeException("对不起,非营销码制");
+            throw  new SuperCodeExtException("对不起,非营销码制");
 		}
 	}
 

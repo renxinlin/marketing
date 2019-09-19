@@ -55,7 +55,7 @@ public class MarketingActivityController extends CommonUtil {
     @ApiOperation("获取所有活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<List<MarketingActivity>> selectAll() throws Exception {
-    	return service.selectAll();
+    	return service.selectAll(1);
     } 
     
 }

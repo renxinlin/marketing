@@ -12,11 +12,14 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataVo;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -306,7 +309,7 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(sdf.parse(startDate).getTime()).lte(sdf.parse(endDate).getTime());
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(sdf.parse(startDate).getTime()).lt(sdf.parse(endDate).getTime());
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
 		// 只获取会员活动点击量
 
@@ -532,7 +535,7 @@ public class CodeEsService extends AbstractEsSearch {
 		// out of date
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SALER_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lt(endDate);
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
 		// 只获取会员活动点击量
 		QueryBuilder memberType = QueryBuilders.termQuery("userId",userId);
@@ -606,11 +609,11 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @throws SuperCodeException
 	 */
 	public void addAbandonPlatformScanCodeRecord(String productId, String productBatchId, String codeId, Long activityId,
-								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId) throws SuperCodeException {
+								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName) {
 		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
 				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
-			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
+			throw new SuperCodeExtException("新增扫码记录出错，有参数为空", 500);
 		}
 
 		logger.info("es保存productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
@@ -623,7 +626,9 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("activityId", activityId);
 		//addParam.put("openId", openId);
 		addParam.put("scanCodeTime", scanCodeTime);
+		addParam.put("scanCodeDate", DateFormatUtils.format(scanCodeTime, "yyyy-MM-dd"));
 		addParam.put("organizationId", organizationId);
+		addParam.put("organizationFullName", organizationFullName);
 		//addParam.put("memberType", memberType);
 		//addParam.put("userId", userId);
 		//0表示扫码后点击放弃抽奖状态，1表示点击了抽奖
@@ -666,6 +671,7 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("activityId", activityId);
 		addParam.put("openId", openId);
 		addParam.put("scanCodeTime", scanCodeTime);
+		addParam.put("scanCodeDate", DateFormatUtils.format(scanCodeTime, "yyyy-MM-dd"));
 		addParam.put("organizationId", organizationId);
 		addParam.put("organizationFullName", organizationFullName);
 		addParam.put("memberType", memberType);
@@ -710,7 +716,7 @@ public class CodeEsService extends AbstractEsSearch {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lte(timeEnd);
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
 		StatsAggregationBuilder aggregation =
 				AggregationBuilders
 						.stats(AggregationName)
@@ -741,12 +747,11 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @return
 	 */
 	public List<ActivityOrganizationDataVo> scanOrganizationList(long timeStart, long timeEnd){
-		Map<String, Object> addParam = new HashMap<>();
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lte(timeEnd);
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
 		Script script = new Script(ScriptType.INLINE, "groovy","doc['organizationId.keyword'].value+','+doc['organizationFullName.keyword'].value", new HashMap<>());
-		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms("orgGroup").script(script).order(BucketOrder.count(false)).size(7);
+		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).script(script).order(BucketOrder.count(false)).size(7);
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
 		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(callTypeTeamAgg);
@@ -762,6 +767,41 @@ public class CodeEsService extends AbstractEsSearch {
 			activityOrganizationDataVo.setOrganizationFullName(idAndName[1]);
 			activityOrganizationDataVo.setActivityJoinNum(bucket.getDocCount());
 			return activityOrganizationDataVo;
+		}).collect(Collectors.toList());
+		return idAndNameList;
+	}
+
+	/**
+	 * 按天统计扫码量
+	 * @param timeStart
+	 * @param timeEnd
+	 * @param status
+	 * @return
+	 */
+	public List<PieChartVo> dayActivityStatistic(long timeStart, long timeEnd, Integer status){
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
+		// 创建查询条件 >= <=
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
+		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).field("scanCodeDate");
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
+		if (status != null) {
+			QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", status);
+			boolQueryBuilder.must(queryBuilderStatus);
+		}
+		searchRequestBuilder.setQuery(boolQueryBuilder);
+		searchRequestBuilder.addAggregation(callTypeTeamAgg).setSize(0);
+		// 获取查询结果
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		// 获取count
+		StringTerms teamAgg = searchResponse.getAggregations().get(AggregationName);
+		List<StringTerms.Bucket> bucketList = teamAgg.getBuckets();
+		List<PieChartVo> idAndNameList = bucketList.stream().map(bucket -> {
+			PieChartVo pieChartVo = new PieChartVo();
+			String name = bucket.getKeyAsString();
+			long value = bucket.getDocCount();
+			pieChartVo.setName(name);
+			pieChartVo.setVale(value);
+			return pieChartVo;
 		}).collect(Collectors.toList());
 		return idAndNameList;
 	}
