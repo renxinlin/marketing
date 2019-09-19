@@ -108,7 +108,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
                wxPayService.qiyePaySync(userPojo.getOpenid(),serverIp,(int)(money*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
            } catch (Exception e) {
                e.printStackTrace();
-               log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,user);
+               log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,JSONObject.toJSONString(user));
                throw new RuntimeException("微信支付，支付失败啦！");
            }
            int i = salerRuleExchangeMapper.reduceHaveStock(salerRuleExchange);
