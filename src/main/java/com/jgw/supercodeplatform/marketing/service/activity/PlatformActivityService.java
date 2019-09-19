@@ -88,6 +88,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
 
     @Override
     protected List<PlatformActivityVo> searchResult(DaoSearchWithUser searchParams) throws Exception {
+        searchParams.setStartNumber((searchParams.getCurrent()-1)*searchParams.getPageSize());
         return mSetMapper.listPlatform(searchParams);
     }
 
