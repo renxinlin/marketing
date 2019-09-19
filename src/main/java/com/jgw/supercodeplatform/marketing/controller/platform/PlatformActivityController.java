@@ -104,8 +104,11 @@ public class PlatformActivityController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/preView")
     public RestResult<String> preView(@RequestBody @Valid PlatformActivityAdd platformActivityAdd) {
-        platformActivityCheck.platformActivityAddCheck(platformActivityAdd);
-        String key = platformActivityService.preView(platformActivityAdd);
+        PlatformActivityUpdate platformActivityPre = new PlatformActivityUpdate();
+        platformActivityPre.setId(0L);
+        BeanUtils.copyProperties(platformActivityAdd, platformActivityPre);
+        platformActivityCheck.platformActivityAddCheck(platformActivityPre);
+        String key = platformActivityService.preView(platformActivityPre);
         if (key != null) {
             return RestResult.successWithData(key);
         }
