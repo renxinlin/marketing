@@ -28,7 +28,9 @@ spring:
     base-url: http://192.168.10.212:9412
   sleuth:
     sampler:
-      probability: 1.0
+      probability: 1
+      percentage: 1
+
 eureka: 
   instance:
     prefer-ip-address: true
