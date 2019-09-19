@@ -58,7 +58,7 @@ public class PlatformActivityController {
     private PlatformActivityService platformActivityService;
     @Autowired
     private PlatformMemberWinService platformMemberWinService;
-
+    @Autowired
     private MarketingActivityService marketingActivityService;
 
     /**
