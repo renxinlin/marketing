@@ -805,13 +805,48 @@ public class CodeEsService extends AbstractEsSearch {
 		List<LongTerms.Bucket> bucketList = teamAgg.getBuckets();
 		List<PieChartVo> idAndNameList = bucketList.stream().map(bucket -> {
 			PieChartVo pieChartVo = new PieChartVo();
-			String name = bucket.getKeyAsString();
+			String name = bucket.getKeyAsString().substring(0,10);
 			long value = bucket.getDocCount();
 			pieChartVo.setName(name);
 			pieChartVo.setVale(value);
 			return pieChartVo;
 		}).collect(Collectors.toList());
 		return idAndNameList;
+	}
+
+	/**
+	 * 统计指定时间段内扫码用户的数量
+	 * @param timeStart
+	 * @param timeEnd
+	 * @param status
+	 * @return
+	 */
+	public long countPlatformScanCodeUserByTime(long timeStart, long timeEnd, Integer status) {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
+		// 创建查询条件 >= <=
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
+		StatsAggregationBuilder aggregation =
+				AggregationBuilders
+						.stats(AggregationName)
+						// 聚和字段：码
+						.field("userId");
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
+		if (status != null) {
+			QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", status);
+			boolQueryBuilder.must(queryBuilderStatus);
+		}
+		searchRequestBuilder.setQuery(boolQueryBuilder);
+		searchRequestBuilder.addAggregation(aggregation);
+		// 获取查询结果
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		// 获取count
+		Stats aggs = searchResponse.getAggregations().get(AggregationName);
+		// 优化方向，其他结果如非必须可剔除
+		// 除去评分机制
+		// 采用过滤而非查询提高查询速度
+		// 取所需结果
+		return aggs.getCount();
 	}
 
 }

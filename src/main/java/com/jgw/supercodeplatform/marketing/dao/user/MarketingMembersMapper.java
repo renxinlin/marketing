@@ -276,4 +276,7 @@ public interface MarketingMembersMapper {
      */
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.CreateDate between #{startDate} and #{endDate} and state !=2 ")
     List<MarketingMembers> getOrganizationAllMemberWithDate(String organizationId, Date startDate, Date endDate);
+
+    @Select("SELECT COUNT(*) FROM marketing_members")
+    long countAllMemberNum();
 }

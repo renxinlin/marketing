@@ -122,8 +122,19 @@ public class PlatformStatisticsService {
         return dayActivityJoinQuantityVo;
     }
 
+    /**
+     * 扫码活跃
+     * @param activityDataParam
+     * @return
+     */
     public List<PieChartVo> scanCodeActMember(ActivityDataParam activityDataParam) {
-        return null;
+        long startTime = activityDataParam.getStartDate().getTime();
+        long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
+        long allNum = marketingMembersMapper.countAllMemberNum();
+        PieChartVo allPie = new PieChartVo("总会员", allNum);
+        long actNum = codeEsService.countPlatformScanCodeUserByTime(startTime, endTime, 1);
+        PieChartVo actPie = new PieChartVo("活跃会员", allNum);
+        return Lists.newArrayList(allPie, actPie);
     }
 
 }
