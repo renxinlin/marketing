@@ -26,9 +26,10 @@ spring:
     name: platform-marketing-supercode
   zipkin:
     base-url: http://192.168.10.212:9412
+    sender:
+      type: web
   sleuth:
     sampler:
-      probability: 1
       percentage: 1
 
 eureka: 
