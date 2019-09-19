@@ -85,8 +85,9 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
             marketingUserService.reduceIntegral(salerRuleExchange.getExchangeIntegral(),userPojo);
             // 兑换次数
             salerExchangeNumService.save(new SalerExchangeNum(null,userPojo.getId(),userPojo.getOrganizationId(),salerRuleExchange.getId()));
-            e.printStackTrace();
             // 积分消耗 获取0元
+            recordService.save(SalerRecordTransfer.buildRecord(salerRuleExchange,user,money));
+            e.printStackTrace();
             return RestResult.error(e.getMessage(),e.getMessage());
         }
         log.info("销售员兑换红包 => money{} USER{} salerRuleExchangeDto{}",money,userPojo,salerRuleExchange);
@@ -107,7 +108,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
                wxPayService.qiyePaySync(userPojo.getOpenid(),serverIp,(int)(money*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
            } catch (Exception e) {
                e.printStackTrace();
-               log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,user);
+               log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,JSONObject.toJSONString(user));
                throw new RuntimeException("微信支付，支付失败啦！");
            }
            int i = salerRuleExchangeMapper.reduceHaveStock(salerRuleExchange);

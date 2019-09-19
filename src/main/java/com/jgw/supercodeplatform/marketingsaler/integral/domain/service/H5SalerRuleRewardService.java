@@ -81,10 +81,13 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             salerRuleRewardNumService.save(new SalerRuleRewardNum(null, user.getMemberId(), user.getOrganizationId(), outCodeId));
 
             // 积分记录
+            int realRewardIntegral = H5SalerRuleRewardTransfer.computeIntegral(rewardPojo);
+            rewardPojo.setRewardIntegral(realRewardIntegral);
+
             SalerRecord salerRecord = SalerRecordTranser.getSalerRecord(outCodeId, reward, user, userPojo, rewardPojo);
             salerRecordService.save(salerRecord);
             // 导购积分添加
-            userService.addIntegral(H5SalerRuleRewardTransfer.computeIntegral(rewardPojo),userPojo);
+            userService.addIntegral(realRewardIntegral,userPojo);
             return rewardPojo.getRewardIntegral();
         } catch (RuntimeException e) {
             e.printStackTrace();
