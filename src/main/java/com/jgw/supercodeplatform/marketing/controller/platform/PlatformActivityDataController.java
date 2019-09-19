@@ -102,7 +102,8 @@ public class PlatformActivityDataController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/memberRegion")
     public RestResult<List<PieChartVo>> memberRegion(@Valid ActivityDataParam activityDataParam) {
-        return RestResult.success();
+        List<PieChartVo> areaList = Lists.newArrayList(new PieChartVo("浙江", 568L), new PieChartVo("江苏", 258L), new PieChartVo("湖北", 124L));
+        return RestResult.successWithData(areaList);
     }
 
 }
