@@ -1,7 +1,9 @@
 package com.jgw.supercodeplatform.marketing.controller.platform;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.pojo.platform.AbandonPlatform;
+import com.jgw.supercodeplatform.marketing.pojo.platform.LotteryPlatform;
 import com.jgw.supercodeplatform.marketing.service.activity.PlatformActivityService;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
@@ -45,6 +47,12 @@ public class PlatformH5Controller {
     @PostMapping("/abandonLottery")
     public RestResult<?> abandonLottery(@RequestBody @Valid AbandonPlatform abandonPlatform){
         platformActivityService.addAbandonPlatform(abandonPlatform);
+        return RestResult.success();
+    }
+
+    @ApiOperation("抽奖")
+    @PostMapping("/lottery")
+    public RestResult<LotteryResultMO> lottery(@RequestBody @Valid LotteryPlatform lotteryPlatform){
         return RestResult.success();
     }
 
