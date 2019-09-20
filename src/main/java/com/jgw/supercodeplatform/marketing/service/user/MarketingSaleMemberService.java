@@ -191,7 +191,6 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 
 
-
 	public void updateMembers(MarketingSaleMembersUpdateParam marketingMembersUpdateParam, String organizationId) throws SuperCodeException{
 		// 基础校验
 		if(marketingMembersUpdateParam == null){
@@ -203,7 +202,16 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		}
 		if(StringUtils.isBlank(organizationId)){
 			throw new SuperCodeException("组织不存在...");
-
+		}
+		if(!StringUtils.isEmpty(marketingMembersUpdateParam.getMobile())){
+			checkPhoneFormat(marketingMembersUpdateParam.getMobile());
+			MarketingUser marketingUser = mapper.selectByPhone(marketingMembersUpdateParam.getMobile());
+			if(marketingUser != null && marketingUser.getId()!=null){
+				Long id = marketingUser.getId().longValue();
+				if(marketingMembersUpdateParam.getId().longValue() != id ){
+					throw new RuntimeException("手机号已经存在");
+				}
+			}
 		}
 
 //		if(StringUtils.isBlank(marketingMembersUpdateParam.getCustomerId())){
