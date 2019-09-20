@@ -672,7 +672,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 */
 	public void addPlatformScanCodeRecord(String productId, String productBatchId, String codeId,String openId,Long userId, Integer memberType, Long activityId,
 												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName,float amount) throws SuperCodeException {
-		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId) || StringUtils.isBlank(openId) || StringUtils.isBlank(userId)
+		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId) || StringUtils.isBlank(openId) || userId == null
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime || memberType == null
 				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
