@@ -125,6 +125,13 @@ public class SalerOrderTransfer {
 
     }
 
+    /**
+     *
+     * @param salerOrderForms 网页数据
+     * @param oldSalerOrderForms 数据库数据
+     * @param organizationId
+     * @return
+     */
     public static List<ChangeColumDto> setColumnInfoWhenUpdate(List<SalerOrderFormSettingDto> salerOrderForms, List<SalerOrderForm> oldSalerOrderForms, String organizationId) {
         List<ChangeColumDto> updateColumns =  new ArrayList<>();
         for(SalerOrderFormSettingDto newSalerOrderForm :salerOrderForms){
@@ -139,6 +146,7 @@ public class SalerOrderTransfer {
                     updateColumn.setOldFormName(oldSalerOrderForm.getFormName());
 
                     updateColumn.setTableName(initTableName(organizationId));
+                    updateColumn.setValue(newSalerOrderForm.getValue());
                     updateColumns.add(updateColumn);
 
                 }
@@ -153,6 +161,7 @@ public class SalerOrderTransfer {
             SalerOrderForm salerOrderForm = new SalerOrderForm();
             salerOrderForm.setId(updateColumn.getId());
             salerOrderForm.setColumnName(updateColumn.getNewColumnName());
+            salerOrderForm.setValue(updateColumn.getValue());
             salerOrderForm.setFormName(updateColumn.getNewFormName());
             list.add(salerOrderForm);
         });

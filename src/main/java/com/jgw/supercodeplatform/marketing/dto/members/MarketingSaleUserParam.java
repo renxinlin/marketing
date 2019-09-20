@@ -35,7 +35,7 @@ public class MarketingSaleUserParam {
     @ApiModelProperty("用户状态(1、 待审核，2 停用3启用)导购员状态")
     /** 用户状态(1、 表示正常，0 表示下线)导购员状态 */
     private Byte state;
-
+    private Long randomId; // 控制前端列表哪个全选打钩样式
 
 
 }

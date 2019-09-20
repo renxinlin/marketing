@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
+import com.jgw.supercodeplatform.marketingsaler.order.constants.FormType;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ChangeColumDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
@@ -91,6 +92,11 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             columnNames.add(salerOrderFormDto.getColumnName());
         });
         Asserts.check(columnNames.size() == salerOrderFormDtos.size(),"存在重复表单名或与预定义名称冲突");
+        salerOrderForms.forEach(salerOrderFormSettingDto -> {
+            if(salerOrderFormSettingDto.getFormType().byteValue() == FormType.xiala){
+                    Asserts.check(!StringUtils.isEmpty(salerOrderFormSettingDto.getValue()),"下拉框必须存在默认值");
+            }
+        });
 
     }
 

@@ -10,19 +10,8 @@ apollo:
 
 server: 
   port: 9071
-  tomcat:
-    max-threads: 3000
-    min-spare-threads: 100
-    max-connections: 3000
-    
-spring: 
-  servlet:
-    multipart:
-      max-file-size: 100Mb
-  http: 
-    multipart:
-      max-request-size: 100Mb
-  application: 
+spring:
+  application:
     name: platform-marketing-supercode
   zipkin:
     base-url: http://192.168.20.220:9411

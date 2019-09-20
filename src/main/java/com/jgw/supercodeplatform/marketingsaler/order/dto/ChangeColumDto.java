@@ -14,4 +14,6 @@ public class ChangeColumDto {
     private String newFormName;
     private String newColumnName;
     private String tableName;
+
+    private String value;
 }
