@@ -64,6 +64,7 @@ public interface MarketingUserMapperExt extends MarketingUserMapper , CommonSql 
             + " OR State LIKE binary CONCAT('%',#{search},'%') "
             + ")"
             + " </if>"
+            + " order by CreateDate desc "
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
             + " </where>"
             + " </script>")
