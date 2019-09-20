@@ -526,6 +526,6 @@ public class CommonService {
 		if(resultJson != null) {
 			return resultJson.getString("innerCodeId");
 		}
-		return null;
+		throw new SuperCodeExtException("查询到不对应的内码");
 	}
 }
