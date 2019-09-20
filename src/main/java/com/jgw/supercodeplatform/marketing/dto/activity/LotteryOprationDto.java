@@ -74,6 +74,10 @@ public class LotteryOprationDto {
      * 该活动发放红包时是否需要审核
      */
     private byte sendAudit;
+    /**
+     * 内码
+     */
+    private String innerCode;
 
     public LotteryOprationDto lotterySuccess(int winnOrNot, String msg) {
         if (lotteryResultMO == null){

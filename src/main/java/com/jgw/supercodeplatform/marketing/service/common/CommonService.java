@@ -400,7 +400,20 @@ public class CommonService {
 		}
 	}
 
-
+	/**
+	 * 校验是否为营销或者防伪码制
+	 * @param codeTypeId
+	 * @return
+	 * @throws SuperCodeException
+	 */
+	public void checkCodeMarketFakeValid(Long codeTypeId) {
+		if(codeTypeId == null){
+			throw  new SuperCodeExtException("对不起,码制不合法");
+		}
+		if (SystemLabelEnum.MARKETING.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.FAKE.getCodeTypeId().intValue() != codeTypeId.intValue()) {
+			throw  new SuperCodeExtException("对不起,码制不合法");
+		}
+	}
 
 	public boolean generateQR(String content, HttpServletResponse response) throws WriterException, IOException {
 		//设置二维码纠错级别ＭＡＰ
@@ -491,4 +504,28 @@ public class CommonService {
 		}
     	return customerMap;
     }
+
+	/**
+	 * 根据码制和码获取内码
+	 * @param codeId
+	 * @param codeTypeId
+	 * @return 内码
+	 */
+    public String getInnerCode(String codeId, String codeTypeId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("outerCodeId", codeId);
+		params.put("codeTypeId", codeTypeId);
+		ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(msCodeUrl+CommonConstants.OUTER_INFO_ONE, params, null);
+		String body = responseEntity.getBody();
+		JSONObject jsonObject=JSONObject.parseObject(body);
+		Integer state=jsonObject.getInteger("state");
+		if (null == state || state.intValue()!=200) {
+			throw new SuperCodeExtException("码查询码信息出错:"+body, 500);
+		}
+		JSONObject resultJson = jsonObject.getJSONObject("results");
+		if(resultJson != null) {
+			return resultJson.getString("innerCodeId");
+		}
+		return null;
+	}
 }

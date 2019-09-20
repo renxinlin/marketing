@@ -625,9 +625,9 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param organizationId
 	 * @throws SuperCodeException
 	 */
-	public void addAbandonPlatformScanCodeRecord(String productId, String productBatchId, String codeId, Long activityId,
+	public void addAbandonPlatformScanCodeRecord(String innerCode, String productId, String productBatchId, String codeId, Long activityId,
 								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName) {
-		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
+		if (StringUtils.isBlank(innerCode) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
 				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeExtException("新增扫码记录出错，有参数为空", 500);
@@ -637,6 +637,7 @@ public class CodeEsService extends AbstractEsSearch {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
 		addParam.put("productBatchId", productBatchId);
+		addParam.put("innerCode", innerCode);
 		addParam.put("codeId", codeId);
 		addParam.put("codeType", codeType);
 		addParam.put("activitySetId", activitySetId);
@@ -670,7 +671,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param organizationId
 	 * @throws SuperCodeException
 	 */
-	public void addPlatformScanCodeRecord(String productId, String productBatchId, String codeId,String openId,Long userId, Integer memberType, Long activityId,
+	public void addPlatformScanCodeRecord(String innerCode, String productId, String productBatchId, String codeId,String openId,Long userId, Integer memberType, Long activityId,
 												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName,float amount) throws SuperCodeException {
 		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId) || StringUtils.isBlank(openId) || userId == null
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime || memberType == null
@@ -682,6 +683,7 @@ public class CodeEsService extends AbstractEsSearch {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
 		addParam.put("productBatchId", productBatchId);
+		addParam.put("innerCode", innerCode);
 		addParam.put("codeId", codeId);
 		addParam.put("codeType", codeType);
 		addParam.put("activitySetId", activitySetId);
@@ -710,9 +712,9 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param productBatchId
 	 * @return
 	 */
-	public long countPlatformScanCodeRecord(String codeId, Integer status) {
+	public long countPlatformScanCodeRecord(String innerCode, Integer status) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
-		addParam.put("codeId.keyword", codeId);
+		addParam.put("innerCode.keyword", innerCode);
 		if (status != null) {
 			addParam.put("status", status);
 		}

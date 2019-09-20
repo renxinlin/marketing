@@ -247,12 +247,12 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
      * 放弃抽奖时调用
      * @param abandonPlatform
      */
-    public void addAbandonPlatform(AbandonPlatform abandonPlatform) {
+    public void addAbandonPlatform(String innerCode, AbandonPlatform abandonPlatform) {
         MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
         if (marketingActivitySet == null) {
             throw new SuperCodeExtException("当前暂无全网运营红包上线");
         }
-        odeEsService.addAbandonPlatformScanCodeRecord(abandonPlatform.getProductId(), abandonPlatform.getProductBatchId(), abandonPlatform.getCodeId(),
+        odeEsService.addAbandonPlatformScanCodeRecord(innerCode, abandonPlatform.getProductId(), abandonPlatform.getProductBatchId(), abandonPlatform.getCodeId(),
                 marketingActivitySet.getActivityId(),abandonPlatform.getCodeType(), marketingActivitySet.getId(),System.currentTimeMillis(),abandonPlatform.getOrganizationId(), abandonPlatform.getOrganizationFullName());
     }
 
@@ -262,7 +262,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
      * @param codeId
      * @return
      */
-    public PlatformScanStatusVo getScanStatus(String codeId, String organizationId) {
+    public PlatformScanStatusVo getScanStatus(String innerCode, String organizationId) {
         PlatformScanStatusVo platformScanStatusVo = new PlatformScanStatusVo(false, false);
         MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
         if (marketingActivitySet == null) {
@@ -275,7 +275,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
             return platformScanStatusVo;
         }
         platformScanStatusVo.setPlatformStatus(true);
-        long count = odeEsService.countPlatformScanCodeRecord(codeId, null);
+        long count = odeEsService.countPlatformScanCodeRecord(innerCode, null);
         if (count > 0) {
             //码已经被扫过，不可用
             return platformScanStatusVo;

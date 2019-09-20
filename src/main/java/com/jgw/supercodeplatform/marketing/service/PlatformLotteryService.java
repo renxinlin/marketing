@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service;
 
+import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -133,6 +134,15 @@ public class PlatformLotteryService {
         lotteryOprationDto.setScanCodeInfoMO(scanCodeInfoMO);
         lotteryOprationDto.setMarketingActivity(activity);
         lotteryOprationDto.setProductName(productName);
+        String conditon = mActivitySet.getValidCondition();
+        if (StringUtils.isBlank(conditon)) {
+            Integer maxJoinNum = JSON.parseObject(conditon).getInteger("maxJoinNum");
+            if (maxJoinNum == null) {
+                lotteryOprationDto.setEachDayNumber(0);
+            } else {
+                lotteryOprationDto.setEachDayNumber(maxJoinNum);
+            }
+        }
         //执行抽奖逻辑
         lotteryOprationDto.setPrizeTypeMO(LotteryUtilWithOutCodeNum.startLottery(moPrizeTypes));
         return lotteryOprationDto;
@@ -143,7 +153,7 @@ public class PlatformLotteryService {
         ScanCodeInfoMO scanCodeInfoMO = lotteryOprationDto.getScanCodeInfoMO();
         MarketingPrizeTypeMO prizeTypeMO = lotteryOprationDto.getPrizeTypeMO();
         Float amount = prizeTypeMO.getPrizeAmount();
-        Long memberId = lotteryOprationDto.getMarketingMembersInfo().getId();
+        String innerCode = lotteryOprationDto.getInnerCode();
         //获取该活动的每个用户最多扫码次数
         Integer maxScanNumber = lotteryOprationDto.getEachDayNumber();
         String organizationId = lotteryOprationDto.getOrganizationId();
@@ -165,7 +175,7 @@ public class PlatformLotteryService {
                 return lotteryOprationDto.lotterySuccess("扫码人数过多,请稍后再试");
             }
             String opneIdNoSpecialChactar = StringUtils.isBlank(openId)? null: CommonUtil.replaceSpicialChactar(openId);
-            long codeCount = codeEsService.countPlatformScanCodeRecord(codeId, null);
+            long codeCount = codeEsService.countPlatformScanCodeRecord(innerCode, null);
             if (codeCount > 0) {
                 return lotteryOprationDto.lotterySuccess("您手速太慢，该码已被其它用户领取");
             }
@@ -178,7 +188,7 @@ public class PlatformLotteryService {
                     return lotteryOprationDto.lotterySuccess("您扫码已超过该活动限制数量");
                 }
             }
-            codeEsService.addPlatformScanCodeRecord(productId, productBatchId, codeId, openId,userId,0, 5L, codeTypeId,activitySetId, nowTimeMills,organizationId,organizationName,amount);
+            codeEsService.addPlatformScanCodeRecord(innerCode, productId, productBatchId, codeId, openId,userId,0, 5L, codeTypeId,activitySetId, nowTimeMills,organizationId,organizationName,amount);
             lotteryOprationDto.setSuccessLottory(1);
             return lotteryOprationDto;
         } catch (Exception e){

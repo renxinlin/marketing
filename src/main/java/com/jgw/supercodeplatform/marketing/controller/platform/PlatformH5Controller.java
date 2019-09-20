@@ -61,22 +61,33 @@ public class PlatformH5Controller {
             @ApiImplicitParam(name = "organizationId", paramType = "query", value = "组织ID", required = true)})
     @GetMapping("/scanStatus")
     public RestResult<PlatformScanStatusVo> getScanStatus(@RequestParam String codeId, @RequestParam String codeTypeId, @RequestParam String organizationId){
+        commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
         commonService.checkCodeValid(codeId, codeTypeId);
-        commonService.checkCodeTypeValid(Long.valueOf(codeTypeId));
-        PlatformScanStatusVo platformScanStatusVo = platformActivityService.getScanStatus(codeId, organizationId);
+        String innerCode = commonService.getInnerCode(codeId, codeTypeId);
+        PlatformScanStatusVo platformScanStatusVo = platformActivityService.getScanStatus(innerCode, organizationId);
         return RestResult.successWithData(platformScanStatusVo);
     }
 
     @ApiOperation("放弃抽奖")
     @PostMapping("/abandonLottery")
     public RestResult<?> abandonLottery(@RequestBody @Valid AbandonPlatform abandonPlatform){
-        platformActivityService.addAbandonPlatform(abandonPlatform);
+        String codeId = abandonPlatform.getCodeId();
+        String codeTypeId = abandonPlatform.getCodeType();
+        commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
+        commonService.checkCodeValid(codeId, codeTypeId);
+        String innerCode = commonService.getInnerCode(codeId, codeTypeId);
+        platformActivityService.addAbandonPlatform(innerCode, abandonPlatform);
         return RestResult.success();
     }
 
     @ApiOperation("抽奖")
     @PostMapping("/lottery")
     public RestResult<LotteryResultMO> lottery(@RequestBody @Valid LotteryPlatform lotteryPlatform, @ApiIgnore H5LoginVO h5LoginVO, HttpServletRequest request) throws Exception {
+        String codeId = lotteryPlatform.getCodeId();
+        String codeTypeId = lotteryPlatform.getCodeType();
+        commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
+        commonService.checkCodeValid(codeId, codeTypeId);
+        String innerCode = commonService.getInnerCode(codeId, codeTypeId);
         MarketingActivitySet marketingActivitySet = marketingActivitySetService.getOnlyPlatformActivity();
         MarketingMembers memberUser = marketingMembersService.getMemberById(lotteryPlatform.getMemberId());
         ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
@@ -86,6 +97,7 @@ public class PlatformH5Controller {
         scanCodeInfoMO.setActivitySetId(marketingActivitySet.getId());
         scanCodeInfoMO.setCodeTypeId(lotteryPlatform.getCodeType());
         LotteryOprationDto lotteryOprationDto = new LotteryOprationDto();
+        lotteryOprationDto.setInnerCode(innerCode);
         //检查抽奖的初始条件是否符合
         lotteryOprationDto = platformLotteryService.checkLotteryCondition(lotteryOprationDto, scanCodeInfoMO);
         RestResult<LotteryResultMO> restResult = lotteryOprationDto.getRestResult();
