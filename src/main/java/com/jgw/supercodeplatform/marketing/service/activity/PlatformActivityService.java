@@ -83,9 +83,6 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
     @Autowired
     private CodeEsService odeEsService;
 
-    @Autowired
-    private MarketingActivityProductMapper marketingActivityProductMapper;
-
     @Override
     protected List<PlatformActivityVo> searchResult(DaoSearchWithUser searchParams) throws Exception {
         searchParams.setStartNumber((searchParams.getCurrent()-1)*searchParams.getPageSize());
@@ -265,23 +262,27 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
      * @param codeId
      * @return
      */
-    public PlatformScanStatusVo getScanStatus(String codeId) {
-        PlatformScanStatusVo platformScanStatusVo = new PlatformScanStatusVo();
+    public PlatformScanStatusVo getScanStatus(String codeId, String organizationId) {
+        PlatformScanStatusVo platformScanStatusVo = new PlatformScanStatusVo(false, false);
         MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
         if (marketingActivitySet == null) {
             //当前不存在全网运营活动，不可用
-            platformScanStatusVo.setPlatformStatus(false);
-        } else {
-            platformScanStatusVo.setPlatformStatus(true);
+            return platformScanStatusVo;
         }
+        MarketingPlatformOrganization marketingPlatformOrganization = marketingPlatformOrganizationMapper.selectByActivitySetIdAndOrganizationId(marketingActivitySet.getId(), organizationId);
+        if (marketingPlatformOrganization == null) {
+            //当前组织未参加活动，不可用
+            return platformScanStatusVo;
+        }
+        platformScanStatusVo.setPlatformStatus(true);
         long count = odeEsService.countPlatformScanCodeRecord(codeId, null);
         if (count > 0) {
             //码已经被扫过，不可用
-            platformScanStatusVo.setScanStatus(false);
-        } else {
-            platformScanStatusVo.setScanStatus(true);
+            return platformScanStatusVo;
         }
+        platformScanStatusVo.setScanStatus(true);
         return platformScanStatusVo;
+
     }
 
 

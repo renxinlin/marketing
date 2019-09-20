@@ -103,6 +103,7 @@ public class PlatformActivityDataController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/memberRegion")
     public RestResult<MemberAreaVo> memberRegion(@Valid ActivityDataParam activityDataParam) {
+        //传给前端时注意按照从大到小的顺序
         List<PieChartVo> areaList = Lists.newArrayList(new PieChartVo("浙江", 568L), new PieChartVo("江苏", 258L), new PieChartVo("湖北", 124L),
         new PieChartVo("上海", 788L), new PieChartVo("山东", 236L), new PieChartVo("陕西", 244L),
         new PieChartVo("江西", 668L), new PieChartVo("辽宁", 478L), new PieChartVo("湖南", 854L));

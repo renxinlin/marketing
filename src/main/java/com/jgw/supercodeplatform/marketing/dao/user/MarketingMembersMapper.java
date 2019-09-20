@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -279,4 +280,8 @@ public interface MarketingMembersMapper {
 
     @Select("SELECT COUNT(*) FROM marketing_members")
     long countAllMemberNum();
+
+    @Select("SELECT "+selectSql+" FROM marketing_members WHERE Openid = #{openid}")
+    MarketingMembers getMemberByOpenId(@Param("openId") String openId);
+
 }

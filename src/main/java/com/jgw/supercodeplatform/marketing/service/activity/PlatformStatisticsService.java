@@ -3,6 +3,8 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 import com.google.common.collect.Lists;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
@@ -14,18 +16,21 @@ import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataV
 import com.jgw.supercodeplatform.marketing.vo.platform.DayActivityJoinQuantityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.ScanCodeDataVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.WinningPrizeDataVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class PlatformStatisticsService {
 
@@ -37,7 +42,10 @@ public class PlatformStatisticsService {
     private MarketingMembersWinRecordMapper marketingMembersWinRecordMapper;
     @Autowired
     private MarketingMembersMapper marketingMembersMapper;
-
+    @Autowired
+    private RestTemplateUtil restTemplateUtil;
+    @Value("${rest.user.url}")
+    private String restUserUrl;
     /**
      * 扫码率
      * @param activityDataParam
@@ -46,8 +54,20 @@ public class PlatformStatisticsService {
     public List<PieChartVo> scanCodeRate(@Valid ActivityDataParam activityDataParam) {
         long startTime = activityDataParam.getStartDate().getTime();
         long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
-        //TODO 去码平台获取指定时间段内生码数量
+        String startDateStr = DateFormatUtils.format(activityDataParam.getStartDate(), "yyyy-MM-dd");
+        String endDateStr = DateFormatUtils.format(activityDataParam.getEndDate(), "yyyy-MM-dd");
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("start", startDateStr);
+        paramMap.put("end", endDateStr);
         long produceCodeNum = 1000000; //暂时假定为一百万个
+        try {
+            ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restUserUrl+ CommonConstants.CODE_GETCODETOTAL,paramMap,null);
+            if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
+                produceCodeNum= Long.parseLong(responseEntity.getBody());
+            }
+        } catch (Exception e) {
+            log.error("获取指定时间内生码数量出错", e);
+        }
         PieChartVo produceCodeVo = new PieChartVo("生码量", produceCodeNum);
         //扫码量
         long scanCodeNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, null);

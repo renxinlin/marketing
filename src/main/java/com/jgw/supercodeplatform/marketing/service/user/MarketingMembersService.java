@@ -688,6 +688,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return marketingMembersMapper.getOrganizationAllMemberWithDate(organizationId,startDate,endDate);
 	}
 
+	public MarketingMembers getMemberByOpenid(String openId){
+    	return marketingMembersMapper.getMemberByOpenId(openId);
+	}
+
+
 	public RestResult<String> guideLottery(String wxstate) {
 		return null;
 	}

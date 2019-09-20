@@ -3,14 +3,17 @@ package com.jgw.supercodeplatform.marketing.controller.wechat;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.enums.market.AccessProtocol;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
@@ -49,7 +52,6 @@ import javax.servlet.http.HttpServletResponse;
 @Api(tags = "微信授权回调地址")
 public class WeixinAuthController {
 
-
 	@Autowired
 	private ModelMapper modelMapper;
 	protected static Logger logger = LoggerFactory.getLogger(WeixinAuthController.class);
@@ -63,12 +65,17 @@ public class WeixinAuthController {
 	@Autowired
 	private MarketingSaleMemberService marketingSaleMemberService;
 
+	@Autowired
+	private MarketingWxMerchantsMapper mWxMerchantsMapper;
 
 	@Autowired
 	private CommonService commonService;
 
 	@Autowired
 	private GlobalRamCache globalRamCache;
+
+	@Autowired
+	private CommonUtil commonUtil;
 
     @Value("${marketing.activity.h5page.url}")
     private String h5pageUrl;
@@ -121,6 +128,11 @@ public class WeixinAuthController {
     			redirectUrl =doBizBySaler(statearr,state,code,userInfo,redirectUrl,response);
     			return redirectUrl;
     		}
+    		//5表示全网运营红包
+    		if (AccessProtocol.ACTIVITY_PLATFORM.getType() == statecode) {
+				redirectUrl = doBizPlatform(statearr[1], code, response);
+				return redirectUrl;
+			}
     		organizationId=statearr[1];
     		userInfo=getUserInfo(code, organizationId,null);
     		openid=userInfo.getString("openid");
@@ -525,4 +537,57 @@ public class WeixinAuthController {
 		logger.info("导购扫码最终返回url:"+redirectUrl);
 		return  redirectUrl;
 	}
+
+
+	private String doBizPlatform(String organizationId, String code, HttpServletResponse response) throws Exception {
+		MarketingWxMerchants mWxMerchants = mWxMerchantsMapper.getJgw();
+		String appId = mWxMerchants.getMchAppid().trim();
+		String secret = mWxMerchants.getMerchantSecret().trim();
+		String tokenParams="?appid="+appId+"&secret="+secret+"&code="+code+"&grant_type=authorization_code";
+		HttpClientResult tokenhttpResult=HttpRequestUtil.doGet(WechatConstants.AUTH_ACCESS_TOKEN_URL+tokenParams);
+		String tokenContent=tokenhttpResult.getContent();
+		logger.info("调用获取授权access_token后返回内容："+tokenContent);
+		if (tokenContent.contains("errcode")) {
+			throw new SuperCodeExtException(tokenContent, 500);
+		}
+		JSONObject accessTokenObj = JSONObject.parseObject(tokenContent);
+		String openid = accessTokenObj.getString("openid");
+		HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(WechatConstants.ACCESS_TOKEN_URL+"&appid="+appId+"&secret="+secret);
+		String body = reHttpClientResult.getContent();
+		logger.info("请求获取用户信息token返回;"+body);
+		JSONObject userInfo = null;
+		if (body.contains("access_token")) {
+			JSONObject tokenObj=JSONObject.parseObject(body);
+			String token=tokenObj.getString("access_token");
+			HttpClientResult userInfoResult=HttpRequestUtil.doGet(WechatConstants.WECHAT_USER_INFO+"?access_token="+token+"&openid="+openid+"&lang=zh_CN");
+			String userInfoBody=userInfoResult.getContent();
+			logger.info("判断是否关注过公众号方法获取用户基本信息`返回结果="+userInfoBody);
+			if (StringUtils.isBlank(userInfoBody)) {
+				throw new SuperCodeExtException(userInfoBody, 500);
+			}
+			userInfo = JSONObject.parseObject(userInfoBody);
+		}
+		// 微信授权
+		openid = userInfo.getString("openid");
+		MarketingUser marketingUser = marketingSaleMemberService.selectByOpenid(openid);
+
+// 导购step-2: 刷新头像
+		// 需要返回前端组织Id和用户id[id或者-1]以及openid
+
+		MarketingMembers members = marketingMembersService.getMemberByOpenid(openid);
+		if (members == null) {
+			members = new MarketingMembers();
+			members.setOpenid(openid);
+			members.setWxName(userInfo.getString("nickName"));
+			members.setState((byte) 2);
+			members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
+			members.setOrganizationId(organizationId);
+			members.setIsRegistered((byte) 0);
+			marketingMembersService.insert(members);
+		}
+		writeJwtToken(response, members);
+		String wxstate=commonUtil.getUUID();
+		return "redirect:" + h5pageUrl + WechatConstants.SALER_LOGIN_URL+"?wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();
+	}
+
 }

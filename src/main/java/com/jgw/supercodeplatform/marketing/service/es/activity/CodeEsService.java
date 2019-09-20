@@ -119,6 +119,17 @@ public class CodeEsService extends AbstractEsSearch {
 		return getCount(eSearch);
 	}
 
+	public long countByUserAndActivityPlatform(String openId, Long activitySetId) {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("openId.keyword", openId);
+		addParam.put("activitySetId", activitySetId);
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.MARKETING);
+		eSearch.setType(EsType.INFO);
+		eSearch.setParam(addParam);
+		return getCount(eSearch);
+	}
+
 	/**
 	 * 根据产品id和批次id查询参与扫码的批次一共被扫了多少次
 	 *
@@ -659,8 +670,8 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param organizationId
 	 * @throws SuperCodeException
 	 */
-	public void addPlatformScanCodeRecord(String productId, String productBatchId, String codeId,String openId,String userId, Integer memberType, Long activityId,
-												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName) throws SuperCodeException {
+	public void addPlatformScanCodeRecord(String productId, String productBatchId, String codeId,String openId,Long userId, Integer memberType, Long activityId,
+												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName,float amount) throws SuperCodeException {
 		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId) || StringUtils.isBlank(openId) || StringUtils.isBlank(userId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime || memberType == null
 				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
@@ -682,6 +693,7 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("organizationFullName", organizationFullName);
 		addParam.put("memberType", memberType);
 		addParam.put("userId", userId);
+		addParam.put("amount", amount);
 		//0表示扫码后点击放弃抽奖状态，1表示点击了抽奖
 		addParam.put("status", 1);
 		EsSearch eSearch = new EsSearch();

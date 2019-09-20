@@ -1042,4 +1042,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		return restResult;
 	}
 
+
+	public MarketingActivitySet getOnlyPlatformActivity(){
+		return mSetMapper.getOnlyPlatformActivity();
+	}
+
 }

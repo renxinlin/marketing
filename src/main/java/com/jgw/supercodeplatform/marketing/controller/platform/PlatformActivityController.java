@@ -154,12 +154,12 @@ public class PlatformActivityController {
     @ApiOperation("启用或停止活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @PostMapping("/disOrEnable")
-    public RestResult<Boolean> disOrEnable(@RequestBody @Valid PlatformActivityDisable platformActivityDisable){
+    public RestResult<?> disOrEnable(@RequestBody @Valid PlatformActivityDisable platformActivityDisable){
         boolean flag = platformActivityService.updatePlatformStatus(platformActivityDisable);
         if (flag) {
             return RestResult.success("设置成功", flag);
         }
-        return RestResult.success("设置失败，当前可能存在正在启用的全平台运营活动", flag);
+        return RestResult.success("设置失败，当前可能存在正在启用的全平台运营活动", "设置失败，当前可能存在正在启用的全平台运营活动");
     }
 
     @ApiOperation("参与记录")

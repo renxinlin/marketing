@@ -185,12 +185,6 @@ public class LotteryService {
 		lotteryOprationDto.setSendAudit(mActivitySet.getSendAudit());
 		lotteryOprationDto.setMarketingMembersInfo(marketingMembersInfo);
 		lotteryOprationDto.setOrganizationId(scanCodeInfoMO.getOrganizationId());
-		if (mActivitySet.getActivityId() == 5) {
-			MarketingPlatformOrganization marketingPlatformOrganization = marketingPlatformOrganizationMapper.selectByActivitySetIdAndOrganizationId(mActivitySet.getId(), scanCodeInfoMO.getOrganizationId());
-			if (marketingPlatformOrganization != null) {
-				lotteryOprationDto.setOrganizationName(marketingPlatformOrganization.getOrganizationFullName());
-			}
-		}
 		if (lotteryOprationDto.getOrganizationName() == null ) {
 			lotteryOprationDto.setOrganizationName(mActivitySet.getOrganizatioIdlName());
 		}
@@ -373,7 +367,7 @@ public class LotteryService {
 			acquireLock = lock.lock(lockKey, 5000, 5, 200);
 			if(!acquireLock) {
 				logger.error("{锁获取失败:" +lockKey+ ",请检查}");
-				redisUtil.hmSet("marketing:lock:fail",activitySetId + codeId +codeTypeId,new Date());
+				redisUtil.hmSet("marketing:lock:fail",lockKey,new Date());
 				return lotteryOprationDto.lotterySuccess("扫码人数过多,请稍后再试");
 			}
 			String opneIdNoSpecialChactar = StringUtils.isBlank(openId)? null:CommonUtil.replaceSpicialChactar(openId);
