@@ -130,7 +130,7 @@ public class WeixinAuthController {
     		}
     		//5表示全网运营红包
     		if (AccessProtocol.ACTIVITY_PLATFORM.getType() == statecode) {
-				redirectUrl = doBizPlatform(statearr[1], code, response);
+				redirectUrl = doBizPlatform(statearr[3],statearr[1], code, response);
 				return redirectUrl;
 			}
     		organizationId=statearr[1];
@@ -539,7 +539,7 @@ public class WeixinAuthController {
 	}
 
 
-	private String doBizPlatform(String organizationId, String code, HttpServletResponse response) throws Exception {
+	private String doBizPlatform(String redirectUri, String organizationId, String code, HttpServletResponse response) throws Exception {
 		MarketingWxMerchants mWxMerchants = mWxMerchantsMapper.getJgw();
 		String appId = mWxMerchants.getMchAppid().trim();
 		String secret = mWxMerchants.getMerchantSecret().trim();
@@ -587,7 +587,18 @@ public class WeixinAuthController {
 		}
 		writeJwtToken(response, members);
 		String wxstate=commonUtil.getUUID();
-		return "redirect:" + h5pageUrl + WechatConstants.SALER_LOGIN_URL+"?wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();
+		String uri = null;
+		String[] uris = redirectUri.split("#");
+		if (uris.length > 1) {
+			String firUri = uris[0] + "wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();
+			uri = firUri;
+			for (int i= 1;i<uris.length;i++) {
+				uri = uri + "#" + uris[i];
+			}
+		} else {
+			uri = redirectUri + "wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();
+		}
+		return "redirect:" + uri;
 	}
 
 }
