@@ -161,7 +161,7 @@ public class SalerOrderTransfer {
             SalerOrderForm salerOrderForm = new SalerOrderForm();
             salerOrderForm.setId(updateColumn.getId());
             salerOrderForm.setColumnName(updateColumn.getNewColumnName());
-            salerOrderForm.setValue(updateColumn.)
+            salerOrderForm.setValue(updateColumn.getValue());
             salerOrderForm.setFormName(updateColumn.getNewFormName());
             list.add(salerOrderForm);
         });
