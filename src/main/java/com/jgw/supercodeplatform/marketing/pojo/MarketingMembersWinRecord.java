@@ -24,8 +24,8 @@ public class MarketingMembersWinRecord {
     private String productId;//产品ID
     private String productBatchId;//产品批次ID
 	private Date createTime;
-	private Date UpdateTime;
-	private Byte awardType;
+	private Date updateTime;
+	private Byte awardGrade;
     public int getId() {
         return id;
     }
@@ -148,19 +148,19 @@ public class MarketingMembersWinRecord {
 		return createTime;
 	}
 
+	public void setAwardGrade(Byte awardGrade) {
+		this.awardGrade = awardGrade;
+	}
+
+	public Byte getAwardGrade() {
+		return awardGrade;
+	}
+
 	public void setUpdateTime(Date updateTime) {
-		UpdateTime = updateTime;
+		this.updateTime = updateTime;
 	}
 
 	public Date getUpdateTime() {
-		return UpdateTime;
-	}
-
-	public void setAwardType(Byte awardType) {
-		this.awardType = awardType;
-	}
-
-	public Byte getAwardType() {
-		return awardType;
+		return updateTime;
 	}
 }

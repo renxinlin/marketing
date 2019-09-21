@@ -255,7 +255,7 @@ public class PlatformLotteryService {
         return RestResult.success(strAmount, lotteryResultMO);
     }
 
-    private void addWinRecord(String outCodeId, String mobile, String openId, String productName,Long activitySetId, byte awardType,
+    private void addWinRecord(String outCodeId, String mobile, String openId, String productName,Long activitySetId, byte awardGrade,
                               MarketingActivity activity, String organizationId,String organizationFullName, Long prizeTypeId, Float amount, String productId, String productBatchId) {
         //插入中奖纪录
         MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
@@ -272,7 +272,7 @@ public class PlatformLotteryService {
         redWinRecord.setOrganizationId(organizationId);
         redWinRecord.setOrganizationFullName(organizationFullName);
         redWinRecord.setProductBatchId(productBatchId);
-        redWinRecord.setAwardType(awardType);
+        redWinRecord.setAwardGrade(awardGrade);
         mWinRecordMapper.addWinRecord(redWinRecord);
     }
 
