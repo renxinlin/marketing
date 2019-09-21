@@ -146,7 +146,14 @@ public class PlatformActivityController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/platformOrganizationPage")
     public RestResult<PageResults<List<PlatformOrganizationDataVo>>> platformOrganization(@Valid DaoSearch daoSearch){
+        daoSearch.setPageSize(1000);
         PageResults<List<PlatformOrganizationDataVo>> pageResults = platformActivityService.platformOrganization(daoSearch);
+        int total = pageResults.getPagination().getTotal();
+        if (total > 1000) {
+            daoSearch.setPageSize(total);
+            PageResults<List<PlatformOrganizationDataVo>> totalPageResults = platformActivityService.platformOrganization(daoSearch);
+            return RestResult.successWithData(totalPageResults);
+        }
         return RestResult.successWithData(pageResults);
     }
 

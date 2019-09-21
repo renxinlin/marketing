@@ -195,8 +195,9 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
         ResponseEntity<String> entity = restTemplateUtil.getRequestAndReturnJosn(userUrl+ WechatConstants.ORG_LIST_PLATFORM, params, headerMap);
         if (entity != null && entity.getStatusCodeValue() == HttpStatus.SC_OK){
             String result = entity.getBody();
-            if (org.apache.commons.lang.StringUtils.isNotBlank(result) && JSON.parseObject(result).getIntValue("state") == HttpStatus.SC_OK) {
+            if (StringUtils.isNotBlank(result) && JSON.parseObject(result).getIntValue("state") == HttpStatus.SC_OK) {
                 PageResults<List<Object>> pageMapResults = JSON.parseObject(result).getObject("results", PageResults.class);
+                int total = pageMapResults.getPagination().getTotal();
                 List<PlatformOrganizationDataVo> resList = pageMapResults.getList().stream().map(obj -> {
                     Map sorMap = (Map)obj;
                     String organizationId = (String) sorMap.get("organizationId");
