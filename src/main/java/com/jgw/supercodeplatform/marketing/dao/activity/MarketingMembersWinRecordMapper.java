@@ -16,7 +16,7 @@ import java.util.List;
 public interface MarketingMembersWinRecordMapper extends CommonSql{
 
 	static String allFields="Id as id,ActivityId as activityId,ActivitySetId as activitySetId,ActivityName as activityName,Openid as openid,PrizeTypeId as prizeTypeId,CreateTime createTime,UpdateTime updateTime,"
-			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId,OrganizationFullName organizationFullName,PrizeName prizeName,ProductId productId";
+			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId,OrganizationFullName organizationFullName,PrizeName prizeName,ProductId productId, AwardType awardType";
 
 	static String allWinFields="mmw.Id as id,mmw.ActivityId as activityId,mmw.ActivitySetId as activitySetId,mmw.ActivityName as activityName,mmw.Openid as openid,mmw.PrizeTypeId as prizeTypeId,"
 			+ " CAST(mmw.WinningAmount AS CHAR) as winningAmount,mmw.PrizeName as prizeName "
@@ -82,10 +82,10 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	List<MarketingMembersWinRecordListReturn> list(MarketingMembersWinRecordListParam searchParams);
 
 	@Insert(" INSERT INTO marketing_members_win(ActivityId,ActivitySetId,ActivityName,Openid,CreateTime,UpdateTime,"
-			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,OrganizationFullName,Mobile,PrizeName,ProductId,ProductBatchId)"
+			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,OrganizationFullName,Mobile,PrizeName,ProductId,ProductBatchId,AwardType)"
 			+ " VALUES(#{activityId},#{activitySetId},#{activityName},#{openid},NOW(),NOW(),#{prizeTypeId},"
 			+ "#{winningAmount},#{winningCode},#{organizationId},#{organizationFullName},#{mobile},#{prizeName},"
-			+ "#{productId},#{productBatchId})")
+			+ "#{productId},#{productBatchId},#{awardType})")
 	int addWinRecord(MarketingMembersWinRecord winRecord);
 
 	@Select("SELECT "+allFields+" FROM marketing_members_win WHERE WinningCode = #{winningCode} AND OrganizationId = #{organizationId}")
@@ -124,6 +124,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	@Select("SELECT COUNT(1) FROM marketing_members_win WHERE ActivityId = 5 AND WinningAmount > 0 AND CreateTime >= #{createTimeStart} AND CreateTime <= #{createTimeEnd}")
 	long countPlatformWining(@Param("createTimeStart") Date createTimeStart, @Param("createTimeEnd") Date createTimeEnd);
 
-
+	@Select("SELECT "+allFields+" FROM marketing_members_win WHERE ActivitySetId = #{activitySetId} AND Openid = #{openid} AND AwardType = 1")
+	MarketingMembersWinRecord getFirstAward(@Param("activitySetId") Long activitySetId, @Param("openid") String openid);
 
 }

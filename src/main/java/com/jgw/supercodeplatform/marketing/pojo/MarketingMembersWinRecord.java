@@ -25,7 +25,7 @@ public class MarketingMembersWinRecord {
     private String productBatchId;//产品批次ID
 	private Date createTime;
 	private Date UpdateTime;
-    
+	private Byte awardType;
     public int getId() {
         return id;
     }
@@ -154,5 +154,13 @@ public class MarketingMembersWinRecord {
 
 	public Date getUpdateTime() {
 		return UpdateTime;
+	}
+
+	public void setAwardType(Byte awardType) {
+		this.awardType = awardType;
+	}
+
+	public Byte getAwardType() {
+		return awardType;
 	}
 }

@@ -123,6 +123,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
                     MarketingPrizeType marketingPrizeType = new MarketingPrizeType();
                     BeanUtils.copyProperties(prizeType, marketingPrizeType);
                     marketingPrizeType.setPrizeAmount(prizeType.getPrizeAmount().floatValue());
+                    marketingPrizeType.setRemainingStock(prizeType.getRemainingNumber());
                     if (prizeType.getAwardGrade() == null) {
                         marketingPrizeType.setRealPrize((byte)0);
                     } else {
@@ -164,10 +165,11 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
         }
         List<PrizeType> prizeTypeList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(marketingPrizeTypeList)) {
-            prizeTypeList = marketingPrizeTypeList.stream().filter(pr -> pr.getAwardGrade() != null).map(marketingPrizeType -> {
+            prizeTypeList = marketingPrizeTypeList.stream().filter(pr -> pr.getAwardGrade() != null && pr.getAwardGrade() > 0).map(marketingPrizeType -> {
                 PrizeType prizeType = new PrizeType();
                 BeanUtils.copyProperties(marketingPrizeType, prizeType);
                 prizeType.setPrizeAmount(new BigDecimal(marketingPrizeType.getPrizeAmount()));
+                prizeType.setRemainingNumber(marketingPrizeType.getRemainingStock());
                 return prizeType;
             }).collect(Collectors.toList());
         }

@@ -18,10 +18,7 @@ import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembersWinRecord;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.pojo.platform.MarketingPlatformOrganization;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
@@ -36,6 +33,9 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,12 +43,13 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 public class PlatformLotteryService {
     @Autowired
-    private CommonService commonService;
+    private MarketingPrizeTypeMapper mPrizeTypeMapper;
     @Autowired
     private MarketingActivitySetMapper mSetMapper;
     @Autowired
@@ -77,14 +78,12 @@ public class PlatformLotteryService {
     private MarketingWxMerchantsMapper marketingWxMerchantsMapper;
     @Autowired
     private MarketingMembersWinRecordMapper mWinRecordMapper;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     public LotteryOprationDto checkLotteryCondition(LotteryOprationDto lotteryOprationDto, ScanCodeInfoMO scanCodeInfoMO) throws ParseException, SuperCodeException {
-        String codeId=scanCodeInfoMO.getCodeId();
-        String codeTypeId=scanCodeInfoMO.getCodeTypeId();
         String productName = scanCodeInfoMO.getProductBatchId();
-        commonService.checkCodeValid(codeId, codeTypeId);
-        commonService.checkCodeTypeValid(Long.valueOf(codeTypeId));
-        Long activitySetId=scanCodeInfoMO.getActivitySetId();
+        Long activitySetId = scanCodeInfoMO.getActivitySetId();
         MarketingActivitySet mActivitySet = mSetMapper.selectById(activitySetId);
         if (null == mActivitySet) {
             return lotteryOprationDto.lotterySuccess("该活动设置不存在");
@@ -120,7 +119,7 @@ public class PlatformLotteryService {
             throw new SuperCodeExtException("对不起,该会员已被加入黑名单",200);
         }
         List<MarketingPrizeTypeMO> moPrizeTypes = marketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
-        if (CollectionUtils.isEmpty(moPrizeTypes)) {
+        if (moPrizeTypes == null || moPrizeTypes.size() <= 1) {
             return lotteryOprationDto.lotterySuccess("该活动未设置中奖奖次");
         }
         lotteryOprationDto.setSendAudit(mActivitySet.getSendAudit());
@@ -143,8 +142,8 @@ public class PlatformLotteryService {
                 lotteryOprationDto.setEachDayNumber(maxJoinNum);
             }
         }
+        lotteryOprationDto.setPrizeTypeMOList(moPrizeTypes);
         //执行抽奖逻辑
-        lotteryOprationDto.setPrizeTypeMO(LotteryUtilWithOutCodeNum.startLottery(moPrizeTypes));
         return lotteryOprationDto;
     }
 
@@ -212,15 +211,23 @@ public class PlatformLotteryService {
         String productBatchId = lotteryOprationDto.getScanCodeInfoMO().getProductBatchId();
         //该组织ID为支付的组织ID
         String organizationId = marketingWxMerchantsMapper.getJgw().getOrganizationId();
+        List<MarketingPrizeTypeMO> prizeTypeMOList = lotteryOprationDto.getPrizeTypeMOList();
+        MarketingPrizeTypeMO prizeTypeMo = getPrizeMo(prizeTypeMOList, marketingActivity.getId(), openId);
         //转化为分
-        MarketingPrizeTypeMO prizeTypeMo = lotteryOprationDto.getPrizeTypeMO();
         Float amount = prizeTypeMo.getPrizeAmount();
+        //添加中奖纪录
+        addWinRecord(winningCode, mobile, openId,productName,lotteryOprationDto.getScanCodeInfoMO().getActivitySetId(),prizeTypeMo.getAwardType(), marketingActivity, lotteryOprationDto.getOrganizationId(), lotteryOprationDto.getOrganizationName(), prizeTypeMo.getId(),amount,productId,productBatchId);
+        //如果是虚拟奖项，则为没有中奖
+        if (prizeTypeMo.getAwardType().intValue() == 0) {
+            LotteryResultMO lotteryResultMO = new LotteryResultMO("哎呀没中");
+            lotteryResultMO.setData(lotteryResultMO.getMsg());
+            return RestResult.success(lotteryResultMO.getMsg(), lotteryResultMO);
+        }
+        mPrizeTypeMapper.updateRemainingStock(prizeTypeMo.getId());
         Float finalAmount = amount * 100;
         if (StringUtils.isBlank(openId)) {
             throw  new SuperCodeExtException("微信支付openid不能为空",200);
         }
-        //添加中奖纪录
-        addWinRecord(winningCode, mobile, openId,productName,lotteryOprationDto.getScanCodeInfoMO().getActivitySetId(), marketingActivity, lotteryOprationDto.getOrganizationId(), lotteryOprationDto.getOrganizationName(), prizeTypeMo.getId(),amount,productId,productBatchId);
         //生成订单号
         String partner_trade_no=wXPayTradeNoGenerator.tradeNo();
         //保存订单
@@ -242,14 +249,13 @@ public class PlatformLotteryService {
         //如果该活动时立刻发送红包，则直接调用微信支付发红包
         wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partner_trade_no, organizationId);
         String strAmount = String.format("%.2f", amount);
-        LotteryResultMO lotteryResultMO = new LotteryResultMO();
-        RestResult<LotteryResultMO> restResult = new RestResult<>();
+        LotteryResultMO lotteryResultMO = new LotteryResultMO(1);
         lotteryResultMO.setData(strAmount);
         lotteryResultMO.setMsg(strAmount);
         return RestResult.success(strAmount, lotteryResultMO);
     }
 
-    private void addWinRecord(String outCodeId, String mobile, String openId, String productName,Long activitySetId,
+    private void addWinRecord(String outCodeId, String mobile, String openId, String productName,Long activitySetId, byte awardType,
                               MarketingActivity activity, String organizationId,String organizationFullName, Long prizeTypeId, Float amount, String productId, String productBatchId) {
         //插入中奖纪录
         MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
@@ -266,7 +272,39 @@ public class PlatformLotteryService {
         redWinRecord.setOrganizationId(organizationId);
         redWinRecord.setOrganizationFullName(organizationFullName);
         redWinRecord.setProductBatchId(productBatchId);
+        redWinRecord.setAwardType(awardType);
         mWinRecordMapper.addWinRecord(redWinRecord);
+    }
+
+    /**
+     * 抽奖过程
+     * 防止并发出现库存减到负数的情况，过期时间为1分钟，应该够了，
+     * @param prizeTypeMOList
+     * @param activityId
+     * @param openId
+     * @return
+     * @throws SuperCodeException
+     */
+    private synchronized MarketingPrizeTypeMO getPrizeMo(List<MarketingPrizeTypeMO> prizeTypeMOList, Long activityId, String openId) throws SuperCodeException {
+        MarketingMembersWinRecord firstAwardWinRecord = mWinRecordMapper.getFirstAward(activityId, openId);
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        for (MarketingPrizeTypeMO prizeTypeMo : prizeTypeMOList) {
+            if (prizeTypeMo.getAwardType().intValue() == 0) {
+                //如果是虚拟不中奖直接不处理
+                continue;
+            }
+            String key = prizeTypeMo.getId() + "_" + prizeTypeMo.getActivitySetId();
+            //需要消耗库存的
+            valueOperations.setIfAbsent(key, prizeTypeMo.getRemainingStock().toString());
+            redisTemplate.expire(key, 60, TimeUnit.SECONDS);
+            String stockNum = valueOperations.get(key);
+            prizeTypeMo.setRemainingStock(Integer.valueOf(stockNum));
+        }
+        MarketingPrizeTypeMO prizeTypeMo = LotteryUtilWithOutCodeNum.platfromStartLottery(prizeTypeMOList, firstAwardWinRecord == null?false:true);
+        if (prizeTypeMo.getAwardType().intValue() != 0) {
+            valueOperations.increment(prizeTypeMo.getId() + "_" + prizeTypeMo.getActivitySetId(), -1L);
+        }
+        return prizeTypeMo;
     }
 
 }

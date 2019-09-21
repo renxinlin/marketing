@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.List;
+
 @Setter
 @Getter
 public class LotteryOprationDto {
@@ -34,6 +36,10 @@ public class LotteryOprationDto {
      * 中奖MO
      */
     private LotteryResultMO lotteryResultMO;
+    /**
+     * 奖项列表
+     */
+    private List<MarketingPrizeTypeMO> prizeTypeMOList;
     /**
      * 活动组织ID
      */
