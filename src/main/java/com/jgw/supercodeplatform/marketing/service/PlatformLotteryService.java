@@ -119,6 +119,7 @@ public class PlatformLotteryService {
             throw new SuperCodeExtException("对不起,该会员已被加入黑名单",200);
         }
         List<MarketingPrizeTypeMO> moPrizeTypes = marketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
+        log.info("----------> {}", JSON.toJSONString(moPrizeTypes));
         if (moPrizeTypes == null || moPrizeTypes.size() <= 1) {
             return lotteryOprationDto.lotterySuccess("该活动未设置中奖奖次");
         }
