@@ -130,7 +130,7 @@ public class WeixinAuthController {
     		}
     		//5表示全网运营红包
     		if (AccessProtocol.ACTIVITY_PLATFORM.getType() == statecode) {
-				redirectUrl = doBizPlatform(statearr[3],statearr[1], code, response);
+				redirectUrl = doBizPlatform(statearr[2],statearr[1], code, response);
 				return redirectUrl;
 			}
     		organizationId=statearr[1];
