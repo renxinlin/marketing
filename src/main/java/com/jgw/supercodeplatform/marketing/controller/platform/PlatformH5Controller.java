@@ -114,7 +114,7 @@ public class PlatformH5Controller {
         }
         //保存抽奖数据
         restResult = platformLotteryService.saveLottory(lotteryOprationDto, request.getRemoteAddr());
-        return RestResult.success();
+        return restResult;
     }
 
 }
