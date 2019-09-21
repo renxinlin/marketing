@@ -242,11 +242,12 @@ public class PlatformLotteryService {
         //如果该活动时立刻发送红包，则直接调用微信支付发红包
         wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partner_trade_no, organizationId);
         String strAmount = String.format("%.2f", amount);
-        LotteryResultMO lotteryResultMO = lotteryOprationDto.getLotteryResultMO();
-        RestResult<LotteryResultMO>  restResult = lotteryOprationDto.getRestResult();
+        LotteryResultMO lotteryResultMO = new LotteryResultMO();
+        RestResult<LotteryResultMO> restResult = new RestResult<>();
         lotteryResultMO.setData(strAmount);
         lotteryResultMO.setMsg(strAmount);
         restResult.setMsg(lotteryResultMO.getMsg());
+        restResult.setResults(lotteryResultMO);
         return restResult;
     }
 
