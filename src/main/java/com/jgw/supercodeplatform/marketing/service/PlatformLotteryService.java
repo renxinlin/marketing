@@ -202,7 +202,7 @@ public class PlatformLotteryService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public RestResult<LotteryResultMO> saveLottory(LotteryOprationDto lotteryOprationDto, String remoteAddr) throws Exception {
+    public WXPayTradeOrder saveLottory(LotteryOprationDto lotteryOprationDto, String remoteAddr) throws Exception {
         String winningCode = lotteryOprationDto.getScanCodeInfoMO().getCodeId();
         String openId = lotteryOprationDto.getScanCodeInfoMO().getOpenId();
         String mobile = lotteryOprationDto.getScanCodeInfoMO().getMobile();
@@ -219,9 +219,7 @@ public class PlatformLotteryService {
         addWinRecord(winningCode, mobile, openId,productName,lotteryOprationDto.getScanCodeInfoMO().getActivitySetId(),prizeTypeMo.getAwardGrade(), marketingActivity, lotteryOprationDto.getOrganizationId(), lotteryOprationDto.getOrganizationName(), prizeTypeMo.getId(),amount,productId,productBatchId);
         //如果是虚拟奖项，则为没有中奖
         if (prizeTypeMo.getAwardGrade().intValue() == 0) {
-            LotteryResultMO lotteryResultMO = new LotteryResultMO("哎呀没中");
-            lotteryResultMO.setData(lotteryResultMO.getMsg());
-            return RestResult.success(lotteryResultMO.getMsg(), lotteryResultMO);
+            return null;
         }
         mPrizeTypeMapper.updateRemainingStock(prizeTypeMo.getId());
         Float finalAmount = amount * 100;
@@ -247,8 +245,17 @@ public class PlatformLotteryService {
         tradeOrder.setRemoteAddr(remoteAddr);
         wXPayTradeOrderMapper.insert(tradeOrder);
         //如果该活动时立刻发送红包，则直接调用微信支付发红包
+        return tradeOrder;
+    }
+
+    public RestResult<LotteryResultMO> saveOrder(WXPayTradeOrder tradeOrder) throws Exception {
+        String openId = tradeOrder.getOpenId();
+        String remoteAddr = tradeOrder.getRemoteAddr();
+        Float finalAmount = tradeOrder.getAmount();
+        String partner_trade_no = tradeOrder.getPartnerTradeNo();
+        String organizationId = tradeOrder.getOrganizationId();
         wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partner_trade_no, organizationId);
-        String strAmount = String.format("%.2f", amount);
+        String strAmount = String.format("%.2f", finalAmount/100);
         LotteryResultMO lotteryResultMO = new LotteryResultMO(1);
         lotteryResultMO.setData(strAmount);
         lotteryResultMO.setMsg(strAmount);

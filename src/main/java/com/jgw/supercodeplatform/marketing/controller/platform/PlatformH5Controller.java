@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.pojo.platform.AbandonPlatform;
 import com.jgw.supercodeplatform.marketing.pojo.platform.LotteryPlatform;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
@@ -113,8 +114,14 @@ public class PlatformH5Controller {
             return lotteryOprationDto.getRestResult();
         }
         //保存抽奖数据
-        restResult = platformLotteryService.saveLottory(lotteryOprationDto, request.getRemoteAddr());
-        return restResult;
+        WXPayTradeOrder tradeOrder = platformLotteryService.saveLottory(lotteryOprationDto, request.getRemoteAddr());
+        if (tradeOrder == null) {
+            LotteryResultMO lotteryResultMO = new LotteryResultMO("哎呀没中");
+            lotteryResultMO.setData(lotteryResultMO.getMsg());
+            return RestResult.success(lotteryResultMO.getMsg(), lotteryResultMO);
+        } else {
+            return platformLotteryService.saveOrder(tradeOrder);
+        }
     }
 
 }
