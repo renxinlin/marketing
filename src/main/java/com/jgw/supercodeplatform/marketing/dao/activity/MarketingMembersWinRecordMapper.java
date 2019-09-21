@@ -82,10 +82,10 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	List<MarketingMembersWinRecordListReturn> list(MarketingMembersWinRecordListParam searchParams);
 
 	@Insert(" INSERT INTO marketing_members_win(ActivityId,ActivitySetId,ActivityName,Openid,CreateTime,UpdateTime,"
-			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,OrganizationFullName,Mobile,PrizeName,ProductId,ProductBatchId,AwardType)"
+			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,OrganizationFullName,Mobile,PrizeName,ProductId,ProductBatchId,AwardGrade)"
 			+ " VALUES(#{activityId},#{activitySetId},#{activityName},#{openid},NOW(),NOW(),#{prizeTypeId},"
 			+ "#{winningAmount},#{winningCode},#{organizationId},#{organizationFullName},#{mobile},#{prizeName},"
-			+ "#{productId},#{productBatchId},#{awardType})")
+			+ "#{productId},#{productBatchId},#{awardGrade})")
 	int addWinRecord(MarketingMembersWinRecord winRecord);
 
 	@Select("SELECT "+allFields+" FROM marketing_members_win WHERE WinningCode = #{winningCode} AND OrganizationId = #{organizationId}")
