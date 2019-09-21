@@ -37,10 +37,6 @@ public class LotteryOprationDto {
      */
     private LotteryResultMO lotteryResultMO;
     /**
-     * 奖项列表
-     */
-    private List<MarketingPrizeTypeMO> prizeTypeMOList;
-    /**
      * 活动组织ID
      */
     private String organizationId;

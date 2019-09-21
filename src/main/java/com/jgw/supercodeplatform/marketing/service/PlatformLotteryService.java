@@ -142,7 +142,8 @@ public class PlatformLotteryService {
                 lotteryOprationDto.setEachDayNumber(maxJoinNum);
             }
         }
-        lotteryOprationDto.setPrizeTypeMOList(moPrizeTypes);
+        MarketingPrizeTypeMO prizeTypeMo = getPrizeMo(moPrizeTypes, activitySetId, marketingMembersInfo.getOpenid());
+        lotteryOprationDto.setPrizeTypeMO(prizeTypeMo);
         //执行抽奖逻辑
         return lotteryOprationDto;
     }
@@ -211,8 +212,7 @@ public class PlatformLotteryService {
         String productBatchId = lotteryOprationDto.getScanCodeInfoMO().getProductBatchId();
         //该组织ID为支付的组织ID
         String organizationId = marketingWxMerchantsMapper.getJgw().getOrganizationId();
-        List<MarketingPrizeTypeMO> prizeTypeMOList = lotteryOprationDto.getPrizeTypeMOList();
-        MarketingPrizeTypeMO prizeTypeMo = getPrizeMo(prizeTypeMOList, marketingActivity.getId(), openId);
+        MarketingPrizeTypeMO prizeTypeMo = lotteryOprationDto.getPrizeTypeMO();
         //转化为分
         Float amount = prizeTypeMo.getPrizeAmount();
         //添加中奖纪录
