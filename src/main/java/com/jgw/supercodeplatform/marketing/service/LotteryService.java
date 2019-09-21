@@ -18,6 +18,7 @@ import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
+import com.jgw.supercodeplatform.marketing.dto.WxOrderPayDto;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
@@ -241,7 +242,7 @@ public class LotteryService {
 
 
 	@Transactional(rollbackFor = Exception.class)
-	public RestResult saveLottory(LotteryOprationDto lotteryOprationDto, String remoteAddr) throws Exception {
+	public WxOrderPayDto saveLottory(LotteryOprationDto lotteryOprationDto, String remoteAddr) throws Exception {
 		IntegralRecord integralRecord = lotteryOprationDto.getIntegralRecord();
 		MarketingMembers marketingMembersInfo = lotteryOprationDto.getMarketingMembersInfo();
 		int consumeIntegralNum = lotteryOprationDto.getConsumeIntegralNum();
@@ -305,13 +306,39 @@ public class LotteryService {
 		if (changeIntegral != 0) {
 			marketingMembersMapper.deleteIntegral(0 - changeIntegral, marketingMembersInfo.getId());
 		}
-		if (amount != null) {
-			//发起微信支付
-			weixinpay(lotteryOprationDto.getSendAudit(),outerCodeId, mobile, openId, organizationId, amount*100, remoteAddr, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
-		}
 		RestResult restResult = lotteryOprationDto.getRestResult();
 		restResult.setMsg(lotteryResultMO.getMsg());
-		return restResult;
+		if (amount != null) {
+			WxOrderPayDto wxOrderPayDto = new WxOrderPayDto();
+			wxOrderPayDto.setAmount(amount*100);
+			wxOrderPayDto.setMobile(mobile);
+			wxOrderPayDto.setOpenId(openId);
+			wxOrderPayDto.setOrganizationId(organizationId);
+			wxOrderPayDto.setOuterCodeId(outerCodeId);
+			wxOrderPayDto.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+			wxOrderPayDto.setRemoteAddr(remoteAddr);
+			wxOrderPayDto.setSendAudit(lotteryOprationDto.getSendAudit());
+			return wxOrderPayDto;
+		}
+		return null;
+	}
+
+	/**
+	 * 保存订单并发起微信支付
+	 *
+	 * @param wxOrderPayDto
+	 * @throws Exception
+	 */
+	public void saveTradeOrder(WxOrderPayDto wxOrderPayDto) throws Exception {
+		float amount = wxOrderPayDto.getAmount();
+		String mobile = wxOrderPayDto.getMobile();
+		String openId = wxOrderPayDto.getOpenId();
+		String organizationId = wxOrderPayDto.getOrganizationId();
+		String outerCodeId = wxOrderPayDto.getOuterCodeId();
+		byte referenceRole = wxOrderPayDto.getReferenceRole();
+		String remoteAddr = wxOrderPayDto.getRemoteAddr();
+		byte sendAudit = wxOrderPayDto.getSendAudit();
+		weixinpay(sendAudit,outerCodeId, mobile, openId, organizationId, amount, remoteAddr, referenceRole);
 	}
 
 	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,

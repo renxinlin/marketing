@@ -124,7 +124,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
                     BeanUtils.copyProperties(prizeType, marketingPrizeType);
                     marketingPrizeType.setPrizeAmount(prizeType.getPrizeAmount().floatValue());
                     marketingPrizeType.setRemainingStock(prizeType.getRemainingNumber());
-                    if (prizeType.getAwardGrade() == null) {
+                    if (prizeType.getAwardGrade().intValue() == 0) {
                         marketingPrizeType.setRealPrize((byte)0);
                     } else {
                         marketingPrizeType.setRealPrize((byte)1);
