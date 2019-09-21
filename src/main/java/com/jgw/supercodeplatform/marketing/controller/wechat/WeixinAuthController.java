@@ -590,13 +590,13 @@ public class WeixinAuthController {
 		String uri = null;
 		String[] uris = redirectUri.split("#");
 		if (uris.length > 1) {
-			String firUri = uris[0] + "wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();
+			String firUri = uris[0] + "&wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();
 			uri = firUri;
 			for (int i= 1;i<uris.length;i++) {
 				uri = uri + "#" + uris[i];
 			}
 		} else {
-			uri = redirectUri + "wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();
+			uri = redirectUri + "&wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();
 		}
 		return "redirect:" + uri;
 	}
