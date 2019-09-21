@@ -246,9 +246,7 @@ public class PlatformLotteryService {
         RestResult<LotteryResultMO> restResult = new RestResult<>();
         lotteryResultMO.setData(strAmount);
         lotteryResultMO.setMsg(strAmount);
-        restResult.setMsg(lotteryResultMO.getMsg());
-        restResult.setResults(lotteryResultMO);
-        return restResult;
+        return RestResult.success(strAmount, lotteryResultMO);
     }
 
     private void addWinRecord(String outCodeId, String mobile, String openId, String productName,Long activitySetId,
