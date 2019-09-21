@@ -137,14 +137,14 @@ public class LotteryService {
 		long currentMills = System.currentTimeMillis();
 		String startDateStr = mActivitySet.getActivityStartDate();
 		if(StringUtils.isNotBlank(startDateStr)) {
-			long startMills = DateUtil.parse(startDateStr, "yyyy-MM-dd HH:mm:ss").getTime();
+			long startMills = DateUtil.parse(startDateStr, "yyyy-MM-dd").getTime();
 			if(currentMills < startMills){
 				throw new SuperCodeExtException("该活动还未开始", 200);
 			}
 		}
 		String endDateStr = mActivitySet.getActivityEndDate();
 		if(StringUtils.isNotBlank(endDateStr)) {
-			long endMills = DateUtil.parse(endDateStr, "yyyy-MM-dd HH:mm:ss").getTime();
+			long endMills = DateUtil.parse(endDateStr, "yyyy-MM-dd").getTime();
 			if(currentMills > endMills){
 				throw new SuperCodeExtException("该活动已经结束", 200);
 			}

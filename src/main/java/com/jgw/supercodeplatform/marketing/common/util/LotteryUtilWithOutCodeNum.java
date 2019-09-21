@@ -60,6 +60,7 @@ public class LotteryUtilWithOutCodeNum {
 		int probabilityLowRan=0;
 		int probabilityHighRan=0;
 		int rand=(int) (Math.random() * 100+1);
+		//mPrizeTypes.stream().filter()
 		if (hasFirst) {
 			//末等奖
 			MarketingPrizeTypeMO endPizeType = mPrizeTypes.stream().filter(prize -> prize.getAwardType() != null && prize.getAwardType() >0)
