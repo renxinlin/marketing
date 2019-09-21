@@ -281,7 +281,7 @@ public interface MarketingMembersMapper {
     @Select("SELECT COUNT(*) FROM marketing_members")
     long countAllMemberNum();
 
-    @Select("SELECT "+selectSql+" FROM marketing_members WHERE Openid = #{openId}")
+    @Select("SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openId}")
     MarketingMembers getMemberByOpenId(@Param("openId") String openId);
 
 }
