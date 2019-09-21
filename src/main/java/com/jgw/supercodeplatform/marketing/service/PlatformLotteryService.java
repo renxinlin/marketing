@@ -119,7 +119,6 @@ public class PlatformLotteryService {
             throw new SuperCodeExtException("对不起,该会员已被加入黑名单",200);
         }
         List<MarketingPrizeTypeMO> moPrizeTypes = marketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
-        log.info("----------> {}", JSON.toJSONString(moPrizeTypes));
         if (moPrizeTypes == null || moPrizeTypes.size() <= 1) {
             return lotteryOprationDto.lotterySuccess("该活动未设置中奖奖次");
         }
@@ -217,9 +216,9 @@ public class PlatformLotteryService {
         //转化为分
         Float amount = prizeTypeMo.getPrizeAmount();
         //添加中奖纪录
-        addWinRecord(winningCode, mobile, openId,productName,lotteryOprationDto.getScanCodeInfoMO().getActivitySetId(),prizeTypeMo.getAwardType(), marketingActivity, lotteryOprationDto.getOrganizationId(), lotteryOprationDto.getOrganizationName(), prizeTypeMo.getId(),amount,productId,productBatchId);
+        addWinRecord(winningCode, mobile, openId,productName,lotteryOprationDto.getScanCodeInfoMO().getActivitySetId(),prizeTypeMo.getAwardGrade(), marketingActivity, lotteryOprationDto.getOrganizationId(), lotteryOprationDto.getOrganizationName(), prizeTypeMo.getId(),amount,productId,productBatchId);
         //如果是虚拟奖项，则为没有中奖
-        if (prizeTypeMo.getAwardType().intValue() == 0) {
+        if (prizeTypeMo.getAwardGrade().intValue() == 0) {
             LotteryResultMO lotteryResultMO = new LotteryResultMO("哎呀没中");
             lotteryResultMO.setData(lotteryResultMO.getMsg());
             return RestResult.success(lotteryResultMO.getMsg(), lotteryResultMO);
@@ -290,7 +289,7 @@ public class PlatformLotteryService {
         MarketingMembersWinRecord firstAwardWinRecord = mWinRecordMapper.getFirstAward(activityId, openId);
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         for (MarketingPrizeTypeMO prizeTypeMo : prizeTypeMOList) {
-            if (prizeTypeMo.getAwardType().intValue() == 0) {
+            if (prizeTypeMo.getAwardGrade().intValue() == 0) {
                 //如果是虚拟不中奖直接不处理
                 continue;
             }
@@ -302,7 +301,7 @@ public class PlatformLotteryService {
             prizeTypeMo.setRemainingStock(Integer.valueOf(stockNum));
         }
         MarketingPrizeTypeMO prizeTypeMo = LotteryUtilWithOutCodeNum.platfromStartLottery(prizeTypeMOList, firstAwardWinRecord == null?false:true);
-        if (prizeTypeMo.getAwardType().intValue() != 0) {
+        if (prizeTypeMo.getAwardGrade().intValue() != 0) {
             valueOperations.increment(prizeTypeMo.getId() + "_" + prizeTypeMo.getActivitySetId(), -1L);
         }
         return prizeTypeMo;
