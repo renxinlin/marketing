@@ -60,10 +60,10 @@ public class LotteryUtilWithOutCodeNum {
 		//没中奖和一等奖
 		MarketingPrizeTypeMO noPrizeTypeMo = null, firstPizeType = null;
 		for (MarketingPrizeTypeMO prizeTypeMO : mPrizeTypes) {
-			if (prizeTypeMO.getAwardType().intValue() == 0) {
+			if (prizeTypeMO.getAwardGrade().intValue() == 0) {
 				noPrizeTypeMo = prizeTypeMO;
 			}
-			if (prizeTypeMO.getAwardType().intValue() == 1) {
+			if (prizeTypeMO.getAwardGrade().intValue() == 1) {
 				firstPizeType = prizeTypeMO;
 			}
 		}
@@ -74,8 +74,8 @@ public class LotteryUtilWithOutCodeNum {
 		if (noPrizeTypeMo.getPrizeProbability().intValue() > 0){
 			if (hasFirst) {
 				//末等奖
-				MarketingPrizeTypeMO endPizeType = mPrizeTypes.stream().filter(prize -> prize.getAwardType() != null && prize.getAwardType() >0)
-						.max((v1,v2) -> v1.getAwardType().compareTo(v2.getAwardType())).get();
+				MarketingPrizeTypeMO endPizeType = mPrizeTypes.stream().filter(prize -> prize.getAwardGrade() != null && prize.getAwardGrade() >0)
+						.max((v1,v2) -> v1.getAwardGrade().compareTo(v2.getAwardGrade())).get();
 				if (endPizeType.equals(firstPizeType)) {
 					return noPrizeTypeMo;
 				}
@@ -100,8 +100,8 @@ public class LotteryUtilWithOutCodeNum {
 			if (mPrizeTypes.size() <=1){
 				return noPrizeTypeMo;
 			}
-			MarketingPrizeTypeMO endPizeType = mPrizeTypes.stream().filter(prize -> prize.getAwardType() != null && prize.getAwardType() >0)
-					.max((v1,v2) -> v1.getAwardType().compareTo(v2.getAwardType())).get();
+			MarketingPrizeTypeMO endPizeType = mPrizeTypes.stream().filter(prize -> prize.getAwardGrade() != null && prize.getAwardGrade() >0)
+					.max((v1,v2) -> v1.getAwardGrade().compareTo(v2.getAwardGrade())).get();
 			endPizeType.setPrizeProbability(endPizeType.getPrizeProbability() + disabledPrizeProbility);
 		}
 		int size = mPrizeTypes.size();
