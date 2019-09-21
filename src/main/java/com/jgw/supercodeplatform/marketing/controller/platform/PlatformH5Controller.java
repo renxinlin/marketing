@@ -82,7 +82,8 @@ public class PlatformH5Controller {
 
     @ApiOperation("抽奖")
     @PostMapping("/lottery")
-    public RestResult<LotteryResultMO> lottery(@RequestBody @Valid LotteryPlatform lotteryPlatform, @ApiIgnore H5LoginVO h5LoginVO, HttpServletRequest request) throws Exception {
+    public RestResult<LotteryResultMO> lottery(@RequestBody @Valid LotteryPlatform lotteryPlatform,  HttpServletRequest request) throws Exception {
+        MarketingMembers marketingMembers = marketingMembersService.getMemberById(lotteryPlatform.getMemberId());
         String codeId = lotteryPlatform.getCodeId();
         String codeTypeId = lotteryPlatform.getCodeType();
         commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
@@ -92,7 +93,9 @@ public class PlatformH5Controller {
         MarketingMembers memberUser = marketingMembersService.getMemberById(lotteryPlatform.getMemberId());
         ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
         BeanUtils.copyProperties(lotteryPlatform, scanCodeInfoMO);
-        BeanUtils.copyProperties(h5LoginVO, scanCodeInfoMO);
+        scanCodeInfoMO.setUserId(marketingMembers.getId());
+        scanCodeInfoMO.setOpenId(marketingMembers.getOpenid());
+        scanCodeInfoMO.setMobile(marketingMembers.getMobile());
         scanCodeInfoMO.setUserId(memberUser.getId());
         scanCodeInfoMO.setActivitySetId(marketingActivitySet.getId());
         scanCodeInfoMO.setCodeTypeId(lotteryPlatform.getCodeType());
