@@ -18,6 +18,8 @@ public class PlatformActivityVo {
     private Date activityEndDate;
     @ApiModelProperty("活动id")
     private Long id;
+    @ApiModelProperty("活动类型")
+    private String activityName;
     @ApiModelProperty("活动标题")
     private String activityTitle;
     @ApiModelProperty("活动时间")

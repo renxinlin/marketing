@@ -201,13 +201,14 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
 
     @Select({startScript,
-            "SELECT "+allFields+" FROM marketing_activity_set WHERE ",
-            " ActivityId = 5 ",
+            "SELECT a.Id id, b.ActivityName activityName, a.ActivityTitle activityTitle, a.UpdateUserName updateUserName, a.UpdateDate updateDate,",
+            "a.ActivityStartDate activityStartDate, a.ActivityEndDate activityEndDate, a.ActivityStatus activityStatus",
+            " FROM marketing_activity_set a INNER JOIN marketing_activity b ON a.ActivityId = b.Id WHERE a.ActivityId = 5 ",
             "<if test = 'search != null and search != &apos;&apos;'> AND (",
-            " OR ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
-            " OR UpdateUserName LIKE CONCAT('%', #{updateUserName}, '%')",
+            " OR a.ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
+            " OR a.UpdateUserName LIKE CONCAT('%', #{updateUserName}, '%')",
             ") </if>",
-            " ORDER BY UpdateDate DESC",
+            " ORDER BY a.UpdateDate DESC",
             " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>",
             endScript})
     List<PlatformActivityVo> listPlatform(DaoSearchWithUser searchParams);

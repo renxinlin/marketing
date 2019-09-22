@@ -5,6 +5,7 @@ package com.jgw.supercodeplatform.marketing.common.util;
  *
  */
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,8 +68,6 @@ public class LotteryUtilWithOutCodeNum {
 				firstPizeType = prizeTypeMO;
 			}
 		}
-		int probabilityLowRan=0;
-		int probabilityHighRan=0;
 		int rand=(int) (Math.random() * 100+1);
 		//为0表示未中奖的虚拟奖项，此时中奖概率并不会为百分百
 		if (noPrizeTypeMo.getPrizeProbability().intValue() > 0){
@@ -79,8 +78,9 @@ public class LotteryUtilWithOutCodeNum {
 				if (endPizeType.equals(firstPizeType)) {
 					return noPrizeTypeMo;
 				}
-				endPizeType.setPrizeProbability(endPizeType.getPrizeProbability() + firstPizeType.getPrizeProbability());
 				mPrizeTypes.remove(firstPizeType);
+				//剩余可抽奖的奖项按照比例分配概率
+				distributeProbability(mPrizeTypes, new BigDecimal(firstPizeType.getPrizeProbability()));
 			}
 		} else {
 			//得到没有库存的奖项
@@ -100,10 +100,10 @@ public class LotteryUtilWithOutCodeNum {
 			if (mPrizeTypes.size() <=1){
 				return noPrizeTypeMo;
 			}
-			MarketingPrizeTypeMO endPizeType = mPrizeTypes.stream().filter(prize -> prize.getAwardGrade() != null && prize.getAwardGrade() >0)
-					.max((v1,v2) -> v1.getAwardGrade().compareTo(v2.getAwardGrade())).get();
-			endPizeType.setPrizeProbability(endPizeType.getPrizeProbability() + disabledPrizeProbility);
+			distributeProbability(mPrizeTypes, new BigDecimal(disabledPrizeProbility));
 		}
+		int probabilityLowRan;
+		int probabilityHighRan=0;
 		int size = mPrizeTypes.size();
 		for (int i=0; i<size; i++) {
 			MarketingPrizeTypeMO mTypeMO = mPrizeTypes.get(i);
@@ -124,6 +124,17 @@ public class LotteryUtilWithOutCodeNum {
 			}
 		}
 		throw new SuperCodeExtException("抽奖算法更新中，暂时无法抽奖请稍后再试", 500);
+	}
+
+
+	private static void distributeProbability(List<MarketingPrizeTypeMO> mPrizeTypes, BigDecimal disabledPrizeProbility){
+		int sumProbility = mPrizeTypes.stream().mapToInt(prize -> prize.getPrizeProbability()).sum();
+		BigDecimal sumProbilityDecimal = new BigDecimal(sumProbility);
+		for (MarketingPrizeTypeMO prizeTypeMO : mPrizeTypes) {
+			int sorProbility = prizeTypeMO.getPrizeProbability();
+			int addProbility = disabledPrizeProbility.multiply(new BigDecimal(sorProbility)).divide(sumProbilityDecimal,0, BigDecimal.ROUND_HALF_UP).intValue();
+			prizeTypeMO.setPrizeProbability(sorProbility + addProbility);
+		}
 	}
 
 }
