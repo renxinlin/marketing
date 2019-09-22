@@ -28,9 +28,13 @@ import org.elasticsearch.index.reindex.BulkByScrollResponse;
 import org.elasticsearch.index.reindex.DeleteByQueryAction;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCount;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +49,12 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
  * @author Created by jgw136 on 2018/04/26.
  */
 public abstract class AbstractEsSearch extends CommonUtil {
+
+    /**
+     * 活动点击量聚合名称
+     */
+    protected static final String AggregationName="agg";
+    protected static final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
 
     /**
      * @param esSearch 搜索方法参数
@@ -193,25 +203,22 @@ public abstract class AbstractEsSearch extends CommonUtil {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
 
         esSearch.getParam().forEach((k, v) -> boolQueryBuilder.must(QueryBuilders.termQuery(k, v)));
-
-
         SearchRequestBuilder requestBuilder = eClient
                 .prepareSearch(esSearch.getIndex().getIndex())
                 .setTypes(esSearch.getType().getType())
                 .setScroll(TimeValue.timeValueMinutes(1))
                 .setQuery(boolQueryBuilder);
-
-        int size = esSearch.getPage().getSize();
-
-        requestBuilder.setSize(size == 0 ? 100 : size);
-
-        if (esSearch.getSortBuilder() != null) {
-            requestBuilder.addSort(esSearch.getSortBuilder());
-        }
-
-        SearchResponse response = requestBuilder.setExplain(true).execute().actionGet();
-        SearchHits searchHits=response.getHits();
-        return  searchHits.getTotalHits();
+        ValueCountAggregationBuilder aggregation = AggregationBuilders.count(AggregationName).field("_id");
+        requestBuilder.addAggregation(aggregation);
+        // 获取查询结果
+        SearchResponse searchResponse = requestBuilder.execute().actionGet();
+        // 获取count
+        ValueCount aggs = searchResponse.getAggregations().get(AggregationName);
+        // 优化方向，其他结果如非必须可剔除
+        // 除去评分机制
+        // 采用过滤而非查询提高查询速度
+        // 取所需结果
+        return aggs.getValue();
     }
 
     /**

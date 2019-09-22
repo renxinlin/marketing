@@ -124,7 +124,7 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("openId.keyword", openId);
 		addParam.put("activitySetId", activitySetId);
 		EsSearch eSearch = new EsSearch();
-		eSearch.setIndex(EsIndex.MARKETING);
+		eSearch.setIndex(EsIndex.MARKET_PLATFORM_SCAN_INFO);
 		eSearch.setType(EsType.INFO);
 		eSearch.setParam(addParam);
 		return getCount(eSearch);
@@ -307,11 +307,7 @@ public class CodeEsService extends AbstractEsSearch {
 
 
 
-	/**
-	 * 活动点击量聚合名称
-	 */
-	private static final String AggregationName="agg";
-	private static final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+
 	/**
 	 * 活动点击量
 	 * @param organizationId

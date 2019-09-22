@@ -179,7 +179,7 @@ public class PlatformLotteryService {
             if (codeCount > 0) {
                 return lotteryOprationDto.lotterySuccess("您手速太慢，该码已被其它用户领取");
             }
-            long nowTimeMills = DateUtils.parseDate(DateFormatUtils.ISO_8601_EXTENDED_DATE_FORMAT.format(System.currentTimeMillis()),"yyyy-MM-dd").getTime();
+            long nowTimeMills = System.currentTimeMillis();
             //校验有没有设置活动用户扫码量限制
             if (maxScanNumber != null && maxScanNumber > 0) {
                 long userscanNum = codeEsService.countByUserAndActivityPlatform(opneIdNoSpecialChactar, activitySetId);

@@ -37,8 +37,13 @@ public class WeixinSNBindFrontController extends CommonUtil {
     @RequestMapping(value = "/get",method = RequestMethod.GET)
     @ApiOperation(value = "获取授权微信商户信息及授权地址", notes = "")
     @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "组织id", required = true)
-    public RestResult<Map<String, String>> get(String organizationId) throws Exception {
-    	MarketingWxMerchants mWxMerchants=marketingWxMerchantsService.selectByOrganizationId(organizationId);
+    public RestResult<Map<String, String>> get(String organizationId, Integer jgw) throws Exception {
+        MarketingWxMerchants mWxMerchants = null;
+        if (jgw != null && jgw.intValue() == 1) {
+            mWxMerchants = marketingWxMerchantsService.getJgw();
+        } else {
+            mWxMerchants = marketingWxMerchantsService.selectByOrganizationId(organizationId);
+        }
     	RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
     	restResult.setState(200);
     	Map<String, String> data=new HashMap<String, String>();

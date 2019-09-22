@@ -101,6 +101,7 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 			"PrizeName LIKE CONCAT('%',#{search},'%') OR ",
 			"OrganizationFullName LIKE CONCAT('%',#{search},'%') ",
 			") </if></where>",
+			" ORDER BY Id DESC",
 			"<if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>",
 			endScript})
 	List<MarketingMembersWinRecord> listWinRecord(JoinResultPage joinResultPage);
