@@ -80,6 +80,10 @@ public class LotteryOprationDto {
      * 内码
      */
     private String innerCode;
+    /**
+     * 点击跳转更多链接
+     */
+    private String sourceLink;
 
     public LotteryOprationDto lotterySuccess(int winnOrNot, String msg) {
         if (lotteryResultMO == null){

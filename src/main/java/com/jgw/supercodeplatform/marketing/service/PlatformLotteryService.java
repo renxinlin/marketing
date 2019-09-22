@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -86,7 +87,7 @@ public class PlatformLotteryService {
         Long activitySetId = scanCodeInfoMO.getActivitySetId();
         MarketingActivitySet mActivitySet = mSetMapper.selectById(activitySetId);
         if (null == mActivitySet) {
-            return lotteryOprationDto.lotterySuccess("该活动设置不存在");
+            throw new SuperCodeExtException("该活动设置不存在", 200);
         }
         if(mActivitySet.getActivityStatus() == 0) {
             throw new SuperCodeExtException("该活动已停用", 200);
@@ -134,13 +135,15 @@ public class PlatformLotteryService {
         lotteryOprationDto.setMarketingActivity(activity);
         lotteryOprationDto.setProductName(productName);
         String conditon = mActivitySet.getValidCondition();
-        if (StringUtils.isBlank(conditon)) {
-            Integer maxJoinNum = JSON.parseObject(conditon).getInteger("maxJoinNum");
+        if (StringUtils.isNotBlank(conditon)) {
+            JSONObject conditionJson = JSON.parseObject(conditon);
+            Integer maxJoinNum = conditionJson.getInteger("maxJoinNum");
             if (maxJoinNum == null) {
                 lotteryOprationDto.setEachDayNumber(0);
             } else {
                 lotteryOprationDto.setEachDayNumber(maxJoinNum);
             }
+            lotteryOprationDto.setSourceLink(conditionJson.getString("sourceLink"));
         }
         MarketingPrizeTypeMO prizeTypeMo = getPrizeMo(moPrizeTypes, activitySetId, marketingMembersInfo.getOpenid());
         lotteryOprationDto.setPrizeTypeMO(prizeTypeMo);
@@ -248,7 +251,7 @@ public class PlatformLotteryService {
         return tradeOrder;
     }
 
-    public RestResult<LotteryResultMO> saveOrder(WXPayTradeOrder tradeOrder) throws Exception {
+    public RestResult<LotteryResultMO> saveOrder(WXPayTradeOrder tradeOrder, String sourceLink) throws Exception {
         String openId = tradeOrder.getOpenId();
         String remoteAddr = tradeOrder.getRemoteAddr();
         Float finalAmount = tradeOrder.getAmount();
@@ -257,7 +260,7 @@ public class PlatformLotteryService {
         wxpService.qiyePay(openId, remoteAddr, finalAmount.intValue(), partner_trade_no, organizationId);
         String strAmount = String.format("%.2f", finalAmount/100);
         LotteryResultMO lotteryResultMO = new LotteryResultMO(1);
-        lotteryResultMO.setData(strAmount);
+        lotteryResultMO.setData(sourceLink);
         lotteryResultMO.setMsg(strAmount);
         return RestResult.success(strAmount, lotteryResultMO);
     }

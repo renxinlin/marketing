@@ -44,8 +44,8 @@ public class PlatformStatisticsService {
     private MarketingMembersMapper marketingMembersMapper;
     @Autowired
     private RestTemplateUtil restTemplateUtil;
-    @Value("${rest.user.url}")
-    private String restUserUrl;
+    @Value("${rest.codemanager.url}")
+    private String restCodemanagerUrl;
     /**
      * 扫码率
      * @param activityDataParam
@@ -61,7 +61,7 @@ public class PlatformStatisticsService {
         paramMap.put("end", endDateStr);
         long produceCodeNum = 1000000; //暂时假定为一百万个
         try {
-            ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restUserUrl+ CommonConstants.CODE_GETCODETOTAL,paramMap,null);
+            ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restCodemanagerUrl+ CommonConstants.CODE_GETCODETOTAL,paramMap,null);
             if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
                 produceCodeNum= Long.parseLong(responseEntity.getBody());
             }
@@ -101,7 +101,7 @@ public class PlatformStatisticsService {
         long scanCodeTotalNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, null);
         PieChartVo scanCodeTotalVo = new PieChartVo("扫码量", scanCodeTotalNum);
         long joinNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, 1);
-        PieChartVo joinVo = new PieChartVo("参与量", scanCodeTotalNum);
+        PieChartVo joinVo = new PieChartVo("参与量", joinNum);
         return Lists.newArrayList(scanCodeTotalVo, joinVo);
     }
 

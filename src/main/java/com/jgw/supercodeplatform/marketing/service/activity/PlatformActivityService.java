@@ -168,7 +168,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
             prizeTypeList = marketingPrizeTypeList.stream().filter(pr -> pr.getAwardGrade() != null && pr.getAwardGrade() > 0).map(marketingPrizeType -> {
                 PrizeType prizeType = new PrizeType();
                 BeanUtils.copyProperties(marketingPrizeType, prizeType);
-                prizeType.setPrizeAmount(new BigDecimal(marketingPrizeType.getPrizeAmount()));
+                prizeType.setPrizeAmount(new BigDecimal(marketingPrizeType.getPrizeAmount().toString()));
                 prizeType.setRemainingNumber(marketingPrizeType.getRemainingStock());
                 return prizeType;
             }).collect(Collectors.toList());

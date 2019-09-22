@@ -291,12 +291,12 @@ public class MemberPortraitController extends CommonUtil {
         // 百分比
         int sexNum = man.getCount()+woman.getCount()+other.getCount();
 
-        BigDecimal manBD = new BigDecimal(man.getCount()*1.00/sexNum);
+        BigDecimal manBD = new BigDecimal(String.valueOf(man.getCount()*1.00/sexNum));
         double mandouble = manBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
         man.setPercent(mandouble);
         man.setPercentStr(mandouble+"");
 
-        BigDecimal womanBD = new BigDecimal(woman.getCount()*1.00/sexNum);
+        BigDecimal womanBD = new BigDecimal(String.valueOf(woman.getCount()*1.00/sexNum));
         double womandouble = womanBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
         woman.setPercent(womandouble);
         woman.setPercentStr(womandouble+"");
@@ -325,28 +325,28 @@ public class MemberPortraitController extends CommonUtil {
         int deviceNum = wxdevice.getCount()+zhifubaodevice.getCount()+appdevice.getCount()
                 +browerdevice.getCount()+qqdevice.getCount()+otherDevice.getCount();
 
-        BigDecimal wxdeviceBD = new BigDecimal(wxdevice.getCount()*1.00/deviceNum);
+        BigDecimal wxdeviceBD = new BigDecimal(String.valueOf(wxdevice.getCount()*1.00/deviceNum));
         double wxdevicedouble = wxdeviceBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
         wxdevice.setPercent(wxdevicedouble);
         wxdevice.setPercentStr(wxdevicedouble+"");
 
-        BigDecimal zhifubaodeviceBD = new BigDecimal(zhifubaodevice.getCount()*1.00/deviceNum);
+        BigDecimal zhifubaodeviceBD = new BigDecimal(String.valueOf(zhifubaodevice.getCount()*1.00/deviceNum));
         double zhifubaodevicedouble = zhifubaodeviceBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
         zhifubaodevice.setPercent(zhifubaodevicedouble);
         zhifubaodevice.setPercentStr(zhifubaodevicedouble+"");
 
-        BigDecimal appdeviceBD = new BigDecimal(appdevice.getCount()*1.00/deviceNum);
+        BigDecimal appdeviceBD = new BigDecimal(String.valueOf(appdevice.getCount()*1.00/deviceNum));
         double appdevicedouble = appdeviceBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
         appdevice.setPercent(appdevicedouble);
         appdevice.setPercentStr(appdevicedouble+"");
 
-        BigDecimal browerdeviceBD = new BigDecimal(browerdevice.getCount()*1.00/deviceNum);
+        BigDecimal browerdeviceBD = new BigDecimal(String.valueOf(browerdevice.getCount()*1.00/deviceNum));
         double browerdevicedouble = browerdeviceBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
         browerdevice.setPercent(browerdevicedouble);
         browerdevice.setPercentStr(browerdevicedouble+"");
 
 
-        BigDecimal qqdeviceBD = new BigDecimal(qqdevice.getCount()*1.00/deviceNum);
+        BigDecimal qqdeviceBD = new BigDecimal(String.valueOf(qqdevice.getCount()*1.00/deviceNum));
         double qqdevicedouble = qqdeviceBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
         qqdevice.setPercent(qqdevicedouble);
         qqdevice.setPercentStr(qqdevicedouble+"");
@@ -384,7 +384,7 @@ public class MemberPortraitController extends CommonUtil {
         final int finalAgeNum = ageNum;
         AtomicReference<Double> percentAgeDoubleSumWithLast = new AtomicReference<>(0.00D);
         Arrays.asList(agex0).forEach(e ->{
-            BigDecimal eBD = new BigDecimal(e.getCount()*1.00/finalAgeNum);
+            BigDecimal eBD = new BigDecimal(String.valueOf(e.getCount()*1.00/finalAgeNum));
             double edouble = eBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
             percentAgeDoubleSumWithLast.updateAndGet(v -> new Double((double) (v + edouble)));
             e.setPercent(edouble);

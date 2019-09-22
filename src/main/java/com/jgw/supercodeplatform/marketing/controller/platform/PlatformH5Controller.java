@@ -104,23 +104,23 @@ public class PlatformH5Controller {
         lotteryOprationDto.setInnerCode(innerCode);
         //检查抽奖的初始条件是否符合
         lotteryOprationDto = platformLotteryService.checkLotteryCondition(lotteryOprationDto, scanCodeInfoMO);
-        RestResult<LotteryResultMO> restResult = lotteryOprationDto.getRestResult();
-        if(restResult != null){
-            return restResult;
-        }
         //营销码判断
         platformLotteryService.holdLockJudgeES(lotteryOprationDto);
         if(lotteryOprationDto.getSuccessLottory() == 0) {
-            return lotteryOprationDto.getRestResult();
+            RestResult<LotteryResultMO> restResult = lotteryOprationDto.getRestResult();
+            LotteryResultMO lotteryResultMO = lotteryOprationDto.getLotteryResultMO();
+            lotteryResultMO.setData(lotteryOprationDto.getSourceLink());
+            restResult.setResults(lotteryResultMO);
+            return restResult;
         }
         //保存抽奖数据
         WXPayTradeOrder tradeOrder = platformLotteryService.saveLottory(lotteryOprationDto, request.getRemoteAddr());
         if (tradeOrder == null) {
             LotteryResultMO lotteryResultMO = new LotteryResultMO("哎呀没中");
-            lotteryResultMO.setData(lotteryResultMO.getMsg());
-            return RestResult.success(lotteryResultMO.getMsg(), lotteryResultMO);
+            lotteryResultMO.setData(lotteryOprationDto.getSourceLink());
+            return RestResult.successWithData(lotteryResultMO);
         } else {
-            return platformLotteryService.saveOrder(tradeOrder);
+            return platformLotteryService.saveOrder(tradeOrder, lotteryOprationDto.getSourceLink());
         }
     }
 
