@@ -197,17 +197,17 @@ public class PlatformStatisticsService {
                 fiftyPieChartVo,sixtyPieChartVo,seventyPieChartVo,eightyPieChartVo,ninetyPieChartVo,hundredPieChartVo,otherAgePieChartVo);
         //扫码来源
         Map<String, Long> browserStatitics = marketingMembersMapper.statisticBrowser();
-        PieChartVo wxChartVo = new PieChartVo("微信",ageStatitics.get("wx"));
-        PieChartVo zfbPieChartVo = new PieChartVo("支付宝",ageStatitics.get("zzb"));
-        PieChartVo ddPieChartVo = new PieChartVo("钉钉",ageStatitics.get("dd"));
-        PieChartVo llqPieChartVo = new PieChartVo("浏览器",ageStatitics.get("llq"));
-        PieChartVo qqPieChartVo = new PieChartVo("QQ",ageStatitics.get("qq"));
-        PieChartVo otherBrowserPieChartVo = new PieChartVo("未知",ageStatitics.get("other"));
+        PieChartVo wxChartVo = new PieChartVo("微信",browserStatitics.get("wx"));
+        PieChartVo zfbPieChartVo = new PieChartVo("支付宝",browserStatitics.get("zzb"));
+        PieChartVo ddPieChartVo = new PieChartVo("钉钉",browserStatitics.get("dd"));
+        PieChartVo llqPieChartVo = new PieChartVo("浏览器",browserStatitics.get("llq"));
+        PieChartVo qqPieChartVo = new PieChartVo("QQ",browserStatitics.get("qq"));
+        PieChartVo otherBrowserPieChartVo = new PieChartVo("未知",browserStatitics.get("other"));
         List<PieChartVo> browserLit = Lists.newArrayList(wxChartVo, zfbPieChartVo, ddPieChartVo, llqPieChartVo, qqPieChartVo, otherBrowserPieChartVo);
         MemberPortraitDataVo memberPortraitDataVo = new MemberPortraitDataVo();
         memberPortraitDataVo.setSex(sexList);
-        memberPortraitDataVo.setScanSource(browserLit);
-        memberPortraitDataVo.setAge(ageList);
+        memberPortraitDataVo.setScanSource(browserLit.stream().filter(browser -> browser.getValue() != null && browser.getValue().intValue() != 0).collect(Collectors.toList()));
+        memberPortraitDataVo.setAge(ageList.stream().filter(age -> age.getValue() != null && age.getValue().intValue() != 0).collect(Collectors.toList()));
         return memberPortraitDataVo;
     }
 
