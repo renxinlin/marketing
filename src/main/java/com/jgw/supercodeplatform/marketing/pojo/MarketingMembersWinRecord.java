@@ -26,6 +26,7 @@ public class MarketingMembersWinRecord {
 	private Date createTime;
 	private Date updateTime;
 	private Byte awardGrade;
+	private String tradeNo;
     public int getId() {
         return id;
     }
@@ -162,5 +163,13 @@ public class MarketingMembersWinRecord {
 
 	public Date getUpdateTime() {
 		return updateTime;
+	}
+
+	public void setTradeNo(String tradeNo) {
+		this.tradeNo = tradeNo;
+	}
+
+	public String getTradeNo() {
+		return tradeNo;
 	}
 }

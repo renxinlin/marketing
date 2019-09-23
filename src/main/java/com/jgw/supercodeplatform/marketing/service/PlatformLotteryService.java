@@ -218,8 +218,10 @@ public class PlatformLotteryService {
         MarketingPrizeTypeMO prizeTypeMo = lotteryOprationDto.getPrizeTypeMO();
         //转化为分
         Float amount = prizeTypeMo.getPrizeAmount();
+        //生成订单号
+        String partner_trade_no = prizeTypeMo.getAwardGrade().intValue() == 0? null:wXPayTradeNoGenerator.tradeNo();
         //添加中奖纪录
-        addWinRecord(winningCode, mobile, openId,productName,lotteryOprationDto.getScanCodeInfoMO().getActivitySetId(),prizeTypeMo.getAwardGrade(), marketingActivity, lotteryOprationDto.getOrganizationId(), lotteryOprationDto.getOrganizationName(), prizeTypeMo.getId(),amount,productId,productBatchId);
+        addWinRecord(winningCode, mobile, openId,productName,lotteryOprationDto.getScanCodeInfoMO().getActivitySetId(),prizeTypeMo.getAwardGrade(),partner_trade_no, marketingActivity, lotteryOprationDto.getOrganizationId(), lotteryOprationDto.getOrganizationName(), prizeTypeMo.getId(),amount,productId,productBatchId);
         //如果是虚拟奖项，则为没有中奖
         if (prizeTypeMo.getAwardGrade().intValue() == 0) {
             return null;
@@ -229,8 +231,6 @@ public class PlatformLotteryService {
         if (StringUtils.isBlank(openId)) {
             throw  new SuperCodeExtException("微信支付openid不能为空",200);
         }
-        //生成订单号
-        String partner_trade_no=wXPayTradeNoGenerator.tradeNo();
         //保存订单
         SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         WXPayTradeOrder tradeOrder=new WXPayTradeOrder();
@@ -265,7 +265,7 @@ public class PlatformLotteryService {
         return RestResult.success(strAmount, lotteryResultMO);
     }
 
-    private void addWinRecord(String outCodeId, String mobile, String openId, String productName,Long activitySetId, byte awardGrade,
+    private void addWinRecord(String outCodeId, String mobile, String openId, String productName,Long activitySetId, byte awardGrade, String tradeNo,
                               MarketingActivity activity, String organizationId,String organizationFullName, Long prizeTypeId, Float amount, String productId, String productBatchId) {
         //插入中奖纪录
         MarketingMembersWinRecord redWinRecord=new MarketingMembersWinRecord();
@@ -283,6 +283,7 @@ public class PlatformLotteryService {
         redWinRecord.setOrganizationFullName(organizationFullName);
         redWinRecord.setProductBatchId(productBatchId);
         redWinRecord.setAwardGrade(awardGrade);
+        redWinRecord.setTradeNo(tradeNo);
         mWinRecordMapper.addWinRecord(redWinRecord);
     }
 
