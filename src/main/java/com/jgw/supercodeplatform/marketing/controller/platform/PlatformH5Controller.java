@@ -5,18 +5,17 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
+import com.jgw.supercodeplatform.marketing.dto.platform.SourceLinkBuryPoint;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingSourcelinkBury;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.pojo.platform.AbandonPlatform;
 import com.jgw.supercodeplatform.marketing.pojo.platform.LotteryPlatform;
 import com.jgw.supercodeplatform.marketing.service.LotteryService;
 import com.jgw.supercodeplatform.marketing.service.PlatformLotteryService;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingPlatformOrganizationService;
-import com.jgw.supercodeplatform.marketing.service.activity.PlatformActivityService;
+import com.jgw.supercodeplatform.marketing.service.activity.*;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
@@ -54,6 +53,9 @@ public class PlatformH5Controller {
 
     @Autowired
     private PlatformLotteryService platformLotteryService;
+
+    @Autowired
+    private MarketingSourcelinkBuryService marketingSourcelinkBuryService;
 
     @ApiOperation("获取该码是否被扫过<true表示被扫过，false表示没有被扫过>")
     @ApiImplicitParams({
@@ -122,6 +124,16 @@ public class PlatformH5Controller {
         } else {
             return platformLotteryService.saveOrder(tradeOrder, lotteryOprationDto.getSourceLink());
         }
+    }
+
+
+    @ApiOperation("点击更多链接埋点")
+    @PostMapping("/sourceLink")
+    public RestResult<?> getSourceLinkBuryPoint(@RequestBody @Valid SourceLinkBuryPoint sourceLinkBuryPoint){
+        MarketingSourcelinkBury marketingSourcelinkBury = new MarketingSourcelinkBury();
+        BeanUtils.copyProperties(sourceLinkBuryPoint, marketingSourcelinkBury);
+        marketingSourcelinkBuryService.addSourceLinkBury(marketingSourcelinkBury);
+        return RestResult.success();
     }
 
 }

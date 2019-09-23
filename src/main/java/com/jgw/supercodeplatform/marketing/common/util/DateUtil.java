@@ -140,7 +140,7 @@ public class DateUtil
 	public static SortedSet<PieChartVo> dayFmt(Date dayDate, Date endDate){
 		SortedSet<PieChartVo> valueSet = new TreeSet<>();
 		long endMills = endDate.getTime();
-		if(dayDate.getTime() >= endMills) {
+		if(dayDate.getTime() > endMills) {
 			return valueSet;
 		}
 		Calendar cal = Calendar.getInstance();

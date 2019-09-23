@@ -88,13 +88,7 @@ public class PlatformActivityDataController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/memberPortrait")
     public RestResult<MemberPortraitDataVo> memberPortrait(@Valid ActivityDataParam activityDataParam) {
-        List<PieChartVo> sex = Lists.newArrayList(new PieChartVo("男",56L), new PieChartVo("女", 63L));
-        List<PieChartVo> age = Lists.newArrayList(new PieChartVo("20-30",71L), new PieChartVo("30-40", 32L));
-        List<PieChartVo> scanSource = Lists.newArrayList(new PieChartVo("微信",561L), new PieChartVo("30-40", 123L));
-        MemberPortraitDataVo memberPortraitDataVo = new MemberPortraitDataVo();
-        memberPortraitDataVo.setAge(age);
-        memberPortraitDataVo.setScanSource(scanSource);
-        memberPortraitDataVo.setSex(sex);
+        MemberPortraitDataVo memberPortraitDataVo = platformStatisticsService.memberPortrait();
         return RestResult.successWithData(memberPortraitDataVo);
     }
 
@@ -104,16 +98,7 @@ public class PlatformActivityDataController {
     @GetMapping("/memberRegion")
     public RestResult<MemberAreaVo> memberRegion(@Valid ActivityDataParam activityDataParam) {
         //传给前端时注意按照从大到小的顺序
-        List<PieChartVo> areaList = Lists.newArrayList(new PieChartVo("浙江", 568L), new PieChartVo("江苏", 258L), new PieChartVo("湖北", 124L),
-        new PieChartVo("上海", 788L), new PieChartVo("山东", 236L), new PieChartVo("陕西", 244L),
-        new PieChartVo("江西", 668L), new PieChartVo("辽宁", 478L), new PieChartVo("湖南", 854L));
-        List<Long> valueList = areaList.stream().map(area -> area.getValue()).collect(Collectors.toList());
-        Long maxNum = valueList.stream().max((v1, v2) -> v1.compareTo(v2)).get();
-        Long minNum = valueList.stream().min((v1, v2) -> v1.compareTo(v2)).get();
-        MemberAreaVo memberAreaVo = new MemberAreaVo();
-        memberAreaVo.setMaxNum(maxNum);
-        memberAreaVo.setMinNum(minNum);
-        memberAreaVo.setRegionList(areaList);
+        MemberAreaVo memberAreaVo = platformStatisticsService.memberRegion();
         return RestResult.successWithData(memberAreaVo);
     }
 

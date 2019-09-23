@@ -15,7 +15,7 @@ import java.util.List;
 @Mapper
 public interface MarketingMembersWinRecordMapper extends CommonSql{
 
-	static String allFields="Id as id,ActivityId as activityId,ActivitySetId as activitySetId,ActivityName as activityName,Openid as openid,PrizeTypeId as prizeTypeId,CreateTime createTime,UpdateTime updateTime,"
+	static String allFields="Id as id,ActivityId as activityId,ActivitySetId as activitySetId,ActivityName as activityName,Openid as openid,PrizeTypeId as prizeTypeId,CreateTime createTime,UpdateTime updateTime,TradeNo tradeNo,"
 			+ "WinningAmount as winningAmount,WinningCode as winningCode,Mobile as mobile,OrganizationId as organizationId,OrganizationFullName organizationFullName,PrizeName prizeName,ProductId productId, AwardGrade awardGrade";
 
 	static String allWinFields="mmw.Id as id,mmw.ActivityId as activityId,mmw.ActivitySetId as activitySetId,mmw.ActivityName as activityName,mmw.Openid as openid,mmw.PrizeTypeId as prizeTypeId,"
@@ -81,9 +81,9 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 		   )
 	List<MarketingMembersWinRecordListReturn> list(MarketingMembersWinRecordListParam searchParams);
 
-	@Insert(" INSERT INTO marketing_members_win(ActivityId,ActivitySetId,ActivityName,Openid,CreateTime,UpdateTime,"
+	@Insert(" INSERT INTO marketing_members_win(ActivityId,ActivitySetId,ActivityName,Openid,CreateTime,UpdateTime,TradeNo,"
 			+ " PrizeTypeId,WinningAmount,WinningCode,OrganizationId,OrganizationFullName,Mobile,PrizeName,ProductId,ProductBatchId,AwardGrade)"
-			+ " VALUES(#{activityId},#{activitySetId},#{activityName},#{openid},NOW(),NOW(),#{prizeTypeId},"
+			+ " VALUES(#{activityId},#{activitySetId},#{activityName},#{openid},NOW(),NOW(),#{tradeNo},#{prizeTypeId},"
 			+ "#{winningAmount},#{winningCode},#{organizationId},#{organizationFullName},#{mobile},#{prizeName},"
 			+ "#{productId},#{productBatchId},#{awardGrade})")
 	int addWinRecord(MarketingMembersWinRecord winRecord);
