@@ -6,10 +6,14 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsParam;
+import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsExtMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
+import com.jgw.supercodeplatform.marketing.service.weixin.constants.BelongToJgwConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -31,6 +35,9 @@ public class MarketingWxMerchantsService {
 	
     @Value("${weixin.certificate.path}")
     private String certificateUrl;
+
+    @Autowired
+	private MarketingWxMerchantsExtMapper marketingWxMerchantsExtMapper;
     
 	public RestResult<MarketingWxMerchants> get() throws SuperCodeException {
 		RestResult<MarketingWxMerchants> restResult=new RestResult<MarketingWxMerchants>();
@@ -103,7 +110,14 @@ public class MarketingWxMerchantsService {
 				fileOutputStream.write(buf, 0, length);
 			}
 			fileOutputStream.flush();
-			
+
+			// 写入mysql
+			MarketingWxMerchantsExt marketingWxMerchantsExt = new MarketingWxMerchantsExt();
+			marketingWxMerchantsExt.setOrganizationId(commonUtil.getOrganizationId());
+			marketingWxMerchantsExt.setBelongToJgw(BelongToJgwConstants.NO);
+			marketingWxMerchantsExt.setOrganizatioIdlName(commonUtil.getOrganizationName());
+			marketingWxMerchantsExt.setCertificateInfo(FileCopyUtils.copyToByteArray(file.getInputStream()));
+			marketingWxMerchantsExtMapper.insert(marketingWxMerchantsExt);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
