@@ -207,7 +207,8 @@ public class WXPayService {
 			MarketingWxMerchantsExt marketingWxMerchantsExt = marketingWxMerchantsExtMapper.selectOne(queryWapper);
 			Asserts.check(marketingWxMerchantsExt!=null && marketingWxMerchantsExt.getCertificateInfo() !=null ,"证书获取失败");
 			try {
-				FileOutputStream fileOutputStream = new FileOutputStream(new File(wholeName));
+				fd.createNewFile();
+				FileOutputStream fileOutputStream = new FileOutputStream(wholeName);
 				fileOutputStream.write(marketingWxMerchantsExt.getCertificateInfo());
 				fileOutputStream.flush();
 				fileOutputStream.close();
