@@ -74,7 +74,8 @@ public class PlatformStatisticsService {
             if (responseEntity.getStatusCode().equals(HttpStatus.OK) && StringUtils.isNotBlank(resBody)) {
                 JSONObject resJson = JSON.parseObject(resBody);
                 if (resJson.getIntValue("state") == HttpStatus.OK.value()) {
-                    produceCodeNum = resJson.getLong("results");
+                    Long totalCodeNum = resJson.getLong("results");
+                    produceCodeNum = totalCodeNum == null?0:totalCodeNum;
                 }
             }
         } catch (Exception e) {
