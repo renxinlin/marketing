@@ -119,13 +119,16 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 			endScript})
 	int countWinRecord(JoinResultPage joinResultPage);
 
-	@Select("SELECT COUNT(1) FROM marketing_members_win WHERE ActivityId = 5 AND WinningAmount = 0 AND CreateTime >= #{createTimeStart} AND CreateTime <= #{createTimeEnd}")
+	@Select("SELECT COUNT(1) FROM marketing_members_win WHERE ActivityId = 5 AND CreateTime >= #{createTimeStart} AND CreateTime <= #{createTimeEnd}")
 	long countPlatformTotal(@Param("createTimeStart") Date createTimeStart, @Param("createTimeEnd") Date createTimeEnd);
 
-	@Select("SELECT COUNT(1) FROM marketing_members_win WHERE ActivityId = 5 AND WinningAmount > 0 AND CreateTime >= #{createTimeStart} AND CreateTime <= #{createTimeEnd}")
+	@Select("SELECT COUNT(1) FROM marketing_members_win WHERE ActivityId = 5 AND WinningAmount > 0 AND CreateTime >= #{createTimeStart} AND CreateTime < #{createTimeEnd}")
 	long countPlatformWining(@Param("createTimeStart") Date createTimeStart, @Param("createTimeEnd") Date createTimeEnd);
 
 	@Select("SELECT "+allFields+" FROM marketing_members_win WHERE ActivitySetId = #{activitySetId} AND Openid = #{openid} AND AwardGrade = 1")
 	MarketingMembersWinRecord getFirstAward(@Param("activitySetId") Long activitySetId, @Param("openid") String openid);
+
+	@Select("SELECT COUNT(1) FROM (select Openid from marketing_members_win WHERE CreateTime >=startTime AND CreateTime <endTime GROUP BY Openid) a")
+	long countActUser(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
 }

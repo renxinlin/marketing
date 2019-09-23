@@ -205,7 +205,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
             "a.ActivityStartDate activityStartDate, a.ActivityEndDate activityEndDate, a.ActivityStatus activityStatus",
             " FROM marketing_activity_set a INNER JOIN marketing_activity b ON a.ActivityId = b.Id WHERE a.ActivityId = 5 ",
             "<if test = 'search != null and search != &apos;&apos;'> AND (",
-            " OR a.ActivityTitle LIKE CONCAT('%', #{search}, '%')",
+            " a.ActivityTitle LIKE CONCAT('%', #{search}, '%')",
             " OR a.UpdateUserName LIKE CONCAT('%', #{search}, '%')",
             ") </if>",
             " ORDER BY a.UpdateDate DESC",
@@ -217,7 +217,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
             "SELECT COUNT(1) FROM marketing_activity_set WHERE  ",
             " ActivityId = 5 ",
             "<if test = 'search != null and search != &apos;&apos;'> AND (",
-            " OR ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
+            " ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
             " OR UpdateUserName LIKE CONCAT('%', #{updateUserName}, '%')",
             ") </if>",
             endScript})

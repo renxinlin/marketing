@@ -391,7 +391,7 @@ public class MemberPortraitController extends CommonUtil {
             e.setPercentStr(edouble +"");
         });
 
-        BigDecimal otherageBD = new BigDecimal(1.00D- percentAgeDoubleSumWithLast.get());
+        BigDecimal otherageBD = new BigDecimal(String.valueOf(1.00D- percentAgeDoubleSumWithLast.get()));
 
         double otheragedouble =otherageBD.setScale(precision, BigDecimal.ROUND_HALF_UP).doubleValue();
 

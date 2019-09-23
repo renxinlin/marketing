@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 
 import com.google.common.collect.Lists;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
@@ -19,6 +20,7 @@ import com.jgw.supercodeplatform.marketing.vo.platform.WinningPrizeDataVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -35,7 +37,8 @@ import java.util.stream.Collectors;
 public class PlatformStatisticsService {
 
     private final static long ONE_DAY_MILLS = 24 * 60 * 60 * 1000;
-
+    @Autowired
+    private CommonUtil commonUtil;
     @Autowired
     private CodeEsService codeEsService;
     @Autowired
@@ -59,9 +62,11 @@ public class PlatformStatisticsService {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("start", startDateStr);
         paramMap.put("end", endDateStr);
+        Map<String, String> headMap = new HashMap<>();
+        headMap.put("super-token", commonUtil.getSuperToken());
         long produceCodeNum = 1000000; //暂时假定为一百万个
         try {
-            ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restCodemanagerUrl+ CommonConstants.CODE_GETCODETOTAL,paramMap,null);
+            ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restCodemanagerUrl+ CommonConstants.CODE_GETCODETOTAL,paramMap,headMap);
             if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
                 produceCodeNum= Long.parseLong(responseEntity.getBody());
             }
@@ -100,7 +105,7 @@ public class PlatformStatisticsService {
         long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
         long scanCodeTotalNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, null);
         PieChartVo scanCodeTotalVo = new PieChartVo("扫码量", scanCodeTotalNum);
-        long joinNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, 1);
+        long joinNum = marketingMembersWinRecordMapper.countPlatformTotal(new Date(startTime), new Date(endTime));
         PieChartVo joinVo = new PieChartVo("参与量", joinNum);
         return Lists.newArrayList(scanCodeTotalVo, joinVo);
     }
@@ -152,7 +157,7 @@ public class PlatformStatisticsService {
         long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
         long allNum = marketingMembersMapper.countAllMemberNum();
         PieChartVo allPie = new PieChartVo("总会员", allNum);
-        long actNum = codeEsService.countPlatformScanCodeUserByTime(startTime, endTime, 1);
+        long actNum = marketingMembersWinRecordMapper.countActUser(new Date(startTime), new Date(endTime));
         PieChartVo actPie = new PieChartVo("活跃会员", actNum);
         return Lists.newArrayList(allPie, actPie);
     }

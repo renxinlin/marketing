@@ -191,7 +191,7 @@ public class PlatformLotteryService {
                     return lotteryOprationDto.lotterySuccess("您扫码已超过该活动限制数量");
                 }
             }
-            codeEsService.addPlatformScanCodeRecord(innerCode, productId, productBatchId, codeId, openId,userId,0, 5L, codeTypeId,activitySetId, nowTimeMills,organizationId,organizationName,amount);
+            codeEsService.addPlatformScanCodeRecord(innerCode, productId, productBatchId, codeId, opneIdNoSpecialChactar,userId,0, 5L, codeTypeId,activitySetId, nowTimeMills,organizationId,organizationName,amount);
             lotteryOprationDto.setSuccessLottory(1);
             return lotteryOprationDto;
         } catch (Exception e){

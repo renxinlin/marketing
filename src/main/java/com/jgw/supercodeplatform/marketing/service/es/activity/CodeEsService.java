@@ -1,20 +1,17 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-
-import javax.validation.constraints.NotNull;
-
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.common.properties.IndexAndType;
+import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
+import com.jgw.supercodeplatform.marketing.diagram.enums.QueryEnum;
+import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.enums.EsIndex;
+import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
+import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
 import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataVo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -37,7 +34,6 @@ import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregation;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
@@ -48,23 +44,20 @@ import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCount;
 import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregator;
-import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
-import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
-import com.jgw.supercodeplatform.marketing.diagram.enums.QueryEnum;
-import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
-import com.jgw.supercodeplatform.marketing.enums.EsIndex;
-import com.jgw.supercodeplatform.marketing.enums.EsType;
-import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 public class CodeEsService extends AbstractEsSearch {
@@ -653,6 +646,7 @@ public class CodeEsService extends AbstractEsSearch {
 		add(eSearch,true, addParam);
 	}
 
+
 	/**
 	 * 添加全网运营红包扫码抽奖的记录
 	 * @param productId
@@ -668,7 +662,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @throws SuperCodeException
 	 */
 	public void addPlatformScanCodeRecord(String innerCode, String productId, String productBatchId, String codeId,String openId,Long userId, Integer memberType, Long activityId,
-												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName,float amount) throws SuperCodeException {
+										  String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName,float amount) throws SuperCodeException {
 		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId) || StringUtils.isBlank(openId) || userId == null
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime || memberType == null
 				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
@@ -699,7 +693,6 @@ public class CodeEsService extends AbstractEsSearch {
 		eSearch.setType(EsType.INFO);
 		add(eSearch,true, addParam);
 	}
-
 
 	/**
 	 * 查询全网运营平台红包该码被扫过次数
@@ -824,41 +817,6 @@ public class CodeEsService extends AbstractEsSearch {
 			return pieChartVo;
 		}).collect(Collectors.toList());
 		return idAndNameList;
-	}
-
-	/**
-	 * 统计指定时间段内扫码用户的数量
-	 * @param timeStart
-	 * @param timeEnd
-	 * @param status
-	 * @return
-	 */
-	public long countPlatformScanCodeUserByTime(long timeStart, long timeEnd, Integer status) {
-		Map<String, Object> addParam = new HashMap<String, Object>();
-		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
-		// 创建查询条件 >= <=
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
-		StatsAggregationBuilder aggregation =
-				AggregationBuilders
-						.stats(AggregationName)
-						// 聚和字段：码
-						.field("userId");
-		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
-		if (status != null) {
-			QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", status);
-			boolQueryBuilder.must(queryBuilderStatus);
-		}
-		searchRequestBuilder.setQuery(boolQueryBuilder);
-		searchRequestBuilder.addAggregation(aggregation);
-		// 获取查询结果
-		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
-		// 获取count
-		Stats aggs = searchResponse.getAggregations().get(AggregationName);
-		// 优化方向，其他结果如非必须可剔除
-		// 除去评分机制
-		// 采用过滤而非查询提高查询速度
-		// 取所需结果
-		return aggs.getCount();
 	}
 
 }
