@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
@@ -19,6 +21,7 @@ import com.jgw.supercodeplatform.marketing.vo.platform.ScanCodeDataVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.WinningPrizeDataVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +70,12 @@ public class PlatformStatisticsService {
         long produceCodeNum = 1000000; //暂时假定为一百万个
         try {
             ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restCodemanagerUrl+ CommonConstants.CODE_GETCODETOTAL,paramMap,headMap);
-            if (responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-                produceCodeNum= Long.parseLong(responseEntity.getBody());
+            String resBody = responseEntity.getBody();
+            if (responseEntity.getStatusCode().equals(HttpStatus.OK) && StringUtils.isNotBlank(resBody)) {
+                JSONObject resJson = JSON.parseObject(resBody);
+                if (resJson.getIntValue("state") == HttpStatus.OK.value()) {
+                    produceCodeNum = resJson.getLong("results");
+                }
             }
         } catch (Exception e) {
             log.error("获取指定时间内生码数量出错", e);
