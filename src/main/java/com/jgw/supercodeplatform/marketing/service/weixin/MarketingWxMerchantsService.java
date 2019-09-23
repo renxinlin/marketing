@@ -29,19 +29,19 @@ public class MarketingWxMerchantsService {
 
 	@Autowired
 	private CommonUtil commonUtil;
-	
+
 	@Autowired
 	private MarketingWxMerchantsMapper dao;
 
 	@Autowired
 	private GlobalRamCache globalRamCache;
-	
+
     @Value("${weixin.certificate.path}")
     private String certificateUrl;
 
     @Autowired
 	private MarketingWxMerchantsExtMapper marketingWxMerchantsExtMapper;
-    
+
 	public RestResult<MarketingWxMerchants> get() throws SuperCodeException {
 		RestResult<MarketingWxMerchants> restResult=new RestResult<MarketingWxMerchants>();
 		String organizationId=commonUtil.getOrganizationId();
@@ -74,7 +74,7 @@ public class MarketingWxMerchantsService {
 		MarketingWxMerchants mWxMerchants=dao.selectByOrganizationId(organizationId);
 		return mWxMerchants;
 	}
-	
+
 	public MarketingWxMerchants get(String organizationId){
 		MarketingWxMerchants mWxMerchants=dao.get(organizationId);
 		if (null==mWxMerchants) {
@@ -82,11 +82,11 @@ public class MarketingWxMerchantsService {
 		}
 		return mWxMerchants;
 	}
-    
+
 	/**
 	 * 上传文件
 	 * @param file
-	 * @return 
+	 * @return
 	 * @throws IOException
 	 * @throws SuperCodeException
 	 */
@@ -105,7 +105,7 @@ public class MarketingWxMerchantsService {
 				dir.mkdirs();
 			}
 			String wholeName=wholeFilePath+File.separator+newName;
-			
+
 			fileOutputStream=new FileOutputStream(wholeName);
 			byte[]buf=new byte[1024];
 			int length=0;
@@ -123,7 +123,6 @@ public class MarketingWxMerchantsService {
 			marketingWxMerchantsExt.setBelongToJgw(BelongToJgwConstants.NO);
 			marketingWxMerchantsExt.setOrganizatioIdlName(commonUtil.getOrganizationName());
 			marketingWxMerchantsExt.setCertificateInfo(FileCopyUtils.copyToByteArray(file.getInputStream()));
-			marketingWxMerchantsExt.setFilename(newName);
 			marketingWxMerchantsExtMapper.insert(marketingWxMerchantsExt);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -131,14 +130,14 @@ public class MarketingWxMerchantsService {
 			if (null!=inputstream) {
 				inputstream.close();
 			}
-			
+
 			if (null!=fileOutputStream) {
 				fileOutputStream.close();
 			}
 		}
 		return newName;
 	}
-	
+
 	public void setUseType(Byte useType){
 		String organizationId = commonUtil.getOrganizationId();
 		String organizationName = commonUtil.getOrganizationName();
