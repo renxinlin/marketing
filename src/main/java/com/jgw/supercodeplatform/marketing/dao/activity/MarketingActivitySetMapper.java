@@ -217,8 +217,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
             "SELECT COUNT(1) FROM marketing_activity_set WHERE  ",
             " ActivityId = 5 ",
             "<if test = 'search != null and search != &apos;&apos;'> AND (",
-            " ActivityTitle LIKE CONCAT('%', #{activityTitle}, '%')",
-            " OR UpdateUserName LIKE CONCAT('%', #{updateUserName}, '%')",
+            " ActivityTitle LIKE CONCAT('%', #{search}, '%')",
+            " OR UpdateUserName LIKE CONCAT('%', #{search}, '%')",
             ") </if>",
             endScript})
     int countPlatform(DaoSearchWithUser searchParams);
