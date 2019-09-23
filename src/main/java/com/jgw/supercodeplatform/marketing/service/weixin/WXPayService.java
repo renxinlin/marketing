@@ -110,6 +110,71 @@ public class WXPayService {
 		exec.submit(new WXPayAsynTask(wxPay, WechatConstants.ORGANIZATION_PAY_CHANGE_Suffix_URL, signMap, 1000, 5000));
 	}
 
+	/**
+	 * 微信同步支付
+	 * @param openid
+	 * @param spbill_create_ip
+	 * @param amount
+	 * @param partner_trade_no
+	 * @param organizationId
+	 * @throws Exception
+	 */
+	public void qiyePayAsycPlatform(String  openid,String  spbill_create_ip,int amount,String  partner_trade_no, String organizationId) throws Exception {
+		if (StringUtils.isBlank(openid) || StringUtils.isBlank(spbill_create_ip)|| StringUtils.isBlank(partner_trade_no)|| StringUtils.isBlank(organizationId)) {
+			logger.info("发起微信支付参数不能为空,openid=" + openid + ",spbill_create_ip=" + spbill_create_ip + ",partner_trade_no=" + partner_trade_no + spbill_create_ip + ",organizationId=" + organizationId);
+			return;
+		}
+		MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.get(organizationId);
+		if (null==mWxMerchants) {
+			logger.info("当前企业"+organizationId+"未绑定公众号数据");
+			return;
+		}
+		if (mWxMerchants.getMerchantType() == 1) {
+			mWxMerchants = mWxMerchantsMapper.getJgw();
+		} else if (StringUtils.isBlank(mWxMerchants.getCertificateAddress())) {
+			logger.info("当前企业"+organizationId+"没有上传公众号证书");
+			return;
+		}
+		String mechid=mWxMerchants.getMchid();
+		String mechappid=mWxMerchants.getMchAppid();
+		if (StringUtils.isBlank(mechid) || StringUtils.isBlank(mechappid)) {
+			logger.info("获取到的企业公众号支付参数有空值，mechid="+mechid+",mechappid="+mechappid);
+			return;
+		}
+		String certificatePassword = mWxMerchants.getCertificatePassword();
+		String key=mWxMerchants.getMerchantKey();
+		//设置配置类
+		WXPayMarketingConfig config=new WXPayMarketingConfig();
+		config.setAppId(mechappid);
+		config.setKey(key);
+		config.setMchId(mechid);
+		if (StringUtils.isBlank(certificatePassword)) {
+			config.setCertificatePassword(mWxMerchants.getMchid());
+		} else {
+			config.setCertificatePassword(certificatePassword);
+		}
+		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getCertificateAddress();
+		logger.info("微信企业支付到零钱证书完整路径："+wholePath);
+		config.setCertificatePath(wholePath);
+		//封装请求参数实体
+		OrganizationPayRequestParam oRequestParam=new OrganizationPayRequestParam();
+		oRequestParam.setAmount(amount);
+		oRequestParam.setMch_appid(mechappid);
+		oRequestParam.setOpenid(openid);
+		oRequestParam.setNonce_str(WXPayUtil.generateNonceStr());
+		oRequestParam.setPartner_trade_no(partner_trade_no);
+		oRequestParam.setSpbill_create_ip(spbill_create_ip);
+		oRequestParam.setMchid(mechid);
+		//根据实体类转换成签名map
+		Map<String, String> signMap=generateMap(oRequestParam);
+
+		//获取签名值sign
+		String sign=WXPayUtil.generateSignature(signMap, key, SignType.MD5);
+		signMap.put("sign", sign);
+
+		WXPay wxPay=new WXPay(config);
+		new WXPayAsynTask(wxPay, WechatConstants.ORGANIZATION_PAY_CHANGE_Suffix_URL, signMap, 1000, 5000).run();
+	}
 
 	/**
 	 * 企业支付零钱同步

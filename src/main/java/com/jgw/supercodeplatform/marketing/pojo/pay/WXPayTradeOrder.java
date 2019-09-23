@@ -52,6 +52,8 @@ public class WXPayTradeOrder {
 	 */
 	private String errCodeDes;
 
+	private Long activityId;
+
 	public WXPayTradeOrder() {
 	}
 
@@ -173,5 +175,13 @@ public class WXPayTradeOrder {
 
 	public Byte getReferenceRole() {
 		return ReferenceRole;
+	}
+
+	public void setActivityId(Long activityId) {
+		this.activityId = activityId;
+	}
+
+	public Long getActivityId() {
+		return activityId;
 	}
 }

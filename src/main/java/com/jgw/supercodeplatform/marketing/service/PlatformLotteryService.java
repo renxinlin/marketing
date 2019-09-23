@@ -226,7 +226,9 @@ public class PlatformLotteryService {
         if (prizeTypeMo.getAwardGrade().intValue() == 0) {
             return null;
         }
-        mPrizeTypeMapper.updateRemainingStock(prizeTypeMo.getId());
+        if (prizeTypeMo.getRemainingStock() != null) {
+            mPrizeTypeMapper.updateRemainingStock(prizeTypeMo.getId());
+        }
         Float finalAmount = amount * 100;
         if (StringUtils.isBlank(openId)) {
             throw  new SuperCodeExtException("微信支付openid不能为空",200);
@@ -242,6 +244,7 @@ public class PlatformLotteryService {
         tradeOrder.setOrganizationId(organizationId);
         tradeOrder.setWinningCode(winningCode);
         tradeOrder.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+        tradeOrder.setActivityId(marketingActivity.getId());
         if (StringUtils.isBlank(remoteAddr)) {
             remoteAddr = serverIp;
         }
@@ -300,8 +303,8 @@ public class PlatformLotteryService {
         MarketingMembersWinRecord firstAwardWinRecord = mWinRecordMapper.getFirstAward(activityId, openId);
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         for (MarketingPrizeTypeMO prizeTypeMo : prizeTypeMOList) {
-            if (prizeTypeMo.getAwardGrade().intValue() == 0) {
-                //如果是虚拟不中奖直接不处理
+            if (prizeTypeMo.getAwardGrade().intValue() == 0 || prizeTypeMo.getRemainingStock() == null) {
+                //如果是虚拟不中奖或者库存为null直接不处理
                 continue;
             }
             String key = prizeTypeMo.getId() + "_" + prizeTypeMo.getActivitySetId();
@@ -311,9 +314,24 @@ public class PlatformLotteryService {
             String stockNum = valueOperations.get(key);
             prizeTypeMo.setRemainingStock(Integer.valueOf(stockNum));
         }
+        //如果是库存为null，则说明，不计算库存消耗，这里把这种情况的库存设置为int的最大值，方便进行抽奖算法
+        prizeTypeMOList.forEach(prize -> {
+            if(prize.getRemainingStock() == null) {
+                prize.setRemainingStock(Integer.MAX_VALUE);
+            }
+        });
         MarketingPrizeTypeMO prizeTypeMo = LotteryUtilWithOutCodeNum.platfromStartLottery(prizeTypeMOList, firstAwardWinRecord == null?false:true);
-        if (prizeTypeMo.getAwardGrade().intValue() != 0) {
+        if (prizeTypeMo.getAwardGrade().intValue() != 0 && prizeTypeMo.getRemainingStock().intValue() != Integer.MAX_VALUE) {
             valueOperations.increment(prizeTypeMo.getId() + "_" + prizeTypeMo.getActivitySetId(), -1L);
+        }
+        //抽奖算法完毕后把不计库存的重新恢复设定为null
+        prizeTypeMOList.forEach(prize -> {
+            if(prize.getRemainingStock().intValue() == Integer.MAX_VALUE) {
+                prize.setRemainingStock(null);
+            }
+        });
+        if (prizeTypeMo.getRemainingStock().intValue() == Integer.MAX_VALUE) {
+            prizeTypeMo.setRemainingStock(null);
         }
         return prizeTypeMo;
     }

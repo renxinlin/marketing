@@ -71,4 +71,5 @@ public class SalerAutoUnderTask {
             logger.info(" 导购积分兑换红包=======================================end timing off shelf=======================================");
         }
     }
+
 }

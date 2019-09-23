@@ -73,8 +73,6 @@ public class PlatformActivityAdd {
         @Positive(message = "中奖概率必须为正数")
         private Integer prizeProbability;
         @ApiModelProperty("该奖项剩余次数")
-        @NotNull(message = "剩余中奖次数不能为空")
-        @PositiveOrZero(message = "剩余中奖次数不能为负数")
         private Integer remainingNumber;
 
     }

@@ -11,16 +11,16 @@ import java.util.List;
 @Mapper
 public interface WXPayTradeOrderMapper extends CommonSql{
 static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amount amount,TradeDate tradeDate,TradeStatus tradeStatus,ReferenceRole referenceRole,"
-		+ "OrganizationId organizationId,RemoteAddr remoteAddr,WinningCode winningCode,ReturnCode returnCode,ReturnMsg returnMsg,ResultCode resultCode,ErrCode errCode,ErrCodeDes errCodeDes";
+		+ "OrganizationId organizationId,RemoteAddr remoteAddr,WinningCode winningCode,ReturnCode returnCode,ReturnMsg returnMsg,ResultCode resultCode,ErrCode errCode,ErrCodeDes errCodeDes, ActivityId activityId";
 
     @Select("select "+allFields+" from marketing_wx_trade_order where PartnerTradeNo=#{partner_trade_no}")
 	WXPayTradeOrder selectByTradeNo(@Param("partner_trade_no")String partner_trade_no);
 	
 	
     @Insert(" INSERT INTO marketing_wx_trade_order(PartnerTradeNo,OpenId,Amount,TradeDate,TradeStatus,"
-            + " OrganizationId,RemoteAddr,WinningCode,ReturnCode,ReturnMsg,ResultCode,ErrCode,ErrCodeDes,ReferenceRole) "
+            + " OrganizationId,RemoteAddr,WinningCode,ReturnCode,ReturnMsg,ResultCode,ErrCode,ErrCodeDes,ReferenceRole,ActivityId) "
             + " VALUES(#{partnerTradeNo},#{openId},#{amount},now(),#{tradeStatus},#{organizationId},#{remoteAddr},#{winningCode},#{returnCode},#{returnMsg},"
-            + "#{resultCode},#{errCode},#{errCodeDes},#{referenceRole}"
+            + "#{resultCode},#{errCode},#{errCodeDes},#{referenceRole},#{activityId}"
             + ")")
 	int insert(WXPayTradeOrder tradeOrder);
 
@@ -68,5 +68,8 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
 	@Select("SELECT "+allFields+" FROM marketing_wx_trade_order WHERE WinningCode = #{winningCode} AND PartnerTradeNo = #{tradeNo}")
 	WXPayTradeOrder selectByCodeId(@Param("tradeNo") String tradeNo, @Param("winningCode") String winningCode);
 
+	//查找到支付失败的订单，
+	@Select("SELECT "+allFields+" FROM marketing_wx_trade_order WHERE TradeDate > #{limitDate} AND TradeStatus = 2 AND ActivityId = #{activityId}")
+	List<WXPayTradeOrder> searchFailOrder(@Param("activityId") Long activityId, @Param("limitDate")Date limitDate);
 
 }
