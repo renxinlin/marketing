@@ -3,7 +3,6 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
@@ -20,9 +19,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +38,6 @@ public class WeixinSNBindController extends CommonUtil {
     @Value("${weixin.certificate.path}")
     private String path;
 
-    
 	/**
 	 * 上传文件
 	 * @author liujianqiang

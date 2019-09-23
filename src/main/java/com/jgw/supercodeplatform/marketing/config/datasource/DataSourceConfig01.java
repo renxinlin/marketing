@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 @Configuration
 @MapperScan(basePackages ={ "com.jgw.supercodeplatform.marketingsaler.integral",
         "com.jgw.supercodeplatform.marketingsaler.base",
+        "com.jgw.supercodeplatform.marketing.mybatisplusdao",
         "com.jgw.supercodeplatform.marketingsaler.order"},sqlSessionFactoryRef="marketingsalerSqlSessionFactory")
 public class DataSourceConfig01 {
 
