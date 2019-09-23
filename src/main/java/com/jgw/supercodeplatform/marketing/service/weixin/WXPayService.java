@@ -200,14 +200,14 @@ public class WXPayService {
 	 */
 	private void cacheToDiscIfNecssary(String wholeName,String wholePath,String organizationId) {
 
-		File fd=new File(wholeName);
+		File fd=new File(wholePath);
 		if(!fd.exists()){       // 文件夹存在则文件存在
 			Wrapper<MarketingWxMerchantsExt> queryWapper = new QueryWrapper<>();
 			((QueryWrapper<MarketingWxMerchantsExt>) queryWapper).eq("organizationId",organizationId);
 			MarketingWxMerchantsExt marketingWxMerchantsExt = marketingWxMerchantsExtMapper.selectOne(queryWapper);
 			Asserts.check(marketingWxMerchantsExt!=null && marketingWxMerchantsExt.getCertificateInfo() !=null ,"证书获取失败");
 			try {
-				fd.createNewFile();
+				fd.mkdirs();
 				FileOutputStream fileOutputStream = new FileOutputStream(wholeName);
 				fileOutputStream.write(marketingWxMerchantsExt.getCertificateInfo());
 				fileOutputStream.flush();
