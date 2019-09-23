@@ -1,15 +1,22 @@
 package com.jgw.supercodeplatform.marketing.service.weixin;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsParam;
+import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsExtMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
+import com.jgw.supercodeplatform.marketing.service.weixin.constants.BelongToJgwConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -22,16 +29,19 @@ public class MarketingWxMerchantsService {
 
 	@Autowired
 	private CommonUtil commonUtil;
-	
+
 	@Autowired
 	private MarketingWxMerchantsMapper dao;
 
 	@Autowired
 	private GlobalRamCache globalRamCache;
-	
+
     @Value("${weixin.certificate.path}")
     private String certificateUrl;
-    
+
+    @Autowired
+	private MarketingWxMerchantsExtMapper marketingWxMerchantsExtMapper;
+
 	public RestResult<MarketingWxMerchants> get() throws SuperCodeException {
 		RestResult<MarketingWxMerchants> restResult=new RestResult<MarketingWxMerchants>();
 		String organizationId=commonUtil.getOrganizationId();
@@ -64,7 +74,7 @@ public class MarketingWxMerchantsService {
 		MarketingWxMerchants mWxMerchants=dao.selectByOrganizationId(organizationId);
 		return mWxMerchants;
 	}
-	
+
 	public MarketingWxMerchants get(String organizationId){
 		MarketingWxMerchants mWxMerchants=dao.get(organizationId);
 		if (null==mWxMerchants) {
@@ -72,11 +82,11 @@ public class MarketingWxMerchantsService {
 		}
 		return mWxMerchants;
 	}
-    
+
 	/**
 	 * 上传文件
 	 * @param file
-	 * @return 
+	 * @return
 	 * @throws IOException
 	 * @throws SuperCodeException
 	 */
@@ -95,7 +105,7 @@ public class MarketingWxMerchantsService {
 				dir.mkdirs();
 			}
 			String wholeName=wholeFilePath+File.separator+newName;
-			
+
 			fileOutputStream=new FileOutputStream(wholeName);
 			byte[]buf=new byte[1024];
 			int length=0;
@@ -103,21 +113,31 @@ public class MarketingWxMerchantsService {
 				fileOutputStream.write(buf, 0, length);
 			}
 			fileOutputStream.flush();
-			
+
+			// 写入mysql
+			UpdateWrapper<MarketingWxMerchantsExt> query = new UpdateWrapper<>();
+			query.eq("OrganizationId",commonUtil.getOrganizationId());
+			marketingWxMerchantsExtMapper.delete(query);
+			MarketingWxMerchantsExt marketingWxMerchantsExt = new MarketingWxMerchantsExt();
+			marketingWxMerchantsExt.setOrganizationId(commonUtil.getOrganizationId());
+			marketingWxMerchantsExt.setBelongToJgw(BelongToJgwConstants.NO);
+			marketingWxMerchantsExt.setOrganizatioIdlName(commonUtil.getOrganizationName());
+			marketingWxMerchantsExt.setCertificateInfo(FileCopyUtils.copyToByteArray(file.getInputStream()));
+			marketingWxMerchantsExtMapper.insert(marketingWxMerchantsExt);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}finally {
 			if (null!=inputstream) {
 				inputstream.close();
 			}
-			
+
 			if (null!=fileOutputStream) {
 				fileOutputStream.close();
 			}
 		}
 		return newName;
 	}
-	
+
 	public void setUseType(Byte useType){
 		String organizationId = commonUtil.getOrganizationId();
 		String organizationName = commonUtil.getOrganizationName();

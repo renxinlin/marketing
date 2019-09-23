@@ -1,11 +1,15 @@
 package com.jgw.supercodeplatform.marketing.service.weixin;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.asyntask.WXPayAsynTask;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
+import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsExtMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
@@ -13,6 +17,7 @@ import com.jgw.supercodeplatform.marketing.weixinpay.WXPayMarketingConfig;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
 import com.jgw.supercodeplatform.marketing.weixinpay.requestparam.OrganizationPayRequestParam;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +47,8 @@ public class WXPayService {
 	@Autowired
 	private WXPayTradeOrderMapper wXPayTradeOrderMapper;
 
-
+	@Autowired
+	private MarketingWxMerchantsExtMapper marketingWxMerchantsExtMapper;
 	/**
      * 企业付款到零钱
      * @param openid
@@ -157,7 +165,9 @@ public class WXPayService {
 		} else {
 			config.setCertificatePassword(certificatePassword);
 		}
-		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getCertificateAddress();
+		String wholePath=certificatePath+File.separator+mWxMerchants.getOrganizationId()+File.separator+mWxMerchants.getCertificateAddress();
+		// 拉取db到磁盘
+		cacheToDiscIfNecssary(wholePath,certificatePath+File.separator+mWxMerchants.getOrganizationId(), mWxMerchants.getOrganizationId());
 		logger.info("微信企业支付到零钱证书完整路径："+wholePath);
 		config.setCertificatePath(wholePath);
 		//封装请求参数实体
@@ -181,9 +191,36 @@ public class WXPayService {
 		wxPayAsynTask.pay();
 
 	}
-	
-	
-    /**
+
+	/**
+	 *
+ 	 * @param wholeName
+	 * @param wholePath
+	 * @param organizationId  唯一标识符作用 挂载于证书域下
+	 */
+	private void cacheToDiscIfNecssary(String wholeName,String wholePath,String organizationId) {
+
+		File fd=new File(wholePath);
+		if(!fd.exists()){       // 文件夹存在则文件存在
+			Wrapper<MarketingWxMerchantsExt> queryWapper = new QueryWrapper<>();
+			((QueryWrapper<MarketingWxMerchantsExt>) queryWapper).eq("organizationId",organizationId);
+			MarketingWxMerchantsExt marketingWxMerchantsExt = marketingWxMerchantsExtMapper.selectOne(queryWapper);
+			Asserts.check(marketingWxMerchantsExt!=null && marketingWxMerchantsExt.getCertificateInfo() !=null ,"证书获取失败");
+			try {
+				fd.mkdirs();
+				FileOutputStream fileOutputStream = new FileOutputStream(wholeName);
+				fileOutputStream.write(marketingWxMerchantsExt.getCertificateInfo());
+				fileOutputStream.flush();
+				fileOutputStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				throw new RuntimeException("存储证书到本地磁盘失败");
+			}
+		}
+	}
+
+
+	/**
      * 生成参与签名的数据map
      * @param oRequestParam
      * @return
