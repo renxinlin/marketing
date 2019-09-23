@@ -144,13 +144,18 @@ public class JWTUtilTest {
 	public static void main(String[] args) throws Exception {
 		JWTUtil demo = new JWTUtil();
 		H5LoginVO j = new H5LoginVO();
-		j.setMemberId(1L);
-		j.setMobile("13211111111");
+		j.setMemberId(82L);
+		j.setMemberType((byte)1);
+		j.setMobile("15728043579");
+		j.setOrganizationId("86ff1c47b5204e88918cb89bbd739f12");
+		j.setCustomerId("86ff1c47b5204e88918cb89bbd739f12");
+		j.setOrganizationName("江苏浮华文化传播有限公司");
+		j.setMemberName("15728043579");
 		String createTokenWithClaim = demo.createTokenWithClaim(j);
 		System.out.println(createTokenWithClaim);
 		Thread.sleep(2000);
 
-		H5LoginVO jwtUser = demo.verifyToken(createTokenWithClaim);
+		H5LoginVO jwtUser = demo.verifyToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJINSBTRUNVQ0lUWSIsImF1ZCI6IkFQUCIsImp3dFVzZXIiOiJ7XCJjdXN0b21lcklkXCI6XCI4NmZmMWM0N2I1MjA0ZTg4OTE4Y2I4OWJiZDczOWYxMlwiLFwibWVtYmVySWRcIjo4MixcIm1lbWJlck5hbWVcIjpcIjE1NzI4MDQzNTc5XCIsXCJtZW1iZXJUeXBlXCI6MSxcIm1vYmlsZVwiOlwiMTU3MjgwNDM1NzlcIixcIm9yZ2FuaXphdGlvbklkXCI6XCI4NmZmMWM0N2I1MjA0ZTg4OTE4Y2I4OWJiZDczOWYxMlwiLFwib3JnYW5pemF0aW9uTmFtZVwiOlwi5rGf6IuP5rWu5Y2O5paH5YyW5Lyg5pKt5pyJ6ZmQ5YWs5Y-4XCIsXCJyZWdpc3RlcmVkXCI6MH0iLCJpc3MiOiJKR1cgQ0pNIENPTVBBTlkiLCJleHAiOjE1Njg3MDc5MjB9.ylw5Af_un-3Iz3dErGyjxIk2t443T6fxBCRgrcMcXbw");
 
 		System.out.println(JSONObject.toJSONString(jwtUser));
 

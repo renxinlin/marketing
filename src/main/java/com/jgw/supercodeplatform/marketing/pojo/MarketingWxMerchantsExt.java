@@ -47,5 +47,10 @@ public class MarketingWxMerchantsExt {
     @TableField(value = "CertificateInfo")
     private byte[] certificateInfo;
 
+    @TableField("Filename")
+    private String filename;
+
+
+
 
 }

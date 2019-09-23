@@ -1,5 +1,8 @@
 package com.jgw.supercodeplatform.marketing.service.weixin;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -112,11 +115,15 @@ public class MarketingWxMerchantsService {
 			fileOutputStream.flush();
 
 			// 写入mysql
+			UpdateWrapper<MarketingWxMerchantsExt> query = new UpdateWrapper<>();
+			query.eq("OrganizationId",commonUtil.getOrganizationId());
+			marketingWxMerchantsExtMapper.delete(query);
 			MarketingWxMerchantsExt marketingWxMerchantsExt = new MarketingWxMerchantsExt();
 			marketingWxMerchantsExt.setOrganizationId(commonUtil.getOrganizationId());
 			marketingWxMerchantsExt.setBelongToJgw(BelongToJgwConstants.NO);
 			marketingWxMerchantsExt.setOrganizatioIdlName(commonUtil.getOrganizationName());
 			marketingWxMerchantsExt.setCertificateInfo(FileCopyUtils.copyToByteArray(file.getInputStream()));
+			marketingWxMerchantsExt.setFilename(newName);
 			marketingWxMerchantsExtMapper.insert(marketingWxMerchantsExt);
 		} catch (Exception e) {
 			e.printStackTrace();
