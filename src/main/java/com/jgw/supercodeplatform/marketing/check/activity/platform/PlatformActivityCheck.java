@@ -47,14 +47,13 @@ public class PlatformActivityCheck {
         if (totalPrizeProbability > 100) {
             throw new SuperCodeExtException("活动概率总和不能大于100%");
         }
-        if (totalPrizeProbability < 100) {
-            PrizeType prizeType = new PrizeType();
-            prizeType.setPrizeAmount(new BigDecimal(0));
-            prizeType.setPrizeProbability(100 - totalPrizeProbability);
-            prizeType.setPrizeTypeName("未中奖");
-            prizeType.setRemainingNumber(9999999);
-            platformActivityAdd.getPrizeTypeList().add(prizeType);
-        }
+        PrizeType prizeType = new PrizeType();
+        prizeType.setPrizeAmount(new BigDecimal(0));
+        prizeType.setPrizeProbability(100 - totalPrizeProbability);
+        prizeType.setPrizeTypeName("未中奖");
+        prizeType.setAwardGrade((byte) 0);
+        prizeType.setRemainingNumber(9999999);
+        platformActivityAdd.getPrizeTypeList().add(prizeType);
 
     }
 

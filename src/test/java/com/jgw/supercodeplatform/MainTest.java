@@ -1,12 +1,14 @@
 package com.jgw.supercodeplatform;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 public class MainTest {
 
     public static void main(String[] args) {
-        DecimalFormat decimalFormat = new DecimalFormat("#.00");
-        System.out.println("------>"+decimalFormat.format( 0.5));
+        Float sd = 12.1F;
+        BigDecimal ss = new BigDecimal(sd);
+        System.out.println("------>"+ss);
     }
 
 }

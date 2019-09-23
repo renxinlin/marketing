@@ -11,6 +11,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.StringUtils;
 
+import java.util.List;
+
 @Setter
 @Getter
 public class LotteryOprationDto {
@@ -74,6 +76,14 @@ public class LotteryOprationDto {
      * 该活动发放红包时是否需要审核
      */
     private byte sendAudit;
+    /**
+     * 内码
+     */
+    private String innerCode;
+    /**
+     * 点击跳转更多链接
+     */
+    private String sourceLink;
 
     public LotteryOprationDto lotterySuccess(int winnOrNot, String msg) {
         if (lotteryResultMO == null){

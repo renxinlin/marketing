@@ -1,8 +1,13 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
@@ -14,30 +19,39 @@ import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataV
 import com.jgw.supercodeplatform.marketing.vo.platform.DayActivityJoinQuantityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.ScanCodeDataVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.WinningPrizeDataVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class PlatformStatisticsService {
 
     private final static long ONE_DAY_MILLS = 24 * 60 * 60 * 1000;
-
+    @Autowired
+    private CommonUtil commonUtil;
     @Autowired
     private CodeEsService codeEsService;
     @Autowired
     private MarketingMembersWinRecordMapper marketingMembersWinRecordMapper;
     @Autowired
     private MarketingMembersMapper marketingMembersMapper;
-
+    @Autowired
+    private RestTemplateUtil restTemplateUtil;
+    @Value("${rest.codemanager.url}")
+    private String restCodemanagerUrl;
     /**
      * 扫码率
      * @param activityDataParam
@@ -46,8 +60,26 @@ public class PlatformStatisticsService {
     public List<PieChartVo> scanCodeRate(@Valid ActivityDataParam activityDataParam) {
         long startTime = activityDataParam.getStartDate().getTime();
         long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
-        //TODO 去码平台获取指定时间段内生码数量
+        String startDateStr = DateFormatUtils.format(activityDataParam.getStartDate(), "yyyy-MM-dd");
+        String endDateStr = DateFormatUtils.format(activityDataParam.getEndDate(), "yyyy-MM-dd");
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("start", startDateStr);
+        paramMap.put("end", endDateStr);
+        Map<String, String> headMap = new HashMap<>();
+        headMap.put("super-token", commonUtil.getSuperToken());
         long produceCodeNum = 1000000; //暂时假定为一百万个
+        try {
+            ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restCodemanagerUrl+ CommonConstants.CODE_GETCODETOTAL,paramMap,headMap);
+            String resBody = responseEntity.getBody();
+            if (responseEntity.getStatusCode().equals(HttpStatus.OK) && StringUtils.isNotBlank(resBody)) {
+                JSONObject resJson = JSON.parseObject(resBody);
+                if (resJson.getIntValue("state") == HttpStatus.OK.value()) {
+                    produceCodeNum = resJson.getLong("results");
+                }
+            }
+        } catch (Exception e) {
+            log.error("获取指定时间内生码数量出错", e);
+        }
         PieChartVo produceCodeVo = new PieChartVo("生码量", produceCodeNum);
         //扫码量
         long scanCodeNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, null);
@@ -80,8 +112,8 @@ public class PlatformStatisticsService {
         long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
         long scanCodeTotalNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, null);
         PieChartVo scanCodeTotalVo = new PieChartVo("扫码量", scanCodeTotalNum);
-        long joinNum = codeEsService.countPlatformScanCodeRecordByTime(startTime, endTime, 1);
-        PieChartVo joinVo = new PieChartVo("参与量", scanCodeTotalNum);
+        long joinNum = marketingMembersWinRecordMapper.countPlatformTotal(new Date(startTime), new Date(endTime));
+        PieChartVo joinVo = new PieChartVo("参与量", joinNum);
         return Lists.newArrayList(scanCodeTotalVo, joinVo);
     }
 
@@ -132,7 +164,7 @@ public class PlatformStatisticsService {
         long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
         long allNum = marketingMembersMapper.countAllMemberNum();
         PieChartVo allPie = new PieChartVo("总会员", allNum);
-        long actNum = codeEsService.countPlatformScanCodeUserByTime(startTime, endTime, 1);
+        long actNum = marketingMembersWinRecordMapper.countActUser(new Date(startTime), new Date(endTime));
         PieChartVo actPie = new PieChartVo("活跃会员", actNum);
         return Lists.newArrayList(allPie, actPie);
     }

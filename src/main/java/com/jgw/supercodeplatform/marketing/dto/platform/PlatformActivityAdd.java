@@ -38,6 +38,7 @@ public class PlatformActivityAdd {
     @ApiModelProperty("奖次信息")
     @Valid
     @NotEmpty(message = "奖次信息不能为空")
+    @Size(min = 2, message = "奖项至少要设置两个")
     private List<PrizeType> prizeTypeList;
     @ApiModelProperty("每人最多参与次数")
     @NotNull(message = "参与次数不能为空")
@@ -73,7 +74,7 @@ public class PlatformActivityAdd {
         private Integer prizeProbability;
         @ApiModelProperty("该奖项剩余次数")
         @NotNull(message = "剩余中奖次数不能为空")
-        @Positive(message = "剩余中奖次数必须为正数")
+        @PositiveOrZero(message = "剩余中奖次数不能为负数")
         private Integer remainingNumber;
 
     }

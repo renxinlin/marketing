@@ -143,4 +143,9 @@ public class MarketingWxMerchantsService {
 		}
 	}
 
+	public MarketingWxMerchants getJgw(){
+		return dao.getJgw();
+	}
+
+
 }

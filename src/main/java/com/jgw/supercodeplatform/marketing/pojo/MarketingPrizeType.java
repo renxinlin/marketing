@@ -9,7 +9,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  * @author czm
  *
  */
-public class MarketingPrizeType implements Comparable<MarketingPrizeType>{
+public class MarketingPrizeType {
 
 
 
@@ -166,12 +166,5 @@ public class MarketingPrizeType implements Comparable<MarketingPrizeType>{
 		                 .append("activitySetId", rhs.activitySetId)
 		                 .isEquals();
 	}
-	@Override
-	public int compareTo(MarketingPrizeType o) {
-		return 0;
-	}
 
-
-	
-	
 }

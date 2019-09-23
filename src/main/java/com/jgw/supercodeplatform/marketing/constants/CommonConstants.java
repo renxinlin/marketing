@@ -70,4 +70,14 @@ public class CommonConstants {
      * 窜货
      */
     public static final String JUDGE_FLEE_GOOD = "/goods/query/judgeFleeGood";
+
+    /**
+     * 查询指定时间内生码数量
+     */
+    public static final String CODE_GETCODETOTAL = "/code/getCodeTotal";
+
+    /**
+     * 查询码信息，包含内码
+     */
+    public static final String OUTER_INFO_ONE = "/outer/info/one";
 }

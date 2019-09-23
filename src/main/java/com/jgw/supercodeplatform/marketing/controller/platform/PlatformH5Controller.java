@@ -1,21 +1,39 @@
 package com.jgw.supercodeplatform.marketing.controller.platform;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.pojo.platform.AbandonPlatform;
 import com.jgw.supercodeplatform.marketing.pojo.platform.LotteryPlatform;
+import com.jgw.supercodeplatform.marketing.service.LotteryService;
+import com.jgw.supercodeplatform.marketing.service.PlatformLotteryService;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingPlatformOrganizationService;
 import com.jgw.supercodeplatform.marketing.service.activity.PlatformActivityService;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformScanStatusVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.text.ParseException;
 
 @RestController
 @RequestMapping("/marketing/activity/platform/h5")
@@ -26,34 +44,84 @@ public class PlatformH5Controller {
     private CommonService commonService;
 
     @Autowired
-    private CodeEsService odeEsService;
+    private MarketingMembersService marketingMembersService;
 
     @Autowired
     private PlatformActivityService platformActivityService;
 
+    @Autowired
+    private MarketingActivitySetService marketingActivitySetService;
+
+    @Autowired
+    private PlatformLotteryService platformLotteryService;
+
     @ApiOperation("获取该码是否被扫过<true表示被扫过，false表示没有被扫过>")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "codeId", paramType = "query", value = "码", required = true),
-            @ApiImplicitParam(name = "codeTypeId", paramType = "query", value = "码制", required = true)})
+            @ApiImplicitParam(name = "codeTypeId", paramType = "query", value = "码制", required = true),
+            @ApiImplicitParam(name = "organizationId", paramType = "query", value = "组织ID", required = true)})
     @GetMapping("/scanStatus")
-    public RestResult<PlatformScanStatusVo> getScanStatus(@RequestParam String codeId, @RequestParam String codeTypeId){
+    public RestResult<PlatformScanStatusVo> getScanStatus(@RequestParam String codeId, @RequestParam String codeTypeId, @RequestParam String organizationId){
+        commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
         commonService.checkCodeValid(codeId, codeTypeId);
-        commonService.checkCodeTypeValid(Long.valueOf(codeTypeId));
-        PlatformScanStatusVo platformScanStatusVo = platformActivityService.getScanStatus(codeId);
+        String innerCode = commonService.getInnerCode(codeId, codeTypeId);
+        PlatformScanStatusVo platformScanStatusVo = platformActivityService.getScanStatus(innerCode, organizationId);
         return RestResult.successWithData(platformScanStatusVo);
     }
 
     @ApiOperation("放弃抽奖")
     @PostMapping("/abandonLottery")
     public RestResult<?> abandonLottery(@RequestBody @Valid AbandonPlatform abandonPlatform){
-        platformActivityService.addAbandonPlatform(abandonPlatform);
+        String codeId = abandonPlatform.getCodeId();
+        String codeTypeId = abandonPlatform.getCodeType();
+        commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
+        commonService.checkCodeValid(codeId, codeTypeId);
+        String innerCode = commonService.getInnerCode(codeId, codeTypeId);
+        platformActivityService.addAbandonPlatform(innerCode, abandonPlatform);
         return RestResult.success();
     }
 
     @ApiOperation("抽奖")
     @PostMapping("/lottery")
-    public RestResult<LotteryResultMO> lottery(@RequestBody @Valid LotteryPlatform lotteryPlatform){
-        return RestResult.success();
+    public RestResult<LotteryResultMO> lottery(@RequestBody @Valid LotteryPlatform lotteryPlatform,  HttpServletRequest request) throws Exception {
+        MarketingMembers marketingMembers = marketingMembersService.getMemberById(lotteryPlatform.getMemberId());
+        String codeId = lotteryPlatform.getCodeId();
+        String codeTypeId = lotteryPlatform.getCodeType();
+        commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
+        commonService.checkCodeValid(codeId, codeTypeId);
+        String innerCode = commonService.getInnerCode(codeId, codeTypeId);
+        MarketingActivitySet marketingActivitySet = marketingActivitySetService.getOnlyPlatformActivity();
+        MarketingMembers memberUser = marketingMembersService.getMemberById(lotteryPlatform.getMemberId());
+        ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
+        BeanUtils.copyProperties(lotteryPlatform, scanCodeInfoMO);
+        scanCodeInfoMO.setUserId(marketingMembers.getId());
+        scanCodeInfoMO.setOpenId(marketingMembers.getOpenid());
+        scanCodeInfoMO.setMobile(marketingMembers.getMobile());
+        scanCodeInfoMO.setUserId(memberUser.getId());
+        scanCodeInfoMO.setActivitySetId(marketingActivitySet.getId());
+        scanCodeInfoMO.setCodeTypeId(lotteryPlatform.getCodeType());
+        LotteryOprationDto lotteryOprationDto = new LotteryOprationDto();
+        lotteryOprationDto.setInnerCode(innerCode);
+        //检查抽奖的初始条件是否符合
+        lotteryOprationDto = platformLotteryService.checkLotteryCondition(lotteryOprationDto, scanCodeInfoMO);
+        //营销码判断
+        platformLotteryService.holdLockJudgeES(lotteryOprationDto);
+        if(lotteryOprationDto.getSuccessLottory() == 0) {
+            RestResult<LotteryResultMO> restResult = lotteryOprationDto.getRestResult();
+            LotteryResultMO lotteryResultMO = lotteryOprationDto.getLotteryResultMO();
+            lotteryResultMO.setData(lotteryOprationDto.getSourceLink());
+            restResult.setResults(lotteryResultMO);
+            return restResult;
+        }
+        //保存抽奖数据
+        WXPayTradeOrder tradeOrder = platformLotteryService.saveLottory(lotteryOprationDto, request.getRemoteAddr());
+        if (tradeOrder == null) {
+            LotteryResultMO lotteryResultMO = new LotteryResultMO("哎呀没中");
+            lotteryResultMO.setData(lotteryOprationDto.getSourceLink());
+            return RestResult.successWithData(lotteryResultMO);
+        } else {
+            return platformLotteryService.saveOrder(tradeOrder, lotteryOprationDto.getSourceLink());
+        }
     }
 
 }

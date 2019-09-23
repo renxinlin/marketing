@@ -113,8 +113,8 @@ public class Top6TaskController extends CommonUtil {
                 vo            .setItem(dto.getProductName());
                 vo           .setCount(dto.getIntegralNum());
 
-                double percent=dto.getIntegralNum()*1.00/all;
-                BigDecimal percentBD = new BigDecimal(percent);
+                Double percent=dto.getIntegralNum()*1.00/all;
+                BigDecimal percentBD = new BigDecimal(percent.toString());
                 double percentDouble = percentBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                 if(i != top6Dtos.size()){
                     percentDoubleSumWithLast +=percentDouble;
@@ -125,12 +125,12 @@ public class Top6TaskController extends CommonUtil {
                 cricleVos                           .add(vo);
             }
 
-            double percent=top6Dtos.get(top6Dtos.size()-1).getIntegralNum()*1.00/all;
-            BigDecimal percentBD = new BigDecimal(percent);
+            Double percent=top6Dtos.get(top6Dtos.size()-1).getIntegralNum()*1.00/all;
+            BigDecimal percentBD = new BigDecimal(percent.toString());
             double percentDouble = percentBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
             // 可能大于0,产品不足6
             if(percentDoubleSumWithLast+percent>1.00D ){
-                BigDecimal percentBDLast = new BigDecimal(1.00D-percentDoubleSumWithLast);
+                BigDecimal percentBDLast = new BigDecimal(String.valueOf(1.00D-percentDoubleSumWithLast));
                 double percentDoubleLast = percentBD.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
                 cricleVos.get(cricleVos.size()-1).setPercent(percentDoubleLast);
                 cricleVos.get(cricleVos.size()-1).setPercentStr(percentDoubleLast+"");

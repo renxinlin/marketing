@@ -23,7 +23,6 @@ public class LotteryUtil {
 		}
 		List<MarketingPrizeTypeMO> mTypeMOs = new ArrayList<MarketingPrizeTypeMO>();
 		int i = 0;
-        Collections.sort(mPrizeTypes);
         Long sum=0L;
 		for (MarketingPrizeType marketingPrizeType : mPrizeTypes) {
 			Integer probability = marketingPrizeType.getPrizeProbability();
@@ -52,7 +51,6 @@ public class LotteryUtil {
 			}
 			i++;
 		}
-		System.out.println("=============================================================");
 		return mTypeMOs;
 	}
 

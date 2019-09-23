@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.dto.WxOrderPayDto;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
@@ -93,8 +94,11 @@ public class LotteryController extends CommonUtil {
         //抽奖
         service.drawLottery(lotteryOprationDto);
         //保存抽奖数据
-        restResult = service.saveLottory(lotteryOprationDto, request.getRemoteAddr());
-        return restResult;
+        WxOrderPayDto orderPayDto = service.saveLottory(lotteryOprationDto, request.getRemoteAddr());
+        if (orderPayDto != null) {
+            service.saveTradeOrder(orderPayDto);
+        }
+        return lotteryOprationDto.getRestResult();
     }
     
     

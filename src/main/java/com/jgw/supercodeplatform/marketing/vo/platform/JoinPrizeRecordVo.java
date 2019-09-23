@@ -16,8 +16,8 @@ public class JoinPrizeRecordVo {
     private Float winningAmount;
     @ApiModelProperty("中奖码")
     private String winningCode;
-    @ApiModelProperty("产品名称")
-    private String productName;
+    @ApiModelProperty("中奖产品")
+    private String prizeName;
     @ApiModelProperty("组织名称")
     private String organizationFullName;
     @ApiModelProperty(value = "参与时间", dataType = "java.lang.String")

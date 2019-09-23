@@ -18,6 +18,7 @@ import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
+import com.jgw.supercodeplatform.marketing.dto.WxOrderPayDto;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityPreviewParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingPrizeTypeParam;
@@ -137,14 +138,14 @@ public class LotteryService {
 		long currentMills = System.currentTimeMillis();
 		String startDateStr = mActivitySet.getActivityStartDate();
 		if(StringUtils.isNotBlank(startDateStr)) {
-			long startMills = DateUtil.parse(startDateStr, "yyyy-MM-dd HH:mm:ss").getTime();
+			long startMills = DateUtil.parse(startDateStr, "yyyy-MM-dd").getTime();
 			if(currentMills < startMills){
 				throw new SuperCodeExtException("该活动还未开始", 200);
 			}
 		}
 		String endDateStr = mActivitySet.getActivityEndDate();
 		if(StringUtils.isNotBlank(endDateStr)) {
-			long endMills = DateUtil.parse(endDateStr, "yyyy-MM-dd HH:mm:ss").getTime();
+			long endMills = DateUtil.parse(endDateStr, "yyyy-MM-dd").getTime();
 			if(currentMills > endMills){
 				throw new SuperCodeExtException("该活动已经结束", 200);
 			}
@@ -185,12 +186,6 @@ public class LotteryService {
 		lotteryOprationDto.setSendAudit(mActivitySet.getSendAudit());
 		lotteryOprationDto.setMarketingMembersInfo(marketingMembersInfo);
 		lotteryOprationDto.setOrganizationId(scanCodeInfoMO.getOrganizationId());
-		if (mActivitySet.getActivityId() == 5) {
-			MarketingPlatformOrganization marketingPlatformOrganization = marketingPlatformOrganizationMapper.selectByActivitySetIdAndOrganizationId(mActivitySet.getId(), scanCodeInfoMO.getOrganizationId());
-			if (marketingPlatformOrganization != null) {
-				lotteryOprationDto.setOrganizationName(marketingPlatformOrganization.getOrganizationFullName());
-			}
-		}
 		if (lotteryOprationDto.getOrganizationName() == null ) {
 			lotteryOprationDto.setOrganizationName(mActivitySet.getOrganizatioIdlName());
 		}
@@ -247,7 +242,7 @@ public class LotteryService {
 
 
 	@Transactional(rollbackFor = Exception.class)
-	public RestResult saveLottory(LotteryOprationDto lotteryOprationDto, String remoteAddr) throws Exception {
+	public WxOrderPayDto saveLottory(LotteryOprationDto lotteryOprationDto, String remoteAddr) throws Exception {
 		IntegralRecord integralRecord = lotteryOprationDto.getIntegralRecord();
 		MarketingMembers marketingMembersInfo = lotteryOprationDto.getMarketingMembersInfo();
 		int consumeIntegralNum = lotteryOprationDto.getConsumeIntegralNum();
@@ -311,13 +306,39 @@ public class LotteryService {
 		if (changeIntegral != 0) {
 			marketingMembersMapper.deleteIntegral(0 - changeIntegral, marketingMembersInfo.getId());
 		}
-		if (amount != null) {
-			//发起微信支付
-			weixinpay(lotteryOprationDto.getSendAudit(),outerCodeId, mobile, openId, organizationId, amount*100, remoteAddr, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
-		}
 		RestResult restResult = lotteryOprationDto.getRestResult();
 		restResult.setMsg(lotteryResultMO.getMsg());
-		return restResult;
+		if (amount != null) {
+			WxOrderPayDto wxOrderPayDto = new WxOrderPayDto();
+			wxOrderPayDto.setAmount(amount*100);
+			wxOrderPayDto.setMobile(mobile);
+			wxOrderPayDto.setOpenId(openId);
+			wxOrderPayDto.setOrganizationId(organizationId);
+			wxOrderPayDto.setOuterCodeId(outerCodeId);
+			wxOrderPayDto.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+			wxOrderPayDto.setRemoteAddr(remoteAddr);
+			wxOrderPayDto.setSendAudit(lotteryOprationDto.getSendAudit());
+			return wxOrderPayDto;
+		}
+		return null;
+	}
+
+	/**
+	 * 保存订单并发起微信支付
+	 *
+	 * @param wxOrderPayDto
+	 * @throws Exception
+	 */
+	public void saveTradeOrder(WxOrderPayDto wxOrderPayDto) throws Exception {
+		float amount = wxOrderPayDto.getAmount();
+		String mobile = wxOrderPayDto.getMobile();
+		String openId = wxOrderPayDto.getOpenId();
+		String organizationId = wxOrderPayDto.getOrganizationId();
+		String outerCodeId = wxOrderPayDto.getOuterCodeId();
+		byte referenceRole = wxOrderPayDto.getReferenceRole();
+		String remoteAddr = wxOrderPayDto.getRemoteAddr();
+		byte sendAudit = wxOrderPayDto.getSendAudit();
+		weixinpay(sendAudit,outerCodeId, mobile, openId, organizationId, amount, remoteAddr, referenceRole);
 	}
 
 	private void addWinRecord(String outCodeId, String mobile, String openId, Long activitySetId,
@@ -373,7 +394,7 @@ public class LotteryService {
 			acquireLock = lock.lock(lockKey, 5000, 5, 200);
 			if(!acquireLock) {
 				logger.error("{锁获取失败:" +lockKey+ ",请检查}");
-				redisUtil.hmSet("marketing:lock:fail",activitySetId + codeId +codeTypeId,new Date());
+				redisUtil.hmSet("marketing:lock:fail",lockKey,new Date());
 				return lotteryOprationDto.lotterySuccess("扫码人数过多,请稍后再试");
 			}
 			String opneIdNoSpecialChactar = StringUtils.isBlank(openId)? null:CommonUtil.replaceSpicialChactar(openId);

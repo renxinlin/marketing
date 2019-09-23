@@ -34,10 +34,10 @@ public class PlatformMemberWinService extends AbstractPageService<JoinResultPage
         List<JoinPrizeRecordVo> joinPrizeRecordVoList = recordPage.getList().stream().map(record -> {
             JoinPrizeRecordVo joinPrizeRecordVo = new JoinPrizeRecordVo();
             BeanUtils.copyProperties(record, joinPrizeRecordVo);
-            if (record.getWinningAmount() == null || record.getWinningAmount() > 0) {
-                joinPrizeRecordVo.setWinningResult("未中奖");
-            } else {
+            if (record.getWinningAmount() != null && record.getWinningAmount() > 0) {
                 joinPrizeRecordVo.setWinningResult("已中奖");
+            } else {
+                joinPrizeRecordVo.setWinningResult("未中奖");
             }
             return joinPrizeRecordVo;
         }).collect(Collectors.toList());

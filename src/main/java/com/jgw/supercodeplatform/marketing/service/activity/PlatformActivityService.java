@@ -83,9 +83,6 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
     @Autowired
     private CodeEsService odeEsService;
 
-    @Autowired
-    private MarketingActivityProductMapper marketingActivityProductMapper;
-
     @Override
     protected List<PlatformActivityVo> searchResult(DaoSearchWithUser searchParams) throws Exception {
         searchParams.setStartNumber((searchParams.getCurrent()-1)*searchParams.getPageSize());
@@ -126,7 +123,8 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
                     MarketingPrizeType marketingPrizeType = new MarketingPrizeType();
                     BeanUtils.copyProperties(prizeType, marketingPrizeType);
                     marketingPrizeType.setPrizeAmount(prizeType.getPrizeAmount().floatValue());
-                    if (prizeType.getAwardGrade() == null) {
+                    marketingPrizeType.setRemainingStock(prizeType.getRemainingNumber());
+                    if (prizeType.getAwardGrade().intValue() == 0) {
                         marketingPrizeType.setRealPrize((byte)0);
                     } else {
                         marketingPrizeType.setRealPrize((byte)1);
@@ -167,10 +165,11 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
         }
         List<PrizeType> prizeTypeList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(marketingPrizeTypeList)) {
-            prizeTypeList = marketingPrizeTypeList.stream().filter(pr -> pr.getAwardGrade() != null).map(marketingPrizeType -> {
+            prizeTypeList = marketingPrizeTypeList.stream().filter(pr -> pr.getAwardGrade() != null && pr.getAwardGrade() > 0).map(marketingPrizeType -> {
                 PrizeType prizeType = new PrizeType();
                 BeanUtils.copyProperties(marketingPrizeType, prizeType);
-                prizeType.setPrizeAmount(new BigDecimal(marketingPrizeType.getPrizeAmount()));
+                prizeType.setPrizeAmount(new BigDecimal(marketingPrizeType.getPrizeAmount().toString()));
+                prizeType.setRemainingNumber(marketingPrizeType.getRemainingStock());
                 return prizeType;
             }).collect(Collectors.toList());
         }
@@ -198,8 +197,9 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
         ResponseEntity<String> entity = restTemplateUtil.getRequestAndReturnJosn(userUrl+ WechatConstants.ORG_LIST_PLATFORM, params, headerMap);
         if (entity != null && entity.getStatusCodeValue() == HttpStatus.SC_OK){
             String result = entity.getBody();
-            if (org.apache.commons.lang.StringUtils.isNotBlank(result) && JSON.parseObject(result).getIntValue("state") == HttpStatus.SC_OK) {
+            if (StringUtils.isNotBlank(result) && JSON.parseObject(result).getIntValue("state") == HttpStatus.SC_OK) {
                 PageResults<List<Object>> pageMapResults = JSON.parseObject(result).getObject("results", PageResults.class);
+                int total = pageMapResults.getPagination().getTotal();
                 List<PlatformOrganizationDataVo> resList = pageMapResults.getList().stream().map(obj -> {
                     Map sorMap = (Map)obj;
                     String organizationId = (String) sorMap.get("organizationId");
@@ -250,12 +250,12 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
      * 放弃抽奖时调用
      * @param abandonPlatform
      */
-    public void addAbandonPlatform(AbandonPlatform abandonPlatform) {
+    public void addAbandonPlatform(String innerCode, AbandonPlatform abandonPlatform) {
         MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
         if (marketingActivitySet == null) {
             throw new SuperCodeExtException("当前暂无全网运营红包上线");
         }
-        odeEsService.addAbandonPlatformScanCodeRecord(abandonPlatform.getProductId(), abandonPlatform.getProductBatchId(), abandonPlatform.getCodeId(),
+        odeEsService.addAbandonPlatformScanCodeRecord(innerCode, abandonPlatform.getProductId(), abandonPlatform.getProductBatchId(), abandonPlatform.getCodeId(),
                 marketingActivitySet.getActivityId(),abandonPlatform.getCodeType(), marketingActivitySet.getId(),System.currentTimeMillis(),abandonPlatform.getOrganizationId(), abandonPlatform.getOrganizationFullName());
     }
 
@@ -265,23 +265,27 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
      * @param codeId
      * @return
      */
-    public PlatformScanStatusVo getScanStatus(String codeId) {
-        PlatformScanStatusVo platformScanStatusVo = new PlatformScanStatusVo();
+    public PlatformScanStatusVo getScanStatus(String innerCode, String organizationId) {
+        PlatformScanStatusVo platformScanStatusVo = new PlatformScanStatusVo(false, false);
         MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
         if (marketingActivitySet == null) {
             //当前不存在全网运营活动，不可用
-            platformScanStatusVo.setPlatformStatus(false);
-        } else {
-            platformScanStatusVo.setPlatformStatus(true);
+            return platformScanStatusVo;
         }
-        long count = odeEsService.countPlatformScanCodeRecord(codeId, null);
+        MarketingPlatformOrganization marketingPlatformOrganization = marketingPlatformOrganizationMapper.selectByActivitySetIdAndOrganizationId(marketingActivitySet.getId(), organizationId);
+        if (marketingPlatformOrganization == null) {
+            //当前组织未参加活动，不可用
+            return platformScanStatusVo;
+        }
+        platformScanStatusVo.setPlatformStatus(true);
+        long count = odeEsService.countPlatformScanCodeRecord(innerCode, null);
         if (count > 0) {
             //码已经被扫过，不可用
-            platformScanStatusVo.setScanStatus(false);
-        } else {
-            platformScanStatusVo.setScanStatus(true);
+            return platformScanStatusVo;
         }
+        platformScanStatusVo.setScanStatus(true);
         return platformScanStatusVo;
+
     }
 
 

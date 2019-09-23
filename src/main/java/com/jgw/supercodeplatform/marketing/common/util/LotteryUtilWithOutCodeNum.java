@@ -5,8 +5,10 @@ package com.jgw.supercodeplatform.marketing.common.util;
  *
  */
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
@@ -44,30 +46,94 @@ public class LotteryUtilWithOutCodeNum {
 		throw new SuperCodeExtException("抽奖算法更新中，暂时无法抽奖请稍后再试", 500);
 	}
 
+	/**
+	 *
+	 * @param mPrizeTypes
+	 * @param hasFirst 是否已经抽过一等奖
+	 * @return
+	 * @throws SuperCodeException
+	 */
+	public static MarketingPrizeTypeMO platfromStartLottery(List<MarketingPrizeTypeMO> mPrizeTypes, boolean hasFirst)
+			throws SuperCodeException {
+		if (null == mPrizeTypes || mPrizeTypes.size() <= 1) {
+			throw new SuperCodeException("中奖算法参数不能为空", 500);
+		}
+		//没中奖和一等奖
+		MarketingPrizeTypeMO noPrizeTypeMo = null, firstPizeType = null;
+		for (MarketingPrizeTypeMO prizeTypeMO : mPrizeTypes) {
+			if (prizeTypeMO.getAwardGrade().intValue() == 0) {
+				noPrizeTypeMo = prizeTypeMO;
+			}
+			if (prizeTypeMO.getAwardGrade().intValue() == 1) {
+				firstPizeType = prizeTypeMO;
+			}
+		}
+		int rand=(int) (Math.random() * 100+1);
+		//为0表示未中奖的虚拟奖项，此时中奖概率并不会为百分百
+		if (noPrizeTypeMo.getPrizeProbability().intValue() > 0){
+			if (hasFirst) {
+				//末等奖
+				MarketingPrizeTypeMO endPizeType = mPrizeTypes.stream().filter(prize -> prize.getAwardGrade() != null && prize.getAwardGrade() >0)
+						.max((v1,v2) -> v1.getAwardGrade().compareTo(v2.getAwardGrade())).get();
+				if (endPizeType.equals(firstPizeType)) {
+					return noPrizeTypeMo;
+				}
+				mPrizeTypes.remove(firstPizeType);
+				//剩余可抽奖的奖项按照比例分配概率
+				distributeProbability(mPrizeTypes, new BigDecimal(firstPizeType.getPrizeProbability()));
+			}
+		} else {
+			//得到没有库存的奖项
+			List<MarketingPrizeTypeMO> noStockPizeTypes = mPrizeTypes.stream().filter(prize -> prize.getRemainingStock().intValue() <= 0).collect(Collectors.toList());
+			//得到不能用的概率和
+			int disabledPrizeProbility = noStockPizeTypes.stream().mapToInt(MarketingPrizeTypeMO::getPrizeProbability).sum();
+			mPrizeTypes.removeAll(noStockPizeTypes);
+			if (mPrizeTypes.size() <= 1) {
+				//说明此时只剩下一个虚拟奖项，即不中奖
+				return noPrizeTypeMo;
+			}
+			//如果已经抽过一等奖，则一等奖也为不可用
+			if (hasFirst && firstPizeType.getRemainingStock().intValue() > 0) {
+				disabledPrizeProbility = disabledPrizeProbility + firstPizeType.getPrizeProbability();
+				mPrizeTypes.remove(firstPizeType);
+			}
+			if (mPrizeTypes.size() <=1){
+				return noPrizeTypeMo;
+			}
+			distributeProbability(mPrizeTypes, new BigDecimal(disabledPrizeProbility));
+		}
+		int probabilityLowRan;
+		int probabilityHighRan=0;
+		int size = mPrizeTypes.size();
+		for (int i=0; i<size; i++) {
+			MarketingPrizeTypeMO mTypeMO = mPrizeTypes.get(i);
+			Integer prizeProbability = mTypeMO.getPrizeProbability();
+			if (i==0) {
+				probabilityLowRan = 1;
+				probabilityHighRan = prizeProbability;
+			}else {
+				probabilityLowRan = 1 + probabilityHighRan;
+				probabilityHighRan = probabilityHighRan+prizeProbability;
+			}
+			//如果随机数在当前的概率范围内就直接返回不需要继续循环
+			if (rand>=probabilityLowRan && rand<=probabilityHighRan) {
+				if (mTypeMO.getRemainingStock().intValue() <= 0) {
+					return noPrizeTypeMo;
+				}
+				return mTypeMO;
+			}
+		}
+		throw new SuperCodeExtException("抽奖算法更新中，暂时无法抽奖请稍后再试", 500);
+	}
 
-	public static void main(String[] args) throws SuperCodeException {
-		List<MarketingPrizeTypeMO> mPrizeTypes=new ArrayList<MarketingPrizeTypeMO>();
-		MarketingPrizeTypeMO m1=new MarketingPrizeTypeMO();
-		m1.setPrizeProbability(10);
-		m1.setPrizeTypeName("一等奖");
-		
-		MarketingPrizeTypeMO m2=new MarketingPrizeTypeMO();
-		m2.setPrizeProbability(20);
-		m2.setPrizeTypeName("2等奖");
-		
-		MarketingPrizeTypeMO m3=new MarketingPrizeTypeMO();
-		m3.setPrizeProbability(40);
-		m3.setPrizeTypeName("3等奖");
-		
-		MarketingPrizeTypeMO m4=new MarketingPrizeTypeMO();
-		m4.setPrizeProbability(30);
-		m4.setPrizeTypeName("未中奖");
-		
-		mPrizeTypes.add(m1);
-		mPrizeTypes.add(m2);
-		mPrizeTypes.add(m3);
-		mPrizeTypes.add(m4);
-		for(int i=0;i<100000;i++) {
+
+	private static void distributeProbability(List<MarketingPrizeTypeMO> mPrizeTypes, BigDecimal disabledPrizeProbility){
+		int sumProbility = mPrizeTypes.stream().mapToInt(prize -> prize.getPrizeProbability()).sum();
+		BigDecimal sumProbilityDecimal = new BigDecimal(sumProbility);
+		for (MarketingPrizeTypeMO prizeTypeMO : mPrizeTypes) {
+			int sorProbility = prizeTypeMO.getPrizeProbability();
+			int addProbility = disabledPrizeProbility.multiply(new BigDecimal(sorProbility)).divide(sumProbilityDecimal,0, BigDecimal.ROUND_HALF_UP).intValue();
+			prizeTypeMO.setPrizeProbability(sorProbility + addProbility);
 		}
 	}
 

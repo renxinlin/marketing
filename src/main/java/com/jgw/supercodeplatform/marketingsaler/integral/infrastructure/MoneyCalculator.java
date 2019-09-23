@@ -20,13 +20,13 @@ public class MoneyCalculator {
             throw new RuntimeException("同学,没中奖!");
         }
         // 获取金额
-        double money = 0.00D;
+        Double money = 0.00D;
         Integer isRrandomMoney = salerRuleExchange.getIsRrandomMoney();
         if(randomMoney == isRrandomMoney){
             float highRand = salerRuleExchange.getHighRand();
             float lowRand = salerRuleExchange.getLowRand();
             money = lowRand +  Math.random() * (highRand - lowRand);
-            BigDecimal bg = new BigDecimal(money);
+            BigDecimal bg = new BigDecimal(money.toString());
             // 保留两位
             money = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 

@@ -120,7 +120,7 @@ public class SalerRecordTransfer extends CommonTransfer{
      * @param user
      * @return
      */
-    public static SalerRecord buildRecord(SalerRuleExchange salerRuleExchange, H5LoginVO user,double money ) {
+    public static SalerRecord buildRecord(SalerRuleExchange salerRuleExchange, H5LoginVO user,Double money ) {
         SalerRecord salerRecord = new SalerRecord();
 
         salerRecord.setCreateDate(new Date());
@@ -137,7 +137,7 @@ public class SalerRecordTransfer extends CommonTransfer{
         salerRecord.setSalerMobile(user.getMobile());
         salerRecord.setSalerName(user.getMemberName());
         // 计算中奖金额
-        salerRecord.setSalerAmount(new BigDecimal(money));
+        salerRecord.setSalerAmount(new BigDecimal(money.toString()));
 
         return salerRecord;
 
