@@ -64,9 +64,9 @@ public class PlatformActivityAdd {
         private Byte awardGrade;
         @ApiModelProperty("红包金额")
         @NotNull(message = "红包金额不能为空")
-        @DecimalMin(value = "0.01", message = "红包金额不能小于0")
-        @DecimalMax(value = "5000.00", message = "红包最大金额不能超过5000")
-        @Digits(integer = 4, fraction = 2, message = "小数位和整数位数超过限制")
+        @DecimalMin(value = "0.30", message = "红包金额不能小于0.3元")
+        @DecimalMax(value = "500.00", message = "红包最大金额不能超过500")
+        @Digits(integer = 3, fraction = 2, message = "小数位和整数位数超过限制")
         private BigDecimal prizeAmount;
         @ApiModelProperty("中奖概率<不含百分号>")
         @NotNull(message = "中奖概率不能为空")

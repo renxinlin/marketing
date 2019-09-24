@@ -578,11 +578,14 @@ public class WeixinAuthController {
 		if (members == null) {
 			members = new MarketingMembers();
 			members.setOpenid(openid);
-			members.setWxName(userInfo.getString("nickName"));
+			members.setWxName(userInfo.getString("nickname"));
+			members.setProvinceName(userInfo.getString("province"));
+			members.setCityName(userInfo.getString("city"));
 			members.setState((byte) 2);
 			members.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
 			members.setOrganizationId(organizationId);
 			members.setIsRegistered((byte) 0);
+			members.setDeviceType((byte)1);
 			marketingMembersService.insert(members);
 		}
 		writeJwtToken(response, members);
