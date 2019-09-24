@@ -330,7 +330,7 @@ public class PlatformLotteryService {
                 prize.setRemainingStock(null);
             }
         });
-        if (prizeTypeMo.getRemainingStock().intValue() == Integer.MAX_VALUE) {
+        if (prizeTypeMo.getRemainingStock() != null && prizeTypeMo.getRemainingStock().intValue() == Integer.MAX_VALUE) {
             prizeTypeMo.setRemainingStock(null);
         }
         return prizeTypeMo;

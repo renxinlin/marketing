@@ -28,13 +28,16 @@ public class PlatformPaySchedule {
     @Autowired
     private RedisLockUtil lock;
 
+    /**
+     * 每天早晨八点钟处理全网运营活动红包雨失败的微信订单，只处理气七天之内的
+     */
     @Scheduled(cron = "0 0 8 * * ?")
     public void sendFailWxOrder(){
         boolean acquireLock = false;
         try {
             acquireLock = lock.lock(SEND_FAIL_WX_ORDER, 60000, 1, 100);
             if (!acquireLock) {
-                log.info("为获取到{}锁", SEND_FAIL_WX_ORDER);
+                log.info("未获取到{}锁", SEND_FAIL_WX_ORDER);
                 return;
             }
             //只查找七天之内的
@@ -53,7 +56,7 @@ public class PlatformPaySchedule {
             }
 
         } catch (Exception e){
-            log.error("扫码获取锁出错抽奖失败", e);
+            log.error("定时处理出错微信订单获取锁出错", e);
         } finally {
             if(acquireLock){
                 lock.releaseLock(SEND_FAIL_WX_ORDER);
