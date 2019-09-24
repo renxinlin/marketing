@@ -232,7 +232,6 @@ public class ScanCodeController {
         return url;
     }
 
-
     @GetMapping("/code/callback")
     @ApiOperation("微信静默授权")
     public String getWXCode(@RequestParam String code, @RequestParam String state) {
@@ -246,5 +245,6 @@ public class ScanCodeController {
             throw new SuperCodeExtException("回调参数不正确");
         }
     }
+
 
 }

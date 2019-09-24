@@ -9,6 +9,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
+
 
 import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 
@@ -20,6 +22,8 @@ import com.ctrip.framework.apollo.spring.annotation.EnableApolloConfig;
 @EnableApolloConfig
 @EnableFeignClients
 @EnableHystrix
+
+//@EnableHystrix  //断路器，对服务的延迟和容错进行兜底处理|超时机制/信号灯，线程
 public class SuperCodeMarketingApplication {
 
 
