@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
