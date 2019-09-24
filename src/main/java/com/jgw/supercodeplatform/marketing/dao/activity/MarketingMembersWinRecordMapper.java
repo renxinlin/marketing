@@ -128,7 +128,8 @@ public interface MarketingMembersWinRecordMapper extends CommonSql{
 	@Select("SELECT "+allFields+" FROM marketing_members_win WHERE ActivitySetId = #{activitySetId} AND Openid = #{openid} AND AwardGrade = 1")
 	MarketingMembersWinRecord getFirstAward(@Param("activitySetId") Long activitySetId, @Param("openid") String openid);
 
-	@Select("SELECT COUNT(1) FROM (select Openid from marketing_members_win WHERE CreateTime >= #{startTime} AND CreateTime < #{endTime} GROUP BY Openid) a")
+	@Select({"SELECT COUNT(1) FROM (select Openid from marketing_members_win WHERE CreateTime >= #{startTime} AND CreateTime < #{endTime} GROUP BY Openid) a ",
+		"INNER JOIN marketing_members b ON a.Openid = b.Openid WHERE b.RegistDate >= #{startTime} AND b.RegistDate < #{endTime}"})
 	long countActUser(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
 }
