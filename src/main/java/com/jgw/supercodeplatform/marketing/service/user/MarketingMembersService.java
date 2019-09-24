@@ -392,7 +392,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			members.setCityName(city.getString(PcccodeConstants.areaName));
 			members.setCountyName(country.getString(PcccodeConstants.areaName));
 		}
-		members.setSex(membersUpdateParam.getSex());
+		members.setSex(StringUtils.isBlank(membersUpdateParam.getSex())? null : Byte.valueOf(membersUpdateParam.getSex()));
 		members.setState(membersUpdateParam.getState());
 		members.setWxName(membersUpdateParam.getWxName());
 		members.setUserName(membersUpdateParam.getUserName());

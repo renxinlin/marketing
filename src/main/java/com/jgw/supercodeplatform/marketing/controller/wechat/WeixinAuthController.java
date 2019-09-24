@@ -579,6 +579,7 @@ public class WeixinAuthController {
 		if (members == null) {
 			members = new MarketingMembers();
 			members.setOpenid(openid);
+			members.setSex(userInfo.getByte("sex"));
 			members.setWxName(userInfo.getString("nickname"));
 			members.setProvinceName(userInfo.getString("province"));
 			members.setCityName(userInfo.getString("city"));
