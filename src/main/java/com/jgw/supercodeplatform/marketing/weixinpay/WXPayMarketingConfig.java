@@ -76,6 +76,7 @@ public class WXPayMarketingConfig extends WXPayConfig{
 		List<MarketingWxMerchantsExt> mwExtList = marketingWxMerchantsExtMapper.selectList(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", marketingWxMerchantsList.get(0).getOrganizationId()));
 		if (CollectionUtils.isEmpty(mwExtList)) {
 			logger.error("证书路径："+certificatePath+"，对应的证书不存在");
+			return null;
 		}
 		InputStream in=null;
 		byte[] certBytes = mwExtList.get(0).getCertificateInfo();
