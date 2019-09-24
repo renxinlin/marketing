@@ -311,7 +311,7 @@ public interface MarketingMembersMapper {
             "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -80 year) AND Birthday <= date_add(curdate() , interval -70 year)) eighty,",
             "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -90 year) AND Birthday <= date_add(curdate() , interval -80 year)) ninety,",
             "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -100 year) AND Birthday <= date_add(curdate() , interval -90 year)) hundred,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday <= date_add(curdate() , interval -100 year) OR Birthday > curdate() OR Birthday IS NULL) other",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND (Birthday <= date_add(curdate() , interval -100 year) OR Birthday > curdate() OR Birthday IS NULL)) other",
             " FROM DUAL"})
     Map<String, Long> statistcAge(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
