@@ -1,8 +1,11 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -10,9 +13,13 @@ import org.springframework.util.StringUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MarketingActivityChannelService {
+
+    @Autowired
+    private CommonService commonService;
 
     @Autowired
     private MarketingChannelMapper mapper;
@@ -181,8 +188,30 @@ public class MarketingActivityChannelService {
             }else{
                 setChildWithAllTreeAndChild(isAddChildSon,children,everyRoot,setSuccess);
             }
-
         }
-
     }
+
+    /**
+     * 判断码对应产品的渠道信息和活动创建对应的渠道信息是否一致
+     * @param codeId
+     * @param activitySetId
+     * @return
+     */
+
+    public MarketingChannel checkCodeIdConformChannel(String codeId, Long activitySetId) {
+        // TODO 先直接返回，等到物流系统和码平台那边功能完成后，再启用
+        return new MarketingChannel();
+//        Map<String, String> customerMap = commonService.queryCurrentCustomer(codeId);
+//        if (customerMap.isEmpty()){
+//            return null;
+//        }
+//        String customerId = customerMap.get("customerId");
+//        List<MarketingChannel> marketChannelList = mapper.selectByCustomerIdAndActivitySetId(customerId, activitySetId);
+//        if (CollectionUtils.isEmpty(marketChannelList)){
+//            return null;
+//        }
+//        return marketChannelList.get(0);
+    }
+
+
 }

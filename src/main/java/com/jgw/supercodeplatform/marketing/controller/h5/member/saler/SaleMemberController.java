@@ -1,25 +1,21 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.member.saler;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dto.SaleInfo;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
-import com.jgw.supercodeplatform.marketing.enums.EsIndex;
-import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
-import com.jgw.supercodeplatform.marketing.service.LotteryService;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
@@ -30,25 +26,22 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.BeanUtils;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
-
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 销售员扫码领红包
@@ -75,6 +68,9 @@ public class SaleMemberController {
     @Autowired
     private MarketingSaleMemberService marketingSaleMemberService;
 
+    @Value("${cookie.domain}")
+    private String cookieDomain;
+
     @GetMapping("info")
     @ApiOperation(value = "销售员中心", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
@@ -89,20 +85,18 @@ public class SaleMemberController {
         SaleInfo saleInfo = new SaleInfo();
         // 1 获取红包统计信息
         Map acquireMoneyAndAcquireNums = service.getAcquireMoneyAndAcquireNums(jwtUser.getMemberId(), jwtUser.getMemberType(), jwtUser.getOrganizationId());
-        // 3 获取扫码信息
-        Integer scanNum = es.searchScanInfoNum(jwtUser.getMemberId(), MemberTypeEnums.SALER.getType());
         // 4 数据转换
 
 
         MarketingUser marketingUser = marketingSaleMemberService.selectById(jwtUser.getMemberId());
-        saleInfo.setUserName(marketingUser != null ? marketingUser.getUserName():null);
+        saleInfo.setUserName(StringUtils.isEmpty(marketingUser.getUserName()) ? marketingUser.getWxName() :marketingUser.getUserName());
         saleInfo.setWechatHeadImgUrl(marketingUser != null ? marketingUser.getWechatHeadImgUrl():null);
-        saleInfo.setScanQRCodeNum(scanNum);
+        saleInfo.setScanQRCodeNum((Integer) acquireMoneyAndAcquireNums.get("scanNum"));
         Long count = (Long) acquireMoneyAndAcquireNums.get("count");
         saleInfo.setScanAmoutNum((count.intValue()));
-        saleInfo.setAmoutNum((Float) acquireMoneyAndAcquireNums.get("sum") != null ? (Float) acquireMoneyAndAcquireNums.get("sum"):0F);
+        saleInfo.setAmoutNum(acquireMoneyAndAcquireNums.get("sum") != null ? (Double) acquireMoneyAndAcquireNums.get("sum"):0D);
         saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
-
+        saleInfo.setHaveIntegral(marketingUser.getHaveIntegral());
 
       return RestResult.success("success",saleInfo);
     }
@@ -113,20 +107,17 @@ public class SaleMemberController {
     @GetMapping("page")
     @ApiOperation(value = "销售员中心page", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
-    public RestResult page(@ApiIgnore H5LoginVO jwtUser, DaoSearch search) throws Exception {
+    public RestResult<PageResults<IntegralRecord>> page(@ApiIgnore H5LoginVO jwtUser, IntegralRecord search) throws Exception {
         if(jwtUser.getMemberType()==null|| MemberTypeEnums.SALER.getType().intValue()!=jwtUser.getMemberType()){
             throw new SuperCodeException("会员角色错误...");
         }
         // 分页信息传递
-        IntegralRecord params = new IntegralRecord();
-        params.setMemberType(MemberTypeEnums.SALER.getType());
+        search.setMemberType(MemberTypeEnums.SALER.getType());
         // 一个导购只能是一个组织
-        params.setOrganizationId(jwtUser.getOrganizationId());
-        params.setSalerId(jwtUser.getMemberId());
-        params.setStartNumber(search.getStartNumber());
-        params.setPageSize(search.getPageSize());
+        search.setOrganizationId(jwtUser.getOrganizationId());
+        search.setSalerId(jwtUser.getMemberId());
         // 查询
-        AbstractPageService.PageResults<IntegralRecord> objectPageResults = service.listSearchViewLike(params);
+        PageResults<IntegralRecord> objectPageResults = service.listSearchViewLike(search);
         // 4 数据转换
         return RestResult.success("success",objectPageResults);
     }
@@ -140,7 +131,7 @@ public class SaleMemberController {
      */
     @GetMapping("getOrgName")
     @ApiOperation(value = "获取组织名称并且传递wxstate", notes = "")
-    public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId ,@RequestParam("wxstate")String wxstate, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException {
+    public RestResult<Map<String,String>> getOrgNameAndAnsycPushScanIfo(@RequestParam("organizationId") String orgId , @RequestParam("wxstate")String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletResponse response) throws SuperCodeException {
         // 数据埋点
         taskExecutor.execute(new Runnable() {
             @Override
@@ -160,11 +151,16 @@ public class SaleMemberController {
                     logger.info("扫码信息插入失败");
                     logger.info(e.getMessage(), e);
                 }
-
-
             }
         });
         // 业务处理: 获取企业名称
+        String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);
+        Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
+        // jwt有效期为2小时，保持一致
+        jwtTokenCookie.setMaxAge(60*60*2);
+        jwtTokenCookie.setPath("/");
+        jwtTokenCookie.setDomain(cookieDomain);
+        response.addCookie(jwtTokenCookie);
         boolean haveOrgId = validateParam(orgId, wxstate);
         return getNameByIdWithDefaultWhenError(orgId,haveOrgId);
     }

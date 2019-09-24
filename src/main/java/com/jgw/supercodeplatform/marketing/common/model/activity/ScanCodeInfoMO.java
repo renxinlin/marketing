@@ -18,7 +18,7 @@ public class ScanCodeInfoMO implements Serializable{
     private String mobile;//登录的手机号
 	private Long userId;//用户id
 	private String sbatchId;
-	
+	private String productName;
 
 	// 目前没用到，防止后期产品多维度查询
 	private Long activityId;//用户id
@@ -128,6 +128,14 @@ public class ScanCodeInfoMO implements Serializable{
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public String getProductName() {
+		return productName;
 	}
 
 	@Override

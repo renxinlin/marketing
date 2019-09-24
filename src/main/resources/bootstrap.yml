@@ -1,32 +1,32 @@
+app: 
+  id: platform-marketing
+apollo: 
+  meta: http://192.168.20.51:8080
+  bootstrap: 
+    enabled: true
+    eagerLoad: 
+      enabled: true
+    namespaces: application,dev.public.conf
+
 server: 
   port: 9071
-  tomcat:
-    max-threads: 3000
-    min-spare-threads: 100
-    max-connections: 3000
-    
-spring: 
-  servlet:
-    multipart:
-      max-file-size: 100Mb
-  http: 
-    multipart:
-      max-request-size: 100Mb
-  application: 
-    name: platform-marketing-supercode-test
-  cloud:
-    config:
-      uri: http://192.168.2.221:7001
-      profile: test
-      label: master
-     
+spring:
+  application:
+    name: platform-marketing-supercode
+  zipkin:
+    base-url: http://192.168.20.220:9411
+    sender:
+      type: web
+  sleuth:
+    sampler:
+      probability: 1.0
+
 eureka: 
   instance:
     prefer-ip-address: true
     non-secure-port: ${server.port}
   client:
     service-url: 
-      defaultZone: http://192.168.2.216:8761/eureka/,http://192.168.2.216:8762/eureka/
+      defaultZone: http://192.168.20.220:8761/eureka/
 
-    
 

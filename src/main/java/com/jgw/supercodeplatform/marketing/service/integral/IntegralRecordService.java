@@ -29,7 +29,7 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
     @Override
     protected List<IntegralRecord> searchResult(IntegralRecord integralRecord) throws Exception {
         // 0会员1导购2 其他
-
+        integralRecord.setStartNumber((integralRecord.getCurrent()-1)*integralRecord.getPageSize());
         List<IntegralRecord> list=recordMapper.list(integralRecord);
         return list;
     }
@@ -112,9 +112,9 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
             throw new SuperCodeException("会员不存在");
         }
         // key count sum
-       return recordMapper.getAcquireMoneyAndAcquireNums(memberId,memberType,organizationId);
-
-
-
+        Map<String, Object> statisticMap = recordMapper.getAcquireMoneyAndAcquireNums(memberId,memberType,organizationId);
+        int scanNum = recordMapper.countScanCodeNum(memberId,memberType,organizationId);
+        statisticMap.put("scanNum", scanNum);
+        return statisticMap;
     }
 }

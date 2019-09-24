@@ -23,7 +23,6 @@ public class MySessionExcludePathInterceptor implements WebMvcSessionInterceptor
                 "/swagger-ui.html",
                 "/v2/**",
                 "/doc.html",
-                "/marketing/front/scan",
                 "/marketing/front/**",//h5接口不拦截
                 "/marketing/common/**",
                 "/marketing/test/**",//测试
@@ -34,7 +33,8 @@ public class MySessionExcludePathInterceptor implements WebMvcSessionInterceptor
                 "/marketing/address/**",
                 "/marketing/jwt/**",
                 "/marketing/front/saler/**",
-                "/marketing/saleMember/**"
+                "/marketing/saleMember/**",
+                "/marketing/activity/platform/h5/*"
 
 
         };

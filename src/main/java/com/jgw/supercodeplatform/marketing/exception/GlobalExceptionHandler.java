@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.exception;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.exception.base.UserSqlException;
@@ -75,10 +76,8 @@ public class GlobalExceptionHandler {
 		logger.error("参数验证失败", e);
 		BindingResult result = e.getBindingResult();
 		FieldError error = result.getFieldError();
-		String field = error.getField();
 		String code = error.getDefaultMessage();
-		String message = String.format("%s:%s", field, code);
-		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), message, null);
+		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), code, null);
 		return RestResult;
 	}
 
@@ -91,10 +90,8 @@ public class GlobalExceptionHandler {
 		logger.error("参数绑定失败", e);
 		BindingResult result = e.getBindingResult();
 		FieldError error = result.getFieldError();
-		String field = error.getField();
 		String code = error.getDefaultMessage();
-		String message = String.format("%s:%s", field, code);
-		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), message, null);
+		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), code, null);
 		return RestResult;
 	}
 
@@ -200,6 +197,25 @@ public class GlobalExceptionHandler {
 		return RestResult;
 	}
 
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(RuntimeException.class)
+	public RestResult runtimeException(RuntimeException e) {
+		logger.error("运行时异常：" + e.getClass().getName(), e);
+		RestResult RestResult = new RestResult(500, e.getMessage(), e.getMessage());
+		return RestResult;
+	}
+	/**
+	 * 自定义异常
+	 */
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(SuperCodeExtException.class)
+	public RestResult codePlatformException(SuperCodeExtException e) {
+		logger.error("自义定异常：" + e.getClass().getName(), e);
+		RestResult RestResult = new RestResult(e.getStatus() == 0 ? HttpStatus.INTERNAL_SERVER_ERROR.value() : e.getStatus(), e.getMessage(), null);
+		return RestResult;
+	}
+
 	/**
 	 * 自定义异常
 	 */
@@ -231,14 +247,14 @@ public class GlobalExceptionHandler {
 
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(SalerLotteryException.class)
-	public RestResult<String> handlerSalerLotteryException(SalerLotteryException e) {
+	public RestResult<LotteryResultMO> handlerSalerLotteryException(SalerLotteryException e) {
 		logger.error("会员未登录异常{}",e.getMessage());
-		RestResult<String> restResult = new RestResult<>();
+		RestResult<LotteryResultMO> restResult = new RestResult<>();
 		// 前端格式:不可修改
 		restResult.setState(200);
 		restResult.setMsg(e.getMessage());
 		// 前端格式:不可修改
-		restResult.setResults(e.getMessage());
+		restResult.setResults(new LotteryResultMO(e.getMessage()));
 		return restResult;
 	}
 

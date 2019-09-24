@@ -91,20 +91,26 @@ public class IntegralRecord  extends DaoSearch {
 
 
     /** 导购员名称 */
+    @ApiModelProperty(value = "导购员名称")
     private String salerName;
 
     /** 导购Id */
+    @ApiModelProperty(value = "导购员ID")
     private Long salerId;
 
     /** 导购员手机 */
+    @ApiModelProperty(value = "导购员手机号")
     private String salerMobile;
 
     /** 扫码状态1获得2未获得 */
+    @ApiModelProperty("红包状态<1:获得红包未发送，2:未获得，3:发送失败，4:发送成功>")
     private String status;
 
     /** 导购员红包金额 */
+    @ApiModelProperty("导购红包金额")
     private Float salerAmount;
-
+    @ApiModelProperty("订单号")
+    private String tradeNo;
 
 
     /** 活动设置ID,导购细分到活动 */
@@ -316,5 +322,13 @@ public class IntegralRecord  extends DaoSearch {
 
     public void setIntegralNum(Integer integralNum) {
         this.integralNum = integralNum;
+    }
+
+    public void setTradeNo(String tradeNo) {
+        this.tradeNo = tradeNo;
+    }
+
+    public String getTradeNo() {
+        return tradeNo;
     }
 }

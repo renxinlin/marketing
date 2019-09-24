@@ -113,6 +113,10 @@ public class IntegralRecordSqlProvider {
             VALUES("ActivitySetId", "#{activitySetId,jdbcType=BIGINT}");
         }
 
+        if (record.getTradeNo() != null) {
+            VALUES("TradeNo", "#{tradeNo,jdbcType=VARCHAR}");
+        }
+
         return SQL();
     }
 

@@ -79,16 +79,16 @@ public class DeliveryAddressController extends CommonUtil {
         }
 
         // 转换结构
-        List pcccodes = new LinkedList();
-        Map pcccode = new HashMap<>();
+        List<Map<Object, Object>> pcccodes = new LinkedList<>();
+        Map<Object, Object> pcccode = new HashMap<>();
         pcccode.put("areaCode",deliveryAddressVO.getProvinceCode());
         pcccode.put("areaName",deliveryAddressVO.getProvince());
         pcccodes.add(pcccode);
-        Map pcccode1 = new HashMap<>();
+        Map<Object, Object> pcccode1 = new HashMap<>();
         pcccode1.put("areaCode",deliveryAddressVO.getCityCode());
         pcccode1.put("areaName",deliveryAddressVO.getCity());
         pcccodes.add(pcccode1);
-        Map pcccode2 = new HashMap<>();
+        Map<Object, Object> pcccode2 = new HashMap<>();
         pcccode2.put("areaCode",deliveryAddressVO.getCountryCode());
         pcccode2.put("areaName",deliveryAddressVO.getCountry());
         pcccodes.add(pcccode2);

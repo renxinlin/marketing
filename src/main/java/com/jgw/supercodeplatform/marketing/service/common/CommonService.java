@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -131,12 +132,12 @@ public class CommonService {
 	}
     /**
      * 获取绑定批次和url的请求参数
-     * @param obj：通过产品和产品批次获取的码管理平台生码批次信息
+     * @param clientRole：0为消费者，1为销售员
      * @param url
      * @return
      * @throws SuperCodeException
      */
-	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
+	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType, Integer clientRole) throws SuperCodeException {
 		List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
 		for(int i=0;i<array.size();i++) {
 			JSONObject batchobj=array.getJSONObject(i);
@@ -151,9 +152,16 @@ public class CommonService {
 			batchMap.put("batchId", codeBatch);
 			batchMap.put("businessType", businessType);
 			batchMap.put("url",  url);
+			if (clientRole != null) {
+				batchMap.put("clientRole",  clientRole);
+			}
 			bindBatchList.add(batchMap);
 		}
 		return bindBatchList;
+	}
+
+	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
+		return getUrlToBatchParam(array, url, businessType, null);
 	}
 
     /**
@@ -214,7 +222,7 @@ public class CommonService {
 
 	/**
 	 * 删除生码批次绑定url
-	 * @param url
+	 * @param
 	 * @param superToken
 	 * @return
 	 * @throws SuperCodeException
@@ -362,8 +370,8 @@ public class CommonService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void checkCodeValid(String codeId, String codeTypeId) throws SuperCodeException {
-		Map<String, String>headerparams=new HashMap<String, String>();
+	public void checkCodeValid(String codeId, String codeTypeId) {
+		Map<String, String> headerparams = new HashMap<String, String>();
 		headerparams.put("token",commonUtil.getCodePlatformToken() );
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
 		logger.info("根据码和码制获取码平台码信息："+responseEntity.toString());
@@ -371,7 +379,7 @@ public class CommonService {
 		JSONObject jsonCodeBody=JSONObject.parseObject(codeBody);
 		String sBatchId=jsonCodeBody.getJSONObject("results").getString("sBatchId");
 		if (StringUtils.isBlank(sBatchId)) {
-			throw  new SuperCodeException("对不起,该码不存在",500);
+			throw  new SuperCodeExtException("对不起,该码不存在",500);
 		}
 	}
 
@@ -383,16 +391,29 @@ public class CommonService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void checkCodeTypeValid( Long codeTypeId) throws SuperCodeException {
+	public void checkCodeTypeValid( Long codeTypeId) {
 		if(codeTypeId == null){
-			throw  new SuperCodeException("对不起,非营销码制");
+			throw  new SuperCodeExtException("对不起,非营销码制");
 		}
 		if (SystemLabelEnum.MARKETING.getCodeTypeId().intValue() != codeTypeId.intValue()) {
-            throw  new SuperCodeException("对不起,非营销码制");
+            throw  new SuperCodeExtException("对不起,非营销码制");
 		}
 	}
 
-
+	/**
+	 * 校验是否为营销或者防伪码制
+	 * @param codeTypeId
+	 * @return
+	 * @throws SuperCodeException
+	 */
+	public void checkCodeMarketFakeValid(Long codeTypeId) {
+		if(codeTypeId == null){
+			throw  new SuperCodeExtException("对不起,码制不合法");
+		}
+		if (SystemLabelEnum.MARKETING.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.FAKE.getCodeTypeId().intValue() != codeTypeId.intValue()) {
+			throw  new SuperCodeExtException("对不起,码制不合法");
+		}
+	}
 
 	public boolean generateQR(String content, HttpServletResponse response) throws WriterException, IOException {
 		//设置二维码纠错级别ＭＡＰ
@@ -458,19 +479,19 @@ public class CommonService {
     /**
      * 
      * @param outerCodeId
-     * @param customerIds
+     * @param
      * @return
      * @throws SuperCodeException
      */
-    public Map<String, String> queryCurrentCustomer(String outerCodeId) throws SuperCodeException {
+    public Map<String, String> queryCurrentCustomer(String outerCodeId) {
     	Map<String, Object> params = new HashMap<>();
-    	params.put("outerCodeId", outerCodeId);
+    	params.put("outerCodeIds", outerCodeId);
     	ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(logisticsUrl+CommonConstants.OUTERCODE_CUSTOMER, params, null);
     	String body = responseEntity.getBody();
 		JSONObject jsonObject=JSONObject.parseObject(body);
 		Integer state=jsonObject.getInteger("state");
 		if (null == state || state.intValue()!=200) {
-			throw new SuperCodeException("码查询客户信息出错:"+body, 500);
+			throw new SuperCodeExtException("码查询客户信息出错:"+body, 500);
 		}
 		Map<String, String> customerMap = new HashMap<>();
 		JSONObject resultJson = jsonObject.getJSONObject("results");
@@ -483,4 +504,28 @@ public class CommonService {
 		}
     	return customerMap;
     }
+
+	/**
+	 * 根据码制和码获取内码
+	 * @param codeId
+	 * @param codeTypeId
+	 * @return 内码
+	 */
+    public String getInnerCode(String codeId, String codeTypeId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("outerCodeId", codeId);
+		params.put("codeTypeId", codeTypeId);
+		ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(msCodeUrl+CommonConstants.OUTER_INFO_ONE, params, null);
+		String body = responseEntity.getBody();
+		JSONObject jsonObject=JSONObject.parseObject(body);
+		Integer state=jsonObject.getInteger("state");
+		if (null == state || state.intValue()!=200) {
+			throw new SuperCodeExtException("码查询码信息出错:"+body, 500);
+		}
+		JSONObject resultJson = jsonObject.getJSONObject("results");
+		if(resultJson != null) {
+			return resultJson.getString("innerCodeId");
+		}
+		throw new SuperCodeExtException("查询到不对应的内码");
+	}
 }

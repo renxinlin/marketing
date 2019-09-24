@@ -18,6 +18,7 @@ import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
@@ -80,6 +81,8 @@ public class SalerRegisterAndLoginV2Controller {
     @Autowired
     private TaskExecutor taskExecutor;
 
+    @Autowired
+    private CommonService commonService;
     /**
      * 登录
      * @param loginUser
@@ -90,7 +93,7 @@ public class SalerRegisterAndLoginV2Controller {
     @ResponseBody
     @GetMapping("login")
     @ApiOperation(value = "手机号登录", notes = "")
-    public RestResult<MarketingUser> login(SalerLoginParam loginUser ,HttpServletResponse response) throws SuperCodeException{
+    public RestResult<Long> login(SalerLoginParam loginUser ,HttpServletResponse response) throws SuperCodeException{
             // 或者 微信回调携带openid登录
             // 手机登录
             // TODO  验证码
@@ -119,13 +122,22 @@ public class SalerRegisterAndLoginV2Controller {
                 if(user.getState().intValue() == SaleUserStatus.DISABLE.getStatus().intValue()){
                     return RestResult.error("您已经被禁用",null,500);
                 }
+
                 H5LoginVO jwtUser = new H5LoginVO();
                 jwtUser.setMobile(loginUser.getMobile());
+                jwtUser.setMemberName(!StringUtils.isEmpty(user.getUserName()) ?  user.getUserName(): user.getWxName() );
                 jwtUser.setMemberId(user.getId());
                 jwtUser.setOrganizationId(loginUser.getOrganizationId());
                 jwtUser.setMemberType(MemberTypeEnums.SALER.getType());
                 jwtUser.setCustomerId(user.getCustomerId());
                 jwtUser.setCustomerName(user.getCustomerName());
+                jwtUser.setHaveIntegral(user.getHaveIntegral());
+                jwtUser.setOpenid(user.getOpenid());
+                try {
+                    jwtUser.setOrganizationName(commonService.getOrgNameByOrgId(loginUser.getOrganizationId()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 // TODO 可能存在其他登录信息需要设置
 
                 String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);
@@ -140,10 +152,8 @@ public class SalerRegisterAndLoginV2Controller {
                 return RestResult.error("请前往注册后登录",null,401);
 
             }
-
-
         // 异步授权openid
-        return RestResult.success("success",null);
+        return RestResult.success("success",user.getId());
     }
 
 

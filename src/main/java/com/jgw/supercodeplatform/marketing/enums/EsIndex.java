@@ -23,7 +23,11 @@ public enum  EsIndex {
     /**
      * 活动索引
      */
-    MARKET_SCAN_INFO("marketingscan");
+    MARKET_SCAN_INFO("marketingscan"),
+    /**
+     *全网平台扫码活动
+     */
+    MARKET_PLATFORM_SCAN_INFO("marketingplatformscan");
 
     private String index;
 

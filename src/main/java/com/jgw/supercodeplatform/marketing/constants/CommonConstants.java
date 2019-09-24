@@ -65,4 +65,24 @@ public class CommonConstants {
      * 非登录下基于组织获取组织信息
      */
     public static final String ORGANIZATION_NAME ="/getByOrganizationId"  ;
+    
+    /**
+     * 窜货
+     */
+    public static final String JUDGE_FLEE_GOOD = "/goods/query/judgeFleeGood";
+
+    /**
+     * 查询指定时间内生码数量
+     */
+    public static final String CODE_GETCODETOTAL = "/code/getCodeTotal";
+
+    /**
+     * 查询码信息，包含内码
+     */
+    public static final String OUTER_INFO_ONE = "/outer/info/one";
+
+    /**
+     * 查询产品信息，包含内码
+     */
+    public static final String PRODUCT_ONE ="/product/one";
 }

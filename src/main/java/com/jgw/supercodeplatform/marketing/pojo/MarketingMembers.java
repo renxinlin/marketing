@@ -10,7 +10,7 @@ public class MarketingMembers {
     private String mobile;//手机
     private String userId;//用户Id
     private String userName;//用户姓名
-    private String sex;//性别
+    private Byte sex;//性别
     private String birthday;//生日
     private String provinceCode;// 省编码
     private String provinceName;// 省名
@@ -143,13 +143,6 @@ public class MarketingMembers {
         this.userName = userName;
     }
 
-    public String getSex() {
-        return sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
 
     public String getBirthday() {
         return birthday;
@@ -272,6 +265,13 @@ public class MarketingMembers {
         this.customerId = customerId;
     }
 
+    public void setSex(Byte sex) {
+        this.sex = sex;
+    }
+
+    public Byte getSex() {
+        return sex;
+    }
 
     public String getProvinceCode() {
         return provinceCode;

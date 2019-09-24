@@ -41,6 +41,12 @@ public class MarketingReceivingPage {
     @ApiModelProperty(value = "活动说明")
     private String activityDesc;
 
+    @ApiModelProperty("公众号Secret")
+    private String merchantSecret;
+
+    @ApiModelProperty("公众号Appid")
+    private String mchAppid;
+
     public Long getId() {
 		return id;
 	}
@@ -152,5 +158,20 @@ public class MarketingReceivingPage {
 	public void setActivityDesc(String activityDesc) {
 		this.activityDesc = activityDesc;
 	}
-    
+
+    public void setMchAppid(String mchAppid) {
+        this.mchAppid = mchAppid;
+    }
+
+    public String getMchAppid() {
+        return mchAppid;
+    }
+
+    public void setMerchantSecret(String merchantSecret) {
+        this.merchantSecret = merchantSecret;
+    }
+
+    public String getMerchantSecret() {
+        return merchantSecret;
+    }
 }

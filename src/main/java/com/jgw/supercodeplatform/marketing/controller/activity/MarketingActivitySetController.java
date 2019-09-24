@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketing.controller.activity;
 
 import java.io.IOException;
 
+import com.jgw.supercodeplatform.marketing.vo.platform.WxMerchantInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -156,5 +157,13 @@ public class MarketingActivitySetController {
     public RestResult<String> preview(@RequestBody MarketingActivityPreviewParam mPreviewParam) throws WriterException, IOException, SuperCodeException{
         return service.preview(mPreviewParam);
     }
+
+    @GetMapping("/wxMerchantInfo")
+    @ApiOperation("新建活动时企业公众号信息")
+    @ApiImplicitParam(paramType="header",value = "新平台token",name="super-token")
+    public RestResult<WxMerchantInfoVo> WxMerchantInfoVo(){
+        return RestResult.success();
+    }
+
 
 }

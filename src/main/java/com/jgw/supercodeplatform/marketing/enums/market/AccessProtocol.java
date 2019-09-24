@@ -7,7 +7,8 @@ import lombok.Getter;
  */
 public enum AccessProtocol {
 
-    ACTIVITY_MEMBER(0,"活动"), ACTIVITY_SALER(2,"导购业务"), ACTIVITY_COUPON(4,"抵扣券");
+    ACTIVITY_MEMBER(0,"活动"), ACTIVITY_SALER(2,"导购业务"),
+    ACTIVITY_COUPON(4,"抵扣券"), ACTIVITY_PLATFORM(5, "全网平台运营活动");
     /**
      * 业务类型
      */

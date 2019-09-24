@@ -173,6 +173,13 @@ public class CommonUtil extends UserInfoUtil {
 		}
 	}
 
+    public String getOrganizationIdNew() {
+        try {
+            return super.getOrganizationId();
+        } catch (Exception e) {
+            throw new SuperCodeExtException("无组织信息，请确认当前用户为普通角色用户", 500);
+        }
+    }
     /**
      * @return
      * @Author corbett
@@ -238,7 +245,7 @@ public class CommonUtil extends UserInfoUtil {
     
     
     public static String replaceSpicialChactar(String data) {
-    	String regEx="[\n`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。， 、？_-]";
+    	String regEx="[\n`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。， 、？]";
     	//可以在中括号内加上任何想要替换的字符
     	String aa= "";//这里是将特殊字符换为aa字符串,""代表直接去掉
     	Pattern p = Pattern.compile(regEx);

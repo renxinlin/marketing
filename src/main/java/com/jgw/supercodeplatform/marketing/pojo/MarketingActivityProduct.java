@@ -111,4 +111,21 @@ public class MarketingActivityProduct {
 		this.sbatchId = sbatchId;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		MarketingActivityProduct productObj = (MarketingActivityProduct)obj;
+		if(productId != null && productBatchId != null && productObj != null) {
+			return productId.equals(productObj.getProductId()) && productBatchId.equals(productObj.getProductBatchId());
+		}
+		return super.equals(obj);
+	}
+	
+	@Override
+	public int hashCode() {
+		if(productId != null && productBatchId != null) {
+			return (productId+":"+productBatchId).hashCode();
+		}
+		return super.hashCode();
+	}
+	
 }

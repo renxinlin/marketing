@@ -67,6 +67,8 @@ public class MarketingMemberCoupon {
     private Long activitySetId;
     
     private String couponCondition;
+
+    private String outerCodeId;
     /***********获得条件，根据活动条件设置获取*************/
     @ApiModelProperty("获得条件")
     private String obtainCondition;
@@ -301,5 +303,12 @@ public class MarketingMemberCoupon {
 	public void setCouponCondition(String couponCondition) {
 		this.couponCondition = couponCondition;
 	}
-	
+
+    public void setOuterCodeId(String outerCodeId) {
+        this.outerCodeId = outerCodeId;
+    }
+
+    public String getOuterCodeId() {
+        return outerCodeId;
+    }
 }

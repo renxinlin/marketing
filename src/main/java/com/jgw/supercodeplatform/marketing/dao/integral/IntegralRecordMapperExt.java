@@ -52,8 +52,9 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     "</otherwise>" +
                     "</choose>" +
                     " <if test='organizationId != null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
-                    " <if test='memberId != null and organizationId != &apos;&apos; '> and MemberId = #{memberId} </if>"+
-                    // 大于
+                    " <if test='memberId != null and memberId != &apos;&apos; '> and MemberId = #{memberId} </if>"+
+                    " <if test='salerId != null and salerId != &apos;&apos; '> and SalerId = #{salerId} </if> "+
+					// 大于
 					" <if test='integralType != null and integralType == 0 '> and IntegralNum &gt; 0 </if>"+
 					// 积分记录区分用户类别
 					// TODO 评估MEMBERTYPE是否可以去除if条件
@@ -62,7 +63,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     " <if test='integralType != null and integralType == 1 '> and IntegralNum &lt;  0 </if>"+
                     "</where>";
     @Select(startScript
-            + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, "
+            + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, SalerAmount salerAmount,TradeNo tradeNo,ir.Status status,"
             + " ir.MemberName memberName,ir.Mobile mobile,ir.IntegralReasonCode integralReasonCode,ir.IntegralReason integralReason, "
             + " ir.ProductId productId,ir.ProductName productName,ir.OuterCodeId outerCodeId,ir.CodeTypeId codeTypeId,ir.CustomerName customerName, "
             + " ir.CustomerId customerId,DATE_FORMAT(ir.CreateDate,'%Y-%m-%d %H:%i:%s') createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
@@ -133,7 +134,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	@Select(" select sum(IntegralNum) from marketing_integral_record where OrganizationId = #{organizationId} " +
 			" and IntegralNum > 0  " +
 			" and CreateDate between #{startDate} and #{endDate} ")
-    Integer sumOrganizationUsingIntegralByDate(String organizationId, Date startDate, Date endDate);
+    Integer sumOrganizationUsingIntegralByDate(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 	/**
 	 * 组织总兑换金额
 	 * @param organizationId
@@ -143,7 +144,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	@Select(" select -sum(IntegralNum) from marketing_integral_record where OrganizationId = #{organizationId} " +
 			" and IntegralNum < 0  " +
 			" and CreateDate between #{startDate} and #{endDate} ")
-	Integer sumOrganizationIntegralExchangeByDate(String organizationId, Date startDate, Date endDate);
+	Integer sumOrganizationIntegralExchangeByDate(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 	/**
 	 * 获取top6产品的兑换消耗的积分； &lt 《
@@ -161,7 +162,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 			" and CreateDate between #{startDate} and #{endDate} " +
  			" group by ProductId,ProductName " +
 			" order by IntegralNum desc limit 0,6 ")
-    List<IntegralRecord> getOrganizationTop6IntegralProduct(String organizationId, Date startDate, Date endDate);
+    List<IntegralRecord> getOrganizationTop6IntegralProduct(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 
 	/**
@@ -177,7 +178,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 			" and OrganizationId = #{organizationId} " +
 			" and IntegralNum < 0 " +
 			" and CreateDate between #{startDate} and #{endDate} " )
-	Integer getOrganizationAllIntegralProduct(String organizationId, Date startDate, Date endDate);
+	Integer getOrganizationAllIntegralProduct(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 	/**
 	 * IntegralReasonEnum PRODUCT_INTEGRAL 4  产品积分
@@ -192,13 +193,23 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 			" and OrganizationId = #{organizationId} " +
 			" and IntegralReasonCode =  4 " +
 			" and CreateDate between #{startDate} and #{endDate} " )
-    List<IntegralRecord> getOrganizationAllSalePrice(String organizationId, Date startDate, Date endDate);
+    List<IntegralRecord> getOrganizationAllSalePrice(@Param("organizationId") String organizationId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 
 	@Select(" select count(SalerAmount) count, sum(SalerAmount) sum from marketing_integral_record where organizationId = #{organizationId} " +
-			" and memberId = #{memberId}" +
+			" and SalerId = #{salerId}" +
 			" and memberType = #{memberType} " +
 			" and Status = 1" +
-			" and SalerAmount is not null ")
-    Map getAcquireMoneyAndAcquireNums(Long memberId, Byte memberType, String organizationId);
+			" and SalerAmount > 0 ")
+    Map<String, Object> getAcquireMoneyAndAcquireNums(@Param("salerId") Long salerId, @Param("memberType") Byte memberType, @Param("organizationId") String organizationId);
+
+	@Select("SELECT "+allFileds+" FROM marketing_integral_record WHERE OuterCodeId = #{outerCodeId} AND memberType = 0 AND Status = '1' AND IntegralNum > 0")
+	IntegralRecord getMemberIntegralRecord(@Param("outerCodeId") String outerCodeId);
+
+	@Update("UPDATE marketing_integral_record SET Status = #{status} WHERE OuterCodeId = #{outerCodeId} AND OrganizationId = #{organizationId} AND MemberType = 1 AND SalerAmount > 0 AND Status != '2'")
+	int updateSalerPrizeRecord(@Param("status") String status, @Param("outerCodeId") String outerCodeId, @Param("organizationId") String organizationId);
+
+	@Select("select count(1) from marketing_integral_record where organizationId = #{organizationId} and SalerId = #{salerId} and memberType = #{memberType} and SalerAmount is not null")
+	int countScanCodeNum(@Param("salerId") Long salerId, @Param("memberType") Byte memberType, @Param("organizationId") String organizationId);
+
 }

@@ -6,22 +6,21 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageR
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
+import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
+import com.jgw.supercodeplatform.marketing.pojo.pay.RedPackageParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingMembersWinRecordService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingWxTradeOrderService;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +34,11 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 	@Autowired
 	private MarketingMembersWinRecordService service;
 
+	@Autowired
+	private MarketingUserMapper marketingUserMapper;
+
+	@Autowired
+	private MarketingWxTradeOrderService marketingWxTradeOrderService;
 
 
 	// 	@Value("${marketing.winRecord.sheetHead}")
@@ -90,6 +94,17 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 		// step-4: 导出前端
 		ExcelUtils.listToExcel(list, filedMap, "中奖记录", response);
 
+	}
+
+	@ApiOperation("发送中奖红包")
+	@PostMapping("/sendRedPackage")
+	@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")
+	public RestResult<?> sendWxTrade(@RequestBody @Valid RedPackageParam redPackageParam) throws Exception {
+		String res = marketingWxTradeOrderService.sendPayTradeOrder(redPackageParam.getTradeNo(), redPackageParam.getWinningCode());
+		if (res == null) {
+			return RestResult.success();
+		}
+		return RestResult.fail(res, null);
 	}
 
 }

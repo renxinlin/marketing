@@ -12,7 +12,9 @@ public enum IntegralReasonEnum {
     SALER_NO_CONDITION(6,"无条件"),
     SALER_ACTIVITY(7,"协助会员抽奖"),
     SALER_INTEGRAL(8,"协助会员领积分"),
-	ACTIVITY_INTEGRAL(9,"活动积分");
+    ACTIVITY_INTEGRAL(9,"活动积分"),
+    SALER_EXCHANGE(10,"抽红包"),
+    SALER_GET_INTEGREL(11,"产品积分"); // 导购领积分
 
     IntegralReasonEnum(Integer integralReasonCode, String integralReason) {
         this.integralReasonCode = integralReasonCode;

@@ -13,11 +13,14 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 商户公众号绑定
@@ -35,7 +38,6 @@ public class WeixinSNBindController extends CommonUtil {
     @Value("${weixin.certificate.path}")
     private String path;
 
-    
 	/**
 	 * 上传文件
 	 * @author liujianqiang
@@ -66,13 +68,20 @@ public class WeixinSNBindController extends CommonUtil {
 	@RequestMapping(value = "/bind", method = RequestMethod.POST)
 	@ApiOperation(value = "微信商户信息绑定", notes = "")
 	@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-	public RestResult<String> bind(@RequestBody MarketingWxMerchantsParam wxMerchantsParam, HttpServletRequest request,
-			HttpServletResponse response) throws Exception {
-
+	public RestResult<String> bind(@RequestBody @Validated MarketingWxMerchantsParam wxMerchantsParam, BindingResult bindingResult) throws Exception {
 		// 校验组织ID
 		String organizationId = getOrganizationId();
 		if(StringUtils.isEmpty(organizationId)){
 			return new RestResult<String>(500, "获取组织信息失败", null);
+		}
+		if (wxMerchantsParam.getMerchantType() != 0){
+			marketingWxMerchantsService.setUseType(wxMerchantsParam.getMerchantType());
+			return RestResult.success();
+		}
+		if (bindingResult.hasErrors()) {
+			List<FieldError> allErrors = bindingResult.getFieldErrors();
+			List<String> collect = allErrors.stream().map(error -> error.getDefaultMessage()).collect(Collectors.toList());
+			return RestResult.fail(collect.toString(), null);
 		}
 		// 新增还是更新基于数据库是否存在
 		MarketingWxMerchants marketingWxMerchants = marketingWxMerchantsService.selectByOrganizationId(organizationId);
@@ -85,7 +94,6 @@ public class WeixinSNBindController extends CommonUtil {
 		} else {
 			marketingWxMerchantsService.updateWxMerchants(wxMerchantsParam);
 		}
-
 		return new RestResult<String>(200, "success", null);
 	}
 
@@ -106,5 +114,5 @@ public class WeixinSNBindController extends CommonUtil {
     public RestResult<MarketingWxMerchants> get() throws Exception {
         return marketingWxMerchantsService.get();
     }
-    
+
 }

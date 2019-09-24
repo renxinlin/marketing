@@ -10,14 +10,14 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
+import com.jgw.supercodeplatform.marketing.dto.WxSignPram;
+import com.jgw.supercodeplatform.marketing.vo.activity.WxSignVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.BarcodeFormat;
@@ -123,4 +123,45 @@ public class CommonController extends CommonUtil {
     	
         return restResult;
     }
+
+
+    @PostMapping("/getSign")
+    @ApiOperation("根据appid和secret获取签名")
+    public RestResult<WxSignVo> get(@RequestBody @Valid WxSignPram wxSignPram) throws Exception {
+        String appId = wxSignPram.getAppId();
+        String appSecret = wxSignPram.getAppSecret();
+        String url = wxSignPram.getUrl();
+        logger.info("签名信息,appid:{}，appsecret:{}", wxSignPram.getAppId(), wxSignPram.getAppSecret());
+        String access_token_url ="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appId+"&secret="+appSecret;
+        HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(access_token_url);
+        String body=reHttpClientResult.getContent();
+        logger.info("请求获取用户信息token返回;"+body);
+        if (!body.contains("access_token")) {
+            return RestResult.fail("获取签名失败", null);
+        }
+        JSONObject tokenObj=JSONObject.parseObject(body);
+        String accessToken=tokenObj.getString("access_token");
+        HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
+        String tickContent=result.getContent();
+        logger.info("获取到tick的数据："+tickContent);
+        String ticket = JSONObject.parseObject(tickContent).getString("ticket");
+        logger.info("获取到tick的数据："+ticket);
+        // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
+        String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
+        long timestamp=WXPayUtil.getCurrentTimestamp();
+        String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
+        String signature=CommonUtil.sha1Encrypt(sha1String1);
+        logger.error("==================start log=====================");
+        logger.error(sha1String1);
+        logger.error(signature);
+
+        WxSignVo wxSignVo = new WxSignVo();
+        wxSignVo.setAppId(appId);
+        wxSignVo.setAppSecret(appSecret);
+        wxSignVo.setNoncestr(noncestr);
+        wxSignVo.setSignature(signature);
+        wxSignVo.setTimestamp(timestamp + "");
+        return RestResult.successWithData(wxSignVo);
+    }
+
 }

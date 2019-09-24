@@ -26,7 +26,7 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
     private Integer remainingStock;
     private Integer awardIntegralNum;
     private String cardLink;
-    
+    private Byte awardGrade;
 	public long getId() {
 		return id;
 	}
@@ -123,6 +123,15 @@ public class MarketingPrizeTypeMO implements Comparable<MarketingPrizeTypeMO>{
 	public void setCardLink(String cardLink) {
 		this.cardLink = cardLink;
 	}
+
+	public void setAwardGrade(Byte awardGrade) {
+		this.awardGrade = awardGrade;
+	}
+
+	public Byte getAwardGrade() {
+		return awardGrade;
+	}
+
 	@Override
 	public int compareTo(MarketingPrizeTypeMO o) {
 		if (o==null) {

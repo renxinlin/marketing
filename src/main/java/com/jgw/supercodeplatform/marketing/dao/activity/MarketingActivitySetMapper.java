@@ -1,15 +1,27 @@
 package com.jgw.supercodeplatform.marketing.dao.activity;
 
+import java.util.List;
+
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithUser;
+import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Many;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.type.JdbcType;
+
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingSalerActivitySetMO;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import org.apache.ibatis.annotations.*;
-import org.apache.ibatis.type.JdbcType;
-
-import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface MarketingActivitySetMapper extends CommonSql {
@@ -17,7 +29,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
  		+ "ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,CreateDate createDate,UpdateDate UpdateDate,"
  		+ "ActivityStatus ActivityStatus,ActivityRangeMark ActivityRangeMark,"
  		+ "autoFetch autoFetch,CodeTotalNum codeTotalNum,OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,"
- 		+ "ActivityDesc activityDesc, ValidCondition validCondition ";
+ 		+ "ActivityDesc activityDesc, ValidCondition validCondition, SendAudit sendAudit ";
 
     String whereSearch =
                     "<choose>"
@@ -68,10 +80,10 @@ public interface MarketingActivitySetMapper extends CommonSql {
 
    @Insert(" INSERT INTO marketing_activity_set(ActivityId,OrganizationId,OrganizatioIdlName,ActivityTitle, "
            + " ActivityStartDate,ActivityEndDate,UpdateUserId,UpdateUserName,ActivityStatus, "
-           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition ) "
+           + " ActivityRangeMark,autoFetch,CodeTotalNum,CreateDate,UpdateDate,ActivityDesc,ValidCondition,SendAudit,MerchantsInfo) "
            + " VALUES(#{ma.activityId},#{ma.organizationId},#{ma.organizatioIdlName},#{ma.activityTitle},#{ma.activityStartDate}, "
            + " #{ma.activityEndDate},#{ma.updateUserId},#{ma.updateUserName},#{ma.activityStatus},#{ma.activityRangeMark}, "
-           + " #{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition} "
+           + " #{ma.autoFetch},#{ma.codeTotalNum},NOW(),NOW(), #{ma.activityDesc},#{ma.validCondition},#{ma.sendAudit},#{ma.merchantsInfo} "
            + " )")
    @Options(useGeneratedKeys=true, keyProperty="ma.id", keyColumn="Id")
    int insert(@Param("ma")MarketingActivitySet marketingActivitySet);
@@ -114,14 +126,15 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " <if test='activityEndDate !=null and activityEndDate != &apos;&apos; '> ActivityEndDate = #{activityEndDate} ,</if> "
             + " <if test='updateUserId !=null and updateUserId != &apos;&apos; '> UpdateUserId = #{updateUserId} ,</if> "
             + " <if test='updateUserName !=null and updateUserName != &apos;&apos; '> UpdateUserName = #{updateUserName} ,</if> "
-            + " <if test='updateDate !=null and updateDate != &apos;&apos; '> UpdateDate = #{updateDate} ,</if> "
+            + "  UpdateDate = NOW() , "
             + " <if test='activityStatus !=null and activityStatus != &apos;&apos; '> ActivityStatus = #{activityStatus} ,</if> "
             + " <if test='activityRangeMark !=null and activityRangeMark != &apos;&apos; '> ActivityRangeMark = #{activityRangeMark} ,</if> "
             + " <if test='autoFetch !=null and autoFetch != &apos;&apos; '> autoFetch = #{autoFetch} ,</if> "
             + " <if test='codeTotalNum !=null and codeTotalNum != &apos;&apos; '> CodeTotalNum = #{codeTotalNum} ,</if> "
             + " <if test='activityDesc !=null'> ActivityDesc = #{activityDesc} ,</if> "
 		    + " <if test='validCondition !=null and validCondition != &apos;&apos; '> ValidCondition = #{validCondition} ,</if> "
-		    + " </set> "
+		    + " <if test='sendAudit != null'>SendAudit = #{sendAudit}</if>"
+            + " </set> "
             + " where Id = #{id}" +endScript
     )
     int update(MarketingActivitySet mActivitySet);
@@ -137,8 +150,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " LEFT JOIN marketing_channel mc ON mc.ActivitySetId = mas.Id "
             + " WHERE mas.OrganizationId = #{organizationId} "
             + whereSearch
-            + " GROUP BY mas.Id "
-            + " ORDER BY mas.UpdateDate "
+            + " GROUP BY mas.Id DESC"
+            + " ORDER BY mas.UpdateDate DESC "
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>"
             + endScript
     )
@@ -166,7 +179,6 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " LEFT JOIN marketing_channel mc ON mc.ActivitySetId = mas.Id "
             + " WHERE mas.OrganizationId = #{organizationId} "
             + whereSearch
-            + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>"
             + endScript
     )
     int count(DaoSearchWithOrganizationIdParam searchParams);
@@ -180,11 +192,41 @@ public interface MarketingActivitySetMapper extends CommonSql {
     int deleteById(@Param("activitySetId") Long activitySetId);
     
     @Select({startScript,
-    		"select ",allFields," from marketing_activity_set where Id in (",
+    		"select ",allFields," from marketing_activity_set where OrganizationId = #{organizationId} AND Id in (",
     		"<foreach collection='idList' item='activitySetId' index='index' separator=','>",
 			"#{activitySetId}",
-			")</foreach>",
+			"</foreach>) ",
     		endScript})
-    List<MarketingActivitySet> selectMarketingActivitySetByIds(@Param("idList") List<Long> idList);
-    
+    List<MarketingActivitySet> selectMarketingActivitySetByIds(@Param("organizationId")String organizationId, @Param("idList") List<Long> idList);
+
+
+    @Select({startScript,
+            "SELECT a.Id id, b.ActivityName activityName, a.ActivityTitle activityTitle, a.UpdateUserName updateUserName, a.UpdateDate updateDate,",
+            "a.ActivityStartDate activityStartDate, a.ActivityEndDate activityEndDate, a.ActivityStatus activityStatus",
+            " FROM marketing_activity_set a INNER JOIN marketing_activity b ON a.ActivityId = b.Id WHERE a.ActivityId = 5 ",
+            "<if test = 'search != null and search != &apos;&apos;'> AND (",
+            " a.ActivityTitle LIKE CONCAT('%', #{search}, '%')",
+            " OR a.UpdateUserName LIKE CONCAT('%', #{search}, '%')",
+            ") </if>",
+            " ORDER BY a.UpdateDate DESC",
+            " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber}, #{pageSize}</if>",
+            endScript})
+    List<PlatformActivityVo> listPlatform(DaoSearchWithUser searchParams);
+
+    @Select({startScript,
+            "SELECT COUNT(1) FROM marketing_activity_set WHERE  ",
+            " ActivityId = 5 ",
+            "<if test = 'search != null and search != &apos;&apos;'> AND (",
+            " ActivityTitle LIKE CONCAT('%', #{search}, '%')",
+            " OR UpdateUserName LIKE CONCAT('%', #{search}, '%')",
+            ") </if>",
+            endScript})
+    int countPlatform(DaoSearchWithUser searchParams);
+
+    @Select("select "+allFields+" from marketing_activity_set where ActivityTitle=#{activityTitle} and ActivityId = #{activityId}")
+    MarketingActivitySet selectByTitlePlatform(@Param("activityTitle")String activityTitle, @Param("activityId") Long activityId);
+
+    @Select("select "+allFields+" from marketing_activity_set where ActivityId=5 and ActivityStatus = 1 AND ActivityStartDate < now() and ActivityEndDate > now()")
+    MarketingActivitySet getOnlyPlatformActivity();
+
 }

@@ -24,7 +24,8 @@ public interface MarketingUserMapperExt extends MarketingUserMapper , CommonSql 
             + " a.CustomerName as customerName,a.CustomerId as customerId,"
             + " a.PCCcode as pCCcode, a.WechatHeadImgUrl as wechatHeadImgUrl, "
             + " a.MemberType memberType, "
-            + " a.State as state, a.DeviceType  ";
+            + " a.State as state, a.DeviceType as deviceType, "
+            + " a.HaveIntegral haveIntegral ";
 
 
     /**
@@ -63,6 +64,7 @@ public interface MarketingUserMapperExt extends MarketingUserMapper , CommonSql 
             + " OR State LIKE binary CONCAT('%',#{search},'%') "
             + ")"
             + " </if>"
+            + " order by CreateDate desc "
             + " <if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>"
             + " </where>"
             + " </script>")

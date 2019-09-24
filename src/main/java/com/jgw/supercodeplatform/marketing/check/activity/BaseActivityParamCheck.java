@@ -76,8 +76,8 @@ public abstract class BaseActivityParamCheck {
 					}else if (randomAmont.equals((byte)0)) {
 						//如果固定金额则不能小于1大于5000
 						Float amount=prizeTypeParam.getPrizeAmount();
-						if (null==amount|| amount<1 ||amount>5000) {
-							throw new SuperCodeException("金额参数非法，不能为空只能在1-5000以内", 500);
+						if (null==amount|| amount<=0 ||amount>5000) {
+							throw new SuperCodeException("金额参数非法，不能为空只能在0-5000以内", 500);
 						}
 					}else if (randomAmont.equals((byte)1)) {
 						//如果是随机金额则校验随机金额取值
@@ -86,8 +86,8 @@ public abstract class BaseActivityParamCheck {
 						if (null==lowrand || null==highrand || lowrand >=highrand) {
 							throw new SuperCodeException("随机金额取值范围不能为空且低取值不能大于等于高取值", 500);
 						}
-						if (lowrand<1 || highrand>5000) {
-							throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在1-5000以内", 500);
+						if (lowrand<=0 || highrand>5000) {
+							throw new SuperCodeException("随机金额参数非法，低值和高值取值只能在0-5000以内", 500);
 						}
 					}
 				}else {

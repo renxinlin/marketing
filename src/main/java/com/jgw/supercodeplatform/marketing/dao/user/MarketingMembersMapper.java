@@ -3,7 +3,11 @@ package com.jgw.supercodeplatform.marketing.dao.user;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
+import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
+import jdk.nashorn.internal.objects.annotations.Setter;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -13,6 +17,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import org.springframework.stereotype.Service;
 
 /**
  * 会员类
@@ -276,4 +281,51 @@ public interface MarketingMembersMapper {
      */
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.CreateDate between #{startDate} and #{endDate} and state !=2 ")
     List<MarketingMembers> getOrganizationAllMemberWithDate(String organizationId, Date startDate, Date endDate);
+
+    @Select("SELECT COUNT(*) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2")
+    long countAllMemberNum(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    @Select("SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openId}")
+    MarketingMembers getMemberByOpenId(@Param("openId") String openId);
+
+    /*
+    统计性别
+     */
+    @Select({"SELECT (SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND State <> 2 AND Sex = 0) male,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Sex = 1) female,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND ((Sex <> 0 AND Sex <>1) OR Sex IS NULL)) other FROM DUAL"})
+    Map<String, Long> statisticSex(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    /**
+     * 按照十岁划分统计年龄
+     * @return
+     */
+    @Select({"SELECT ",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -10 year) AND Birthday <= curdate()) ten,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -20 year) AND Birthday <= date_add(curdate() , interval -10 year)) twenty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -30 year) AND Birthday <= date_add(curdate() , interval -20 year)) thirty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -40 year) AND Birthday <= date_add(curdate() , interval -30 year)) forty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -50 year) AND Birthday <= date_add(curdate() , interval -40 year)) fifty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -60 year) AND Birthday <= date_add(curdate() , interval -50 year)) sixty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -70 year) AND Birthday <= date_add(curdate() , interval -60 year)) seventy,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -80 year) AND Birthday <= date_add(curdate() , interval -70 year)) eighty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -90 year) AND Birthday <= date_add(curdate() , interval -80 year)) ninety,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Birthday > date_add(curdate() , interval -100 year) AND Birthday <= date_add(curdate() , interval -90 year)) hundred,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND (Birthday <= date_add(curdate() , interval -100 year) OR Birthday > curdate() OR Birthday IS NULL)) other",
+            " FROM DUAL"})
+    Map<String, Long> statistcAge(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    @Select({"SELECT ",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND DeviceType = 1) wx,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND DeviceType = 2) zfb,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND DeviceType = 3) dd,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND DeviceType = 4) llq,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND DeviceType = 5) qq,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND (DeviceType > 5 OR DeviceType < 1 OR DeviceType IS NULL)) other",
+            "FROM DUAL"})
+    Map<String, Long> statisticBrowser(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    @Select("SELECT provinceName name, COUNT(ProvinceName) value FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND ProvinceName <> '' AND ProvinceName IS NOT NULL GROUP BY ProvinceName")
+    Set<PieChartVo> statisticArea(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
 }

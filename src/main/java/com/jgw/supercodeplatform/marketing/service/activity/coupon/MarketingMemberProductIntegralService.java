@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -69,6 +70,9 @@ public class MarketingMemberProductIntegralService {
 	
 	@Autowired
 	private CommonService commonService;
+
+	@Autowired
+	private MarketingActivityChannelService marketingActivityChannelService;
 	
 	@Autowired
 	private RedisLockUtil lock;
@@ -81,6 +85,29 @@ public class MarketingMemberProductIntegralService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void obtainCoupon(MarketingMemberProductIntegral productIntegral, MarketingMembers members, String productName, String outerCodeId) throws ParseException, SuperCodeException {
+		String integralMsg = JSON.toJSONString(productIntegral);
+		String productId = productIntegral.getProductId();
+		String productBatchId = productIntegral.getProductBatchId();
+		MarketingActivityProduct marketingActivityProduct = marketingActivityProductMapper.selectByProductAndProductBatchIdWithReferenceRole(productId, productBatchId, MemberTypeEnums.VIP.getType());
+		if (marketingActivityProduct == null) {
+			log.info("该产品未参加优惠券活动：{}", integralMsg);
+			return;
+		}
+		String sBatchIds = marketingActivityProduct.getSbatchId();
+//		if (StringUtils.isBlank(sBatchIds) || sBatchIds.contains(productIntegral.getSbatchId())) {
+//			log.info("该生码批次未参加优惠券活动：{}", integralMsg);
+//			return;
+//		}
+		MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(marketingActivityProduct.getActivitySetId());
+		if(marketingActivitySet == null){
+			log.info("该产品未参加优惠券活动：{}", integralMsg);
+			return;
+		}
+		MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(outerCodeId, marketingActivityProduct.getActivitySetId());
+		if (marketingChannel == null) {
+			log.info("该产品渠道未参加优惠券活动：{}", integralMsg);
+			return;
+		}
 		//添加或者更新累计积分
 		long accrueIntegral = productIntegral.getAccrueIntegral();
 		MarketingMemberProductIntegral marketingMemberProductIntegral = productIntegralMapper.selectProductIntegralByMemberIdAndProductId(productIntegral.getMemberId(), productIntegral.getProductId());
@@ -95,43 +122,36 @@ public class MarketingMemberProductIntegralService {
 			productIntegral.setUpdateTime(new Date());
 			productIntegralMapper.updateByPrimaryKeySelective(productIntegral);
 		}
-		String productId = productIntegral.getProductId();
-		String productBatchId = productIntegral.getProductBatchId();
 		//获取抵扣券
-		MarketingActivityProduct marketingActivityProduct = marketingActivityProductMapper.selectByProductAndProductBatchIdWithReferenceRole(productId, productBatchId, MemberTypeEnums.VIP.getType());
-		if(marketingActivityProduct != null) {
-			MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(marketingActivityProduct.getActivitySetId());
-			List<MarketingChannel> marketingChannelList = marketingChannelMapper.selectByActivitySetId(marketingActivitySet.getId());
-			int activityStatus = marketingActivitySet.getActivityStatus() == null?0:marketingActivitySet.getActivityStatus().intValue();
-			int activityId = marketingActivitySet.getActivityId().intValue();
-			String activityStartDateStr = marketingActivitySet.getActivityStartDate();
-			String activityEndDateStr = marketingActivitySet.getActivityEndDate();
-			long currentMills = System.currentTimeMillis();
-			long activityStartMills = StringUtils.isBlank(activityStartDateStr)?0L:DateUtils.parseDate(activityStartDateStr, CommonConstants.DATE_PATTERNS).getTime();
-			long activityEndMills = StringUtils.isBlank(activityEndDateStr)?0L:DateUtils.parseDate(activityEndDateStr, CommonConstants.DATE_PATTERNS).getTime();
-			if(activityId == 4 && activityStatus == 1 && ((activityStartMills < currentMills && currentMills < activityEndMills)||(activityStartMills == 0 && activityEndMills == 0))) {
-				String validCondition = marketingActivitySet.getValidCondition();
-				MarketingActivitySetCondition activityCondtion = JSON.parseObject(validCondition, MarketingActivitySetCondition.class);
-				Byte acquireCondition = activityCondtion.getAcquireCondition();
-				if(acquireCondition != null) {
-					Long activitySetId = marketingActivityProduct.getActivitySetId();
-					List<MarketingCoupon> marketingCouponList = marketingCouponMapper.selectByActivitySetId(activitySetId);
-					Integer acquireConditionIntegral = activityCondtion.getAcquireConditionIntegral();
-					CouponAcquireConditionEnum couponAcquireConditionEnum = CouponAcquireConditionEnum.getConditionEnumByType(activityCondtion.getAcquireCondition());
-					switch (couponAcquireConditionEnum) {
-					case FIRST:
-						if(marketingMemberProductIntegral == null)
-							addMarketingMemberCoupon( marketingCouponList, members, productId, productName,outerCodeId);
-						break;
-					case ONCE_LIMIT:
-						onceLimit(acquireConditionIntegral, accrueIntegral, marketingCouponList, members, productId, productName,outerCodeId);
-						break;
-					case LIMIT:
-						limt(productIntegral.getId(), acquireConditionIntegral, sumIntegral, marketingCouponList, members, productId, productName,outerCodeId);
-						break;
-					default:
-						break;
-					}
+		int activityStatus = marketingActivitySet.getActivityStatus() == null?0:marketingActivitySet.getActivityStatus().intValue();
+		int activityId = marketingActivitySet.getActivityId().intValue();
+		String activityStartDateStr = marketingActivitySet.getActivityStartDate();
+		String activityEndDateStr = marketingActivitySet.getActivityEndDate();
+		long currentMills = System.currentTimeMillis();
+		long activityStartMills = StringUtils.isBlank(activityStartDateStr)?0L:DateUtils.parseDate(activityStartDateStr, CommonConstants.DATE_PATTERNS).getTime();
+		long activityEndMills = StringUtils.isBlank(activityEndDateStr)?0L:DateUtils.parseDate(activityEndDateStr, CommonConstants.DATE_PATTERNS).getTime();
+		if(activityId == 4 && activityStatus == 1 && ((activityStartMills < currentMills && currentMills < activityEndMills)||(activityStartMills == 0 && activityEndMills == 0))) {
+			String validCondition = marketingActivitySet.getValidCondition();
+			MarketingActivitySetCondition activityCondtion = JSON.parseObject(validCondition, MarketingActivitySetCondition.class);
+			Byte acquireCondition = activityCondtion.getAcquireCondition();
+			if(acquireCondition != null) {
+				Long activitySetId = marketingActivityProduct.getActivitySetId();
+				List<MarketingCoupon> marketingCouponList = marketingCouponMapper.selectByActivitySetId(activitySetId);
+				Integer acquireConditionIntegral = activityCondtion.getAcquireConditionIntegral();
+				CouponAcquireConditionEnum couponAcquireConditionEnum = CouponAcquireConditionEnum.getConditionEnumByType(activityCondtion.getAcquireCondition());
+				switch (couponAcquireConditionEnum) {
+				case FIRST:
+					if(marketingMemberProductIntegral == null)
+						addMarketingMemberCoupon( marketingCouponList, members, productId, productName,outerCodeId,marketingChannel);
+					break;
+				case ONCE_LIMIT:
+					onceLimit(acquireConditionIntegral, accrueIntegral, marketingCouponList, members, productId, productName,outerCodeId,marketingChannel);
+					break;
+				case LIMIT:
+					limt(productIntegral.getId(), acquireConditionIntegral, sumIntegral, marketingCouponList, members, productId, productName,outerCodeId,marketingChannel);
+					break;
+				default:
+					break;
 				}
 			}
 		}
@@ -139,16 +159,16 @@ public class MarketingMemberProductIntegralService {
 	
 	
 	//一次积分达到限定值获得优惠券
-	private void onceLimit(long acquireConditionIntegral,long accrueIntegral, List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName,String outerCodeId) throws SuperCodeException {
+	private void onceLimit(long acquireConditionIntegral,long accrueIntegral, List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName,String outerCodeId, MarketingChannel marketingChannel) throws SuperCodeException {
 		if(accrueIntegral >= acquireConditionIntegral) {
-			addMarketingMemberCoupon(marketingCouponList, member, productId, productName, outerCodeId);
+			addMarketingMemberCoupon(marketingCouponList, member, productId, productName, outerCodeId, marketingChannel);
 		}
 	}
 	
 	//累计积分达到限定值
-	private void limt(Long memberProductIntegralId, long acquireConditionIntegral,long sumIntegral,List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName, String outerCodeId) throws SuperCodeException {
+	private void limt(Long memberProductIntegralId, long acquireConditionIntegral,long sumIntegral,List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName, String outerCodeId, MarketingChannel marketingChannel) throws SuperCodeException {
 		if(sumIntegral >= acquireConditionIntegral) {
-			addMarketingMemberCoupon(marketingCouponList, member, productId, productName, outerCodeId);
+			addMarketingMemberCoupon(marketingCouponList, member, productId, productName, outerCodeId,marketingChannel);
 			MarketingMemberProductIntegral productIntegral = new MarketingMemberProductIntegral();
 			productIntegral.setId(memberProductIntegralId);
 			productIntegral.setAccrueIntegral(0L);
@@ -157,9 +177,7 @@ public class MarketingMemberProductIntegralService {
 	}
 	
 	//添加抵扣券
-	private void addMarketingMemberCoupon(List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName, String outerCodeId) throws SuperCodeException {
-		Map<String, String> customerMap = commonService.queryCurrentCustomer(outerCodeId);
-		log.info("查询获取门店客户信息：{},{}", outerCodeId,customerMap);
+	private void addMarketingMemberCoupon(List<MarketingCoupon> marketingCouponList, MarketingMembers member,String productId, String productName, String outerCodeId, MarketingChannel marketingChannel) throws SuperCodeException {
 		if(CollectionUtils.isNotEmpty(marketingCouponList)) {
 			List<MarketingMemberCoupon> memberCouponList = new ArrayList<>();
 			marketingCouponList.forEach(marketingCoupon -> {
@@ -176,9 +194,10 @@ public class MarketingMemberProductIntegralService {
 				marketingMemberCoupon.setProductId(productId);
 				marketingMemberCoupon.setProductName(productName);
 				marketingMemberCoupon.setUsed((byte)0);
-				marketingMemberCoupon.setCustomerId(customerMap.get("customerId"));
-				marketingMemberCoupon.setCustomerName(customerMap.get("customerName"));
+				marketingMemberCoupon.setCustomerId(marketingChannel.getCustomerId());
+				marketingMemberCoupon.setCustomerName(marketingChannel.getCustomerName());
 				marketingMemberCoupon.setActivitySetId(marketingCoupon.getActivitySetId());
+				marketingMemberCoupon.setOuterCodeId(outerCodeId);
 				CouponConditionDto CouponCondition = new CouponConditionDto();
 				CouponCondition.setDeductionChannelType(marketingCoupon.getDeductionChannelType());
 				CouponCondition.setEductionProductType(marketingCoupon.getDeductionProductType());
@@ -204,7 +223,7 @@ public class MarketingMemberProductIntegralService {
 	 * @throws Exception 
 	 * @throws SuperCodeException
 	 */
-	public void obtainCouponShopping(ScanCodeInfoMO scanCodeInfoMO, String productName, H5LoginVO jwtUser, String outerCodeId) throws Exception {
+	public void obtainCouponShopping(ScanCodeInfoMO scanCodeInfoMO, String productName, H5LoginVO jwtUser, String outerCodeId, MarketingChannel marketingChannel) throws Exception {
 		String lockKey = "marketing:coupon:" + scanCodeInfoMO.getCodeTypeId() + ":" + scanCodeInfoMO.getCodeId();
 		boolean lockFlag = false;
 		try {
@@ -215,14 +234,14 @@ public class MarketingMemberProductIntegralService {
 				if(codeScanNum > 0) {
 					throw new SuperCodeException("您已经扫过此码啦！");
 				}
-				codeEsService.indexScanInfo(scanCodeInfoMO);
 				MarketingMembers member = new MarketingMembers();
 				member.setId(jwtUser.getMemberId());
 				member.setMobile(jwtUser.getMobile());
 				member.setCustomerId(jwtUser.getCustomerId());
 				member.setCustomerName(jwtUser.getCustomerName());
 				List<MarketingCoupon> marketingCouponList = marketingCouponMapper.selectByActivitySetId(scanCodeInfoMO.getActivitySetId());
-				addMarketingMemberCoupon(marketingCouponList, member, scanCodeInfoMO.getProductId(), productName, outerCodeId);
+				addMarketingMemberCoupon(marketingCouponList, member, scanCodeInfoMO.getProductId(), productName, outerCodeId, marketingChannel);
+				codeEsService.indexScanInfo(scanCodeInfoMO);
 			}
 		} catch (Exception e) {
 			throw e;

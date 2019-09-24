@@ -59,6 +59,7 @@ public class MarketingSaleMembersController extends CommonUtil {
         for(MarketingUser dto : list){
             MarketingSaleUserParam vo = modelMapper.map(dto, MarketingSaleUserParam.class);
             vo.setAddress(dto.getProvinceName()+dto.getCityName()+dto.getCountyName());
+            vo.setRandomId(System.nanoTime());
             listVo.add(vo);
         }
         PageResults<List<MarketingSaleUserParam>> voPages = new   AbstractPageService.PageResults<List<MarketingSaleUserParam>>(listVo,pagination);

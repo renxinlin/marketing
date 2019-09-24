@@ -4,6 +4,13 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.dto.WxOrderPayDto;
+import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +57,12 @@ public class LotteryController extends CommonUtil {
     @Autowired
     private IntegralOrderExcelService integralOrderExcelService;
 
+    @Autowired
+    private MarketingActivityChannelService marketingActivityChannelService;
+
+    @Autowired
+    private GlobalRamCache globalRamCache;
+
     @Value("${cookie.domain}")
 	private String cookieDomain;
 	/**
@@ -61,14 +74,31 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/lottery")
     @ApiOperation(value = "用户点击领奖方法", notes = "")
     public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
-    	RestResult<LotteryResultMO> restResult = null;
-    	try {
-    		restResult = service.lottery(wxstate, request.getRemoteAddr());
-    	} catch (Exception e) {
-			logger.error("中奖方法出错", e);
-			throw new LotteryException(e.getMessage(), 200);
-		}
-        return restResult;
+        ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
+        LotteryOprationDto lotteryOprationDto = new LotteryOprationDto();
+        MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
+        if (marketingChannel == null){
+            return RestResult.successWithData(new LotteryResultMO("渠道信息不对"));
+        }
+        //检查抽奖的初始条件是否符合
+        service.checkLotteryCondition(lotteryOprationDto, scanCodeInfoMO);
+        RestResult<LotteryResultMO> restResult = lotteryOprationDto.getRestResult();
+        if(restResult != null){
+            return restResult;
+        }
+        //营销码判断
+        service.holdLockJudgeES(lotteryOprationDto);
+        if(lotteryOprationDto.getSuccessLottory() == 0) {
+            return lotteryOprationDto.getRestResult();
+        }
+        //抽奖
+        service.drawLottery(lotteryOprationDto);
+        //保存抽奖数据
+        WxOrderPayDto orderPayDto = service.saveLottory(lotteryOprationDto, request.getRemoteAddr());
+        if (orderPayDto != null) {
+            service.saveTradeOrder(orderPayDto);
+        }
+        return lotteryOprationDto.getRestResult();
     }
     
     
@@ -90,14 +120,21 @@ public class LotteryController extends CommonUtil {
     @GetMapping("/salerLottery")
     @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
-    public RestResult<String> salerLottery( String codeId,Long codeTypeId ,String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
+    public RestResult<LotteryResultMO> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
+        ScanCodeInfoMO scanCodeInfoMO = salerLotteryService.validateBasicBySalerlottery(wxstate, jwtUser);
+        Long codeTypeId = Long.valueOf(scanCodeInfoMO.getCodeTypeId());
+        String codeId = scanCodeInfoMO.getCodeId();
         // 是不是营销码制，不是不可通过
-        if(codeTypeId == null|| codeTypeId != 12){
-            throw new SuperCodeException("非营销码...");
-        }
         commonService.checkCodeTypeValid(codeTypeId);
         commonService.checkCodeValid(codeId,codeTypeId+"");
-        return salerLotteryService.salerlottery(wxstate,jwtUser,request);
+        MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
+        if (marketingChannel == null){
+            throw new SuperCodeExtException("渠道信息不对");
+        }
+        LotteryResultMO lotteryResultMO = salerLotteryService.salerlottery(scanCodeInfoMO,jwtUser,request);
+        RestResult<LotteryResultMO> restResult = RestResult.success();
+        restResult.setMsg(lotteryResultMO.getMsg());
+        return restResult;
     }
     
     

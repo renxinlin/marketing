@@ -128,6 +128,7 @@ public class IntegralExchangeController extends CommonUtil {
     @ApiOperation(value = "兑换|【更新】", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "新平台token--开发联调使用",name="super-token")})
     public RestResult update(@Valid  @RequestBody IntegralExchangeUpdateParam integralExchange) throws Exception {
+        integralExchange.setMemberType((byte)0);
          integralExchangeService.updateByOrganizationId(integralExchange,getOrganizationId(),getOrganizationName());
          return RestResult.success();
     }

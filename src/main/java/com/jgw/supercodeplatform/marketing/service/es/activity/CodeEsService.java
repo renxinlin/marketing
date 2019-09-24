@@ -1,19 +1,21 @@
 package com.jgw.supercodeplatform.marketing.service.es.activity;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
-import javax.validation.constraints.NotNull;
-
+import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
+import com.jgw.supercodeplatform.marketing.diagram.enums.QueryEnum;
+import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.dto.platform.ProductInfoDto;
+import com.jgw.supercodeplatform.marketing.enums.EsIndex;
+import com.jgw.supercodeplatform.marketing.enums.EsType;
+import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
+import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
+import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataVo;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -28,26 +30,35 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.BucketOrder;
+import org.elasticsearch.search.aggregations.bucket.terms.LongTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
+import org.elasticsearch.search.aggregations.bucket.terms.UnmappedTerms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCount;
+import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
-import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
-import com.jgw.supercodeplatform.marketing.diagram.enums.QueryEnum;
-import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
-import com.jgw.supercodeplatform.marketing.enums.EsIndex;
-import com.jgw.supercodeplatform.marketing.enums.EsType;
-import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Service
 public class CodeEsService extends AbstractEsSearch {
@@ -90,13 +101,24 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param productBatchId
 	 * @return
 	 */
-	public Long countByUserAndActivityQuantum(String openId, Long activitySetId, long nowTtimeStemp) {
+	public long countByUserAndActivityQuantum(String openId, Long activitySetId, long nowTtimeStemp) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("openId.keyword", openId);
 		addParam.put("scanCodeTime", nowTtimeStemp);
 		addParam.put("activitySetId", activitySetId);
 		EsSearch eSearch = new EsSearch();
 		eSearch.setIndex(EsIndex.MARKETING);
+		eSearch.setType(EsType.INFO);
+		eSearch.setParam(addParam);
+		return getCount(eSearch);
+	}
+
+	public long countByUserAndActivityPlatform(String openId, Long activitySetId) {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("openId.keyword", openId);
+		addParam.put("activitySetId", activitySetId);
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.MARKET_PLATFORM_SCAN_INFO);
 		eSearch.setType(EsType.INFO);
 		eSearch.setParam(addParam);
 		return getCount(eSearch);
@@ -128,7 +150,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param productBatchId
 	 * @return
 	 */
-	public Long countByCode(String codeId, String codeType,Integer memberType) {
+	public long countByCode(String codeId, String codeType,Integer memberType) {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("codeId.keyword", codeId);
 		addParam.put("codeType.keyword", codeType);
@@ -279,11 +301,7 @@ public class CodeEsService extends AbstractEsSearch {
 
 
 
-	/**
-	 * 活动点击量聚合名称
-	 */
-	private static final String AggregationName="agg";
-	private static final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+
 	/**
 	 * 活动点击量
 	 * @param organizationId
@@ -298,7 +316,7 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(sdf.parse(startDate).getTime()).lte(sdf.parse(endDate).getTime());
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(sdf.parse(startDate).getTime()).lt(sdf.parse(endDate).getTime());
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
 		// 只获取会员活动点击量
 
@@ -512,25 +530,19 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public int countSalerNumByUserIdAndDate(String organizationId, Long userId, String startDate ,String endDate) throws SuperCodeException {
+	public int countSalerNumByUserIdAndDate(String organizationId, Long userId, long startDate ,long endDate) throws SuperCodeException {
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		if (null ==userId) {
 			throw new SuperCodeException("userID error");
 		}
-		if (StringUtils.isBlank(startDate)) {
-			throw new SuperCodeException("startDate error");
-		}
-		if (StringUtils.isBlank(endDate)) {
-			throw new SuperCodeException("endDate error");
-		}
-		if (StringUtils.isNotBlank(organizationId)) {
+		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("organizationId error");
 		}
 		// 聚合求和;效果同 select count from table where org = and date between a and b
 		// out of date
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_SALER_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
-		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lte(endDate);
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(startDate).lt(endDate);
 		QueryBuilder queryBuilderOrg = QueryBuilders.termQuery("organizationId", organizationId);
 		// 只获取会员活动点击量
 		QueryBuilder memberType = QueryBuilders.termQuery("userId",userId);
@@ -591,4 +603,234 @@ public class CodeEsService extends AbstractEsSearch {
 		return scaned;
 
 	}
+
+	/**
+	 * 添加全网运营红包扫码放弃抽奖的记录
+	 * @param productId
+	 * @param productBatchId
+	 * @param codeId
+	 * @param codeType
+	 * @param activitySetId
+	 * @param scanCodeTime
+	 * @param organizationId
+	 * @throws SuperCodeException
+	 */
+	public void addAbandonPlatformScanCodeRecord(ProductInfoDto productInfoDto, String innerCode, String productId, String productBatchId, String codeId, Long activityId,
+												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName) {
+		if (StringUtils.isBlank(innerCode) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
+				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
+				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeExtException("新增扫码记录出错，有参数为空", 500);
+		}
+
+		logger.info("es保存productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("productId", productId);
+		addParam.put("productBatchId", productBatchId);
+		addParam.put("innerCode", innerCode);
+		addParam.put("codeId", codeId);
+		addParam.put("codeType", codeType);
+		addParam.put("activitySetId", activitySetId);
+		addParam.put("activityId", activityId);
+		addParam.put("productName", productInfoDto.getProductName());
+		addParam.put("producLargeCategory", productInfoDto.getProducLargeCategory());
+		addParam.put("producMiddleCategory", productInfoDto.getProducMiddleCategory());
+		addParam.put("producSmallCategory", productInfoDto.getProducSmallCategory());
+		addParam.put("producLargeCategoryName", productInfoDto.getProducLargeCategoryName());
+		addParam.put("producMiddleCategoryName", productInfoDto.getProducMiddleCategoryName());
+		addParam.put("producSmallCategoryName", productInfoDto.getProducSmallCategoryName());
+		addParam.put("scanCodeTime", scanCodeTime);
+		addParam.put("scanCodeDate", DateFormatUtils.format(scanCodeTime, "yyyy-MM-dd"));
+		addParam.put("organizationId", organizationId);
+		addParam.put("organizationFullName", organizationFullName);
+		//addParam.put("memberType", memberType);
+		//addParam.put("userId", userId);
+		//0表示扫码后点击放弃抽奖状态，1表示点击了抽奖
+		addParam.put("status", 0);
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.MARKET_PLATFORM_SCAN_INFO);
+		eSearch.setType(EsType.INFO);
+		add(eSearch,true, addParam);
+	}
+
+
+	/**
+	 * 添加全网运营红包扫码抽奖的记录
+	 * @param productId
+	 * @param productBatchId
+	 * @param codeId
+	 * @param openId
+	 * @param userId
+	 * @param memberType
+	 * @param codeType
+	 * @param activitySetId
+	 * @param scanCodeTime
+	 * @param organizationId
+	 * @throws SuperCodeException
+	 */
+	public void addPlatformScanCodeRecord(ProductInfoDto productInfoDto, String innerCode, String productId, String productBatchId, String codeId,String openId,Long userId, Integer memberType, Long activityId,
+										  String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName,float amount) throws SuperCodeException {
+		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId) || StringUtils.isBlank(openId) || userId == null
+				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime || memberType == null
+				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
+		}
+
+		logger.info("es保存productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("productId", productId);
+		addParam.put("productBatchId", productBatchId);
+		addParam.put("innerCode", innerCode);
+		addParam.put("codeId", codeId);
+		addParam.put("codeType", codeType);
+		addParam.put("activitySetId", activitySetId);
+		addParam.put("activityId", activityId);
+		addParam.put("productName", productInfoDto.getProductName());
+		addParam.put("producLargeCategory", productInfoDto.getProducLargeCategory());
+		addParam.put("producMiddleCategory", productInfoDto.getProducMiddleCategory());
+		addParam.put("producSmallCategory", productInfoDto.getProducSmallCategory());
+		addParam.put("producLargeCategoryName", productInfoDto.getProducLargeCategoryName());
+		addParam.put("producMiddleCategoryName", productInfoDto.getProducMiddleCategoryName());
+		addParam.put("producSmallCategoryName", productInfoDto.getProducSmallCategoryName());
+		addParam.put("openId", openId);
+		addParam.put("scanCodeTime", scanCodeTime);
+		addParam.put("scanCodeDate", DateFormatUtils.format(scanCodeTime, "yyyy-MM-dd"));
+		addParam.put("organizationId", organizationId);
+		addParam.put("organizationFullName", organizationFullName);
+		addParam.put("memberType", memberType);
+		addParam.put("userId", userId);
+		addParam.put("amount", amount);
+		//0表示扫码后点击放弃抽奖状态，1表示点击了抽奖
+		addParam.put("status", 1);
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.MARKET_PLATFORM_SCAN_INFO);
+		eSearch.setType(EsType.INFO);
+		add(eSearch,true, addParam);
+	}
+
+	/**
+	 * 查询全网运营平台红包该码被扫过次数
+	 *
+	 * @param productId
+	 * @param productBatchId
+	 * @return
+	 */
+	public long countPlatformScanCodeRecord(String innerCode, Integer status) {
+		Map<String, Object> addParam = new HashMap<String, Object>();
+		addParam.put("innerCode.keyword", innerCode);
+		if (status != null) {
+			addParam.put("status", status);
+		}
+		EsSearch eSearch = new EsSearch();
+		eSearch.setIndex(EsIndex.MARKET_PLATFORM_SCAN_INFO);
+		eSearch.setType(EsType.INFO);
+		eSearch.setParam(addParam);
+		return getCount(eSearch);
+	}
+
+	/**
+	 * 统计指定时间段内码的数量
+	 * @param timeStart
+	 * @param timeEnd
+	 * @param status
+	 * @return
+	 */
+	public long countPlatformScanCodeRecordByTime(long timeStart, long timeEnd, Integer status) {
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
+		// 创建查询条件 >= <=
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
+		ValueCountAggregationBuilder aggregation =
+				AggregationBuilders.count(AggregationName).field("codeId.keyword");
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
+		if (status != null) {
+			QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", status);
+			boolQueryBuilder.must(queryBuilderStatus);
+		}
+		searchRequestBuilder.setQuery(boolQueryBuilder);
+		searchRequestBuilder.addAggregation(aggregation);
+		// 获取查询结果
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		// 获取count
+		ValueCount aggs = searchResponse.getAggregations().get(AggregationName);
+		// 优化方向，其他结果如非必须可剔除
+		// 除去评分机制
+		// 采用过滤而非查询提高查询速度
+		// 取所需结果
+		return aggs.getValue();
+	}
+
+	/**
+	 * 获取扫码组织排行
+	 * @param timeStart
+	 * @param timeEnd
+	 * @return
+	 */
+	public List<ActivityOrganizationDataVo> scanOrganizationList(long timeStart, long timeEnd){
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
+		// 创建查询条件 >= <=
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
+		Script script = new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG,"doc['organizationId.keyword'].value+','+doc['organizationFullName.keyword'].value", new HashMap<>());
+		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).script(script).order(BucketOrder.count(false)).size(7);
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
+		searchRequestBuilder.setQuery(boolQueryBuilder);
+		searchRequestBuilder.addAggregation(callTypeTeamAgg);
+		// 获取查询结果
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		// 获取count
+		Aggregation team = searchResponse.getAggregations().get(AggregationName);
+		if (team instanceof UnmappedTerms) {
+			return new ArrayList<>();
+		}
+		StringTerms teamAgg = (StringTerms) team;
+		List<StringTerms.Bucket> bucketList = teamAgg.getBuckets();
+		List<ActivityOrganizationDataVo> idAndNameList = bucketList.stream().map(bucket -> {
+			String[] idAndName = bucket.getKeyAsString().split(",");
+			ActivityOrganizationDataVo activityOrganizationDataVo = new ActivityOrganizationDataVo();
+			activityOrganizationDataVo.setOrganizationId(idAndName[0]);
+			activityOrganizationDataVo.setOrganizationFullName(idAndName[1]);
+			activityOrganizationDataVo.setActivityJoinNum(bucket.getDocCount());
+			return activityOrganizationDataVo;
+		}).collect(Collectors.toList());
+		return idAndNameList;
+	}
+
+	/**
+	 * 按天统计扫码量
+	 * @param timeStart
+	 * @param timeEnd
+	 * @param status
+	 * @return
+	 */
+	public List<PieChartVo> dayActivityStatistic(long timeStart, long timeEnd, Integer status){
+		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
+		// 创建查询条件 >= <=
+		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
+		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).field("scanCodeDate");
+		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
+		if (status != null) {
+			QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", status);
+			boolQueryBuilder.must(queryBuilderStatus);
+		}
+		searchRequestBuilder.setQuery(boolQueryBuilder);
+		searchRequestBuilder.addAggregation(callTypeTeamAgg).setSize(0);
+		// 获取查询结果
+		SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+		// 获取count
+		Aggregation team = searchResponse.getAggregations().get(AggregationName);
+		if (team instanceof UnmappedTerms) {
+			return new ArrayList<>();
+		}
+		LongTerms teamAgg = (LongTerms) team;
+		List<LongTerms.Bucket> bucketList = teamAgg.getBuckets();
+		List<PieChartVo> idAndNameList = bucketList.stream().map(bucket -> {
+			PieChartVo pieChartVo = new PieChartVo();
+			String name = bucket.getKeyAsString().substring(0,10);
+			long value = bucket.getDocCount();
+			pieChartVo.setName(name);
+			pieChartVo.setValue(value);
+			return pieChartVo;
+		}).collect(Collectors.toList());
+		return idAndNameList;
+	}
+
 }

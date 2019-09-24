@@ -22,6 +22,12 @@ public class MarketingReceivingPageParam {
     private String qrcodeUrl;//二维码Url
     @ApiModelProperty(value = "翻转次数")
     private Integer flipTimes;
+
+    @ApiModelProperty("公众号Secret")
+    private String merchantSecret;
+
+    @ApiModelProperty("公众号Appid")
+    private String mchAppid;
     
     public Long getId() {
 		return id;
@@ -86,5 +92,21 @@ public class MarketingReceivingPageParam {
 	public void setFlipTimes(Integer flipTimes) {
 		this.flipTimes = flipTimes;
 	}
-    
+
+    public void setMerchantSecret(String merchantSecret) {
+        this.merchantSecret = merchantSecret;
+    }
+
+    public String getMerchantSecret() {
+        return merchantSecret;
+    }
+
+    public void setMchAppid(String mchAppid) {
+        this.mchAppid = mchAppid;
+    }
+
+    public String getMchAppid() {
+        return mchAppid;
+    }
+
 }
