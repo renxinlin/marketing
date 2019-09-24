@@ -180,6 +180,9 @@ public class PlatformLotteryService {
         String productBatchId = scanCodeInfoMO.getProductBatchId();
         String organizationName = lotteryOprationDto.getOrganizationName();
         ProductInfoDto productInfoDto = getProductInfo(productId);
+        if (productInfoDto == null) {
+            productInfoDto = new ProductInfoDto();
+        }
         boolean acquireLock =false;
         String lockKey = activitySetId + ":" + codeId + ":" + codeTypeId;
         try {

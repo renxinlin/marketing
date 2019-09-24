@@ -81,6 +81,9 @@ public class PlatformH5Controller {
         commonService.checkCodeValid(codeId, codeTypeId);
         String innerCode = commonService.getInnerCode(codeId, codeTypeId);
         ProductInfoDto productInfoDto = platformLotteryService.getProductInfo(abandonPlatform.getProductId());
+        if (productInfoDto == null) {
+            productInfoDto = new ProductInfoDto();
+        }
         platformActivityService.addAbandonPlatform(innerCode, abandonPlatform, productInfoDto);
         return RestResult.success();
     }
