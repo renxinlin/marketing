@@ -191,7 +191,7 @@ public class PlatformActivityController {
 
     @ApiOperation("导出参与记录")
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
-    @GetMapping("/export")
+    @PostMapping("/export")
     public void export(@Valid JoinResultPage joinResultPage, HttpServletResponse response) throws ExcelException {
         List<JoinPrizeRecordVo> jpList = platformMemberWinService.joinPirzeRecordList(joinResultPage);
         ExcelUtils.listToExcel(jpList, FILED_MAP, "核销记录", response);
