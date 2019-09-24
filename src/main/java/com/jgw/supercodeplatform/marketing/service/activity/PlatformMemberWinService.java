@@ -47,4 +47,21 @@ public class PlatformMemberWinService extends AbstractPageService<JoinResultPage
         return joinRecordPage;
     }
 
+    public List<JoinPrizeRecordVo> joinPirzeRecordList(JoinResultPage joinResultPage) {
+        joinResultPage.setStartNumber(null);
+        joinResultPage.setPageSize(null);
+        List<MarketingMembersWinRecord> recordList = marketingMembersWinRecordMapper.listWinRecord(joinResultPage);
+        List<JoinPrizeRecordVo> joinPrizeRecordVoList = recordList.stream().map(record -> {
+            JoinPrizeRecordVo joinPrizeRecordVo = new JoinPrizeRecordVo();
+            BeanUtils.copyProperties(record, joinPrizeRecordVo);
+            if (record.getWinningAmount() != null && record.getWinningAmount() > 0) {
+                joinPrizeRecordVo.setWinningResult("已中奖");
+            } else {
+                joinPrizeRecordVo.setWinningResult("未中奖");
+            }
+            return joinPrizeRecordVo;
+        }).collect(Collectors.toList());
+        return joinPrizeRecordVoList;
+    }
+
 }

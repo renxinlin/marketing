@@ -37,6 +37,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -591,6 +592,7 @@ public class WeixinAuthController {
 		writeJwtToken(response, members);
 		String wxstate=commonUtil.getUUID();
 		String uri = null;
+		redirectUri = URLDecoder.decode(redirectUri, "utf-8");
 		String[] uris = redirectUri.split("#");
 		if (uris.length > 1) {
 			String firUri = uris[0] + "&wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();

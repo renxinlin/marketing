@@ -2,11 +2,13 @@ package com.jgw.supercodeplatform.marketing.controller.platform;
 
 
 import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jgw.supercodeplatform.marketing.check.activity.platform.PlatformActivityCheck;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.*;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
@@ -16,15 +18,13 @@ import com.jgw.supercodeplatform.marketing.dto.platform.JoinResultPage;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityDisable;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
+import com.jgw.supercodeplatform.marketing.exception.base.ExcelException;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivity;
 import com.jgw.supercodeplatform.marketing.service.activity.*;
 import com.jgw.supercodeplatform.marketing.vo.platform.JoinPrizeRecordVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.text.ParseException;
 import java.util.Date;
@@ -60,6 +61,17 @@ public class PlatformActivityController {
     private PlatformMemberWinService platformMemberWinService;
     @Autowired
     private MarketingActivityService marketingActivityService;
+
+    private final static Map<String, String> FILED_MAP = new HashMap<>();
+
+    {
+        FILED_MAP.put("winningAmount", "中奖金额");
+        FILED_MAP.put("winningCode", "中奖码");
+        FILED_MAP.put("prizeName", "中奖产品");
+        FILED_MAP.put("organizationFullName","组织名称");
+        FILED_MAP.put("createTime", "参与时间");
+        FILED_MAP.put("winningResult", "抽奖结果");
+    }
 
     /**
      *  获取所有活动 activityType为3
@@ -175,6 +187,14 @@ public class PlatformActivityController {
     public RestResult<PageResults<List<JoinPrizeRecordVo>>> joinResultPage(@Valid JoinResultPage joinResultPage) throws Exception {
         PageResults<List<JoinPrizeRecordVo>> pageResults = platformMemberWinService.listJoinPirzeRecord(joinResultPage);
         return RestResult.successWithData(pageResults);
+    }
+
+    @ApiOperation("导出参与记录")
+    @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
+    @GetMapping("/export")
+    public void export(@Valid JoinResultPage joinResultPage, HttpServletResponse response) throws ExcelException {
+        List<JoinPrizeRecordVo> jpList = platformMemberWinService.joinPirzeRecordList(joinResultPage);
+        ExcelUtils.listToExcel(jpList, FILED_MAP, "核销记录", response);
     }
 
 }

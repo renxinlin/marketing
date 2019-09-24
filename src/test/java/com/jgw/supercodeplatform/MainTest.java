@@ -11,14 +11,17 @@ import java.util.Set;
 public class MainTest {
 
     public static void main(String[] args) {
-        Set<PieChartVo> ss1 = new HashSet<>();
-        ss1.add(new PieChartVo("1", 1L));
-        Set<PieChartVo> ss2 = new HashSet<>();
-        ss2.add(new PieChartVo("1", 2L));
-        Set<PieChartVo> ss = new HashSet<>();
-        ss.addAll(ss1);ss.addAll(ss2);
-
-        System.out.println("------>"+ JSON.toJSONString(ss));
+        String redirectUri = "https://antifake.h5.kf315.net/?codeTypeId=21&fakeCode=488250077757241592801&sBatchId=60711&uuid=36c0804108d349a3b5ee540ca66a5421#/h3";
+        String uri = null;
+        String[] uris = redirectUri.split("#");
+        if (uris.length > 1) {
+            String firUri = uris[0] + "&wxstate="+"sss"+"&organizationId="+"ff"+"&memberId="+"pp";
+            uri = firUri;
+            for (int i= 1;i<uris.length;i++) {
+                uri = uri + "#" + uris[i];
+            }
+        }
+        System.out.println("------>"+ "redirect:" + uri);
     }
 
 }
