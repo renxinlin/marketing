@@ -281,7 +281,7 @@ public interface MarketingMembersMapper {
     @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.OrganizationId = #{organizationId} and a.CreateDate between #{startDate} and #{endDate} and state !=2 ")
     List<MarketingMembers> getOrganizationAllMemberWithDate(String organizationId, Date startDate, Date endDate);
 
-    @Select("SELECT COUNT(*) FROM marketing_members")
+    @Select("SELECT COUNT(*) FROM marketing_members WHERE State <> 2")
     long countAllMemberNum();
 
     @Select("SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openId}")
@@ -300,31 +300,31 @@ public interface MarketingMembersMapper {
      * @return
      */
     @Select({"SELECT ",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -10 year) AND Birthday <= curdate()) ten,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -20 year) AND Birthday <= date_add(curdate() , interval -10 year)) twenty,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -30 year) AND Birthday <= date_add(curdate() , interval -20 year)) thirty,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -40 year) AND Birthday <= date_add(curdate() , interval -30 year)) forty,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -50 year) AND Birthday <= date_add(curdate() , interval -40 year)) fifty,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -60 year) AND Birthday <= date_add(curdate() , interval -50 year)) sixty,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -70 year) AND Birthday <= date_add(curdate() , interval -60 year)) seventy,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -80 year) AND Birthday <= date_add(curdate() , interval -70 year)) eighty,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -90 year) AND Birthday <= date_add(curdate() , interval -80 year)) ninety,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday > date_add(curdate() , interval -100 year) AND Birthday <= date_add(curdate() , interval -90 year)) hundred,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE Birthday <= date_add(curdate() , interval -100 year) OR Birthday > curdate() OR Birthday IS NULL) other",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -10 year) AND Birthday <= curdate()) ten,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -20 year) AND Birthday <= date_add(curdate() , interval -10 year)) twenty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -30 year) AND Birthday <= date_add(curdate() , interval -20 year)) thirty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -40 year) AND Birthday <= date_add(curdate() , interval -30 year)) forty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -50 year) AND Birthday <= date_add(curdate() , interval -40 year)) fifty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -60 year) AND Birthday <= date_add(curdate() , interval -50 year)) sixty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -70 year) AND Birthday <= date_add(curdate() , interval -60 year)) seventy,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -80 year) AND Birthday <= date_add(curdate() , interval -70 year)) eighty,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -90 year) AND Birthday <= date_add(curdate() , interval -80 year)) ninety,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday > date_add(curdate() , interval -100 year) AND Birthday <= date_add(curdate() , interval -90 year)) hundred,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Birthday <= date_add(curdate() , interval -100 year) OR Birthday > curdate() OR Birthday IS NULL) other",
             " FROM DUAL"})
     Map<String, Long> statistcAge();
 
     @Select({"SELECT ",
-            "(SELECT COUNT(1) FROM marketing_members WHERE DeviceType = 1) wx,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE DeviceType = 2) zfb,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE DeviceType = 3) dd,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE DeviceType = 4) llq,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE DeviceType = 5) qq,",
-            "(SELECT COUNT(1) FROM marketing_members WHERE DeviceType > 5 OR DeviceType < 1 OR DeviceType IS NULL) other",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND DeviceType = 1) wx,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND DeviceType = 2) zfb,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND DeviceType = 3) dd,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND DeviceType = 4) llq,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND DeviceType = 5) qq,",
+            "(SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND (DeviceType > 5 OR DeviceType < 1 OR DeviceType IS NULL)) other",
             "FROM DUAL"})
     Map<String, Long> statisticBrowser();
 
-    @Select("SELECT provinceName name, COUNT(ProvinceName) value FROM marketing_members WHERE ProvinceName <> '' AND ProvinceName IS NOT NULL GROUP BY ProvinceName")
+    @Select("SELECT provinceName name, COUNT(ProvinceName) value FROM marketing_members WHERE State <> 2 AND ProvinceName <> '' AND ProvinceName IS NOT NULL GROUP BY ProvinceName")
     Set<PieChartVo> statisticArea();
 
 }

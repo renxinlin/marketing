@@ -80,4 +80,9 @@ public class CommonConstants {
      * 查询码信息，包含内码
      */
     public static final String OUTER_INFO_ONE = "/outer/info/one";
+
+    /**
+     * 查询产品信息，包含内码
+     */
+    public static final String PRODUCT_ONE ="/product/one";
 }

@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.common.model.es.EsSearch;
 import com.jgw.supercodeplatform.marketing.diagram.enums.QueryEnum;
 import com.jgw.supercodeplatform.marketing.diagram.vo.DiagramRemebermeVo;
 import com.jgw.supercodeplatform.marketing.dto.SalerScanInfo;
+import com.jgw.supercodeplatform.marketing.dto.platform.ProductInfoDto;
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
@@ -614,8 +615,8 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param organizationId
 	 * @throws SuperCodeException
 	 */
-	public void addAbandonPlatformScanCodeRecord(String innerCode, String productId, String productBatchId, String codeId, Long activityId,
-								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName) {
+	public void addAbandonPlatformScanCodeRecord(ProductInfoDto productInfoDto, String innerCode, String productId, String productBatchId, String codeId, Long activityId,
+												 String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName) {
 		if (StringUtils.isBlank(innerCode) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
 				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
@@ -631,7 +632,13 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("codeType", codeType);
 		addParam.put("activitySetId", activitySetId);
 		addParam.put("activityId", activityId);
-		//addParam.put("openId", openId);
+		addParam.put("productName", productInfoDto.getProductName());
+		addParam.put("producLargeCategory", productInfoDto.getProducLargeCategory());
+		addParam.put("producMiddleCategory", productInfoDto.getProducMiddleCategory());
+		addParam.put("producSmallCategory", productInfoDto.getProducSmallCategory());
+		addParam.put("producLargeCategoryName", productInfoDto.getProducLargeCategoryName());
+		addParam.put("producMiddleCategoryName", productInfoDto.getProducMiddleCategoryName());
+		addParam.put("producSmallCategoryName", productInfoDto.getProducSmallCategoryName());
 		addParam.put("scanCodeTime", scanCodeTime);
 		addParam.put("scanCodeDate", DateFormatUtils.format(scanCodeTime, "yyyy-MM-dd"));
 		addParam.put("organizationId", organizationId);
@@ -661,7 +668,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @param organizationId
 	 * @throws SuperCodeException
 	 */
-	public void addPlatformScanCodeRecord(String innerCode, String productId, String productBatchId, String codeId,String openId,Long userId, Integer memberType, Long activityId,
+	public void addPlatformScanCodeRecord(ProductInfoDto productInfoDto, String innerCode, String productId, String productBatchId, String codeId,String openId,Long userId, Integer memberType, Long activityId,
 										  String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName,float amount) throws SuperCodeException {
 		if (StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId) || StringUtils.isBlank(openId) || userId == null
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime || memberType == null
@@ -678,6 +685,13 @@ public class CodeEsService extends AbstractEsSearch {
 		addParam.put("codeType", codeType);
 		addParam.put("activitySetId", activitySetId);
 		addParam.put("activityId", activityId);
+		addParam.put("productName", productInfoDto.getProductName());
+		addParam.put("producLargeCategory", productInfoDto.getProducLargeCategory());
+		addParam.put("producMiddleCategory", productInfoDto.getProducMiddleCategory());
+		addParam.put("producSmallCategory", productInfoDto.getProducSmallCategory());
+		addParam.put("producLargeCategoryName", productInfoDto.getProducLargeCategoryName());
+		addParam.put("producMiddleCategoryName", productInfoDto.getProducMiddleCategoryName());
+		addParam.put("producSmallCategoryName", productInfoDto.getProducSmallCategoryName());
 		addParam.put("openId", openId);
 		addParam.put("scanCodeTime", scanCodeTime);
 		addParam.put("scanCodeDate", DateFormatUtils.format(scanCodeTime, "yyyy-MM-dd"));

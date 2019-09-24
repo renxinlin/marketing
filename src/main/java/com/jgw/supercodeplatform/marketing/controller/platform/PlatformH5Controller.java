@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
+import com.jgw.supercodeplatform.marketing.dto.platform.ProductInfoDto;
 import com.jgw.supercodeplatform.marketing.dto.platform.SourceLinkBuryPoint;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
@@ -79,7 +80,8 @@ public class PlatformH5Controller {
         commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
         commonService.checkCodeValid(codeId, codeTypeId);
         String innerCode = commonService.getInnerCode(codeId, codeTypeId);
-        platformActivityService.addAbandonPlatform(innerCode, abandonPlatform);
+        ProductInfoDto productInfoDto = platformLotteryService.getProductInfo(abandonPlatform.getProductId());
+        platformActivityService.addAbandonPlatform(innerCode, abandonPlatform, productInfoDto);
         return RestResult.success();
     }
 

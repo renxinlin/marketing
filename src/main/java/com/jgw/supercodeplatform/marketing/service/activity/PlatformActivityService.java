@@ -22,6 +22,7 @@ import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.Join
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.PrizeType;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityDisable;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
+import com.jgw.supercodeplatform.marketing.dto.platform.ProductInfoDto;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
@@ -250,12 +251,12 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
      * 放弃抽奖时调用
      * @param abandonPlatform
      */
-    public void addAbandonPlatform(String innerCode, AbandonPlatform abandonPlatform) {
+    public void addAbandonPlatform(String innerCode, AbandonPlatform abandonPlatform, ProductInfoDto productInfoDto) {
         MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
         if (marketingActivitySet == null) {
             throw new SuperCodeExtException("当前暂无全网运营红包上线");
         }
-        odeEsService.addAbandonPlatformScanCodeRecord(innerCode, abandonPlatform.getProductId(), abandonPlatform.getProductBatchId(), abandonPlatform.getCodeId(),
+        odeEsService.addAbandonPlatformScanCodeRecord(productInfoDto, innerCode, abandonPlatform.getProductId(), abandonPlatform.getProductBatchId(), abandonPlatform.getCodeId(),
                 marketingActivitySet.getActivityId(),abandonPlatform.getCodeType(), marketingActivitySet.getId(),System.currentTimeMillis(),abandonPlatform.getOrganizationId(), abandonPlatform.getOrganizationFullName());
     }
 

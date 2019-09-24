@@ -11,13 +11,16 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
+import com.jgw.supercodeplatform.marketing.dto.platform.ProductInfoDto;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
@@ -37,13 +40,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -81,6 +88,10 @@ public class PlatformLotteryService {
     private MarketingMembersWinRecordMapper mWinRecordMapper;
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private RestTemplateUtil restTemplateUtil;
+    @Value("${rest.user.url}")
+    private String restUserUrl;
 
     public LotteryOprationDto checkLotteryCondition(LotteryOprationDto lotteryOprationDto, ScanCodeInfoMO scanCodeInfoMO) throws ParseException, SuperCodeException {
         String productName = scanCodeInfoMO.getProductBatchId();
@@ -168,6 +179,7 @@ public class PlatformLotteryService {
         String productId = scanCodeInfoMO.getProductId();
         String productBatchId = scanCodeInfoMO.getProductBatchId();
         String organizationName = lotteryOprationDto.getOrganizationName();
+        ProductInfoDto productInfoDto = getProductInfo(productId);
         boolean acquireLock =false;
         String lockKey = activitySetId + ":" + codeId + ":" + codeTypeId;
         try {
@@ -191,7 +203,7 @@ public class PlatformLotteryService {
                     return lotteryOprationDto.lotterySuccess("您扫码已超过该活动限制数量");
                 }
             }
-            codeEsService.addPlatformScanCodeRecord(innerCode, productId, productBatchId, codeId, opneIdNoSpecialChactar,userId,0, 5L, codeTypeId,activitySetId, nowTimeMills,organizationId,organizationName,amount);
+            codeEsService.addPlatformScanCodeRecord(productInfoDto, innerCode, productId, productBatchId, codeId, opneIdNoSpecialChactar,userId,0, 5L, codeTypeId,activitySetId, nowTimeMills,organizationId,organizationName,amount);
             lotteryOprationDto.setSuccessLottory(1);
             return lotteryOprationDto;
         } catch (Exception e){
@@ -334,6 +346,31 @@ public class PlatformLotteryService {
             prizeTypeMo.setRemainingStock(null);
         }
         return prizeTypeMo;
+    }
+
+
+    /**
+     * 根据productId获取产品信息
+     * @param productId
+     * @return
+     */
+    public ProductInfoDto getProductInfo(String productId) {
+        try {
+            Map<String, Object> paramMap = new HashMap<>();
+            paramMap.put("productId", productId);
+            ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(restUserUrl + CommonConstants.PRODUCT_ONE, paramMap, null);
+            String resBody = responseEntity.getBody();
+            if (responseEntity.getStatusCode().equals(HttpStatus.OK) && org.apache.commons.lang3.StringUtils.isNotBlank(resBody)) {
+                JSONObject resJson = JSON.parseObject(resBody);
+                if (resJson.getIntValue("state") == HttpStatus.OK.value()) {
+                    ProductInfoDto productInfoDto = resJson.getObject("results", ProductInfoDto.class);
+                    return productInfoDto;
+                }
+            }
+        } catch (Exception e) {
+            log.error("获取指定时间内生码数量出错", e);
+        }
+        return null;
     }
 
 }
