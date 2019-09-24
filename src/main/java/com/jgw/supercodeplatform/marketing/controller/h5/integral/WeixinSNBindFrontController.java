@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
+import com.jgw.supercodeplatform.marketing.service.weixin.constants.BelongToJgwConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -43,6 +44,9 @@ public class WeixinSNBindFrontController extends CommonUtil {
             mWxMerchants = marketingWxMerchantsService.getJgw();
         } else {
             mWxMerchants = marketingWxMerchantsService.selectByOrganizationId(organizationId);
+            if(mWxMerchants!= null && mWxMerchants.getMerchantType() == BelongToJgwConstants.YES){
+                mWxMerchants = marketingWxMerchantsService.getJgw();
+            }
         }
     	RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
     	restResult.setState(200);
