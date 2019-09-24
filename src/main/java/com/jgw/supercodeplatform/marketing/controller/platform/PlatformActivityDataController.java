@@ -88,7 +88,7 @@ public class PlatformActivityDataController {
     @ApiImplicitParam(name = "super-token", paramType = "header", value = "token信息", required = true)
     @GetMapping("/memberPortrait")
     public RestResult<MemberPortraitDataVo> memberPortrait(@Valid ActivityDataParam activityDataParam) {
-        MemberPortraitDataVo memberPortraitDataVo = platformStatisticsService.memberPortrait();
+        MemberPortraitDataVo memberPortraitDataVo = platformStatisticsService.memberPortrait(activityDataParam);
         return RestResult.successWithData(memberPortraitDataVo);
     }
 
@@ -98,7 +98,7 @@ public class PlatformActivityDataController {
     @GetMapping("/memberRegion")
     public RestResult<MemberAreaVo> memberRegion(@Valid ActivityDataParam activityDataParam) {
         //传给前端时注意按照从大到小的顺序
-        MemberAreaVo memberAreaVo = platformStatisticsService.memberRegion();
+        MemberAreaVo memberAreaVo = platformStatisticsService.memberRegion(activityDataParam);
         return RestResult.successWithData(memberAreaVo);
     }
 

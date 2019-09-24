@@ -162,7 +162,7 @@ public class PlatformStatisticsService {
     public List<PieChartVo> scanCodeActMember(ActivityDataParam activityDataParam) {
         long startTime = activityDataParam.getStartDate().getTime();
         long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
-        long allNum = marketingMembersMapper.countAllMemberNum();
+        long allNum = marketingMembersMapper.countAllMemberNum(new Date(startTime), new Date(endTime));
         PieChartVo allPie = new PieChartVo("总会员", allNum);
         long actNum = marketingMembersWinRecordMapper.countActUser(new Date(startTime), new Date(endTime));
         PieChartVo actPie = new PieChartVo("活跃会员", actNum);
@@ -173,15 +173,17 @@ public class PlatformStatisticsService {
      * 会员画像统计
      * @return
      */
-    public MemberPortraitDataVo memberPortrait(){
+    public MemberPortraitDataVo memberPortrait(ActivityDataParam activityDataParam){
+        long startTime = activityDataParam.getStartDate().getTime();
+        long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
         //性别
-        Map<String, Long> sexStatitics = marketingMembersMapper.statisticSex();
+        Map<String, Long> sexStatitics = marketingMembersMapper.statisticSex(new Date(startTime), new Date(endTime));
         PieChartVo malePieChartVo = new PieChartVo("男",sexStatitics.get("male"));
         PieChartVo femalePieChartVo = new PieChartVo("女", sexStatitics.get("female"));
         PieChartVo otherSexPieChartVo = new PieChartVo("未知", sexStatitics.get("other"));
         List<PieChartVo> sexList = Lists.newArrayList(malePieChartVo, femalePieChartVo, otherSexPieChartVo);
         //年龄
-        Map<String, Long> ageStatitics = marketingMembersMapper.statistcAge();
+        Map<String, Long> ageStatitics = marketingMembersMapper.statistcAge(new Date(startTime), new Date(endTime));
         PieChartVo tenPieChartVo = new PieChartVo("0-10",ageStatitics.get("ten"));
         PieChartVo twentyPieChartVo = new PieChartVo("10-20",ageStatitics.get("twenty"));
         PieChartVo thirtyPieChartVo = new PieChartVo("20-30",ageStatitics.get("thirty"));
@@ -196,7 +198,7 @@ public class PlatformStatisticsService {
         List<PieChartVo> ageList = Lists.newArrayList(tenPieChartVo, twentyPieChartVo, thirtyPieChartVo,fortyPieChartVo,
                 fiftyPieChartVo,sixtyPieChartVo,seventyPieChartVo,eightyPieChartVo,ninetyPieChartVo,hundredPieChartVo,otherAgePieChartVo);
         //扫码来源
-        Map<String, Long> browserStatitics = marketingMembersMapper.statisticBrowser();
+        Map<String, Long> browserStatitics = marketingMembersMapper.statisticBrowser(new Date(startTime), new Date(endTime));
         PieChartVo wxChartVo = new PieChartVo("微信",browserStatitics.get("wx"));
         PieChartVo zfbPieChartVo = new PieChartVo("支付宝",browserStatitics.get("zzb"));
         PieChartVo ddPieChartVo = new PieChartVo("钉钉",browserStatitics.get("dd"));
@@ -212,8 +214,10 @@ public class PlatformStatisticsService {
     }
 
 
-    public MemberAreaVo memberRegion(){
-        Set<PieChartVo> areaPieChartSet = marketingMembersMapper.statisticArea();
+    public MemberAreaVo memberRegion(ActivityDataParam activityDataParam){
+        long startTime = activityDataParam.getStartDate().getTime();
+        long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
+        Set<PieChartVo> areaPieChartSet = marketingMembersMapper.statisticArea(new Date(startTime), new Date(endTime));
         areaPieChartSet.stream().forEach(area -> {
             String name = area.getName();
             if (name.contains("黑龙江") || name.contains("内蒙古")) {
