@@ -6,11 +6,13 @@ import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper
 import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsExtMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.List;
 
 public class WXPayMarketingConfig extends WXPayConfig{
 	protected static Logger logger = LoggerFactory.getLogger(WXPayMarketingConfig.class);
@@ -67,16 +69,16 @@ public class WXPayMarketingConfig extends WXPayConfig{
 
 		MarketingWxMerchantsMapper marketingWxMerchantsMapper = SpringContextUtil.getBean(MarketingWxMerchantsMapper.class);
 		MarketingWxMerchantsExtMapper marketingWxMerchantsExtMapper = SpringContextUtil.getBean(MarketingWxMerchantsExtMapper.class);
-		MarketingWxMerchants marketingWxMerchants = marketingWxMerchantsMapper.getByAppidMchid(mchId, appId);
-		if (marketingWxMerchants == null) {
+		List<MarketingWxMerchants> marketingWxMerchantsList = marketingWxMerchantsMapper.getByAppidMchid(mchId, appId);
+		if (CollectionUtils.isEmpty(marketingWxMerchantsList)) {
 			return null;
 		}
-		MarketingWxMerchantsExt mwExt = marketingWxMerchantsExtMapper.selectOne(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", marketingWxMerchants.getOrganizationId()));
-		if (mwExt == null) {
+		List<MarketingWxMerchantsExt> mwExtList = marketingWxMerchantsExtMapper.selectList(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", marketingWxMerchantsList.get(0).getOrganizationId()));
+		if (CollectionUtils.isEmpty(mwExtList)) {
 			logger.error("证书路径："+certificatePath+"，对应的证书不存在");
 		}
 		InputStream in=null;
-		byte[] certBytes = mwExt.getCertificateInfo();
+		byte[] certBytes = mwExtList.get(0).getCertificateInfo();
 		in= new ByteArrayInputStream(certBytes);
 		return in;
 	}

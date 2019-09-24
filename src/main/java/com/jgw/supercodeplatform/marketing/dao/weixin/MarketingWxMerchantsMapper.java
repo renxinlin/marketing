@@ -4,6 +4,8 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsPara
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface MarketingWxMerchantsMapper {
 	static String allFields="Id id,Mchid mchid,MchAppid mchAppid,MerchantName merchantName,MerchantKey merchantKey,CertificateAddress certificateAddress,"
@@ -62,6 +64,6 @@ public interface MarketingWxMerchantsMapper {
 	int updateAppidAndSecret(@Param("mchAppid")String mchAppid, @Param("merchantSecret")String merchantSecret, @Param("organizationId") String organizationId);
 
 	@Select("select "+allFields+" from marketing_wx_merchants where Mchid = #{mchid} AND MchAppid = #{mchAppid}")
-	MarketingWxMerchants getByAppidMchid(@Param("mchid") String mchid, @Param("mchAppid")String mchAppid);
+	List<MarketingWxMerchants> getByAppidMchid(@Param("mchid") String mchid, @Param("mchAppid")String mchAppid);
 
 }
