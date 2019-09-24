@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
@@ -25,6 +26,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -225,6 +227,20 @@ public class ScanCodeController {
         logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid()+",h5pageUrl="+h5pageUrl);
         String url=h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1"+"&organizationId="+organizationId;
         return url;
+    }
+
+    @GetMapping("/code/callback")
+    @ApiOperation("微信静默授权")
+    public String getWXCode(@RequestParam String code, @RequestParam String state) {
+        logger.info("微信授权回调获取code=" + code + ",state=" + state);
+        if (StringUtils.isBlank(state)) {
+            throw new SuperCodeExtException("state不能为空", 500);
+        }
+        try {
+            return "redirect:" + restUserDomain + "/wechat/org/info?code=" + code + "&state=" + state;
+        } catch (Exception e) {
+            throw new SuperCodeExtException("回调参数不正确");
+        }
     }
 
 
