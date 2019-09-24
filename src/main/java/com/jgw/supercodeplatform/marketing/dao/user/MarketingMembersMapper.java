@@ -291,7 +291,7 @@ public interface MarketingMembersMapper {
     /*
     统计性别
      */
-    @Select({"SELECT (SELECT COUNT(1) FROM marketing_members WHERE State <> 2 AND Sex = 0) male,",
+    @Select({"SELECT (SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND State <> 2 AND Sex = 0) male,",
             "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND Sex = 1) female,",
             "(SELECT COUNT(1) FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND ((Sex <> 0 AND Sex <>1) OR Sex IS NULL)) other FROM DUAL"})
     Map<String, Long> statisticSex(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
