@@ -61,4 +61,7 @@ public interface MarketingWxMerchantsMapper {
 	@Update("UPDATE marketing_wx_merchants SET MchAppid = #{mchAppid}, MerchantSecret = #{merchantSecret} WHERE OrganizationId = #{organizationId}")
 	int updateAppidAndSecret(@Param("mchAppid")String mchAppid, @Param("merchantSecret")String merchantSecret, @Param("organizationId") String organizationId);
 
+	@Select("select "+allFields+" from marketing_wx_merchants where Mchid = #{mchid} AND MchAppid = #{mchAppid}")
+	MarketingWxMerchants getByAppidMchid(@Param("mchid") String mchid, @Param("mchAppid")String mchAppid);
+
 }

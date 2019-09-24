@@ -1,13 +1,16 @@
 package com.jgw.supercodeplatform.marketing.weixinpay;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.jgw.supercodeplatform.marketing.common.util.SpringContextUtil;
+import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
+import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsExtMapper;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 
 public class WXPayMarketingConfig extends WXPayConfig{
 	protected static Logger logger = LoggerFactory.getLogger(WXPayMarketingConfig.class);
@@ -61,19 +64,20 @@ public class WXPayMarketingConfig extends WXPayConfig{
 
 	@Override
 	InputStream getCertStream() {
-		if (StringUtils.isBlank(certificatePath)) {
+
+		MarketingWxMerchantsMapper marketingWxMerchantsMapper = SpringContextUtil.getBean(MarketingWxMerchantsMapper.class);
+		MarketingWxMerchantsExtMapper marketingWxMerchantsExtMapper = SpringContextUtil.getBean(MarketingWxMerchantsExtMapper.class);
+		MarketingWxMerchants marketingWxMerchants = marketingWxMerchantsMapper.getByAppidMchid(mchId, appId);
+		if (marketingWxMerchants == null) {
 			return null;
 		}
-		File file=new File(certificatePath);
-		if (!file.exists()) {
+		MarketingWxMerchantsExt mwExt = marketingWxMerchantsExtMapper.selectOne(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", marketingWxMerchants.getOrganizationId()));
+		if (mwExt == null) {
 			logger.error("证书路径："+certificatePath+"，对应的证书不存在");
 		}
-		FileInputStream in=null;
-		try {
-			in=new FileInputStream(certificatePath);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		InputStream in=null;
+		byte[] certBytes = mwExt.getCertificateInfo();
+		in= new ByteArrayInputStream(certBytes);
 		return in;
 	}
 
