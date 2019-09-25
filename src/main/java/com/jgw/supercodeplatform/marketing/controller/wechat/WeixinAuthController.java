@@ -593,7 +593,8 @@ public class WeixinAuthController {
 		writeJwtToken(response, members);
 		String wxstate=commonUtil.getUUID();
 		String uri = null;
-		String[] uris = StringUtils.replace(redirectUri, "|", "&").split("#");
+		redirectUri = StringUtils.replace(redirectUri, ",", "&");
+		String[] uris = redirectUri.split("#");
 		if (uris.length > 1) {
 			String startUrl = uris[0].contains("?")? uris[0]+"&" : uris[0]+"?";
 			String firUri = startUrl + "wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+members.getId();
