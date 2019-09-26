@@ -31,7 +31,7 @@ public class PlatformPaySchedule {
     /**
      * 每天早晨八点钟处理全网运营活动红包雨失败的微信订单，只处理气七天之内的
      */
-    @Scheduled(cron = "0 0 8 * * ?")
+    @Scheduled(cron = "0 0 * * * ?")
     public void sendFailWxOrder(){
         boolean acquireLock = false;
         try {
