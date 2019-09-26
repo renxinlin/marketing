@@ -63,7 +63,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     " <if test='integralType != null and integralType == 1 '> and IntegralNum &lt;  0 </if>"+
                     "</where>";
     @Select(startScript
-            + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, SalerAmount salerAmount,TradeNo tradeNo,ir.Status status,"
+            + " select ir.Id id, ir.MemberType memberType,ir.MemberId memberId, ir.SalerAmount salerAmount,ir.TradeNo tradeNo,ir.Status status,ir.SalerName salerName, ir.SalerMobile salerMobile,"
             + " ir.MemberName memberName,ir.Mobile mobile,ir.IntegralReasonCode integralReasonCode,ir.IntegralReason integralReason, "
             + " ir.ProductId productId,ir.ProductName productName,ir.OuterCodeId outerCodeId,ir.CodeTypeId codeTypeId,ir.CustomerName customerName, "
             + " ir.CustomerId customerId,DATE_FORMAT(ir.CreateDate,'%Y-%m-%d %H:%i:%s') createDate,ir.OrganizationId organizationId,ir.OrganizationName organizationName,ir.IntegralNum integralNum "
