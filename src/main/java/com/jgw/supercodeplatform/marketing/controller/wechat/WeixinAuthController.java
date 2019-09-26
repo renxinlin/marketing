@@ -594,7 +594,7 @@ public class WeixinAuthController {
 
 		String wxstate=commonUtil.getUUID();
 		String uri = null;
-		redirectUri = StringUtils.replace(URLDecoder.decode(redirectUri, "UTF-8"), ",", "&");
+		redirectUri = URLDecoder.decode(redirectUri, "UTF-8");
 		String[] uris = redirectUri.split("#");
 		if (uris.length > 1) {
 			String startUrl = uris[0].contains("?")? uris[0]+"&" : uris[0]+"?";
