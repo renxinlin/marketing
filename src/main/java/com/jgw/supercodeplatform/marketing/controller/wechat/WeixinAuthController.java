@@ -94,7 +94,7 @@ public class WeixinAuthController {
      * @throws Exception
      */
     @RequestMapping(value = "/code",method=RequestMethod.GET)
-    public String getWXCode(String code ,String state,HttpServletResponse response) throws Exception {
+    public String getWXCode(String code ,String state, String redirctUrl, HttpServletResponse response) throws Exception {
     	logger.info("微信授权回调获取code="+code+",state="+state);
     	if (StringUtils.isBlank(state)) {
     		throw new SuperCodeException("state不能为空", 500);
@@ -131,7 +131,7 @@ public class WeixinAuthController {
     		}
     		//5表示全网运营红包
     		if (AccessProtocol.ACTIVITY_PLATFORM.getType() == statecode) {
-				redirectUrl = doBizPlatform(statearr[2],statearr[1], code, response);
+				redirectUrl = doBizPlatform(redirctUrl, statearr[1], code, response);
 				return redirectUrl;
 			}
     		organizationId=statearr[1];
@@ -591,9 +591,10 @@ public class WeixinAuthController {
 			marketingMembersService.insert(members);
 		}
 		writeJwtToken(response, members);
+
 		String wxstate=commonUtil.getUUID();
 		String uri = null;
-		redirectUri = StringUtils.replace(redirectUri, ",", "&");
+		redirectUri = StringUtils.replace(URLDecoder.decode(redirectUri, "UTF-8"), ",", "&");
 		String[] uris = redirectUri.split("#");
 		if (uris.length > 1) {
 			String startUrl = uris[0].contains("?")? uris[0]+"&" : uris[0]+"?";

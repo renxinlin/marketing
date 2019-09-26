@@ -40,9 +40,9 @@ public class PlatformPaySchedule {
                 log.info("未获取到{}锁", SEND_FAIL_WX_ORDER);
                 return;
             }
-            //只查找七天之内的
+            //只查找50天之内的
             Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DATE, -7);
+            cal.add(Calendar.DATE, -50);
             List<WXPayTradeOrder> orderList = tradeOrderService.searchFailOrder(5L, cal.getTime());
             if (CollectionUtils.isNotEmpty(orderList)) {
                 for (WXPayTradeOrder order : orderList) {

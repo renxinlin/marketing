@@ -9,7 +9,9 @@ import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +20,7 @@ import java.util.Set;
 
 public class MainTest {
 
-    public static void main(String[] args) throws SuperCodeException {
+    public static void main(String[] args) throws SuperCodeException, UnsupportedEncodingException {
 
 //        List<MarketingPrizeTypeMO> marketingPrizeTypeMOs = new ArrayList<MarketingPrizeTypeMO>();
 //
@@ -70,8 +72,8 @@ public class MainTest {
 //
 //        System.out.println("------>"+ JSON.toJSONString(lto));
 
-        String redirectUri = "dgsrrar#gga#gg";
-        String fd = StringUtils.replace(redirectUri, "#", "|");
+        String redirectUri = "http://gggg.yyy.com?aa=ff&gg=dgsrrar#gga#gg";
+        String fd = URLEncoder.encode(redirectUri, "UTF-8");
         //String hg = redirectUri.replaceAll("#", "&");
         System.out.println("--->" + fd);
     }
