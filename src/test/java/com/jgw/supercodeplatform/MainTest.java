@@ -72,7 +72,7 @@ public class MainTest {
 //
 //        System.out.println("------>"+ JSON.toJSONString(lto));
 
-        String redirectUri = "http://gggg.yyy.com?aa=ff&gg=dgsrrar#gga#gg";
+        String redirectUri = "https://antifake.h5.kf315.net/?s=52179&uuid=1297cf6ba9fd436aa8cb0468c682d4f0#/h2";
         String fd = URLEncoder.encode(redirectUri, "UTF-8");
         //String hg = redirectUri.replaceAll("#", "&");
         System.out.println("--->" + fd);

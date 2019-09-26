@@ -591,10 +591,10 @@ public class WeixinAuthController {
 			marketingMembersService.insert(members);
 		}
 		writeJwtToken(response, members);
-
 		String wxstate=commonUtil.getUUID();
 		String uri = null;
 		redirectUri = URLDecoder.decode(redirectUri, "UTF-8");
+		redirectUri = StringUtils.replace(redirectUri, ",", "&");
 		String[] uris = redirectUri.split("#");
 		if (uris.length > 1) {
 			String startUrl = uris[0].contains("?")? uris[0]+"&" : uris[0]+"?";
