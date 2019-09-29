@@ -37,5 +37,7 @@ public class MarketingWxMerchantsParam {
     private String organizatioIdlName;//组织
     @ApiModelProperty("是否使用甲骨文公众号，<0:使用本公司[默认]，1：使用甲骨文公众号>，不传默认0")
     private byte merchantType;
+    @ApiModelProperty(value = "商户名称不需要传",name="merchantName",example="sssdd22",hidden=true)
+    private String merchantName;
 
 }
