@@ -19,7 +19,6 @@ public class LotteryPlatform extends AbandonPlatform {
     @NotNull(message = "微信用户ID")
     private Long memberId;
     @ApiModelProperty("商品名称")
-    @NotBlank(message = "商品名称不能为空")
     private String productName;
 
 }
