@@ -28,6 +28,12 @@ public class IntegralRecordService  extends AbstractPageService<IntegralRecord >
 
     @Override
     protected List<IntegralRecord> searchResult(IntegralRecord integralRecord) throws Exception {
+        if (integralRecord.getCurrent() == null) {
+            integralRecord.setCurrent(1);
+        }
+        if (integralRecord.getPageSize() == null) {
+            integralRecord.setPageSize(10);
+        }
         // 0会员1导购2 其他
         integralRecord.setStartNumber((integralRecord.getCurrent()-1)*integralRecord.getPageSize());
         List<IntegralRecord> list=recordMapper.list(integralRecord);

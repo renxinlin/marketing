@@ -18,16 +18,13 @@ public class AbandonPlatform {
     @NotBlank(message = "码制不能为空")
     private String codeType;
 	@ApiModelProperty("商品ID")
-    @NotBlank(message = "商品ID不能为空")
     private String productId;
 	@ApiModelProperty("商品批次ID")
-    @NotBlank(message = "商品批次ID不能为空")
     private String productBatchId;
 	@ApiModelProperty("组织ID")
     @NotBlank(message = "组织ID不能为空")
     private String organizationId;
 	@ApiModelProperty("组织名称")
-    @NotBlank(message = "组织名称不能为空")
     private String organizationFullName;
 
 }
