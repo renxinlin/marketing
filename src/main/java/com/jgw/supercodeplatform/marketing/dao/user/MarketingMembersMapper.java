@@ -208,7 +208,7 @@ public interface MarketingMembersMapper {
             + " UPDATE marketing_members "
             + " <set>"
             + " <if test='userName !=null and userName != &apos;&apos; '> UserName = #{userName} ,</if> "
-            + " <if test='sex !=null and sex != &apos;&apos; '> Sex = #{sex} ,</if> "
+            + " <if test='sex !=null'> Sex = #{sex} ,</if> "
             + " <if test='birthday !=null and birthday != &apos;&apos; '> Birthday = #{birthday} ,</if> "
             + " <if test='newRegisterFlag !=null'> NewRegisterFlag = #{newRegisterFlag} ,</if> "
             + " <if test='state !=null'> State = #{state} ,</if> "

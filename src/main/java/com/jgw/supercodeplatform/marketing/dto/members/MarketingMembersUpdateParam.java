@@ -15,7 +15,7 @@ public class MarketingMembersUpdateParam {
     private String mobile;//手机
     private String userId;//用户Id
     private String userName;//用户姓名
-    private String sex;//性别
+    private Byte sex;//性别
     private String birthday;//生日
     private String registDate;//注册时间
     private Byte state;//状态(1、 表示正常，0 表示下线)
@@ -101,11 +101,11 @@ public class MarketingMembersUpdateParam {
         this.userName = userName;
     }
 
-    public String getSex() {
+    public Byte getSex() {
         return sex;
     }
 
-    public void setSex(String sex) {
+    public void setSex(Byte sex) {
         this.sex = sex;
     }
 
