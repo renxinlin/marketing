@@ -136,7 +136,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					+ " OR State LIKE binary CONCAT('%',#{search},'%') "
 					+ ")");
 		}
-//		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate,");
+		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate,");
 //		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
 //			String code=marketingOrganizationPortraitListParam.getCodeId();
 //			if( "birthday".equalsIgnoreCase(code)){
