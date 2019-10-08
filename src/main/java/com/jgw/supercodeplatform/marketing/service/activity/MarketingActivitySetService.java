@@ -275,6 +275,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 					}
 					if (bizType != null) {
 						String sbatchIds = marketingActivityProduct.getSbatchId();
+						if (StringUtils.isBlank(sbatchIds)) {
+							continue;
+						}
 						String[] sbatchIdArray = sbatchIds.split(",");
 						for(String sbatchId : sbatchIdArray) {
 							Map<String, Object> delMap = new HashMap<>();
@@ -587,6 +590,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 					}
 					if (bizType != null) {
 						String sbatchIds = marketingActivityProduct.getSbatchId();
+						if (StringUtils.isBlank(sbatchIds)) {
+							continue;
+						}
 						String[] sbatchIdArray = sbatchIds.split(",");
 						for(String sbatchId : sbatchIdArray) {
 							sBatchIdSet.add(sbatchId);
