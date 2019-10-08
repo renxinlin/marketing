@@ -36,7 +36,7 @@ public interface MarketingWxMerchantsMapper {
 			+ " <if test='merchantSecret !=null and merchantSecret != &apos;&apos; '> MerchantSecret = #{merchantSecret} ,</if> "
 			//+ " <if test='organizationId !=null and organizationId != &apos;&apos; '> OrganizationId = #{organizationId} ,</if> "
 			+ " <if test='organizatioIdlName !=null and organizatioIdlName != &apos;&apos; '> OrganizatioIdlName = #{organizatioIdlName} ,</if> "
-			+ " <if test='merchantType !=null and merchantType != &apos;&apos; '> MerchantType = #{merchantType} </if></set>"
+			+ " <if test='merchantType != null'> MerchantType = #{merchantType} </if></set>"
 			+ " <where> "
  			+ "   OrganizationId = #{organizationId}  "
 			+ " </where>"
