@@ -29,7 +29,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
  		+ "ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,CreateDate createDate,UpdateDate UpdateDate,"
  		+ "ActivityStatus ActivityStatus,ActivityRangeMark ActivityRangeMark,"
  		+ "autoFetch autoFetch,CodeTotalNum codeTotalNum,OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,"
- 		+ "ActivityDesc activityDesc, ValidCondition validCondition, SendAudit sendAudit ";
+ 		+ "ActivityDesc activityDesc, ValidCondition validCondition, SendAudit sendAudit, MerchantsInfo, merchantsInfo ";
 
     String whereSearch =
                     "<choose>"
