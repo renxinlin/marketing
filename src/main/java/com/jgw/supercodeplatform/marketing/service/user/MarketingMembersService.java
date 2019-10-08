@@ -122,7 +122,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String search=searchParams.getSearch();
 		if (StringUtils.isNotBlank(search)) {
 			commonsearch=true;
-			commonSearchbuf.append(" AND (Mobile LIKE CONCAT('%',"+search+",'%')  "
+			commonSearchbuf.append(" AND (Mobile LIKE CONCAT('%','"+search+"','%')  "
 					+ " OR WxName LIKE CONCAT('%','"+search+"','%') "
 					+ " OR Openid LIKE CONCAT('%','"+search+"','%') "
 					+ " OR UserName LIKE CONCAT('%','"+search+"','%') "
