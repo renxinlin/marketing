@@ -122,49 +122,61 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String search=searchParams.getSearch();
 		if (StringUtils.isNotBlank(search)) {
 			commonsearch=true;
-			commonSearchbuf.append(" AND (");
+			commonSearchbuf.append(" AND (Mobile LIKE CONCAT('%',#{search},'%')  "
+					+ " OR WxName LIKE CONCAT('%',#{search},'%') "
+					+ " OR Openid LIKE CONCAT('%',#{search},'%') "
+					+ " OR UserName LIKE CONCAT('%',#{search},'%') "
+					+ " OR Sex LIKE binary CONCAT('%',#{search},'%') "
+					+ " OR Birthday LIKE binary CONCAT('%',#{search},'%') "
+					+ " OR PCCcode LIKE binary CONCAT('%',#{search},'%') "
+					+ " OR CustomerName LIKE binary CONCAT('%',#{search},'%') "
+					+ " OR NewRegisterFlag LIKE binary CONCAT('%',#{search},'%') "
+					+ " OR RegistDate LIKE binary CONCAT('%',#{search},'%') "
+					+ " OR BabyBirthday LIKE binary CONCAT('%',#{search},'%') "
+					+ " OR State LIKE binary CONCAT('%',#{search},'%') "
+					+ ")");
 		}
-		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate,");
-		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
-			String code=marketingOrganizationPortraitListParam.getCodeId();
-			if( "birthday".equalsIgnoreCase(code)){
-				fieldsbuf.append(" date_format(birthday ,'%Y-%m-%d' ) Birthday ");
-
-			} else if("babyBirthday".equalsIgnoreCase(code)){
-				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
-			// TODO 这个月份是按天【DATEDIFF】计算还是跨月【period_dif，%Y%mf】计算
-			}else if("NoIntegralWithOneMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 1 ,0,1) NoIntegralWithOneMonth ");
-
-			}else if("NoIntegralWithThreeMonth".equalsIgnoreCase(code)){
-				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 3 ,0,1) NoIntegralWithThreeMonth ");
-
-			}else if("NoIntegralWithSixMonth".equalsIgnoreCase(code)){
-			    // if(DATEDIFF(now(),IntegralReceiveDate)<=180,1,0 ) NoIntegralWithOneMonth  1,表示6月内有领取，0表示没有
-				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 6 ,0,1) NoIntegralWithSixMonth ");
-
-			}else{
-				fieldsbuf.append(code);
-
-			}
-			if(i<mPortraitListParams.size()-1) {
-				fieldsbuf.append(",");
-			}
-			if (commonsearch) {
-				if (i>0) {
-					commonSearchbuf.append(" OR ");
-				}
-				commonSearchbuf.append(code).append(" like ");
-				if (code.contains("Date")) {
-					commonSearchbuf.append("binary");
-				}
-				commonSearchbuf.append("CONCAT('%',").append("'").append(search).append("'").append(",'%')");
-				if(i==mPortraitListParams.size()-1) {
-					commonSearchbuf.append(")");
-				}
-			}
-			i++;
-		}
+//		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate,");
+//		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
+//			String code=marketingOrganizationPortraitListParam.getCodeId();
+//			if( "birthday".equalsIgnoreCase(code)){
+//				fieldsbuf.append(" date_format(birthday ,'%Y-%m-%d' ) Birthday ");
+//
+//			} else if("babyBirthday".equalsIgnoreCase(code)){
+//				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
+//			// TODO 这个月份是按天【DATEDIFF】计算还是跨月【period_dif，%Y%mf】计算
+//			}else if("NoIntegralWithOneMonth".equalsIgnoreCase(code)){
+//				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 1 ,0,1) NoIntegralWithOneMonth ");
+//
+//			}else if("NoIntegralWithThreeMonth".equalsIgnoreCase(code)){
+//				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 3 ,0,1) NoIntegralWithThreeMonth ");
+//
+//			}else if("NoIntegralWithSixMonth".equalsIgnoreCase(code)){
+//			    // if(DATEDIFF(now(),IntegralReceiveDate)<=180,1,0 ) NoIntegralWithOneMonth  1,表示6月内有领取，0表示没有
+//				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 6 ,0,1) NoIntegralWithSixMonth ");
+//
+//			}else{
+//				fieldsbuf.append(code);
+//
+//			}
+//			if(i<mPortraitListParams.size()-1) {
+//				fieldsbuf.append(",");
+//			}
+//			if (commonsearch) {
+//				if (i>0) {
+//					commonSearchbuf.append(" OR ");
+//				}
+//				commonSearchbuf.append(code).append(" like ");
+//				if (code.contains("Date")) {
+//					commonSearchbuf.append("binary");
+//				}
+//				commonSearchbuf.append("CONCAT('%',").append("'").append(search).append("'").append(",'%')");
+//				if(i==mPortraitListParams.size()-1) {
+//					commonSearchbuf.append(")");
+//				}
+//			}
+//			i++;
+//		}
 		String from=" from marketing_members ";
 		String where=" where State!=2 and OrganizationId='"+organizationId+"'";
 		String sql=null;
