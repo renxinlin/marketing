@@ -134,6 +134,7 @@ public class LotteryController extends CommonUtil {
         LotteryResultMO lotteryResultMO = salerLotteryService.salerlottery(scanCodeInfoMO,jwtUser,request);
         RestResult<LotteryResultMO> restResult = RestResult.success();
         restResult.setMsg(lotteryResultMO.getMsg());
+        restResult.setResults(lotteryResultMO);
         return restResult;
     }
     
