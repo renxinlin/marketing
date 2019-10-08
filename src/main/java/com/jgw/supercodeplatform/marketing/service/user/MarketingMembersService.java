@@ -137,31 +137,31 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					+ ")");
 		}
 		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate,");
-//		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
-//			String code=marketingOrganizationPortraitListParam.getCodeId();
-//			if( "birthday".equalsIgnoreCase(code)){
-//				fieldsbuf.append(" date_format(birthday ,'%Y-%m-%d' ) Birthday ");
-//
-//			} else if("babyBirthday".equalsIgnoreCase(code)){
-//				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
-//			// TODO 这个月份是按天【DATEDIFF】计算还是跨月【period_dif，%Y%mf】计算
-//			}else if("NoIntegralWithOneMonth".equalsIgnoreCase(code)){
-//				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 1 ,0,1) NoIntegralWithOneMonth ");
-//
-//			}else if("NoIntegralWithThreeMonth".equalsIgnoreCase(code)){
-//				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 3 ,0,1) NoIntegralWithThreeMonth ");
-//
-//			}else if("NoIntegralWithSixMonth".equalsIgnoreCase(code)){
-//			    // if(DATEDIFF(now(),IntegralReceiveDate)<=180,1,0 ) NoIntegralWithOneMonth  1,表示6月内有领取，0表示没有
-//				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 6 ,0,1) NoIntegralWithSixMonth ");
-//
-//			}else{
-//				fieldsbuf.append(code);
-//
-//			}
-//			if(i<mPortraitListParams.size()-1) {
-//				fieldsbuf.append(",");
-//			}
+		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
+			String code=marketingOrganizationPortraitListParam.getCodeId();
+			if( "birthday".equalsIgnoreCase(code)){
+				fieldsbuf.append(" date_format(birthday ,'%Y-%m-%d' ) Birthday ");
+
+			} else if("babyBirthday".equalsIgnoreCase(code)){
+				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
+			// TODO 这个月份是按天【DATEDIFF】计算还是跨月【period_dif，%Y%mf】计算
+			}else if("NoIntegralWithOneMonth".equalsIgnoreCase(code)){
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 1 ,0,1) NoIntegralWithOneMonth ");
+
+			}else if("NoIntegralWithThreeMonth".equalsIgnoreCase(code)){
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 3 ,0,1) NoIntegralWithThreeMonth ");
+
+			}else if("NoIntegralWithSixMonth".equalsIgnoreCase(code)){
+			    // if(DATEDIFF(now(),IntegralReceiveDate)<=180,1,0 ) NoIntegralWithOneMonth  1,表示6月内有领取，0表示没有
+				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 6 ,0,1) NoIntegralWithSixMonth ");
+
+			}else{
+				fieldsbuf.append(code);
+
+			}
+			if(i<mPortraitListParams.size()-1) {
+				fieldsbuf.append(",");
+			}
 //			if (commonsearch) {
 //				if (i>0) {
 //					commonSearchbuf.append(" OR ");
@@ -176,7 +176,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 //				}
 //			}
 //			i++;
-//		}
+		}
 		String from=" from marketing_members ";
 		String where=" where State!=2 and OrganizationId='"+organizationId+"'";
 		String sql=null;
