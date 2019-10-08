@@ -136,8 +136,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					+ " OR State LIKE binary CONCAT('%',#{search},'%') "
 					+ ")");
 		}
-		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate,");
+		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate ");
 		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
+			fieldsbuf.append(",");
 			String code=marketingOrganizationPortraitListParam.getCodeId();
 			if( "birthday".equalsIgnoreCase(code)){
 				fieldsbuf.append(" date_format(birthday ,'%Y-%m-%d' ) Birthday ");
@@ -157,10 +158,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 			}else{
 				fieldsbuf.append(code);
-
-			}
-			if(i<mPortraitListParams.size()-1) {
-				fieldsbuf.append(",");
 			}
 //			if (commonsearch) {
 //				if (i>0) {
