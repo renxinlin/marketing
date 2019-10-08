@@ -122,18 +122,18 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String search=searchParams.getSearch();
 		if (StringUtils.isNotBlank(search)) {
 			commonsearch=true;
-			commonSearchbuf.append(" AND (Mobile LIKE CONCAT('%',#{search},'%')  "
-					+ " OR WxName LIKE CONCAT('%',#{search},'%') "
-					+ " OR Openid LIKE CONCAT('%',#{search},'%') "
-					+ " OR UserName LIKE CONCAT('%',#{search},'%') "
-					+ " OR Sex LIKE binary CONCAT('%',#{search},'%') "
-					+ " OR Birthday LIKE binary CONCAT('%',#{search},'%') "
-					+ " OR PCCcode LIKE binary CONCAT('%',#{search},'%') "
-					+ " OR CustomerName LIKE binary CONCAT('%',#{search},'%') "
-					+ " OR NewRegisterFlag LIKE binary CONCAT('%',#{search},'%') "
-					+ " OR RegistDate LIKE binary CONCAT('%',#{search},'%') "
-					+ " OR BabyBirthday LIKE binary CONCAT('%',#{search},'%') "
-					+ " OR State LIKE binary CONCAT('%',#{search},'%') "
+			commonSearchbuf.append(" AND (Mobile LIKE CONCAT('%',"+search+",'%')  "
+					+ " OR WxName LIKE CONCAT('%',"+search+",'%') "
+					+ " OR Openid LIKE CONCAT('%',"+search+",'%') "
+					+ " OR UserName LIKE CONCAT('%',"+search+",'%') "
+					+ " OR Sex LIKE binary CONCAT('%',"+search+",'%') "
+					+ " OR Birthday LIKE binary CONCAT('%',"+search+",'%') "
+					+ " OR PCCcode LIKE binary CONCAT('%',"+search+",'%') "
+					+ " OR CustomerName LIKE binary CONCAT('%',"+search+",'%') "
+					+ " OR NewRegisterFlag LIKE binary CONCAT('%',"+search+",'%') "
+					+ " OR RegistDate LIKE binary CONCAT('%',"+search+",'%') "
+					+ " OR BabyBirthday LIKE binary CONCAT('%',"+search+",'%') "
+					+ " OR State LIKE binary CONCAT('%',"+search+",'%') "
 					+ ")");
 		}
 		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate ");
