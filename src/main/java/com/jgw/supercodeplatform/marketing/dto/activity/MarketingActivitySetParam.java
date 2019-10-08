@@ -37,6 +37,9 @@ public class MarketingActivitySetParam {
     @ApiModelProperty(name = "activityDesc", value = "活动描述", example = "红包活动")
     private String activityDesc;
 
+	@ApiModelProperty("红包发放审核（0:不审核，1：需要审核）")
+	private byte sendAudit;
+
 	public Byte getParticipationCondition() {
 		return participationCondition;
 	}
@@ -123,4 +126,11 @@ public class MarketingActivitySetParam {
 		this.activityDesc = activityDesc;
 	}
 
+	public void setSendAudit(byte sendAudit) {
+		this.sendAudit = sendAudit;
+	}
+
+	public byte getSendAudit() {
+		return sendAudit;
+	}
 }
