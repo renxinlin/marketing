@@ -41,7 +41,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "导购记录")
 public class MarketingSaleMemberRewardController  extends CommonUtil {
     // todo 积分记录插入和查询都需要【区分会员和导购以及其他】
-    protected static Logger logger = LoggerFactory.getLogger(MarketingMembersWinRecordController.class);
+    protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberRewardController.class);
     // 	@Value("${marketing.winRecord.sheetHead}")
     @Value("{\"customerName\":\"所属机构\",\"salerMobile\":\"销售员手机\",\"salerName\":\"姓名\", \"productName\":\"产品\",\"outerCodeId\":\"码\",\"salerAmount\":\"红包金额\", \"integralReason\":\"参与条件\",\"mobile\":\"会员手机\",\"createDate\":\"参与时间\",\"status\":\"状态\"}")
     private String EXCEL_FIELD_MAP;
