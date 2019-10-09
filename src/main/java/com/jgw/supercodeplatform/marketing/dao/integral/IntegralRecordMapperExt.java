@@ -199,7 +199,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	@Select(" select count(SalerAmount) count, sum(SalerAmount) sum from marketing_integral_record where organizationId = #{organizationId} " +
 			" and SalerId = #{salerId}" +
 			" and memberType = #{memberType} " +
-			" and Status = 1" +
+			" and Status <> '2'" +
 			" and SalerAmount > 0 ")
     Map<String, Object> getAcquireMoneyAndAcquireNums(@Param("salerId") Long salerId, @Param("memberType") Byte memberType, @Param("organizationId") String organizationId);
 
