@@ -481,7 +481,6 @@ public class SalerLotteryService {
             throw new SuperCodeException("用户处于非启用状态");
         }
         marketingUser.setOpenid(jwtUser.getOpenid());
-        marketingUser.setOrganizationId(jwtUser.getOrganizationId());
         return marketingUser;
     }
 

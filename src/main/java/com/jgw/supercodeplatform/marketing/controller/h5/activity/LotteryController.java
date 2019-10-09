@@ -4,6 +4,7 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
@@ -125,6 +126,7 @@ public class LotteryController extends CommonUtil {
     @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<LotteryResultMO> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
+        logger.info("=====>"+ JSON.toJSONString(jwtUser));
         if (wxstate.startsWith("0_")) {
             RestResult<LotteryResultMO> restResult = new RestResult<>();
             restResult.setMsg(wxstate.split("_")[1]);

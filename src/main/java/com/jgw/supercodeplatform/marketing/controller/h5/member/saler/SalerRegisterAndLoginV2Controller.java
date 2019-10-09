@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.member.saler;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
@@ -133,6 +134,7 @@ public class SalerRegisterAndLoginV2Controller {
                 jwtUser.setCustomerName(user.getCustomerName());
                 jwtUser.setHaveIntegral(user.getHaveIntegral());
                 jwtUser.setOpenid(loginUser.getOpenid());
+                logger.info("=====>"+ JSON.toJSONString(jwtUser));
                 try {
                     jwtUser.setOrganizationName(commonService.getOrgNameByOrgId(loginUser.getOrganizationId()));
                 } catch (Exception e) {
