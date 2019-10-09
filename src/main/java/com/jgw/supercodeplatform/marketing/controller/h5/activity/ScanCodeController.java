@@ -218,6 +218,7 @@ public class ScanCodeController {
 		} else {
             if (mWxMerchants.getMerchantType() == 1) {
                 mWxMerchants = mWxMerchantsService.getJgw();
+                organizationId = mWxMerchants.getOrganizationId();
             }
         }
         sCodeInfoMO.setSbatchId(sbatchId);
