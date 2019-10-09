@@ -29,7 +29,10 @@ import javax.sql.DataSource;
 @MapperScan(basePackages ={ "com.jgw.supercodeplatform.marketingsaler.integral",
         "com.jgw.supercodeplatform.marketingsaler.base",
         "com.jgw.supercodeplatform.marketing.mybatisplusdao",
-        "com.jgw.supercodeplatform.marketingsaler.order"},sqlSessionFactoryRef="marketingsalerSqlSessionFactory")
+        "com.jgw.supercodeplatform.marketingsaler.order",
+        // 大转盘
+        "com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper"},
+        sqlSessionFactoryRef="marketingsalerSqlSessionFactory")
 public class DataSourceConfig01 {
 
     @Autowired
