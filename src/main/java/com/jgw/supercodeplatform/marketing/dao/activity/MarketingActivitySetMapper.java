@@ -134,6 +134,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " <if test='activityDesc !=null'> ActivityDesc = #{activityDesc} ,</if> "
 		    + " <if test='validCondition !=null and validCondition != &apos;&apos; '> ValidCondition = #{validCondition} ,</if> "
 		    + " <if test='sendAudit != null'>SendAudit = #{sendAudit}</if>"
+            + " <if test='merchantsInfo !=null and merchantsInfo != &apos;&apos; '>MerchantsInfo = #{merchantsInfo}</if>"
             + " </set> "
             + " where Id = #{id}" +endScript
     )
