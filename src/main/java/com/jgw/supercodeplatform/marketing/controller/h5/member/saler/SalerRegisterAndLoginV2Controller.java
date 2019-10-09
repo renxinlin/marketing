@@ -127,7 +127,7 @@ public class SalerRegisterAndLoginV2Controller {
                 jwtUser.setMobile(loginUser.getMobile());
                 jwtUser.setMemberName(!StringUtils.isEmpty(user.getUserName()) ?  user.getUserName(): user.getWxName() );
                 jwtUser.setMemberId(user.getId());
-                jwtUser.setOrganizationId(loginUser.getOrganizationId());
+                jwtUser.setOrganizationId(user.getOrganizationId());
                 jwtUser.setMemberType(MemberTypeEnums.SALER.getType());
                 jwtUser.setCustomerId(user.getCustomerId());
                 jwtUser.setCustomerName(user.getCustomerName());
