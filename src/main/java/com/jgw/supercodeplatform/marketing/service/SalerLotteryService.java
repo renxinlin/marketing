@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
@@ -91,6 +92,9 @@ public class SalerLotteryService {
     private MarketingWxMerchantsMapper mWxMerchantsMapper;
     @Autowired
     private RedisLockUtil lock;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Value("${marketing.server.ip}")
     private String serverIp;
@@ -480,7 +484,8 @@ public class SalerLotteryService {
         if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
             throw new SuperCodeException("用户处于非启用状态");
         }
-        marketingUser.setOpenid(jwtUser.getOpenid());
+        String openid = redisUtil.get("memberuser:id:"+marketingUser.getId());
+        marketingUser.setOpenid(openid);
         return marketingUser;
     }
 

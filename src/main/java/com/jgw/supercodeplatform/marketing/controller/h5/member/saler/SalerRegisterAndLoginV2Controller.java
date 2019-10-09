@@ -134,7 +134,7 @@ public class SalerRegisterAndLoginV2Controller {
                 jwtUser.setCustomerName(user.getCustomerName());
                 jwtUser.setHaveIntegral(user.getHaveIntegral());
                 jwtUser.setOpenid(loginUser.getOpenid());
-                logger.info("=====>"+ JSON.toJSONString(jwtUser));
+                redisUtil.set("memberuser:id:"+user.getId(), loginUser.getOpenid(), (long) (60*60*2));
 //                try {
 //                    jwtUser.setOrganizationName(commonService.getOrgNameByOrgId(loginUser.getOrganizationId()));
 //                } catch (Exception e) {
