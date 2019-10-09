@@ -485,7 +485,9 @@ public class SalerLotteryService {
             throw new SuperCodeException("用户处于非启用状态");
         }
         String openid = redisUtil.get("memberuser:id:"+marketingUser.getId());
-        marketingUser.setOpenid(openid);
+        if (mWxMerchantsMapper.get(jwtUser.getOrganizationId()).getMerchantType() == 1 && StringUtils.isNotBlank(openid)) {
+            marketingUser.setOpenid(openid);
+        }
         return marketingUser;
     }
 
