@@ -132,7 +132,7 @@ public class SalerRegisterAndLoginV2Controller {
                 jwtUser.setCustomerId(user.getCustomerId());
                 jwtUser.setCustomerName(user.getCustomerName());
                 jwtUser.setHaveIntegral(user.getHaveIntegral());
-                jwtUser.setOpenid(user.getOpenid());
+                jwtUser.setOpenid(loginUser.getOpenid());
                 try {
                     jwtUser.setOrganizationName(commonService.getOrgNameByOrgId(loginUser.getOrganizationId()));
                 } catch (Exception e) {

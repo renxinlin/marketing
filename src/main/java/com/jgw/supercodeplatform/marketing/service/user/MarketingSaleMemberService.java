@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -57,6 +58,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	@Autowired
 	private MarketingMembersService membersService;
 
+	@Autowired
+	private MarketingWxMerchantsMapper mWxMerchantsMapper;
 
 	@Override
 	protected List<MarketingUser> searchResult(MarketingMembersListParam searchParams) throws SuperCodeException{
@@ -314,7 +317,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			throw new SuperCodeException("用户不存在");
 
 		}
-		if(!loginUser.getOrganizationId().equals(marketingUser.getOrganizationId())){
+		String orgId = mWxMerchantsMapper.getJgw().getOrganizationId();
+		if(!loginUser.getOrganizationId().equals(orgId) && !loginUser.getOrganizationId().equals(marketingUser.getOrganizationId())){
 			throw new SuperCodeException("组织校验失败");
 
 		}

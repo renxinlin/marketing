@@ -470,6 +470,8 @@ public class SalerLotteryService {
         if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
             throw new SuperCodeException("用户处于非启用状态");
         }
+        marketingUser.setOpenid(jwtUser.getOpenid());
+        marketingUser.setOrganizationId(jwtUser.getOrganizationId());
         return marketingUser;
     }
 
