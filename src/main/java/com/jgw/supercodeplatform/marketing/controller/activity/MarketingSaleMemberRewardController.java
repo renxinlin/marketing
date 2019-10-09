@@ -70,6 +70,7 @@ public class MarketingSaleMemberRewardController  extends CommonUtil {
         String organizationId = getOrganizationId();
 
         IntegralRecord record = modelMapper.map(integralRecord, IntegralRecord.class);
+        record.setActivitySetId(integralRecord.getId());
         // 导购员
         record.setMemberType(MemberTypeEnums.SALER.getType());
         record.setOrganizationId(organizationId);
