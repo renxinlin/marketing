@@ -135,11 +135,11 @@ public class SalerRegisterAndLoginV2Controller {
                 jwtUser.setHaveIntegral(user.getHaveIntegral());
                 jwtUser.setOpenid(loginUser.getOpenid());
                 logger.info("=====>"+ JSON.toJSONString(jwtUser));
-                try {
-                    jwtUser.setOrganizationName(commonService.getOrgNameByOrgId(loginUser.getOrganizationId()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    jwtUser.setOrganizationName(commonService.getOrgNameByOrgId(loginUser.getOrganizationId()));
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
                 // TODO 可能存在其他登录信息需要设置
 
                 String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);
