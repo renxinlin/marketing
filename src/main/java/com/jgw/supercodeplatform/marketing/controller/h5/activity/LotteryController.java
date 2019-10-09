@@ -132,7 +132,6 @@ public class LotteryController extends CommonUtil {
             LotteryResultMO lotteryResultMO = new LotteryResultMO();
             lotteryResultMO.setWinnOrNot(0);
             lotteryResultMO.setMsg(restResult.getMsg());
-            lotteryResultMO.setData(lotteryResultMO);
             restResult.setResults(lotteryResultMO);
             return restResult;
         }
