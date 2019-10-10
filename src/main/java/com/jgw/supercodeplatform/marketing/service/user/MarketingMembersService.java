@@ -13,6 +13,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -93,11 +95,23 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	@Autowired
 	private IntegralRecordMapperExt integralRecordDao;
 
+	@Autowired
+	private MarketingWxMerchantsService mWxMerchantsService;
+
 	@Override
 	protected List<Map<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
 
 		String listSQl = listSql(searchParams,false);
 		List<Map<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
+		if (data != null) {
+			data.stream().forEach(dat -> {
+				if(Boolean.TRUE.equals(dat.get("Sex"))){
+					dat.put("Sex", 1);
+				} else if (Boolean.FALSE.equals(dat.get("Sex"))) {
+					dat.put("Sex", 0);
+				}
+			});
+		}
 		return data;
 	}
 
@@ -518,7 +532,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		h5LoginVO=new H5LoginVO();
 		h5LoginVO.setMobile(mobile);			//积分登录openid不一定存在
 		MarketingMembers trueMember=null;
-		
+		MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
+		if (marketingWxMerchants.getMerchantType() == 1) {
+			organizationId = mWxMerchantsService.getJgw().getOrganizationId();
+		}
 		if (StringUtils.isBlank(openid)) {
 			MarketingMembers memberByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
 			if (null==memberByPhone) {
@@ -593,7 +610,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					}else {
 						//如果已存在的手机号用户已绑定了微信openid且与当前登录openid不一致则不允许登录
 						if (!exOpenid.equals(openid)) {
-							throw new SuperCodeException("登录的手机号已绑定其它微信号不可以登录当前微信号", 500);
+							memberByPhone.setOpenid(openid);
+							marketingMembersMapper.update(memberByPhone);
+							//throw new SuperCodeException("登录的手机号已绑定其它微信号不可以登录当前微信号", 500);
 						}
 						if (memberByPhone.getState().byteValue()==0) {
 							throw new SuperCodeException("当前手机号用户已被禁用，请联系管理员", 500);

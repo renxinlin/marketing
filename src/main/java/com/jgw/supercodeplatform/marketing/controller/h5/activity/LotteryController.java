@@ -4,6 +4,7 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
@@ -132,7 +133,6 @@ public class LotteryController extends CommonUtil {
             LotteryResultMO lotteryResultMO = new LotteryResultMO();
             lotteryResultMO.setWinnOrNot(0);
             lotteryResultMO.setMsg(restResult.getMsg());
-            lotteryResultMO.setData(lotteryResultMO);
             restResult.setResults(lotteryResultMO);
             return restResult;
         }

@@ -51,6 +51,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     "</if>" +
                     "</otherwise>" +
                     "</choose>" +
+					" <if test='activitySetId != null and activitySetId != &apos;&apos; '> and ActivitySetId = #{activitySetId} </if>" +
                     " <if test='organizationId != null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
                     " <if test='memberId != null and memberId != &apos;&apos; '> and MemberId = #{memberId} </if>"+
                     " <if test='salerId != null and salerId != &apos;&apos; '> and SalerId = #{salerId} </if> "+
