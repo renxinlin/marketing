@@ -115,10 +115,14 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
            Asserts.check(i==1,"扣减库存失败");
 
        }
-        int towebMoney = (int)money*100;
+       int towebMoney = (int)money*100;
+        log.info("中奖金额" +  money);
+        log.info("中奖金额" +  towebMoney/100D);
        return RestResult.success(""+ (towebMoney/100D),(towebMoney/100D));
 
     }
+
+
 
     /**
      * 自动下架
