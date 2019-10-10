@@ -260,15 +260,15 @@ public class WeixinAuthController {
 
     public JSONObject getUserInfo(String code,String organizationId, Long activitySetId) throws Exception {
 		String appId = null, secret = null;
-    	if (activitySetId != null) {
-			MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(activitySetId);
-			String merchantsInfo = marketingActivitySet.getMerchantsInfo();
-			if (StringUtils.isNotBlank(merchantsInfo)) {
-				JSONObject merchantJson = JSON.parseObject(merchantsInfo);
-				appId = merchantJson.getString("mchAppid");
-				secret = merchantJson.getString("merchantSecret");
-			}
-		}
+//    	if (activitySetId != null) {
+//			MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(activitySetId);
+//			String merchantsInfo = marketingActivitySet.getMerchantsInfo();
+//			if (StringUtils.isNotBlank(merchantsInfo)) {
+//				JSONObject merchantJson = JSON.parseObject(merchantsInfo);
+//				appId = merchantJson.getString("mchAppid");
+//				secret = merchantJson.getString("merchantSecret");
+//			}
+//		}
     	if (appId == null || secret == null){
 			MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(organizationId);
 			appId = mWxMerchants.getMchAppid().trim();
