@@ -172,7 +172,7 @@ public class ScanCodeController {
         RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole);
         if (restResult.getState()==500) {
             logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
-            return h5pageUrl+salerUrlsuffix+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
+            return h5pageUrl+salerUrlsuffix+"?wxstate=0_"+URLEncoder.encode(restResult.getMsg(),"utf-8");
         }
 
         ScanCodeInfoMO sCodeInfoMO=restResult.getResults();
@@ -213,9 +213,13 @@ public class ScanCodeController {
     	//在校验产品及产品批次时可以从活动设置表中获取组织id
         String organizationId=sCodeInfoMO.getOrganizationId();
         MarketingWxMerchants mWxMerchants=mWxMerchantsService.selectByOrganizationId(organizationId);
-        if (null==mWxMerchants || StringUtils.isBlank(mWxMerchants.getMchAppid())) {
+        if (null==mWxMerchants) {
         	 return h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId,"utf-8"),"utf-8");
-		}
+		} else {
+            if (mWxMerchants.getMerchantType() == 1) {
+                mWxMerchants = mWxMerchantsService.getJgw();
+            }
+        }
         sCodeInfoMO.setSbatchId(sbatchId);
         sCodeInfoMO.setOrganizationId(organizationId);
         globalRamCache.putScanCodeInfoMO(wxstate,sCodeInfoMO);
