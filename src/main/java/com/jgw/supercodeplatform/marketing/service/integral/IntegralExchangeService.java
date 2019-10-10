@@ -828,9 +828,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             throw new SuperCodeException("组织名称不存在");
         }
         // 目前写死，只有会员 upgrade
-        if(integralExchange.getMemberType() != 0){
-            throw new SuperCodeException("会员类型不存在");
-        }
+        integralExchange.setMemberType((byte)0);
 
         if(integralExchange.getExchangeResource() != 1 && integralExchange.getExchangeResource() != 0){
             throw new SuperCodeException("兑换资源类型不存在");
