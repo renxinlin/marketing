@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -115,9 +117,13 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
            Asserts.check(i==1,"扣减库存失败");
 
        }
-       return RestResult.success();
+       log.info("中奖金额" +  money);
+        String moneyStr = String.format("%.2f", money);
+        log.info("中奖金额moneyStr" +  moneyStr);
+       return RestResult.success( moneyStr,moneyStr);
 
     }
+
 
     /**
      * 自动下架

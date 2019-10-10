@@ -126,7 +126,7 @@ public class WeixinAuthController {
     	if (null==scanCodeInfoMO) {
     		// 2表示导购
     		if(AccessProtocol.ACTIVITY_SALER.getType() == statecode){
-    			redirectUrl =doBizBySaler(statearr,state,code,userInfo,redirectUrl,response);
+    			redirectUrl =doBizBySaler(statearr[1],state,code,userInfo,redirectUrl,response);
     			return redirectUrl;
     		}
     		//5表示全网运营红包
@@ -260,15 +260,15 @@ public class WeixinAuthController {
 
     public JSONObject getUserInfo(String code,String organizationId, Long activitySetId) throws Exception {
 		String appId = null, secret = null;
-    	if (activitySetId != null) {
-			MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(activitySetId);
-			String merchantsInfo = marketingActivitySet.getMerchantsInfo();
-			if (StringUtils.isNotBlank(merchantsInfo)) {
-				JSONObject merchantJson = JSON.parseObject(merchantsInfo);
-				appId = merchantJson.getString("mchAppid");
-				secret = merchantJson.getString("merchantSecret");
-			}
-		}
+//    	if (activitySetId != null) {
+//			MarketingActivitySet marketingActivitySet = marketingActivitySetMapper.selectById(activitySetId);
+//			String merchantsInfo = marketingActivitySet.getMerchantsInfo();
+//			if (StringUtils.isNotBlank(merchantsInfo)) {
+//				JSONObject merchantJson = JSON.parseObject(merchantsInfo);
+//				appId = merchantJson.getString("mchAppid");
+//				secret = merchantJson.getString("merchantSecret");
+//			}
+//		}
     	if (appId == null || secret == null){
 			MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(organizationId);
 			appId = mWxMerchants.getMchAppid().trim();
@@ -479,16 +479,18 @@ public class WeixinAuthController {
 
 
 
-	private String doBizBySaler(String[] statearr, String state,String code,JSONObject userInfo,String redirectUrl,HttpServletResponse response) throws Exception {
-		if(statearr == null || statearr.length<=1){
+	private String doBizBySaler(String organizationId, String state,String code,JSONObject userInfo,String redirectUrl,HttpServletResponse response) throws Exception {
+		if(StringUtils.isBlank(organizationId)){
 			if(logger.isErrorEnabled()){
 				logger.error("[前端授权导购信息异常=>state:{}]",state);
 				throw new SuperCodeException("系统授权信息异常");
 			}
 		}
-
+		MarketingWxMerchants marketingWxMerchants = mWxMerchantsMapper.get(organizationId);
+		if (marketingWxMerchants != null && marketingWxMerchants.getMerchantType() == 1) {
+			organizationId = mWxMerchantsMapper.getJgw().getOrganizationId();
+		}
 // 导购step-1: 微信授权
-		String organizationId=statearr[1];
 		userInfo=getUserInfo(code, organizationId,null);
 		String openid=userInfo.getString("openid");
 

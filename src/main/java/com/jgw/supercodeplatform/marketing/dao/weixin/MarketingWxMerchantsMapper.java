@@ -18,9 +18,9 @@ public interface MarketingWxMerchantsMapper {
 	MarketingWxMerchants getJgw();
 
 	@Insert(" INSERT INTO marketing_wx_merchants(Mchid,MchAppid,MerchantName,MerchantKey,"
-			+ " CertificateAddress,CertificatePassword,OrganizationId,OrganizatioIdlName,MerchantSecret) "
+			+ " CertificateAddress,CertificatePassword,OrganizationId,OrganizatioIdlName,MerchantSecret, MerchantType) "
 			+ " VALUES(#{mchid},#{mchAppid},#{merchantName},#{merchantKey},#{certificateAddress},"
-			+ "#{certificatePassword},#{organizationId},#{organizatioIdlName},#{merchantSecret}"
+			+ "#{certificatePassword},#{organizationId},#{organizatioIdlName},#{merchantSecret}, #{merchantType}"
 			+ ")")
 	int addWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam);
 
@@ -36,7 +36,7 @@ public interface MarketingWxMerchantsMapper {
 			+ " <if test='merchantSecret !=null and merchantSecret != &apos;&apos; '> MerchantSecret = #{merchantSecret} ,</if> "
 			//+ " <if test='organizationId !=null and organizationId != &apos;&apos; '> OrganizationId = #{organizationId} ,</if> "
 			+ " <if test='organizatioIdlName !=null and organizatioIdlName != &apos;&apos; '> OrganizatioIdlName = #{organizatioIdlName} ,</if> "
-			+ " </set>"
+			+ " <if test='merchantType != null'> MerchantType = #{merchantType} </if></set>"
 			+ " <where> "
  			+ "   OrganizationId = #{organizationId}  "
 			+ " </where>"

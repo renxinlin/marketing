@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.member.saler;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
@@ -127,17 +128,18 @@ public class SalerRegisterAndLoginV2Controller {
                 jwtUser.setMobile(loginUser.getMobile());
                 jwtUser.setMemberName(!StringUtils.isEmpty(user.getUserName()) ?  user.getUserName(): user.getWxName() );
                 jwtUser.setMemberId(user.getId());
-                jwtUser.setOrganizationId(loginUser.getOrganizationId());
+                jwtUser.setOrganizationId(user.getOrganizationId());
                 jwtUser.setMemberType(MemberTypeEnums.SALER.getType());
                 jwtUser.setCustomerId(user.getCustomerId());
                 jwtUser.setCustomerName(user.getCustomerName());
                 jwtUser.setHaveIntegral(user.getHaveIntegral());
-                jwtUser.setOpenid(user.getOpenid());
-                try {
-                    jwtUser.setOrganizationName(commonService.getOrgNameByOrgId(loginUser.getOrganizationId()));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                jwtUser.setOpenid(loginUser.getOpenid());
+                redisUtil.set("memberuser:id:"+user.getId(), loginUser.getOpenid(), (long) (60*60*2));
+//                try {
+//                    jwtUser.setOrganizationName(commonService.getOrgNameByOrgId(loginUser.getOrganizationId()));
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
                 // TODO 可能存在其他登录信息需要设置
 
                 String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);

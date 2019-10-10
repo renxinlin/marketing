@@ -51,6 +51,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
                     "</if>" +
                     "</otherwise>" +
                     "</choose>" +
+					" <if test='activitySetId != null and activitySetId != &apos;&apos; '> and ActivitySetId = #{activitySetId} </if>" +
                     " <if test='organizationId != null and organizationId != &apos;&apos; '> and OrganizationId = #{organizationId} </if>"+
                     " <if test='memberId != null and memberId != &apos;&apos; '> and MemberId = #{memberId} </if>"+
                     " <if test='salerId != null and salerId != &apos;&apos; '> and SalerId = #{salerId} </if> "+
@@ -199,7 +200,7 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	@Select(" select count(SalerAmount) count, sum(SalerAmount) sum from marketing_integral_record where organizationId = #{organizationId} " +
 			" and SalerId = #{salerId}" +
 			" and memberType = #{memberType} " +
-			" and Status = 1" +
+			" and Status <> '2'" +
 			" and SalerAmount > 0 ")
     Map<String, Object> getAcquireMoneyAndAcquireNums(@Param("salerId") Long salerId, @Param("memberType") Byte memberType, @Param("organizationId") String organizationId);
 

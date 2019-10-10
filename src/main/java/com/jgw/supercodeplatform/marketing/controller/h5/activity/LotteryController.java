@@ -4,6 +4,7 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
@@ -11,6 +12,7 @@ import com.jgw.supercodeplatform.marketing.dto.WxOrderPayDto;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,9 @@ public class LotteryController extends CommonUtil {
 
     @Autowired
     private GlobalRamCache globalRamCache;
+
+    @Autowired
+    private MarketingActivitySetService marketingActivitySetService;
 
     @Value("${cookie.domain}")
 	private String cookieDomain;
@@ -121,6 +126,16 @@ public class LotteryController extends CommonUtil {
     @ApiOperation(value = "导购领奖方法", notes = "导购活动领取")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "会员请求头",name="jwt-token")})
     public RestResult<LotteryResultMO> salerLottery(String wxstate, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception {
+        if (wxstate.startsWith("0_")) {
+            RestResult<LotteryResultMO> restResult = new RestResult<>();
+            restResult.setMsg(wxstate.split("_")[1]);
+            restResult.setState(500);
+            LotteryResultMO lotteryResultMO = new LotteryResultMO();
+            lotteryResultMO.setWinnOrNot(0);
+            lotteryResultMO.setMsg(restResult.getMsg());
+            restResult.setResults(lotteryResultMO);
+            return restResult;
+        }
         ScanCodeInfoMO scanCodeInfoMO = salerLotteryService.validateBasicBySalerlottery(wxstate, jwtUser);
         Long codeTypeId = Long.valueOf(scanCodeInfoMO.getCodeTypeId());
         String codeId = scanCodeInfoMO.getCodeId();
@@ -134,6 +149,7 @@ public class LotteryController extends CommonUtil {
         LotteryResultMO lotteryResultMO = salerLotteryService.salerlottery(scanCodeInfoMO,jwtUser,request);
         RestResult<LotteryResultMO> restResult = RestResult.success();
         restResult.setMsg(lotteryResultMO.getMsg());
+        restResult.setResults(lotteryResultMO);
         return restResult;
     }
     

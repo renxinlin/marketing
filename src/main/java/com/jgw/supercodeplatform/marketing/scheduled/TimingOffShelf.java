@@ -26,7 +26,9 @@ public class TimingOffShelf {
     /**
      * 每天凌晨00：00下架，1点确认
      */
-    @Scheduled(cron = "0 0 0,1 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
+//    @Scheduled(cron = "*/5 * * * * ?")
+
     public void shelf(){
         if(logger.isInfoEnabled()){
             logger.info(" =======================================start timing off shelf=======================================");
@@ -44,9 +46,7 @@ public class TimingOffShelf {
             if(needOffExchange.getUndercarriageSetWay() == (byte) 1){
                 // 时间到了自动下架
                 Date underCarriage = needOffExchange.getUnderCarriage();
-                String date = DateUtil.DateFormat(underCarriage, "yyyy-MM-dd");
-                String now = DateUtil.DateFormat(new Date(), "yyyy-MM-dd");
-                if(now.equals(date)){
+                if(new Date().getTime() > underCarriage.getTime()){
                     // 需要下架
                     readingToDb.add(needOffExchange);
                 }

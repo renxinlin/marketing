@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,11 @@ public class CouponCustmerVerifyService extends AbstractPageService<CouponCustme
 	
 	@Override
 	protected List<CouponVerifyVo> searchResult(CouponCustmerVerifyPageParam searchParams) throws Exception {
-		return marketingMemberCouponMapper.listCustomerVerifyCoupon(searchParams);
+		List<CouponVerifyVo> cpList = marketingMemberCouponMapper.listCustomerVerifyCoupon(searchParams);
+		if (cpList == null) {
+			cpList = new ArrayList<>();
+		}
+		return cpList;
 	}
 
 	@Override

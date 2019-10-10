@@ -6,10 +6,13 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
+import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.enums.market.*;
 import com.jgw.supercodeplatform.marketing.pojo.*;
@@ -85,9 +88,13 @@ public class SalerLotteryService {
     private MarketingMembersWinRecordMapper mWinRecordMapper;
     @Autowired
     private CommonUtil commonUtil;
-
+    @Autowired
+    private MarketingWxMerchantsMapper mWxMerchantsMapper;
     @Autowired
     private RedisLockUtil lock;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Value("${marketing.server.ip}")
     private String serverIp;
@@ -101,7 +108,6 @@ public class SalerLotteryService {
      * @return
      * @throws SuperCodeException
      */
-    @Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
     public LotteryResultMO salerlottery(ScanCodeInfoMO scanCodeInfoMO, H5LoginVO jwtUser,HttpServletRequest request) throws Exception {
         /**
          * 扫码条件:
@@ -154,13 +160,13 @@ public class SalerLotteryService {
         Byte participationCondition = marketingActivitySetCondition.getParticipationCondition();
         LotteryResultMO lotteryResultMO = new LotteryResultMO();
         if (participationCondition.intValue() == ParticipationConditionConstant.activity ){
-            MarketingMembersWinRecord membersWinRecord = mWinRecordMapper.getRecordByCodeId(scanCodeInfoMO.getCodeId(),commonUtil.getOrganizationId());
+            MarketingMembersWinRecord membersWinRecord = mWinRecordMapper.getRecordByCodeId(scanCodeInfoMO.getCodeId());
             if(membersWinRecord == null) {
                 lotteryResultMO.setWinnOrNot(0);
                 lotteryResultMO.setMsg("请先让消费者扫码领红包");
                 return lotteryResultMO;
             }
-            MarketingMembers marketingMembers = marketingMembersMapper.selectByMobileAndOrgId(membersWinRecord.getMobile(), membersWinRecord.getOrganizationId());
+            MarketingMembers marketingMembers = marketingMembersMapper.selectByOpenIdAndOrgId(membersWinRecord.getOpenid(), membersWinRecord.getOrganizationId());
             record.setMobile(marketingMembers.getMobile());
             record.setMemberName(marketingMembers.getUserName());
             record.setMemberId(marketingMembers.getId());
@@ -200,6 +206,13 @@ public class SalerLotteryService {
             throws SuperCodeException{
         if (StringUtils.isBlank(openId)) {
             throw  new SuperCodeException("微信支付openid不能为空",500);
+        }
+        MarketingWxMerchants marketingWxMerchants = mWxMerchantsMapper.get(organizationId);
+        if (marketingWxMerchants == null ){
+            throw new SuperCodeExtException("该组织未绑定公众号信息");
+        }
+        if (marketingWxMerchants.getMerchantType() == 1) {
+            organizationId = mWxMerchantsMapper.getJgw().getOrganizationId();
         }
         // TODO 改成枚举
         logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
@@ -334,6 +347,7 @@ public class SalerLotteryService {
                 weixinpayForSaler(partnerTradeNo,marketingActivitySet.getSendAudit(),scanInfo.getCodeId(),marketingUser.getMobile(), marketingUser.getOpenid(), marketingUser.getOrganizationId(), amount*100, request.getRemoteAddr(), ReferenceRoleEnum.ACTIVITY_SALER.getType());
                 lotteryResultMO.setWinnOrNot(1);
                 lotteryResultMO.setMsg(String.format("%.2f", amount));
+                lotteryResultMO.setData(lotteryResultMO.getMsg());
                 return lotteryResultMO;
             }
         }
@@ -398,6 +412,7 @@ public class SalerLotteryService {
                if(vipscanNum ==null || vipscanNum <= 0){
                    throw new SuperCodeException("请先协助会员领取红包");
                }
+               break;
                // 是否有会员领取活动
            case ParticipationConditionConstant.integral:
                 // 是否有会员领取积分
@@ -405,6 +420,7 @@ public class SalerLotteryService {
                if(memberscanNum ==null || memberscanNum <= 0){
                    throw new SuperCodeException("请先协助会员领取积分");
                }
+               break;
            case ParticipationConditionConstant.noCondition:
                break;
            default:
@@ -468,6 +484,10 @@ public class SalerLotteryService {
         }
         if(marketingUser.getState().intValue() != SaleUserStatus.ENABLE.getStatus().intValue()){
             throw new SuperCodeException("用户处于非启用状态");
+        }
+        String openid = redisUtil.get("memberuser:id:"+marketingUser.getId());
+        if (mWxMerchantsMapper.get(jwtUser.getOrganizationId()).getMerchantType() == 1 && StringUtils.isNotBlank(openid)) {
+            marketingUser.setOpenid(openid);
         }
         return marketingUser;
     }

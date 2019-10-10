@@ -112,4 +112,69 @@ public class MarketingActivityProductService {
 		}
 		return json;
 	}
+
+//    public JSONObject relationActProds(String search, Integer pageSize, Integer current) throws SuperCodeException {
+//        String organizationId=commonUtil.getOrganizationId();
+//        List<String> productBatchIds=mapper.usedProductBatchIds(organizationId);
+//        Map<String, Object>params=new HashMap<String, Object>();
+////		if (null!=productBatchIds && !productBatchIds.isEmpty()) {
+////			StringBuffer buf=new StringBuffer();
+////			for (String productBatchId : productBatchIds) {
+////				buf.append(productBatchId).append(",");
+////			}
+////			params.put("productBatchIds",buf.substring(0, buf.length()-1));
+////		}
+//        params.put("organizationId",organizationId );
+//        params.put("relationType",3 );
+//        params.put("search",search);
+//        params.put("pageSize",pageSize);
+//        params.put("current",current);
+//        Map<String, String> headerMap=new HashMap<>();
+//        headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
+//        HashMap<String, String> superToken = new HashMap<>();
+//        superToken.put("super-token",commonUtil.getSuperToken());
+//
+//        ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
+//        logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
+//        String body=responseEntity.getBody();
+//        JSONObject json=JSONObject.parseObject(body);
+//        if (null==json.getString("results")) {
+//            json.put("results", new ArrayList<>());
+//        }
+//        return json;
+//    }
+//
+//
+//    public JSONObject relationActProds(String search, Integer pageSize, Integer current) throws SuperCodeException {
+//        String organizationId=commonUtil.getOrganizationId();
+//        List<String> productBatchIds=mapper.usedProductBatchIds(organizationId);
+//        Map<String, Object>params=new HashMap<String, Object>();
+////		if (null!=productBatchIds && !productBatchIds.isEmpty()) {
+////			StringBuffer buf=new StringBuffer();
+////			for (String productBatchId : productBatchIds) {
+////				buf.append(productBatchId).append(",");
+////			}
+////			params.put("productBatchIds",buf.substring(0, buf.length()-1));
+////		}
+//        params.put("organizationId",organizationId );
+//        params.put("relationType",3 );
+//        params.put("search",search);
+//        params.put("pageSize",pageSize);
+//        params.put("current",current);
+//        Map<String, String> headerMap=new HashMap<>();
+//        headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
+//        HashMap<String, String> superToken = new HashMap<>();
+//        superToken.put("super-token",commonUtil.getSuperToken());
+//
+//        ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
+//        logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
+//        String body=responseEntity.getBody();
+//        JSONObject json=JSONObject.parseObject(body);
+//        if (null==json.getString("results")) {
+//            json.put("results", new ArrayList<>());
+//        }
+//        return json;
+//    }
+
+
 }

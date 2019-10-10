@@ -29,7 +29,7 @@ public interface MarketingActivitySetMapper extends CommonSql {
  		+ "ActivityEndDate ActivityEndDate,UpdateUserName UpdateUserName,UpdateUserId UpdateUserId,CreateDate createDate,UpdateDate UpdateDate,"
  		+ "ActivityStatus ActivityStatus,ActivityRangeMark ActivityRangeMark,"
  		+ "autoFetch autoFetch,CodeTotalNum codeTotalNum,OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,"
- 		+ "ActivityDesc activityDesc, ValidCondition validCondition, SendAudit sendAudit ";
+ 		+ "ActivityDesc activityDesc, ValidCondition validCondition, SendAudit sendAudit, MerchantsInfo, merchantsInfo ";
 
     String whereSearch =
                     "<choose>"
@@ -133,7 +133,8 @@ public interface MarketingActivitySetMapper extends CommonSql {
             + " <if test='codeTotalNum !=null and codeTotalNum != &apos;&apos; '> CodeTotalNum = #{codeTotalNum} ,</if> "
             + " <if test='activityDesc !=null'> ActivityDesc = #{activityDesc} ,</if> "
 		    + " <if test='validCondition !=null and validCondition != &apos;&apos; '> ValidCondition = #{validCondition} ,</if> "
-		    + " <if test='sendAudit != null'>SendAudit = #{sendAudit}</if>"
+		    + " <if test='sendAudit != null'>SendAudit = #{sendAudit},</if>"
+            + " <if test='merchantsInfo !=null and merchantsInfo != &apos;&apos; '>MerchantsInfo = #{merchantsInfo}</if>"
             + " </set> "
             + " where Id = #{id}" +endScript
     )
