@@ -167,7 +167,7 @@ public class SalerLotteryService {
                 lotteryResultMO.setMsg("请先让消费者扫码领红包");
                 return lotteryResultMO;
             }
-            MarketingMembers marketingMembers = marketingMembersMapper.selectByMobileAndOrgId(membersWinRecord.getOpenid(), membersWinRecord.getOrganizationId());
+            MarketingMembers marketingMembers = marketingMembersMapper.selectByOpenIdAndOrgId(membersWinRecord.getOpenid(), membersWinRecord.getOrganizationId());
             record.setMobile(marketingMembers.getMobile());
             record.setMemberName(marketingMembers.getUserName());
             record.setMemberId(marketingMembers.getId());
