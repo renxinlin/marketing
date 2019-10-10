@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketingActivityProductService {
@@ -103,13 +105,38 @@ public class MarketingActivityProductService {
         HashMap<String, String> superToken = new HashMap<>();
         superToken.put("super-token",commonUtil.getSuperToken());
 
-		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
+		ResponseEntity<String> responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
 		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
 		String body=responseEntity.getBody();
 		JSONObject json=JSONObject.parseObject(body);
 		if (null==json.getString("results")) {
-			json.put("results", new ArrayList<>());
-		}
+		    Map<String, Object> liMap = new HashMap<>();
+            liMap.put("pagination", new HashMap<>());
+            liMap.put("list", new ArrayList<>());
+			json.put("results", liMap);
+		} else {
+            JSONObject resJson = json.getJSONObject("results");
+            JSONArray listJson = resJson.getJSONArray("list");
+            listJson.forEach(obj -> {
+                Map prodMap = (Map)obj;
+                List prodBatchs = (List)prodMap.get("productBatchs");
+                if (prodBatchs != null) {
+                    List filPordBatchList = (List) prodBatchs.stream().filter(prodObj -> {
+                        Map prodBatchMap = (Map)prodBatchs;
+                        if (prodBatchMap == null) {
+                            return false;
+                        }
+                        if (prodBatchMap.get("productBatchId") == null || prodBatchMap.get("productBatchName") == null) {
+                            return false;
+                        }
+                        return true;
+                    }).collect(Collectors.toList());
+                    prodMap.put("productBatchs", filPordBatchList);
+                }
+            });
+            resJson.put("list", listJson);
+            json.put("results", resJson);
+        }
 		return json;
 	}
 
