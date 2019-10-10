@@ -167,10 +167,10 @@ public class SalerLotteryService {
                 lotteryResultMO.setMsg("请先让消费者扫码领红包");
                 return lotteryResultMO;
             }
-            MarketingMembers marketingMembers = marketingMembersMapper.selectByMobileAndOrgId(membersWinRecord.getMobile(), membersWinRecord.getOrganizationId());
-            record.setMobile(marketingMembers.getMobile());
-            record.setMemberName(marketingMembers.getUserName());
-            record.setMemberId(marketingMembers.getId());
+//            MarketingMembers marketingMembers = marketingMembersMapper.selectByMobileAndOrgId(membersWinRecord.getMobile(), membersWinRecord.getOrganizationId());
+            record.setMobile(jwtUser.getMobile());
+            record.setMemberName(jwtUser.getMemberName());
+            record.setMemberId(jwtUser.getMemberId());
         }else if(participationCondition.intValue() ==ParticipationConditionConstant.integral ){
             IntegralRecord integralRecord = integralRecordMapperExt.getMemberIntegralRecord(scanCodeInfoMO.getCodeId());
             if(integralRecord == null) {
