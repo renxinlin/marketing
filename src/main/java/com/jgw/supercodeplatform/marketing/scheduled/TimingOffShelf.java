@@ -26,7 +26,9 @@ public class TimingOffShelf {
     /**
      * 每天凌晨00：00下架，1点确认
      */
-    @Scheduled(cron = "0 0 1 * * ?")
+//    @Scheduled(cron = "0 0 1 * * ?")
+    @Scheduled(cron = "*/5 * * * * ?")
+
     public void shelf(){
         if(logger.isInfoEnabled()){
             logger.info(" =======================================start timing off shelf=======================================");
