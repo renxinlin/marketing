@@ -115,7 +115,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
            Asserts.check(i==1,"扣减库存失败");
 
        }
-       return RestResult.success();
+       return RestResult.success("恭喜中奖"+money,"恭喜中奖"+money);
 
     }
 
