@@ -47,6 +47,8 @@ public class WheelsReward implements Serializable {
      * 图片规格
      */
     private String pictureSpecs;
+    // 绑定excel的key
+    private String cdkKey;
 
 
 }
