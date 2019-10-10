@@ -122,7 +122,7 @@ public class MarketingActivityProductService {
                 List prodBatchs = (List)prodMap.get("productBatchs");
                 if (prodBatchs != null) {
                     List filPordBatchList = (List) prodBatchs.stream().filter(prodObj -> {
-                        Map prodBatchMap = (Map)prodBatchs;
+                        Map prodBatchMap = (Map)prodObj;
                         if (prodBatchMap == null) {
                             return false;
                         }
