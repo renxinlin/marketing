@@ -33,6 +33,9 @@ public class MoneyCalculator {
         }else {
 
             money =  salerRuleExchange.getPrizeAmount().doubleValue();
+            BigDecimal bg = new BigDecimal(money.toString());
+            money = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
         }
         Asserts.check(money>0.00D,"抽中0元");
         return money;
