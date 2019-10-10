@@ -118,13 +118,11 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
 
        }
        log.info("中奖金额" +  money);
-       DecimalFormat df1 = new DecimalFormat("0.00");
-       String moneyStr = df1.format(money);
-       log.info("中奖金额moneyStr" +  moneyStr);
+        String moneyStr = String.format("%.2f", money);
+        log.info("中奖金额moneyStr" +  moneyStr);
        return RestResult.success( moneyStr,moneyStr);
 
     }
-
 
 
     /**
