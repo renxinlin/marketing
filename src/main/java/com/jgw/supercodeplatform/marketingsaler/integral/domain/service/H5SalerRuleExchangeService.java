@@ -116,13 +116,10 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
 
        }
         int towebMoney = (int)money*100;
-       return RestResult.success("恭喜中奖"+(towebMoney/100D),"恭喜中奖"+(towebMoney/100D));
+       return RestResult.success(""+ (towebMoney/100D),(towebMoney/100D));
 
     }
 
-    public static void main(String[] args) {
-        System.out.println(30/100d);
-    }
     /**
      * 自动下架
      * @param salerRuleExchange
