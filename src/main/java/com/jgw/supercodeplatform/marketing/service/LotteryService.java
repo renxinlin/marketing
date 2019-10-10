@@ -320,9 +320,12 @@ public class LotteryService {
 			wxOrderPayDto.setSendAudit(lotteryOprationDto.getSendAudit());
 			return wxOrderPayDto;
 		} else {
-			lotteryResultMO = new LotteryResultMO("手气不好，没抽中");
+			lotteryResultMO = new LotteryResultMO("哎呀，手气不好，没抽中");
+			lotteryResultMO.setData("哎呀，手气不好，没抽中");
+			restResult.setResults(lotteryResultMO);
 			restResult.setMsg(lotteryResultMO.getMsg());
 			lotteryOprationDto.setRestResult(restResult);
+			lotteryOprationDto.setLotteryResultMO(lotteryResultMO);
 		}
 		return null;
 	}

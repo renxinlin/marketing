@@ -413,6 +413,7 @@ public class SalerLotteryService {
                if(vipscanNum ==null || vipscanNum <= 0){
                    throw new SuperCodeException("请先协助会员领取红包");
                }
+               break;
                // 是否有会员领取活动
            case ParticipationConditionConstant.integral:
                 // 是否有会员领取积分
@@ -420,6 +421,7 @@ public class SalerLotteryService {
                if(memberscanNum ==null || memberscanNum <= 0){
                    throw new SuperCodeException("请先协助会员领取积分");
                }
+               break;
            case ParticipationConditionConstant.noCondition:
                break;
            default:
