@@ -161,7 +161,7 @@ public class SalerLotteryService {
         Byte participationCondition = marketingActivitySetCondition.getParticipationCondition();
         LotteryResultMO lotteryResultMO = new LotteryResultMO();
         if (participationCondition.intValue() == ParticipationConditionConstant.activity ){
-            MarketingMembersWinRecord membersWinRecord = mWinRecordMapper.getRecordByCodeId(scanCodeInfoMO.getCodeId(),commonUtil.getOrganizationId());
+            MarketingMembersWinRecord membersWinRecord = mWinRecordMapper.getRecordByCodeId(scanCodeInfoMO.getCodeId());
             if(membersWinRecord == null) {
                 lotteryResultMO.setWinnOrNot(0);
                 lotteryResultMO.setMsg("请先让消费者扫码领红包");
