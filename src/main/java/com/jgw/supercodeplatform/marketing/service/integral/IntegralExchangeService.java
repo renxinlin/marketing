@@ -440,8 +440,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                          if( beforeEchangeStatus.getStockWarningNum() != null && afterExchangeStock <=  beforeEchangeStatus.getStockWarningNum()){
                              // 发出库存预警
                              shouldUndercarriageDO.setStockWarning((byte)1);
+                             mapper.updateByPrimaryKeySelective(shouldUndercarriageDO);
                          }
-                         mapper.updateByPrimaryKeySelective(shouldUndercarriageDO);
                      }
 
                 }
