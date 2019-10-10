@@ -595,9 +595,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					if (StringUtils.isBlank(exOpenid)) {
 						//微信号用户为未激活刚注册用户且如果当前手机号用户未绑定微信号但被禁用了则不允许登录
 						if (memberByPhone.getState().byteValue()==0) {
-							memberByPhone.setOpenid(openid);
-							marketingMembersMapper.update(memberByPhone);
-							//throw new SuperCodeException("当前手机号用户已被禁用，请联系管理员", 500);
+							throw new SuperCodeException("当前手机号用户已被禁用，请联系管理员", 500);
 						}
 						//如果已存在的手机号用户未绑定微信号则直接绑定手机号
 						memberByPhone.setOpenid(openid);
@@ -612,7 +610,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					}else {
 						//如果已存在的手机号用户已绑定了微信openid且与当前登录openid不一致则不允许登录
 						if (!exOpenid.equals(openid)) {
-							throw new SuperCodeException("登录的手机号已绑定其它微信号不可以登录当前微信号", 500);
+							memberByPhone.setOpenid(openid);
+							marketingMembersMapper.update(memberByPhone);
+							//throw new SuperCodeException("登录的手机号已绑定其它微信号不可以登录当前微信号", 500);
 						}
 						if (memberByPhone.getState().byteValue()==0) {
 							throw new SuperCodeException("当前手机号用户已被禁用，请联系管理员", 500);
