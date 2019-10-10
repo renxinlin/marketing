@@ -108,7 +108,6 @@ public class SalerLotteryService {
      * @return
      * @throws SuperCodeException
      */
-    @Transactional(rollbackFor = {SuperCodeException.class,Exception.class})
     public LotteryResultMO salerlottery(ScanCodeInfoMO scanCodeInfoMO, H5LoginVO jwtUser,HttpServletRequest request) throws Exception {
         /**
          * 扫码条件:
