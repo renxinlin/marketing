@@ -171,12 +171,13 @@ public class SalerLotteryService {
             record.setMemberName(marketingMembers.getUserName());
             record.setMemberId(marketingMembers.getId());
         }else if(participationCondition.intValue() ==ParticipationConditionConstant.integral ){
-            IntegralRecord integralRecord = integralRecordMapperExt.getMemberIntegralRecord(scanCodeInfoMO.getCodeId());
-            if(integralRecord == null) {
+            List<IntegralRecord> integralRecordList = integralRecordMapperExt.getMemberIntegralRecord(scanCodeInfoMO.getCodeId());
+            if(CollectionUtils.isEmpty(integralRecordList)) {
                 lotteryResultMO.setWinnOrNot(0);
                 lotteryResultMO.setMsg("请先让消费者扫码领取积分");
                 return lotteryResultMO;
             }
+            IntegralRecord integralRecord = integralRecordList.get(0);
             record.setMobile(integralRecord.getMobile());
             record.setMemberName(integralRecord.getMemberName());
             record.setMemberId(integralRecord.getMemberId());
