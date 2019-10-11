@@ -85,4 +85,15 @@ public class CommonConstants {
      * 查询产品信息，包含内码
      */
     public static final String PRODUCT_ONE ="/product/one";
+
+    /**
+     *查询一级经销商
+     */
+    public static final String CUSTOMER_ENABLE_PAGE_LIST = "/customer/enable/two/page/list";
+
+    /**
+     * 查询子经销商
+     */
+    public static final String CUSTOMER_ENABLE_CHILD_PAGE_LIST = "/customer/enable/child/page/list";
+
 }
