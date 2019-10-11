@@ -144,31 +144,32 @@ public class MarketingActivitySetController {
     }
 
 
-//    @GetMapping("/customer/list")
-//    @ApiOperation("获取活动做过码关联的产品及产品批次数据")
-//    @ApiImplicitParams({@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-//            @ApiImplicitParam(name = "search", paramType = "query", defaultValue = "10", value = "查询", required = false),
-//            @ApiImplicitParam(name = "pageSize", paramType = "query", defaultValue = "10", value = "分页条数", required = false),
-//            @ApiImplicitParam(name = "current", paramType = "query", defaultValue = "1", value = "当前页", required = false)})
-//    public JSONObject relationActProds(@RequestParam(name="search",required=false)String search,@RequestParam(name="pageSize",required=false)Integer pageSize,@RequestParam(name="current",required=false)Integer current) throws Exception {
-//
-//        return maProductService.relationActProds(search,pageSize,current);
-//    }
-//
-//    @GetMapping("/customer/children/list")
-//    @ApiOperation("获取活动做过码关联的产品及产品批次数据")
-//    @ApiImplicitParams({@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
-//            @ApiImplicitParam(name = "search", paramType = "query", defaultValue = "10", value = "查询", required = false),
-//            @ApiImplicitParam(name = "pageSize", paramType = "query", defaultValue = "10", value = "分页条数", required = false),
-//            @ApiImplicitParam(name = "current", paramType = "query", defaultValue = "1", value = "当前页", required = false)})
-//    public JSONObject relationActProds(@RequestParam(name="search",required=false)String search,@RequestParam(name="pageSize",required=false)Integer pageSize,@RequestParam(name="current",required=false)Integer current) throws Exception {
-//
-//        return maProductService.relationActProds(search,pageSize,current);
-//    }
+    @GetMapping("/customer/list")
+    @ApiOperation("获取一级经销商数据")
+    @ApiImplicitParams({@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
+            @ApiImplicitParam(name = "search", paramType = "query", defaultValue = "10", value = "查询", required = false),
+            @ApiImplicitParam(name = "pageSize", paramType = "query", defaultValue = "10", value = "分页条数", required = false),
+            @ApiImplicitParam(name = "current", paramType = "query", defaultValue = "1", value = "当前页", required = false)})
+    public JSONObject relationCustomers(String search, Integer pageSize, Integer current) throws Exception {
+
+        return maProductService.relationCustomers(search,pageSize,current);
+    }
+
+    @GetMapping("/customer/children/list")
+    @ApiOperation("获取下级经销商数据")
+    @ApiImplicitParams({@ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
+            @ApiImplicitParam(name = "customerSuperior", paramType = "query", value = "查询", required = true),
+            @ApiImplicitParam(name = "search", paramType = "query", defaultValue = "10", value = "查询", required = false),
+            @ApiImplicitParam(name = "pageSize", paramType = "query", defaultValue = "10", value = "分页条数", required = false),
+            @ApiImplicitParam(name = "current", paramType = "query", defaultValue = "1", value = "当前页", required = false)})
+    public JSONObject relationChildrenCustomers(@RequestParam String customerSuperior, String search, Integer pageSize, Integer current) throws Exception {
+
+        return maProductService.relationChildrenCustomers(customerSuperior, search,pageSize,current);
+    }
 
     /**
      * 活动预览
-     * @param activitySetId
+     * @param
      * @return
      * @throws IOException 
      * @throws WriterException 
