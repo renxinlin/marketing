@@ -1,6 +1,8 @@
 package com.jgw.supercodeplatform.prizewheels.application.service;
 
 
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.pojo.cache.OrganizationCache;
@@ -13,6 +15,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepo
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsDto;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsUpdateDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,5 +93,16 @@ public class WheelsPublishAppication {
         wheelsRewardRepository.deleteByPrizeWheelsId(id);
 
         // TODO cdk暂时不管
+    }
+
+    public void update(WheelsUpdateDto wheelsUpdateDto) {
+    }
+
+    public WheelsUpdateDto detail(Long id) {
+        return null;
+    }
+
+    public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
+        return null;
     }
 }

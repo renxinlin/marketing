@@ -7,6 +7,7 @@ import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.prizewheels.application.service.WheelsPublishAppication;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsDto;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsUpdateDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -25,6 +26,7 @@ public class WheelsController extends SalerCommonController {
     @Autowired
     private WheelsPublishAppication appication;
 
+
     @PostMapping("/add")
     @ApiOperation(value = "添加", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
@@ -37,18 +39,18 @@ public class WheelsController extends SalerCommonController {
     @PostMapping("/update")
     @ApiOperation(value = "更新", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult update(@Valid  @RequestBody WheelsDto wheelsDto)   {
-        // appication.publish(wheelsDto);
+    public RestResult update(@Valid  @RequestBody WheelsUpdateDto wheelsUpdateDto)   {
+        appication.update(wheelsUpdateDto);
         return success();
     }
-
 
 
     @GetMapping("/detail")
     @ApiOperation(value = "详情", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<WheelsDto> detail(@RequestParam("id") Long id)   {
-        return success();
+    public RestResult<WheelsUpdateDto> detail(@RequestParam("id") Long id)   {
+        WheelsUpdateDto wheelsUpdateDto = appication.detail(id);
+        return success(wheelsUpdateDto);
     }
 
 
@@ -60,11 +62,12 @@ public class WheelsController extends SalerCommonController {
         return success();
     }
 
+
     @GetMapping("/add")
     @ApiOperation(value = "分页", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<WheelsDto>>> list(DaoSearch daoSearch)   {
-        return success();
+    public RestResult<AbstractPageService.PageResults<List<WheelsUpdateDto>>> list(DaoSearch daoSearch)   {
+        return success(appication.list(daoSearch));
     }
 
 }
