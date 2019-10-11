@@ -11,4 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface WheelsPublishRepository {
 
     void publish(Wheels wheels);
+
+    int deletePrizeWheelsById(Long id);
 }

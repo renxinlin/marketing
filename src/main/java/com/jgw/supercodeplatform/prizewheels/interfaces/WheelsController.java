@@ -47,7 +47,7 @@ public class WheelsController extends SalerCommonController {
     @GetMapping("/detail")
     @ApiOperation(value = "详情", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<WheelsDto> detail(@RequestParam("id") Integer id)   {
+    public RestResult<WheelsDto> detail(@RequestParam("id") Long id)   {
         return success();
     }
 
@@ -55,7 +55,8 @@ public class WheelsController extends SalerCommonController {
     @GetMapping("/delete")
     @ApiOperation(value = "删除", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult delete(@RequestParam("id") Integer id)   {
+    public RestResult delete(@RequestParam("id") Long id)   {
+        appication.deletePrizeWheelsById(id);
         return success();
     }
 

@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.prizewheels.infrastructure.transfer;
+package com.jgw.supercodeplatform.prizewheels.infrastructure.repository;
 
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
@@ -14,5 +14,10 @@ public class WheelsPublishRepositoryImpl implements WheelsPublishRepository {
     @Override
     public void publish(Wheels wheels) {
 
+    }
+
+    @Override
+    public int deletePrizeWheelsById(Long id) {
+        return 0;
     }
 }

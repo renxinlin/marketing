@@ -10,6 +10,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ public class WheelsPublishAppication {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private WheelsRewardRepository wheelsRewardRepository;
 
     /**
      * 新增大转盘活动
@@ -79,4 +83,12 @@ public class WheelsPublishAppication {
 
     }// 单次操作:100万CDK 的更新 3000/s => 300s 管理系统上线活动允许
 
+    @Transactional
+    public void deletePrizeWheelsById(Long id) {
+        wheelsPublishRepository.deletePrizeWheelsById(id);
+        productRepository.deleteByPrizeWheelsId(id);
+        wheelsRewardRepository.deleteByPrizeWheelsId(id);
+
+        // TODO cdk暂时不管
+    }
 }

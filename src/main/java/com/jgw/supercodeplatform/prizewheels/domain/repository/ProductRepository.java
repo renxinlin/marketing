@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface ProductRepository {
     void saveButDeleteOld(List<Product> products);
-}
+
+    int deleteByPrizeWheelsId(Long id);
+
+ }
