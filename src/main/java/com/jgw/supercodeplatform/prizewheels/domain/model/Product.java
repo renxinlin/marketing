@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -38,10 +39,7 @@ public class Product implements Serializable {
      */
     private Long activitySetId;
 
-    /**
-     * 类型
-     */
-    private String codeType;
+
 
     /**
      * 产品批次号
@@ -63,35 +61,21 @@ public class Product implements Serializable {
      */
     private String productName;
 
-    /**
-     * 该批次关联码总数
-     */
-    private Integer codeTotalAmount;
-
-    /**
-     * 建立日期
-     */
-    private Date createDate;
-
-    /**
-     * 修改日期
-     */
-    private Date updateDate;
 
     /**
      * 活动大类0会员活动1导购活动
      */
-    private Boolean referenceRole;
+    private Byte referenceRole = 0;
+
+//    /**
+//     * 生码批次ID
+//     */
+//    private String sbatchId;
 
     /**
-     * 生码批次ID
+     * 产品所属活动类型其他0大转盘12签到
      */
-    private String sbatchId;
-
-    /**
-     * 产品所属活动类型其他0大转盘1
-     */
-    private Integer type;
+    private Integer type = ActivityTypeConstant.wheels;
 
 
 }

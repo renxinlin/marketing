@@ -63,6 +63,7 @@ public class Wheels implements Serializable {
      */
     private String thirdUrl;
 
+    private String thirdUrlButton;
     /**
      * 本次活动奖品种类
      */
@@ -76,7 +77,8 @@ public class Wheels implements Serializable {
 
 
     private Publisher publisher;
-
+    // 前台活动模板id
+    private String  templateId;
 
     public void addPublisher(Publisher publisher) {
         Asserts.check(publisher != null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());

@@ -95,5 +95,10 @@ public class Wheels implements Serializable {
     @TableField("PrizeNum")
     private Integer prizeNum;
 
+    /**
+     * 前端模板id
+     */
+    @TableField("TemplateId")
+    private String  templateId;
 
 }

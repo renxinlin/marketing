@@ -90,7 +90,7 @@ public class Product implements Serializable {
      * 活动大类0会员活动1导购活动
      */
     @TableField("ReferenceRole")
-    private Boolean referenceRole;
+    private Byte referenceRole;
 
     /**
      * 生码批次ID

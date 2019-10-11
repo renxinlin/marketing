@@ -43,10 +43,10 @@ public class WheelsReward implements Serializable {
      * 概率
      */
     @TableField("Probability")
-    private String probability;
+    private double probability;
 
     @TableField("Num")
-    private String num;
+    private Integer num;
 
     @TableField("Picture")
     private String picture;
