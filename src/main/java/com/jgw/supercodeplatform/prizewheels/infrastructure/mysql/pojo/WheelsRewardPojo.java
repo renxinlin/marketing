@@ -21,7 +21,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("marketing_activity_prize_wheels_reward")
-public class WheelsReward implements Serializable {
+public class WheelsRewardPojo implements Serializable {
 
 
     @TableId("Id")

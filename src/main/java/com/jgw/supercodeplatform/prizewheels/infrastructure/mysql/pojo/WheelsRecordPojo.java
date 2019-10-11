@@ -21,7 +21,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("marketing_activity_prize_wheels_record")
-public class WheelsRecord implements Serializable {
+public class WheelsRecordPojo implements Serializable {
 
 
     private Long id;

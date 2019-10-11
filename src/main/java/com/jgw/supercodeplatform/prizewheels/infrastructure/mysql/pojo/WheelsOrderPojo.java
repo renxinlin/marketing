@@ -19,7 +19,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("marketing_activity_prize_wheels_order")
-public class WheelsOrder implements Serializable {
+public class WheelsOrderPojo implements Serializable {
 
 
     private Long id;
