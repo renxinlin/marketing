@@ -56,7 +56,7 @@ public class WheelsUpdateDto {
     @ApiModelProperty("奖励总数") private Integer prizeNum;
 
     @Valid @NotNull(message = "参加活动的产品不存在")
-    @ApiModelProperty("大转盘产品集合")  private List<ProductUpdateDto> productUpdateDto;
+    @ApiModelProperty("大转盘产品集合")  private List<ProductUpdateDto> productUpdateDtos;
 
     @Valid @NotNull(message = "活动奖励不可为空")
     @ApiModelProperty("大转盘产品集合")  private List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos;

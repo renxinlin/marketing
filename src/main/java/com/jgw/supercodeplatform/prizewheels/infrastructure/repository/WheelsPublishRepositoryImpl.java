@@ -32,4 +32,10 @@ public class WheelsPublishRepositoryImpl implements WheelsPublishRepository {
     public int deletePrizeWheelsById(Long id) {
         return wheelsMapper.deleteById(id);
     }
+
+    @Override
+    public int updatePrizeWheel(Wheels wheels) {
+        WheelsPojo wheelsPojo =  wheelsPojoTransfer.tranferDomainToPojoWhenUpdate(wheels);
+        return wheelsMapper.updateById(wheelsPojo);
+    }
 }

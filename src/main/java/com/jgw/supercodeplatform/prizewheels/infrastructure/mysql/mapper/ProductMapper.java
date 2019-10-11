@@ -15,8 +15,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ProductMapper extends BaseMapper<ProductPojo> {
-    @Autowired
-    private ModelMapper modelMapper;
+
 
 
 }
