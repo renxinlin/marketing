@@ -52,4 +52,13 @@ public class ProductRepositoryImpl implements ProductRepository {
         List<ProductPojo> productPojos = productPojoTransfer.transferProductsToPojos(products);
         productBatchService.saveBatch(productPojos);
     }
+
+    @Override
+    public List<Product> getByPrizeWheelsId(Long prizeWheelsid) {
+        QueryWrapper<ProductPojo> wapper = new QueryWrapper<>();
+        wapper.eq("ActivitySetId",prizeWheelsid);
+        List<ProductPojo> productPojos = productMapper.selectList(wapper);
+
+        return productPojoTransfer.tranferPojosToDomains(productPojos);
+    }
 }

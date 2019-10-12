@@ -22,4 +22,6 @@ public interface ProductDomainService {
      * @param products
      */
     void executeBizWhichCodeManagerWant(List<Product> products);
+
+    void removeOldProduct(List<Product> byPrizeWheelsId);
 }

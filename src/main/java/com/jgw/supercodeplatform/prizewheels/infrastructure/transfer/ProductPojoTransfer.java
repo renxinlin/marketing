@@ -24,4 +24,14 @@ public class ProductPojoTransfer {
         });
         return  productPojos;
     }
+
+    public List<Product> tranferPojosToDomains(List<ProductPojo> productPojos) {
+        List<Product> products = new ArrayList<>();
+        productPojos.forEach(productPojo-> {
+            Product product  = modelMapper.map(productPojo, Product.class);
+            // TODO 属性补充
+            products.add(product);
+        });
+        return  products;
+    }
 }

@@ -15,4 +15,7 @@ public interface GetSbatchIdsByPrizeWheelsFeign {
     @RequestMapping(value = "/code/relation/getBatchInfoWithoutType",method = RequestMethod.GET)
     RestResult<Object> getSbatchIds(List<GetBatchInfoDto> getBatchInfoDtoList);
 
+
+    // todo
+    RestResult<Object> removeOldProduct();
 }

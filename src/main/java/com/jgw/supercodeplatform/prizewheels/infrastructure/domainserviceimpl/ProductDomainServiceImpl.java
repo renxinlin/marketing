@@ -59,4 +59,10 @@ public class ProductDomainServiceImpl implements ProductDomainService {
     public void executeBizWhichCodeManagerWant(List<Product> products) {
 
     }
+
+    @Override
+    public void removeOldProduct(List<Product> byPrizeWheelsId) {
+        // TODO
+        getSbatchIdsByPrizeWheelsFeign.removeOldProduct();
+    }
 }
