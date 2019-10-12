@@ -96,7 +96,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void createOrUpdatePlatformActivitySet(PlatformActivityAdd platformActivityAdd){
+    public void createOrUpdatePlatformActivitySet(PlatformActivityAdd platformActivityAdd) {
         MarketingActivitySet marketingActivitySet = new MarketingActivitySet();
         BeanUtils.copyProperties(platformActivityAdd, marketingActivitySet);
         JSONObject validConditionJson = new JSONObject();

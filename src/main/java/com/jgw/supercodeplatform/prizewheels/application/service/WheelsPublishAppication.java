@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.prizewheels.application.service;
 
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.pojo.cache.OrganizationCache;
@@ -47,7 +48,7 @@ public class WheelsPublishAppication {
      * @param wheelsDto
      */
     @Transactional(rollbackFor = Exception.class)
-    public void publish(WheelsDto wheelsDto){
+    public void publish(WheelsDto wheelsDto)  {
         // 数据获取
         String organizationId = commonUtil.getOrganizationId();
         String organization = commonUtil.getOrganizationName();
