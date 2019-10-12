@@ -23,7 +23,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("marketing_activity_product")
-public class Product implements Serializable {
+public class ProductPojo implements Serializable {
 
 
     /**
@@ -90,7 +90,7 @@ public class Product implements Serializable {
      * 活动大类0会员活动1导购活动
      */
     @TableField("ReferenceRole")
-    private Boolean referenceRole;
+    private Byte referenceRole;
 
     /**
      * 生码批次ID
@@ -103,6 +103,16 @@ public class Product implements Serializable {
      */
     @TableField("Type")
     private Integer type;
+
+
+    /**
+     * 是否自动获取(1、自动获取 2、仅此一次 )当前仅当为大转盘和签到有效
+     */
+    private byte autoType;
+
+
+
+
 
 
 }

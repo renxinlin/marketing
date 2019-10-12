@@ -63,6 +63,7 @@ public class Wheels implements Serializable {
      */
     private String thirdUrl;
 
+    private String thirdUrlButton;
     /**
      * 本次活动奖品种类
      */
@@ -76,11 +77,48 @@ public class Wheels implements Serializable {
 
 
     private Publisher publisher;
-
+    // 前台活动模板id
+    private String  templateId;
 
     public void addPublisher(Publisher publisher) {
         Asserts.check(publisher != null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         this.publisher = publisher;
+    }
+
+    public void initOrgInfo(String organizationId, String organizationName) {
+        Asserts.check(!StringUtils .isEmpty(organizationId) , ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        Asserts.check(!StringUtils .isEmpty(organizationName) , ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+
+        this.organizationId = organizationId;
+        this.organizatioIdName = organizationName;
+    }
+
+    private void checkBase() {
+        Asserts.check(!StringUtils .isEmpty(title1) , ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        Asserts.check(!StringUtils .isEmpty(title2) , ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        Asserts.check(!StringUtils .isEmpty(title3) , ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+
+        Asserts.check(!StringUtils .isEmpty(templateId) , ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+
+        Asserts.check(!StringUtils .isEmpty(organizationId) , ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        Asserts.check(!StringUtils .isEmpty(organizatioIdName) , ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+
+        Asserts.check(startTime !=null ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        Asserts.check(endTime !=null ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+    }
+    public void checkWhenUpdate() {
+        // 基本校验
+        Asserts.check(id != null && id > 0,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        checkBase();
+
+        // TODO 业务校验
+
+    }
+
+
+
+    public void checkWhenAdd() {
+        checkBase();
     }
 
 

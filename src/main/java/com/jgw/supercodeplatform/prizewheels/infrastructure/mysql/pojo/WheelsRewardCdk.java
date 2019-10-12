@@ -26,11 +26,16 @@ public class WheelsRewardCdk implements Serializable {
     @TableField("prizeRewardId")
     private Long prizeRewardId;
 
+    @TableField("cdk")
     private String cdk;
+
+    @TableField("cdkKey")
+    private String cdkKey;
 
     /**
      * 1未领取 2 待领取 3 领取
      */
+    @TableField("status")
     private Integer status;
 
 

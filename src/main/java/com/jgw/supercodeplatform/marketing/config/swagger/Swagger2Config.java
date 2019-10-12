@@ -207,4 +207,24 @@ public class Swagger2Config {
                 .apiInfo(apiInfo())
                 .enable(enable);
     }
+
+
+
+    @Bean("大转盘")
+    public Docket prizeWheels() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("大转盘")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.prizewheels.interfaces"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+
+
+
+
+
+
 }

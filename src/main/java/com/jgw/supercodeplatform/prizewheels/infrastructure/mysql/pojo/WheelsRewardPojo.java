@@ -21,7 +21,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("marketing_activity_prize_wheels_reward")
-public class WheelsReward implements Serializable {
+public class WheelsRewardPojo implements Serializable {
 
 
     @TableId("Id")
@@ -43,10 +43,10 @@ public class WheelsReward implements Serializable {
      * 概率
      */
     @TableField("Probability")
-    private String probability;
+    private double probability;
 
     @TableField("Num")
-    private String num;
+    private Integer num;
 
     @TableField("Picture")
     private String picture;

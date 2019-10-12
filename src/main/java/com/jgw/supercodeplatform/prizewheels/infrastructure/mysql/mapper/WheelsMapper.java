@@ -1,5 +1,5 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo  .Wheels;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -10,7 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author renxinlin
  * @since 2019-10-09
  */
-public interface WheelsMapper extends BaseMapper<Wheels> {
+public interface WheelsMapper extends BaseMapper<WheelsPojo> {
 
 
 }

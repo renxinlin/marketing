@@ -1,6 +1,5 @@
 package com.jgw.supercodeplatform.prizewheels.interfaces.dto;
 
-import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,7 +21,12 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel("大转盘新增")
-public class WheelsDto {
+public class WheelsUpdateDto {
+
+
+    @NotEmpty(message = "id不可为空") @Min(0)
+    @ApiModelProperty("id")private Long  id;
+
     @NotEmpty(message = "活动模板id不可为空")
     @ApiModelProperty("活动模板id") private String  templateId;
 
@@ -52,10 +56,10 @@ public class WheelsDto {
     @ApiModelProperty("奖励总数") private Integer prizeNum;
 
     @Valid @NotNull(message = "参加活动的产品不存在")
-    @ApiModelProperty("大转盘产品集合")  private List<ProductDto> productDtos;
+    @ApiModelProperty("大转盘产品集合")  private List<ProductUpdateDto> productUpdateDtos;
 
     @Valid @NotNull(message = "活动奖励不可为空")
-    @ApiModelProperty("大转盘产品集合")  private List<WheelsRewardDto> wheelsRewardDtos;
+    @ApiModelProperty("大转盘产品集合")  private List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos;
 
     @NotNull(message = "产品追加的码是否参与活动") @Min(1) @Max(2)
     @ApiModelProperty("是否自动获取(1、自动获取 2、仅此一次 )")   private byte autoType;

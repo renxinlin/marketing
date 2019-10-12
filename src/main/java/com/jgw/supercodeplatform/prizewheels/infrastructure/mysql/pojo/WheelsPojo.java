@@ -23,7 +23,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("marketing_activity_prize_wheels")
-public class Wheels implements Serializable {
+public class WheelsPojo implements Serializable {
 
 
     @TableId(value = "id", type = IdType.AUTO)
@@ -95,5 +95,10 @@ public class Wheels implements Serializable {
     @TableField("PrizeNum")
     private Integer prizeNum;
 
+    /**
+     * 前端模板id
+     */
+    @TableField("TemplateId")
+    private String  templateId;
 
 }

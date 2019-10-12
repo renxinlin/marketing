@@ -1,21 +1,18 @@
 package com.jgw.supercodeplatform.prizewheels.domain.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * <p>
  * 产品域
- *
- *
+ * <p>
+ * <p>
  * 参与大转盘活动的产品
  * </p>
  *
@@ -28,6 +25,7 @@ import java.util.Date;
 public class Product implements Serializable {
 
 
+    private static final String SPLIT_SYMBOL = ",";
     /**
      * Id
      */
@@ -38,10 +36,6 @@ public class Product implements Serializable {
      */
     private Long activitySetId;
 
-    /**
-     * 类型
-     */
-    private String codeType;
 
     /**
      * 产品批次号
@@ -63,35 +57,42 @@ public class Product implements Serializable {
      */
     private String productName;
 
-    /**
-     * 该批次关联码总数
-     */
-    private Integer codeTotalAmount;
-
-    /**
-     * 建立日期
-     */
-    private Date createDate;
-
-    /**
-     * 修改日期
-     */
-    private Date updateDate;
 
     /**
      * 活动大类0会员活动1导购活动
      */
-    private Boolean referenceRole;
+    private Byte referenceRole = 0;
+
+//    /**
+//     * 生码批次ID
+//     */
+//    private String sbatchId;
 
     /**
-     * 生码批次ID
+     * 产品所属活动类型其他0大转盘12签到
      */
+    private Integer type = ActivityTypeConstant.wheels;
+
+    /**
+     * 码管理回调url
+     */
+    private String urlByCodeManagerCallBack;
+    /**
+     * 是否自动获取(1、自动获取 2、仅此一次 )当前仅当为大转盘和签到有效
+     */
+    private byte autoType;
+
+    // TODO 待解决自动追加问题
+    //  关于该字段产生的问题: 由于产品需求包含当前数量和自动追加
+    // 该字段属于码管理领域合理吗?属于营销领域第一直觉不太合理
+    // 如果都不合理，如何定他的域
     private String sbatchId;
 
-    /**
-     * 产品所属活动类型其他0大转盘1
-     */
-    private Integer type;
+    public void appendSbatchId(String sbatchId) {
+        if(StringUtils.isEmpty(sbatchId)){
+            this.sbatchId = sbatchId;
+        }
+        this.sbatchId = this.sbatchId + SPLIT_SYMBOL + sbatchId;
 
-
+    }
 }
