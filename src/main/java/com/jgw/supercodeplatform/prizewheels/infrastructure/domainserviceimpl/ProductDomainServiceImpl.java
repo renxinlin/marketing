@@ -8,13 +8,16 @@ import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.EsRelationcode;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.translator.ProductDomainTranfer;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Slf4j
 @Service
 public class ProductDomainServiceImpl implements ProductDomainService {
 
@@ -57,7 +60,10 @@ public class ProductDomainServiceImpl implements ProductDomainService {
 
     @Override
     public void executeBizWhichCodeManagerWant(List<Product> products) {
-
+        List<SbatchUrlDto> sbatchUrlDtoList = productDomainTranfer.tranferProductsToSbatchUrlDtos(products);
+        RestResult restResult = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(sbatchUrlDtoList);
+        log.error("更新大转盘失败executeBizWhichCodeManagerWant(List<Product> products） =》 {}",JSONObject.toJSONString(restResult));
+        Asserts.check(restResult!=null && restResult.getState() == 200 ,"服务调用失败");
     }
 
     @Override

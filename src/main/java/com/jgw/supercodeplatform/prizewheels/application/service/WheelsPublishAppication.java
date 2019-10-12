@@ -139,17 +139,17 @@ public class WheelsPublishAppication {
 
         // 产品 设置产品信息，发送产品链接url 发送产品类型 TCC 模块
         products = productDomainService.initSbatchIds(products);
+        productDomainService.executeBizWhichCodeManagerWant(products);
         List<Product> byPrizeWheelsId = productRepository.getByPrizeWheelsId(prizeWheelsid);
         // 将此活动之前产品与码管理的信息解绑
         productDomainService.removeOldProduct(byPrizeWheelsId);
-        // 持久化 todo 有bug  产品 删除老的,老的解绑码管理 ; 新增新的 绑定到码管理
-        // todo 奖励 删除老的，新增新的
+
         wheelsPublishRepository.updatePrizeWheel(wheels);
+
         wheelsRewardRepository.deleteByPrizeWheelsId(prizeWheelsid);
         wheelsRewardRepository.batchSave(wheelsRewards);
 
-        productRepository.deleteByPrizeWheelsId(prizeWheelsid);
-        productRepository.batchSave(products);
+        productRepository.saveButDeleteOld(products);
         // 结束任务
     }
 

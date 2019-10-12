@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.prizewheels.infrastructure.feigns;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,4 +19,6 @@ public interface GetSbatchIdsByPrizeWheelsFeign {
 
     // todo
     RestResult<Object> removeOldProduct();
+    @RequestMapping(value = "/code/sbatchUrl/addSbatchUrl",method = RequestMethod.POST)
+    RestResult bindingUrlAndBizType(List<SbatchUrlDto> sbatchUrlDtoList);
 }

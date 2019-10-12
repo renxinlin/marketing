@@ -25,7 +25,7 @@ import java.io.Serializable;
 public class Product implements Serializable {
 
 
-    private static final String SPLIT_SYMBOL = ",";
+    public static final String SPLIT_SYMBOL = ",";
     /**
      * Id
      */
