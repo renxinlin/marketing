@@ -8,13 +8,16 @@ import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.EsRelationcode;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.translator.ProductDomainTranfer;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Slf4j
 @Service
 public class ProductDomainServiceImpl implements ProductDomainService {
 
@@ -47,6 +50,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
             });
 
         }else {
+            log.info("initSbatchIds(List<Product> products) =》 {}",JSONObject.toJSONString(products));
             throw new RuntimeException("获取码管理生码信息失败");
         }
         // 携带生码批次
@@ -57,12 +61,17 @@ public class ProductDomainServiceImpl implements ProductDomainService {
 
     @Override
     public void executeBizWhichCodeManagerWant(List<Product> products) {
-
+        List<SbatchUrlDto> sbatchUrlDtoList = productDomainTranfer.tranferProductsToSbatchUrlDtos(products);
+        RestResult restResult = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(sbatchUrlDtoList);
+        log.info("更新大转盘executeBizWhichCodeManagerWant(List<Product> products） =》 {}",JSONObject.toJSONString(restResult));
+        Asserts.check(restResult!=null && restResult.getState() == 200 ,"服务调用失败");
     }
 
     @Override
-    public void removeOldProduct(List<Product> byPrizeWheelsId) {
-        // TODO
-        getSbatchIdsByPrizeWheelsFeign.removeOldProduct();
+    public void removeOldProduct(List<Product> product) {
+        List<SbatchUrlDto> sbatchids = productDomainTranfer.tranferProductsToSbatchUrlDtos(product);;
+        RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(sbatchids);
+        log.info("更新大转盘removeOldProduct(List<Product> product) =》 {}",JSONObject.toJSONString(objectRestResult));
+        Asserts.check(objectRestResult!=null && objectRestResult.getState() == 200 ,"服务调用失败");
     }
 }

@@ -122,7 +122,7 @@ public class WheelsPublishAppication {
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos = wheelsUpdateDto.getWheelsRewardUpdateDtos();
         List<Product> products = productTransfer.transferUpdateDtoToDomain(productUpdateDtos, prizeWheelsid,wheelsUpdateDto.getAutoType());
         List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferUpdateDtoToDomain(wheelsRewardUpdateDtos, prizeWheelsid);
-        // 业务处理
+        // 1 业务处理
         // 大转盘
         Publisher publisher = new Publisher();
         publisher.initUserInfo(
@@ -132,24 +132,30 @@ public class WheelsPublishAppication {
         wheels.addPublisher(publisher);
         wheels.checkWhenUpdate();
 
-        // 奖励
+        // 2 奖励
         wheelsRewardDomainService.checkWhenUpdate(wheelsRewards);
-        // cdk 领域事件
+        // 2-1 cdk 领域事件 奖品与cdk绑定
         wheelsRewardDomainService.cdkEventCommitedWhenNecessary(wheelsRewards);
 
-        // 产品 设置产品信息，发送产品链接url 发送产品类型 TCC 模块
+        // 3 码管理业务
+        // 3-1 获取生码批次
         products = productDomainService.initSbatchIds(products);
-        List<Product> byPrizeWheelsId = productRepository.getByPrizeWheelsId(prizeWheelsid);
-        // 将此活动之前产品与码管理的信息解绑
-        productDomainService.removeOldProduct(byPrizeWheelsId);
-        // 持久化 todo 有bug  产品 删除老的,老的解绑码管理 ; 新增新的 绑定到码管理
-        // todo 奖励 删除老的，新增新的
+
+        // 3-2 将此活动之前产品与码管理的信息解绑
+        List<Product> oldPrizeWheelsProduct = productRepository.getByPrizeWheelsId(prizeWheelsid);
+        productDomainService.removeOldProduct(oldPrizeWheelsProduct);
+        // 将准备绑定的产品原来的绑定删除: 里面可能有部分产品之前属于其他活动需要解绑:
+        productDomainService.removeOldProduct(products);
+        // 3-3 发送新的产品绑定请求
+        productDomainService.executeBizWhichCodeManagerWant(products);
+
+        // 持久化
         wheelsPublishRepository.updatePrizeWheel(wheels);
+
         wheelsRewardRepository.deleteByPrizeWheelsId(prizeWheelsid);
         wheelsRewardRepository.batchSave(wheelsRewards);
 
-        productRepository.deleteByPrizeWheelsId(prizeWheelsid);
-        productRepository.batchSave(products);
+        productRepository.saveButDeleteOld(products);
         // 结束任务
     }
 

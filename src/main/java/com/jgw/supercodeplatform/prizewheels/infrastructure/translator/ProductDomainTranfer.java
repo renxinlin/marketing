@@ -1,17 +1,18 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.translator;
 
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConstant;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoProductBatch;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class ProductDomainTranfer {
@@ -47,6 +48,28 @@ public class ProductDomainTranfer {
             });
         });
 
+        return list;
+    }
+
+
+    /**
+     *
+     * @param products
+     * @return
+     */
+    public List<SbatchUrlDto> tranferProductsToSbatchUrlDtos(List<Product> products) {
+        List<SbatchUrlDto> list = new ArrayList<>();
+        products.forEach(product -> {
+            String[] sbatchIds = product.getSbatchId().split(Product.SPLIT_SYMBOL);
+            Arrays.asList(sbatchIds).forEach(sbatchId ->{
+                SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
+                sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
+                sbatchUrlDto.setBusinessType(ActivityTypeConstant.wheels);
+                sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+                sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+                list.add(sbatchUrlDto);
+            });
+        });
         return list;
     }
 }
