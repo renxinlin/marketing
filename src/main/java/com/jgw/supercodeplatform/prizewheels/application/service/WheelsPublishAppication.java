@@ -16,6 +16,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,8 @@ public class WheelsPublishAppication {
     @Autowired
     private WheelsRewardDomainService wheelsRewardDomainService;
 
+    @Autowired
+    private ProductDomainService productDomainService;
     /**
      * 新增大转盘活动
      * @param wheelsDto
@@ -109,14 +112,15 @@ public class WheelsPublishAppication {
 
         // TODO cdk后期删除
     }
-
+    @Transactional(rollbackFor = Exception.class)
     public void update(WheelsUpdateDto wheelsUpdateDto) {
         // 数据转换
         Long prizeWheelsid = wheelsUpdateDto.getId();
         Wheels wheels =  wheelsTransfer.tranferToDomain(wheelsUpdateDto);
+
         List<ProductUpdateDto> productUpdateDtos = wheelsUpdateDto.getProductUpdateDtos();
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos = wheelsUpdateDto.getWheelsRewardUpdateDtos();
-        productTransfer.transferUpdateDtoToDomain(productUpdateDtos,prizeWheelsid);
+        List<Product> products = productTransfer.transferUpdateDtoToDomain(productUpdateDtos, prizeWheelsid,wheelsUpdateDto.getAutoType());
         List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferUpdateDtoToDomain(wheelsRewardUpdateDtos, prizeWheelsid);
         // 业务处理
         // 大转盘
@@ -133,12 +137,14 @@ public class WheelsPublishAppication {
         // cdk 领域事件
         wheelsRewardDomainService.cdkEventCommitedWhenNecessary(wheelsRewards);
 
-        // 产品
-
+        // 产品 设置产品信息，发送产品链接url 发送产品类型
+        products = productDomainService.initSbatchIds(products);
+        productDomainService.executeBizWhichCodeManagerWant(products);
 
         // 持久化
         wheelsPublishRepository.updatePrizeWheel(wheels);
         wheelsRewardRepository.batchSave(wheelsRewards);
+        productRepository.batchSave(products);
         // 结束任务
     }
 

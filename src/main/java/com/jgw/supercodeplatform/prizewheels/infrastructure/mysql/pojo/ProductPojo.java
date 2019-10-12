@@ -105,4 +105,14 @@ public class ProductPojo implements Serializable {
     private Integer type;
 
 
+    /**
+     * 是否自动获取(1、自动获取 2、仅此一次 )当前仅当为大转盘和签到有效
+     */
+    private byte autoType;
+
+
+
+
+
+
 }

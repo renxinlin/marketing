@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -54,4 +56,8 @@ public class WheelsDto {
 
     @Valid @NotNull(message = "活动奖励不可为空")
     @ApiModelProperty("大转盘产品集合")  private List<WheelsRewardDto> wheelsRewardDtos;
+
+    @NotNull(message = "产品追加的码是否参与活动") @Min(1) @Max(2)
+    @ApiModelProperty("是否自动获取(1、自动获取 2、仅此一次 )")   private byte autoType;
+
 }

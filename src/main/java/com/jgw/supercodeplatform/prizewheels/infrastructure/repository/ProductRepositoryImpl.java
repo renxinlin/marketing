@@ -46,4 +46,10 @@ public class ProductRepositoryImpl implements ProductRepository {
         int delete = productMapper.delete(wapper);
         return delete;
     }
+
+    @Override
+    public void batchSave(List<Product> products) {
+        List<ProductPojo> productPojos = productPojoTransfer.transferProductsToPojos(products);
+        productBatchService.saveBatch(productPojos);
+    }
 }

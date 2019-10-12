@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.application.transfer;
 
+import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductUpdateDto;
@@ -29,7 +30,7 @@ public class ProductTransfer {
                 .collect(Collectors.toList());
     }
 
-    public List<Product>  transferUpdateDtoToDomain(List<ProductUpdateDto> productUpdateDtos, Long activitySetId) {
+    public List<Product>  transferUpdateDtoToDomain(List<ProductUpdateDto> productUpdateDtos, Long activitySetId,byte autoType) {
         return productUpdateDtos
                 .stream()
                 .map(productDto -> {
@@ -38,6 +39,8 @@ public class ProductTransfer {
                     Asserts.check(product.getReferenceRole() != null ,"modelMapper 映射不了...........");
                     log.error("modelMapper映射问题===============product.getReferenceRole() =>{}" ,product.getReferenceRole());
                     product.setActivitySetId(activitySetId);
+                    product.setAutoType(autoType);
+                    product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
                     return product;})
                 .collect(Collectors.toList());
     }

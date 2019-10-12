@@ -107,8 +107,11 @@ public class Wheels implements Serializable {
         Asserts.check(endTime !=null ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
     }
     public void checkWhenUpdate() {
+        // 基本校验
         Asserts.check(id != null && id > 0,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         checkBase();
+
+        // TODO 业务校验
 
     }
 

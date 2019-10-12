@@ -10,4 +10,5 @@ public interface ProductRepository {
 
     int deleteByPrizeWheelsId(Long id);
 
- }
+    void batchSave(List<Product> products);
+}
