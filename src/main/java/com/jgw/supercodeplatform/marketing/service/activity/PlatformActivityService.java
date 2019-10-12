@@ -254,8 +254,13 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
     public void addAbandonPlatform(String innerCode, AbandonPlatform abandonPlatform, ProductInfoDto productInfoDto) {
         MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
         if (marketingActivitySet == null) {
-            throw new SuperCodeExtException("当前暂无全网运营红包上线");
+            throw new SuperCodeExtException("当前暂无全网运营红包上线", 200);
         }
+        MarketingPlatformOrganization marketingPlatformOrganization = marketingPlatformOrganizationMapper.selectByActivitySetIdAndOrganizationId(marketingActivitySet.getId(), abandonPlatform.getOrganizationId());
+        if (marketingPlatformOrganization == null) {
+            throw new SuperCodeExtException("当前组织没有参加全网运营活动", 200);
+        }
+        abandonPlatform.setOrganizationFullName(marketingPlatformOrganization.getOrganizationFullName());
         odeEsService.addAbandonPlatformScanCodeRecord(productInfoDto, innerCode, abandonPlatform.getProductId(), abandonPlatform.getProductBatchId(), abandonPlatform.getCodeId(),
                 marketingActivitySet.getActivityId(),abandonPlatform.getCodeType(), marketingActivitySet.getId(),System.currentTimeMillis(),abandonPlatform.getOrganizationId(), abandonPlatform.getOrganizationFullName());
     }
@@ -263,7 +268,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
 
     /**
      * 获取扫码状态
-     * @param codeId
+     * @param
      * @return
      */
     public PlatformScanStatusVo getScanStatus(String innerCode, String organizationId) {

@@ -171,7 +171,7 @@ public class IntegralFrontController {
 		    	productIntegral.setOrganizationId(organizationId);
 		    	productIntegral.setProductBatchId(productBatchId);
 		    	productIntegral.setProductId(productId);
-		    	productIntegralService.obtainCoupon(productIntegral, members, inRuleProduct.getProductName(),outerCodeId);
+		    	productIntegralService.obtainCoupon(productIntegral, members, inRuleProduct.getProductName(),codeTypeId,outerCodeId);
 		    }
 			// 7.把当前码存入积分ES。注意6,7是一个事务保证一致性且需在redis的同步锁里以防多个用户同时操作
 			esService.addCodeIntegral(members.getId(), outerCodeId, codeTypeId, productId, productBatchId, organizationId, staticESSafeFormat.parse(nowTime).getTime());

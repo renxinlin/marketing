@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketingActivityProductService {
@@ -32,8 +34,10 @@ public class MarketingActivityProductService {
     
     @Autowired
     private CommonUtil commonUtil;
-    
-    
+
+    @Value("${rest.user.url}")
+    private String restUserUrl;
+
 	@Value("${rest.codemanager.url}")
 	private String codeManagerUrl;
 	
@@ -103,78 +107,118 @@ public class MarketingActivityProductService {
         HashMap<String, String> superToken = new HashMap<>();
         superToken.put("super-token",commonUtil.getSuperToken());
 
-		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
+		ResponseEntity<String> responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
 		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
 		String body=responseEntity.getBody();
 		JSONObject json=JSONObject.parseObject(body);
 		if (null==json.getString("results")) {
-			json.put("results", new ArrayList<>());
-		}
+		    Map<String, Object> liMap = new HashMap<>();
+            liMap.put("pagination", new HashMap<>());
+            liMap.put("list", new ArrayList<>());
+			json.put("results", liMap);
+		} else {
+            JSONObject resJson = json.getJSONObject("results");
+            JSONArray listJson = resJson.getJSONArray("list");
+            listJson.forEach(obj -> {
+                Map prodMap = (Map)obj;
+                List<Object> prodBatchs = (List)prodMap.get("productBatchs");
+                if (prodBatchs != null) {
+                    List<Object> filPordBatchList =  prodBatchs.stream().filter(prodObj -> {
+                        Map prodBatchMap = (Map)prodObj;
+                        if (prodBatchMap == null) {
+                            return false;
+                        }
+                        if (prodBatchMap.get("productBatchId") == null || prodBatchMap.get("productBatchName") == null) {
+                            return false;
+                        }
+                        return true;
+                    }).collect(Collectors.toList());
+                    prodMap.put("productBatchs", filPordBatchList);
+                }
+            });
+            resJson.put("list", listJson);
+            json.put("results", resJson);
+        }
 		return json;
 	}
 
-//    public JSONObject relationActProds(String search, Integer pageSize, Integer current) throws SuperCodeException {
-//        String organizationId=commonUtil.getOrganizationId();
-//        List<String> productBatchIds=mapper.usedProductBatchIds(organizationId);
-//        Map<String, Object>params=new HashMap<String, Object>();
-////		if (null!=productBatchIds && !productBatchIds.isEmpty()) {
-////			StringBuffer buf=new StringBuffer();
-////			for (String productBatchId : productBatchIds) {
-////				buf.append(productBatchId).append(",");
-////			}
-////			params.put("productBatchIds",buf.substring(0, buf.length()-1));
-////		}
-//        params.put("organizationId",organizationId );
-//        params.put("relationType",3 );
-//        params.put("search",search);
-//        params.put("pageSize",pageSize);
-//        params.put("current",current);
-//        Map<String, String> headerMap=new HashMap<>();
-//        headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
-//        HashMap<String, String> superToken = new HashMap<>();
-//        superToken.put("super-token",commonUtil.getSuperToken());
-//
-//        ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
-//        logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
-//        String body=responseEntity.getBody();
-//        JSONObject json=JSONObject.parseObject(body);
-//        if (null==json.getString("results")) {
-//            json.put("results", new ArrayList<>());
-//        }
-//        return json;
-//    }
-//
-//
-//    public JSONObject relationActProds(String search, Integer pageSize, Integer current) throws SuperCodeException {
-//        String organizationId=commonUtil.getOrganizationId();
-//        List<String> productBatchIds=mapper.usedProductBatchIds(organizationId);
-//        Map<String, Object>params=new HashMap<String, Object>();
-////		if (null!=productBatchIds && !productBatchIds.isEmpty()) {
-////			StringBuffer buf=new StringBuffer();
-////			for (String productBatchId : productBatchIds) {
-////				buf.append(productBatchId).append(",");
-////			}
-////			params.put("productBatchIds",buf.substring(0, buf.length()-1));
-////		}
-//        params.put("organizationId",organizationId );
-//        params.put("relationType",3 );
-//        params.put("search",search);
-//        params.put("pageSize",pageSize);
-//        params.put("current",current);
-//        Map<String, String> headerMap=new HashMap<>();
-//        headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
-//        HashMap<String, String> superToken = new HashMap<>();
-//        superToken.put("super-token",commonUtil.getSuperToken());
-//
-//        ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
-//        logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
-//        String body=responseEntity.getBody();
-//        JSONObject json=JSONObject.parseObject(body);
-//        if (null==json.getString("results")) {
-//            json.put("results", new ArrayList<>());
-//        }
-//        return json;
-//    }
+    public JSONObject relationCustomers(String search, Integer pageSize, Integer current) throws SuperCodeException {
+        Map<String, Object>params=new HashMap<String, Object>();
+        params.put("search",search);
+        params.put("pageSize",pageSize);
+        params.put("current",current);
+        Map<String, String> headerMap=new HashMap<>();
+        headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
+        HashMap<String, String> superToken = new HashMap<>();
+        superToken.put("super-token",commonUtil.getSuperToken());
+
+        ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.CUSTOMER_ENABLE_PAGE_LIST, params, superToken);
+        logger.info("获取所有渠道信息："+responseEntity.toString());
+        String body=responseEntity.getBody();
+        JSONObject json=JSONObject.parseObject(body);
+        if (null==json.getString("results")) {
+            Map<String, Object> liMap = new HashMap<>();
+            liMap.put("pagination", new HashMap<>());
+            liMap.put("list", new ArrayList<>());
+            json.put("results", liMap);
+        } else {
+            JSONObject resJson = json.getJSONObject("results");
+            JSONArray listJson = resJson.getJSONArray("list");
+            if (listJson != null) {
+                List mkList = listJson.stream().filter(obj -> {
+                    Map prodMap = (Map)obj;
+                    Integer mkwarehousing = (Integer) prodMap.get("mkwarehousing");
+                    if (mkwarehousing != null && mkwarehousing.intValue() == 1) {
+                        return true;
+                    }
+                    return false;
+                }).collect(Collectors.toList());
+                resJson.put("list", mkList);
+                json.put("results", resJson);
+            }
+        }
+        return json;
+    }
+
+
+    public JSONObject relationChildrenCustomers(String customerSuperior, String search, Integer pageSize, Integer current) throws SuperCodeException {
+        Map<String, Object>params=new HashMap<String, Object>();
+        params.put("customerSuperior",customerSuperior);
+        params.put("search",search);
+        params.put("pageSize",pageSize);
+        params.put("current",current);
+        Map<String, String> headerMap=new HashMap<>();
+        headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
+        HashMap<String, String> superToken = new HashMap<>();
+        superToken.put("super-token",commonUtil.getSuperToken());
+
+        ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.CUSTOMER_ENABLE_CHILD_PAGE_LIST, params, superToken);
+        logger.info("获取下级渠道信息："+responseEntity.toString());
+        String body=responseEntity.getBody();
+        JSONObject json=JSONObject.parseObject(body);
+        if (null==json.getString("results")) {
+            Map<String, Object> liMap = new HashMap<>();
+            liMap.put("pagination", new HashMap<>());
+            liMap.put("list", new ArrayList<>());
+            json.put("results", liMap);
+        } else {
+            JSONObject resJson = json.getJSONObject("results");
+            JSONArray listJson = resJson.getJSONArray("list");
+            if (listJson != null) {
+                List mkList = listJson.stream().filter(obj -> {
+                    Map prodMap = (Map)obj;
+                    Integer mkwarehousing = (Integer) prodMap.get("mkwarehousing");
+                    if (mkwarehousing != null && mkwarehousing.intValue() == 1) {
+                        return true;
+                    }
+                    return false;
+                }).collect(Collectors.toList());
+                resJson.put("list", mkList);
+                json.put("results", resJson);
+            }
+        }
+        return json;
+    }
 
 
 }

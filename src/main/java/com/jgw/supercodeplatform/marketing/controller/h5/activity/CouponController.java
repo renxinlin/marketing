@@ -134,7 +134,7 @@ public class CouponController {
 		commonService.checkCodeValid(codeId, codeTypeId);
 		commonService.checkCodeTypeValid(Long.valueOf(codeTypeId));
 		//检查是渠道信息
-		MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(codeId, activityId);
+		MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(codeTypeId, codeId, activityId);
 		if (marketingChannel == null){
 			return RestResult.fail("渠道信息不正确",null);
 		}
