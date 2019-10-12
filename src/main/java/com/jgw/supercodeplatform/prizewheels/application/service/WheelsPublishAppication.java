@@ -141,15 +141,15 @@ public class WheelsPublishAppication {
         // 3-1 获取生码批次
         products = productDomainService.initSbatchIds(products);
 
-        List<Product> oldPrizeWheelsProduct = productRepository.getByPrizeWheelsId(prizeWheelsid);
         // 3-2 将此活动之前产品与码管理的信息解绑
+        List<Product> oldPrizeWheelsProduct = productRepository.getByPrizeWheelsId(prizeWheelsid);
         productDomainService.removeOldProduct(oldPrizeWheelsProduct);
-        // 将准备绑定的产品原来的绑定删除
+        // 将准备绑定的产品原来的绑定删除: 里面可能有部分产品之前属于其他活动需要解绑:
         productDomainService.removeOldProduct(products);
         // 3-3 发送新的产品绑定请求
         productDomainService.executeBizWhichCodeManagerWant(products);
 
-
+        // 持久化
         wheelsPublishRepository.updatePrizeWheel(wheels);
 
         wheelsRewardRepository.deleteByPrizeWheelsId(prizeWheelsid);
