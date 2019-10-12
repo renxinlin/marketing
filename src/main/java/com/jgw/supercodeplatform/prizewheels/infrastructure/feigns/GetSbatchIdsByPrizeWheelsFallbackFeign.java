@@ -19,7 +19,7 @@ public class GetSbatchIdsByPrizeWheelsFallbackFeign implements GetSbatchIdsByPri
     }
 
     @Override
-    public RestResult<Object> removeOldProduct() {
+    public RestResult<Object> removeOldProduct(List<SbatchUrlDto> sbatchUrlDtoList) {
         log.error("removeOldProduct失败");
         return null;
     }
