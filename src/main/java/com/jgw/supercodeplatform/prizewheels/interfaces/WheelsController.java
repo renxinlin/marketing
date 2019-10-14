@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonContr
 import com.jgw.supercodeplatform.prizewheels.application.service.WheelsPublishAppication;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsUpdateDto;
+import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -48,9 +49,9 @@ public class WheelsController extends SalerCommonController {
     @GetMapping("/detail")
     @ApiOperation(value = "详情", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<WheelsUpdateDto> detail(@RequestParam("id") Long id)   {
-        WheelsUpdateDto wheelsUpdateDto = appication.detail(id);
-        return success(wheelsUpdateDto);
+    public RestResult<WheelsDetailsVo> detail(@RequestParam("id") Long id)   {
+        WheelsDetailsVo wheelsDetailsVo = appication.getWheelsDetails(id);
+        return success(wheelsDetailsVo);
     }
 
 
