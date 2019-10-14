@@ -7,6 +7,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepo
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.transfer.WheelsPojoTransfer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Repository;
 /**
  * 六边形架构模式:实现解耦放置于基础设施
  */
+@Slf4j
 @Repository
 public class WheelsPublishRepositoryImpl implements WheelsPublishRepository {
 
@@ -31,6 +33,9 @@ public class WheelsPublishRepositoryImpl implements WheelsPublishRepository {
     public void publish(Wheels wheels) {
         WheelsPojo wheelsPojo =  wheelsPojoTransfer.tranferDomainToPojo(wheels);
         wheelsMapper.insert(wheelsPojo);
+        wheels.setId(wheelsPojo.getId());
+        log.info("新增大转盘返回大转盘主键{}",wheelsPojo.getId());
+
     }
 
     @Override

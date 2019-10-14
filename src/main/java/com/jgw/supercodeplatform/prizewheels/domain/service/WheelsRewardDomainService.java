@@ -33,8 +33,17 @@ public class WheelsRewardDomainService {
         }
     }
 
+
+    public void checkWhenAdd(List<WheelsReward> wheelsRewards) {
+        Asserts.check(!CollectionUtils.isEmpty(wheelsRewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+
+
+    }
+
+
     public void cdkEventCommitedWhenNecessary(List<WheelsReward> wheelsRewards) {
         for(WheelsReward wheelsReward : wheelsRewards){
+            Asserts.check(wheelsReward.getId()!= null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());
             if(!StringUtils.isEmpty(wheelsReward.getCdkKey())){
                 CdkEvent cdkEvent = new CdkEvent(wheelsReward.getId(), wheelsReward.getCdkKey());
                 cdkEventPublisher.addSubscriber(cdkEventSubscriber);

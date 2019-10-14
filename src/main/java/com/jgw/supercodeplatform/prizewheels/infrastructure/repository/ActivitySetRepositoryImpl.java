@@ -14,8 +14,9 @@ import org.springframework.stereotype.Service;
 public class ActivitySetRepositoryImpl implements ActivitySetRepository {
     @Autowired
     private ActivitySetMapper activitySetMapper;
+
     @Override
-    public void updateWhernWheelsChanged(ActivitySet activitySet) {
+    public void updateWhenWheelsChanged(ActivitySet activitySet) {
         Asserts.check(activitySet != null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         Asserts.check(activitySet.getId1() != null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         Asserts.check(activitySet.getActivityId() != null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());
