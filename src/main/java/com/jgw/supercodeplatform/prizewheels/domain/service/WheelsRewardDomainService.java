@@ -31,6 +31,12 @@ public class WheelsRewardDomainService {
             Asserts.check(wheelsReward.getPrizeWheelId()  != null && wheelsReward.getPrizeWheelId() > 0
                     ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         }
+
+        double pro = 0D;
+        for(WheelsReward wheelsReward : wheelsRewards){
+            pro = pro + wheelsReward.getProbability();
+        };
+        Asserts.check(pro == 100D,"概率总和100%");
     }
 
 
@@ -42,6 +48,12 @@ public class WheelsRewardDomainService {
 
     public void checkWhenAdd(List<WheelsReward> wheelsRewards) {
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        double pro = 0D;
+
+        for(WheelsReward wheelsReward : wheelsRewards){
+            pro = pro + wheelsReward.getProbability();
+        };
+        Asserts.check(pro == 100D,"概率总和100%");
     }
 
 

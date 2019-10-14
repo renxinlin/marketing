@@ -54,11 +54,6 @@ public class ProductRepositoryImpl implements ProductRepository {
         return delete;
     }
 
-    @Override
-    public void batchSave(List<Product> products) {
-        List<ProductPojo> productPojos = productPojoTransfer.transferProductsToPojos(products);
-        productBatchService.saveBatch(productPojos);
-    }
 
     @Override
     public List<Product> getByPrizeWheelsId(Long prizeWheelsid) {

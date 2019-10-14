@@ -11,8 +11,6 @@ public interface ProductRepository {
 
     int deleteByPrizeWheelsId(Long id);
 
-    void batchSave(List<Product> products);
-
     List<Product> getByPrizeWheelsId(Long prizeWheelsid);
 
     List<ProductPojo> getPojoByPrizeWheelsId(Long prizeWheelsid);
