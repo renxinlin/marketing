@@ -13,13 +13,17 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.ActivitySetRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.service.ProcessActivityDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ActivitySet;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
+import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,42 +77,65 @@ public class WheelsPublishAppication {
 
     @Autowired
     private WheelsMapper wheelsMapper;
+
+    @Autowired
+    private ProcessActivityDomainService processActivityDomainService;
+
+    @Autowired
+    private  ActivitySetRepository activitySetRepository;
+
     /**
      * 新增大转盘活动
      * @param wheelsDto
      */
     @Transactional(rollbackFor = Exception.class)
     public void publish(WheelsDto wheelsDto){
-        // 数据获取
-        String organizationId = commonUtil.getOrganizationId();
-        String organization = commonUtil.getOrganizationName();
-        String accountId = commonUtil.getUserLoginCache().getAccountId();
-        String userName = commonUtil.getUserLoginCache().getUserName();
-
-
-        // 创建发布大转盘相关领域并完成业务
-
-        // 设置中奖产品 剔除存在的产品批次活动
-
-        // 设置奖励信息
-        // 异步事件 获取导入的cdk_key 发布cdk关联产品事件 并给cdk关联产品事件绑定消费者
-
-        Publisher publisher = new Publisher();
-        publisher.initUserInfoWhenFirstPublish(accountId,userName);
+        // 数据转换
+        byte autoType = wheelsDto.getAutoType();
+        Wheels wheels =  wheelsTransfer.tranferToDomainWhenAdd(wheelsDto);
 
         List<ProductDto> productDtos = wheelsDto.getProductDtos();
-        List<Product> products = productTransfer.dtoToProduct(productDtos);
-
-
-        Wheels wheels = new Wheels(organizationId,organization);
+        List<WheelsRewardDto> wheelsRewardDtos = wheelsDto.getWheelsRewardDtos();
+        List<Product> products = productTransfer.transferDtoToDomain(productDtos, autoType);
+        List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferDtoToDomain(wheelsRewardDtos);
+        // 1 业务处理
+        // 大转盘
+        Publisher publisher = new Publisher();
+        publisher.initUserInfo(
+                commonUtil.getUserLoginCache().getAccountId()
+                ,commonUtil.getUserLoginCache().getUserName());
+        wheels.initOrgInfo(commonUtil.getOrganizationId(),commonUtil.getOrganizationName());
         wheels.addPublisher(publisher);
+        wheels.checkWhenAdd();
+        // 持久化 返回主键
+        wheelsPublishRepository.publish(wheels);
+        Long prizeWheelsid = wheels.getId();
 
-        // 持久化业务
+        // 2 奖励
+        wheelsRewardDomainService.checkWhenAdd(wheelsRewards);
+        // 持久化返回主键
+        wheelsRewardRepository.batchSave(wheelsRewards);
+
+        // 2-1 cdk 领域事件 奖品与cdk绑定
+        wheelsRewardDomainService.cdkEventCommitedWhenNecessary(wheelsRewards);
+
+        // 3 码管理业务
+        // 3-1 获取生码批次
+        products = productDomainService.initSbatchIds(products);
+
+        // 3-2 将此活动涉及产品与码管理的信息解绑
+        productDomainService.removeOldProduct(products);
+        // 3-3 发送新的产品绑定请求
+        productDomainService.executeBizWhichCodeManagerWant(products);
+        // 4 修改活动聚合老表
+        ActivitySet activitySet = processActivityDomainService.formPrizeWheelsToOldActivity(wheels, (int) autoType);
+        // 持久化
+
         productRepository.saveButDeleteOld(products);
 
-        wheelsPublishRepository.publish(wheels);
+        activitySetRepository.addWhenWheelsAdd(activitySet);
 
-    }// 单次操作:100万CDK 的更新 3000/s => 300s 管理系统上线活动允许
+    }
 
 
     @Transactional
@@ -116,7 +143,6 @@ public class WheelsPublishAppication {
         wheelsPublishRepository.deletePrizeWheelsById(id);
         productRepository.deleteByPrizeWheelsId(id);
         wheelsRewardRepository.deleteByPrizeWheelsId(id);
-
         // TODO cdk后期删除
     }
 
@@ -168,7 +194,7 @@ public class WheelsPublishAppication {
 
         productRepository.saveButDeleteOld(products);
 
-        activitySetRepository.updateWhernWheelsChanged(activitySet);
+        activitySetRepository.updateWhenWheelsChanged(activitySet);
 
     }
 

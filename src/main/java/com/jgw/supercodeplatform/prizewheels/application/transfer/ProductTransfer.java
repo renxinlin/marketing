@@ -44,4 +44,18 @@ public class ProductTransfer {
                     return product;})
                 .collect(Collectors.toList());
     }
+
+    public List<Product> transferDtoToDomain(List<ProductDto> productDtos, byte autoType) {
+        return productDtos
+                .stream()
+                .map(productDto -> {
+                    Product product = modelMapper.map(productDto, Product.class);
+                    //TODO 检查
+                    Asserts.check(product.getReferenceRole() != null ,"modelMapper 映射不了...........");
+                    log.error("modelMapper映射问题===============product.getReferenceRole() =>{}" ,product.getReferenceRole());
+                    product.setAutoType(autoType);
+                    product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
+                    return product;})
+                .collect(Collectors.toList());
+    }
 }

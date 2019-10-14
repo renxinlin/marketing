@@ -19,7 +19,7 @@ public interface ActivitySetRepository {
      * 修改活动聚合的老表
      * @param activitySet
      */
-    void  updateWhernWheelsChanged(ActivitySet activitySet);
+    void  updateWhenWheelsChanged(ActivitySet activitySet);
 
      void addWhenWheelsAdd(ActivitySet activitySet) ;
 
