@@ -24,9 +24,11 @@ import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPoj
 import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsPublishRepositoryImpl;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
+import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -208,40 +210,18 @@ public class WheelsPublishAppication {
         WheelsDetailsVo wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
         //获取产品
         List<Product> wheelsProducts = productRepository.getByPrizeWheelsId(id);
+        Asserts.check(!CollectionUtils.isEmpty(wheelsProducts),"为获取到产品信息");
         List<ProductUpdateDto> productUpdateDtos=productTransfer.productToProductDto(wheelsProducts);
         wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
         //获取奖励
         List<WheelsReward> wheelsRewards=wheelsRewardRepository.getByPrizeWheelsId(id);
+        Asserts.check(!CollectionUtils.isEmpty(wheelsRewards),"为获取到奖励信息");
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewards);
         wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
         wheelsDetailsVo.setAutoType(wheelsProducts.get(0).getAutoType());
         return null;
     }
     public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
-        return null;
-    }
-
-    /**
-     * B端 根据组织id和组织名称获取大转盘详情
-     * @return
-     */
-    public WheelsDetailsVo getWheelsDetails(){
-        // 组织数据获取
-
-        return null;
-    }
-
-    public String uploadExcel(MultipartFile uploadFile){
-
-//        ExcelUtils
-//        String fileName = uploadFile.getOriginalFilename();
-//        String path = commonUtil.getRoot()+ File.separator;
-//        File filePath = new File(path);
-//        if (!filePath.isDirectory()){
-//            filePath.mkdir();
-//        }
-//        File file = new File(path, commonUtil.getUUID() + fileName);
-//        uploadFile.transferTo(file);
         return null;
     }
 }
