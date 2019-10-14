@@ -114,7 +114,7 @@ public class WheelsPublishAppication {
         wheelsPublishRepository.publish(wheels);
         Long prizeWheelsid = wheels.getId();
 
-        // 2 奖励
+        // 2 奖励 包含一个未中奖
         wheelsRewardDomainService.initPrizeWheelsid(wheelsRewards,prizeWheelsid);
         wheelsRewardDomainService.checkWhenAdd(wheelsRewards);
         // 持久化返回主键
@@ -173,7 +173,7 @@ public class WheelsPublishAppication {
         wheels.addPublisher(publisher);
         wheels.checkWhenUpdate();
 
-        // 2 奖励
+        // 2 奖励 包含一个未中奖
         wheelsRewardDomainService.checkWhenUpdate(wheelsRewards);
         // 2-1 cdk 领域事件 奖品与cdk绑定
         wheelsRewardDomainService.cdkEventCommitedWhenNecessary(wheelsRewards);
@@ -226,9 +226,6 @@ public class WheelsPublishAppication {
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
         wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
         wheelsDetailsVo.setAutoType(productPojos.get(0).getAutoType());
-        return null;
-    }
-    public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
-        return null;
+        return wheelsDetailsVo;
     }
 }
