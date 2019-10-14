@@ -4,6 +4,8 @@ package com.jgw.supercodeplatform.prizewheels.application.service;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
+import com.jgw.supercodeplatform.pojo.cache.OrganizationCache;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsRewardTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsTransfer;
@@ -11,19 +13,24 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
-import com.jgw.supercodeplatform.prizewheels.domain.repository.ActivitySetRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
-import com.jgw.supercodeplatform.prizewheels.domain.service.ProcessActivityDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ActivitySet;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,10 +72,7 @@ public class WheelsPublishAppication {
     private ProductDomainService productDomainService;
 
     @Autowired
-    private ActivitySetRepository activitySetRepository;
-
-    @Autowired
-    private ProcessActivityDomainService processActivityDomainService;
+    private WheelsMapper wheelsMapper;
     /**
      * 新增大转盘活动
      * @param wheelsDto
@@ -138,8 +142,6 @@ public class WheelsPublishAppication {
         wheels.addPublisher(publisher);
         wheels.checkWhenUpdate();
 
-
-
         // 2 奖励
         wheelsRewardDomainService.checkWhenUpdate(wheelsRewards);
         // 2-1 cdk 领域事件 奖品与cdk绑定
@@ -175,4 +177,32 @@ public class WheelsPublishAppication {
         return null;
     }
 
+    public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
+        return null;
+    }
+
+    /**
+     * B端 根据组织id和组织名称获取大转盘详情
+     * @return
+     */
+    public WheelsDetailsVo getWheelsDetails(){
+        // 组织数据获取
+        String organizationId = commonUtil.getOrganizationId();
+        String organization = commonUtil.getOrganizationName();
+        return wheelsMapper.getWheelsDetails(organizationId,organization);
+    }
+
+    public String uploadExcel(MultipartFile uploadFile){
+
+//        ExcelUtils
+//        String fileName = uploadFile.getOriginalFilename();
+//        String path = commonUtil.getRoot()+ File.separator;
+//        File filePath = new File(path);
+//        if (!filePath.isDirectory()){
+//            filePath.mkdir();
+//        }
+//        File file = new File(path, commonUtil.getUUID() + fileName);
+//        uploadFile.transferTo(file);
+        return null;
+    }
 }

@@ -15,4 +15,6 @@ public interface WheelsPublishRepository {
     int deletePrizeWheelsById(Long id);
 
     int updatePrizeWheel(Wheels wheels);
+
+
 }
