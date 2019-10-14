@@ -18,15 +18,19 @@ import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepo
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
+import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +71,9 @@ public class WheelsPublishAppication {
 
     @Autowired
     private ProductDomainService productDomainService;
+
+    @Autowired
+    private WheelsMapper wheelsMapper;
     /**
      * 新增大转盘活动
      * @param wheelsDto
@@ -164,6 +171,31 @@ public class WheelsPublishAppication {
     }
 
     public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
+        return null;
+    }
+
+    /**
+     * B端 根据组织id和组织名称获取大转盘详情
+     * @return
+     */
+    public WheelsDetailsVo getWheelsDetails(){
+        // 组织数据获取
+        String organizationId = commonUtil.getOrganizationId();
+        String organization = commonUtil.getOrganizationName();
+        return wheelsMapper.getWheelsDetails(organizationId,organization);
+    }
+
+    public String uploadExcel(MultipartFile uploadFile){
+
+//        ExcelUtils
+//        String fileName = uploadFile.getOriginalFilename();
+//        String path = commonUtil.getRoot()+ File.separator;
+//        File filePath = new File(path);
+//        if (!filePath.isDirectory()){
+//            filePath.mkdir();
+//        }
+//        File file = new File(path, commonUtil.getUUID() + fileName);
+//        uploadFile.transferTo(file);
         return null;
     }
 }
