@@ -71,8 +71,7 @@ public class WheelsPublishAppication {
     @Autowired
     private ProductDomainService productDomainService;
 
-    @Autowired
-    private WheelsMapper wheelsMapper;
+
 
     @Autowired
     private ProcessActivityDomainService processActivityDomainService;
@@ -111,6 +110,7 @@ public class WheelsPublishAppication {
         Long prizeWheelsid = wheels.getId();
 
         // 2 奖励
+        wheelsRewardDomainService.initPrizeWheelsid(wheelsRewards,prizeWheelsid);
         wheelsRewardDomainService.checkWhenAdd(wheelsRewards);
         // 持久化返回主键
         wheelsRewardRepository.batchSave(wheelsRewards);
@@ -118,7 +118,8 @@ public class WheelsPublishAppication {
         // 2-1 cdk 领域事件 奖品与cdk绑定
         wheelsRewardDomainService.cdkEventCommitedWhenNecessary(wheelsRewards);
 
-        // 3 码管理业务
+        // 3 码管理业务 绑定活动Id
+        products = productDomainService.initPrizeWheelsId(products,prizeWheelsid);
         // 3-1 获取生码批次
         products = productDomainService.initSbatchIds(products);
 

@@ -24,4 +24,11 @@ public interface ProductDomainService {
     void executeBizWhichCodeManagerWant(List<Product> products);
 
     void removeOldProduct(List<Product> byPrizeWheelsId);
+
+    default List<Product> initPrizeWheelsId(List<Product> products, Long prizeWheelsid){
+        products.forEach(product -> {
+            product.setActivitySetId(prizeWheelsid);
+        });
+        return products;
+    }
 }

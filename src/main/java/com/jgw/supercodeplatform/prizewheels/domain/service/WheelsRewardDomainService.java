@@ -34,10 +34,14 @@ public class WheelsRewardDomainService {
     }
 
 
+    public void initPrizeWheelsid(List<WheelsReward> wheelsRewards, Long prizeWheelsid) {
+        for(WheelsReward wheelsReward : wheelsRewards){
+            wheelsReward.setPrizeWheelId(prizeWheelsid);
+        }
+    }
+
     public void checkWhenAdd(List<WheelsReward> wheelsRewards) {
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
-
-
     }
 
 
@@ -53,4 +57,6 @@ public class WheelsRewardDomainService {
         }
 
     }
+
+
 }
