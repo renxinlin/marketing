@@ -11,11 +11,14 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.ActivitySetRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.service.ProcessActivityDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ActivitySet;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -60,6 +63,12 @@ public class WheelsPublishAppication {
 
     @Autowired
     private ProductDomainService productDomainService;
+
+    @Autowired
+    private ActivitySetRepository activitySetRepository;
+
+    @Autowired
+    private ProcessActivityDomainService processActivityDomainService;
     /**
      * 新增大转盘活动
      * @param wheelsDto
@@ -109,11 +118,12 @@ public class WheelsPublishAppication {
     public void update(WheelsUpdateDto wheelsUpdateDto) {
         // 数据转换
         Long prizeWheelsid = wheelsUpdateDto.getId();
+        byte autoType = wheelsUpdateDto.getAutoType();
         Wheels wheels =  wheelsTransfer.tranferToDomain(wheelsUpdateDto);
 
         List<ProductUpdateDto> productUpdateDtos = wheelsUpdateDto.getProductUpdateDtos();
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos = wheelsUpdateDto.getWheelsRewardUpdateDtos();
-        List<Product> products = productTransfer.transferUpdateDtoToDomain(productUpdateDtos, prizeWheelsid,wheelsUpdateDto.getAutoType());
+        List<Product> products = productTransfer.transferUpdateDtoToDomain(productUpdateDtos, prizeWheelsid, autoType);
         List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferUpdateDtoToDomain(wheelsRewardUpdateDtos, prizeWheelsid);
         // 1 业务处理
         // 大转盘
@@ -124,6 +134,8 @@ public class WheelsPublishAppication {
         wheels.initOrgInfo(commonUtil.getOrganizationId(),commonUtil.getOrganizationName());
         wheels.addPublisher(publisher);
         wheels.checkWhenUpdate();
+
+
 
         // 2 奖励
         wheelsRewardDomainService.checkWhenUpdate(wheelsRewards);
@@ -141,7 +153,8 @@ public class WheelsPublishAppication {
         productDomainService.removeOldProduct(products);
         // 3-3 发送新的产品绑定请求
         productDomainService.executeBizWhichCodeManagerWant(products);
-
+        // 4 修改活动聚合老表
+        ActivitySet activitySet = processActivityDomainService.formPrizeWheelsToOldActivity(wheels, (int) autoType);
         // 持久化
         wheelsPublishRepository.updatePrizeWheel(wheels);
 
@@ -149,7 +162,9 @@ public class WheelsPublishAppication {
         wheelsRewardRepository.batchSave(wheelsRewards);
 
         productRepository.saveButDeleteOld(products);
-        // 结束任务
+
+        activitySetRepository.updateWhernWheelsChanged(activitySet);
+
     }
 
     public WheelsUpdateDto detail(Long id) {
