@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.prizewheels.application.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class GetWheelsRewardApplication {
 
     @Transactional(rollbackFor = Exception.class)
-    public String reward(Long id, H5LoginVO user) {
-        log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), id);
+    public String reward(PrizeWheelsRewardDto prizeWheelsRewardDto, H5LoginVO user) {
+        log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), JSONObject.toJSONString(prizeWheelsRewardDto));
         // 校验用户状态 码，码制校验
         // 码被扫校验   有公众号返回公众号否则返回扫过提示
 
