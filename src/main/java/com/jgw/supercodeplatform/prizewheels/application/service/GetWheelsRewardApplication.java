@@ -64,9 +64,8 @@ public class GetWheelsRewardApplication {
 
     public WheelsDetailsVo detail(String productBatchId) {
         log.info("H5大转盘详情:产品批次ID{}", productBatchId);
-        // TODO 实现
+        //
         WheelsDetailsVo wheelsDetailsVo=new WheelsDetailsVo();
-
         //获取产品
         List<ProductPojo> productPojos = productRepositoryImpl.getPojoByPrizeWheelsId(productBatchId);
         Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
