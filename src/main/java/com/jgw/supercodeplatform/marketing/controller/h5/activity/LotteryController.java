@@ -81,7 +81,7 @@ public class LotteryController extends CommonUtil {
     public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
         ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
         LotteryOprationDto lotteryOprationDto = new LotteryOprationDto();
-        MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
+        MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeTypeId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
         if (marketingChannel == null){
             return RestResult.successWithData(new LotteryResultMO("渠道信息不对"));
         }
@@ -142,7 +142,7 @@ public class LotteryController extends CommonUtil {
         // 是不是营销码制，不是不可通过
         commonService.checkCodeTypeValid(codeTypeId);
         commonService.checkCodeValid(codeId,codeTypeId+"");
-        MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
+        MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeTypeId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
         if (marketingChannel == null){
             throw new SuperCodeExtException("渠道信息不对");
         }
