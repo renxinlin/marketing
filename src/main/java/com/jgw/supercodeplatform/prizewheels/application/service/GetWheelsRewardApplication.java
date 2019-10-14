@@ -11,6 +11,7 @@ import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRew
 import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.ProductRepositoryImpl;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsPublishRepositoryImpl;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsRewardRepositoryImpl;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductUpdateDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardUpdateDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
@@ -46,8 +47,8 @@ public class GetWheelsRewardApplication {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public String reward(Long id, H5LoginVO user) {
-        log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), id);
+    public String reward(PrizeWheelsRewardDto prizeWheelsRewardDto, H5LoginVO user) {
+        log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), JSONObject.toJSONString(prizeWheelsRewardDto));
         // 校验用户状态 码，码制校验
         // 码被扫校验   有公众号返回公众号否则返回扫过提示
 
