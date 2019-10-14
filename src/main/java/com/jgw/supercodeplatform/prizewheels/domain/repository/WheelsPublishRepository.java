@@ -17,7 +17,18 @@ public interface WheelsPublishRepository {
 
     int updatePrizeWheel(Wheels wheels);
 
+    /**
+     * B端
+     * @param id
+     * @return
+     */
     WheelsPojo getWheels(Long id);
 
+    /**
+     * C端
+     * @param id
+     * @return
+     */
+    WheelsPojo getWheelsById(Long id);
 
 }

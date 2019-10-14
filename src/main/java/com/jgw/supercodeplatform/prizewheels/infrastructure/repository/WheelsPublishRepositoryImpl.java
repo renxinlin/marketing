@@ -56,4 +56,11 @@ public class WheelsPublishRepositoryImpl implements WheelsPublishRepository {
         return wheelsMapper.selectOne(wrapper);
     }
 
+    @Override
+    public WheelsPojo getWheelsById(Long id) {
+        QueryWrapper<WheelsPojo> wrapper = new QueryWrapper<>();
+        wrapper.eq("Id",id);
+        return wheelsMapper.selectOne(wrapper);
+    }
+
 }

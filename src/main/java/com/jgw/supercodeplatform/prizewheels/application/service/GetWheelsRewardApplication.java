@@ -5,6 +5,9 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsRewardTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsTransfer;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ProductPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
@@ -37,13 +40,13 @@ public class GetWheelsRewardApplication {
     private WheelsRewardTransfer wheelsRewardTransfer;
 
     @Autowired
-    private WheelsPublishRepositoryImpl wheelsPublishRepositoryImpl;
+    private WheelsPublishRepository wheelsPublishRepository;
 
     @Autowired
-    private ProductRepositoryImpl productRepositoryImpl;
+    private ProductRepository productRepository;
 
     @Autowired
-    private WheelsRewardRepositoryImpl wheelsRewardRepositoryImpl;
+    private WheelsRewardRepository wheelsRewardRepository;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -68,18 +71,18 @@ public class GetWheelsRewardApplication {
         //
         WheelsDetailsVo wheelsDetailsVo=new WheelsDetailsVo();
         //获取产品
-        List<ProductPojo> productPojos = productRepositoryImpl.getPojoByPrizeWheelsId(productBatchId);
+        List<ProductPojo> productPojos = productRepository.getPojoByBatchId(productBatchId);
         Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
         //一个批次id对应一个产品id
         Long id=productPojos.get(0).getId();
         List<ProductUpdateDto> productUpdateDtos=productTransfer.productPojoToProductUpdateDto(productPojos);
         wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
 
-        WheelsPojo wheelsPojo=wheelsPublishRepositoryImpl.getWheels(id);
+        WheelsPojo wheelsPojo=wheelsPublishRepository.getWheelsById(id);
         Asserts.check(wheelsPojo!=null,"未获取到大转盘信息");
         wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
         //获取奖励
-        List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepositoryImpl.getByPrizeWheelsId(id);
+        List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepository.getByPrizeWheelsId(id);
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewardPojos),"未获取到奖励信息");
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
         wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
