@@ -84,7 +84,7 @@ public class MarketingMemberProductIntegralService {
 	 * @throws SuperCodeException 
 	 */
 	@Transactional(rollbackFor = Exception.class)
-	public void obtainCoupon(MarketingMemberProductIntegral productIntegral, MarketingMembers members, String productName, String outerCodeId) throws ParseException, SuperCodeException {
+	public void obtainCoupon(MarketingMemberProductIntegral productIntegral, MarketingMembers members, String productName, String codeTypeId, String outerCodeId) throws ParseException, SuperCodeException {
 		String integralMsg = JSON.toJSONString(productIntegral);
 		String productId = productIntegral.getProductId();
 		String productBatchId = productIntegral.getProductBatchId();
@@ -103,7 +103,7 @@ public class MarketingMemberProductIntegralService {
 			log.info("该产品未参加优惠券活动：{}", integralMsg);
 			return;
 		}
-		MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(outerCodeId, marketingActivityProduct.getActivitySetId());
+		MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(codeTypeId, outerCodeId, marketingActivityProduct.getActivitySetId());
 		if (marketingChannel == null) {
 			log.info("该产品渠道未参加优惠券活动：{}", integralMsg);
 			return;

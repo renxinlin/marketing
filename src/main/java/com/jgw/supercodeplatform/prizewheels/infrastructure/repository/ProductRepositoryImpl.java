@@ -26,13 +26,20 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Autowired
     private ProductPojoTransfer productPojoTransfer;
 
+    /**
+     * 删除旧的产品
+     * @param products
+     */
     @Override
     public void saveButDeleteOld(List<Product> products) {
         List<String> productBatchIds = products.stream().map(product -> product.getProductBatchId()).collect(Collectors.toList());
+
+        // 删除当前的产品已经存在于数据库的
         QueryWrapper<ProductPojo> wrapper = new QueryWrapper<>();
         wrapper.in("ProductBatchId",productBatchIds);
         productMapper.delete(wrapper);
-
+        // 删除这个活动之前选择,此次没有选择的
+        deleteByPrizeWheelsId(products.get(0).getActivitySetId());
 
         List<ProductPojo> productPojos = productPojoTransfer.transferProductsToPojos(products);
         productBatchService.saveBatch(productPojos);

@@ -768,9 +768,11 @@ public class CodeEsService extends AbstractEsSearch {
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
+		QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", 1);
 		Script script = new Script(ScriptType.INLINE, Script.DEFAULT_SCRIPT_LANG,"doc['organizationId.keyword'].value+','+doc['organizationFullName.keyword'].value", new HashMap<>());
 		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).script(script).order(BucketOrder.count(false)).size(7);
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
+		boolQueryBuilder.must(queryBuilderStatus);
 		searchRequestBuilder.setQuery(boolQueryBuilder);
 		searchRequestBuilder.addAggregation(callTypeTeamAgg);
 		// 获取查询结果

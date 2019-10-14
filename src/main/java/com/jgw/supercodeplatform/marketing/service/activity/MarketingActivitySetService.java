@@ -105,7 +105,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		MarketingReceivingPage mReceivingPage=maReceivingPageMapper.getByActivityId(activitySetId);
 		MarketingActivitySet marketingActivitySet = mSetMapper.selectById(activitySetId);
 		String merchantsInfo = marketingActivitySet.getMerchantsInfo();
-		if (StringUtils.isNotBlank(merchantsInfo)) {
+		if (StringUtils.isNotBlank(merchantsInfo) && merchantsInfo.length() > 2) {
 			JSONObject merchantJson = JSON.parseObject(merchantsInfo);
 			mReceivingPage.setMchAppid(merchantJson.getString("mchAppid"));
 			mReceivingPage.setMerchantSecret(merchantJson.getString("merchantSecret"));
