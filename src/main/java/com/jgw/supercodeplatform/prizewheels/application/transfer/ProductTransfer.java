@@ -21,7 +21,7 @@ public class ProductTransfer {
     private ModelMapper modelMapper;
 
     public List<Product> dtoToProduct(List<ProductDto> productDtos) {
-       return productDtos
+        return productDtos
                 .stream()
                 .map(productDto -> {
                     Product product = modelMapper.map(productDto, Product.class);
@@ -56,6 +56,15 @@ public class ProductTransfer {
                     product.setAutoType(autoType);
                     product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
                     return product;})
+                .collect(Collectors.toList());
+    }
+    public List<ProductUpdateDto> productToProductDto(List<Product> products) {
+        return products
+                .stream()
+                .map(product -> {
+                    ProductUpdateDto productDto = modelMapper.map(product, ProductUpdateDto.class);
+                    // TODO 字段补充
+                    return productDto;})
                 .collect(Collectors.toList());
     }
 }

@@ -20,6 +20,8 @@ import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ActivitySet;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsPublishRepositoryImpl;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +77,9 @@ public class WheelsPublishAppication {
 
     @Autowired
     private  ActivitySetRepository activitySetRepository;
+
+    @Autowired
+    private   WheelsPublishRepositoryImpl wheelsPublishRepositoryImpl;
 
     /**
      * 新增大转盘活动
@@ -191,10 +196,27 @@ public class WheelsPublishAppication {
     }
 
 
-    public WheelsUpdateDto detail(Long id) {
+    /**
+     * B端 根据组织id和组织名称获取大转盘详情
+     * @return
+     */
+    public WheelsDetailsVo getWheelsDetails(Long id ){
+        // 组织数据获取
+        // 获取大转盘
+
+        WheelsPojo wheelsPojo=wheelsPublishRepositoryImpl.getWheels(id);
+        WheelsDetailsVo wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
+        //获取产品
+        List<Product> wheelsProducts = productRepository.getByPrizeWheelsId(id);
+        List<ProductUpdateDto> productUpdateDtos=productTransfer.productToProductDto(wheelsProducts);
+        wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
+        //获取奖励
+        List<WheelsReward> wheelsRewards=wheelsRewardRepository.getByPrizeWheelsId(id);
+        List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewards);
+        wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
+        wheelsDetailsVo.setAutoType(wheelsProducts.get(0).getAutoType());
         return null;
     }
-
     public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
         return null;
     }

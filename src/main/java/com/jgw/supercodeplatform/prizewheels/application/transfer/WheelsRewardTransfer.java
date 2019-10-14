@@ -34,4 +34,12 @@ public class WheelsRewardTransfer {
                     return wheelsReward;})
                 .collect(Collectors.toList());
     }
+    public List<WheelsRewardUpdateDto> transferRewardToDomain(List<WheelsReward> wheelsRewards){
+        return wheelsRewards
+                .stream()
+                .map(wheelsReward -> {
+                    WheelsRewardUpdateDto wheelsRewardUpdateDto=modelMapper.map(wheelsReward,WheelsRewardUpdateDto.class);
+                    return wheelsRewardUpdateDto;
+                }).collect(Collectors.toList());
+    }
 }
