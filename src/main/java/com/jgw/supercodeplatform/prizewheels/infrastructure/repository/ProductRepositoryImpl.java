@@ -65,9 +65,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<ProductPojo> getPojoByPrizeWheelsId(Long prizeWheelsid) {
+    public List<ProductPojo> getPojoByPrizeWheelsId(String productBatchId) {
         QueryWrapper<ProductPojo> wapper = new QueryWrapper<>();
-        wapper.eq("ActivitySetId",prizeWheelsid);
+        wapper.eq("ProductBatchId",productBatchId);
         List<ProductPojo> productPojos = productMapper.selectList(wapper);
         return productPojos;
     }

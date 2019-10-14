@@ -13,5 +13,5 @@ public interface ProductRepository {
 
     List<Product> getByPrizeWheelsId(Long prizeWheelsid);
 
-    List<ProductPojo> getPojoByPrizeWheelsId(Long prizeWheelsid);
+    List<ProductPojo> getPojoByPrizeWheelsId(String productBatchId);
 }

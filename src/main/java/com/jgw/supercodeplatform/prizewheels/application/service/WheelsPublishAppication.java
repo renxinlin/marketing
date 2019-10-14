@@ -56,7 +56,6 @@ public class WheelsPublishAppication {
     @Autowired
     private ProductTransfer productTransfer;
 
-
     @Autowired
     private WheelsRewardTransfer wheelsRewardTransfer;
 
@@ -75,17 +74,20 @@ public class WheelsPublishAppication {
     @Autowired
     private ProductDomainService productDomainService;
 
-
-
     @Autowired
     private ProcessActivityDomainService processActivityDomainService;
 
     @Autowired
     private ActivitySetRepository activitySetRepository;
 
+    @Autowired
+    private WheelsPublishRepositoryImpl wheelsPublishRepositoryImpl;
 
+    @Autowired
+    private ProductRepositoryImpl productRepositoryImpl;
 
-
+    @Autowired
+    private WheelsRewardRepositoryImpl wheelsRewardRepositoryImpl;
 
     /**
      * 新增大转盘活动
@@ -114,7 +116,7 @@ public class WheelsPublishAppication {
         wheelsPublishRepository.publish(wheels);
         Long prizeWheelsid = wheels.getId();
 
-        // 2 奖励 包含一个未中奖
+        // 2 奖励
         wheelsRewardDomainService.initPrizeWheelsid(wheelsRewards,prizeWheelsid);
         wheelsRewardDomainService.checkWhenAdd(wheelsRewards);
         // 持久化返回主键
@@ -173,7 +175,7 @@ public class WheelsPublishAppication {
         wheels.addPublisher(publisher);
         wheels.checkWhenUpdate();
 
-        // 2 奖励 包含一个未中奖
+        // 2 奖励
         wheelsRewardDomainService.checkWhenUpdate(wheelsRewards);
         // 2-1 cdk 领域事件 奖品与cdk绑定
         wheelsRewardDomainService.cdkEventCommitedWhenNecessary(wheelsRewards);
@@ -211,21 +213,23 @@ public class WheelsPublishAppication {
     public WheelsDetailsVo getWheelsDetails(Long id ){
         // 组织数据获取
         // 获取大转盘
-
-        WheelsPojo wheelsPojo=wheelsPublishRepository.getWheels(id);
+        WheelsPojo wheelsPojo=wheelsPublishRepositoryImpl.getWheels(id);
         Asserts.check(wheelsPojo!=null,"未获取到大转盘信息");
         WheelsDetailsVo wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
         //获取产品
-        List<ProductPojo> productPojos = productRepository.getPojoByPrizeWheelsId(id);
+        List<ProductPojo> productPojos = productRepositoryImpl.getPojoByPrizeWheelsId(id);
         Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
         List<ProductUpdateDto> productUpdateDtos=productTransfer.productPojoToProductUpdateDto(productPojos);
         wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
         //获取奖励
-        List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepository.getByPrizeWheelsId(id);
+        List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepositoryImpl.getByPrizeWheelsId(id);
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewardPojos),"未获取到奖励信息");
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
         wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
         wheelsDetailsVo.setAutoType(productPojos.get(0).getAutoType());
         return wheelsDetailsVo;
+    }
+    public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
+        return null;
     }
 }

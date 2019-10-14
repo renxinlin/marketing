@@ -55,4 +55,5 @@ public class WheelsPublishRepositoryImpl implements WheelsPublishRepository {
         wrapper.eq("Id",id).eq("OrganizationId",commonUtil.getOrganizationId());
         return wheelsMapper.selectOne(wrapper);
     }
+
 }
