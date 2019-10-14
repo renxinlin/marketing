@@ -39,4 +39,12 @@ public class WheelsRewardCdk implements Serializable {
     private Integer status;
 
 
+    @TableField("OrganizationId")
+    private String organizationId;
+
+    @TableField("OrganizationName")
+    private String organizationName;
+
+
+
 }
