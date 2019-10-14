@@ -32,25 +32,21 @@ public class ExcelApplication {
      */
     public String uploadExcel(InputStream is) throws ExcelException {
         LinkedHashMap linkedHashMap = new LinkedHashMap();
-        linkedHashMap.put("prize_wheels_reward_cdk","cdk");
-        String[] uniqueFields={"奖励列表"};
+        linkedHashMap.put("cdk","cdk"); // excel:cdk ,table:cdk
+        String[] uniqueFields={"cdk"}; // cdk不可重复
         List<WheelsRewardCdk> wheelsRewardCdks=ExcelUtils.excelToList(is,sheetName,WheelsRewardCdk.class,linkedHashMap,uniqueFields);
-        //提取有用的cdk
-        List<WheelsRewardCdk> exitWheelsRewardCdks=new ArrayList<>(wheelsRewardCdks.size()-1);
 
-        for(int i=1;i<wheelsRewardCdks.size();i++){
-            exitWheelsRewardCdks.add(wheelsRewardCdks.get(i));
-        }
         //插入数据库的list对象
-        List<WheelsRewardCdk> uploadwheelsRewardCdks=new ArrayList<>(exitWheelsRewardCdks.size());
-        String UUID=commonUtil.getUUID();
-        for (WheelsRewardCdk wheelsRewardCdk:exitWheelsRewardCdks) {
-            WheelsRewardCdk wheelsRewardCdk1=new WheelsRewardCdk();
-            wheelsRewardCdk1.setCdk(wheelsRewardCdk.getCdk());
-            wheelsRewardCdk1.setCdkKey(UUID);
-            uploadwheelsRewardCdks.add(wheelsRewardCdk1);
+         String cdkKey=commonUtil.getUUID();
+         boolean skip = true;
+        for (WheelsRewardCdk wheelsRewardCdk:wheelsRewardCdks) {
+            if(skip){
+                skip = false;
+                continue;
+            }
+            wheelsRewardCdk.setCdkKey(cdkKey);
         }
-        wheelsRewardCdkService.saveBatch(uploadwheelsRewardCdks);
-        return UUID;
+        wheelsRewardCdkService.saveBatch(wheelsRewardCdks);
+        return cdkKey;
     }
 }
