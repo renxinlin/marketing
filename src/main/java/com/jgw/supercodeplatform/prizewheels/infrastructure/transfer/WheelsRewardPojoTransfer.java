@@ -24,4 +24,7 @@ public class WheelsRewardPojoTransfer {
         }
         return lists;
     }
+
+
+
 }

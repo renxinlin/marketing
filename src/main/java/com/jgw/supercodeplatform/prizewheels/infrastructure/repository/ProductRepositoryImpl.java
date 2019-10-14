@@ -68,4 +68,12 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         return productPojoTransfer.tranferPojosToDomains(productPojos);
     }
+
+    @Override
+    public List<ProductPojo> getPojoByPrizeWheelsId(Long prizeWheelsid) {
+        QueryWrapper<ProductPojo> wapper = new QueryWrapper<>();
+        wapper.eq("ActivitySetId",prizeWheelsid);
+        List<ProductPojo> productPojos = productMapper.selectList(wapper);
+        return productPojos;
+    }
 }

@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.prizewheels.application.transfer;
 
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ProductPojo;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductUpdateDto;
 import lombok.extern.slf4j.Slf4j;
@@ -58,11 +59,11 @@ public class ProductTransfer {
                     return product;})
                 .collect(Collectors.toList());
     }
-    public List<ProductUpdateDto> productToProductDto(List<Product> products) {
-        return products
+    public List<ProductUpdateDto> productPojoToProductUpdateDto(List<ProductPojo> productPojos) {
+        return productPojos
                 .stream()
-                .map(product -> {
-                    ProductUpdateDto productDto = modelMapper.map(product, ProductUpdateDto.class);
+                .map(productPojo -> {
+                    ProductUpdateDto productDto = modelMapper.map(productPojo, ProductUpdateDto.class);
                     // TODO 字段补充
                     return productDto;})
                 .collect(Collectors.toList());

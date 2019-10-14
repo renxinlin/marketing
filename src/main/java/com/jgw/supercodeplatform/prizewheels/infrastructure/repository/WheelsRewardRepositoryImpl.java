@@ -1,13 +1,11 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.repository;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.batch.WheelsRewardService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsRewardMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.transfer.WheelsPojoTransfer;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.transfer.WheelsRewardPojoTransfer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -23,7 +21,8 @@ public class WheelsRewardRepositoryImpl implements WheelsRewardRepository {
     @Autowired
     private WheelsRewardService wheelsRewardBatchService;
 
-
+    @Autowired
+    private WheelsRewardRepository wheelsRewardRepository;
 
     @Autowired
     private WheelsRewardPojoTransfer wheelsRewardPojoTransfer;
@@ -40,4 +39,13 @@ public class WheelsRewardRepositoryImpl implements WheelsRewardRepository {
         List<WheelsRewardPojo> lists = wheelsRewardPojoTransfer.tranferDomainsToPojos(wheelsRewards);
         wheelsRewardBatchService.saveBatch(lists);
     }
+
+    @Override
+    public List<WheelsRewardPojo> getByPrizeWheelsId(Long id) {
+        QueryWrapper<WheelsRewardPojo> wrapper = new QueryWrapper<>();
+        wrapper.eq("PrizeWheelId",id);
+        return wheelsRewardMapper.selectList(wrapper);
+    }
+
+
 }

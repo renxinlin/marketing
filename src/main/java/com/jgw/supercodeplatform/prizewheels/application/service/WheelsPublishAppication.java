@@ -20,8 +20,12 @@ import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ActivitySet;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ProductPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.ProductRepositoryImpl;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsPublishRepositoryImpl;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsRewardRepositoryImpl;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import org.apache.http.util.Asserts;
@@ -77,10 +81,16 @@ public class WheelsPublishAppication {
     private ProcessActivityDomainService processActivityDomainService;
 
     @Autowired
-    private  ActivitySetRepository activitySetRepository;
+    private ActivitySetRepository activitySetRepository;
 
     @Autowired
-    private   WheelsPublishRepositoryImpl wheelsPublishRepositoryImpl;
+    private WheelsPublishRepositoryImpl wheelsPublishRepositoryImpl;
+
+    @Autowired
+    private WheelsRewardRepositoryImpl wheelsRewardRepositoryImpl;
+
+    @Autowired
+    private ProductRepositoryImpl productRepositoryImpl;
 
     /**
      * 新增大转盘活动
@@ -208,18 +218,19 @@ public class WheelsPublishAppication {
         // 获取大转盘
 
         WheelsPojo wheelsPojo=wheelsPublishRepositoryImpl.getWheels(id);
+        Asserts.check(wheelsPojo!=null,"未获取到大转盘信息");
         WheelsDetailsVo wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
         //获取产品
-        List<Product> wheelsProducts = productRepository.getByPrizeWheelsId(id);
-        Asserts.check(!CollectionUtils.isEmpty(wheelsProducts),"为获取到产品信息");
-        List<ProductUpdateDto> productUpdateDtos=productTransfer.productToProductDto(wheelsProducts);
+        List<ProductPojo> productPojos = productRepositoryImpl.getPojoByPrizeWheelsId(id);
+        Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
+        List<ProductUpdateDto> productUpdateDtos=productTransfer.productPojoToProductUpdateDto(productPojos);
         wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
         //获取奖励
-        List<WheelsReward> wheelsRewards=wheelsRewardRepository.getByPrizeWheelsId(id);
-        Asserts.check(!CollectionUtils.isEmpty(wheelsRewards),"为获取到奖励信息");
-        List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewards);
+        List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepositoryImpl.getByPrizeWheelsId(id);
+        Asserts.check(!CollectionUtils.isEmpty(wheelsRewardPojos),"未获取到奖励信息");
+        List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
         wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
-        wheelsDetailsVo.setAutoType(wheelsProducts.get(0).getAutoType());
+        wheelsDetailsVo.setAutoType(productPojos.get(0).getAutoType());
         return null;
     }
     public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {

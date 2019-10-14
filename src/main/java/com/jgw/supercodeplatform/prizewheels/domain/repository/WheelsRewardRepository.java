@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.prizewheels.domain.repository;
 
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,5 +13,5 @@ public interface WheelsRewardRepository {
 
     void batchSave(List<WheelsReward> wheelsRewards);
 
-    List<WheelsReward> getByPrizeWheelsId(Long id);
+    List<WheelsRewardPojo> getByPrizeWheelsId(Long id);
 }

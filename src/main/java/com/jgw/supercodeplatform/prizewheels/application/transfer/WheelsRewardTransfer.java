@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.prizewheels.application.transfer;
 
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardUpdateDto;
 import org.modelmapper.ModelMapper;
@@ -34,11 +35,11 @@ public class WheelsRewardTransfer {
                     return wheelsReward;})
                 .collect(Collectors.toList());
     }
-    public List<WheelsRewardUpdateDto> transferRewardToDomain(List<WheelsReward> wheelsRewards){
-        return wheelsRewards
+    public List<WheelsRewardUpdateDto> transferRewardToDomain(List<WheelsRewardPojo> wheelsRewardPojos){
+        return wheelsRewardPojos
                 .stream()
-                .map(wheelsReward -> {
-                    WheelsRewardUpdateDto wheelsRewardUpdateDto=modelMapper.map(wheelsReward,WheelsRewardUpdateDto.class);
+                .map(wheelsRewardPojo -> {
+                    WheelsRewardUpdateDto wheelsRewardUpdateDto=modelMapper.map(wheelsRewardPojo,WheelsRewardUpdateDto.class);
                     return wheelsRewardUpdateDto;
                 }).collect(Collectors.toList());
     }
