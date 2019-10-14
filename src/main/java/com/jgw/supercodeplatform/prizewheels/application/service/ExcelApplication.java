@@ -40,6 +40,8 @@ public class ExcelApplication {
          String cdkKey=commonUtil.getUUID();
         for (WheelsRewardCdk wheelsRewardCdk:wheelsRewardCdks) {
             wheelsRewardCdk.setCdkKey(cdkKey);
+            wheelsRewardCdk.setOrganizationId(commonUtil.getOrganizationId());
+            wheelsRewardCdk.setOrganizationName(commonUtil.getOrganizationName());
         }
         wheelsRewardCdkService.saveBatch(wheelsRewardCdks);
         return cdkKey;
