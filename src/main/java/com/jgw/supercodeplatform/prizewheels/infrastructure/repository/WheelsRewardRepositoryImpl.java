@@ -22,9 +22,6 @@ public class WheelsRewardRepositoryImpl implements WheelsRewardRepository {
     private WheelsRewardService wheelsRewardBatchService;
 
     @Autowired
-    private WheelsRewardRepository wheelsRewardRepository;
-
-    @Autowired
     private WheelsRewardPojoTransfer wheelsRewardPojoTransfer;
 
     @Override

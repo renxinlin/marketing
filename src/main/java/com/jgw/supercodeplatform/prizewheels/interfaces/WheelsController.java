@@ -29,7 +29,7 @@ public class WheelsController extends SalerCommonController {
 
 
     @PostMapping("/add")
-    @ApiOperation(value = "添加", notes = "")
+    @ApiOperation(value = "添加", notes = "分页参见以前接口")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult add(@Valid  @RequestBody WheelsDto wheelsDto)   {
         appication.publish(wheelsDto);
@@ -38,7 +38,7 @@ public class WheelsController extends SalerCommonController {
 
 
     @PostMapping("/update")
-    @ApiOperation(value = "更新", notes = "")
+    @ApiOperation(value = "更新", notes = "分页参见以前接口")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult update(@Valid  @RequestBody WheelsUpdateDto wheelsUpdateDto)   {
         appication.update(wheelsUpdateDto);
@@ -47,7 +47,7 @@ public class WheelsController extends SalerCommonController {
 
 
     @GetMapping("/detail")
-    @ApiOperation(value = "详情", notes = "")
+    @ApiOperation(value = "详情", notes = "分页参见以前接口")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<WheelsDetailsVo> detail(@RequestParam("id") Long id)   {
         WheelsDetailsVo wheelsDetailsVo = appication.getWheelsDetails(id);
@@ -56,7 +56,7 @@ public class WheelsController extends SalerCommonController {
 
 
     @GetMapping("/delete")
-    @ApiOperation(value = "删除", notes = "")
+    @ApiOperation(value = "删除", notes = "分页参见以前接口")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult delete(@RequestParam("id") Long id)   {
         appication.deletePrizeWheelsById(id);
@@ -64,11 +64,6 @@ public class WheelsController extends SalerCommonController {
     }
 
 
-    @GetMapping("/add")
-    @ApiOperation(value = "分页", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<WheelsUpdateDto>>> list(DaoSearch daoSearch)   {
-        return success(appication.list(daoSearch));
-    }
+
 
 }

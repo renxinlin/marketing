@@ -83,14 +83,9 @@ public class WheelsPublishAppication {
     @Autowired
     private ActivitySetRepository activitySetRepository;
 
-    @Autowired
-    private WheelsPublishRepositoryImpl wheelsPublishRepositoryImpl;
 
-    @Autowired
-    private WheelsRewardRepositoryImpl wheelsRewardRepositoryImpl;
 
-    @Autowired
-    private ProductRepositoryImpl productRepositoryImpl;
+
 
     /**
      * 新增大转盘活动
@@ -217,16 +212,16 @@ public class WheelsPublishAppication {
         // 组织数据获取
         // 获取大转盘
 
-        WheelsPojo wheelsPojo=wheelsPublishRepositoryImpl.getWheels(id);
+        WheelsPojo wheelsPojo=wheelsPublishRepository.getWheels(id);
         Asserts.check(wheelsPojo!=null,"未获取到大转盘信息");
         WheelsDetailsVo wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
         //获取产品
-        List<ProductPojo> productPojos = productRepositoryImpl.getPojoByPrizeWheelsId(id);
+        List<ProductPojo> productPojos = productRepository.getPojoByPrizeWheelsId(id);
         Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
         List<ProductUpdateDto> productUpdateDtos=productTransfer.productPojoToProductUpdateDto(productPojos);
         wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
         //获取奖励
-        List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepositoryImpl.getByPrizeWheelsId(id);
+        List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepository.getByPrizeWheelsId(id);
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewardPojos),"未获取到奖励信息");
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
         wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
