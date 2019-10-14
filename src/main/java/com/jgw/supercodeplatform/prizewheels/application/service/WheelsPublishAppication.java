@@ -106,6 +106,7 @@ public class WheelsPublishAppication {
 
     }// 单次操作:100万CDK 的更新 3000/s => 300s 管理系统上线活动允许
 
+
     @Transactional
     public void deletePrizeWheelsById(Long id) {
         wheelsPublishRepository.deletePrizeWheelsById(id);
@@ -114,6 +115,8 @@ public class WheelsPublishAppication {
 
         // TODO cdk后期删除
     }
+
+
     @Transactional(rollbackFor = Exception.class)
     public void update(WheelsUpdateDto wheelsUpdateDto) {
         // 数据转换
@@ -167,11 +170,9 @@ public class WheelsPublishAppication {
 
     }
 
+
     public WheelsUpdateDto detail(Long id) {
         return null;
     }
 
-    public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
-        return null;
-    }
 }
