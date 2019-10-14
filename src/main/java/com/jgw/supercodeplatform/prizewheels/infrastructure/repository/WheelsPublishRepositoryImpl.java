@@ -52,7 +52,7 @@ public class WheelsPublishRepositoryImpl implements WheelsPublishRepository {
     @Override
     public WheelsPojo getWheels(Long id) {
         QueryWrapper<WheelsPojo> wrapper = new QueryWrapper<>();
-        wrapper.eq("Id",id).eq("OrganizationId",commonUtil.getOrganizationId()).eq("OrganizationName",commonUtil.getOrganizationName());
+        wrapper.eq("Id",id).eq("OrganizationId",commonUtil.getOrganizationId());
         return wheelsMapper.selectOne(wrapper);
     }
 }
