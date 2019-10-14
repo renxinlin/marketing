@@ -38,12 +38,7 @@ public class ExcelApplication {
 
         //插入数据库的list对象
          String cdkKey=commonUtil.getUUID();
-         boolean skip = true;
         for (WheelsRewardCdk wheelsRewardCdk:wheelsRewardCdks) {
-            if(skip){
-                skip = false;
-                continue;
-            }
             wheelsRewardCdk.setCdkKey(cdkKey);
         }
         wheelsRewardCdkService.saveBatch(wheelsRewardCdks);
