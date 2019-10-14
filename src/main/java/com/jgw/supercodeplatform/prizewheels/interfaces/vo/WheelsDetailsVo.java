@@ -7,12 +7,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-
-import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -50,10 +44,10 @@ public class WheelsDetailsVo {
 
     @ApiModelProperty("奖励总数") private Integer prizeNum;
 
-//    @ApiModelProperty("大转盘产品集合")  private List<ProductUpdateDto> productUpdateDtos;
-//
-//    @ApiModelProperty("大转盘产品集合")  private List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos;
-//
-//    @ApiModelProperty("是否自动获取(1、自动获取 2、仅此一次 )")   private byte autoType;
+    @ApiModelProperty("大转盘产品集合")  private List<ProductUpdateDto> productUpdateDtos;
+
+    @ApiModelProperty("大转盘奖励集合")  private List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos;
+
+    @ApiModelProperty("是否自动获取(1、自动获取 2、仅此一次 )")   private byte autoType;
 
 }

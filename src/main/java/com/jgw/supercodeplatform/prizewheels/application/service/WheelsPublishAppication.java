@@ -19,6 +19,8 @@ import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepos
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsPublishRepositoryImpl;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +75,7 @@ public class WheelsPublishAppication {
     private ProductDomainService productDomainService;
 
     @Autowired
-    private WheelsMapper wheelsMapper;
+    private WheelsPublishRepositoryImpl wheelsPublishRepositoryImpl;
     /**
      * 新增大转盘活动
      * @param wheelsDto
@@ -178,11 +180,21 @@ public class WheelsPublishAppication {
      * B端 根据组织id和组织名称获取大转盘详情
      * @return
      */
-    public WheelsDetailsVo getWheelsDetails(){
+    public WheelsDetailsVo getWheelsDetails(Long id ){
         // 组织数据获取
-        String organizationId = commonUtil.getOrganizationId();
-        String organization = commonUtil.getOrganizationName();
-        return wheelsMapper.getWheelsDetails(organizationId,organization);
+        // 获取大转盘
+        WheelsPojo wheelsPojo=wheelsPublishRepositoryImpl.getWheels(id);
+        WheelsDetailsVo wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
+        //获取产品
+        List<Product> wheelsProducts = productRepository.getByPrizeWheelsId(id);
+        List<ProductUpdateDto> productUpdateDtos=productTransfer.productToProductDto(wheelsProducts);
+        wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
+        //获取奖励
+        List<WheelsReward> wheelsRewards=wheelsRewardRepository.getByPrizeWheelsId(id);
+        List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewards);
+        wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
+
+        return null;
     }
 
     public String uploadExcel(MultipartFile uploadFile){

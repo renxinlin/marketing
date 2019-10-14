@@ -11,4 +11,6 @@ public interface WheelsRewardRepository {
     int deleteByPrizeWheelsId(Long id);
 
     void batchSave(List<WheelsReward> wheelsRewards);
+
+    List<WheelsReward> getByPrizeWheelsId(Long id);
 }

@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.prizewheels.domain.repository;
 
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
 import org.springframework.stereotype.Repository;
 
 
@@ -16,5 +17,6 @@ public interface WheelsPublishRepository {
 
     int updatePrizeWheel(Wheels wheels);
 
+    WheelsPojo getWheels(Long id);
 
 }

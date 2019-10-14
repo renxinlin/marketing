@@ -44,4 +44,14 @@ public class ProductTransfer {
                     return product;})
                 .collect(Collectors.toList());
     }
+
+    public List<ProductUpdateDto> productToProductDto(List<Product> products) {
+        return products
+                .stream()
+                .map(product -> {
+                    ProductUpdateDto productDto = modelMapper.map(product, ProductUpdateDto.class);
+                    // TODO 字段补充
+                    return productDto;})
+                .collect(Collectors.toList());
+    }
 }
