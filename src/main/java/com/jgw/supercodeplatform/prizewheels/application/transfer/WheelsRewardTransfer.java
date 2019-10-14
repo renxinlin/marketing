@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.prizewheels.application.transfer;
 
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardUpdateDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +26,12 @@ public class WheelsRewardTransfer {
                 .collect(Collectors.toList());
     }
 
-    public List<WheelsRewardUpdateDto> transferRewardToDomain(List<WheelsReward> wheelsRewards){
-        return wheelsRewards
+    public List<WheelsReward> transferDtoToDomain(List<WheelsRewardDto> wheelsRewardDtos) {
+        return wheelsRewardDtos
                 .stream()
-                .map(wheelsReward -> {
-                    WheelsRewardUpdateDto wheelsRewardUpdateDto=modelMapper.map(wheelsReward,WheelsRewardUpdateDto.class);
-                    return wheelsRewardUpdateDto;
-                }).collect(Collectors.toList());
+                .map(wheelsRewardDto -> {
+                    WheelsReward wheelsReward = modelMapper.map(wheelsRewardDto, WheelsReward.class);
+                    return wheelsReward;})
+                .collect(Collectors.toList());
     }
 }

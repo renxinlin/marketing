@@ -125,7 +125,7 @@
 //		if (null==mPrizeTypeParams || mPrizeTypeParams.isEmpty()) {
 //			throw new SuperCodeException("奖次信息不能为空", 500);
 //		}else {
-//			Set<String> set = new HashSet<String>();
+//			ActivitySet<String> set = new HashSet<String>();
 //			for (MarketingPrizeTypeParam prizeTypeParam:mPrizeTypeParams){
 //				Byte randomAmont=prizeTypeParam.getIsRrandomMoney();
 //				if (null==randomAmont) {
@@ -192,7 +192,7 @@
 //
 //		Long activitySetId= mActivitySet.getId();
 //
-//		Set set = new HashSet();
+//		ActivitySet set = new HashSet();
 //		int size = 0;
 //		for (MarketingActivityProductParam mProduct:maProductParams){
 //			// 去重

@@ -45,13 +45,17 @@ public class ProductTransfer {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductUpdateDto> productToProductDto(List<Product> products) {
-        return products
+    public List<Product> transferDtoToDomain(List<ProductDto> productDtos, byte autoType) {
+        return productDtos
                 .stream()
-                .map(product -> {
-                    ProductUpdateDto productDto = modelMapper.map(product, ProductUpdateDto.class);
-                    // TODO 字段补充
-                    return productDto;})
+                .map(productDto -> {
+                    Product product = modelMapper.map(productDto, Product.class);
+                    //TODO 检查
+                    Asserts.check(product.getReferenceRole() != null ,"modelMapper 映射不了...........");
+                    log.error("modelMapper映射问题===============product.getReferenceRole() =>{}" ,product.getReferenceRole());
+                    product.setAutoType(autoType);
+                    product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
+                    return product;})
                 .collect(Collectors.toList());
     }
 }

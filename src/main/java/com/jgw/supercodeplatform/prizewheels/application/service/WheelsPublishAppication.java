@@ -4,8 +4,6 @@ package com.jgw.supercodeplatform.prizewheels.application.service;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
-import com.jgw.supercodeplatform.pojo.cache.OrganizationCache;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsRewardTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsTransfer;
@@ -13,14 +11,15 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.ActivitySetRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.service.ProcessActivityDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsPublishRepositoryImpl;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ActivitySet;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -75,61 +68,87 @@ public class WheelsPublishAppication {
     private ProductDomainService productDomainService;
 
     @Autowired
-    private WheelsPublishRepositoryImpl wheelsPublishRepositoryImpl;
+    private WheelsMapper wheelsMapper;
+
+    @Autowired
+    private ProcessActivityDomainService processActivityDomainService;
+
+    @Autowired
+    private  ActivitySetRepository activitySetRepository;
+
     /**
      * 新增大转盘活动
      * @param wheelsDto
      */
     @Transactional(rollbackFor = Exception.class)
     public void publish(WheelsDto wheelsDto){
-        // 数据获取
-        String organizationId = commonUtil.getOrganizationId();
-        String organization = commonUtil.getOrganizationName();
-        String accountId = commonUtil.getUserLoginCache().getAccountId();
-        String userName = commonUtil.getUserLoginCache().getUserName();
-
-
-        // 创建发布大转盘相关领域并完成业务
-
-        // 设置中奖产品 剔除存在的产品批次活动
-
-        // 设置奖励信息
-        // 异步事件 获取导入的cdk_key 发布cdk关联产品事件 并给cdk关联产品事件绑定消费者
-
-        Publisher publisher = new Publisher();
-        publisher.initUserInfoWhenFirstPublish(accountId,userName);
+        // 数据转换
+        byte autoType = wheelsDto.getAutoType();
+        Wheels wheels =  wheelsTransfer.tranferToDomainWhenAdd(wheelsDto);
 
         List<ProductDto> productDtos = wheelsDto.getProductDtos();
-        List<Product> products = productTransfer.dtoToProduct(productDtos);
-
-
-        Wheels wheels = new Wheels(organizationId,organization);
+        List<WheelsRewardDto> wheelsRewardDtos = wheelsDto.getWheelsRewardDtos();
+        List<Product> products = productTransfer.transferDtoToDomain(productDtos, autoType);
+        List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferDtoToDomain(wheelsRewardDtos);
+        // 1 业务处理
+        // 大转盘
+        Publisher publisher = new Publisher();
+        publisher.initUserInfo(
+                commonUtil.getUserLoginCache().getAccountId()
+                ,commonUtil.getUserLoginCache().getUserName());
+        wheels.initOrgInfo(commonUtil.getOrganizationId(),commonUtil.getOrganizationName());
         wheels.addPublisher(publisher);
+        wheels.checkWhenAdd();
+        // 持久化 返回主键
+        wheelsPublishRepository.publish(wheels);
+        Long prizeWheelsid = wheels.getId();
 
-        // 持久化业务
+        // 2 奖励
+        wheelsRewardDomainService.checkWhenAdd(wheelsRewards);
+        // 持久化返回主键
+        wheelsRewardRepository.batchSave(wheelsRewards);
+
+        // 2-1 cdk 领域事件 奖品与cdk绑定
+        wheelsRewardDomainService.cdkEventCommitedWhenNecessary(wheelsRewards);
+
+        // 3 码管理业务
+        // 3-1 获取生码批次
+        products = productDomainService.initSbatchIds(products);
+
+        // 3-2 将此活动涉及产品与码管理的信息解绑
+        productDomainService.removeOldProduct(products);
+        // 3-3 发送新的产品绑定请求
+        productDomainService.executeBizWhichCodeManagerWant(products);
+        // 4 修改活动聚合老表
+        ActivitySet activitySet = processActivityDomainService.formPrizeWheelsToOldActivity(wheels, (int) autoType);
+        // 持久化
+
         productRepository.saveButDeleteOld(products);
 
-        wheelsPublishRepository.publish(wheels);
+        activitySetRepository.addWhenWheelsAdd(activitySet);
 
-    }// 单次操作:100万CDK 的更新 3000/s => 300s 管理系统上线活动允许
+    }
+
 
     @Transactional
     public void deletePrizeWheelsById(Long id) {
         wheelsPublishRepository.deletePrizeWheelsById(id);
         productRepository.deleteByPrizeWheelsId(id);
         wheelsRewardRepository.deleteByPrizeWheelsId(id);
-
         // TODO cdk后期删除
     }
+
+
     @Transactional(rollbackFor = Exception.class)
     public void update(WheelsUpdateDto wheelsUpdateDto) {
         // 数据转换
         Long prizeWheelsid = wheelsUpdateDto.getId();
+        byte autoType = wheelsUpdateDto.getAutoType();
         Wheels wheels =  wheelsTransfer.tranferToDomain(wheelsUpdateDto);
 
         List<ProductUpdateDto> productUpdateDtos = wheelsUpdateDto.getProductUpdateDtos();
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos = wheelsUpdateDto.getWheelsRewardUpdateDtos();
-        List<Product> products = productTransfer.transferUpdateDtoToDomain(productUpdateDtos, prizeWheelsid,wheelsUpdateDto.getAutoType());
+        List<Product> products = productTransfer.transferUpdateDtoToDomain(productUpdateDtos, prizeWheelsid, autoType);
         List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferUpdateDtoToDomain(wheelsRewardUpdateDtos, prizeWheelsid);
         // 1 业务处理
         // 大转盘
@@ -157,7 +176,8 @@ public class WheelsPublishAppication {
         productDomainService.removeOldProduct(products);
         // 3-3 发送新的产品绑定请求
         productDomainService.executeBizWhichCodeManagerWant(products);
-
+        // 4 修改活动聚合老表
+        ActivitySet activitySet = processActivityDomainService.formPrizeWheelsToOldActivity(wheels, (int) autoType);
         // 持久化
         wheelsPublishRepository.updatePrizeWheel(wheels);
 
@@ -165,8 +185,11 @@ public class WheelsPublishAppication {
         wheelsRewardRepository.batchSave(wheelsRewards);
 
         productRepository.saveButDeleteOld(products);
-        // 结束任务
+
+        activitySetRepository.updateWhenWheelsChanged(activitySet);
+
     }
+
 
     public WheelsUpdateDto detail(Long id) {
         return null;
@@ -180,19 +203,8 @@ public class WheelsPublishAppication {
      * B端 根据组织id和组织名称获取大转盘详情
      * @return
      */
-    public WheelsDetailsVo getWheelsDetails(Long id ){
+    public WheelsDetailsVo getWheelsDetails(){
         // 组织数据获取
-        // 获取大转盘
-        WheelsPojo wheelsPojo=wheelsPublishRepositoryImpl.getWheels(id);
-        WheelsDetailsVo wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
-        //获取产品
-        List<Product> wheelsProducts = productRepository.getByPrizeWheelsId(id);
-        List<ProductUpdateDto> productUpdateDtos=productTransfer.productToProductDto(wheelsProducts);
-        wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
-        //获取奖励
-        List<WheelsReward> wheelsRewards=wheelsRewardRepository.getByPrizeWheelsId(id);
-        List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewards);
-        wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
 
         return null;
     }
