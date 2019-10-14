@@ -24,7 +24,7 @@ import javax.validation.Valid;
 @Slf4j
 @Controller
 @RequestMapping("marketing/front/prizeWheels")
-@Api(value = "", tags = "大转盘")
+@Api(value = "", tags = "大转盘H5")
 public class H5WheelsController extends SalerCommonController {
 
     @Autowired
