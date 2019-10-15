@@ -58,10 +58,15 @@ public class WheelsUpdateDto {
     @Valid @NotNull(message = "参加活动的产品不存在")
     @ApiModelProperty("大转盘产品集合")  private List<ProductUpdateDto> productUpdateDtos;
 
+    @NotNull @Min(0) @Max(100)
+    @ApiModelProperty("未中奖概率") private double loseAwardProbability;
+
     @Valid @NotNull(message = "活动奖励不可为空")
     @ApiModelProperty("大转盘产品集合")  private List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos;
 
     @NotNull(message = "产品追加的码是否参与活动") @Min(1) @Max(2)
     @ApiModelProperty("是否自动获取(1、自动获取 2、仅此一次 )")   private byte autoType;
+
+
 
 }

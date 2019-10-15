@@ -31,4 +31,5 @@ public interface WheelsPublishRepository {
      */
     WheelsPojo getWheelsById(Long id);
 
+    Wheels getWheelsInfo(Long id);
 }

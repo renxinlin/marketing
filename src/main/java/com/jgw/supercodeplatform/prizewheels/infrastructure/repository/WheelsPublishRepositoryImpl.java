@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.transfer.WheelsPojoTransfer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -61,6 +63,15 @@ public class WheelsPublishRepositoryImpl implements WheelsPublishRepository {
         QueryWrapper<WheelsPojo> wrapper = new QueryWrapper<>();
         wrapper.eq("Id",id);
         return wheelsMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public Wheels getWheelsInfo(Long id) {
+        QueryWrapper<WheelsPojo> wrapper = new QueryWrapper<>();
+        wrapper.eq("Id",id);
+        WheelsPojo wheelsPojo = wheelsMapper.selectOne(wrapper);
+        Asserts.check(wheelsPojo!=null, ErrorCodeEnum.NOT_EXITS_ERROR.getErrorMessage());
+        return wheelsPojoTransfer.tranferPojoToDomain(wheelsPojo);
     }
 
 }

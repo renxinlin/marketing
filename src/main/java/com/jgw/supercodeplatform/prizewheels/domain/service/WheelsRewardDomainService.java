@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.domain.service;
 
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
 import com.jgw.supercodeplatform.prizewheels.domain.publisher.CdkEventPublisher;
@@ -70,5 +71,13 @@ public class WheelsRewardDomainService {
 
     }
 
-
+    /**
+     * c端用户领取这个奖项
+     * @param finalReward
+     * @param user
+     * @param outerCodeId
+     * @param codeTypeId
+     */
+    public void getReward(WheelsReward finalReward, H5LoginVO user, String outerCodeId, String codeTypeId) {
+    }
 }

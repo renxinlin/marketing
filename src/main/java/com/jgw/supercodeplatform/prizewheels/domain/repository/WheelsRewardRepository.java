@@ -14,4 +14,6 @@ public interface WheelsRewardRepository {
     void batchSave(List<WheelsReward> wheelsRewards);
 
     List<WheelsRewardPojo> getByPrizeWheelsId(Long id);
+
+    List<WheelsReward> getDomainByPrizeWheelsId(Long id);
 }

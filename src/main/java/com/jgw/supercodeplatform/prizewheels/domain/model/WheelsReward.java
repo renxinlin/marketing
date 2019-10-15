@@ -52,4 +52,8 @@ public class WheelsReward implements Serializable {
     private String cdkKey;
 
 
+
+    private Byte loseAward;
+
+
 }

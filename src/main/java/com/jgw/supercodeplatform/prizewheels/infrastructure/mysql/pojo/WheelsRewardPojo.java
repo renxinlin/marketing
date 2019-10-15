@@ -58,4 +58,8 @@ public class WheelsRewardPojo implements Serializable {
     private String pictureSpecs;
 
 
+    @TableField("LoseAward")
+    private Byte loseAward;
+
+
 }

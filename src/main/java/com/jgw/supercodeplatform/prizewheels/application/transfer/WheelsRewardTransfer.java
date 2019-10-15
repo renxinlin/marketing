@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.application.transfer;
 
+import com.jgw.supercodeplatform.prizewheels.domain.constants.LoseAwardConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
@@ -27,13 +28,21 @@ public class WheelsRewardTransfer {
                 .collect(Collectors.toList());
     }
 
-    public List<WheelsReward> transferDtoToDomain(List<WheelsRewardDto> wheelsRewardDtos) {
-        return wheelsRewardDtos
+    public List<WheelsReward> transferDtoToDomain(List<WheelsRewardDto> wheelsRewardDtos, double loseAwardProbability) {
+        List<WheelsReward> list = wheelsRewardDtos
                 .stream()
                 .map(wheelsRewardDto -> {
                     WheelsReward wheelsReward = modelMapper.map(wheelsRewardDto, WheelsReward.class);
-                    return wheelsReward;})
+                    wheelsReward.setLoseAward(LoseAwardConstant.no);
+                    return wheelsReward;
+                })
                 .collect(Collectors.toList());
+
+        WheelsReward wheelsReward = new WheelsReward();
+        wheelsReward.setProbability(loseAwardProbability);
+        wheelsReward.setLoseAward(LoseAwardConstant.yes);
+        list.add(wheelsReward);
+        return list;
     }
     public List<WheelsRewardUpdateDto> transferRewardToDomain(List<WheelsRewardPojo> wheelsRewardPojos){
         return wheelsRewardPojos

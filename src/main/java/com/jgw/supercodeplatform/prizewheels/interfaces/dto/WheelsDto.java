@@ -51,6 +51,9 @@ public class WheelsDto {
 
     @ApiModelProperty("奖励总数") private Integer prizeNum;
 
+    @NotNull @Min(0) @Max(100)
+    @ApiModelProperty("未中奖概率") private double loseAwardProbability;
+
     @Valid @NotNull(message = "参加活动的产品不存在")
     @ApiModelProperty("大转盘产品集合")  private List<ProductDto> productDtos;
 

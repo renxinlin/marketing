@@ -5,15 +5,17 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsRewardTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsTransfer;
+import com.jgw.supercodeplatform.prizewheels.domain.model.*;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.ScanRecordRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.service.CodeDomainService;
+import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
+import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ProductPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.ProductRepositoryImpl;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsPublishRepositoryImpl;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsRewardRepositoryImpl;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductUpdateDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardUpdateDto;
@@ -24,7 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Slf4j
@@ -48,21 +52,63 @@ public class GetWheelsRewardApplication {
     @Autowired
     private WheelsRewardRepository wheelsRewardRepository;
 
+    @Autowired
+    private ScanRecordRepository scanRecordRepository;
 
+    @Autowired
+    private CodeDomainService codeDomainService;
+
+    @Autowired
+    private ProductDomainService productDomainService;
+
+    @Autowired
+    private WheelsRewardDomainService wheelsRewardDomainService;
+    /**
+     * 用户校验提到用户域: 基于aop
+     * 当前不做用户校验:导致结果，用户被禁用后，等到下次登录，禁用才生效
+     * @param prizeWheelsRewardDto
+     * @param user
+     * @return
+     */
     @Transactional(rollbackFor = Exception.class)
     public String reward(PrizeWheelsRewardDto prizeWheelsRewardDto, H5LoginVO user) {
         log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), JSONObject.toJSONString(prizeWheelsRewardDto));
-        // 校验用户状态 码，码制校验
-        // 码被扫校验   有公众号返回公众号否则返回扫过提示
+        // 数据获取
+        List<Product> products = productRepository.getByPrizeWheelsId(prizeWheelsRewardDto.getId());
+        Wheels wheelsInfo = wheelsPublishRepository.getWheelsInfo(prizeWheelsRewardDto.getId());
+        List<WheelsReward> wheelsRewards = wheelsRewardRepository.getDomainByPrizeWheelsId(prizeWheelsRewardDto.getId());
+        String codeTypeId = prizeWheelsRewardDto.getCodeTypeId();
+        String outerCodeId = prizeWheelsRewardDto.getOuterCodeId();
+        ScanRecord mayBeScanedCode = scanRecordRepository.getCodeRecord(outerCodeId, codeTypeId);
+        // 业务校验
+        // 1-1 码，码制校验
+        String sbatchId = codeDomainService.vaildAndGetBatchId(codeTypeId, outerCodeId);
+        // 1-2 批次id能否匹配活动
+        productDomainService.isPrizeWheelsMatchThisBatchId(products,sbatchId);
 
-        // 没扫描产生扫码记录
+        // 1-3 码被扫校验 返回公众号信息[如果存在]
+        codeDomainService.noscanedOrTerminated(mayBeScanedCode ,wheelsInfo.getWxErcode());
+
+        // 业务执行
+        // 2-1 没扫描产生扫码记录
+        ScanRecord scanRecord = new ScanRecord(outerCodeId,Integer.parseInt(codeTypeId));
+        String userName = !StringUtils.isEmpty(user.getMemberName())?user.getMemberName():user.getMobile();
+        scanRecord.initScanerInfo(user.getMemberId(),userName,user.getMobile(),user.getOrganizationId(),user.getOrganizationName());
 
         // 概率计算 未成功返回没有领取
-
-
+        ProbabilityCalculator probabilityCalculator = new ProbabilityCalculator();
+        probabilityCalculator.initRewards(wheelsRewards);
+        WheelsReward finalReward = probabilityCalculator.calculator();
         // 领取成功 cdk - 1 领取记录
 
         // 领取记录
+        wheelsRewardDomainService.getReward(finalReward,user,outerCodeId,codeTypeId);
+
+
+        // 持久化
+        scanRecordRepository.saveScanRecord(scanRecord);
+
+
         return null;
     }
 

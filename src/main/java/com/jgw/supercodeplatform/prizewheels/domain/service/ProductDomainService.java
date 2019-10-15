@@ -1,7 +1,12 @@
 package com.jgw.supercodeplatform.prizewheels.domain.service;
 
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductUpdateDto;
+import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -30,5 +35,16 @@ public interface ProductDomainService {
             product.setActivitySetId(prizeWheelsid);
         });
         return products;
+    }
+
+    default boolean isPrizeWheelsMatchThisBatchId(List<Product> products, String sbatchId){
+        Asserts.check(!CollectionUtils.isEmpty(products), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        Asserts.check(!StringUtils.isEmpty(sbatchId), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        for(Product product : products){
+            if(!StringUtils.isEmpty(product.getSbatchId() ) && product.getSbatchId().contains(sbatchId) ){
+                return true;
+            }
+        }
+        throw new RuntimeException(ErrorCodeEnum.BIZ_VALID_ERROR.getErrorMessage());
     }
 }

@@ -35,6 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -95,7 +98,9 @@ public class WheelsPublishAppication {
         List<ProductDto> productDtos = wheelsDto.getProductDtos();
         List<WheelsRewardDto> wheelsRewardDtos = wheelsDto.getWheelsRewardDtos();
         List<Product> products = productTransfer.transferDtoToDomain(productDtos, autoType);
-        List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferDtoToDomain(wheelsRewardDtos);
+
+        double loseAwardProbability = wheelsDto.getLoseAwardProbability();
+        List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferDtoToDomain(wheelsRewardDtos,loseAwardProbability);
         // 1 业务处理
         // 大转盘
         Publisher publisher = new Publisher();

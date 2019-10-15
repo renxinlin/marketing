@@ -7,6 +7,7 @@ import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.prizewheels.application.service.WheelsPublishAppication;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsDto;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsUpdateDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import io.swagger.annotations.Api;
