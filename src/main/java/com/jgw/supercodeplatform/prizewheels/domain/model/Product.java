@@ -84,7 +84,7 @@ public class Product implements Serializable {
 
 
     public void appendSbatchId(String sbatchId) {
-        if(StringUtils.isEmpty(sbatchId)){
+        if(StringUtils.isEmpty(this.sbatchId)){
             this.sbatchId = sbatchId;
         }
         this.sbatchId = this.sbatchId + SPLIT_SYMBOL + sbatchId;

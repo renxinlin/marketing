@@ -14,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 @Slf4j
 @Service
@@ -36,7 +38,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
         RestResult<Object> sbatchIds = getSbatchIdsByPrizeWheelsFeign.getSbatchIds(getBatchInfoDtoList);
 
         // 业务
-        if(sbatchIds!=null && sbatchIds.getState() ==200){
+        if(!CollectionUtils.isEmpty((ArrayList)sbatchIds.getResults()) && sbatchIds.getState() ==200 ){
             List<EsRelationcode> esRelationcodes = JSONObject.parseArray((JSONObject.toJSONString(sbatchIds.getResults())), EsRelationcode.class);
             esRelationcodes.forEach(esRelationcode -> {
                 products.forEach(product -> {

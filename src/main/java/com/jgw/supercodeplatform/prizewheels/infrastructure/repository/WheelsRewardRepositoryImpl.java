@@ -38,6 +38,15 @@ public class WheelsRewardRepositoryImpl implements WheelsRewardRepository {
     public void batchSave(List<WheelsReward> wheelsRewards) {
         List<WheelsRewardPojo> lists = wheelsRewardPojoTransfer.tranferDomainsToPojos(wheelsRewards);
         wheelsRewardBatchService.saveBatch(lists);
+        for (WheelsReward wheelsReward:wheelsRewards){
+            for(WheelsRewardPojo wheelsRewardPojo:lists){
+                if(wheelsRewardPojo.getName().equals(wheelsReward.getName())){
+                    wheelsReward.setId(wheelsRewardPojo.getId());
+                    break;
+                }
+             }
+
+        }
     }
 
     @Override

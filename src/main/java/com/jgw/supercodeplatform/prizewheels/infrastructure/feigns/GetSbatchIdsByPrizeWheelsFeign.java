@@ -13,7 +13,7 @@ import java.util.List;
 @FeignClient(name = "${platform.codemanager.mircosoft.name:platform-codemanager-supercode-dev}",fallback = GetSbatchIdsByPrizeWheelsFallbackFeign.class )
 public interface GetSbatchIdsByPrizeWheelsFeign {
     // object 会返回2种类型
-    @RequestMapping(value = "/code/relation/getBatchInfoWithoutType",method = RequestMethod.GET)
+    @RequestMapping(value = "/code/relation/getBatchInfoWithoutType",method = RequestMethod.POST)
     RestResult<Object> getSbatchIds(List<GetBatchInfoDto> getBatchInfoDtoList);
 
 

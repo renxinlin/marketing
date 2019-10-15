@@ -34,4 +34,8 @@ public class WheelsRewardDto {
 
     @ApiModelProperty("上传文件返回的UUID")
     private String cdkKey;
+
+    @NotEmpty(message = "奖项名称不可为空")
+    @ApiModelProperty("獎項名")
+    private String name;
 }
