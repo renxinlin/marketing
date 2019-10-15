@@ -24,7 +24,7 @@ import java.util.List;
 public class WheelsUpdateDto {
 
 
-    @NotEmpty(message = "id不可为空") @Min(0)
+    @NotNull(message = "id不可为空") @Min(0)
     @ApiModelProperty("id")private Long  id;
 
     @NotEmpty(message = "活动模板id不可为空")

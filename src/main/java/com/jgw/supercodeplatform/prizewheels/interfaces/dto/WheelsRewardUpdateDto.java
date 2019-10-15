@@ -35,12 +35,16 @@ public class WheelsRewardUpdateDto {
     private String cdkKey;
 
 
-    @NotEmpty(message = "id不可为空") @Min(0)
+    @NotNull(message = "id不可为空") @Min(0)
     @ApiModelProperty("id") private Long id;
 
 
-    @NotEmpty(message = "活动id不可为空") @Min(0)
+    @NotNull(message = "活动id不可为空") @Min(0)
     @ApiModelProperty("活动id") private Long prizeWheelId;
+
+    @NotEmpty(message = "奖项名称不可为空")
+    @ApiModelProperty("獎項名")
+    private String name;
 
 
 }
