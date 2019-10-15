@@ -9,27 +9,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Component
 @Slf4j
 public class ProductTransfer {
 
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<Product> dtoToProduct(List<ProductDto> productDtos) {
-        return productDtos
-                .stream()
-                .map(productDto -> {
-                    Product product = modelMapper.map(productDto, Product.class);
-                    // TODO 字段补充
-                    return product;})
-                .collect(Collectors.toList());
-    }
+
 
     public List<Product>  transferUpdateDtoToDomain(List<ProductUpdateDto> productUpdateDtos, Long activitySetId,byte autoType) {
         return productUpdateDtos
