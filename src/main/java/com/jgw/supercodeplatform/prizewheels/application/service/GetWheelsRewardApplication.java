@@ -73,8 +73,8 @@ public class GetWheelsRewardApplication {
         //获取产品
         List<ProductPojo> productPojos = productRepository.getPojoByBatchId(productBatchId);
         Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
-        //一个批次id对应一个产品id
-        Long id=productPojos.get(0).getId();
+        // 大转盘活动ID
+        Long id=productPojos.get(0).getActivitySetId();
         List<ProductUpdateDto> productUpdateDtos=productTransfer.productPojoToProductUpdateDto(productPojos);
         wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
 

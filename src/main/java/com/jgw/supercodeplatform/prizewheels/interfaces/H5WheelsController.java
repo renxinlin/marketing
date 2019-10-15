@@ -56,10 +56,11 @@ public class H5WheelsController extends SalerCommonController {
 
     @CheckRole(role = Role.vip)
     @ResponseBody
-    @GetMapping("/reward")
+    @GetMapping("/detail")
+
     @ApiOperation(value = "H5大转盘详情", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult detail(@Valid @RequestBody  String productBatchId){
+    public RestResult detail(@RequestParam String productBatchId){
         WheelsDetailsVo wheelsDetailsVO = application.detail(productBatchId);
         return success(wheelsDetailsVO);
     }
