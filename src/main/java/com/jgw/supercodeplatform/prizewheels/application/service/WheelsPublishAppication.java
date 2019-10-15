@@ -148,7 +148,6 @@ public class WheelsPublishAppication {
         wheelsPublishRepository.deletePrizeWheelsById(id);
         productRepository.deleteByPrizeWheelsId(id);
         wheelsRewardRepository.deleteByPrizeWheelsId(id);
-        // TODO cdk后期删除
     }
 
 
