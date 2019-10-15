@@ -8,7 +8,9 @@ import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.ScanRec
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ScanRecordPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.transfer.ScanRecordPojoTranfer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ScanRecordRepositoryImpl implements ScanRecordRepository {
     @Autowired
     private ScanRecordMapper mapper;
