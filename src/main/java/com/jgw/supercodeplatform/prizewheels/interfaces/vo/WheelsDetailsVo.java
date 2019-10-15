@@ -7,6 +7,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -45,6 +49,8 @@ public class WheelsDetailsVo {
     @ApiModelProperty("奖励总数") private Integer prizeNum;
 
     @ApiModelProperty("大转盘产品集合")  private List<ProductUpdateDto> productUpdateDtos;
+
+    @ApiModelProperty("未中奖概率") private double loseAwardProbability;
 
     @ApiModelProperty("大转盘奖励集合")  private List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos;
 
