@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.base.config;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import feign.RequestInterceptor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +30,18 @@ public class FeignHeaderCross implements RequestInterceptor {
             return;
         }
         String superToken = getHeaders(getHttpServletRequest()).get(UserConstants.SUPER_TOKEN);
+        log.info("服务调用请求头header{}", JSONObject.toJSONString(superToken));
+
         if(StringUtils.isEmpty(superToken)){
             Cookie[] cookies = getHttpServletRequest().getCookies();
             for(Cookie cookie : cookies){
-                if(UserConstants.SINGLE_CODE.equals(cookie.getName())){
+                if(UserConstants.SUPER_TOKEN.equals(cookie.getName())){
                     superToken = cookie.getValue();
                 }
             }
+        log.info("服务调用请求头cookie{}", JSONObject.toJSONString(cookies));
         }
 
-        log.info("服务调用请求头{}",superToken);
         requestTemplate.header(UserConstants.SUPER_TOKEN, superToken);
     }
 
