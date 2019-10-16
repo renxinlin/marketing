@@ -66,5 +66,19 @@ public class WheelsController extends SalerCommonController {
 
 
 
+    @PostMapping("/changeStatus")
+    @ApiOperation(value = "活动停用启用", notes = "活动状态(1、表示上架进展，0 表示下架)")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult status(@RequestParam("id") String activityStatus)   {
+
+        appication.upadteStatus(activityStatus);
+        return success();
+    }
+
+
+
+
+
+
 
 }

@@ -21,8 +21,8 @@ public class WheelsRewardTransfer {
     @Autowired
     private ModelMapper modelMapper;
 
-    public List<WheelsReward> transferUpdateDtoToDomain(List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos, Long prizeWheelsid) {
-        return wheelsRewardUpdateDtos
+    public List<WheelsReward> transferUpdateDtoToDomain(List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos, Long prizeWheelsid,double loseAwardProbability) {
+        List<WheelsReward> rewards = wheelsRewardUpdateDtos
                 .stream()
                 .map(wheelsRewardUpdateDto -> {
                     WheelsReward wheelsReward = modelMapper.map(wheelsRewardUpdateDto, WheelsReward.class);
@@ -34,8 +34,18 @@ public class WheelsRewardTransfer {
                         log.info("暂无cdk");
                     }
                     wheelsReward.setPrizeWheelId(prizeWheelsid);
-                    return wheelsReward;})
+
+
+                    return wheelsReward;
+                })
                 .collect(Collectors.toList());
+        WheelsReward wheelsReward = new WheelsReward();
+        wheelsReward.setName("_未中奖_");
+        wheelsReward.setPicture("");
+        wheelsReward.setProbability(loseAwardProbability);
+        wheelsReward.setLoseAward(LoseAwardConstant.yes);
+        rewards.add(wheelsReward);
+        return rewards;
     }
 
     public List<WheelsReward> transferDtoToDomain(List<WheelsRewardDto> wheelsRewardDtos, double loseAwardProbability) {

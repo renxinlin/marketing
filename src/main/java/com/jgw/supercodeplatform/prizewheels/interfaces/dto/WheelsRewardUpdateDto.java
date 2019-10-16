@@ -38,7 +38,6 @@ public class WheelsRewardUpdateDto {
     private List<CdkKey> cdkKey;
 
 
-    @NotNull(message = "id不可为空") @Min(0)
     @ApiModelProperty("id") private Long id;
 
 

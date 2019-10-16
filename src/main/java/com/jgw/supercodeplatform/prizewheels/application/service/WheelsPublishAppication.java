@@ -154,7 +154,7 @@ public class WheelsPublishAppication {
         List<ProductUpdateDto> productUpdateDtos = wheelsUpdateDto.getProductDtos();
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos = wheelsUpdateDto.getWheelsRewardDtos();
         List<Product> products = productTransfer.transferUpdateDtoToDomain(productUpdateDtos, prizeWheelsid, autoType);
-        List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferUpdateDtoToDomain(wheelsRewardUpdateDtos, prizeWheelsid);
+        List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferUpdateDtoToDomain(wheelsRewardUpdateDtos, prizeWheelsid,wheelsUpdateDto.getLoseAwardProbability());
         // 1 业务处理
         // 大转盘
         Publisher publisher = new Publisher();
@@ -165,8 +165,10 @@ public class WheelsPublishAppication {
         wheels.addPublisher(publisher);
         wheels.checkWhenUpdate();
 
-        // 2 奖励
+        // 2 奖励  返回主键
         wheelsRewardDomainService.checkWhenUpdate(wheelsRewards);
+        wheelsRewardRepository.batchSave(wheelsRewards);
+
         // 2-1 cdk 领域事件 奖品与cdk绑定
         wheelsRewardDomainService.cdkEventCommitedWhenNecessary(wheelsRewards);
 
@@ -187,7 +189,6 @@ public class WheelsPublishAppication {
         wheelsPublishRepository.updatePrizeWheel(wheels);
 
         wheelsRewardRepository.deleteByPrizeWheelsId(prizeWheelsid);
-        wheelsRewardRepository.batchSave(wheelsRewards);
 
         productRepository.saveButDeleteOld(products);
 
@@ -232,5 +233,8 @@ public class WheelsPublishAppication {
     }
     public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
         return null;
+    }
+
+    public void upadteStatus(String activityStatus) {
     }
 }
