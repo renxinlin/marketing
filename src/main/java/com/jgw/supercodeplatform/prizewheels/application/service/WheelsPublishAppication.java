@@ -167,6 +167,7 @@ public class WheelsPublishAppication {
 
         // 2 奖励  返回主键
         wheelsRewardDomainService.checkWhenUpdate(wheelsRewards);
+        wheelsRewardRepository.deleteByPrizeWheelsId(prizeWheelsid);
         wheelsRewardRepository.batchSave(wheelsRewards);
 
         // 2-1 cdk 领域事件 奖品与cdk绑定
@@ -188,7 +189,6 @@ public class WheelsPublishAppication {
         // 持久化
         wheelsPublishRepository.updatePrizeWheel(wheels);
 
-        wheelsRewardRepository.deleteByPrizeWheelsId(prizeWheelsid);
 
         productRepository.saveButDeleteOld(products);
 
