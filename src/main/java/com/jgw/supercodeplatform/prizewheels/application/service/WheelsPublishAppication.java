@@ -19,14 +19,10 @@ import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepos
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProcessActivityDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ActivitySet;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ProductPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.ProductRepositoryImpl;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsPublishRepositoryImpl;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.repository.WheelsRewardRepositoryImpl;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import org.apache.http.util.Asserts;
@@ -34,11 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -159,8 +151,8 @@ public class WheelsPublishAppication {
         byte autoType = wheelsUpdateDto.getAutoType();
         Wheels wheels =  wheelsTransfer.tranferToDomain(wheelsUpdateDto);
 
-        List<ProductUpdateDto> productUpdateDtos = wheelsUpdateDto.getProductUpdateDtos();
-        List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos = wheelsUpdateDto.getWheelsRewardUpdateDtos();
+        List<ProductUpdateDto> productUpdateDtos = wheelsUpdateDto.getProductDtos();
+        List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos = wheelsUpdateDto.getWheelsRewardDtos();
         List<Product> products = productTransfer.transferUpdateDtoToDomain(productUpdateDtos, prizeWheelsid, autoType);
         List<WheelsReward> wheelsRewards = wheelsRewardTransfer.transferUpdateDtoToDomain(wheelsRewardUpdateDtos, prizeWheelsid);
         // 1 业务处理
@@ -218,7 +210,7 @@ public class WheelsPublishAppication {
         List<ProductPojo> productPojos = productRepository.getPojoByPrizeWheelsId(id);
         Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
         List<ProductUpdateDto> productUpdateDtos=productTransfer.productPojoToProductUpdateDto(productPojos);
-        wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
+        wheelsDetailsVo.setProductDtos(productUpdateDtos);
         //获取奖励
         List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepository.getByPrizeWheelsId(id);
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewardPojos),"未获取到奖励信息");
@@ -233,7 +225,7 @@ public class WheelsPublishAppication {
         wheelsRewardPojos.remove(notwheelsRewardPojo);
 
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
-        wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
+        wheelsDetailsVo.setWheelsRewardDtos(wheelsRewardUpdateDtos);
         wheelsDetailsVo.setAutoType(productPojos.get(0).getAutoType());
         wheelsDetailsVo.setLoseAwardProbability(notwheelsRewardPojo.getProbability());
         return wheelsDetailsVo;

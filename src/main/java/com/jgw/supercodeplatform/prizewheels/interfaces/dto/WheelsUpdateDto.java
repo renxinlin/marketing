@@ -1,10 +1,12 @@
 package com.jgw.supercodeplatform.prizewheels.interfaces.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -41,9 +43,14 @@ public class WheelsUpdateDto {
 
     @ApiModelProperty("企业logo") private String logo;
 
+
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8") @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "活动时间不可为空")
     @ApiModelProperty("活动开始时间")  private Date startTime;
 
+
+
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8") @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "活动时间不可为空")
     @ApiModelProperty("活动结束时间")  private Date endTime;
 
