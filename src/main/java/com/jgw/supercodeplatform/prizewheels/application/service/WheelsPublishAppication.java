@@ -7,6 +7,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsRewardTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsTransfer;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.LoseAwardConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
@@ -221,9 +222,20 @@ public class WheelsPublishAppication {
         //获取奖励
         List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepository.getByPrizeWheelsId(id);
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewardPojos),"未获取到奖励信息");
+        //剔除list中的未中奖，并将未中奖的数据的中奖率返回
+        WheelsRewardPojo notwheelsRewardPojo=new WheelsRewardPojo();
+        for (WheelsRewardPojo wheelsRewardPojo:wheelsRewardPojos){
+            if (wheelsRewardPojo.getLoseAward().intValue() == LoseAwardConstant.yes.intValue()){
+                notwheelsRewardPojo=wheelsRewardPojo;
+                break;
+            }
+        }
+        wheelsRewardPojos.remove(notwheelsRewardPojo);
+
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
         wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
         wheelsDetailsVo.setAutoType(productPojos.get(0).getAutoType());
+        wheelsDetailsVo.setLoseAwardProbability(notwheelsRewardPojo.getProbability());
         return wheelsDetailsVo;
     }
     public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
