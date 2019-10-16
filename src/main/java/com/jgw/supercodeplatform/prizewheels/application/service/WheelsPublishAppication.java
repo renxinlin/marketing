@@ -136,7 +136,7 @@ public class WheelsPublishAppication {
     }
 
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deletePrizeWheelsById(Long id) {
         wheelsPublishRepository.deletePrizeWheelsById(id);
         productRepository.deleteByPrizeWheelsId(id);
@@ -235,6 +235,8 @@ public class WheelsPublishAppication {
         return null;
     }
 
+
+    @Transactional(rollbackFor = Exception.class)
     public void upadteStatus(ActivityStatus activityStatus) {
         wheelsPublishRepository.updateStatus(activityStatus.getId(),activityStatus.getStatus());
         processActivityDomainService.updateStatus(activityStatus.getId(),activityStatus.getStatus());
