@@ -36,7 +36,7 @@ public class WheelsRewardDomainService {
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
 
         for(WheelsReward wheelsReward : wheelsRewards){
-            Asserts.check(wheelsReward.getId()!= null && wheelsReward.getId() > 0,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+           // Asserts.check(wheelsReward.getId()!= null && wheelsReward.getId() > 0,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
             Asserts.check(wheelsReward.getPrizeWheelId()  != null && wheelsReward.getPrizeWheelId() > 0
                     ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         }

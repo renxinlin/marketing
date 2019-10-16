@@ -39,8 +39,6 @@ public class ProductTransfer {
                 String productBatchId = productBatchDto.getProductBatchId();
                 String productBatchName = productBatchDto.getProductBatchName();
                 Product product = modelMapper.map(productDto, Product.class);
-                Asserts.check(product.getReferenceRole() != null, "modelMapper 映射不了...........");
-                log.error("modelMapper映射问题===============product.getReferenceRole() =>{}", product.getReferenceRole());
                 product.setActivitySetId(activitySetId);
                 product.setAutoType(autoType);
                 product.setProductBatchId(productBatchId);
@@ -63,8 +61,6 @@ public class ProductTransfer {
                 String productBatchId = productBatchDto.getProductBatchId();
                 String productBatchName = productBatchDto.getProductBatchName();
                 Product product = modelMapper.map(productDto, Product.class);
-                Asserts.check(product.getReferenceRole() != null, "modelMapper 映射不了...........");
-                log.error("modelMapper映射问题===============product.getReferenceRole() =>{}", product.getReferenceRole());
                 product.setAutoType(autoType);
                 product.setProductBatchId(productBatchId);
                 product.setProductBatchName(productBatchName);
