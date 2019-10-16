@@ -36,6 +36,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
         List<GetBatchInfoDto> getBatchInfoDtoList =  productDomainTranfer.tranferProductsToGetBatchInfoDtos(products);
         // 两个限界上下文交互
         RestResult<Object> sbatchIds = getSbatchIdsByPrizeWheelsFeign.getSbatchIds(getBatchInfoDtoList);
+        log.info(" initSbatchIds请求返回如下",JSONObject.toJSONString(sbatchIds));
 
         // 业务
         if(!CollectionUtils.isEmpty((ArrayList)sbatchIds.getResults()) && sbatchIds.getState() ==200 ){
@@ -52,7 +53,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
             });
 
         }else {
-            log.info("initSbatchIds(List<Product> products) =》 {}",JSONObject.toJSONString(products));
+            log.info("initSbatchIds(List<Product> products) =》 {}",JSONObject.toJSONString(getBatchInfoDtoList));
             throw new RuntimeException("获取码管理生码信息失败");
         }
         // 携带生码批次
