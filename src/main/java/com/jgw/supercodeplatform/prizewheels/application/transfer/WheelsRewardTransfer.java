@@ -56,6 +56,8 @@ public class WheelsRewardTransfer {
                 .collect(Collectors.toList());
 
         WheelsReward wheelsReward = new WheelsReward();
+        wheelsReward.setName("_未中奖_");
+        wheelsReward.setPicture("");
         wheelsReward.setProbability(loseAwardProbability);
         wheelsReward.setLoseAward(LoseAwardConstant.yes);
         list.add(wheelsReward);
