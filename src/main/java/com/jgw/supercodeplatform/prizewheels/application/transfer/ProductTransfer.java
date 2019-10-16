@@ -53,17 +53,25 @@ public class ProductTransfer {
      }
 
     public List<Product> transferDtoToDomain(List<ProductDto> productDtos, byte autoType) {
-        return productDtos
-                .stream()
-                .map(productDto -> {
-                    Product product = modelMapper.map(productDto, Product.class);
-                    //TODO 检查
-                    Asserts.check(product.getReferenceRole() != null ,"modelMapper 映射不了...........");
-                    log.error("modelMapper映射问题===============product.getReferenceRole() =>{}" ,product.getReferenceRole());
-                    product.setAutoType(autoType);
-                    product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
-                    return product;})
-                .collect(Collectors.toList());
+        List<Product> products = new ArrayList<>();
+        for(ProductDto productDto : productDtos){
+            List<ProductBatchDto> productBatchParams = productDto.getProductBatchParams();
+            for(ProductBatchDto productBatchDto : productBatchParams) {
+                String productBatchId = productBatchDto.getProductBatchId();
+                String productBatchName = productBatchDto.getProductBatchName();
+                Product product = modelMapper.map(productDto, Product.class);
+                Asserts.check(product.getReferenceRole() != null, "modelMapper 映射不了...........");
+                log.error("modelMapper映射问题===============product.getReferenceRole() =>{}", product.getReferenceRole());
+                product.setAutoType(autoType);
+                product.setProductBatchId(productBatchId);
+                product.setProductBatchName(productBatchName);
+                product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
+
+                products.add(product);
+            }
+        }
+        return products;
+
     }
     public List<ProductUpdateDto> productPojoToProductUpdateDto(List<ProductPojo> productPojos) {
         return productPojos
