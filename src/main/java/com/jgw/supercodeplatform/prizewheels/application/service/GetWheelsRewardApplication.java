@@ -142,7 +142,7 @@ public class GetWheelsRewardApplication {
         wheelsRewardPojos.remove(notwheelsRewardPojo);
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
         wheelsDetailsVo.setWheelsRewardDtos(wheelsRewardUpdateDtos);
-        wheelsDetailsVo.setAutoType(productPojos.get(0).getAutoType());
+        wheelsDetailsVo.setAutoType(!CollectionUtils.isEmpty(productPojos)?productPojos.get(0).getAutoType():1);
         //赋值未中奖率
         wheelsDetailsVo.setLoseAwardProbability(notwheelsRewardPojo.getProbability());
         return wheelsDetailsVo;
