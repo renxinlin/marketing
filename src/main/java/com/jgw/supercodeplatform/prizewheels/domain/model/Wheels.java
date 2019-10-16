@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.domain.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -79,6 +80,9 @@ public class Wheels implements Serializable {
     private Publisher publisher;
     // 前台活动模板id
     private String  templateId;
+
+    private String  activityStatus;
+
 
     public void addPublisher(Publisher publisher) {
         Asserts.check(publisher != null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());

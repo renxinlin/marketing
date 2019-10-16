@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConsta
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProcessActivityDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.ActivitySetMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ActivitySet;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
@@ -21,6 +22,10 @@ public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainSe
 
     @Autowired
     private WheelsMapper wheelsMapper;
+
+
+    @Autowired
+    private ActivitySetMapper setMapper;
 
 
     @Autowired
@@ -43,5 +48,15 @@ public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainSe
         activitySet.setOrganizatioIdlName(commonUtil.getOrganizationName());
         activitySet.setOrganizationId(commonUtil.getOrganizationId());
         return activitySet;
+    }
+
+    @Override
+    public void updateStatus(Long id, String status) {
+        ActivitySet activitySet = new ActivitySet();
+        activitySet.setId1(id);
+        activitySet.setActivityStatus(status);
+        setMapper.updateById(activitySet);
+
+
     }
 }

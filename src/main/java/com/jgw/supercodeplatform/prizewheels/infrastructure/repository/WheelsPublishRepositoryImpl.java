@@ -74,4 +74,12 @@ public class WheelsPublishRepositoryImpl implements WheelsPublishRepository {
         return wheelsPojoTransfer.tranferPojoToDomain(wheelsPojo);
     }
 
+    @Override
+    public void updateStatus(Long id, String status) {
+        WheelsPojo wheelsPojo = new WheelsPojo();
+        wheelsPojo.setActivityStatus(status);
+        wheelsPojo.setId(id);
+        wheelsMapper.updateById(wheelsPojo);
+    }
+
 }

@@ -101,4 +101,8 @@ public class WheelsPojo implements Serializable {
     @TableField("TemplateId")
     private String  templateId;
 
+
+    @TableField("ActivityStatus")
+    private String  activityStatus;
+
 }

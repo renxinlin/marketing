@@ -32,4 +32,6 @@ public interface WheelsPublishRepository {
     WheelsPojo getWheelsById(Long id);
 
     Wheels getWheelsInfo(Long id);
+
+    void updateStatus(Long id, String status);
 }

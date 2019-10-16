@@ -235,6 +235,8 @@ public class WheelsPublishAppication {
         return null;
     }
 
-    public void upadteStatus(String activityStatus) {
+    public void upadteStatus(ActivityStatus activityStatus) {
+        wheelsPublishRepository.updateStatus(activityStatus.getId(),activityStatus.getStatus());
+        processActivityDomainService.updateStatus(activityStatus.getId(),activityStatus.getStatus());
     }
 }

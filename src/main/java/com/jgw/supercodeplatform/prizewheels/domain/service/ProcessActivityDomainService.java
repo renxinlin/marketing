@@ -11,4 +11,6 @@ import org.springframework.stereotype.Service;
 public interface ProcessActivityDomainService {
 
      ActivitySet formPrizeWheelsToOldActivity(Wheels prizeWheels,Integer autoFetch);
+
+     void updateStatus(Long id, String status);
 }
