@@ -41,8 +41,8 @@ public class WheelsController extends SalerCommonController {
     @PostMapping("/update")
     @ApiOperation(value = "更新", notes = "分页参见以前接口")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult update(@Valid  @RequestBody WheelsUpdateDto wheelsUpdateDto)   {
-        appication.update(wheelsUpdateDto);
+    public RestResult update(@Valid  @RequestBody WheelsUpdateDto wheelsDto)   {
+        appication.update(wheelsDto);
         return success();
     }
 
