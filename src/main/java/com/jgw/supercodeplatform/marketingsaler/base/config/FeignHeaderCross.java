@@ -3,10 +3,12 @@ package com.jgw.supercodeplatform.marketingsaler.base.config;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import feign.RequestInterceptor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -27,6 +29,15 @@ public class FeignHeaderCross implements RequestInterceptor {
             return;
         }
         String superToken = getHeaders(getHttpServletRequest()).get(UserConstants.SUPER_TOKEN);
+        if(StringUtils.isEmpty(superToken)){
+            Cookie[] cookies = getHttpServletRequest().getCookies();
+            for(Cookie cookie : cookies){
+                if(UserConstants.SINGLE_CODE.equals(cookie.getName())){
+                    superToken = cookie.getValue();
+                }
+            }
+        }
+
         log.info("服务调用请求头{}",superToken);
         requestTemplate.header(UserConstants.SUPER_TOKEN, superToken);
     }
