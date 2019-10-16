@@ -208,7 +208,7 @@ public class WheelsPublishAppication {
         WheelsDetailsVo wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
         //获取产品
         List<ProductPojo> productPojos = productRepository.getPojoByPrizeWheelsId(id);
-        Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
+        // Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
         List<ProductUpdateDto> productUpdateDtos=productTransfer.productPojoToProductUpdateDto(productPojos);
         wheelsDetailsVo.setProductDtos(productUpdateDtos);
         //获取奖励
