@@ -29,6 +29,6 @@ public class ProductUpdateDto {
     @ApiModelProperty("产品批次") List<ProductBatchDto> productBatchParams;
 
     @NotNull(message = "活动不可为空") @Min(0)
-    @ApiModelProperty("activitySetId") private Long id;
+    @ApiModelProperty("活动Id,大转盘取id1,activityId为7") private Long id;
 
 }

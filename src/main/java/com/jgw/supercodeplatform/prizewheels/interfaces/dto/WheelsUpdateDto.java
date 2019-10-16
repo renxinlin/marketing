@@ -25,7 +25,7 @@ public class WheelsUpdateDto {
 
 
     @NotNull(message = "id不可为空") @Min(0)
-    @ApiModelProperty("id")private Long  id;
+    @ApiModelProperty("活动Id,大转盘取id1,activityId为7")private Long  id;
 
     @NotEmpty(message = "活动模板id不可为空")
     @ApiModelProperty("活动模板id") private String  templateId;
