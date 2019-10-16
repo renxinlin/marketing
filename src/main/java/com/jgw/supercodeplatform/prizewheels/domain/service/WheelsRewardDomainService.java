@@ -5,9 +5,11 @@ import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
 import com.jgw.supercodeplatform.prizewheels.domain.publisher.CdkEventPublisher;
 import com.jgw.supercodeplatform.prizewheels.domain.subscribers.CdkEventSubscriber;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl.CdkEventSubscriberImplV2;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -21,9 +23,16 @@ import java.util.List;
 public class WheelsRewardDomainService {
     @Autowired
     private CdkEventPublisher cdkEventPublisher;
+//    http://filetest.cjm.so/654b72fd99fc43188aed44945daf3d04
 
     @Autowired
+    @Qualifier("cdkEventSubscriberImpl")
     private CdkEventSubscriber cdkEventSubscriber;
+
+    @Autowired
+    @Qualifier("cdkEventSubscriberImplV2")
+    private CdkEventSubscriber cdkEventSubscriberV2;
+
     public void checkWhenUpdate(List<WheelsReward> wheelsRewards) {
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
 
@@ -63,7 +72,9 @@ public class WheelsRewardDomainService {
             Asserts.check(wheelsReward.getId()!= null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());
             if(!StringUtils.isEmpty(wheelsReward.getCdkKey())){
                 CdkEvent cdkEvent = new CdkEvent(wheelsReward.getId(), wheelsReward.getCdkKey());
-                cdkEventPublisher.addSubscriber(cdkEventSubscriber);
+//                cdkEventPublisher.addSubscriber(cdkEventSubscriber);   // excel 已经导入,关联wheelsRewards主键即可  前端组件不支持我也是醉了
+                cdkEventPublisher.addSubscriber(cdkEventSubscriberV2); // excel导入到七牛云,此时读excel
+
                 cdkEventPublisher.publish(cdkEvent);
 
             }

@@ -31,10 +31,10 @@ public class ExcelApplication {
      * @param is
      */
     public String uploadExcel(InputStream is) throws ExcelException {
-        LinkedHashMap linkedHashMap = new LinkedHashMap();
-        linkedHashMap.put("cdk","cdk"); // excel:cdk ,table:cdk
-        String[] uniqueFields={"cdk"}; // cdk不可重复
-        List<WheelsRewardCdk> wheelsRewardCdks=ExcelUtils.excelToList(is,sheetName,WheelsRewardCdk.class,linkedHashMap,uniqueFields);
+            LinkedHashMap linkedHashMap = new LinkedHashMap();
+            linkedHashMap.put("cdk","cdk"); // excel:cdk ,table:cdk
+            String[] uniqueFields={"cdk"}; // cdk不可重复
+            List<WheelsRewardCdk> wheelsRewardCdks=ExcelUtils.excelToList(is,sheetName,WheelsRewardCdk.class,linkedHashMap,uniqueFields);
 
         //插入数据库的list对象
          String cdkKey=commonUtil.getUUID();
