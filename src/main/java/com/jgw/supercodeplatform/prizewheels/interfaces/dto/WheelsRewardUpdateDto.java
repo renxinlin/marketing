@@ -42,7 +42,6 @@ public class WheelsRewardUpdateDto {
     @ApiModelProperty("id") private Long id;
 
 
-    @NotNull(message = "活动id不可为空") @Min(0)
     @ApiModelProperty("活动id") private Long prizeWheelId;
 
     @NotEmpty(message = "奖项名称不可为空")
