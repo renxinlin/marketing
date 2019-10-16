@@ -36,7 +36,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
         List<GetBatchInfoDto> getBatchInfoDtoList =  productDomainTranfer.tranferProductsToGetBatchInfoDtos(products);
         // 两个限界上下文交互
         RestResult<Object> sbatchIds = getSbatchIdsByPrizeWheelsFeign.getSbatchIds(getBatchInfoDtoList);
-        log.info(" initSbatchIds请求返回如下",JSONObject.toJSONString(sbatchIds));
+        log.info(" initSbatchIds请求返回如下{}",JSONObject.toJSONString(sbatchIds));
 
         // 业务
         if(!CollectionUtils.isEmpty((ArrayList)sbatchIds.getResults()) && sbatchIds.getState() ==200 ){
