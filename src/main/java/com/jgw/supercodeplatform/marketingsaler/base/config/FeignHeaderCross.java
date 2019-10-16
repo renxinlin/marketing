@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketingsaler.base.config;
 
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import feign.RequestInterceptor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -15,6 +16,7 @@ import java.util.Map;
  * 微服务
  * 跨域请求头处理
  */
+@Slf4j
 @Component
 public class FeignHeaderCross implements RequestInterceptor {
 
@@ -24,7 +26,9 @@ public class FeignHeaderCross implements RequestInterceptor {
         if(null == httpServletRequest){
             return;
         }
-        requestTemplate.header(UserConstants.SUPER_TOKEN, getHeaders(getHttpServletRequest()).get(UserConstants.SUPER_TOKEN));
+        String superToken = getHeaders(getHttpServletRequest()).get(UserConstants.SUPER_TOKEN);
+        log.info("服务调用请求头{}",superToken);
+        requestTemplate.header(UserConstants.SUPER_TOKEN, superToken);
     }
 
     private HttpServletRequest getHttpServletRequest() {
