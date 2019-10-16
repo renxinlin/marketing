@@ -42,6 +42,7 @@ public class WheelsRewardTransfer {
         WheelsReward wheelsReward = new WheelsReward();
         wheelsReward.setName("_未中奖_");
         wheelsReward.setPicture("");
+        wheelsReward.setPrizeWheelId(prizeWheelsid);
         wheelsReward.setProbability(loseAwardProbability);
         wheelsReward.setLoseAward(LoseAwardConstant.yes);
         rewards.add(wheelsReward);

@@ -78,6 +78,17 @@ public class WheelsController extends SalerCommonController {
 
 
 
+    @GetMapping("/record")
+    @ApiOperation(value = "参与记录", notes = "活动状态(1、表示上架进展，0 表示下架)")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult record(String id)   {
+
+        appication.upadteStatus(null);
+        return success();
+    }
+
+
+
 
 
 
