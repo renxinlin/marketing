@@ -48,11 +48,11 @@ public class WheelsDetailsVo {
 
     @ApiModelProperty("奖励总数") private Integer prizeNum;
 
-    @ApiModelProperty("大转盘产品集合")  private List<ProductUpdateDto> productUpdateDtos;
+    @ApiModelProperty("大转盘产品集合")  private List<ProductUpdateDto> productDtos;
 
     @ApiModelProperty("未中奖概率") private double loseAwardProbability;
 
-    @ApiModelProperty("大转盘奖励集合")  private List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos;
+    @ApiModelProperty("大转盘奖励集合")  private List<WheelsRewardUpdateDto> wheelsRewardDtos;
 
     @ApiModelProperty("是否自动获取(1、自动获取 2、仅此一次 )")   private byte autoType;
 

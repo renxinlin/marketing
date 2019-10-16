@@ -23,7 +23,6 @@ import java.util.List;
 public class WheelsRewardDomainService {
     @Autowired
     private CdkEventPublisher cdkEventPublisher;
-//    http://filetest.cjm.so/654b72fd99fc43188aed44945daf3d04
 
     @Autowired
     @Qualifier("cdkEventSubscriberImpl")
