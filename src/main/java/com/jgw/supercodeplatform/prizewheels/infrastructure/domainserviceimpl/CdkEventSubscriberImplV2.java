@@ -40,7 +40,7 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
     @Override
     public void handle(CdkEvent cdkEvent) {
         // 根据cdkkey去七牛云读取文件
-        String cdkKey = cdkEvent.getCdkKey();
+        String cdkKey = cdkEvent.getCdkUuid();
         String excelUrl = QiNiuYunConfigConstant.URL + cdkKey;
 
         // 读取excel流

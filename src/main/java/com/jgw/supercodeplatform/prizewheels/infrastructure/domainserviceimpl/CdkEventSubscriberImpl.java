@@ -20,7 +20,7 @@ public class CdkEventSubscriberImpl implements CdkEventSubscriber {
         entity.setPrizeRewardId(cdkEvent.getPrizeRewardId());
 
         QueryWrapper<WheelsRewardCdk> query = new QueryWrapper<>();
-        query.eq("cdkKey",cdkEvent.getCdkKey());
+        query.eq("cdkKey",cdkEvent.getCdkUuid());
         wheelsRewardCdkMapper.update(entity,query);
     }
 }

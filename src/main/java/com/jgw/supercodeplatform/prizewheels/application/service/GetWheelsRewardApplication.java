@@ -123,7 +123,7 @@ public class GetWheelsRewardApplication {
         // 大转盘活动ID
         Long id=productPojos.get(0).getActivitySetId();
         List<ProductUpdateDto> productUpdateDtos=productTransfer.productPojoToProductUpdateDto(productPojos);
-        wheelsDetailsVo.setProductUpdateDtos(productUpdateDtos);
+        wheelsDetailsVo.setProductDtos(productUpdateDtos);
 
         WheelsPojo wheelsPojo=wheelsPublishRepository.getWheelsById(id);
         Asserts.check(wheelsPojo!=null,"未获取到大转盘信息");
@@ -141,7 +141,7 @@ public class GetWheelsRewardApplication {
         }
         wheelsRewardPojos.remove(notwheelsRewardPojo);
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
-        wheelsDetailsVo.setWheelsRewardUpdateDtos(wheelsRewardUpdateDtos);
+        wheelsDetailsVo.setWheelsRewardDtos(wheelsRewardUpdateDtos);
         wheelsDetailsVo.setAutoType(productPojos.get(0).getAutoType());
         //赋值未中奖率
         wheelsDetailsVo.setLoseAwardProbability(notwheelsRewardPojo.getProbability());

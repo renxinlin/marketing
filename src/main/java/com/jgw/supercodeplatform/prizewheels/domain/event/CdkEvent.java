@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CdkEvent {
     private Long prizeRewardId;
-    private String cdkKey;
+    private String cdkUuid;
 }

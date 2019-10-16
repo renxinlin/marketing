@@ -10,6 +10,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
@@ -31,8 +33,9 @@ public class WheelsRewardUpdateDto {
     @ApiModelProperty("奖励图片")
     private String picture;
 
-    @ApiModelProperty("上传文件返回的UUID")
-    private String cdkKey;
+
+    @ApiModelProperty("上传文件信息")
+    private List<CdkKey> cdkKey;
 
 
     @NotNull(message = "id不可为空") @Min(0)
