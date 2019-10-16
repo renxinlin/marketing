@@ -241,4 +241,7 @@ public class WheelsPublishAppication {
         wheelsPublishRepository.updateStatus(activityStatus.getId(),activityStatus.getStatus());
         processActivityDomainService.updateStatus(activityStatus.getId(),activityStatus.getStatus());
     }
+
+    public void records(Long id) {
+    }
 }

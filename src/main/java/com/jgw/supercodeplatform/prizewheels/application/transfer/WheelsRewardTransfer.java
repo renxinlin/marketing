@@ -30,6 +30,8 @@ public class WheelsRewardTransfer {
                         // 有且仅有一个,前端格式如此
                         wheelsReward.setCdkName(wheelsRewardUpdateDto.getCdkKey().get(0).getName());
                         wheelsReward.setCdkUuid(wheelsRewardUpdateDto.getCdkKey().get(0).getUuid());
+                        wheelsReward.setLoseAward(LoseAwardConstant.no);
+
                     } catch (Exception e) {
                         log.info("暂无cdk");
                     }
