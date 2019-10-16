@@ -69,8 +69,8 @@ public class WheelsRewardDomainService {
     public void cdkEventCommitedWhenNecessary(List<WheelsReward> wheelsRewards) {
         for(WheelsReward wheelsReward : wheelsRewards){
             Asserts.check(wheelsReward.getId()!= null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());
-            if(!StringUtils.isEmpty(wheelsReward.getCdkKey())){
-                CdkEvent cdkEvent = new CdkEvent(wheelsReward.getId(), wheelsReward.getCdkKey());
+            if(!StringUtils.isEmpty(wheelsReward.getCdkUuid())){
+                CdkEvent cdkEvent = new CdkEvent(wheelsReward.getId(), wheelsReward.getCdkUuid());
 //                cdkEventPublisher.addSubscriber(cdkEventSubscriber);   // excel 已经导入,关联wheelsRewards主键即可  前端组件不支持我也是醉了
                 cdkEventPublisher.addSubscriber(cdkEventSubscriberV2); // excel导入到七牛云,此时读excel
 
