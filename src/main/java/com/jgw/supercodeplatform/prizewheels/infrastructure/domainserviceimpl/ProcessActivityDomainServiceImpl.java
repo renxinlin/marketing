@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
@@ -56,7 +58,9 @@ public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainSe
         ActivitySet activitySet = new ActivitySet();
         activitySet.setId1(id);
         activitySet.setActivityStatus(status);
-        setMapper.updateById(activitySet);
+        QueryWrapper<ActivitySet> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("id1",id);
+        setMapper.update(activitySet,queryWrapper);
 
 
     }
