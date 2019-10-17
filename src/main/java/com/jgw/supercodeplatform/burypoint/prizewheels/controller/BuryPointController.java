@@ -19,7 +19,7 @@ import javax.validation.Valid;
  * @date 2019/10/16 13:06
  */
 @RestController
-@RequestMapping("marketing/prizeWheels/buryPointtc")
+@RequestMapping("marketing/buryPoint/prizeWheels/")
 @Api(tags = "大转盘埋点")
 public class BuryPointController extends SalerCommonController {
 
@@ -31,7 +31,6 @@ public class BuryPointController extends SalerCommonController {
 
     @PostMapping(value = "/addOuterChain")
     @ApiOperation(value = "插入C端点击外链埋点数据")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult buryPointOuterChainTc(@RequestBody BuryPointOuterChainTcDto buryPointOuterChainTcDto){
         buryPointOuterChainTcService.buryPointOuterChainTc(buryPointOuterChainTcDto);
         return success();
@@ -39,7 +38,6 @@ public class BuryPointController extends SalerCommonController {
 
     @PostMapping(value = "/addReward")
     @ApiOperation(value = "插入C端领取奖励埋点数据")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult buryPointRewardTbc(@RequestBody BuryPointRewardTbcDto buryPointRewardTbcDto){
         buryPointRewardTbcService.buryPointRewardTbc(buryPointRewardTbcDto);
         return success();
