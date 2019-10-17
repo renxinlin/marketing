@@ -36,8 +36,13 @@ public class BuryPointOuterChainTcService {
         buryPointOuterChainTc.setActivityId(buryPointOuterChainTcDto.getActivityId());
         buryPointOuterChainTc.setOrganizationId(commonUtil.getOrganizationId());
         buryPointOuterChainTc.setOrganizationName(commonUtil.getOrganizationName());
-        buryPointOuterChainTcMapper.insert(buryPointOuterChainTc);
-        logger.info("插入c端大转盘链接埋点数据："+buryPointOuterChainTc.toString());
+        try {
+            logger.info("插入c端大转盘链接埋点数据出错："+buryPointOuterChainTc.toString());
+            buryPointOuterChainTcMapper.insert(buryPointOuterChainTc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        logger.info("成功插入c端大转盘链接埋点数据："+buryPointOuterChainTc.toString());
 
     }
 

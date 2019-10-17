@@ -37,8 +37,13 @@ public class BuryPointRewardTbcService {
         buryPointRewardTbc.setActivityId(buryPointRewardTbcDto.getActivityId());
         buryPointRewardTbc.setRewardId(buryPointRewardTbcDto.getRewardId());
         buryPointRewardTbc.setRewardName(buryPointRewardTbcDto.getRewardName());
-        buryPointRewardTbcMapper.insert(buryPointRewardTbc);
-        logger.info("插入c端发放奖励埋点数据:"+buryPointRewardTbc.toString());
+        try {
+            buryPointRewardTbcMapper.insert(buryPointRewardTbc);
+        } catch (Exception e) {
+            logger.info("插入c端发放奖励埋点数据出错:"+buryPointRewardTbc.toString());
+            e.printStackTrace();
+        }
+        logger.info("成功插入c端发放奖励埋点数据:"+buryPointRewardTbc.toString());
     }
 
 
