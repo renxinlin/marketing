@@ -18,7 +18,7 @@ import javax.validation.Valid;
  * @date 2019/10/16 13:06
  */
 @RestController
-@RequestMapping("marketing/prizeWheels/buryPoint")
+@RequestMapping("marketing/prizeWheels/buryPointc")
 @Api(tags = "大转盘埋点")
 public class BuryPointController extends SalerCommonController {
 
