@@ -5,7 +5,10 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.prizewheels.application.service.WheelsPublishAppication;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRecordPojo;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ActivityStatus;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardDto;
@@ -79,11 +82,10 @@ public class WheelsController extends SalerCommonController {
 
 
     @GetMapping("/record")
-    @ApiOperation(value = "参与记录", notes = "活动状态(1、表示上架进展，0 表示下架)")
+    @ApiOperation(value = "参与记录", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<Object> record(Long id)   {
-        appication.records(id);
-        return success();
+    public RestResult<AbstractPageService.PageResults<List<WheelsRecordPojo>> > record(DaoSearch daoSearch)   {
+        return success(appication.records(daoSearch));
     }
 
 

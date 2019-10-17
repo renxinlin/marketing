@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @date 2019/10/17 11:32
  */
 @RestController
-@RequestMapping("marketing/prizeWheels/buryPointData")
+@RequestMapping("marketing/buryPoint/getPrizeWheelsData")
 @Api(tags = "获取大转盘各类埋点数据")
 public class BuryPointDataGetController extends SalerCommonController {
     private Logger logger = LoggerFactory.getLogger(BuryPointDataGetController.class);
@@ -33,8 +33,13 @@ public class BuryPointDataGetController extends SalerCommonController {
     @ApiOperation(value = "获取B端配置外链埋点数据")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult buryPointOuterChainTc(@RequestParam(value = "key") String key){
-        String result=redisUtil.get(buryPointOuterChain+key);
-        logger.info("查询B端配置外链埋点数据----"+result);
+        String result= null;
+        try {
+            result = redisUtil.get(buryPointOuterChain+key);
+        } catch (Exception e) {
+            logger.info("查询B端配置外链埋点数据出错----");
+            e.printStackTrace();
+        }
         return success(result);
     }
 }

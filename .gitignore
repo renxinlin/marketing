@@ -4,3 +4,6 @@
 .settings/
 /.idea/*
 .jar
+/src/main/resources/templates/
+/src/main/java/com/jgw/supercodeplatform/GeneratorServiceEntityUtil.java
+/src/main/java/com/jgw/supercodeplatform/MyAutoGenerator.java

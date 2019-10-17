@@ -40,10 +40,8 @@ public class BuryPointRewardTbcService {
         try {
             buryPointRewardTbcMapper.insert(buryPointRewardTbc);
         } catch (Exception e) {
-            logger.info("插入c端发放奖励埋点数据出错:"+buryPointRewardTbc.toString());
             e.printStackTrace();
         }
-        logger.info("成功插入c端发放奖励埋点数据:"+buryPointRewardTbc.toString());
     }
 
 
