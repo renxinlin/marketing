@@ -1,10 +1,15 @@
 package com.jgw.supercodeplatform.prizewheels.application.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.SalerRecordTransfer;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
+import com.jgw.supercodeplatform.prizewheels.application.transfer.RecordTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsRewardTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsTransfer;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.LoseAwardConstant;
@@ -12,17 +17,11 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Wheels;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
-import com.jgw.supercodeplatform.prizewheels.domain.repository.ActivitySetRepository;
-import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
-import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
-import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.*;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProcessActivityDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ActivitySet;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ProductPojo;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import org.apache.http.util.Asserts;
@@ -63,6 +62,9 @@ public class WheelsPublishAppication {
 
     @Autowired
     private WheelsRewardRepository wheelsRewardRepository;
+
+    @Autowired
+    private RecordRepository recordRepository;
 
     @Autowired
     private WheelsRewardDomainService wheelsRewardDomainService;
@@ -231,9 +233,6 @@ public class WheelsPublishAppication {
         wheelsDetailsVo.setLoseAwardProbability(notwheelsRewardPojo.getProbability());
         return wheelsDetailsVo;
     }
-    public AbstractPageService.PageResults<List<WheelsUpdateDto>> list(DaoSearch daoSearch) {
-        return null;
-    }
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -242,8 +241,10 @@ public class WheelsPublishAppication {
         processActivityDomainService.updateStatus(activityStatus.getId(),activityStatus.getStatus());
     }
 
-    public void records(Long id) {
-        String organizationId = commonUtil.getOrganizationId();
+    public AbstractPageService.PageResults<List<WheelsRecordPojo>> records(DaoSearch daoSearch) {
+        IPage<WheelsRecordPojo> wheelsRecordPojoIPage = recordRepository.selectPage(RecordTransfer.getPage(daoSearch)
+                , RecordTransfer.getPageParam(daoSearch, commonUtil.getOrganizationId()));
+        return RecordTransfer.toPageResult(wheelsRecordPojoIPage);
 
     }
 }
