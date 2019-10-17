@@ -97,7 +97,7 @@ public class WheelsPublishAppication {
         // 1 业务处理
         // 大转盘
         Publisher publisher = new Publisher();
-        publisher.initUserInfo(
+        publisher.initUserInfoWhenFirstPublish(
                 commonUtil.getUserLoginCache().getAccountId()
                 ,commonUtil.getUserLoginCache().getUserName());
         wheels.initOrgInfo(commonUtil.getOrganizationId(),commonUtil.getOrganizationName());
@@ -243,5 +243,7 @@ public class WheelsPublishAppication {
     }
 
     public void records(Long id) {
+        String organizationId = commonUtil.getOrganizationId();
+
     }
 }
