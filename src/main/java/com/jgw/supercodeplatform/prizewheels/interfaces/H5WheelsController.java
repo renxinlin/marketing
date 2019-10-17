@@ -38,6 +38,7 @@ public class H5WheelsController extends SalerCommonController {
     @ApiOperation(value = "H5领奖", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<WheelsRewardCdk> reward(@Valid @RequestBody PrizeWheelsRewardDto prizeWheelsRewardDto, @ApiIgnore H5LoginVO user) throws CommonException {
+        // 暂时只有虚拟wu
         return success(application.reward(prizeWheelsRewardDto,user));
     }
 

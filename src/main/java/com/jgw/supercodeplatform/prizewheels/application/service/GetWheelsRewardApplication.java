@@ -103,7 +103,6 @@ public class GetWheelsRewardApplication {
                 log.info("未获取到{}锁", PREFIXX);
                 throw new RuntimeException("该码正在被其他人领取...");
             }
-            // TODO 分布式锁
             log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), JSONObject.toJSONString(prizeWheelsRewardDto));
             // 数据获取
             Long id = prizeWheelsRewardDto.getId(); // 活动id
