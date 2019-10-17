@@ -10,6 +10,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.controller.H
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.H5SalerRuleExchangeDto;
 import com.jgw.supercodeplatform.prizewheels.application.service.GetWheelsRewardApplication;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
+import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
@@ -36,9 +37,8 @@ public class H5WheelsController extends SalerCommonController {
     @PostMapping("/reward")
     @ApiOperation(value = "H5领奖", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult reward(@Valid @RequestBody PrizeWheelsRewardDto prizeWheelsRewardDto, @ApiIgnore H5LoginVO user) throws CommonException {
-            application.reward(prizeWheelsRewardDto,user);
-        return success();
+    public RestResult<WheelsRewardCdk> reward(@Valid @RequestBody PrizeWheelsRewardDto prizeWheelsRewardDto, @ApiIgnore H5LoginVO user) throws CommonException {
+        return success(application.reward(prizeWheelsRewardDto,user));
     }
 
 

@@ -8,7 +8,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.constants.QiNiuYunConfigCons
 import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
 import com.jgw.supercodeplatform.prizewheels.domain.subscribers.CdkEventSubscriber;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.batch.WheelsRewardCdkService;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardCdk;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardCdkPojo;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -46,24 +46,24 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
         // 读取excel流
         InputStream is = downExcelStream(excelUrl);
         // excel转list
-        List<WheelsRewardCdk> wheelsRewardCdks = excelStreamToList(is);
+        List<WheelsRewardCdkPojo> wheelsRewardCdkPojos = excelStreamToList(is);
         // 业务属性补充
-        wheelsRewardCdks = addOtherFields(wheelsRewardCdks,cdkKey,cdkEvent.getPrizeRewardId());
+        wheelsRewardCdkPojos = addOtherFields(wheelsRewardCdkPojos,cdkKey,cdkEvent.getPrizeRewardId());
         // 持久化
-        wheelsRewardCdkService.saveBatch(wheelsRewardCdks);
+        wheelsRewardCdkService.saveBatch(wheelsRewardCdkPojos);
 
 
     }
 
-    private List<WheelsRewardCdk> addOtherFields(List<WheelsRewardCdk> wheelsRewardCdks, String cdkKey,Long rewardId) {
-        for (WheelsRewardCdk wheelsRewardCdk : wheelsRewardCdks) {
-            wheelsRewardCdk.setCdkKey(cdkKey);
-            wheelsRewardCdk.setStatus(CdkStatus.BEFORE_REWARD);
-            wheelsRewardCdk.setPrizeRewardId(rewardId);
-            wheelsRewardCdk.setOrganizationId(commonUtil.getOrganizationId());
-            wheelsRewardCdk.setOrganizationName(commonUtil.getOrganizationName());
+    private List<WheelsRewardCdkPojo> addOtherFields(List<WheelsRewardCdkPojo> wheelsRewardCdkPojos, String cdkKey, Long rewardId) {
+        for (WheelsRewardCdkPojo wheelsRewardCdkPojo : wheelsRewardCdkPojos) {
+            wheelsRewardCdkPojo.setCdkKey(cdkKey);
+            wheelsRewardCdkPojo.setStatus(CdkStatus.BEFORE_REWARD);
+            wheelsRewardCdkPojo.setPrizeRewardId(rewardId);
+            wheelsRewardCdkPojo.setOrganizationId(commonUtil.getOrganizationId());
+            wheelsRewardCdkPojo.setOrganizationName(commonUtil.getOrganizationName());
         }
-        return wheelsRewardCdks;
+        return wheelsRewardCdkPojos;
     }
 
     private List excelStreamToList(InputStream is) {
@@ -71,8 +71,8 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
         linkedHashMap.put("cdk", "cdk"); // excel:cdk ,table:cdk
         String[] uniqueFields = {"cdk"}; // cdk不可重复
         try {
-            List<WheelsRewardCdk> wheelsRewardCdks = ExcelUtils.excelToList(is, sheetName, WheelsRewardCdk.class, linkedHashMap, uniqueFields);
-            return wheelsRewardCdks;
+            List<WheelsRewardCdkPojo> wheelsRewardCdkPojos = ExcelUtils.excelToList(is, sheetName, WheelsRewardCdkPojo.class, linkedHashMap, uniqueFields);
+            return wheelsRewardCdkPojos;
         } catch (ExcelException e) {
             e.printStackTrace();
             throw new RuntimeException("excel解析失败");

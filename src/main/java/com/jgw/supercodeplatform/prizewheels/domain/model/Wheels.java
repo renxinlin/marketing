@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.prizewheels.domain.model;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityStatusConstant;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -123,6 +124,14 @@ public class Wheels implements Serializable {
 
     public void checkWhenAdd() {
         checkBase();
+    }
+
+    public void checkAcitivyStatusWhenHReward() {
+
+        Date date = new Date();
+        Asserts.check(startTime.getTime() <= date.getTime(),"活动未开始");
+        Asserts.check(endTime.getTime() > date.getTime(),"活动已结束");
+        Asserts.check(ActivityStatusConstant.UP.equals(activityStatus),"活动未启用");
     }
 
 
