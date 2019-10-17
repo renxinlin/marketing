@@ -4,6 +4,7 @@ import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointRewar
 import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointRewardTbcMapper;
 import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointRewardTbc;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +28,21 @@ public class BuryPointRewardTbcService {
      * 埋点奖励发放
      * @param buryPointRewardTbcDto
      */
-    public void buryPointRewardTbc(BuryPointRewardTbcDto buryPointRewardTbcDto){
+    public void buryPointRewardTbc(BuryPointRewardTbcDto buryPointRewardTbcDto, H5LoginVO user){
         BuryPointRewardTbc buryPointRewardTbc=new BuryPointRewardTbc();
-        buryPointRewardTbc.setCreateUser(commonUtil.getUserLoginCache().getUserName());
-        buryPointRewardTbc.setCreateUserId(commonUtil.getUserLoginCache().getUserId());
+        buryPointRewardTbc.setCreateUser(user.getMemberName());
+        buryPointRewardTbc.setCreateUserId(String.valueOf(user.getMemberId()));
         buryPointRewardTbc.setCreateDate(new Date());
-        buryPointRewardTbc.setOrganizationId(commonUtil.getOrganizationId());
-        buryPointRewardTbc.setOrganizationName(commonUtil.getOrganizationName());
+        buryPointRewardTbc.setOrganizationId(user.getOrganizationId());
+        buryPointRewardTbc.setOrganizationName(user.getOrganizationName());
         buryPointRewardTbc.setActivityId(buryPointRewardTbcDto.getActivityId());
         buryPointRewardTbc.setRewardId(buryPointRewardTbcDto.getRewardId());
         buryPointRewardTbc.setRewardName(buryPointRewardTbcDto.getRewardName());
-        buryPointRewardTbcMapper.insert(buryPointRewardTbc);
-        logger.info("插入c端发放奖励埋点数据:"+buryPointRewardTbc.toString());
+        try {
+            buryPointRewardTbcMapper.insert(buryPointRewardTbc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

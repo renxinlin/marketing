@@ -35,8 +35,7 @@ public class MySessionExcludePathInterceptor implements WebMvcSessionInterceptor
                 "/marketing/front/saler/**",
                 "/marketing/saleMember/**",
                 "/marketing/saleMember/**",
-                "/marketing/activity/platform/h5/*",
-                "marketing/buryPoint/prizeWheels"
+                "/marketing/activity/platform/h5/*"
 
         };
         return Arrays.asList(add);
