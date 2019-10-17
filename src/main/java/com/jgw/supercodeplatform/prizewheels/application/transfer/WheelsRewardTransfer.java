@@ -26,11 +26,11 @@ public class WheelsRewardTransfer {
                 .stream()
                 .map(wheelsRewardUpdateDto -> {
                     WheelsReward wheelsReward = modelMapper.map(wheelsRewardUpdateDto, WheelsReward.class);
+                    wheelsReward.setLoseAward(LoseAwardConstant.no);
                     try {
                         // 有且仅有一个,前端格式如此
                         wheelsReward.setCdkName(wheelsRewardUpdateDto.getCdkKey().get(0).getName());
                         wheelsReward.setCdkUuid(wheelsRewardUpdateDto.getCdkKey().get(0).getUuid());
-                        wheelsReward.setLoseAward(LoseAwardConstant.no);
 
                     } catch (Exception e) {
                         log.info("暂无cdk");
