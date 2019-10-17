@@ -42,7 +42,8 @@ public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainSe
         activitySet.setAutoFetch(autoFetch);
         activitySet.setActivityDesc("大转盘活动");
         activitySet.setId1(prizeWheels.getId());
-        activitySet.setUpdateDate(prizeWheels.getUpdateDate());
+        activitySet.setActivityStatus(wheels.getActivityStatus());
+        activitySet.setUpdateDate(prizeWheels.getUpdateDate() == null ? prizeWheels.getCreateDate():prizeWheels.getUpdateDate());
         activitySet.setUpdateUserId(commonUtil.getUserLoginCache().getAccountId());
         activitySet.setUpdateUserName(commonUtil.getUserLoginCache().getUserName());
         activitySet.setOrganizatioIdlName(commonUtil.getOrganizationName());

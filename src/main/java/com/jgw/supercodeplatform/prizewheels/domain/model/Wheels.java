@@ -110,6 +110,10 @@ public class Wheels implements Serializable {
 
         Asserts.check(startTime !=null ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         Asserts.check(endTime !=null ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+
+        if(activityStatus == null){
+            activityStatus =ActivityStatusConstant.UP;
+        }
     }
     public void checkWhenUpdate() {
         // 基本校验

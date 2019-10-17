@@ -46,7 +46,7 @@ public class H5WheelsController extends SalerCommonController {
     @GetMapping("/redrict")
     @ApiOperation(value = "码管理重定向", notes = "")
     public String reward(String productBatchId, String outerCodeId, String codeTypeId)   {
-        // 扫码重定向到前端 基于产品批次找到活动
+        // 扫码重定向到前端 基于产品批次找到活动 TODO 码管理直接重定向到前端
         String url = "redirct:"
                 + CallBackConstant.TO_WEB_URL
                 + "?productBatchId="+productBatchId
