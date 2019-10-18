@@ -247,4 +247,5 @@ public class WheelsPublishAppication {
         return RecordTransfer.toPageResult(wheelsRecordPojoIPage);
 
     }
+
 }
