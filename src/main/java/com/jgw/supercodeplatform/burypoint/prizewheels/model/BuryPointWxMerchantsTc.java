@@ -8,17 +8,24 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author fangshiping
- * @date 2019/10/18 11:50
+ * <p>
+ * 
+ * </p>
+ *
+ * @author renxinlin
+ * @since 2019-10-16
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_prizewheels_bury_point_wheels_click_tc")
-public class BuryPointWheelsClickTc {
+@TableName("marketing_prizewheels_bury_point_wx_merchants_tc")
+public class BuryPointWxMerchantsTc implements Serializable {
+
+
     /**
      * 主键ID
      */
@@ -43,7 +50,11 @@ public class BuryPointWheelsClickTc {
     @TableField("CreateDate")
     private Date createDate;
 
-    @TableField("ActivityId")
-    private String activityId;
+    @TableField("MerchantName")
+    private String merchantName;
+
+    @TableField("MchAppid")
+    private String mchAppid;
+
 
 }

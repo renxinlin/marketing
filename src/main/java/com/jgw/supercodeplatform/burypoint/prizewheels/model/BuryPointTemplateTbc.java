@@ -12,13 +12,13 @@ import java.util.Date;
 
 /**
  * @author fangshiping
- * @date 2019/10/18 11:50
+ * @date 2019/10/18 15:28
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_prizewheels_bury_point_wheels_click_tc")
-public class BuryPointWheelsClickTc {
+@TableName("marketing_prizewheels_bury_point_template_tbc")
+public class BuryPointTemplateTbc {
     /**
      * 主键ID
      */
@@ -43,7 +43,6 @@ public class BuryPointWheelsClickTc {
     @TableField("CreateDate")
     private Date createDate;
 
-    @TableField("ActivityId")
-    private String activityId;
-
+    @TableField("TemplateId")
+    private String templateId;
 }

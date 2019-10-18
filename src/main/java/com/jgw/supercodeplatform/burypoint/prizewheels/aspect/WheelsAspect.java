@@ -59,7 +59,7 @@ public class WheelsAspect {
         try {
             buryPointOuterChainTbMapper.insert(buryPointOuterChainTb);
         } catch (Exception e) {
-            logger.info("插入b端大转盘链接埋点数据出错："+buryPointOuterChainTb.toString());
+            logger.error("插入b端大转盘链接埋点数据出错："+buryPointOuterChainTb.toString());
             e.printStackTrace();
         }
         logger.info("成功插入b端大转盘链接埋点数据："+buryPointOuterChainTb.toString());

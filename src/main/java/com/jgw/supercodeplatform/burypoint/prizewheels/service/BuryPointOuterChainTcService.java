@@ -20,12 +20,6 @@ import java.util.Date;
  */
 @Service
 public class BuryPointOuterChainTcService {
-    private Logger logger = LoggerFactory.getLogger(BuryPointOuterChainTcService.class);
-    @Autowired
-    private CommonUtil commonUtil;
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     @Autowired
     private BuryPointOuterChainTcMapper buryPointOuterChainTcMapper;

@@ -25,7 +25,7 @@ import   java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_bury_point_outer_chain_tc")
+@TableName("marketing_prizewheels_bury_point_outer_chain_tc")
 public class BuryPointOuterChainTc implements Serializable {
 
 

@@ -17,7 +17,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_bury_point_outer_chain_tb")
+@TableName("marketing_prizewheels_bury_point_reward_tbc")
 public class BuryPointRewardTbc {
     /**
      * 主键ID

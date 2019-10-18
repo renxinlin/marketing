@@ -6,10 +6,7 @@ import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointRewardTbc
 import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointWheelsClickTcMapper;
 import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointRewardTbc;
 import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointWheelsClickTc;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +18,6 @@ import java.util.Date;
  */
 @Service
 public class BuryPointRewardTbcService {
-    private Logger logger = LoggerFactory.getLogger(BuryPointRewardTbcService.class);
-    @Autowired
-    private CommonUtil commonUtil;
 
     @Autowired
     private BuryPointRewardTbcMapper buryPointRewardTbcMapper;

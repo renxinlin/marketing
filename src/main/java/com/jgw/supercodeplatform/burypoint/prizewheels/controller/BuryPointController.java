@@ -3,16 +3,14 @@ package com.jgw.supercodeplatform.burypoint.prizewheels.controller;
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.outerchain.BuryPointOuterChainTcDto;
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointRewardTbcDto;
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointWheelsClickTcDto;
-import com.jgw.supercodeplatform.burypoint.prizewheels.service.BuryPointOuterChainTcService;
-import com.jgw.supercodeplatform.burypoint.prizewheels.service.BuryPointRewardTbcService;
+import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointWxMerchantsTcDto;
+import com.jgw.supercodeplatform.burypoint.prizewheels.service.*;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -31,6 +29,18 @@ public class BuryPointController extends SalerCommonController {
 
     @Autowired
     private BuryPointRewardTbcService buryPointRewardTbcService;
+
+    @Autowired
+    private BuryPointTemplateTbcService buryPointTemplateTbcService;
+
+    @Autowired
+    private BuryPointWxMerchantsTcService buryPointWxMerchantsTcService;
+
+    @Autowired
+    private BuryPointWxMerchantsTbService buryPointWxMerchantsTbService;
+
+    @Autowired
+    private BuryPointPageViewTcService buryPointPageViewTcService;
 
     @PostMapping(value = "/addOuterChain")
     @ApiOperation(value = "插入C端点击外链埋点数据")
@@ -56,5 +66,36 @@ public class BuryPointController extends SalerCommonController {
         return success();
     }
 
+    @PostMapping(value = "/addTemplate")
+    @ApiOperation(value = "插入模板使用相关埋点数据")
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointTemplateTbc(@RequestParam String templateId,@ApiIgnore H5LoginVO user){
+        buryPointTemplateTbcService.buryPointTemplateTbc(templateId,user);
+        return success();
+    }
+
+    @PostMapping(value = "/addWxTc")
+    @ApiOperation(value = "C端公众号关注埋点数据")
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointWxMerchantsTc(@RequestBody BuryPointWxMerchantsTcDto buryPointWxMerchantsTcDto, @ApiIgnore H5LoginVO user){
+        buryPointWxMerchantsTcService.buryPointWxMerchantsTc(buryPointWxMerchantsTcDto,user);
+        return success();
+    }
+
+    @PostMapping(value = "/addWxTb")
+    @ApiOperation(value = "B端配置公众号埋点数据")
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointWxMerchantsTb(@RequestParam String WxPicture, @ApiIgnore H5LoginVO user){
+        buryPointWxMerchantsTbService.buryPointWxMerchantsTb(WxPicture,user);
+        return success();
+    }
+
+    @PostMapping(value = "/addPv")
+    @ApiOperation(value = "C端PV埋点数据")
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointPageVisitTc(@RequestParam String device, @ApiIgnore H5LoginVO user){
+        buryPointPageViewTcService.buryPointPageVisitTc(device,user);
+        return success();
+    }
 
 }
