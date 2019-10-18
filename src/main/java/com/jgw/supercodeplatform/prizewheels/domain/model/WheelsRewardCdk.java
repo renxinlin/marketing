@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class WheelsRewardCdk implements Serializable {
 
-
+    private Long id;
     private Long prizeRewardId;
 
     private String cdk;

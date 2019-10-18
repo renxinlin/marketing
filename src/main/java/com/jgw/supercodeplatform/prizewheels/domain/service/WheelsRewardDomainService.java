@@ -1,9 +1,14 @@
 package com.jgw.supercodeplatform.prizewheels.domain.service;
 
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
+import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRecord;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
+import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
 import com.jgw.supercodeplatform.prizewheels.domain.publisher.CdkEventPublisher;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.RecordRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardCdkRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.subscribers.CdkEventSubscriber;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl.CdkEventSubscriberImplV2;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
@@ -14,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,6 +37,12 @@ public class WheelsRewardDomainService {
     @Autowired
     @Qualifier("cdkEventSubscriberImplV2")
     private CdkEventSubscriber cdkEventSubscriberV2;
+    @Autowired
+    private WheelsRewardCdkRepository wheelsRewardCdkRepository;
+
+    @Autowired
+    private RecordRepository recordRepository;
+
 
     public void checkWhenUpdate(List<WheelsReward> wheelsRewards) {
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
@@ -88,6 +100,30 @@ public class WheelsRewardDomainService {
      * @param outerCodeId
      * @param codeTypeId
      */
-    public void getReward(WheelsReward finalReward, H5LoginVO user, String outerCodeId, String codeTypeId) {
+    public WheelsRewardCdk getReward(WheelsReward finalReward, H5LoginVO user, String outerCodeId, String codeTypeId,Long prizeWheelsId) {
+        // 领取成功 cdk - 1 领取记录
+        if(finalReward.getType().intValue() == RewardTypeConstant.virtual){
+            WheelsRewardCdk cdkWhenH5Reward = wheelsRewardCdkRepository.getCdkWhenH5Reward(prizeWheelsId);
+
+
+            WheelsRecord wheelsRecord = new WheelsRecord();
+            wheelsRecord.setCreateTime(new Date());
+            wheelsRecord.setMobile(user.getMobile());
+            wheelsRecord.setRewardName(finalReward.getName());
+            wheelsRecord.setType(RewardTypeConstant.virtual);
+            wheelsRecord.setUserId(user.getMemberId()+"");
+            wheelsRecord.setUserName(user.getMemberName());
+            recordRepository.newRecordWhenH5Reward(wheelsRecord);
+
+            return cdkWhenH5Reward;
+
+        }
+
+        if(finalReward.getType().intValue() == RewardTypeConstant.real){
+            throw new RuntimeException("系统暂不支持实物");
+
+        }
+
+        throw new RuntimeException("奖励类型暂不支持...");
     }
 }

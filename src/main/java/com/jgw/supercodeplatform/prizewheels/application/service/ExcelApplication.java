@@ -4,12 +4,11 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.exception.base.ExcelException;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.batch.WheelsRewardCdkService;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardCdk;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardCdkPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -34,16 +33,16 @@ public class ExcelApplication {
             LinkedHashMap linkedHashMap = new LinkedHashMap();
             linkedHashMap.put("cdk","cdk"); // excel:cdk ,table:cdk
             String[] uniqueFields={"cdk"}; // cdk不可重复
-            List<WheelsRewardCdk> wheelsRewardCdks=ExcelUtils.excelToList(is,sheetName,WheelsRewardCdk.class,linkedHashMap,uniqueFields);
+            List<WheelsRewardCdkPojo> wheelsRewardCdkPojos =ExcelUtils.excelToList(is,sheetName, WheelsRewardCdkPojo.class,linkedHashMap,uniqueFields);
 
         //插入数据库的list对象
          String cdkKey=commonUtil.getUUID();
-        for (WheelsRewardCdk wheelsRewardCdk:wheelsRewardCdks) {
-            wheelsRewardCdk.setCdkKey(cdkKey);
-            wheelsRewardCdk.setOrganizationId(commonUtil.getOrganizationId());
-            wheelsRewardCdk.setOrganizationName(commonUtil.getOrganizationName());
+        for (WheelsRewardCdkPojo wheelsRewardCdkPojo : wheelsRewardCdkPojos) {
+            wheelsRewardCdkPojo.setCdkKey(cdkKey);
+            wheelsRewardCdkPojo.setOrganizationId(commonUtil.getOrganizationId());
+            wheelsRewardCdkPojo.setOrganizationName(commonUtil.getOrganizationName());
         }
-        wheelsRewardCdkService.saveBatch(wheelsRewardCdks);
+        wheelsRewardCdkService.saveBatch(wheelsRewardCdkPojos);
         return cdkKey;
     }
 }

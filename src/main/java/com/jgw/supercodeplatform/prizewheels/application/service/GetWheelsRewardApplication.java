@@ -1,12 +1,16 @@
 package com.jgw.supercodeplatform.prizewheels.application.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsRewardTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsTransfer;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.LoseAwardConstant;
+import com.jgw.supercodeplatform.prizewheels.domain.event.ScanRecordWhenRewardEvent;
 import com.jgw.supercodeplatform.prizewheels.domain.model.*;
+import com.jgw.supercodeplatform.prizewheels.domain.publisher.ScanRecordWhenRewardPublisher;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ScanRecordRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
@@ -14,6 +18,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepos
 import com.jgw.supercodeplatform.prizewheels.domain.service.CodeDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
+import com.jgw.supercodeplatform.prizewheels.domain.subscribers.ScanRecordWhenRewardSubscriber;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ProductPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
@@ -29,13 +34,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
+
+import static com.jgw.supercodeplatform.marketing.scheduled.PlatformPaySchedule.SEND_FAIL_WX_ORDER;
 
 @Slf4j
 @Service
 public class GetWheelsRewardApplication {
 
+    private static final String PREFIXX = "marketing:prizeWheels:h5Reward:";
     @Autowired
     private WheelsTransfer wheelsTransfer;
     @Autowired
@@ -64,6 +74,18 @@ public class GetWheelsRewardApplication {
 
     @Autowired
     private WheelsRewardDomainService wheelsRewardDomainService;
+
+    @Autowired
+    private ScanRecordWhenRewardPublisher scanRecordWhenRewardPublisher;
+
+
+    @Autowired
+    private ScanRecordWhenRewardSubscriber scanRecordWhenRewardSubscriber;
+
+
+    @Autowired
+    private RedisLockUtil lock;
+
     /**
      * 用户校验提到用户域: 基于aop
      * 当前不做用户校验:导致结果，用户被禁用后，等到下次登录，禁用才生效
@@ -72,45 +94,73 @@ public class GetWheelsRewardApplication {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public String reward(PrizeWheelsRewardDto prizeWheelsRewardDto, H5LoginVO user) {
-        log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), JSONObject.toJSONString(prizeWheelsRewardDto));
-        // 数据获取
-        List<Product> products = productRepository.getByPrizeWheelsId(prizeWheelsRewardDto.getId());
-        Wheels wheelsInfo = wheelsPublishRepository.getWheelsInfo(prizeWheelsRewardDto.getId());
-        List<WheelsReward> wheelsRewards = wheelsRewardRepository.getDomainByPrizeWheelsId(prizeWheelsRewardDto.getId());
-        String codeTypeId = prizeWheelsRewardDto.getCodeTypeId();
+    public WheelsRewardCdk reward(PrizeWheelsRewardDto prizeWheelsRewardDto, H5LoginVO user) {
         String outerCodeId = prizeWheelsRewardDto.getOuterCodeId();
-        ScanRecord mayBeScanedCode = scanRecordRepository.getCodeRecord(outerCodeId, codeTypeId);
-        // 业务校验
-        // 1-1 码，码制校验
-        String sbatchId = codeDomainService.vaildAndGetBatchId(codeTypeId, outerCodeId);
-        // 1-2 批次id能否匹配活动
-        productDomainService.isPrizeWheelsMatchThisBatchId(products,sbatchId);
+        boolean acquireLock = false;
+        try {
+            acquireLock = lock.lock(PREFIXX + outerCodeId, 60000, 1, 50);
+            if (!acquireLock) {
+                log.info("未获取到{}锁", PREFIXX);
+                throw new RuntimeException("该码正在被其他人领取...");
+            }
+            log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), JSONObject.toJSONString(prizeWheelsRewardDto));
+            // 数据获取
+            Long id = prizeWheelsRewardDto.getId(); // 活动id
+            List<Product> products = productRepository.getByPrizeWheelsId(id);
+            Wheels wheelsInfo = wheelsPublishRepository.getWheelsInfo(id);
+            List<WheelsReward> wheelsRewards = wheelsRewardRepository.getDomainByPrizeWheelsId(id);
+            String codeTypeId = prizeWheelsRewardDto.getCodeTypeId();
+            ScanRecord mayBeScanedCode = scanRecordRepository.getCodeRecord(outerCodeId, codeTypeId);
+            // 业务校验
 
-        // 1-3 码被扫校验 返回公众号信息[如果存在]
-        codeDomainService.noscanedOrTerminated(mayBeScanedCode ,wheelsInfo.getWxErcode());
+            // 1-1 码，码制校验
+            String sbatchId = codeDomainService.vaildAndGetBatchId(codeTypeId, outerCodeId);
+            // 1-2 批次id能否匹配活动
+            productDomainService.isPrizeWheelsMatchThisBatchId(products, sbatchId);
 
-        // 业务执行
-        // 2-1 没扫描产生扫码记录
+            // 1-3 码被扫校验 返回公众号信息[如果存在]
+            codeDomainService.noscanedOrTerminated(mayBeScanedCode, wheelsInfo.getWxErcode());
+
+            // 2 活动校验
+            wheelsInfo.checkAcitivyStatusWhenHReward();
+
+
+            // 业务执行
+            // 2-1 没扫描产生扫码记录
+            newScanRecord(user, codeTypeId, outerCodeId);
+            // 概率计算 未成功返回没有领取
+            ProbabilityCalculator probabilityCalculator = new ProbabilityCalculator();
+            probabilityCalculator.initRewards(wheelsRewards);
+            WheelsReward finalReward = probabilityCalculator.calculator();
+
+            // 领取奖励
+            WheelsRewardCdk reward = wheelsRewardDomainService.getReward(finalReward, user, outerCodeId, codeTypeId, id);
+
+
+            return reward;
+
+        } catch (Exception e){
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        } finally {
+            if (acquireLock) {
+                lock.releaseLock(PREFIXX + outerCodeId);
+            }
+        }
+    }
+
+    /**
+     * 异步:不受业务异常影响
+     * @param user
+     * @param codeTypeId
+     * @param outerCodeId
+     */
+    private void newScanRecord(H5LoginVO user, String codeTypeId, String outerCodeId) {
         ScanRecord scanRecord = new ScanRecord(outerCodeId,Integer.parseInt(codeTypeId));
         String userName = !StringUtils.isEmpty(user.getMemberName())?user.getMemberName():user.getMobile();
         scanRecord.initScanerInfo(user.getMemberId(),userName,user.getMobile(),user.getOrganizationId(),user.getOrganizationName());
-
-        // 概率计算 未成功返回没有领取
-        ProbabilityCalculator probabilityCalculator = new ProbabilityCalculator();
-        probabilityCalculator.initRewards(wheelsRewards);
-        WheelsReward finalReward = probabilityCalculator.calculator();
-        // 领取成功 cdk - 1 领取记录
-
-        // 领取记录
-        wheelsRewardDomainService.getReward(finalReward,user,outerCodeId,codeTypeId);
-
-
-        // 持久化
-        scanRecordRepository.saveScanRecord(scanRecord);
-
-
-        return null;
+        scanRecordWhenRewardPublisher.addSubscriber(scanRecordWhenRewardSubscriber);
+        scanRecordWhenRewardPublisher.commitAsyncEvent(new ScanRecordWhenRewardEvent(scanRecord));
     }
 
     public WheelsDetailsVo detail(String productBatchId) {
