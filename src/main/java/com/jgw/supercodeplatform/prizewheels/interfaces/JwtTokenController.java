@@ -4,25 +4,15 @@ package com.jgw.supercodeplatform.prizewheels.interfaces;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
-import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
-import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRecordPojo;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -31,11 +21,11 @@ import java.util.Map;
 public class JwtTokenController extends SalerCommonController {
 
     @GetMapping("/jwt")
-    @ApiOperation(value = "导出参与记录",notes = "")
+    @ApiOperation(value = "jwt-测试")
     public RestResult<String> exportRecords() throws SuperCodeException {
         JWTUtil demo = new JWTUtil();
         H5LoginVO j = new H5LoginVO();
-        j.setMemberId(62l);
+        j.setMemberId(62L);
         j.setMemberType((byte)0);
         j.setMobile("15306818218");
         j.setOrganizationId("86ff1c47b5204e88918cb89bbd739f12");
