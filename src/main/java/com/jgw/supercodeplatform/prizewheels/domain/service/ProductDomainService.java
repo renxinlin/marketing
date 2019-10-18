@@ -47,4 +47,13 @@ public interface ProductDomainService {
         }
         throw new RuntimeException(ErrorCodeEnum.BIZ_VALID_ERROR.getErrorMessage());
     }
+
+    default void checkSbatchId(List<Product> products){
+        for(Product product:products){
+            if(StringUtils.isEmpty(product.getSbatchId())){
+                throw new RuntimeException("产品"+ product.getProductName() + "未绑定码");
+            }
+
+        }
+    }
 }

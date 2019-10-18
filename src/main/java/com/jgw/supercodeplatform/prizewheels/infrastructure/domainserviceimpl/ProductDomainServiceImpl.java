@@ -52,6 +52,8 @@ public class ProductDomainServiceImpl implements ProductDomainService {
 
             });
 
+
+
         }else {
             log.info("initSbatchIds(List<Product> products) =》 {}",JSONObject.toJSONString(getBatchInfoDtoList));
             throw new RuntimeException("获取码管理生码信息失败");
