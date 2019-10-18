@@ -13,9 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("marketing/front/prizeWheels")
 @Api(value = "", tags = "登录token生成器")
 public class JwtTokenController extends SalerCommonController {
