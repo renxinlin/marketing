@@ -178,6 +178,7 @@ public class WheelsPublishAppication {
         // 3 码管理业务
         // 3-1 获取生码批次
         products = productDomainService.initSbatchIds(products);
+        productDomainService.checkSbatchId(products);
 
         // 3-2 将此活动之前产品与码管理的信息解绑
         List<Product> oldPrizeWheelsProduct = productRepository.getByPrizeWheelsId(prizeWheelsid);
