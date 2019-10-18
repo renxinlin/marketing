@@ -48,7 +48,7 @@ public class WheelsController extends SalerCommonController {
     @Autowired
     protected HttpServletResponse response;
 
-    @Value("{\"userId\":\"用户ID\",\"mobile\":\"手机号\",\"userName\":\"姓名\", \"rewardName\":\"奖项名称\",\"type\":\"奖项类型(虚拟，实物)\", \"address\":\"地址\",\"createTime\":\"领奖时间\", \"address\":\"地址\"}")
+    @Value("{\"userName\":\"姓名\",\"mobile\":\"手机号\", \"rewardName\":\"奖项名称\",\"createTime\":\"领奖时间\"}")
     private String EXCEL_FIELD_MAP;
 
     @PostMapping("/add")
