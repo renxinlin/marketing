@@ -45,8 +45,6 @@ public class WheelsController extends SalerCommonController {
     @Autowired
     private WheelsPublishAppication appication;
 
-    @Autowired
-    protected HttpServletResponse response;
 
     @Value("{\"userName\":\"姓名\",\"mobile\":\"手机号\", \"rewardName\":\"奖项名称\",\"createTime\":\"领奖时间\"}")
     private String EXCEL_FIELD_MAP;
@@ -106,13 +104,12 @@ public class WheelsController extends SalerCommonController {
         return success(appication.records(daoSearch));
     }
 
-
     @GetMapping("/export")
     @ApiOperation(value = "导出参与记录",notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public void exportRecords() throws SuperCodeException {
-        DaoSearch daoSearch=new DaoSearch();
+    public void exportRecords(DaoSearch daoSearch, HttpServletResponse response) throws SuperCodeException {
         //导出十万条
+        daoSearch.setCurrent(1);
         daoSearch.setPageSize(100000);
         // step-1 查询记录
         AbstractPageService.PageResults<List<WheelsRecordPojo>> pageResults=appication.records(daoSearch);
