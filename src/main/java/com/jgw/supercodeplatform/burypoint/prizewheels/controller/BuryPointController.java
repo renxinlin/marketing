@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.burypoint.prizewheels.controller;
 
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.outerchain.BuryPointOuterChainTcDto;
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointRewardTbcDto;
+import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointWheelsClickTcDto;
 import com.jgw.supercodeplatform.burypoint.prizewheels.service.BuryPointOuterChainTcService;
 import com.jgw.supercodeplatform.burypoint.prizewheels.service.BuryPointRewardTbcService;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -46,5 +47,14 @@ public class BuryPointController extends SalerCommonController {
         buryPointRewardTbcService.buryPointRewardTbc(buryPointRewardTbcDto,user);
         return success();
     }
+
+    @PostMapping(value = "/addClick")
+    @ApiOperation(value = "插入C端点击大转盘埋点数据")
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointWheelsClickTc(@RequestBody BuryPointWheelsClickTcDto buryPointWheelsClickTcDto, @ApiIgnore H5LoginVO user){
+        buryPointRewardTbcService.buryPointWheelsClickTc(buryPointWheelsClickTcDto,user);
+        return success();
+    }
+
 
 }

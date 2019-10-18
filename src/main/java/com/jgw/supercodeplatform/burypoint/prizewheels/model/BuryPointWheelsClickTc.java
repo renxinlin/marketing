@@ -12,27 +12,18 @@ import java.util.Date;
 
 /**
  * @author fangshiping
- * @date 2019/10/16 14:12
+ * @date 2019/10/18 11:50
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_bury_point_outer_chain_tb")
-public class BuryPointRewardTbc {
+@TableName("marketing_bury_point_outer_wheels_click_tc")
+public class BuryPointWheelsClickTc {
     /**
      * 主键ID
      */
     @TableId(value = "Id", type = IdType.AUTO)
     private Long id;
-
-    /**
-     * 奖励id
-     */
-    @TableField("RewardId")
-    private String rewardId;
-
-    @TableField("RewardName")
-    private String rewardName;
 
     /**
      * 组织ID
@@ -55,6 +46,4 @@ public class BuryPointRewardTbc {
     @TableField("ActivityId")
     private String activityId;
 
-    @TableField("ThirdUrl")
-    private String thirdUrl;
 }

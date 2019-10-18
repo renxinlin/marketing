@@ -19,4 +19,6 @@ public class BuryPointRewardTbcDto {
     private String rewardName;
 
     private String activityId;
+
+    private String thirdUrl;
 }

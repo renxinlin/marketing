@@ -1,8 +1,11 @@
 package com.jgw.supercodeplatform.burypoint.prizewheels.service;
 
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointRewardTbcDto;
+import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointWheelsClickTcDto;
 import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointRewardTbcMapper;
+import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointWheelsClickTcMapper;
 import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointRewardTbc;
+import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointWheelsClickTc;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.slf4j.Logger;
@@ -21,8 +24,33 @@ public class BuryPointRewardTbcService {
     private Logger logger = LoggerFactory.getLogger(BuryPointRewardTbcService.class);
     @Autowired
     private CommonUtil commonUtil;
+
     @Autowired
     private BuryPointRewardTbcMapper buryPointRewardTbcMapper;
+
+    @Autowired
+    private BuryPointWheelsClickTcMapper buryPointWheelsClickTcMapper;
+
+    /**
+     * 大转盘点击次数埋点
+     * @param buryPointWheelsClickTcDto
+     * @param user
+     */
+    public void buryPointWheelsClickTc(BuryPointWheelsClickTcDto buryPointWheelsClickTcDto,H5LoginVO user){
+        BuryPointWheelsClickTc buryPointWheelsClickTc=new BuryPointWheelsClickTc();
+        buryPointWheelsClickTc.setCreateUser(user.getMemberName());
+        buryPointWheelsClickTc.setCreateUserId(String.valueOf(user.getMemberId()));
+        buryPointWheelsClickTc.setCreateDate(new Date());
+        buryPointWheelsClickTc.setOrganizationId(user.getOrganizationId());
+        buryPointWheelsClickTc.setOrganizationName(user.getOrganizationName());
+        buryPointWheelsClickTc.setActivityId(buryPointWheelsClickTcDto.getActivityId());
+        try{
+            buryPointWheelsClickTcMapper.insert(buryPointWheelsClickTc);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
     /**
      * 埋点奖励发放
@@ -38,6 +66,7 @@ public class BuryPointRewardTbcService {
         buryPointRewardTbc.setActivityId(buryPointRewardTbcDto.getActivityId());
         buryPointRewardTbc.setRewardId(buryPointRewardTbcDto.getRewardId());
         buryPointRewardTbc.setRewardName(buryPointRewardTbcDto.getRewardName());
+        buryPointRewardTbc.setThirdUrl(buryPointRewardTbcDto.getThirdUrl());
         try {
             buryPointRewardTbcMapper.insert(buryPointRewardTbc);
         } catch (Exception e) {
