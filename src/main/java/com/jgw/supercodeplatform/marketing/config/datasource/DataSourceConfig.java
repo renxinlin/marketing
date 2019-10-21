@@ -77,6 +77,7 @@ public class DataSourceConfig {
 		factory.setDataSource(dataSource);
 		factory.setPlugins(new Interceptor[]{paginationInterceptor});
 		MybatisConfiguration mybatisConfiguration = new MybatisConfiguration();
+		mybatisConfiguration.setMapUnderscoreToCamelCase(false);
 		factory.setConfiguration(mybatisConfiguration);
 		return factory.getObject();
     }
