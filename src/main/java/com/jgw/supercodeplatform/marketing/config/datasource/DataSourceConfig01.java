@@ -33,7 +33,9 @@ import javax.sql.DataSource;
         // 大转盘
         "com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper",
         //大转盘埋点
-        "com.jgw.supercodeplatform.burypoint.prizewheels.mapper"},
+        "com.jgw.supercodeplatform.burypoint.prizewheels.mapper",
+        //签到埋点
+        "com.jgw.supercodeplatform.burypoint.signin.mapper"},
         sqlSessionFactoryRef="marketingsalerSqlSessionFactory")
 public class DataSourceConfig01 {
 
