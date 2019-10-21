@@ -3,10 +3,7 @@ package com.jgw.supercodeplatform.marketingsaler.dynamic.mapper;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ChangeColumDto;
 import com.jgw.supercodeplatform.marketingsaler.order.dto.ColumnnameAndValueDto;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +16,7 @@ public interface DynamicMapper extends CommonSql {
     @Update(startScript +
             " CREATE TABLE `jgw_marketing_dynamic`.`${tableName}`  ( " +
             " `Id` bigint(20) NOT NULL AUTO_INCREMENT , " +
+            " `orderstatus` tinyint(2) NULL DEFAULT 0  , " +
             " <foreach collection='list' item='item' index='index'  open='  ' close='  ' separator=' ' > " +
             "  ${item} varchar(255) NULL ,  " +
             "  </foreach>  " +
@@ -101,4 +99,24 @@ public interface DynamicMapper extends CommonSql {
             + " </foreach> "
             + endScript)
     void saveOrder(@Param("columnnameAndValues") List<ColumnnameAndValueDto> columnnameAndValues,@Param("tableName") String tableName);
+
+    @Update(startScript
+            + " update ${tableName} set"
+            + " <foreach collection='columnnameAndValues' item='item' index='index'  open='   ' close='   ' separator=',' >  "
+            + " ${item.columnName} =  #{item.columnValue}  "
+            + " </foreach> "
+            + " where id = #{id}"
+            + endScript)
+    void updateOrder(List<ColumnnameAndValueDto> columnnameAndValues, String tableName,String id);
+    @Update(startScript
+            + " update ${tableName} set "
+            + " status = #{status} "
+            + " where id = #{id} "
+            + endScript)
+    void updateStatus(Long id, byte status, String tableName);
+
+    @Delete(startScript
+            + " delete from ${tableName} where id = #{id} "
+            + endScript)
+    void delete(Long id, String tableName);
 }

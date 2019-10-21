@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.dao.weixin;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingWxMerchantsParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import org.apache.ibatis.annotations.*;
@@ -7,9 +8,9 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 @Mapper
-public interface MarketingWxMerchantsMapper {
+public interface MarketingWxMerchantsMapper extends BaseMapper<MarketingWxMerchants> {
 	static String allFields="Id id,Mchid mchid,MchAppid mchAppid,MerchantName merchantName,MerchantKey merchantKey,CertificateAddress certificateAddress,"
-			+ "OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,MerchantSecret merchantSecret, MerchantType merchantType, BelongToJgw belongToJgw";
+			+ "OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,MerchantSecret merchantSecret, MerchantType merchantType, BelongToJgw belongToJgw, DefaultUse defaultUse";
 	
     @Select("select "+allFields+" from marketing_wx_merchants where OrganizationId=#{organizationId}")
 	MarketingWxMerchants get(@Param("organizationId") String organizationId);
@@ -18,9 +19,9 @@ public interface MarketingWxMerchantsMapper {
 	MarketingWxMerchants getJgw();
 
 	@Insert(" INSERT INTO marketing_wx_merchants(Mchid,MchAppid,MerchantName,MerchantKey,"
-			+ " CertificateAddress,CertificatePassword,OrganizationId,OrganizatioIdlName,MerchantSecret, MerchantType) "
+			+ " CertificateAddress,CertificatePassword,OrganizationId,OrganizatioIdlName,MerchantSecret, MerchantType, DefaultUse) "
 			+ " VALUES(#{mchid},#{mchAppid},#{merchantName},#{merchantKey},#{certificateAddress},"
-			+ "#{certificatePassword},#{organizationId},#{organizatioIdlName},#{merchantSecret}, #{merchantType}"
+			+ "#{certificatePassword},#{organizationId},#{organizatioIdlName},#{merchantSecret}, #{merchantType}, 1"
 			+ ")")
 	int addWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam);
 

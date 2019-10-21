@@ -467,7 +467,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
          order.setExchangeIntegralNum(exchangeProductParam.getExchangeNum() * integralExchanges.get(0).getExchangeIntegral());
          // 待发货
         order.setStatus((byte)0);
-        MarketingMembers memberById = membersMapper.getMemberById(exchangeProductParam.getMemberId());
+        MarketingMembers memberById = membersMapper.selectById(exchangeProductParam.getMemberId());
         // 会员名
         order.setMemberName(memberById.getUserName());
         // 订单创建日期
@@ -496,7 +496,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
      */
     private IntegralRecord getRecordDo(ExchangeProductParam exchangeProductParam) {
         IntegralRecord record = modelMapper.map(exchangeProductParam, IntegralRecord.class);
-        MarketingMembers memberById = membersMapper.getMemberById(exchangeProductParam.getMemberId());
+        MarketingMembers memberById = membersMapper.selectById(exchangeProductParam.getMemberId());
         record.setMemberType(memberById.getMemberType());
         record.setMemberName(memberById.getUserName());
         // 积分记录存储的为会员手机号而不是收货手机
@@ -534,7 +534,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 手机号校验
         checkPhoneFormat(exchangeProductParam.getMobile());
         // 查看memberID存在
-        MarketingMembers member = membersMapper.getMemberById(exchangeProductParam.getMemberId());
+        MarketingMembers member = membersMapper.selectById(exchangeProductParam.getMemberId());
         if(member == null){
             logger.error(" {会员ID"+exchangeProductParam.getMemberId()+"信息异常 ,统计出0条} ");
             throw new SuperCodeException("会员不存在");
@@ -1209,8 +1209,8 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
     /**
      * 新增兑换校验
-     * @param id
-     * @param organizationId
+     * @param
+     * @param integralExchange
      */
     private void validateAdd( IntegralExchange integralExchange) throws SuperCodeException{
 

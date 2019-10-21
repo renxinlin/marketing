@@ -7,10 +7,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.dto.platform.ProductInfoDto;
 import com.jgw.supercodeplatform.marketing.dto.platform.SourceLinkBuryPoint;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingSourcelinkBury;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.pojo.platform.AbandonPlatform;
 import com.jgw.supercodeplatform.marketing.pojo.platform.LotteryPlatform;
@@ -91,20 +88,16 @@ public class PlatformH5Controller {
     @ApiOperation("抽奖")
     @PostMapping("/lottery")
     public RestResult<LotteryResultMO> lottery(@RequestBody @Valid LotteryPlatform lotteryPlatform,  HttpServletRequest request) throws Exception {
-        MarketingMembers marketingMembers = marketingMembersService.getMemberById(lotteryPlatform.getMemberId());
         String codeId = lotteryPlatform.getCodeId();
         String codeTypeId = lotteryPlatform.getCodeType();
         commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
         commonService.checkCodeValid(codeId, codeTypeId);
         String innerCode = commonService.getInnerCode(codeId, codeTypeId);
         MarketingActivitySet marketingActivitySet = marketingActivitySetService.getOnlyPlatformActivity();
-        MarketingMembers memberUser = marketingMembersService.getMemberById(lotteryPlatform.getMemberId());
+        MarketingWxMember wxMember = marketingMembersService.getWxMemberById(lotteryPlatform.getMemberId());
         ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
         BeanUtils.copyProperties(lotteryPlatform, scanCodeInfoMO);
-        scanCodeInfoMO.setUserId(marketingMembers.getId());
-        scanCodeInfoMO.setOpenId(marketingMembers.getOpenid());
-        scanCodeInfoMO.setMobile(marketingMembers.getMobile());
-        scanCodeInfoMO.setUserId(memberUser.getId());
+        scanCodeInfoMO.setOpenId(wxMember.getOpenid());
         scanCodeInfoMO.setActivitySetId(marketingActivitySet.getId());
         scanCodeInfoMO.setCodeTypeId(lotteryPlatform.getCodeType());
         LotteryOprationDto lotteryOprationDto = new LotteryOprationDto();

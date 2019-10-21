@@ -15,6 +15,7 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCo
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
+import com.jgw.supercodeplatform.marketing.pojo.UserWithWechat;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
@@ -88,15 +89,15 @@ public class SaleMemberController {
         // 4 数据转换
 
 
-        MarketingUser marketingUser = marketingSaleMemberService.selectById(jwtUser.getMemberId());
-        saleInfo.setUserName(StringUtils.isEmpty(marketingUser.getUserName()) ? marketingUser.getWxName() :marketingUser.getUserName());
-        saleInfo.setWechatHeadImgUrl(marketingUser != null ? marketingUser.getWechatHeadImgUrl():null);
+        UserWithWechat userWithWechat = marketingSaleMemberService.selectById(jwtUser.getMemberId());
+        saleInfo.setUserName(StringUtils.isEmpty(userWithWechat.getUserName()) ? userWithWechat.getWxName() :userWithWechat.getUserName());
+        saleInfo.setWechatHeadImgUrl(userWithWechat != null ? userWithWechat.getWechatHeadImgUrl():null);
         saleInfo.setScanQRCodeNum((Integer) acquireMoneyAndAcquireNums.get("scanNum"));
         Long count = (Long) acquireMoneyAndAcquireNums.get("count");
         saleInfo.setScanAmoutNum((count.intValue()));
         saleInfo.setAmoutNum(acquireMoneyAndAcquireNums.get("sum") != null ? (Double) acquireMoneyAndAcquireNums.get("sum"):0D);
         saleInfo.setAmoutNumStr(saleInfo.getAmoutNum()+"");
-        saleInfo.setHaveIntegral(marketingUser.getHaveIntegral());
+        saleInfo.setHaveIntegral(userWithWechat.getHaveIntegral());
 
       return RestResult.success("success",saleInfo);
     }
@@ -222,10 +223,10 @@ public class SaleMemberController {
         pMo.setActivitySetId(activitySetId);
         ;
         pMo.setUserId(userId);
-        MarketingUser marketingUser = marketingSaleMemberService.selectById(userId);
-        pMo.setMobile(marketingUser.getMobile());
-        pMo.setOpenId(marketingUser.getOpenid());
-        pMo.setOrganizationId(marketingUser.getOrganizationId());
+        UserWithWechat userWithWechat = marketingSaleMemberService.selectById(userId);
+        pMo.setMobile(userWithWechat.getMobile());
+        pMo.setOpenId(userWithWechat.getOpenid());
+        pMo.setOrganizationId(userWithWechat.getOrganizationId());
         globalRamCache.putScanCodeInfoMO(wxstate,pMo);
         return RestResult.success("success","wxstate12345678900987654321");
     }

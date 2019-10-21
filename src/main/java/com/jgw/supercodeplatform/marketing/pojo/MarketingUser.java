@@ -6,12 +6,6 @@ public class MarketingUser {
     /** 序号 */
     private Long id;
 
-    /** 微信昵称 */
-    private String wxName;
-
-    /** 微信id号 */
-    private String openid;
-
     /** 手机 */
     private String mobile;
 
@@ -63,9 +57,6 @@ public class MarketingUser {
     /** 省市区前端编码 */
     private String pCCcode;
 
-    /** 微信头像/个人头像 */
-    private String wechatHeadImgUrl;
-
     /** 默认1导购员,其他员工等 */
     private Byte memberType;
 
@@ -91,22 +82,6 @@ public class MarketingUser {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getWxName() {
-        return wxName;
-    }
-
-    public void setWxName(String wxName) {
-        this.wxName = wxName;
-    }
-
-    public String getOpenid() {
-        return openid;
-    }
-
-    public void setOpenid(String openid) {
-        this.openid = openid;
     }
 
     public String getMobile() {
@@ -243,14 +218,6 @@ public class MarketingUser {
 
     public void setpCCcode(String pCCcode) {
         this.pCCcode = pCCcode;
-    }
-
-    public String getWechatHeadImgUrl() {
-        return wechatHeadImgUrl;
-    }
-
-    public void setWechatHeadImgUrl(String wechatHeadImgUrl) {
-        this.wechatHeadImgUrl = wechatHeadImgUrl;
     }
 
     public Byte getMemberType() {
