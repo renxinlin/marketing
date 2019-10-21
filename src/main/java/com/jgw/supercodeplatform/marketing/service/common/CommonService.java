@@ -400,11 +400,11 @@ public class CommonService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void checkCodeTypeValid( Long codeTypeId) {
+	public void checkCodeTypeValid(Long codeTypeId) {
 		if(codeTypeId == null){
 			throw  new SuperCodeExtException("对不起,非营销码制");
 		}
-		if (SystemLabelEnum.MARKETING.getCodeTypeId().intValue() != codeTypeId.intValue()) {
+		if (SystemLabelEnum.MARKETING_12.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.MARKETING_13.getCodeTypeId().intValue() != codeTypeId.intValue()) {
             throw  new SuperCodeExtException("对不起,非营销码制");
 		}
 	}
@@ -419,7 +419,7 @@ public class CommonService {
 		if(codeTypeId == null){
 			throw  new SuperCodeExtException("对不起,码制不合法");
 		}
-		if (SystemLabelEnum.MARKETING.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.FAKE.getCodeTypeId().intValue() != codeTypeId.intValue()) {
+		if (SystemLabelEnum.MARKETING_12.getCodeTypeId().intValue() != codeTypeId.intValue()&& SystemLabelEnum.MARKETING_13.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.FAKE.getCodeTypeId().intValue() != codeTypeId.intValue()) {
 			throw  new SuperCodeExtException("对不起,码制不合法");
 		}
 	}
