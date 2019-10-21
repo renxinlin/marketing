@@ -2,11 +2,13 @@ package com.jgw.supercodeplatform.marketing.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.util.Date;
 
+@TableName("marketing_members")
 public class MarketingMembers {
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;//序号
     private String mobile;//手机
     private String userId;//用户Id

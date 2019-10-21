@@ -12,7 +12,7 @@ import java.util.Date;
 @Getter
 @TableName("marketing_wx_member")
 public class MarketingWxMember {
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     private String wxName;
