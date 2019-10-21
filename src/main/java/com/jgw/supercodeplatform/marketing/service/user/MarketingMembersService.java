@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -524,6 +525,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	 */
 
+	@Transactional
 	public RestResult<H5LoginVO> login(String mobile, String wxstate, String verificationCode, String openid, String organizationId,Integer deviceType, HttpServletResponse response) throws SuperCodeException {
 		RestResult<H5LoginVO> restResult=new RestResult<H5LoginVO>();
 		if (StringUtils.isBlank(mobile) || StringUtils.isBlank(verificationCode)) {
@@ -767,6 +769,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return memberWithWechat;
 	}
 
+	@Transactional
 	public void insert(MemberWithWechat memberWithWechat) {
 		memberWithWechat.setMemberType((byte)0);
 		if (StringUtils.isNotBlank(memberWithWechat.getMobile())) {
@@ -775,11 +778,23 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			marketingMembersMapper.insert(members);
 			memberWithWechat.setMemberId(members.getId());
 		}
-		if (StringUtils.isNotBlank(memberWithWechat.getOpenid()) && StringUtils.isNotBlank(memberWithWechat.getOrganizationId())) {
-			MarketingWxMember marketingWxMember = new MarketingWxMember();
-			BeanUtils.copyProperties(memberWithWechat, marketingWxMember);
-			marketingWxMemberMapper.insert(marketingWxMember);
-			memberWithWechat.setWxMemberId(marketingWxMember.getId());
+		String openid = memberWithWechat.getOpenid();
+		String organizationId = memberWithWechat.getOrganizationId();
+		if (StringUtils.isNotBlank(openid) && StringUtils.isNotBlank(organizationId)) {
+			MemberWithWechat memberWithWechatByOpenid = selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
+			if (memberWithWechatByOpenid != null ) {
+				MarketingWxMember marketingWxMember = new MarketingWxMember();
+				BeanUtils.copyProperties(memberWithWechat, marketingWxMember);
+				marketingWxMember.setCreateTime(new Date());
+				marketingWxMember.setUpdateTime(new Date());
+				marketingWxMemberMapper.insert(marketingWxMember);
+				memberWithWechat.setWxMemberId(marketingWxMember.getId());
+			} else {
+				UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte)1).eq("MemberType", MemberTypeEnums.VIP.getType());
+				marketingWxMemberMapper.update(null, nouseUpdateWrapper);
+				UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
+				marketingWxMemberMapper.update(null, currentUpdateWrapper);
+			}
 		}
 	}
 
