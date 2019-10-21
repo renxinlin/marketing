@@ -66,7 +66,7 @@ public class Product implements Serializable {
 //    /**
 //     * 生码批次ID
 //     */
-//    private String sbatchId;
+    private String sbatchId;
 
     /**
      * 产品所属活动类型其他0大转盘12签到
@@ -82,14 +82,9 @@ public class Product implements Serializable {
      */
     private byte autoType;
 
-    // TODO 待解决自动追加问题
-    //  关于该字段产生的问题: 由于产品需求包含当前数量和自动追加
-    // 该字段属于码管理领域合理吗?属于营销领域第一直觉不太合理
-    // 如果都不合理，如何定他的域
-    private String sbatchId;
 
     public void appendSbatchId(String sbatchId) {
-        if(StringUtils.isEmpty(sbatchId)){
+        if(StringUtils.isEmpty(this.sbatchId)){
             this.sbatchId = sbatchId;
         }
         this.sbatchId = this.sbatchId + SPLIT_SYMBOL + sbatchId;

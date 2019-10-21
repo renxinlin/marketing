@@ -1,6 +1,8 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,8 +22,9 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("marketing_activity_prize_wheels_reward_cdk")
-public class WheelsRewardCdk implements Serializable {
-
+public class WheelsRewardCdkPojo implements Serializable {
+    @TableId(value = "Id", type = IdType.AUTO)
+    private Long id;
 
     @TableField("prizeRewardId")
     private Long prizeRewardId;
@@ -37,6 +40,14 @@ public class WheelsRewardCdk implements Serializable {
      */
     @TableField("status")
     private Integer status;
+
+
+    @TableField("OrganizationId")
+    private String organizationId;
+
+    @TableField("OrganizationName")
+    private String organizationName;
+
 
 
 }

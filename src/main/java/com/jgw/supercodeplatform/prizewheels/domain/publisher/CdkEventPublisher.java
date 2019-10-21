@@ -5,7 +5,13 @@ import com.jgw.supercodeplatform.prizewheels.domain.subscribers.CdkEventSubscrib
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+
+/**
+ * 发布者尽量不要在领域服务而在应用层
+ */
 @Component
 public class CdkEventPublisher {
 
@@ -14,7 +20,7 @@ public class CdkEventPublisher {
         if(cdkEventSubscribers == null ){
             cdkEventSubscribers = new ArrayList<>();
         }
-        cdkEventSubscribers.addAll(cdkEventSubscribers);
+        cdkEventSubscribers.addAll(Arrays.asList(cdkEventSubscriber));
     }
 
     public void publish(CdkEvent cdkEvent) {

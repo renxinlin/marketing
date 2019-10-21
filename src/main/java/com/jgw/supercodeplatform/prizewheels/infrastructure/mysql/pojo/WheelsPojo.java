@@ -65,6 +65,11 @@ public class WheelsPojo implements Serializable {
     @TableField("ThirdUrl")
     private String thirdUrl;
 
+    @TableField("ThirdUrlButton")
+    private String thirdUrlButton;
+
+
+
     @TableField("OrganizationId")
     private String organizationId;
 
@@ -100,5 +105,9 @@ public class WheelsPojo implements Serializable {
      */
     @TableField("TemplateId")
     private String  templateId;
+
+
+    @TableField("ActivityStatus")
+    private String  activityStatus;
 
 }

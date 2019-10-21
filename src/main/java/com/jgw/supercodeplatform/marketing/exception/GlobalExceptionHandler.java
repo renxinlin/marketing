@@ -216,6 +216,18 @@ public class GlobalExceptionHandler {
 		return RestResult;
 	}
 
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(PrizeWheelsForWxErcodeException.class)
+	public RestResult prizeWheelsException(PrizeWheelsForWxErcodeException e) {
+		logger.error("自义定异常：" + e.getClass().getName(), e);
+		RestResult RestResult = new RestResult(500,"来迟啦,码已经被扫啦!" , e.getMessage());
+		return RestResult;
+	}
+
+
+
+
 	/**
 	 * 自定义异常
 	 */

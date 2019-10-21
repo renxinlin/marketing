@@ -6,8 +6,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -15,11 +18,6 @@ import javax.validation.constraints.NotEmpty;
 @ApiModel("参与活动的产品含id")
 public class ProductUpdateDto {
 
-    @NotEmpty(message = "产品批次id不为空")
-    @ApiModelProperty("产品批次")  private String productBatchId;
-
-    @NotEmpty(message = "产品批次不为空")
-    @ApiModelProperty("产品批次") private String productBatchName;
 
     @NotEmpty(message = "产品id不为空")
     @ApiModelProperty("产品id") private String productId;
@@ -27,12 +25,10 @@ public class ProductUpdateDto {
     @NotEmpty(message = "产品id不为空")
     @ApiModelProperty("产品名称") private String productName;
 
+    @Valid
+    @ApiModelProperty("产品批次") List<ProductBatchDto> productBatchParams;
 
-    @NotEmpty(message = "id不可为空") @Min(0)
-    @ApiModelProperty("id") private Long id;
-
-
-    @NotEmpty(message = "活动不可为空") @Min(0)
-    @ApiModelProperty("activitySetId") private Long activitySetId;
+    @NotNull(message = "活动不可为空") @Min(0)
+    @ApiModelProperty("活动Id,大转盘取id1,activityId为7") private Long id;
 
 }

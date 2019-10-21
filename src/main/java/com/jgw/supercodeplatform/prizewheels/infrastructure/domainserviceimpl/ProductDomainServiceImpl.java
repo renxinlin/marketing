@@ -14,8 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 @Slf4j
 @Service
@@ -34,9 +36,10 @@ public class ProductDomainServiceImpl implements ProductDomainService {
         List<GetBatchInfoDto> getBatchInfoDtoList =  productDomainTranfer.tranferProductsToGetBatchInfoDtos(products);
         // 两个限界上下文交互
         RestResult<Object> sbatchIds = getSbatchIdsByPrizeWheelsFeign.getSbatchIds(getBatchInfoDtoList);
+        log.info(" initSbatchIds请求返回如下{}",JSONObject.toJSONString(sbatchIds));
 
         // 业务
-        if(sbatchIds!=null && sbatchIds.getState() ==200){
+        if(!CollectionUtils.isEmpty((ArrayList)sbatchIds.getResults()) && sbatchIds.getState() ==200 ){
             List<EsRelationcode> esRelationcodes = JSONObject.parseArray((JSONObject.toJSONString(sbatchIds.getResults())), EsRelationcode.class);
             esRelationcodes.forEach(esRelationcode -> {
                 products.forEach(product -> {
@@ -49,8 +52,10 @@ public class ProductDomainServiceImpl implements ProductDomainService {
 
             });
 
+
+
         }else {
-            log.info("initSbatchIds(List<Product> products) =》 {}",JSONObject.toJSONString(products));
+            log.info("initSbatchIds(List<Product> products) =》 {}",JSONObject.toJSONString(getBatchInfoDtoList));
             throw new RuntimeException("获取码管理生码信息失败");
         }
         // 携带生码批次

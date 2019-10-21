@@ -222,6 +222,17 @@ public class Swagger2Config {
                 .enable(enable);
     }
 
+    @Bean("大转盘埋点")
+    public Docket prizeWheelsBuryPoint() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("大转盘埋点")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.burypoint.prizewheels.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
 
 
 

@@ -138,11 +138,11 @@ public class IntegralCouponTest {
 //		int state = obj.getInteger("state");
 //		if (200 == state) {
 //			// 生码批次数组
-//			Map<String, Set<String>> productSbathIds = new HashMap<>();
+//			Map<String, ActivitySet<String>> productSbathIds = new HashMap<>();
 //			JSONArray arr = obj.getJSONArray("results");
 //
 //			mList.forEach(marketingActivityProduct -> {
-//				Set<String> sbathIds = new HashSet<>();
+//				ActivitySet<String> sbathIds = new HashSet<>();
 //				for(int i=0;i<arr.size();i++) {
 //					// 码管理回参类型
 //					String globalBacthId = arr.getJSONObject(i).getString("globalBacthId");
@@ -155,7 +155,7 @@ public class IntegralCouponTest {
 //						productSbathIds.put(productId+productBatchId,sbathIds);
 //					}
 //				}
-//				Set<String> sbathIdsDto = productSbathIds.get(marketingActivityProduct.getProductId() + marketingActivityProduct.getProductBatchId());
+//				ActivitySet<String> sbathIdsDto = productSbathIds.get(marketingActivityProduct.getProductId() + marketingActivityProduct.getProductBatchId());
 //				if(!CollectionUtils.isEmpty(sbathIdsDto)){
 //					String[] sbathIdsDtoArray = new String[sbathIdsDto.size()];
 //					sbathIdsDto.toArray(sbathIdsDtoArray);

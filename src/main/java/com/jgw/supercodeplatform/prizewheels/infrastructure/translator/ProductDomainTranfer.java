@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.translator;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
@@ -7,13 +8,14 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoProductBatch;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
-
+@Slf4j
 @Component
 public class ProductDomainTranfer {
     @Autowired
@@ -58,6 +60,7 @@ public class ProductDomainTranfer {
      * @return
      */
     public List<SbatchUrlDto> tranferProductsToSbatchUrlDtos(List<Product> products) {
+        log.info(" tranferProductsToSbatchUrlDtos(List<Product> products) {}",JSONObject.toJSONString(products));
         List<SbatchUrlDto> list = new ArrayList<>();
         products.forEach(product -> {
             String[] sbatchIds = product.getSbatchId().split(Product.SPLIT_SYMBOL);

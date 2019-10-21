@@ -58,4 +58,13 @@ public class WheelsRewardPojo implements Serializable {
     private String pictureSpecs;
 
 
+    @TableField("LoseAward")
+    private Byte loseAward;
+
+    @TableField("CdkName")
+    private String cdkName;
+
+    @TableField("CdkUuid")
+    private String cdkUuid;
+
 }

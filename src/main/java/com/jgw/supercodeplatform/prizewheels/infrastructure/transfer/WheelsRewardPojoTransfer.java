@@ -19,9 +19,21 @@ public class WheelsRewardPojoTransfer {
         if(!CollectionUtils.isEmpty(wheelsRewards)){
             for(WheelsReward wheelsReward : wheelsRewards){
                 WheelsRewardPojo wheelsRewardPojo = modelMapper.map(wheelsReward, WheelsRewardPojo.class);
+                wheelsRewardPojo.setLoseAward(wheelsReward.getLoseAward());
                 lists.add(wheelsRewardPojo);
             }
         }
         return lists;
+    }
+
+
+    public  List<WheelsReward>  tranferPojosToDomains(List<WheelsRewardPojo> list) {
+        List<WheelsReward> wheelsRewards = new ArrayList<>();
+
+        list.stream().forEach(wheelsRewardPojo -> {
+            WheelsReward wheelsReward = modelMapper.map(wheelsRewardPojo, WheelsReward.class);
+            wheelsRewards.add(wheelsReward);
+        });
+        return wheelsRewards;
     }
 }

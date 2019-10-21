@@ -11,7 +11,7 @@ import java.util.List;
 
 @Mapper
 public interface MarketingActivityMapper extends CommonSql{
-    static String allFileds="Id id,ActivityType activityType,ActivityName activityName";
+    static String allFileds="Id id,ActivityType activityType,ActivityName activityName ";
     
     static String whereSearch =
 			"<where>" +
@@ -49,6 +49,7 @@ public interface MarketingActivityMapper extends CommonSql{
 			+ " DATE_FORMAT(aset.ActivityStartDate,'%Y-%m-%d') as activityStartDate, "
 			+ " DATE_FORMAT(aset.ActivityEndDate,'%Y-%m-%d') as activityEndDate, "
 			+ " aset.UpdateUserName updateUserName, "
+			+ " aset.Id1 id1, "
 			+ " DATE_FORMAT(aset.UpdateDate,'%Y-%m-%d %H:%i:%S') as updateDate,"
 
 			+ " aset.ActivityStatus activityStatus,"

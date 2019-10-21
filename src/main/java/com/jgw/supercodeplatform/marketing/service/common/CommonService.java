@@ -378,7 +378,7 @@ public class CommonService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void checkCodeValid(String codeId, String codeTypeId) {
+	public String checkCodeValid(String codeId, String codeTypeId) {
 		Map<String, String> headerparams = new HashMap<String, String>();
 		headerparams.put("token",commonUtil.getCodePlatformToken() );
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
@@ -389,6 +389,7 @@ public class CommonService {
 		if (StringUtils.isBlank(sBatchId)) {
 			throw  new SuperCodeExtException("对不起,该码不存在",500);
 		}
+		return sBatchId;
 	}
 
 

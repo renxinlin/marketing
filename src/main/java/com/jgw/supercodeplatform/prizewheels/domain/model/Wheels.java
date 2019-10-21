@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.prizewheels.domain.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityStatusConstant;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -80,6 +82,9 @@ public class Wheels implements Serializable {
     // 前台活动模板id
     private String  templateId;
 
+    private String  activityStatus;
+
+
     public void addPublisher(Publisher publisher) {
         Asserts.check(publisher != null, ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         this.publisher = publisher;
@@ -105,6 +110,10 @@ public class Wheels implements Serializable {
 
         Asserts.check(startTime !=null ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         Asserts.check(endTime !=null ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+
+        if(activityStatus == null){
+            activityStatus =ActivityStatusConstant.UP;
+        }
     }
     public void checkWhenUpdate() {
         // 基本校验
@@ -119,6 +128,14 @@ public class Wheels implements Serializable {
 
     public void checkWhenAdd() {
         checkBase();
+    }
+
+    public void checkAcitivyStatusWhenHReward() {
+
+        Date date = new Date();
+        Asserts.check(startTime.getTime() <= date.getTime(),"活动未开始");
+        Asserts.check(endTime.getTime() > date.getTime(),"活动已结束");
+        Asserts.check(ActivityStatusConstant.UP.equals(activityStatus),"活动未启用");
     }
 
 

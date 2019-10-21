@@ -108,6 +108,7 @@ public class ProductPojo implements Serializable {
     /**
      * 是否自动获取(1、自动获取 2、仅此一次 )当前仅当为大转盘和签到有效
      */
+    @TableField("AutoType")
     private byte autoType;
 
 

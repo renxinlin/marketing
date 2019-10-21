@@ -249,7 +249,7 @@ public class WeixinAuthController {
 			response.addCookie(jwtTokenCookie);
 			response.addHeader("Access-Control-Allow-Origin", "");
 			response.addHeader("Access-Control-Allow-Credentials", "true");
-			response.addHeader("Access-Control-Allow-Headers", "Content-Type, Set-Cookie, *");
+			response.addHeader("Access-Control-Allow-Headers", "Content-Type, ActivitySet-Cookie, *");
 			logger.info("微信授权写jwt-token成功");
 		} catch (Exception e) {
 			e.printStackTrace();
