@@ -17,12 +17,12 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_bury_point_outer_wheels_click_tc")
+@TableName("marketing_prizewheels_bury_point_wheels_click_tc")
 public class BuryPointWheelsClickTc {
     /**
      * 主键ID
      */
-    @TableId(value = "Id", type = IdType.AUTO)
+    @TableId(value = "Id", type = IdType.ID_WORKER)
     private Long id;
 
     /**

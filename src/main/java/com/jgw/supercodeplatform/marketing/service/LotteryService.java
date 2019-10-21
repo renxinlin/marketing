@@ -30,6 +30,7 @@ import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.pojo.platform.MarketingPlatformOrganization;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,8 +39,10 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -74,7 +77,7 @@ public class LotteryService {
 	private WXPayTradeOrderMapper wXPayTradeOrderMapper;
 
 	@Autowired
-	private GlobalRamCache globalRamCache;
+	private MarketingMembersService marketingMembersService;
 
 	@Autowired
 	private WXPayService wxpService;
@@ -160,10 +163,13 @@ public class LotteryService {
 			throw new SuperCodeExtException("该活动不存在", 200);
 		}
 		Long userId = scanCodeInfoMO.getUserId();
-		MarketingMembers marketingMembersInfo = marketingMembersMapper.getMemberById(userId);
-		if(marketingMembersInfo == null){
+		MemberWithWechat memberWithWechat = marketingMembersService.selectById(userId);
+		if(memberWithWechat == null){
 			throw new SuperCodeException("会员信息不存在",200);
 		}
+		MarketingMembers marketingMembersInfo = new MarketingMembers();
+		BeanUtils.copyProperties(memberWithWechat, marketingMembersInfo);
+		marketingMembersInfo.setId(userId);
 		if( null != marketingMembersInfo.getState() && marketingMembersInfo.getState() == 0){
 			throw new SuperCodeException("对不起,该会员已被加入黑名单",200);
 		}

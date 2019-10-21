@@ -115,7 +115,7 @@ public class DeliveryAddressController extends CommonUtil {
         }
         Long memberId = jwtUser.getMemberId();
         deliveryAddressDto.setMemberId(memberId);
-        deliveryAddressDto.setMemberName(membersMapper.getMemberById(memberId).getUserName());
+        deliveryAddressDto.setMemberName(membersMapper.selectById(memberId).getUserName());
         DeliveryAddress toWeb = deliveryAddressService.add(deliveryAddressDto);
         // TODO 优化
         toWeb.setDetailAll(toWeb.getProvince()+toWeb.getCity()+toWeb.getCountry()+toWeb.getDetail());

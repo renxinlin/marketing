@@ -5,8 +5,6 @@ import java.util.Date;
 public class MarketingMembers {
 
     private Long id;//序号
-    private String openid;//微信id号
-    private String wxName;//微信id号
     private String mobile;//手机
     private String userId;//用户Id
     private String userName;//用户姓名
@@ -32,7 +30,6 @@ public class MarketingMembers {
     private Integer haveIntegral; //  会员积分
     private Byte memberType; // 会员类型默认0
     private Date integralReceiveDate; // 最新一次积分领取时间
-    private String wechatHeadImgUrl;
     private Byte userSource;// 注册来源1招募会员
     private Byte deviceType;// 设备来源
 
@@ -87,16 +84,6 @@ public class MarketingMembers {
     public Date getIntegralReceiveDate() {
         return integralReceiveDate;
     }
-
-    public String getWechatHeadImgUrl() {
-		return wechatHeadImgUrl;
-	}
-
-	public void setWechatHeadImgUrl(String wechatHeadImgUrl) {
-		this.wechatHeadImgUrl = wechatHeadImgUrl;
-	}
-
-
 
 	public void setIntegralReceiveDate(Date integralReceiveDate) {
         this.integralReceiveDate = integralReceiveDate;
@@ -217,14 +204,6 @@ public class MarketingMembers {
         this.updateDate = updateDate;
     }
 
-    public String getWxName() {
-        return wxName;
-    }
-
-    public void setWxName(String wxName) {
-        this.wxName = wxName;
-    }
-
     public String getUserId() {
         return userId;
     }
@@ -239,14 +218,6 @@ public class MarketingMembers {
 
     public void setBabyBirthday(String babyBirthday) {
         this.babyBirthday = babyBirthday;
-    }
-
-    public String getOpenid() {
-        return openid;
-    }
-
-    public void setOpenid(String openid) {
-        this.openid = openid;
     }
 
     public String getCustomerName() {

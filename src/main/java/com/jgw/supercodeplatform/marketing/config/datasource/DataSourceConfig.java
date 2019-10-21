@@ -2,6 +2,10 @@ package com.jgw.supercodeplatform.marketing.config.datasource;
 
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -27,6 +31,8 @@ public class DataSourceConfig {
 	
 	@Autowired
 	private Environment env;
+	@Autowired
+	private PaginationInterceptor paginationInterceptor;
 	
 	/**
 	 * 数据源dataSource配置
@@ -64,9 +70,15 @@ public class DataSourceConfig {
 	 */
 	@Bean
     public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource) throws Exception {
-        SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
-        factoryBean.setDataSource(dataSource);
-        return factoryBean.getObject();
+//        SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
+//        factoryBean.setDataSource(dataSource);
+//        return factoryBean.getObject();
+		MybatisSqlSessionFactoryBean factory = new MybatisSqlSessionFactoryBean();
+		factory.setDataSource(dataSource);
+		factory.setPlugins(new Interceptor[]{paginationInterceptor});
+		MybatisConfiguration mybatisConfiguration = new MybatisConfiguration();
+		factory.setConfiguration(mybatisConfiguration);
+		return factory.getObject();
     }
 	
 	/**
@@ -82,7 +94,7 @@ public class DataSourceConfig {
         SqlSessionTemplate template = new SqlSessionTemplate(sqlSessionFactory(dataSource));
         return template;
     }
-    
+
     @Bean
     public PlatformTransactionManager fakeTransactionManager(@Qualifier("dataSource") DataSource prodDataSource) {
         return new DataSourceTransactionManager(prodDataSource);

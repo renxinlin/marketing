@@ -10,15 +10,22 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.dao.user.MarketingWxMemberMapper;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -48,8 +55,6 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdatePar
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -64,7 +69,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	private  String registerMsgContent ;
 	@Value("${rest.user.url}")
 	private String userServiceUrl;
-	
+
 	@Autowired
 	private MarketingMembersMapper marketingMembersMapper;
 
@@ -76,7 +81,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	@Autowired
 	private IntegralRuleMapperExt integralRuleDao;
-	
+
 	@Autowired
 	private RedisUtil redisUtil;
 
@@ -91,12 +96,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@Autowired
 	private IntegralRecordMapperExt integralRecordDao;
 
 	@Autowired
 	private MarketingWxMerchantsService mWxMerchantsService;
+
+	@Autowired
+	private MarketingWxMemberMapper marketingWxMemberMapper;
 
 	@Override
 	protected List<Map<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
@@ -159,7 +167,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 			} else if("babyBirthday".equalsIgnoreCase(code)){
 				fieldsbuf.append(" date_format(babyBirthday ,'%Y-%m-%d' ) BabyBirthday ");
-			// TODO 这个月份是按天【DATEDIFF】计算还是跨月【period_dif，%Y%mf】计算
+				// TODO 这个月份是按天【DATEDIFF】计算还是跨月【period_dif，%Y%mf】计算
 			}else if("NoIntegralWithOneMonth".equalsIgnoreCase(code)){
 				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 1 ,0,1) NoIntegralWithOneMonth ");
 
@@ -167,7 +175,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 3 ,0,1) NoIntegralWithThreeMonth ");
 
 			}else if("NoIntegralWithSixMonth".equalsIgnoreCase(code)){
-			    // if(DATEDIFF(now(),IntegralReceiveDate)<=180,1,0 ) NoIntegralWithOneMonth  1,表示6月内有领取，0表示没有
+				// if(DATEDIFF(now(),IntegralReceiveDate)<=180,1,0 ) NoIntegralWithOneMonth  1,表示6月内有领取，0表示没有
 				fieldsbuf.append(" if(period_diff(date_format(now(),'%Y%m'),date_format(IntegralReceiveDate, '%Y%m')) <= 6 ,0,1) NoIntegralWithSixMonth ");
 
 			}else{
@@ -219,7 +227,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	/**
 	 * 会员注册
-	 * @param map
+	 * @param marketingMembersAddParam
 	 * @return
 	 * @throws Exception
 	 */
@@ -267,7 +275,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		MarketingMembers members=modelMapper.map(marketingMembersAddParam,MarketingMembers.class);
 		if(!StringUtils.isBlank(marketingMembersAddParam.getpCCcode())){
 			List<JSONObject> objects = JSONObject.parseArray(marketingMembersAddParam.getpCCcode(),JSONObject.class);
- 			int size = objects.size();
+			int size = objects.size();
 			JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
 			JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
 			JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
@@ -281,9 +289,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 
 		members.setIsRegistered((byte)1);//手机号注册默认为已完善过信息
-        if(members.getDeviceType() == null){
-            members.setDeviceType((byte) 6);
-        }
+		if(members.getDeviceType() == null){
+			members.setDeviceType((byte) 6);
+		}
 		int result = marketingMembersMapper.insert(members);
 		// 调用用户模块发送短信
 		if(1 == result){
@@ -292,20 +300,20 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				Byte registerState=rule.getIntegralByRegisterStatus();
 				if (null!=registerState && registerState.intValue()==1) {
 					members.setHaveIntegral(rule.getIntegralByRegister());
-					marketingMembersMapper.update(members);
-					 IntegralRecord integralRecord=new IntegralRecord();
-					 integralRecord.setIntegralNum(rule.getIntegralByRegister());
-					 integralRecord.setIntegralReasonCode(IntegralReasonEnum.REGISTER_MEMBER.getIntegralReasonCode());
-					 integralRecord.setIntegralReason(IntegralReasonEnum.REGISTER_MEMBER.getIntegralReason());
-					 integralRecord.setCustomerId(members.getCustomerId());
-					 integralRecord.setCustomerName(members.getCustomerName());
-					 integralRecord.setMemberId(members.getId());
-					 integralRecord.setMemberName(members.getUserName());
-					 integralRecord.setMemberType(members.getMemberType());
-					 integralRecord.setMobile(members.getMobile());
-					 integralRecord.setOrganizationId(organizationId);
-					 integralRecord.setIntegralType(0);
-					 integralRecordDao.insert(integralRecord);
+					marketingMembersMapper.updateById(members);
+					IntegralRecord integralRecord=new IntegralRecord();
+					integralRecord.setIntegralNum(rule.getIntegralByRegister());
+					integralRecord.setIntegralReasonCode(IntegralReasonEnum.REGISTER_MEMBER.getIntegralReasonCode());
+					integralRecord.setIntegralReason(IntegralReasonEnum.REGISTER_MEMBER.getIntegralReason());
+					integralRecord.setCustomerId(members.getCustomerId());
+					integralRecord.setCustomerName(members.getCustomerName());
+					integralRecord.setMemberId(members.getId());
+					integralRecord.setMemberName(members.getUserName());
+					integralRecord.setMemberType(members.getMemberType());
+					integralRecord.setMobile(members.getMobile());
+					integralRecord.setOrganizationId(organizationId);
+					integralRecord.setIntegralType(0);
+					integralRecordDao.insert(integralRecord);
 				}
 			}
 			String msg = msgTimplate(marketingMembersAddParam.getUserName() == null ? "用户": marketingMembersAddParam.getUserName() ,selectedPortrait.get(0).getOrganizationFullName());
@@ -368,7 +376,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	/**
 	 * 修改会员信息
-	 * @param map
+	 * @param membersUpdateParam
 	 * @return
 	 */
 	public int updateMembers(MarketingMembersUpdateParam membersUpdateParam) throws SuperCodeException{
@@ -400,7 +408,6 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		members.setCustomerId(membersUpdateParam.getCustomerId());
 		members.setCustomerName(membersUpdateParam.getCustomerName());
 		members.setMobile(membersUpdateParam.getMobile());
-		members.setOpenid(membersUpdateParam.getOpenid());
 		members.setpCCcode(membersUpdateParam.getpCCcode());
 		if(!StringUtils.isBlank(membersUpdateParam.getpCCcode())){
 			List<JSONObject> objects = JSONObject.parseArray(membersUpdateParam.getpCCcode(),JSONObject.class);
@@ -417,45 +424,94 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 		members.setSex(membersUpdateParam.getSex());
 		members.setState(membersUpdateParam.getState());
-		members.setWxName(membersUpdateParam.getWxName());
 		members.setUserName(membersUpdateParam.getUserName());
 		members.setId(membersUpdateParam.getId());
 		members.setIsRegistered((byte)1);
-		return marketingMembersMapper.update(members);
+		int upNum = marketingMembersMapper.updateById(members);
+		String openid = membersUpdateParam.getOpenid();
+		if (StringUtils.isBlank(openid)) {
+			return upNum;
+		}
+		String organizationId = marketingMembersMapper.selectById(members.getId()).getOrganizationId();
+		String wxName = membersUpdateParam.getWxName();
+		MarketingWxMember marketingWxMember = marketingWxMemberMapper.selectOne(Wrappers.<MarketingWxMember>query().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType()));
+		if (marketingWxMember == null) {
+			marketingWxMember = new MarketingWxMember();
+			marketingWxMember.setCurrentUse((byte)1);
+			marketingWxMember.setOpenid(openid);
+			marketingWxMember.setWxName(wxName);
+			marketingWxMember.setOrganizationId(organizationId);
+			MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
+			marketingWxMember.setOrganizationFullName(marketingWxMerchants.getOrganizatioIdlName());
+			if (marketingWxMerchants.getMerchantType() == 1) {
+				marketingWxMember.setJgwType((byte)1);
+				marketingWxMember.setAppid(mWxMerchantsService.getJgw().getMchAppid());
+			} else {
+				marketingWxMember.setJgwType((byte)0);
+				marketingWxMember.setAppid(marketingWxMerchants.getMchAppid());
+			}
+			marketingWxMember.setCreateTime(new Date());
+			marketingWxMember.setUpdateTime(new Date());
+			marketingWxMember.setMemberId(members.getId());
+			marketingWxMemberMapper.insert(marketingWxMember);
+		} else {
+			UpdateWrapper<MarketingWxMember> updateWrapper = Wrappers.<MarketingWxMember>update().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
+			updateWrapper.set(StringUtils.isNotBlank(wxName) && !wxName.equals(marketingWxMember.getWxName()), "WxName", wxName);
+			updateWrapper.set(!members.getId().equals(marketingWxMember.getMemberId()), "MemberId", members.getId());
+			if(updateWrapper.getSqlSet() != null) {
+				marketingWxMemberMapper.update(null, updateWrapper);
+			}
+		}
+		return upNum;
 	}
 
 	/**
 	 * 修改会员状态
-	 * @param map
+	 * @param
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public int updateMembersStatus(Long id,int status) throws SuperCodeException{
-		return marketingMembersMapper.updateMembersStatus(id,status);
+	public int updateMembersStatus(Long id,int status) {
+		MarketingMembers marketingMembers = new MarketingMembers();
+		marketingMembers.setState((byte)status);
+		marketingMembers.setId(id);
+		return marketingMembersMapper.updateById(marketingMembers);
 	}
 
-	/**
-	 * 获取单个会员信息
-	 * @param map
-	 * @return
-	 * @throws SuperCodeException
-	 */
-	public MarketingMembers getMemberById(Long id) throws SuperCodeException{
-		return marketingMembersMapper.getMemberById(id);
-	}
-
-	public MarketingMembers selectByOpenIdAndOrgIdWithTemp(String openid, String organizationId) {
-		return marketingMembersMapper.selectByOpenIdAndOrgIdWithTemp(openid,organizationId);
+	public MemberWithWechat selectByOpenIdAndOrgIdWithTemp(String openid, String organizationId) {
+		MarketingWxMember marketingWxMember = marketingWxMemberMapper.selectOne(Wrappers.<MarketingWxMember>query().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType()));
+		if (marketingWxMember == null) {
+			return null;
+		}
+		if (marketingWxMember.getMemberId() == null) {
+			return null;
+		}
+		MarketingMembers marketingMembers = marketingMembersMapper.selectById(marketingWxMember.getMemberId());
+		if (marketingMembers == null) {
+			return null;
+		}
+		if(marketingWxMember.getCurrentUse() == 0) {
+			UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte)1).eq("MemberType", MemberTypeEnums.VIP.getType());
+			marketingWxMemberMapper.update(null, nouseUpdateWrapper);
+			UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
+			marketingWxMemberMapper.update(null, currentUpdateWrapper);
+		}
+		MemberWithWechat memberWithWechat = new MemberWithWechat();
+		BeanUtils.copyProperties(marketingWxMember, memberWithWechat);
+		memberWithWechat.setWxMemberId(marketingWxMember.getId());
+		BeanUtils.copyProperties(marketingMembers, memberWithWechat);
+		memberWithWechat.setMemberId(marketingMembers.getId());
+		return memberWithWechat;
 	}
 	/**
 	 * h5页面登录接口--既然已经执行登录接口那肯定是该活动中奖页设置了手机登录（通过活动设置id查询中奖页信息得知）
 	 * @param mobile
-	 * @param openId
-	 * @param activitySetId
+	 * @param
+	 * @param
 	 * @param verificationCode
-	 * @param openid 
-	 * @param organizationId 
-	 * @param response 
+	 * @param openid
+	 * @param organizationId
+	 * @param response
 	 * @return
 	 * @throws SuperCodeException
 	 *
@@ -488,13 +544,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			restResult.setMsg("验证码不正确");
 			return restResult;
 		}
-		
+
 		H5LoginVO h5LoginVO =null;
 		if(deviceType == null || BrowerTypeEnum.Min.getStatus() > deviceType.byteValue()  || BrowerTypeEnum.Max.getStatus() < deviceType.byteValue()  ){
 			deviceType = BrowerTypeEnum.OTHER.getStatus().intValue();
 		}
 		if (StringUtils.isNotBlank(wxstate)) {
-			 h5LoginVO = loginWithWxstate(mobile, wxstate,deviceType);
+			h5LoginVO = loginWithWxstate(mobile, wxstate,deviceType);
 			restResult.setResults(h5LoginVO);
 		}else {
 			List<MarketingOrganizationPortraitListParam> mPortraits = organizationPortraitMapper
@@ -531,116 +587,106 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		}
 		h5LoginVO=new H5LoginVO();
 		h5LoginVO.setMobile(mobile);			//积分登录openid不一定存在
-		MarketingMembers trueMember=null;
+		MemberWithWechat trueMember=null;
 		MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
 		if (marketingWxMerchants.getMerchantType() == 1) {
 			organizationId = mWxMerchantsService.getJgw().getOrganizationId();
 		}
 		if (StringUtils.isBlank(openid)) {
-			MarketingMembers memberByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
-			if (null==memberByPhone) {
-				memberByPhone=new MarketingMembers();
-				memberByPhone.setMobile(mobile);
-				memberByPhone.setState((byte)1);
-				memberByPhone.setHaveIntegral(0);
+			MemberWithWechat memberWithWechat = selectByMobileOrgid(mobile, organizationId);
+			if (null==memberWithWechat) {
+				memberWithWechat=new MemberWithWechat();
+				memberWithWechat.setMobile(mobile);
+				memberWithWechat.setState((byte)1);
+				memberWithWechat.setHaveIntegral(0);
 				if (portraitsSize>1) {
-					memberByPhone.setIsRegistered((byte)0);
+					memberWithWechat.setIsRegistered((byte)0);
 				}else {
-					memberByPhone.setIsRegistered((byte)1);
+					memberWithWechat.setIsRegistered((byte)1);
 				}
-				memberByPhone.setMemberType((byte)0);
-				memberByPhone.setOrganizationId(organizationId);
-				memberByPhone.setDeviceType((byte)deviceType);
-				marketingMembersMapper.insert(memberByPhone);
+				memberWithWechat.setMemberType((byte)0);
+				memberWithWechat.setOrganizationId(organizationId);
+				memberWithWechat.setDeviceType((byte)deviceType);
+				insert(memberWithWechat);
 			}
-			if (memberByPhone.getState().intValue()==0) {
+			if (memberWithWechat.getState().intValue()==0) {
 				throw new SuperCodeException("您已被禁用，请联系管理员", 500);
 			}
-			trueMember=memberByPhone;
+			trueMember=memberWithWechat;
 		}else {
 			logger.error("marketingMembersMapper.selectByOpenIdAndOrgIdWithTemp参数 openid{}organizationId{}",openid,organizationId);
-			MarketingMembers memberByOpenId=marketingMembersMapper.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
-			if (null==memberByOpenId) {
+			//MemberWithWechat memberWithWechatByOpenid= selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
+			MarketingWxMember wxMemberByOpenid = marketingWxMemberMapper.selectOne(Wrappers.<MarketingWxMember>query().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType()));
+			if (wxMemberByOpenid == null) {
 				throw new SuperCodeException("登录失败，无此微信用户", 500);
 			}
-			
-			Byte state=memberByOpenId.getState()==null?1:memberByOpenId.getState();//如果是null可能是之前创建用户时忘记设置值的可能性更大则默认为合法用户
+			Long memberid = wxMemberByOpenid.getMemberId();
+			MarketingMembers member = null;
+			if(memberid == null) {
+				member = marketingMembersMapper.selectOne(Wrappers.<MarketingMembers>query().eq("Mobile", mobile).eq("OrganizationId", organizationId));
+				if (null==member) {
+					member = new MarketingMembers();
+					member.setMobile(mobile);
+					member.setState((byte)1);
+					member.setHaveIntegral(0);
+					if (portraitsSize>1) {
+						member.setIsRegistered((byte)0);
+					}else {
+						member.setIsRegistered((byte)1);
+					}
+					member.setMemberType((byte)0);
+					member.setOrganizationId(organizationId);
+					member.setDeviceType((byte)deviceType);
+					marketingMembersMapper.insert(member);
+				}
+				wxMemberByOpenid.setMemberId(member.getId());
+				marketingWxMemberMapper.updateById(wxMemberByOpenid);
+			} else {
+				member = marketingMembersMapper.selectById(memberid);
+			}
+			if(wxMemberByOpenid.getCurrentUse() == 0) {
+				UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte)1).eq("MemberType", MemberTypeEnums.VIP.getType());
+				marketingWxMemberMapper.update(null, nouseUpdateWrapper);
+				UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
+				marketingWxMemberMapper.update(null, currentUpdateWrapper);
+			}
+			Byte state=member.getState()==null?1:member.getState();//如果是null可能是之前创建用户时忘记设置值的可能性更大则默认为合法用户
 			//如果当前微信用户已存在且状态为1 则判断手机号是否一致
 			if (state.byteValue()!=2) {
-				String exMobile=memberByOpenId.getMobile();
+				String exMobile=member.getMobile();
 				if (!mobile.equals(exMobile)) {
 					throw new SuperCodeException("登录的手机号与当前微信用户手机号不一致无法登录", 500);
 				}
 				if (state.byteValue()==0) {
 					throw new SuperCodeException("您已被禁用，请联系管理员", 500);
 				}
+				MemberWithWechat memberWithWechat = new MemberWithWechat();
+				BeanUtils.copyProperties(member, memberWithWechat);
+				memberWithWechat.setMemberId(member.getId());
+				BeanUtils.copyProperties(wxMemberByOpenid, memberWithWechat);
+				memberWithWechat.setWxMemberId(wxMemberByOpenid.getId());
 				//设置用户
-				trueMember=memberByOpenId;
-			}else{
-				//如果state为2则表示该用户未激活刚刚授权状态
-				//
-				//判断手机号用户是否存在，判断手机号用户是否已绑定微信号，判断手机号用户的微信号是否与登录微信号一直
-				MarketingMembers memberByPhone=marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
-				if (null==memberByPhone) {
-					//如果手机号用户不存在，微信用户又是未激活则表明这个是彻底的新用户
-					memberByOpenId.setMobile(mobile);
-					memberByOpenId.setState((byte)1);
-					memberByOpenId.setDeviceType((byte) deviceType);
-					marketingMembersMapper.update(memberByOpenId);
-					
-					//设置用户
-					trueMember=memberByOpenId;
-				}else {
-					String exOpenid=memberByPhone.getOpenid();
-					if (StringUtils.isBlank(exOpenid)) {
-						//微信号用户为未激活刚注册用户且如果当前手机号用户未绑定微信号但被禁用了则不允许登录
-						if (memberByPhone.getState().byteValue()==0) {
-							throw new SuperCodeException("当前手机号用户已被禁用，请联系管理员", 500);
-						}
-						//如果已存在的手机号用户未绑定微信号则直接绑定手机号
-						memberByPhone.setOpenid(openid);
-						memberByPhone.setWxName(memberByOpenId.getWxName());
-						if (StringUtils.isNotBlank(memberByOpenId.getWechatHeadImgUrl())) {
-							memberByPhone.setWechatHeadImgUrl(memberByOpenId.getWechatHeadImgUrl());
-						}
-						marketingMembersMapper.update(memberByPhone);
-						
-						marketingMembersMapper.deleteById(memberByOpenId.getId());
-						
-					}else {
-						//如果已存在的手机号用户已绑定了微信openid且与当前登录openid不一致则不允许登录
-						if (!exOpenid.equals(openid)) {
-							memberByPhone.setOpenid(openid);
-							marketingMembersMapper.update(memberByPhone);
-							//throw new SuperCodeException("登录的手机号已绑定其它微信号不可以登录当前微信号", 500);
-						}
-						if (memberByPhone.getState().byteValue()==0) {
-							throw new SuperCodeException("当前手机号用户已被禁用，请联系管理员", 500);
-						}
-					}
-					//设置用户
-					trueMember=memberByPhone;
-				}
+				trueMember=memberWithWechat;
 			}
 		}
-		
+
 		h5LoginVO.setWechatHeadImgUrl(trueMember.getWechatHeadImgUrl());
-		h5LoginVO.setMemberId(trueMember.getId());
+		h5LoginVO.setMemberId(trueMember.getMemberId());
 		h5LoginVO.setHaveIntegral(trueMember.getHaveIntegral()==null?0:trueMember.getHaveIntegral());
 		h5LoginVO.setRegistered(trueMember.getIsRegistered().intValue());
 		h5LoginVO.setCustomerId(trueMember.getCustomerId());
 		h5LoginVO.setCustomerName(trueMember.getCustomerName());
 		return h5LoginVO;
 	}
-	
-    /**
-     * 扫描产品防伪码登录
-     * @param mobile
-     * @param wxstate
-     * @param portraitsSize 
-     * @return
-     * @throws SuperCodeException
-     */
+
+	/**
+	 * 扫描产品防伪码登录
+	 * @param mobile
+	 * @param wxstate
+	 * @param portraitsSize
+	 * @return
+	 * @throws SuperCodeException
+	 */
 	private H5LoginVO loginWithWxstate(String mobile, String wxstate,int deviceType) throws SuperCodeException {
 		ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
 		if (null == scanCodeInfoMO) {
@@ -664,26 +710,80 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		globalRamCache.putScanCodeInfoMO(wxstate, scanCodeInfoMO);
 		return h5LoginVO;
 	}
-	
+
 
 	public void update(MarketingMembers members) {
-		marketingMembersMapper.update(members);
+		marketingMembersMapper.updateById(members);
 	}
 
-	public MarketingMembers selectById(Long id) {
-		return marketingMembersMapper.getMemberById(id);
+	public void updateWxMemberByOpenid(MarketingWxMember marketingWxMember){
+		String openid = marketingWxMember.getOpenid();
+		String organizationId = marketingWxMember.getOrganizationId();
+		if (StringUtils.isBlank(openid) || StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeExtException("openid或者组织ID不能为空");
+		}
+		UpdateWrapper<MarketingWxMember> updateWrapper = Wrappers.<MarketingWxMember>update().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
+		marketingWxMemberMapper.update(marketingWxMember, updateWrapper);
 	}
 
-	public void insert(MarketingMembers members) {
-		marketingMembersMapper.insert(members);
+
+	private MemberWithWechat selectByMobileOrgid(String mobile, String orgid) {
+		MarketingMembers members = marketingMembersMapper.selectOne(Wrappers.<MarketingMembers>query().eq("Mobile", mobile).eq("OrganizationId", orgid));
+		if (members == null) {
+			return null;
+		}
+		MemberWithWechat memberWithWechat = new MemberWithWechat();
+		BeanUtils.copyProperties(members, memberWithWechat);
+		memberWithWechat.setMemberId(members.getId());
+		QueryWrapper<MarketingWxMember> query = Wrappers.<MarketingWxMember>query().eq("MemberId", members.getId()).eq("OrganizationId", members.getOrganizationId()).eq("CurrentUse",(byte)1);
+		MarketingWxMember marketingWxMember = marketingWxMemberMapper.selectOne(query);
+		if (marketingWxMember != null) {
+			BeanUtils.copyProperties(marketingWxMember, memberWithWechat);
+			memberWithWechat.setWxMemberId(marketingWxMember.getId());
+		}
+		return memberWithWechat;
 	}
 
-	public MarketingMembers selectByPhoneAndOrgId(String mobile, String organizationId) {
-		return marketingMembersMapper.selectByMobileAndOrgId(mobile, organizationId);
+
+	/**
+	 * 用户微信用户ID获取用户信息，,
+	 * @param memberId
+	 * @return
+	 */
+	public MemberWithWechat selectById(Long memberId) {
+		MarketingMembers members = marketingMembersMapper.selectById(memberId);
+		if (members == null) {
+			return null;
+		}
+		MemberWithWechat memberWithWechat = new MemberWithWechat();
+		BeanUtils.copyProperties(members, memberWithWechat);
+		memberWithWechat.setMemberId(memberId);
+		QueryWrapper<MarketingWxMember> query = Wrappers.<MarketingWxMember>query().eq("MemberId", memberId).eq("OrganizationId", members.getOrganizationId()).eq("CurrentUse",(byte)1);
+		MarketingWxMember marketingWxMember = marketingWxMemberMapper.selectOne(query);
+		if (marketingWxMember != null) {
+			BeanUtils.copyProperties(marketingWxMember, memberWithWechat);
+			memberWithWechat.setWxMemberId(marketingWxMember.getId());
+		}
+		return memberWithWechat;
 	}
 
-	public void deleteById(Long id) {
-		marketingMembersMapper.deleteById(id);		
+	public void insert(MemberWithWechat memberWithWechat) {
+		if (StringUtils.isNotBlank(memberWithWechat.getMobile())) {
+			MarketingMembers members = new MarketingMembers();
+			BeanUtils.copyProperties(memberWithWechat, members);
+			marketingMembersMapper.insert(members);
+			memberWithWechat.setMemberId(members.getId());
+		}
+		if (StringUtils.isNotBlank(memberWithWechat.getOpenid()) && StringUtils.isNotBlank(memberWithWechat.getOrganizationId())) {
+			MarketingWxMember marketingWxMember = new MarketingWxMember();
+			BeanUtils.copyProperties(memberWithWechat, marketingWxMember);
+			marketingWxMemberMapper.insert(marketingWxMember);
+			memberWithWechat.setWxMemberId(marketingWxMember.getId());
+		}
+	}
+
+	public MarketingMembers getMemberById(Long id) {
+		return marketingMembersMapper.selectById(id);
 	}
 
 	public MarketingMembers selectByPhoneAndOrgIdExcludeId(String mobile, String organizationId, Long id) {
@@ -696,15 +796,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * @param date
 	 * @param date1
 	 */
-    public List<MarketingMembers> getRegisterNum(String organizationId, Date startDate, Date endDate) throws SuperCodeException {
-   		if(StringUtils.isBlank(organizationId)){
-   			throw new SuperCodeException("组织不存在...");
+	public List<MarketingMembers> getRegisterNum(String organizationId, Date startDate, Date endDate) throws SuperCodeException {
+		if(StringUtils.isBlank(organizationId)){
+			throw new SuperCodeException("组织不存在...");
 		}
 		if(startDate == null || endDate == null){
 			throw new SuperCodeException("日期未选择...");
 		}
-   		return marketingMembersMapper.getRegisterNum(organizationId,startDate,endDate);
-    }
+		return marketingMembersMapper.getRegisterNum(organizationId,startDate,endDate);
+	}
 
 	public List<MarketingMembers> getOrganizationAllMemberWithDate(String organizationId, Date startDate, Date endDate) throws SuperCodeException {
 		if(StringUtils.isBlank(organizationId)){
@@ -716,14 +816,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return marketingMembersMapper.getOrganizationAllMemberWithDate(organizationId,startDate,endDate);
 	}
 
-	public MarketingMembers getMemberByOpenid(String openId){
-    	return marketingMembersMapper.getMemberByOpenId(openId);
+	public MarketingWxMember getWxMemberById(Long id){
+		return marketingWxMemberMapper.selectById(id);
 	}
 
-
-	public RestResult<String> guideLottery(String wxstate) {
-		return null;
-	}
 }
 
 

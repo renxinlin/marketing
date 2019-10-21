@@ -2,6 +2,8 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.google.common.collect.Lists;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
@@ -10,6 +12,7 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingMembersWinRecordMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataVo;
@@ -162,7 +165,8 @@ public class PlatformStatisticsService {
     public List<PieChartVo> scanCodeActMember(ActivityDataParam activityDataParam) {
         long startTime = activityDataParam.getStartDate().getTime();
         long endTime = activityDataParam.getEndDate().getTime() + ONE_DAY_MILLS;
-        long allNum = marketingMembersMapper.countAllMemberNum(new Date(startTime), new Date(endTime));
+        QueryWrapper<MarketingMembers> wrapper = Wrappers.<MarketingMembers>query().ge("RegistDate", new Date(startTime)).lt("RegistDate", new Date(endTime)).ne("State", 2);
+        long allNum = marketingMembersMapper.selectCount(wrapper);
         PieChartVo allPie = new PieChartVo("总会员", allNum);
         long actNum = marketingMembersWinRecordMapper.countActUser(new Date(startTime), new Date(endTime));
         PieChartVo actPie = new PieChartVo("活跃会员", actNum);

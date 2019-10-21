@@ -1,17 +1,15 @@
 package com.jgw.supercodeplatform.burypoint.prizewheels.model;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import   com.baomidou.mybatisplus.annotation.IdType;
-import   java.util.Date;
-import   com.baomidou.mybatisplus.annotation.TableId;
-import   com.baomidou.mybatisplus.annotation.TableField;
-import   java.io.Serializable;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -24,8 +22,8 @@ import   java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_prizewheels_bury_point_outer_chain_tb")
-public class BuryPointOuterChainTb implements Serializable {
+@TableName("marketing_prizewheels_bury_point_wx_merchants_tc")
+public class BuryPointWxMerchantsTc implements Serializable {
 
 
     /**
@@ -33,12 +31,6 @@ public class BuryPointOuterChainTb implements Serializable {
      */
     @TableId(value = "Id", type = IdType.ID_WORKER)
     private Long id;
-
-    /**
-     * 外链地址
-     */
-    @TableField("ThirdUrl")
-    private String thirdUrl;
 
     /**
      * 组织ID
@@ -58,14 +50,11 @@ public class BuryPointOuterChainTb implements Serializable {
     @TableField("CreateDate")
     private Date createDate;
 
-    @TableField("UpdateUserId")
-    private String updateUserId;
+    @TableField("MerchantName")
+    private String merchantName;
 
-    @TableField("UpdateUserName")
-    private String updateUserName;
-
-    @TableField("UpdateDate")
-    private Date updateDate;
+    @TableField("MchAppid")
+    private String mchAppid;
 
 
 }

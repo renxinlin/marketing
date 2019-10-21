@@ -4,14 +4,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.dao.user.MarketingWxMemberMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSONObject;
@@ -26,7 +34,6 @@ import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 
 @Service
@@ -61,6 +68,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	@Autowired
 	private MarketingWxMerchantsMapper mWxMerchantsMapper;
 
+	@Autowired
+	private MarketingWxMemberMapper marketingWxMemberMapper;
+
 	@Override
 	protected List<MarketingUser> searchResult(MarketingMembersListParam searchParams) throws SuperCodeException{
 		if(StringUtils.isBlank(searchParams.getOrganizationId())){
@@ -82,8 +92,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 	/**
 	 * 批量改变会员状态
-	 * @param id
-	 * @param state
+	 * @param
+	 * @param
 	 * @param organizationId
 	 * @throws SuperCodeException
 	 */
@@ -279,7 +289,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(i!=1){
 			throw new SuperCodeException("更新失败...");
 		}
- 	}
+	}
 
 	/**
 	 *
@@ -317,8 +327,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			throw new SuperCodeException("用户不存在");
 
 		}
-		String orgId = mWxMerchantsMapper.getJgw().getOrganizationId();
-		if(!loginUser.getOrganizationId().equals(orgId) && !loginUser.getOrganizationId().equals(marketingUser.getOrganizationId())){
+		if(!loginUser.getOrganizationId().equals(marketingUser.getOrganizationId())){
 			throw new SuperCodeException("组织校验失败");
 
 		}
@@ -332,7 +341,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public MarketingUser saveRegisterUser(MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
+	public UserWithWechat saveRegisterUser(MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
 		// 1基础校验
 		validateBasicByRegisterUser(userInfo);
 
@@ -356,11 +365,17 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 
 		// 3数据转换和保存
-		MarketingUser userDo =changeToDo(userInfo);
-
-		int i = mapper.insertSelective(userDo);
-		if(i !=1){
-			throw new SuperCodeException("保存信息失败...");
+		UserWithWechat userDo =changeToDo(userInfo);
+		if (StringUtils.isNotBlank(userDo.getMobile())) {
+			MarketingUser marketingUser = new MarketingUser();
+			BeanUtils.copyProperties(userDo, marketingUser);
+			mapper.insertSelective(marketingUser);
+			userDo.setMemberId(marketingUser.getId());
+		}
+		if (StringUtils.isNotBlank(userDo.getOpenid()) && StringUtils.isNotBlank(userDo.getOrganizationId())) {
+			MarketingWxMember marketingWxMember = new MarketingWxMember();
+			BeanUtils.copyProperties(userDo, marketingWxMember);
+			marketingWxMemberMapper.insert(marketingWxMember);
 		}
 		return userDo;
 
@@ -372,11 +387,11 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	 * @throws SuperCodeException
 	 */
 	private void validateBasicByRegisterUser(MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
-        if(userInfo == null){
-            throw new SuperCodeException("保存用户失败001...");
-        }
+		if(userInfo == null){
+			throw new SuperCodeException("保存用户失败001...");
+		}
 
-        if(StringUtils.isBlank(userInfo.getOrganizationId())){
+		if(StringUtils.isBlank(userInfo.getOrganizationId())){
 			throw new SuperCodeException("组织信息获取失败...");
 		}
 		if(StringUtils.isBlank(userInfo.getMobile())){
@@ -391,7 +406,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(StringUtils.isBlank(userInfo.getpCCcode())){
 			throw new SuperCodeException("请输入所在地信息...");
 		}
-        // 产品需求改变:必填
+		// 产品需求改变:必填
 		if(StringUtils.isBlank(userInfo.getCustomerId())){
 			throw new SuperCodeException("请输入渠道ID信息...");
 		}
@@ -409,8 +424,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	 * @param userInfo
 	 * @return
 	 */
-	private MarketingUser changeToDo(MarketingSaleMembersAddParam userInfo) throws SuperCodeException {
-		MarketingUser userDtoToDb = modelMapper.map(userInfo,MarketingUser.class);
+	private UserWithWechat changeToDo(MarketingSaleMembersAddParam userInfo) throws SuperCodeException {
+		UserWithWechat userDtoToDb = modelMapper.map(userInfo,UserWithWechat.class);
 
 		// 门店信息转换
 //		List<CustomerInfo> customers = userInfo.getCustomer();
@@ -450,10 +465,6 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		userDtoToDb.setProvinceName(province.getString(PcccodeConstants.areaName));
 		userDtoToDb.setCityName(city.getString(PcccodeConstants.areaName));
 		userDtoToDb.setCountyName(country.getString(PcccodeConstants.areaName));
-		// 时间处理
-		Date date = new Date();
-		userDtoToDb.setCreateDate(date);
-		userDtoToDb.setUpdateDate(date);
 		// 导购员
 		userDtoToDb.setMemberType(MemberTypeEnums.SALER.getType());
 		// USER ID
@@ -464,50 +475,100 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		return userDtoToDb;
 	}
 
-	public MarketingUser selectByMobile(String state) {
-		return mapper.selectByPhone(state);
+	public void addUserOpenId(MarketingUser user, String openid) {
+		String organizationId = user.getOrganizationId();
+		QueryWrapper<MarketingWxMember> queryWrapper = Wrappers.query();
+		queryWrapper.eq("MemberId",user.getId()).eq("CurrentUse", 1).eq("MemberType", MemberTypeEnums.SALER.getType());
+		MarketingWxMember addMarketingWxMember = new MarketingWxMember();
+		MarketingWxMember marketingWxMember = marketingWxMemberMapper.selectOne(queryWrapper);
+		if (marketingWxMember != null) {
+			UpdateWrapper nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte)1).eq("MemberType", MemberTypeEnums.SALER.getType());
+			marketingWxMemberMapper.update(null, nouseUpdateWrapper);
+			BeanUtils.copyProperties(marketingWxMember, addMarketingWxMember);
+		}
+		MarketingWxMerchants marketingWxMerchants = mWxMerchantsMapper.get(user.getOrganizationId());
+		if (marketingWxMerchants.getMerchantType() == (byte)1) {
+			marketingWxMerchants = mWxMerchantsMapper.getJgw();
+			addMarketingWxMember.setJgwType((byte)1);
+		} else {
+			addMarketingWxMember.setJgwType((byte)0);
+		}
+		addMarketingWxMember.setOrganizationId(marketingWxMerchants.getOrganizationId());
+		addMarketingWxMember.setOrganizationFullName(marketingWxMerchants.getOrganizatioIdlName());
+		addMarketingWxMember.setAppid(marketingWxMerchants.getMchAppid());
+		addMarketingWxMember.setOpenid(openid);
+		addMarketingWxMember.setCreateTime(new Date());
+		addMarketingWxMember.setUpdateTime(new Date());
+		addMarketingWxMember.setMemberId(user.getId());
+		addMarketingWxMember.setMemberType(MemberTypeEnums.SALER.getType());
+		addMarketingWxMember.setCurrentUse((byte)1);
+		marketingWxMemberMapper.insert(addMarketingWxMember);
 	}
 
-	public void updateUserOpenId(MarketingUser marketingUserDo) throws SuperCodeException{
-		if(marketingUserDo == null){
-			throw new SuperCodeException("参数获取失败");
-		}
-		if(marketingUserDo.getId() == null || marketingUserDo.getId() <= 0){
-			throw new SuperCodeException("用户获取失败");
 
-		}
+//	public MarketingUser selectByOpenid(String openid) throws SuperCodeException {
+//		if(openid == null){
+//			throw new SuperCodeException("参数获取失败");
+//		}
+//		return mapper.selectByOpenid(openid);
+//
+//
+//	}
 
-		if(StringUtils.isEmpty(marketingUserDo.getOpenid())){
-			throw new SuperCodeException("OPEN_ID获取失败");
-
+	@Transactional
+	public UserWithWechat selectByOpenidAndOrgId(String openid, String organizationId) {
+		MarketingWxMember marketingWxMember = marketingWxMemberMapper.selectOne(Wrappers.<MarketingWxMember>query().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.SALER.getType()));
+		if (marketingWxMember == null) {
+			return null;
 		}
-		mapper.updateByPrimaryKeySelective(marketingUserDo);
+		if(marketingWxMember.getCurrentUse() == 0) {
+			UpdateWrapper nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte)1).eq("MemberType", MemberTypeEnums.SALER.getType());
+			marketingWxMemberMapper.update(null, nouseUpdateWrapper);
+			UpdateWrapper currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.SALER.getType());
+			marketingWxMemberMapper.update(null, currentUpdateWrapper);
+		}
+		UserWithWechat userWithWechat = new UserWithWechat();
+		BeanUtils.copyProperties(marketingWxMember, userWithWechat);
+		MarketingUser marketingUser = mapper.selectByPrimaryKey(marketingWxMember.getMemberId());
+		BeanUtils.copyProperties(marketingUser, userWithWechat);
+		return userWithWechat;
 	}
 
-	public MarketingUser selectByOpenid(String openid) throws SuperCodeException {
-		if(openid == null){
-			throw new SuperCodeException("参数获取失败");
+	public UserWithWechat selectById(Long memberId) {
+		MarketingUser marketingUser = mapper.selectByPrimaryKey(memberId);
+		if (marketingUser == null) {
+			return null;
 		}
-		return mapper.selectByOpenid(openid);
-
-
-	}
-
-    public MarketingUser selectByOpenidAndOrgId(String openid, String organizationId) {
-	    return mapper.selectByOpenidAndOrgId( openid,  organizationId);
-    }
-
-	public MarketingUser selectById(Long memberId) {
-		return mapper.selectByPrimaryKey(memberId);
+		MarketingWxMember marketingWxMember = marketingWxMemberMapper.selectOne(Wrappers.<MarketingWxMember>query().eq("MemberId",memberId).eq("CurrentUse", 1).eq("MemberType", MemberTypeEnums.SALER.getType()));
+		UserWithWechat userWithWechat = new UserWithWechat();
+		BeanUtils.copyProperties(marketingUser, userWithWechat);
+		if (marketingWxMember != null) {
+			userWithWechat.setWxName(marketingWxMember.getWxName());
+			userWithWechat.setOpenid(marketingWxMember.getOpenid());
+			userWithWechat.setWechatHeadImgUrl(marketingWxMember.getWechatHeadImgUrl());
+		}
+		return userWithWechat;
 	}
 
 	/**
 	 * 更新openid 用户头像
-	 * @param marketingUser
+	 * @param marketingWxMember
 	 * @return
 	 */
-	public int updateWxInfo(MarketingUser marketingUser) {
-		return mapper.updateWxInfo(marketingUser);
+	public int updateWxInfo(MarketingWxMember marketingWxMember) {
+		if (marketingWxMember == null) {
+			throw new SuperCodeExtException("用户更新信息不能为空");
+		}
+		String openid = marketingWxMember.getOpenid();
+		if (StringUtils.isBlank(openid)){
+			throw new SuperCodeExtException("openid不能为空");
+		}
+		String organizationId = marketingWxMember.getOrganizationId();
+		if (StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeExtException("组织ID不能为空");
+		}
+		UpdateWrapper<MarketingWxMember> updateWrapper = Wrappers.<MarketingWxMember>update().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.SALER.getType());
+		return marketingWxMemberMapper.update(marketingWxMember, updateWrapper);
 	}
 }
 

@@ -19,6 +19,7 @@ import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
+import com.jgw.supercodeplatform.marketing.pojo.UserWithWechat;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -104,16 +105,12 @@ public class SalerRegisterAndLoginV2Controller {
                 if(!StringUtils.isBlank(loginUser.getOpenid())){
                     // 说明微信登录失败,但用户存在
                     // 说明没绑定openid/如果微信openid变动【刷新openid】
-                    MarketingUser userOpenidExist = service.selectByOpenidAndOrgId(loginUser.getOpenid(), loginUser.getOrganizationId());
+                    UserWithWechat userWithWechat = service.selectByOpenidAndOrgId(loginUser.getOpenid(), loginUser.getOrganizationId());
                     // openid已经绑定用户
-                    if(userOpenidExist==null){
-                        Long id = user.getId();
-                        MarketingUser userDo = new MarketingUser();
-                        userDo.setId(id);
-                        userDo.setOpenid(loginUser.getOpenid());
-                        service.updateUserOpenId(userDo);
+                    if(userWithWechat == null){
+                        service.addUserOpenId(user, loginUser.getOpenid());
                     }
-                    if(userOpenidExist!=null && !userOpenidExist.getMobile().equals(loginUser.getMobile())){
+                    if(userWithWechat!=null && !userWithWechat.getMobile().equals(loginUser.getMobile())){
                         return RestResult.error("您的微信已经绑定其他手机号...",null,500);
                     }
                 }
@@ -123,10 +120,9 @@ public class SalerRegisterAndLoginV2Controller {
                 if(user.getState().intValue() == SaleUserStatus.DISABLE.getStatus().intValue()){
                     return RestResult.error("您已经被禁用",null,500);
                 }
-
                 H5LoginVO jwtUser = new H5LoginVO();
                 jwtUser.setMobile(loginUser.getMobile());
-                jwtUser.setMemberName(!StringUtils.isEmpty(user.getUserName()) ?  user.getUserName(): user.getWxName() );
+                jwtUser.setMemberName(user.getUserName());
                 jwtUser.setMemberId(user.getId());
                 jwtUser.setOrganizationId(user.getOrganizationId());
                 jwtUser.setMemberType(MemberTypeEnums.SALER.getType());
@@ -141,7 +137,6 @@ public class SalerRegisterAndLoginV2Controller {
 //                    e.printStackTrace();
 //                }
                 // TODO 可能存在其他登录信息需要设置
-
                 String jwtToken = JWTUtil.createTokenWithClaim(jwtUser);
                 Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
                 // jwt有效期为2小时，保持一致

@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.service.weixin;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -13,6 +14,7 @@ import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsEx
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
 import com.jgw.supercodeplatform.marketing.service.weixin.constants.BelongToJgwConstants;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -59,28 +61,48 @@ public class MarketingWxMerchantsService {
 	public int addWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam) throws SuperCodeException{
 		String organizationId=commonUtil.getOrganizationId();
 		String organizationName=commonUtil.getOrganizationName();
+		UpdateWrapper<MarketingWxMerchants> updateWrapper = Wrappers.<MarketingWxMerchants>update().set("DefaultUse", 0).eq("OrganizationId", organizationId).eq("DefaultUse", 1);
+		dao.update(null, updateWrapper);
 		marketingWxMerchantsParam.setOrganizatioIdlName(organizationName);
 		marketingWxMerchantsParam.setOrganizationId(organizationId);
+		globalRamCache.delWXMerchants(marketingWxMerchantsParam.getOrganizationId());
 		return dao.addWxMerchants(marketingWxMerchantsParam);
 	}
 
 	public int updateWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam){
-		globalRamCache.delWXMerchants(marketingWxMerchantsParam.getOrganizationId());
-		int er = dao.updateWxMerchants(marketingWxMerchantsParam);
+		String organizationId = marketingWxMerchantsParam.getOrganizationId();
+		UpdateWrapper<MarketingWxMerchants> updateWrapper = Wrappers.<MarketingWxMerchants>update().set("DefaultUse", 0).eq("OrganizationId", organizationId).eq("DefaultUse", 1);
+		dao.update(null, updateWrapper);
+		globalRamCache.delWXMerchants(organizationId);
+		MarketingWxMerchants marketingWxMerchants = new MarketingWxMerchants();
+		BeanUtils.copyProperties(marketingWxMerchantsParam, marketingWxMerchants);
+		marketingWxMerchants.setDefaultUse((byte)1);
+		UpdateWrapper<MarketingWxMerchants> updateMerchants = Wrappers.<MarketingWxMerchants>update().eq("OrganizationId", organizationId).eq("MchAppid", marketingWxMerchants.getMchAppid());
+		int er = dao.update(marketingWxMerchants, updateMerchants);
 		return er;
 	}
 
 	public MarketingWxMerchants selectByOrganizationId(String organizationId) {
-		MarketingWxMerchants mWxMerchants=dao.selectByOrganizationId(organizationId);
-		return mWxMerchants;
+		return get(organizationId);
+	}
+
+	public MarketingWxMerchants selectByOrganizationId(String organizationId, String appid) {
+		QueryWrapper<MarketingWxMerchants> queryWrapper = Wrappers.<MarketingWxMerchants>query().eq("OrganizationId", organizationId).eq("MchAppid", appid);
+		return dao.selectOne(queryWrapper);
 	}
 
 	public MarketingWxMerchants get(String organizationId){
-		MarketingWxMerchants mWxMerchants=dao.get(organizationId);
+		QueryWrapper<MarketingWxMerchants> queryWrapper = Wrappers.<MarketingWxMerchants>query().eq("OrganizationId", organizationId).eq("DefaultUse", 1);
+		MarketingWxMerchants mWxMerchants=dao.selectOne(queryWrapper);
 		if (null==mWxMerchants) {
 			mWxMerchants=dao.selectDefault();
 		}
 		return mWxMerchants;
+	}
+
+	private void updateNotDefaultMerchant(String organizationId){
+		UpdateWrapper<MarketingWxMerchants> updateWrapper = Wrappers.<MarketingWxMerchants>update().set("DefaultUse", 0).eq("OrganizationId", organizationId).eq("DefaultUse", 1);
+		dao.update(null, updateWrapper);
 	}
 
 	/**
