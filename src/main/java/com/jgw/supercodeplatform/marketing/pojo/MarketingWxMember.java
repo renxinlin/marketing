@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +12,7 @@ import java.util.Date;
 @Getter
 @TableName("marketing_wx_member")
 public class MarketingWxMember {
-
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     private String wxName;
