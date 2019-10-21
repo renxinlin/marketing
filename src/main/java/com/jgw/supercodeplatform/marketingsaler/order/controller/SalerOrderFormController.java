@@ -123,7 +123,7 @@ public class SalerOrderFormController extends SalerCommonController {
 
 
 
-    @PostMapping("/saveOrder")
+    @PostMapping("/updateOrder")
     @ApiOperation(value = "10月21需求 修改更新订单", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult updateOrder(@Valid @RequestBody ColumnnameAndValueListDto columnnameAndValueListDto) throws SuperCodeException {
