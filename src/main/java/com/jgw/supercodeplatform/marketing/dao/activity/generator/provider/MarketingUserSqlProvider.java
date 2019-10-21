@@ -20,14 +20,6 @@ public class MarketingUserSqlProvider {
             VALUES("Id", "#{id,jdbcType=BIGINT}");
         }
         
-        if (record.getWxName() != null) {
-            VALUES("WxName", "#{wxName,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getOpenid() != null) {
-            VALUES("Openid", "#{openid,jdbcType=VARCHAR}");
-        }
-        
         if (record.getMobile() != null) {
             VALUES("Mobile", "#{mobile,jdbcType=VARCHAR}");
         }
@@ -96,10 +88,6 @@ public class MarketingUserSqlProvider {
             VALUES("PCCcode", "#{pCCcode,jdbcType=VARCHAR}");
         }
         
-        if (record.getWechatHeadImgUrl() != null) {
-            VALUES("WechatHeadImgUrl", "#{wechatHeadImgUrl,jdbcType=VARCHAR}");
-        }
-        
         if (record.getMemberType() != null) {
             VALUES("MemberType", "#{memberType,jdbcType=TINYINT}");
         }
@@ -122,14 +110,6 @@ public class MarketingUserSqlProvider {
     public String updateByPrimaryKeySelective(MarketingUser record) {
         BEGIN();
         UPDATE("marketing_user");
-        
-        if (record.getWxName() != null) {
-            SET("WxName = #{wxName,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getOpenid() != null) {
-            SET("Openid = #{openid,jdbcType=VARCHAR}");
-        }
         
         if (record.getMobile() != null) {
             SET("Mobile = #{mobile,jdbcType=VARCHAR}");
@@ -197,10 +177,6 @@ public class MarketingUserSqlProvider {
         
         if (record.getpCCcode() != null) {
             SET("PCCcode = #{pCCcode,jdbcType=VARCHAR}");
-        }
-        
-        if (record.getWechatHeadImgUrl() != null) {
-            SET("WechatHeadImgUrl = #{wechatHeadImgUrl,jdbcType=VARCHAR}");
         }
         
         if (record.getMemberType() != null) {

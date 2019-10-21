@@ -16,7 +16,7 @@ import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 import com.jgw.supercodeplatform.marketing.vo.coupon.CouponPageVo;
 import com.jgw.supercodeplatform.marketing.vo.coupon.CouponVerifyVo;
 
-@Mapper
+//@Mapper
 public interface MarketingMemberCouponMapperExt extends MarketingMemberCouponMapper {
 	
 	String allFields = "mmc.Id, mmc.MemberId memberId, mmc.CouponId couponId, mmc.CouponCode couponCode,mmc.CouponAmount couponAmount, mmc.MemberPhone memberPhone, mmc.ProductId productId, mmc.ProductBatchId productBatchId,"+

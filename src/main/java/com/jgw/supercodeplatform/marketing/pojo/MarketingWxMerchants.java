@@ -14,6 +14,7 @@ public class MarketingWxMerchants {
     private String merchantSecret;//公众号secret微信授权获取token时需要用到
     private byte merchantType;
     private byte belongToJgw;
+    private byte defaultUse;
 
     public String getId() {
 		return id;
@@ -110,5 +111,13 @@ public class MarketingWxMerchants {
 
     public byte getMerchantType() {
         return merchantType;
+    }
+
+    public void setDefaultUse(byte defaultUse) {
+        this.defaultUse = defaultUse;
+    }
+
+    public byte getDefaultUse() {
+        return defaultUse;
     }
 }

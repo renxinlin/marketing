@@ -84,7 +84,7 @@ public class WeixinSNBindController extends CommonUtil {
 			return RestResult.fail(collect.toString(), null);
 		}
 		// 新增还是更新基于数据库是否存在
-		MarketingWxMerchants marketingWxMerchants = marketingWxMerchantsService.selectByOrganizationId(organizationId);
+		MarketingWxMerchants marketingWxMerchants = marketingWxMerchantsService.selectByOrganizationId(organizationId, wxMerchantsParam.getMchAppid());
 		// 补充组织参数
 		wxMerchantsParam.setOrganizationId(organizationId);
 		wxMerchantsParam.setOrganizatioIdlName(getOrganization().getOrganizationFullName());
