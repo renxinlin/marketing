@@ -32,7 +32,7 @@ public class BuryPointOuterChainTc implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(value = "Id", type = IdType.AUTO)
+    @TableId(value = "Id", type = IdType.ID_WORKER)
     private Long id;
 
     /**
