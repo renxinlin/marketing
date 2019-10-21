@@ -9,9 +9,7 @@ import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonContr
 import com.jgw.supercodeplatform.marketingsaler.base.exception.CommonException;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralStatus;
-import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormDto;
-import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingDto;
-import com.jgw.supercodeplatform.marketingsaler.order.dto.SalerOrderFormSettingListDto;
+import com.jgw.supercodeplatform.marketingsaler.order.dto.*;
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.service.SalerOrderFormService;
 import io.swagger.annotations.Api;
@@ -121,6 +119,47 @@ public class SalerOrderFormController extends SalerCommonController {
 
         }
 
+    }
+
+
+
+    @PostMapping("/saveOrder")
+    @ApiOperation(value = "10月21需求 修改更新订单", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult updateOrder(@Valid @RequestBody ColumnnameAndValueListDto columnnameAndValueListDto) throws SuperCodeException {
+
+        service.updateOrder(columnnameAndValueListDto.getDatas());
+        return success();
+    }
+
+
+    @GetMapping("/updateStatus")
+    @ApiOperation(value = "10月21需求 更新状态0未发货1发货", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult updateStatus(@RequestParam Long id,@RequestParam byte status) throws SuperCodeException {
+        service.updateStatus(id,status);
+        return success();
+    }
+
+
+    @GetMapping("/delete")
+    @ApiOperation(value = "10月21需求 删除订单", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult delete(@RequestParam Long id) throws SuperCodeException {
+        service.delete(id);
+        return success();
+    }
+
+
+
+
+    @PostMapping("/saveOrder")
+    @ApiOperation(value = "10月21需求新增订单", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult saveOrder(@Valid @RequestBody ColumnnameAndValueListDto columnnameAndValueListDto) throws SuperCodeException {
+
+        service.saveOrder(columnnameAndValueListDto.getDatas());
+        return success();
     }
 
 
