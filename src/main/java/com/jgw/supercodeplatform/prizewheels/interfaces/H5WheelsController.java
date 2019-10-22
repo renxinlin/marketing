@@ -74,7 +74,7 @@ public class H5WheelsController extends SalerCommonController {
     @PostMapping("/setAdddress")
     @ApiOperation(value = "实物领奖地址", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult setAdddress(@RequestBody @Valid PrizeWheelsOrderDto prizeWheelsOrderDto,H5LoginVO user) {
+    public RestResult setAdddress(@RequestBody @Valid PrizeWheelsOrderDto prizeWheelsOrderDto,@ApiIgnore H5LoginVO user) {
         application.setAdddress(prizeWheelsOrderDto, user);
         return success( );
     }
