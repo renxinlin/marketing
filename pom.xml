@@ -114,12 +114,12 @@
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-boot-starter</artifactId>
-			<version>3.1.2</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-generator</artifactId>
-			<version>3.1.2</version>
+			<version>3.1.1</version>
 		</dependency>
 		<!-- 模板引擎 -->
 		<dependency>

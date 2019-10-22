@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.burypoint.prizewheels.controller;
 
+import com.jgw.supercodeplatform.burypoint.prizewheels.service.get.BuryPointDataGetService;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+
 /**
  * @author fangshiping
  * @date 2019/10/17 11:32
@@ -23,23 +26,35 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "获取大转盘各类埋点数据")
 public class BuryPointDataGetController extends SalerCommonController {
     private Logger logger = LoggerFactory.getLogger(BuryPointDataGetController.class);
+
     @Autowired
-    private RedisUtil redisUtil;
+    private BuryPointDataGetService buryPointDataGetService;
 
-    //外链埋点统一前缀
-    private String buryPointOuterChain= "strom:marketing:outUrl:";
-
-    @GetMapping(value = "/getOuterChainNum")
-    @ApiOperation(value = "获取B端配置外链埋点数据")
+    @GetMapping(value = "/getPvAll")
+    @ApiOperation(value = "获取总Pv")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult buryPointOuterChainTc(@RequestParam(value = "key") String key){
-        String result= null;
-        try {
-            result = redisUtil.get(buryPointOuterChain+key);
-        } catch (Exception e) {
-            logger.info("查询B端配置外链埋点数据出错----");
-            e.printStackTrace();
-        }
-        return success(result);
+    public RestResult<String> getPvAll(){
+        return success(buryPointDataGetService.getPvAll());
+    }
+
+    @GetMapping(value = "/getPvDay")
+    @ApiOperation(value = "获取每天Pv")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<HashMap> getPvDay(){
+        return success(buryPointDataGetService.getPvDay());
+    }
+
+    @GetMapping(value = "/getUvAll")
+    @ApiOperation(value = "获取总Uv")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<String> getUvAll(){
+        return success(buryPointDataGetService.getUvAll());
+    }
+
+    @GetMapping(value = "/getUvDay")
+    @ApiOperation(value = "获取每天Uv")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<HashMap> getUvDay(){
+        return success(buryPointDataGetService.getUvDay());
     }
 }

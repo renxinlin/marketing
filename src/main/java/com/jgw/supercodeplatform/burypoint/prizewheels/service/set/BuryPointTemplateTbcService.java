@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.burypoint.prizewheels.service;
+package com.jgw.supercodeplatform.burypoint.prizewheels.service.set;
 
 import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointTemplateTbcMapper;
 import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointTemplateTbc;
