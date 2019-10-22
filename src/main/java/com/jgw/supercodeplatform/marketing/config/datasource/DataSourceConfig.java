@@ -2,7 +2,10 @@ package com.jgw.supercodeplatform.marketing.config.datasource;
 
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import org.apache.ibatis.plugin.Interceptor;
@@ -69,7 +72,7 @@ public class DataSourceConfig {
 	 * @throws Exception
 	 */
 	@Bean
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource) throws Exception {
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource, @Qualifier("globalConfig")GlobalConfig globalConfig) throws Exception {
 //        SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
 //        factoryBean.setDataSource(dataSource);
 //        return factoryBean.getObject();
@@ -77,6 +80,8 @@ public class DataSourceConfig {
 		factory.setDataSource(dataSource);
 		factory.setPlugins(new Interceptor[]{paginationInterceptor});
 		MybatisConfiguration mybatisConfiguration = new MybatisConfiguration();
+		mybatisConfiguration.setMapUnderscoreToCamelCase(false);
+		mybatisConfiguration.setGlobalConfig(globalConfig);
 		factory.setConfiguration(mybatisConfiguration);
 		return factory.getObject();
     }
@@ -90,8 +95,8 @@ public class DataSourceConfig {
 	 * @throws Exception
 	 */
     @Bean
-    public SqlSessionTemplate sqlSessionTemplate1(@Qualifier("dataSource") DataSource dataSource) throws Exception {
-        SqlSessionTemplate template = new SqlSessionTemplate(sqlSessionFactory(dataSource));
+    public SqlSessionTemplate sqlSessionTemplate1(@Qualifier("dataSource") DataSource dataSource, @Qualifier("globalConfig")GlobalConfig globalConfig) throws Exception {
+        SqlSessionTemplate template = new SqlSessionTemplate(sqlSessionFactory(dataSource, globalConfig));
         return template;
     }
 
@@ -99,6 +104,17 @@ public class DataSourceConfig {
     public PlatformTransactionManager fakeTransactionManager(@Qualifier("dataSource") DataSource prodDataSource) {
         return new DataSourceTransactionManager(prodDataSource);
     }
-     
+
+
+	@Bean
+	public GlobalConfig globalConfig() {
+		GlobalConfig globalConfig = new GlobalConfig();
+		globalConfig.setBanner(false);
+		GlobalConfig.DbConfig dbConfig = new GlobalConfig.DbConfig();
+		dbConfig.setIdType(IdType.AUTO);
+		dbConfig.setFieldStrategy(FieldStrategy.NOT_NULL);
+		globalConfig.setDbConfig(dbConfig);
+		return globalConfig;
+	}
 
 }
