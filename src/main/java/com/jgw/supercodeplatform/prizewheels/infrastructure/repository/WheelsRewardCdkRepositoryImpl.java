@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CdkStatus;
+import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardCdkRepository;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsRewardCdkMapper;
@@ -14,6 +15,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class WheelsRewardCdkRepositoryImpl implements WheelsRewardCdkRepository {
@@ -55,5 +59,14 @@ public class WheelsRewardCdkRepositoryImpl implements WheelsRewardCdkRepository 
         }
 
         throw new RuntimeException("活动cdk已经被领完");
+    }
+
+    @Override
+    public void deleteOldCdk(List<WheelsReward> oldwheelsRewards) {
+        QueryWrapper<WheelsRewardCdkPojo> deleteWrapper = new QueryWrapper<>();
+        List<Long> rewardIds = oldwheelsRewards.stream().map(WheelsReward::getId).collect(Collectors.toList());
+        deleteWrapper.in("prizeRewardId" ,rewardIds );
+        wheelsRewardCdkMapper.delete(deleteWrapper);
+
     }
 }
