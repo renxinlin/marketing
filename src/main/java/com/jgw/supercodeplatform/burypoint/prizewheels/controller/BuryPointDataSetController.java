@@ -4,7 +4,7 @@ import com.jgw.supercodeplatform.burypoint.prizewheels.dto.outerchain.BuryPointO
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointRewardTbcDto;
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointWheelsClickTcDto;
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward.BuryPointWxMerchantsTcDto;
-import com.jgw.supercodeplatform.burypoint.prizewheels.service.*;
+import com.jgw.supercodeplatform.burypoint.prizewheels.service.set.*;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
@@ -23,7 +23,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("marketing/buryPoint/prizeWheels/")
 @Api(tags = "大转盘埋点")
-public class BuryPointController extends SalerCommonController {
+public class BuryPointDataSetController extends SalerCommonController {
     @Autowired
     private BuryPointOuterChainTcService buryPointOuterChainTcService;
 

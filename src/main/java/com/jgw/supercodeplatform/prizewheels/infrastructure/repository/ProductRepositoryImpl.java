@@ -41,7 +41,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         QueryWrapper<ProductPojo> wrapper = new QueryWrapper<>();
         wrapper.in("ProductBatchId",productBatchIds);
         productMapper.delete(wrapper);
-        // 删除这个活动之前选择,此次没有选择的
+        // 更新时删除这个活动之前选择,此次没有选择的
         deleteByPrizeWheelsId(products.get(0).getActivitySetId());
 
         List<ProductPojo> productPojos = productPojoTransfer.transferProductsToPojos(products);
