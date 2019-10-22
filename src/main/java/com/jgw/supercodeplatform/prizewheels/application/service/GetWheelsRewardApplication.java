@@ -94,7 +94,7 @@ public class GetWheelsRewardApplication {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public WheelsRewardCdk reward(PrizeWheelsRewardDto prizeWheelsRewardDto, H5LoginVO user) {
+    public H5RewardInfo reward(PrizeWheelsRewardDto prizeWheelsRewardDto, H5LoginVO user) {
         String outerCodeId = prizeWheelsRewardDto.getOuterCodeId();
         boolean acquireLock = false;
         try {
@@ -134,7 +134,7 @@ public class GetWheelsRewardApplication {
             WheelsReward finalReward = probabilityCalculator.calculator();
 
             // 领取奖励
-            WheelsRewardCdk reward = wheelsRewardDomainService.getReward(finalReward, user, outerCodeId, codeTypeId, id);
+            H5RewardInfo reward = wheelsRewardDomainService.getReward(finalReward, user, outerCodeId, codeTypeId, id);
 
 
             return reward;

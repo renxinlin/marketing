@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.prizewheels.domain.service;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
+import com.jgw.supercodeplatform.prizewheels.domain.model.H5RewardInfo;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRecord;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
@@ -100,7 +101,7 @@ public class WheelsRewardDomainService {
      * @param outerCodeId
      * @param codeTypeId
      */
-    public WheelsRewardCdk getReward(WheelsReward finalReward, H5LoginVO user, String outerCodeId, String codeTypeId,Long prizeWheelsId) {
+    public H5RewardInfo getReward(WheelsReward finalReward, H5LoginVO user, String outerCodeId, String codeTypeId,Long prizeWheelsId) {
         // 领取成功 cdk - 1 领取记录
         if(finalReward.getType().intValue() == RewardTypeConstant.virtual){
             WheelsRewardCdk cdkWhenH5Reward = wheelsRewardCdkRepository.getCdkWhenH5Reward(prizeWheelsId);
@@ -115,12 +116,17 @@ public class WheelsRewardDomainService {
             wheelsRecord.setUserName(user.getMemberName());
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
-            return cdkWhenH5Reward;
+            H5RewardInfo rewardInfo = new H5RewardInfo();
+            rewardInfo.initVirtualRewardInfo(finalReward.getPicture(),cdkWhenH5Reward.getCdk());
+            return rewardInfo;
 
         }
 
         if(finalReward.getType().intValue() == RewardTypeConstant.real){
-            throw new RuntimeException("系统暂不支持实物");
+            H5RewardInfo rewardInfo = new H5RewardInfo();
+            rewardInfo.initRealReward(finalReward.getPicture(),finalReward.getName());
+            return rewardInfo;
+
 
         }
 
