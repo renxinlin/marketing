@@ -79,6 +79,8 @@ public class WheelsPublishAppication {
     private ActivitySetRepository activitySetRepository;
 
 
+    @Autowired
+    private WheelsRewardCdkRepository wheelsRewardCdkRepository;
 
     /**
      * 新增大转盘活动
@@ -168,13 +170,15 @@ public class WheelsPublishAppication {
         wheels.checkWhenUpdate();
 
         // 2 奖励  返回主键
+        List<WheelsReward> oldwheelsRewards = wheelsRewardRepository.getDomainByPrizeWheelsId(prizeWheelsid);
+
         wheelsRewardDomainService.checkWhenUpdate(wheelsRewards);
         wheelsRewardRepository.deleteByPrizeWheelsId(prizeWheelsid);
         wheelsRewardRepository.batchSave(wheelsRewards);
 
-        // 2-1 cdk 领域事件 奖品与cdk绑定
+        // 2-1 cdk 领域事件 奖品与cdk绑定 旧的cdk删除
+        wheelsRewardCdkRepository.deleteOldCdk(oldwheelsRewards);
         wheelsRewardDomainService.cdkEventCommitedWhenNecessary(wheelsRewards);
-
         // 3 码管理业务
         // 3-1 获取生码批次
         products = productDomainService.initSbatchIds(products);

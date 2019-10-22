@@ -1,6 +1,8 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,10 +24,10 @@ import java.util.Date;
 @Accessors(chain = true)
 @TableName("marketing_activity_prize_wheels_record")
 public class WheelsRecordPojo implements Serializable {
-
-
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @TableField("mobile")
     private String mobile;
 
     @TableField("userId")
