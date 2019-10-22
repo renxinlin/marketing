@@ -86,7 +86,7 @@ public class CommonController extends CommonUtil {
     	logger.info("签名信息,organizationId="+organizationId+",url="+url);
     	MarketingWxMerchants mWxMerchants=marketingWxMerchantsService.selectByOrganizationId(organizationId);
     	if (null==mWxMerchants) {
-           throw new SuperCodeException("无法获取商户公众号信息", 500);
+            mWxMerchants = marketingWxMerchantsService.getJgw();
 		}
     	String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), organizationId);
         // TODO 测试

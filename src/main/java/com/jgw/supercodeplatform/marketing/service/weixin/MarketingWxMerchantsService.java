@@ -94,9 +94,6 @@ public class MarketingWxMerchantsService {
 	public MarketingWxMerchants get(String organizationId){
 		QueryWrapper<MarketingWxMerchants> queryWrapper = Wrappers.<MarketingWxMerchants>query().eq("OrganizationId", organizationId).eq("DefaultUse", 1);
 		MarketingWxMerchants mWxMerchants=dao.selectOne(queryWrapper);
-		if (null==mWxMerchants) {
-			mWxMerchants=dao.selectDefault();
-		}
 		return mWxMerchants;
 	}
 
