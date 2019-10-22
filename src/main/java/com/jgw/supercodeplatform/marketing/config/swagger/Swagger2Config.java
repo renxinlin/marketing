@@ -234,6 +234,18 @@ public class Swagger2Config {
                 .enable(enable);
     }
 
+    @Bean("签到埋点")
+    public Docket signinBuryPoint() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("签到埋点")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.burypoint.signin.controller"))
+                .paths(PathSelectors.any())
+                .build()
+                .apiInfo(apiInfo())
+                .enable(enable);
+    }
+
 
 
 

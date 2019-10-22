@@ -1,7 +1,7 @@
-package com.jgw.supercodeplatform.burypoint.prizewheels.service;
+package com.jgw.supercodeplatform.burypoint.signin.service;
 
-import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointWxMerchantsTbMapper;
-import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointWxMerchantsTb;
+import com.jgw.supercodeplatform.burypoint.signin.mapper.SignBuryPointWxMerchantsTbMapper;
+import com.jgw.supercodeplatform.burypoint.signin.model.BuryPointWxMerchantsTb;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,9 @@ import java.util.Date;
  * @date 2019/10/18 16:10
  */
 @Service
-public class BuryPointWxMerchantsTbService {
+public class SignBuryPointWxMerchantsTbService {
     @Autowired
-    private BuryPointWxMerchantsTbMapper buryPointWxMerchantsTbMapper;
+    private SignBuryPointWxMerchantsTbMapper signBuryPointWxMerchantsTbMapper;
     
     public void buryPointWxMerchantsTb(String wxPicture, H5LoginVO user){
         BuryPointWxMerchantsTb buryPointWxMerchantsTb=new BuryPointWxMerchantsTb();
@@ -26,7 +26,7 @@ public class BuryPointWxMerchantsTbService {
         buryPointWxMerchantsTb.setOrganizationName(user.getOrganizationName());
         buryPointWxMerchantsTb.setWxPicture(wxPicture);
         try {
-            buryPointWxMerchantsTbMapper.insert(buryPointWxMerchantsTb);
+            signBuryPointWxMerchantsTbMapper.insert(buryPointWxMerchantsTb);
         } catch (Exception e) {
             e.printStackTrace();
         }

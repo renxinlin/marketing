@@ -1,7 +1,7 @@
-package com.jgw.supercodeplatform.burypoint.prizewheels.service;
+package com.jgw.supercodeplatform.burypoint.signin.service;
 
-import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointTemplateTbcMapper;
-import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointTemplateTbc;
+import com.jgw.supercodeplatform.burypoint.signin.mapper.SignBuryPointTemplateTbcMapper;
+import com.jgw.supercodeplatform.burypoint.signin.model.BuryPointTemplateTbc;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,9 +13,9 @@ import java.util.Date;
  * @date 2019/10/18 15:30
  */
 @Service
-public class BuryPointTemplateTbcService {
+public class SignBuryPointTemplateTbcService {
     @Autowired
-    private BuryPointTemplateTbcMapper buryPointTemplateTbcMapper;
+    private SignBuryPointTemplateTbcMapper signBuryPointTemplateTbcMapper;
 
     public void buryPointTemplateTbc(String templateId, H5LoginVO user){
         BuryPointTemplateTbc buryPointTemplateTbc=new BuryPointTemplateTbc();
@@ -26,7 +26,7 @@ public class BuryPointTemplateTbcService {
         buryPointTemplateTbc.setOrganizationName(user.getOrganizationName());
         buryPointTemplateTbc.setTemplateId(templateId);
         try{
-            buryPointTemplateTbcMapper.insert(buryPointTemplateTbc);
+            signBuryPointTemplateTbcMapper.insert(buryPointTemplateTbc);
         }catch (Exception e) {
             e.printStackTrace();
         }
