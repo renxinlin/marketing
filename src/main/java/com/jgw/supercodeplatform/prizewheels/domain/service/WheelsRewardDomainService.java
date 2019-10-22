@@ -123,6 +123,17 @@ public class WheelsRewardDomainService {
         }
 
         if(finalReward.getType().intValue() == RewardTypeConstant.real){
+            // TODO initRealReward() 替代
+            WheelsRecord wheelsRecord = new WheelsRecord();
+            wheelsRecord.setCreateTime(new Date());
+            wheelsRecord.setMobile(user.getMobile());
+            wheelsRecord.setRewardName(finalReward.getName());
+            wheelsRecord.setType(RewardTypeConstant.real);
+            wheelsRecord.setUserId(user.getMemberId()+"");
+            wheelsRecord.setUserName(user.getMemberName());
+            recordRepository.newRecordWhenH5Reward(wheelsRecord);
+
+
             H5RewardInfo rewardInfo = new H5RewardInfo();
             rewardInfo.initRealReward(finalReward.getPicture(),finalReward.getName());
             return rewardInfo;

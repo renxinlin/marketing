@@ -10,6 +10,7 @@ import com.jgw.supercodeplatform.prizewheels.application.service.GetWheelsReward
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.H5RewardInfo;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsOrderDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import io.swagger.annotations.Api;
@@ -67,6 +68,15 @@ public class H5WheelsController extends SalerCommonController {
     public RestResult detail(@RequestParam String productBatchId) {
         WheelsDetailsVo wheelsDetailsVO = application.detail(productBatchId);
         return success(wheelsDetailsVO);
+    }
+
+    @ResponseBody
+    @PostMapping("/setAdddress")
+    @ApiOperation(value = "实物领奖地址", notes = "")
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult setAdddress(@RequestBody @Valid PrizeWheelsOrderDto prizeWheelsOrderDto,H5LoginVO user) {
+        application.setAdddress(prizeWheelsOrderDto, user);
+        return success( );
     }
 
 

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.prizewheels.application.transfer.PrizeWheelsOrderTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsRewardTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsTransfer;
@@ -11,10 +12,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.constants.LoseAwardConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.event.ScanRecordWhenRewardEvent;
 import com.jgw.supercodeplatform.prizewheels.domain.model.*;
 import com.jgw.supercodeplatform.prizewheels.domain.publisher.ScanRecordWhenRewardPublisher;
-import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
-import com.jgw.supercodeplatform.prizewheels.domain.repository.ScanRecordRepository;
-import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsPublishRepository;
-import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.*;
 import com.jgw.supercodeplatform.prizewheels.domain.service.CodeDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
 import com.jgw.supercodeplatform.prizewheels.domain.service.WheelsRewardDomainService;
@@ -22,6 +20,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.subscribers.ScanRecordWhenRe
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ProductPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardPojo;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsOrderDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsRewardDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductUpdateDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsRewardUpdateDto;
@@ -50,6 +49,9 @@ public class GetWheelsRewardApplication {
     private WheelsTransfer wheelsTransfer;
     @Autowired
     private ProductTransfer productTransfer;
+
+    @Autowired
+    private PrizeWheelsOrderTransfer prizeWheelsOrderTransfer;
 
     @Autowired
     private WheelsRewardTransfer wheelsRewardTransfer;
@@ -82,6 +84,8 @@ public class GetWheelsRewardApplication {
     @Autowired
     private ScanRecordWhenRewardSubscriber scanRecordWhenRewardSubscriber;
 
+    @Autowired
+    private PrizeWheelsOrderRepository prizeWheelsOrderRepository;
 
     @Autowired
     private RedisLockUtil lock;
@@ -197,4 +201,12 @@ public class GetWheelsRewardApplication {
         wheelsDetailsVo.setLoseAwardProbability(notwheelsRewardPojo.getProbability());
         return wheelsDetailsVo;
     }
+
+    public void setAdddress(PrizeWheelsOrderDto prizeWheelsOrderDto,H5LoginVO user) {
+        PrizeWheelsOrder prizeWheelsOrder = prizeWheelsOrderTransfer.tranferToDomain(prizeWheelsOrderDto);
+        prizeWheelsOrder.initRealRewardInfo(user.getMemberId(),user.getMobile(),user.getMemberName(),user.getOrganizationId(),user.getOrganizationName());
+        prizeWheelsOrderRepository.addOrder(prizeWheelsOrder);
+
+    }
+
 }

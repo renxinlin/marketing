@@ -37,15 +37,12 @@ public class WheelsRecord implements Serializable {
     /**
      * 1虚拟2 实物
      */
-    private byte type = RewardTypeConstant.virtual;
+    private byte type  ;
 
     private String address;
 
     private Date createTime;
 
-    public void changeRecordTypeToGift(){
-        type = RewardTypeConstant.real;
-    }
 
 
 }
