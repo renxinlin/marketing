@@ -45,14 +45,15 @@ public class H5WheelsController extends SalerCommonController {
 
     @GetMapping("/redrict")
     @ApiOperation(value = "大转盘码管理重定向", notes = "")
-    public String reward(String productBatchId, String outerCodeId, String codeTypeId)   {
+    public String reward(String productBatchId, String outerCodeId, String codeTypeId,String organizationId)   {
         // 扫码重定向到前端 基于产品批次找到活动 TODO 码管理直接重定向到前端
         String url = "redirect:"
                 + CallBackConstant.TO_WEB_URL
                 + "?productBatchId="+productBatchId
                 + "&outerCodeId="+outerCodeId
                 + "&codeTypeId="+codeTypeId
-                + "&template=10" ; // 业务标志字段
+                + "&template=10"  // 业务标志字段
+                 + "&organizationId="+organizationId ; //  组织字段
         log.info("==> 大转盘扫码重定向到前端{} ",url);
         return url;
     }
