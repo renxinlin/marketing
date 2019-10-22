@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -24,7 +25,7 @@ import java.io.Serializable;
 public class WheelsRewardPojo implements Serializable {
 
 
-    @TableId("Id")
+    @TableId(value = "Id", type = IdType.AUTO)
     private Long id;
 
     @TableField("PrizeWheelId")
