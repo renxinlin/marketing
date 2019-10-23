@@ -17,8 +17,8 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@TableName("marketing_prizewheels_bury_point_template_tbc")
-public class BuryPointTemplateTbc {
+@TableName("marketing_prizewheels_bury_point_template_tc")
+public class BuryPointTemplateTc {
     /**
      * 主键ID
      */
