@@ -31,7 +31,7 @@ public class BuryPointDataSetController extends SalerCommonController {
     private BuryPointRewardTbcService buryPointRewardTbcService;
 
     @Autowired
-    private BuryPointTemplateTbcService buryPointTemplateTbcService;
+    private BuryPointTemplateTbService buryPointTemplateTbService;
 
     @Autowired
     private BuryPointWxMerchantsTcService buryPointWxMerchantsTcService;
@@ -41,6 +41,9 @@ public class BuryPointDataSetController extends SalerCommonController {
 
     @Autowired
     private BuryPointPageViewTcService buryPointPageViewTcService;
+
+    @Autowired
+    private BuryPointTemplateTcService buryPointTemplateTcService;
 
     @PostMapping(value = "/addOuterChain")
     @ApiOperation(value = "插入C端点击外链埋点数据")
@@ -66,11 +69,19 @@ public class BuryPointDataSetController extends SalerCommonController {
         return success();
     }
 
-    @PostMapping(value = "/addTemplate")
-    @ApiOperation(value = "插入模板使用相关埋点数据")
+    @PostMapping(value = "/addBTemplate")
+    @ApiOperation(value = "B端配置模板相关埋点数据")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult buryPointTemplateTbc(@RequestParam String templateId,@ApiIgnore H5LoginVO user){
-        buryPointTemplateTbcService.buryPointTemplateTbc(templateId,user);
+        buryPointTemplateTbService.buryPointTemplateTb(templateId,user);
+        return success();
+    }
+
+    @PostMapping(value = "/addCTemplate")
+    @ApiOperation(value = "C端扫描模板相关埋点数据")
+    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointTemplateTc(@RequestParam String templateId,@ApiIgnore H5LoginVO user){
+        buryPointTemplateTcService.buryPointTemplateTc(templateId,user);
         return success();
     }
 
