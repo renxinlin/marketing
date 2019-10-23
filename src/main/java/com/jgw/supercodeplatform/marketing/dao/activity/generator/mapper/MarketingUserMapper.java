@@ -61,8 +61,6 @@ public interface MarketingUserMapper {
     })
     @Results({
         @Result(column="Id", property="id", jdbcType=JdbcType.BIGINT, id=true),
-        @Result(column="WxName", property="wxName", jdbcType=JdbcType.VARCHAR),
-        @Result(column="Openid", property="openid", jdbcType=JdbcType.VARCHAR),
         @Result(column="Mobile", property="mobile", jdbcType=JdbcType.VARCHAR),
         @Result(column="UserId", property="userId", jdbcType=JdbcType.VARCHAR),
         @Result(column="UserName", property="userName", jdbcType=JdbcType.VARCHAR),
@@ -80,7 +78,6 @@ public interface MarketingUserMapper {
         @Result(column="CustomerName", property="customerName", jdbcType=JdbcType.VARCHAR),
         @Result(column="CustomerId", property="customerId", jdbcType=JdbcType.VARCHAR),
         @Result(column="PCCcode", property="pCCcode", jdbcType=JdbcType.VARCHAR),
-        @Result(column="WechatHeadImgUrl", property="wechatHeadImgUrl", jdbcType=JdbcType.VARCHAR),
         @Result(column="MemberType", property="memberType", jdbcType=JdbcType.TINYINT),
         @Result(column="State", property="state", jdbcType=JdbcType.TINYINT),
         @Result(column="DeviceType", property="deviceType", jdbcType=JdbcType.TINYINT),
@@ -106,15 +103,14 @@ public interface MarketingUserMapper {
             + " <if test='sex !=null'> Sex = #{sex} ,</if> "
             + " <if test='birthday !=null and birthday != &apos;&apos; '> Birthday = #{birthday} ,</if> "
             + " <if test='pCCcode !=null and pCCcode != &apos;&apos; '> PCCcode = #{pCCcode} ,</if> "
-            + " <if test='pCCcode !=null'> CountyCode = #{countyCode} ,</if> "
-            + " <if test='pCCcode !=null'> CityCode = #{cityCode} ,</if> "
-            + " <if test='pCCcode !=null'> ProvinceCode = #{provinceCode} ,</if> "
-            + " <if test='pCCcode !=null'> CountyName = #{countyName} ,</if> "
-            + " <if test='pCCcode !=null'> CityName = #{cityName} ,</if> "
-            + " <if test='pCCcode !=null'> ProvinceName = #{provinceName} ,</if> "
+            + " <if test='countyCode !=null'> CountyCode = #{countyCode} ,</if> "
+            + " <if test='cityCode !=null'> CityCode = #{cityCode} ,</if> "
+            + " <if test='provinceCode !=null'> ProvinceCode = #{provinceCode} ,</if> "
+            + " <if test='countyName !=null'> CountyName = #{countyName} ,</if> "
+            + " <if test='cityName !=null'> CityName = #{cityName} ,</if> "
+            + " <if test='provinceName !=null'> ProvinceName = #{provinceName} ,</if> "
             + " <if test='customerName !=null and customerName != &apos;&apos; '> CustomerName = #{customerName} ,</if> "
             + " <if test='customerId !=null and customerId != &apos;&apos; '> CustomerId = #{customerId} ,</if> "
-            + " <if test='wechatHeadImgUrl !=null and wechatHeadImgUrl != &apos;&apos; '> WechatHeadImgUrl = #{wechatHeadImgUrl} ,</if> "
             + " <if test='memberType !=null  '> MemberType = #{memberType} ,</if> "
             + " <if test='state !=null  '> State = #{state} ,</if> "
             + " <if test='deviceType !=null '> DeviceType = #{deviceType} ,</if> "
@@ -126,35 +122,5 @@ public interface MarketingUserMapper {
             + " </where>"
             + " </script>")
     int updateByPrimaryKeySelectiveWithBiz(MarketingUser record);
-
-    @Update({
-        "update marketing_user",
-        "set WxName = #{wxName,jdbcType=VARCHAR},",
-          "Openid = #{openid,jdbcType=VARCHAR},",
-          "Mobile = #{mobile,jdbcType=VARCHAR},",
-          "UserId = #{userId,jdbcType=VARCHAR},",
-          "UserName = #{userName,jdbcType=VARCHAR},",
-          "Sex = #{sex,jdbcType=VARCHAR},",
-          "Birthday = #{birthday,jdbcType=TIMESTAMP},",
-          "PCCcode = #{pCCcode,jdbcType=VARCHAR},",
-          "ProvinceCode = #{provinceCode,jdbcType=VARCHAR},",
-          "CountyCode = #{countyCode,jdbcType=VARCHAR},",
-          "CityCode = #{cityCode,jdbcType=VARCHAR},",
-          "ProvinceName = #{provinceName,jdbcType=VARCHAR},",
-          "CountyName = #{countyName,jdbcType=VARCHAR},",
-          "CityName = #{cityName,jdbcType=VARCHAR},",
-          "OrganizationId = #{organizationId,jdbcType=VARCHAR},",
-          "CreateDate = #{createDate,jdbcType=TIMESTAMP},",
-          "UpdateDate = #{updateDate,jdbcType=TIMESTAMP},",
-          "CustomerName = #{customerName,jdbcType=VARCHAR},",
-          "CustomerId = #{customerId,jdbcType=VARCHAR},",
-          "WechatHeadImgUrl = #{wechatHeadImgUrl,jdbcType=VARCHAR},",
-          "MemberType = #{memberType,jdbcType=TINYINT},",
-          "State = #{state,jdbcType=TINYINT},",
-          "DeviceType = #{deviceType,jdbcType=TINYINT},",
-          "HaveIntegral = #{haveIntegral,jdbcType=INTEGER}",
-        "where Id = #{id,jdbcType=BIGINT}"
-    })
-    int updateByPrimaryKey(MarketingUser record);
 
 }

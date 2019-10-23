@@ -12,8 +12,10 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.dto.WxSignPram;
 import com.jgw.supercodeplatform.marketing.vo.activity.WxSignVo;
+import com.jgw.supercodeplatform.marketing.vo.common.WxMerchants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +88,7 @@ public class CommonController extends CommonUtil {
     	logger.info("签名信息,organizationId="+organizationId+",url="+url);
     	MarketingWxMerchants mWxMerchants=marketingWxMerchantsService.selectByOrganizationId(organizationId);
     	if (null==mWxMerchants) {
-           throw new SuperCodeException("无法获取商户公众号信息", 500);
+            mWxMerchants = marketingWxMerchantsService.getJgw();
 		}
     	String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), organizationId);
         // TODO 测试
@@ -162,6 +164,21 @@ public class CommonController extends CommonUtil {
         wxSignVo.setSignature(signature);
         wxSignVo.setTimestamp(timestamp + "");
         return RestResult.successWithData(wxSignVo);
+    }
+
+    @GetMapping("/wxMerchants")
+    @ApiOperation("根据organizationId获取微信公众号信息")
+    public RestResult<WxMerchants> getWxMerchants(@RequestParam String organizationId) {
+        MarketingWxMerchants mWxMerchants = marketingWxMerchantsService.selectByOrganizationId(organizationId);
+        if (mWxMerchants == null ) {
+            throw new SuperCodeExtException("该组织对应的微信信息不存在");
+        }
+        if (mWxMerchants.getMerchantType() == 1) {
+            mWxMerchants = marketingWxMerchantsService.getJgw();
+        }
+        WxMerchants wxMerchants = new WxMerchants();
+        wxMerchants.setAppid(mWxMerchants.getMchAppid());
+        return RestResult.successWithData(wxMerchants);
     }
 
 }

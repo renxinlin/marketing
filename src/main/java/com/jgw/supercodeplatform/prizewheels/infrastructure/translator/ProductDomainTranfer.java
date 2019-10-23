@@ -67,7 +67,7 @@ public class ProductDomainTranfer {
             Arrays.asList(sbatchIds).forEach(sbatchId ->{
                 SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
                 sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
-                sbatchUrlDto.setBusinessType(ActivityTypeConstant.wheels);
+                sbatchUrlDto.initAllBusinessType();
                 sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
                 sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
                 list.add(sbatchUrlDto);

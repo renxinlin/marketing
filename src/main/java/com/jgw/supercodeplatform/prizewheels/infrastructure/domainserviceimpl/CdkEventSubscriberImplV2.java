@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl;
 
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.exception.base.ExcelException;
@@ -14,6 +15,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +52,12 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
         // 业务属性补充
         wheelsRewardCdkPojos = addOtherFields(wheelsRewardCdkPojos,cdkKey,cdkEvent.getPrizeRewardId());
         // 持久化
-        wheelsRewardCdkService.saveBatch(wheelsRewardCdkPojos);
+        try {
+            wheelsRewardCdkService.saveBatch(wheelsRewardCdkPojos);
+        } catch (PersistenceException e) {
+            e.printStackTrace();
+            throw new RuntimeException("cdk保存失败,excel格式错误或cdk重复");
+        }
 
 
     }

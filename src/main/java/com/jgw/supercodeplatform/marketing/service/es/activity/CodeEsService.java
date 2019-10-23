@@ -803,10 +803,11 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @return
 	 */
 	public List<PieChartVo> dayActivityStatistic(long timeStart, long timeEnd, Integer status){
+	    Long countSize = (timeEnd - timeStart)/(1000*60*60*24);
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
-		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).field("scanCodeDate");
+		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).field("scanCodeDate").size(countSize.intValue());
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
 		if (status != null) {
 			QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", status);

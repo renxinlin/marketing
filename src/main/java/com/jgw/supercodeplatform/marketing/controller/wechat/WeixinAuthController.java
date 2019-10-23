@@ -117,7 +117,7 @@ public class WeixinAuthController {
     	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
     	boolean needWriteJwtToken=false;
 
-
+		String appId = null;
 		String organizationName = null;
     	MemberWithWechat memberWithWechat=null;
     	//表示不是从扫码产品防伪码入口进入
@@ -134,6 +134,7 @@ public class WeixinAuthController {
 			}
     		organizationId=statearr[1];
     		userInfo=getUserInfo(code, organizationId,null);
+			appId = userInfo.getString("appId");
 			organizationName = userInfo.getString(organizationName);
     		openid=userInfo.getString("openid");
     		StringBuffer h5BUf=new StringBuffer();
@@ -164,6 +165,7 @@ public class WeixinAuthController {
 			openid=userInfo.getString("openid");
 			organizationName = userInfo.getString(organizationName);
 			organizationId=scanCodeInfoMO.getOrganizationId();
+			appId = userInfo.getString("appId");
 			//表示是从扫码产品防伪码入口进入
 			nickName=userInfo.getString("nickname");
 			scanCodeInfoMO.setOpenId(userInfo.getString("openid"));
@@ -182,6 +184,7 @@ public class WeixinAuthController {
 			memberWithWechat.setOpenid(openid);
 			memberWithWechat.setWxName(nickName);
 			memberWithWechat.setState((byte)2);
+			memberWithWechat.setAppid(appId);
 			memberWithWechat.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
 			memberWithWechat.setOrganizationId(organizationId);
 			memberWithWechat.setOrganizationFullName(organizationName);
@@ -301,6 +304,7 @@ public class WeixinAuthController {
 			if (userInfoBody.contains("subscribe")) {
 				JSONObject userObj=JSONObject.parseObject(userInfoBody);
 				userObj.put("organizationName", organizationName);
+				userObj.put("appId", appId);
                 return userObj;
 			}
 		}
@@ -510,6 +514,7 @@ public class WeixinAuthController {
 			marketingWxMember.setOpenid(userInfo.getString("openid"));
 			marketingWxMember.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
 			marketingWxMember.setWxName(userInfo.getString("nickname"));
+			marketingWxMember.setOrganizationId(organizationId);
 			marketingSaleMemberService.updateWxInfo(marketingWxMember);
 			// 说明用户存在,需要自动登录
 			logger.error("user =>{} define =>{}", userWithWechat.getState().intValue(),SaleUserStatus.ENABLE.getStatus().intValue());
