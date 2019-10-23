@@ -514,6 +514,7 @@ public class WeixinAuthController {
 			marketingWxMember.setOpenid(userInfo.getString("openid"));
 			marketingWxMember.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
 			marketingWxMember.setWxName(userInfo.getString("nickname"));
+			marketingWxMember.setOrganizationId(organizationId);
 			marketingSaleMemberService.updateWxInfo(marketingWxMember);
 			// 说明用户存在,需要自动登录
 			logger.error("user =>{} define =>{}", userWithWechat.getState().intValue(),SaleUserStatus.ENABLE.getStatus().intValue());
