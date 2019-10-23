@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoProductBatch;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class ProductDomainTranfer {
      * @param products
      * @return
      */
-    public List<SbatchUrlDto> tranferProductsToSbatchUrlDtos(List<Product> products) {
+    public List<SbatchUrlDto> tranferProductsToSbatchUrlDtosWhenBinding(List<Product> products) {
         log.info(" tranferProductsToSbatchUrlDtos(List<Product> products) {}",JSONObject.toJSONString(products));
         List<SbatchUrlDto> list = new ArrayList<>();
         products.forEach(product -> {
@@ -68,6 +69,24 @@ public class ProductDomainTranfer {
                 SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
                 sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
                 sbatchUrlDto.setBusinessType(ActivityTypeConstant.wheels);
+                sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+                sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+                list.add(sbatchUrlDto);
+            });
+        });
+        return list;
+    }
+
+
+    public List<SbatchUrlUnBindDto> tranferProductsToSbatchUrlDtosWhenUnBinding(List<Product> products) {
+        log.info(" tranferProductsToSbatchUrlDtos(List<Product> products) {}",JSONObject.toJSONString(products));
+        List<SbatchUrlUnBindDto> list = new ArrayList<>();
+        products.forEach(product -> {
+            String[] sbatchIds = product.getSbatchId().split(Product.SPLIT_SYMBOL);
+            Arrays.asList(sbatchIds).forEach(sbatchId ->{
+                SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+                sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
+                sbatchUrlDto.initAllBusinessType();
                 sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
                 sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
                 list.add(sbatchUrlDto);

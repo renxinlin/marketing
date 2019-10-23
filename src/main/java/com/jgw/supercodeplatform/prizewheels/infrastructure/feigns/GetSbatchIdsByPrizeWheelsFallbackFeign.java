@@ -4,6 +4,7 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class GetSbatchIdsByPrizeWheelsFallbackFeign implements GetSbatchIdsByPri
     }
 
     @Override
-    public RestResult<Object> removeOldProduct(List<SbatchUrlDto> sbatchUrlDtoList) {
+    public RestResult<Object> removeOldProduct(List<SbatchUrlUnBindDto> sbatchUrlDtoList) {
         log.error("removeOldProduct失败");
         return null;
     }
