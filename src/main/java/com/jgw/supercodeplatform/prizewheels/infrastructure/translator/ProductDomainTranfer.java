@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.GetBatchInfoProductBatch;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ public class ProductDomainTranfer {
             Arrays.asList(sbatchIds).forEach(sbatchId ->{
                 SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
                 sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
-                sbatchUrlDto.setBusinessTypes(new ArrayList<>(ActivityTypeConstant.wheels));
+                sbatchUrlDto.setBusinessType(ActivityTypeConstant.wheels);
                 sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
                 sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
                 list.add(sbatchUrlDto);
@@ -77,13 +78,13 @@ public class ProductDomainTranfer {
     }
 
 
-    public List<SbatchUrlDto> tranferProductsToSbatchUrlDtosWhenUnBinding(List<Product> products) {
+    public List<SbatchUrlUnBindDto> tranferProductsToSbatchUrlDtosWhenUnBinding(List<Product> products) {
         log.info(" tranferProductsToSbatchUrlDtos(List<Product> products) {}",JSONObject.toJSONString(products));
-        List<SbatchUrlDto> list = new ArrayList<>();
+        List<SbatchUrlUnBindDto> list = new ArrayList<>();
         products.forEach(product -> {
             String[] sbatchIds = product.getSbatchId().split(Product.SPLIT_SYMBOL);
             Arrays.asList(sbatchIds).forEach(sbatchId ->{
-                SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
+                SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
                 sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
                 sbatchUrlDto.initAllBusinessType();
                 sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
