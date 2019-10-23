@@ -59,7 +59,25 @@ public class ProductDomainTranfer {
      * @param products
      * @return
      */
-    public List<SbatchUrlDto> tranferProductsToSbatchUrlDtos(List<Product> products) {
+    public List<SbatchUrlDto> tranferProductsToSbatchUrlDtosWhenBinding(List<Product> products) {
+        log.info(" tranferProductsToSbatchUrlDtos(List<Product> products) {}",JSONObject.toJSONString(products));
+        List<SbatchUrlDto> list = new ArrayList<>();
+        products.forEach(product -> {
+            String[] sbatchIds = product.getSbatchId().split(Product.SPLIT_SYMBOL);
+            Arrays.asList(sbatchIds).forEach(sbatchId ->{
+                SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
+                sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
+                sbatchUrlDto.setBusinessTypes(new ArrayList<>(ActivityTypeConstant.wheels));
+                sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+                sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+                list.add(sbatchUrlDto);
+            });
+        });
+        return list;
+    }
+
+
+    public List<SbatchUrlDto> tranferProductsToSbatchUrlDtosWhenUnBinding(List<Product> products) {
         log.info(" tranferProductsToSbatchUrlDtos(List<Product> products) {}",JSONObject.toJSONString(products));
         List<SbatchUrlDto> list = new ArrayList<>();
         products.forEach(product -> {
