@@ -96,8 +96,6 @@ public interface MarketingUserMapper {
     @Update(" <script>"
             + " UPDATE marketing_user "
             + " <set>"
-            + " <if test='wxName !=null and wxName != &apos;&apos; '> WxName = #{wxName} ,</if> "
-            + " <if test='openid !=null and openid != &apos;&apos; '> Openid = #{openid} ,</if> "
             + " <if test='mobile !=null and mobile != &apos;&apos; '> Mobile = #{mobile} ,</if> "
             + " <if test='userId !=null'> UserId = #{userId} ,</if> "
             + " <if test='sex !=null'> Sex = #{sex} ,</if> "

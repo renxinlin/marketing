@@ -48,6 +48,11 @@ public interface WechatConstants {
      * 导购登录页
      */
     public final static String SALER_LOGIN_URL ="#/sales/index"  ;
-    
-    
+
+    /**
+     * 微信授权登录跳转地址，请注意参数替换
+     */
+    public static final String WECHAT_AUTH_URL = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_userinfo&state={state}#wechat_redirect";
+
+
 }

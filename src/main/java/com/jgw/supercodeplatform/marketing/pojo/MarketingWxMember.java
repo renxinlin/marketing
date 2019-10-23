@@ -21,7 +21,7 @@ public class MarketingWxMember {
 
     private Long memberId;
 
-    private byte wxSex;
+    private Byte wxSex;
 
     private String wechatHeadImgUrl;
 
