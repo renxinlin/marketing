@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.domain.service;
 
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
@@ -30,6 +31,9 @@ import java.util.List;
 public class WheelsRewardDomainService {
     @Autowired
     private CdkEventPublisher cdkEventPublisher;
+
+    @Autowired
+    private CommonUtil commonUtil;
 
     @Autowired
     @Qualifier("cdkEventSubscriberImpl")
@@ -104,16 +108,20 @@ public class WheelsRewardDomainService {
     public H5RewardInfo getReward(WheelsReward finalReward, H5LoginVO user, String outerCodeId, String codeTypeId,Long prizeWheelsId) {
         // 领取成功 cdk - 1 领取记录
         if(finalReward.getType().intValue() == RewardTypeConstant.virtual){
+            // TODO Repository做了业务，提到上层
             WheelsRewardCdk cdkWhenH5Reward = wheelsRewardCdkRepository.getCdkWhenH5Reward(prizeWheelsId);
 
 
             WheelsRecord wheelsRecord = new WheelsRecord();
-            wheelsRecord.setCreateTime(new Date());
-            wheelsRecord.setMobile(user.getMobile());
-            wheelsRecord.setRewardName(finalReward.getName());
-            wheelsRecord.setType(RewardTypeConstant.virtual);
-            wheelsRecord.setUserId(user.getMemberId()+"");
-            wheelsRecord.setUserName(user.getMemberName());
+            wheelsRecord.initvirtualInfo(
+                    user.getMobile()
+                    ,finalReward.getName()
+                    ,user.getMemberId()+""
+                    ,user.getMemberName()
+                    ,prizeWheelsId,finalReward.getId()
+                    ,commonUtil.getOrganizationName()
+                    ,commonUtil.getOrganizationId());
+
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
             H5RewardInfo rewardInfo = new H5RewardInfo();
@@ -123,14 +131,16 @@ public class WheelsRewardDomainService {
         }
 
         if(finalReward.getType().intValue() == RewardTypeConstant.real){
-            // TODO initRealReward() 替代
             WheelsRecord wheelsRecord = new WheelsRecord();
-            wheelsRecord.setCreateTime(new Date());
-            wheelsRecord.setMobile(user.getMobile());
-            wheelsRecord.setRewardName(finalReward.getName());
-            wheelsRecord.setType(RewardTypeConstant.real);
-            wheelsRecord.setUserId(user.getMemberId()+"");
-            wheelsRecord.setUserName(user.getMemberName());
+            wheelsRecord.initrealInfo(
+                    user.getMobile()
+                    ,finalReward.getName()
+                    ,user.getMemberId()+""
+                    ,user.getMemberName()
+                    ,prizeWheelsId,finalReward.getId()
+                    ,commonUtil.getOrganizationName()
+                    ,commonUtil.getOrganizationId());
+
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
 

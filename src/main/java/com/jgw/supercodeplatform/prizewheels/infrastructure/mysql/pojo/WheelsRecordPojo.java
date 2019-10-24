@@ -51,5 +51,15 @@ public class WheelsRecordPojo implements Serializable {
     @TableField("CreateTime")
     private Date createTime;
 
+    @TableField("OrganizationId")
+    private String organizationId;
 
+    @TableField("OrganizatioIdName")
+    private String organizatioIdName;
+
+    @TableField("PrizeWheelId")
+    private Long prizeWheelId;
+
+    @TableField("RewardId")
+    private Long rewardId;
 }
