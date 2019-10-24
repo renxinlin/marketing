@@ -46,7 +46,7 @@ public class LoginWithWechatService {
         }
         JSONObject userObj = JSON.parseObject(userObjJson);
         String organizationId = loginWithWechat.getOrganizationId();
-        if (organizationId.equals(userObj.getString("organizationId"))) {
+        if (!organizationId.equals(userObj.getString("organizationId"))) {
             throw new SuperCodeExtException("组织ID有误");
         }
         MarketingWxMerchants marketingWxMerchants = getMerchantsByOrgId(organizationId);

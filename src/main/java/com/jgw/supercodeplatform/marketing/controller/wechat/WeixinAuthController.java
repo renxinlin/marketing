@@ -120,6 +120,7 @@ public class WeixinAuthController {
 		String appId = null;
 		String organizationName = null;
     	MemberWithWechat memberWithWechat=null;
+		MarketingWxMember marketingWxMember = null;
     	//表示不是从扫码产品防伪码入口进入
     	if (null==scanCodeInfoMO) {
     		// 2表示导购
@@ -151,6 +152,7 @@ public class WeixinAuthController {
     		if(statecode != null && statecode.intValue() == AccessProtocol.ACTIVITY_COUPON.getType()) 
     			h5BUf.append("&uuid=").append(statearr[2]).append("&type=").append(statecode);
 			memberWithWechat = marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
+			marketingWxMember = marketingMembersService.getWxMemberByOpenidAndOrgid(openid, organizationId);
     		Long memberParamId = loginMemberId(memberWithWechat);
             if (memberParamId.intValue()!=-1) {
             	needWriteJwtToken=true;
@@ -172,14 +174,15 @@ public class WeixinAuthController {
 			//更新扫码信息
 			globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
 			memberWithWechat = marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
-    		Long memberParamId = loginMemberId(memberWithWechat);
-            if (memberParamId.intValue()!=-1) {
-            	needWriteJwtToken=true;
+			marketingWxMember = marketingMembersService.getWxMemberByOpenidAndOrgid(openid, organizationId);
+			Long memberParamId = loginMemberId(memberWithWechat);
+			if (memberParamId.intValue()!=-1) {
+				needWriteJwtToken=true;
 			}
 			redirectUrl="redirect:"+h5pageUrl+"?wxstate="+state+"&activitySetId="+scanCodeInfoMO.getActivitySetId()+"&organizationId="+organizationId+"&memberId="+memberParamId;
 		}
 		//判断是否需要保存用户
-		if (null == memberWithWechat) {
+		if (null == marketingWxMember) {
 			memberWithWechat = new MemberWithWechat();
 			memberWithWechat.setOpenid(openid);
 			memberWithWechat.setWxName(nickName);
@@ -194,11 +197,11 @@ public class WeixinAuthController {
 				scanCodeInfoMO.setUserId(memberWithWechat.getMemberId());
 				globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
 			}
-			MarketingWxMember marketingWxMember = new MarketingWxMember();
-			marketingWxMember.setCurrentUse((byte)1);
-			marketingWxMember.setWxName(nickName);
-			marketingWxMember.setOpenid(memberWithWechat.getOpenid());
-			marketingWxMember.setOrganizationId(memberWithWechat.getOrganizationId());
+			MarketingWxMember wxMember = new MarketingWxMember();
+			wxMember.setCurrentUse((byte)1);
+			wxMember.setWxName(nickName);
+			wxMember.setOpenid(memberWithWechat.getOpenid());
+			wxMember.setOrganizationId(memberWithWechat.getOrganizationId());
 			marketingMembersService.updateWxMemberByOpenid(marketingWxMember);
 		}
 
@@ -579,10 +582,9 @@ public class WeixinAuthController {
 		openid = userInfo.getString("openid");
 // 导购step-2: 刷新头像
 		// 需要返回前端组织Id和用户id[id或者-1]以及openid
-
-		MemberWithWechat memberWithWechat = marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
-		if (memberWithWechat == null) {
-			memberWithWechat = new MemberWithWechat();
+		MemberWithWechat memberWithWechat = new MemberWithWechat();
+		MarketingWxMember marketingWxMember = marketingMembersService.getWxMemberByOpenidAndOrgid(openid, organizationId);
+		if (marketingWxMember == null) {
 			memberWithWechat.setOpenid(openid);
 			memberWithWechat.setSex(userInfo.getByte("sex"));
 			memberWithWechat.setWxName(userInfo.getString("nickname"));
@@ -594,9 +596,14 @@ public class WeixinAuthController {
 			memberWithWechat.setIsRegistered((byte) 0);
 			memberWithWechat.setDeviceType((byte)1);
 			marketingMembersService.insert(memberWithWechat);
+		} else {
+			BeanUtils.copyProperties(marketingWxMember, memberWithWechat);
 		}
-		writeJwtToken(response, memberWithWechat);
+		memberWithWechat.setMemberId(0L);
 		String wxstate=commonUtil.getUUID();
+		ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
+		scanCodeInfoMO.setOpenId(openid);
+		globalRamCache.putScanCodeInfoMO(wxstate, scanCodeInfoMO);
 		String uri = null;
 		redirectUri = URLDecoder.decode(redirectUri, "UTF-8");
 		redirectUri = StringUtils.replace(redirectUri, ",", "&");

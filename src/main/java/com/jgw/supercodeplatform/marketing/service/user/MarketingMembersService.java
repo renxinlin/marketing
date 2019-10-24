@@ -685,7 +685,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	 * 扫描产品防伪码登录
 	 * @param mobile
 	 * @param wxstate
-	 * @param portraitsSize
+	 * @param
 	 * @return
 	 * @throws SuperCodeException
 	 */
@@ -781,9 +781,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String openid = memberWithWechat.getOpenid();
 		String organizationId = memberWithWechat.getOrganizationId();
 		if (StringUtils.isNotBlank(openid) && StringUtils.isNotBlank(organizationId)) {
-			MemberWithWechat memberWithWechatByOpenid = selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
-			if (memberWithWechatByOpenid != null ) {
-				MarketingWxMember marketingWxMember = new MarketingWxMember();
+			MarketingWxMember marketingWxMember = getWxMemberByOpenidAndOrgid(openid, organizationId);
+			if (marketingWxMember == null ) {
+				marketingWxMember = new MarketingWxMember();
 				BeanUtils.copyProperties(memberWithWechat, marketingWxMember);
 				marketingWxMember.setCreateTime(new Date());
 				marketingWxMember.setUpdateTime(new Date());
@@ -809,8 +809,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	/**
 	 * 招募会员注册数目
 	 * @param organizationId
-	 * @param date
-	 * @param date1
+	 * @param
+	 * @param
 	 */
 	public List<MarketingMembers> getRegisterNum(String organizationId, Date startDate, Date endDate) throws SuperCodeException {
 		if(StringUtils.isBlank(organizationId)){
@@ -834,6 +834,10 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	public MarketingWxMember getWxMemberById(Long id){
 		return marketingWxMemberMapper.selectById(id);
+	}
+
+	public MarketingWxMember getWxMemberByOpenidAndOrgid(String openid, String organizationId) {
+		return marketingWxMemberMapper.selectOne(Wrappers.<MarketingWxMember>query().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType()));
 	}
 
 }
