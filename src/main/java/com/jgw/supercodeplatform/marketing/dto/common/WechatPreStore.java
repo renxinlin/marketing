@@ -15,10 +15,10 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 @ApiModel("跳转微信之前，先预存的信息，如微信登录后跳转前端地址等信息")
 public class WechatPreStore {
-    @ApiModelProperty("前端跳转地址")
+    @ApiModelProperty(value = "前端跳转地址", required = true)
     @NotBlank(message = "前端跳转地址不能为空")
     private String frontRedirectUrl;
-    @ApiModelProperty("组织ID")
+    @ApiModelProperty(value = "组织ID", required = true)
     @NotBlank(message = "组织ID不能为空")
     private String organizationId;
 

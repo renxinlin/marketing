@@ -78,7 +78,6 @@ public class WechatAuthLoginService {
         redisUtil.remove(key);
         String organizationId = wechatPreStore.getOrganizationId();
         MarketingWxMerchants marketingWxMerchants = getMerchantsByOrgId(organizationId);
-        String organizationName = marketingWxMerchants.getOrganizatioIdlName();
         String appId = marketingWxMerchants.getMchAppid();
         String secret = marketingWxMerchants.getMerchantSecret();
         //获取access_token
