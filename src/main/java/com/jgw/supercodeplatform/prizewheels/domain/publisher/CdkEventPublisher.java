@@ -17,9 +17,7 @@ public class CdkEventPublisher {
 
     private List<CdkEventSubscriber> cdkEventSubscribers;
     public void addSubscriber(CdkEventSubscriber... cdkEventSubscriber ) {
-        if(cdkEventSubscribers == null ){
-            cdkEventSubscribers = new ArrayList<>();
-        }
+        cdkEventSubscribers = new ArrayList<>();
         cdkEventSubscribers.addAll(Arrays.asList(cdkEventSubscriber));
     }
 
