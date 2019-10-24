@@ -201,8 +201,8 @@ public class WeixinAuthController {
 			MarketingWxMember wxMember = new MarketingWxMember();
 			wxMember.setCurrentUse((byte)1);
 			wxMember.setWxName(nickName);
-			wxMember.setOpenid(memberWithWechat.getOpenid());
-			wxMember.setOrganizationId(memberWithWechat.getOrganizationId());
+			wxMember.setOpenid(marketingWxMember.getOpenid());
+			wxMember.setOrganizationId(marketingWxMember.getOrganizationId());
 			marketingMembersService.updateWxMemberByOpenid(marketingWxMember);
 		}
 
