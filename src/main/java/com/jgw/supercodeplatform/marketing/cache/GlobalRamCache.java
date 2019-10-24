@@ -69,7 +69,7 @@ public class GlobalRamCache {
 			if (null==mWxMerchants) {
 				mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
 				if (null==mWxMerchants) {
-					mWxMerchants=mWxMerchantsMapper.selectDefault();
+					mWxMerchants=mWxMerchantsMapper.getJgw();
 				}
 				redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));
 			}

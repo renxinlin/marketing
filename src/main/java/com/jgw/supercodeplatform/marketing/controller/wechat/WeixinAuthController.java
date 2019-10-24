@@ -191,6 +191,7 @@ public class WeixinAuthController {
 			memberWithWechat.setWechatHeadImgUrl(userInfo.getString("headimgurl"));
 			memberWithWechat.setOrganizationId(organizationId);
 			memberWithWechat.setOrganizationFullName(organizationName);
+			memberWithWechat.setMemberType((byte)0);
 			marketingMembersService.insert(memberWithWechat);
 		} else {
 			if (null!=scanCodeInfoMO) {
@@ -595,6 +596,7 @@ public class WeixinAuthController {
 			memberWithWechat.setOrganizationId(organizationId);
 			memberWithWechat.setIsRegistered((byte) 0);
 			memberWithWechat.setDeviceType((byte)1);
+			memberWithWechat.setMemberType((byte)0);
 			marketingMembersService.insert(memberWithWechat);
 		} else {
 			BeanUtils.copyProperties(marketingWxMember, memberWithWechat);
