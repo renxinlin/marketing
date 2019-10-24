@@ -99,14 +99,14 @@ public class WheelsController extends SalerCommonController {
     @GetMapping("/record")
     @ApiOperation(value = "参与记录", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult<AbstractPageService.PageResults<List<WheelsRecordPojo>> > record(DaoSearch daoSearch)   {
+    public RestResult<AbstractPageService.PageResults<List<WheelsRecordPojo>> > record(DaoSearchWithPrizeWheelsIdDto daoSearch)   {
         return success(appication.records(daoSearch));
     }
 
     @GetMapping("/export")
     @ApiOperation(value = "导出参与记录",notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public void exportRecords(DaoSearch daoSearch, HttpServletResponse response) throws SuperCodeException {
+    public void exportRecords(DaoSearchWithPrizeWheelsIdDto daoSearch, HttpServletResponse response) throws SuperCodeException {
         //导出十万条
         daoSearch.setCurrent(1);
         daoSearch.setPageSize(100000);

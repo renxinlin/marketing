@@ -246,9 +246,9 @@ public class WheelsPublishAppication {
         processActivityDomainService.updateStatus(activityStatus.getId(),activityStatus.getStatus());
     }
 
-    public AbstractPageService.PageResults<List<WheelsRecordPojo>> records(DaoSearch daoSearch) {
+    public AbstractPageService.PageResults<List<WheelsRecordPojo>> records(DaoSearchWithPrizeWheelsIdDto daoSearch) {
         IPage<WheelsRecordPojo> wheelsRecordPojoIPage = recordRepository.selectPage(RecordTransfer.getPage(daoSearch)
-                , RecordTransfer.getPageParam(daoSearch, commonUtil.getOrganizationId()));
+                , RecordTransfer.getPageParam(daoSearch, commonUtil.getOrganizationId(),daoSearch.getId()));
         return RecordTransfer.toPageResult(wheelsRecordPojoIPage);
 
     }

@@ -43,9 +43,10 @@ public class RecordTransfer {
         return results;
     }
 
-    public static Wrapper<WheelsRecordPojo> getPageParam(DaoSearch daoSearch, String organizationId) {
+    public static Wrapper<WheelsRecordPojo> getPageParam(DaoSearch daoSearch, String organizationId,long id) {
         QueryWrapper<WheelsRecordPojo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("OrganizationId",organizationId);
+        queryWrapper.eq("PrizeWheelId",id);
         if(daoSearch != null && !StringUtils.isEmpty(daoSearch.getSearch())){
             queryWrapper.and(query ->query.like("mobile",daoSearch.getSearch())
                     .or().like("userName",daoSearch.getSearch())

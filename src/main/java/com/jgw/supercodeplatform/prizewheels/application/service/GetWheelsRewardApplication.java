@@ -167,12 +167,20 @@ public class GetWheelsRewardApplication {
         scanRecordWhenRewardPublisher.commitAsyncEvent(new ScanRecordWhenRewardEvent(scanRecord));
     }
 
+
+    /**
+     *  TODO 应用层业务下沉
+     * @param productBatchId
+     * @return
+     */
     public WheelsDetailsVo detail(String productBatchId) {
         log.info("H5大转盘详情:产品批次ID{}", productBatchId);
         //
         WheelsDetailsVo wheelsDetailsVo=new WheelsDetailsVo();
         //获取产品
+        // TODO 仓库获取的数据经转换后成领域实体而非pojo
         List<ProductPojo> productPojos = productRepository.getPojoByBatchId(productBatchId);
+        // TODO 应用层无业务:下沉 Asserts
         Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
         // 大转盘活动ID
         Long id=productPojos.get(0).getActivitySetId();
@@ -180,13 +188,16 @@ public class GetWheelsRewardApplication {
         wheelsDetailsVo.setProductDtos(productUpdateDtos);
 
         WheelsPojo wheelsPojo=wheelsPublishRepository.getWheelsById(id);
+        // TODO 应用层无业务:下沉 Asserts
         Asserts.check(wheelsPojo!=null,"未获取到大转盘信息");
         wheelsDetailsVo=wheelsTransfer.tranferWheelsPojoToDomain(wheelsPojo);
         //获取奖励
         List<WheelsRewardPojo> wheelsRewardPojos=wheelsRewardRepository.getByPrizeWheelsId(id);
+        // TODO 应用层无业务::业务下沉 Asserts
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewardPojos),"未获取到奖励信息");
         //剔除list中的未中奖，并将未中奖的数据的中奖率返回
         WheelsRewardPojo notwheelsRewardPojo=new WheelsRewardPojo();
+        // TODO 应用层无业务::业务下沉
         for (WheelsRewardPojo wheelsRewardPojo:wheelsRewardPojos){
             if (wheelsRewardPojo.getLoseAward().intValue() == LoseAwardConstant.yes.intValue()){
                 notwheelsRewardPojo=wheelsRewardPojo;
@@ -194,7 +205,9 @@ public class GetWheelsRewardApplication {
             }
         }
         wheelsRewardPojos.remove(notwheelsRewardPojo);
+
         List<WheelsRewardUpdateDto> wheelsRewardUpdateDtos=wheelsRewardTransfer.transferRewardToDomain(wheelsRewardPojos);
+        // TODO 合并到领域层
         wheelsDetailsVo.setWheelsRewardDtos(wheelsRewardUpdateDtos);
         wheelsDetailsVo.setAutoType(!CollectionUtils.isEmpty(productPojos)?productPojos.get(0).getAutoType():1);
         //赋值未中奖率
