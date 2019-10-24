@@ -29,7 +29,7 @@ public class MarketingWxMember {
 
     private String organizationFullName;
 
-    private byte memberType;
+    private Byte memberType;
 
     private String appid;
 
@@ -37,8 +37,8 @@ public class MarketingWxMember {
 
     private Date  updateTime;
 
-    private byte jgwType;
+    private Byte jgwType;
 
-    private byte currentUse;
+    private Byte currentUse;
 
 }
