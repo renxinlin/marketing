@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.domain.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
@@ -14,6 +15,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardCdkRe
 import com.jgw.supercodeplatform.prizewheels.domain.subscribers.CdkEventSubscriber;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl.CdkEventSubscriberImplV2;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,6 +30,7 @@ import java.util.List;
  * 领域服务 : 仅处理WheelsReward 直接实现类
  */
 @Service
+@Slf4j
 public class WheelsRewardDomainService {
     @Autowired
     private CdkEventPublisher cdkEventPublisher;
@@ -90,7 +93,7 @@ public class WheelsRewardDomainService {
                 CdkEvent cdkEvent = new CdkEvent(wheelsReward.getId(), wheelsReward.getCdkUuid());
 //                cdkEventPublisher.addSubscriber(cdkEventSubscriber);   // excel 已经导入,关联wheelsRewards主键即可  前端组件不支持我也是醉了
                 cdkEventPublisher.addSubscriber(cdkEventSubscriberV2); // excel导入到七牛云,此时读excel
-
+                log.info("======================cdk{}",JSONObject.toJSONString(cdkEvent));
                 cdkEventPublisher.publish(cdkEvent);
 
             }

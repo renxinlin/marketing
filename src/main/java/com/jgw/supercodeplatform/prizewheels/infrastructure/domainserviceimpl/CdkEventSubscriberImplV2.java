@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
@@ -41,6 +42,8 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
 
     @Override
     public void handle(CdkEvent cdkEvent) {
+        log.info("cdkEvent{}", JSONObject.toJSONString(cdkEvent));
+
         // 根据cdkkey去七牛云读取文件
         String cdkKey = cdkEvent.getCdkUuid();
         String excelUrl = QiNiuYunConfigConstant.URL + cdkKey;
@@ -49,8 +52,11 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
         InputStream is = downExcelStream(excelUrl);
         // excel转list
         List<WheelsRewardCdkPojo> wheelsRewardCdkPojos = excelStreamToList(is);
+        log.info("excel输出{}", JSONObject.toJSONString(wheelsRewardCdkPojos));
         // 业务属性补充
         wheelsRewardCdkPojos = addOtherFields(wheelsRewardCdkPojos,cdkKey,cdkEvent.getPrizeRewardId());
+        log.info("addOtherFields{}", JSONObject.toJSONString(wheelsRewardCdkPojos));
+
         // 持久化
         try {
             wheelsRewardCdkService.saveBatch(wheelsRewardCdkPojos);
