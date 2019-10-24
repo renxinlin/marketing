@@ -125,7 +125,7 @@ public class WheelsRewardDomainService {
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
             H5RewardInfo rewardInfo = new H5RewardInfo();
-            rewardInfo.initVirtualRewardInfo(finalReward.getPicture(),cdkWhenH5Reward.getCdk());
+            rewardInfo.initVirtualRewardInfo(finalReward.getId(),finalReward.getPicture(),cdkWhenH5Reward.getCdk());
             return rewardInfo;
 
         }
@@ -145,7 +145,7 @@ public class WheelsRewardDomainService {
 
 
             H5RewardInfo rewardInfo = new H5RewardInfo();
-            rewardInfo.initRealReward(finalReward.getPicture(),finalReward.getName());
+            rewardInfo.initRealReward(finalReward.getId(),finalReward.getPicture(),finalReward.getName());
             return rewardInfo;
 
 
