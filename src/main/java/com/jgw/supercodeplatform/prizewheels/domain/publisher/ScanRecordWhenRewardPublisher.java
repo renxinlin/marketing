@@ -15,9 +15,7 @@ public class ScanRecordWhenRewardPublisher {
 
     private List<ScanRecordWhenRewardSubscriber> scanRecordWhenRewardSubscribers;
     public void addSubscriber(ScanRecordWhenRewardSubscriber... scanRecordWhenRewardSubscriber ) {
-        if(scanRecordWhenRewardSubscribers == null ){
-            scanRecordWhenRewardSubscribers = new ArrayList<>();
-        }
+        scanRecordWhenRewardSubscribers = new ArrayList<>();
         scanRecordWhenRewardSubscribers.addAll(Arrays.asList(scanRecordWhenRewardSubscriber));
     }
 
