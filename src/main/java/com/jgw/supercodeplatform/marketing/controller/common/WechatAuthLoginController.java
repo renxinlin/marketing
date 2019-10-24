@@ -17,7 +17,7 @@ import javax.validation.Valid;
 
 @Slf4j
 @Controller
-@Api(tags = "微信登录相关")
+@Api(tags = "微信授权相关")
 @RequestMapping("/marketing/wechat")
 public class WechatAuthLoginController {
 

@@ -7,6 +7,8 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dto.common.LoginWithWechat;
 import com.jgw.supercodeplatform.marketing.service.common.LoginWithWechatService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +20,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+@Api(tags = "微信授权后前端发起登录")
 @RestController
 @RequestMapping("/marketing/wx")
 public class LoginWithWechatController {
@@ -27,6 +30,7 @@ public class LoginWithWechatController {
     @Autowired
     private LoginWithWechatService loginWithWechatService;
 
+    @ApiOperation("会员登录")
     @PostMapping("/memberLogin")
     public RestResult<?> memberLogin(@RequestBody @Valid LoginWithWechat loginWithWechat, HttpServletResponse response) throws SuperCodeException {
         H5LoginVO h5LoginVO = loginWithWechatService.memberLogin(loginWithWechat);
