@@ -787,12 +787,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				BeanUtils.copyProperties(memberWithWechat, marketingWxMember);
 				marketingWxMember.setCreateTime(new Date());
 				marketingWxMember.setUpdateTime(new Date());
+				marketingWxMember.setCurrentUse((byte)0);
 				marketingWxMemberMapper.insert(marketingWxMember);
 				memberWithWechat.setWxMemberId(marketingWxMember.getId());
-			} else {
-				UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte)1).eq("MemberType", MemberTypeEnums.VIP.getType());
+			}
+			if (marketingWxMember.getCurrentUse().intValue() != 1) {
+				UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte) 1).eq("MemberType", MemberTypeEnums.VIP.getType());
 				marketingWxMemberMapper.update(null, nouseUpdateWrapper);
-				UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
+				UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
 				marketingWxMemberMapper.update(null, currentUpdateWrapper);
 			}
 		}
