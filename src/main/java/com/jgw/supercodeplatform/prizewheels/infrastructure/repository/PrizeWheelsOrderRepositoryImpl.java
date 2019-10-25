@@ -26,8 +26,4 @@ public class PrizeWheelsOrderRepositoryImpl implements PrizeWheelsOrderRepositor
     }
 
 
-    @Override
-    public IPage<PrizeWheelsOrderPojo> selectPage(IPage<PrizeWheelsOrderPojo> page, Wrapper<PrizeWheelsOrderPojo> pageParam) {
-        return mapper.selectPage(page,pageParam);
-    }
 }
