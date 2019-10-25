@@ -49,6 +49,9 @@ public class WheelsController extends SalerCommonController {
     @Value("{\"userName\":\"姓名\",\"mobile\":\"手机号\", \"rewardName\":\"奖项名称\",\"createTime\":\"领奖时间\"}")
     private String EXCEL_FIELD_MAP;
 
+    @Value("{\"organizationId\":\"组织ID\",\"organizationName\":\"组织名称\", \"receiverName\":\"收货人\",\"mobile\":\"用户手机\",\"receiverMobile\":\"收货手机\",\"address\":\"用户地址\",\"content\":\"物品\",\"createDate\":\"下单时间\"}")
+    private String EXCEL_ORDER_FIELD_MAP;
+
     @PostMapping("/add")
     @ApiOperation(value = "添加", notes = "分页参见以前接口")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
@@ -150,7 +153,7 @@ public class WheelsController extends SalerCommonController {
         //导出
         Map<String,String> filedMap;
         try {
-            filedMap= JsonToMapUtil.toMap(EXCEL_FIELD_MAP);
+            filedMap= JsonToMapUtil.toMap(EXCEL_ORDER_FIELD_MAP);
         } catch (Exception e) {
             logger.error("{desc：记录表头解析异常"+e.getMessage()+"}");
             throw new SuperCodeException("表头解析异常",500);
