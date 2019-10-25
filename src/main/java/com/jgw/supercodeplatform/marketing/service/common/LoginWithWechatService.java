@@ -78,7 +78,7 @@ public class LoginWithWechatService {
             throw new SuperCodeExtException("找不到对应的用户信息");
         }
         H5LoginVO h5LoginVO=new H5LoginVO();
-        h5LoginVO.setMemberType(marketingWxMember.getMemberType());
+        h5LoginVO.setMemberType((byte)0);
         h5LoginVO.setCustomerId(member.getCustomerId());
         h5LoginVO.setCustomerName(member.getCustomerName());
         h5LoginVO.setHaveIntegral(member.getHaveIntegral());

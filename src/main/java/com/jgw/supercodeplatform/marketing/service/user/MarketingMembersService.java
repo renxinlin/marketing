@@ -583,12 +583,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	}
 
 	private H5LoginVO commonLogin(String mobile, String openid, String organizationId, int portraitsSize,int deviceType) throws SuperCodeException {
-		H5LoginVO h5LoginVO;
+//		H5LoginVO h5LoginVO;
 		if (StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("积分领取登录时组织id必传", 500);
 		}
-		h5LoginVO=new H5LoginVO();
-		h5LoginVO.setMobile(mobile);			//积分登录openid不一定存在
+//		h5LoginVO=new H5LoginVO();
+//		h5LoginVO.setMobile(mobile);			//积分登录openid不一定存在
 		MemberWithWechat trueMember=null;
 		MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
 		if (marketingWxMerchants.getMerchantType() == 1) {
@@ -671,7 +671,18 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				trueMember=memberWithWechat;
 			}
 		}
-
+		H5LoginVO h5LoginVO = new H5LoginVO();
+		h5LoginVO.setMemberType((byte)0);
+		h5LoginVO.setCustomerId(trueMember.getCustomerId());
+		h5LoginVO.setCustomerName(trueMember.getCustomerName());
+		h5LoginVO.setHaveIntegral(trueMember.getHaveIntegral());
+		h5LoginVO.setMemberId(trueMember.getMemberId());
+		h5LoginVO.setMobile(trueMember.getMobile());
+		h5LoginVO.setWechatHeadImgUrl(trueMember.getWechatHeadImgUrl());
+		h5LoginVO.setMemberName(StringUtils.isEmpty(trueMember.getUserName())?trueMember.getWxName():trueMember.getUserName());
+		h5LoginVO.setOrganizationId(trueMember.getOrganizationId());
+		h5LoginVO.setOpenid(trueMember.getOpenid());
+		h5LoginVO.setOrganizationName(trueMember.getOrganizationFullName());
 		h5LoginVO.setWechatHeadImgUrl(trueMember.getWechatHeadImgUrl());
 		h5LoginVO.setMemberId(trueMember.getMemberId());
 		h5LoginVO.setHaveIntegral(trueMember.getHaveIntegral()==null?0:trueMember.getHaveIntegral());
