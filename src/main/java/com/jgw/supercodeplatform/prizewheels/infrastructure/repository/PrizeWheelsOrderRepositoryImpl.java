@@ -1,5 +1,7 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.repository;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jgw.supercodeplatform.prizewheels.domain.model.PrizeWheelsOrder;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.PrizeWheelsOrderRepository;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.PrizeWheelsOrderMapper;
@@ -15,5 +17,11 @@ public class PrizeWheelsOrderRepositoryImpl implements PrizeWheelsOrderRepositor
     @Override
     public void addOrder(PrizeWheelsOrder prizeWheelsOrder) {
         mapper.insert(modelMapper.map(prizeWheelsOrder, PrizeWheelsOrderPojo.class));
+    }
+
+
+    @Override
+    public IPage<PrizeWheelsOrderPojo> selectPage(IPage<PrizeWheelsOrderPojo> page, Wrapper<PrizeWheelsOrderPojo> pageParam) {
+        return mapper.selectPage(page,pageParam);
     }
 }
