@@ -24,7 +24,7 @@ public class CodeManagerService {
 
     public ProductInfoByCodeDto getProductByCode(OutCodeInfoDto outCodeInfoDto){
         log.info("准备获取外码对应的产品信息{}",outCodeInfoDto);
-        Asserts.check(UserConstants.MARKETING_CODE_TYPE.equals(outCodeInfoDto.getCodeTypeId()),"非营销码");
+        Asserts.check(UserConstants.MARKETING_CODE_TYPE.equals(outCodeInfoDto.getCodeTypeId())|| UserConstants.MARKETING_CODE_TYPE_13.equals(outCodeInfoDto.getCodeTypeId()),"非营销码");
         RestResult<Object>  restResult = null;
         restResult = codeManagerFeign.getProductByCode(outCodeInfoDto);
         log.info("准备获取外码对应的产品信息返回{}", JSONObject.toJSONString(restResult));

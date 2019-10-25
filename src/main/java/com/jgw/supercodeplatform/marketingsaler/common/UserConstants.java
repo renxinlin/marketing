@@ -7,6 +7,7 @@ public interface UserConstants {
     String MARKETING_ORDER_BUTTON ="marketing:order:button:" ;
     String SALER_INTEGRAL_REWARD_PREFIX = "SALER:INTEGRAL:REWARD:PREFIX:";
     String MARKETING_CODE_TYPE = "12";
+    String MARKETING_CODE_TYPE_13 = "13";
     // 默认导购兑换库存
     Integer defaultStock = 99999 ;
     // 导购兑换上限
