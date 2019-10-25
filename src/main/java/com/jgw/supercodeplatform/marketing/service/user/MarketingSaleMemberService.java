@@ -341,6 +341,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	 * @return
 	 * @throws SuperCodeException
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public UserWithWechat saveRegisterUser(MarketingSaleMembersAddParam userInfo) throws SuperCodeException{
 		// 1基础校验
 		validateBasicByRegisterUser(userInfo);
@@ -375,6 +376,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if (StringUtils.isNotBlank(userDo.getOpenid()) && StringUtils.isNotBlank(userDo.getOrganizationId())) {
 			MarketingWxMember marketingWxMember = new MarketingWxMember();
 			BeanUtils.copyProperties(userDo, marketingWxMember);
+			marketingWxMember.setCurrentUse((byte)1);
 			marketingWxMemberMapper.insert(marketingWxMember);
 		}
 		return userDo;
