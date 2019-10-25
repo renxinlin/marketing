@@ -3,14 +3,7 @@ package com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.generator.provider.MarketingUserSqlProvider;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.InsertProvider;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-import org.apache.ibatis.annotations.UpdateProvider;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 
 public interface MarketingUserMapper {
@@ -49,6 +42,7 @@ public interface MarketingUserMapper {
     int insert(MarketingUser record);
 
     @InsertProvider(type= MarketingUserSqlProvider.class, method="insertSelective")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "Id")
     int insertSelective(MarketingUser record);
 
     @Select({

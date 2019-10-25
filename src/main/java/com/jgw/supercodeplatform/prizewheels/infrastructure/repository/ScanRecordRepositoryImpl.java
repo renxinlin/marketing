@@ -24,6 +24,9 @@ public class ScanRecordRepositoryImpl implements ScanRecordRepository {
         query.eq("CodeTypeId",codeTypeId);
 
         ScanRecordPojo scanRecordPojo = mapper.selectOne(query);
+        if(scanRecordPojo == null){
+            return null;
+        }
         return scanRecordPojoTranfer.tranferPojoToDomain(scanRecordPojo);
 
     }

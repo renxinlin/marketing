@@ -29,7 +29,7 @@ public class CodeDomainService {
      * @return
      */
     public boolean noscanedOrTerminated(ScanRecord scanRecord,String wxErcode)  {
-        if(scanRecord == null){
+        if(scanRecord != null){
             // 返回微信二维码 返回null 不显示公众号
             throw new PrizeWheelsForWxErcodeException(wxErcode);
         }
