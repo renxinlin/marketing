@@ -14,7 +14,7 @@ public class ProbabilityCalculator {
     private List<WheelsReward> rewards;
 
     public void initRewards(List<WheelsReward> rewards) {
-        Asserts.check(CollectionUtils.isEmpty(rewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        Asserts.check(!CollectionUtils.isEmpty(rewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         this.rewards = rewards;
     }
 
