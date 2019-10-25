@@ -133,7 +133,7 @@ public class WheelsController extends SalerCommonController {
 
     @ResponseBody
     @GetMapping("/pageOrder")
-    @ApiOperation(value = "实物领奖地址", notes = "")
+    @ApiOperation(value = "订单分页", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult pageOrder(DaoSearch daoSearch) {
         // appication.pageOrder(daoSearch);
@@ -146,9 +146,9 @@ public class WheelsController extends SalerCommonController {
 
     @ResponseBody
     @GetMapping("/exportOrder")
-    @ApiOperation(value = "实物领奖地址", notes = "")
+    @ApiOperation(value = "订单导出", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public void setAdddress(DaoSearch daoSearch, HttpServletResponse response) throws SuperCodeException {
+    public void exportOrder(DaoSearch daoSearch, HttpServletResponse response) throws SuperCodeException {
         //导出十万条
         daoSearch.setCurrent(1);
         daoSearch.setPageSize(100000);
