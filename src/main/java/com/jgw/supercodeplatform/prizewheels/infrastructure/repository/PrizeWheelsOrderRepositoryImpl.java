@@ -14,6 +14,12 @@ import org.springframework.stereotype.Repository;
 public class PrizeWheelsOrderRepositoryImpl implements PrizeWheelsOrderRepository {
     @Autowired private ModelMapper modelMapper;
     @Autowired private PrizeWheelsOrderMapper mapper;
+
+    @Override
+    public IPage<PrizeWheelsOrderPojo> selectPage(IPage<PrizeWheelsOrderPojo> page, Wrapper<PrizeWheelsOrderPojo> pageParam) {
+        return mapper.selectPage(page,pageParam);
+    }
+
     @Override
     public void addOrder(PrizeWheelsOrder prizeWheelsOrder) {
         mapper.insert(modelMapper.map(prizeWheelsOrder, PrizeWheelsOrderPojo.class));
