@@ -226,6 +226,15 @@ public class GlobalExceptionHandler {
 	}
 
 
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(NotGetPrizeWheelsException.class)
+	public RestResult prizeWheelsException(NotGetPrizeWheelsException e) {
+		logger.error("大转盘概率计算器计算未获取奖：" + e.getClass().getName(), e);
+		RestResult RestResult = new RestResult(201,"来迟啦,码已经被扫啦!" , e.getMessage());
+		return RestResult;
+	}
+
+
 
 
 	/**

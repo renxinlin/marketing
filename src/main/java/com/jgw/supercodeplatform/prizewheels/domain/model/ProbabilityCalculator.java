@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.prizewheels.domain.model;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jgw.supercodeplatform.marketing.exception.NotGetPrizeWheelsException;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.LoseAwardConstant;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -46,10 +47,10 @@ public class ProbabilityCalculator {
 
         if(getWheelsReward == null){
             log.error("奖项为空{}", JSONObject.toJSONString(rewards));
-            throw new RuntimeException("未中奖,再来一次!!!");
+            throw new NotGetPrizeWheelsException("未中奖,再来一次!!!");
         }
         if (getWheelsReward.getLoseAward().intValue() == LoseAwardConstant.yes.intValue()) {
-            throw new RuntimeException("未中奖,再来一次!");
+            throw new NotGetPrizeWheelsException("未中奖,再来一次!");
         }
         return getWheelsReward;
 
