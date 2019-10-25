@@ -200,6 +200,29 @@ public class GlobalExceptionHandler {
 
 
 	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(PrizeWheelsForWxErcodeException.class)
+	public RestResult prizeWheelsException(PrizeWheelsForWxErcodeException e) {
+		logger.error("自义定异常：" + e.getClass().getName(), e);
+		HashMap hashMap = new HashMap<>();
+		hashMap.put("type",1);
+		hashMap.put("wxErcode",e.getMessage());
+		RestResult RestResult = new RestResult(200,"来迟啦,码已经被扫啦!" , hashMap); // 状态码前端需求
+		return RestResult;
+	}
+
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(NotGetPrizeWheelsException.class)
+	public RestResult notGetPrizeWheelsException(NotGetPrizeWheelsException e) {
+		logger.error("大转盘概率计算器计算未获取奖：" + e.getClass().getName(), e);
+		RestResult RestResult = new RestResult(200,"未中奖!!!" , e.getMessage());// 状态码前端需求
+		return RestResult;
+	}
+
+
+
+
+	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(RuntimeException.class)
 	public RestResult runtimeException(RuntimeException e) {
 		logger.error("运行时异常：" + e.getClass().getName(), e);
@@ -217,25 +240,6 @@ public class GlobalExceptionHandler {
 		return RestResult;
 	}
 
-
-	@ResponseStatus(HttpStatus.OK)
-	@ExceptionHandler(PrizeWheelsForWxErcodeException.class)
-	public RestResult prizeWheelsException(PrizeWheelsForWxErcodeException e) {
-		logger.error("自义定异常：" + e.getClass().getName(), e);
-		HashMap hashMap = new HashMap<>();
-		hashMap.put("type",1);
-		RestResult RestResult = new RestResult(200,"来迟啦,码已经被扫啦!" , hashMap); // 状态码前端需求
-		return RestResult;
-	}
-
-
-	@ResponseStatus(HttpStatus.OK)
-	@ExceptionHandler(NotGetPrizeWheelsException.class)
-	public RestResult prizeWheelsException(NotGetPrizeWheelsException e) {
-		logger.error("大转盘概率计算器计算未获取奖：" + e.getClass().getName(), e);
-		RestResult RestResult = new RestResult(200,"未中奖!!!" , e.getMessage());// 状态码前端需求
-		return RestResult;
-	}
 
 
 
