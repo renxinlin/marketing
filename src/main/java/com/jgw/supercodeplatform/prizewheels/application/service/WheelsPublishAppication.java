@@ -8,10 +8,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.SalerRecordTransfer;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
-import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
-import com.jgw.supercodeplatform.prizewheels.application.transfer.RecordTransfer;
-import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsRewardTransfer;
-import com.jgw.supercodeplatform.prizewheels.application.transfer.WheelsTransfer;
+import com.jgw.supercodeplatform.prizewheels.application.transfer.*;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.LoseAwardConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
@@ -81,6 +78,9 @@ public class WheelsPublishAppication {
 
     @Autowired
     private WheelsRewardCdkRepository wheelsRewardCdkRepository;
+
+    @Autowired
+    private PrizeWheelsOrderRepository prizeWheelsOrderRepository;
 
     /**
      * 新增大转盘活动
@@ -252,5 +252,16 @@ public class WheelsPublishAppication {
         return RecordTransfer.toPageResult(wheelsRecordPojoIPage);
 
     }
+
+    /**
+     * 订单记录
+     */
+    public AbstractPageService.PageResults<List<PrizeWheelsOrderPojo>> orderRecords(DaoSearchWithPrizeWheelsIdDto daoSearch) {
+        IPage<PrizeWheelsOrderPojo> prizeWheelsOrderPojoIPage = prizeWheelsOrderRepository.selectPage(OrderTransfer.getPage(daoSearch)
+                , OrderTransfer.getPageParam(daoSearch, commonUtil.getOrganizationId(),daoSearch.getId()));
+        return OrderTransfer.toPageResult(prizeWheelsOrderPojoIPage);
+
+    }
+
 
 }

@@ -14,6 +14,7 @@ import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonContr
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.prizewheels.application.service.WheelsPublishAppication;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.PrizeWheelsOrderPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRecordPojo;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
@@ -168,7 +169,35 @@ public class WheelsController extends SalerCommonController {
         ExcelUtils.listToExcel(list, filedMap, "参与记录",response);
     }
 
+    @GetMapping("/orderPage")
+    @ApiOperation(value = "订单分页")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<AbstractPageService.PageResults<List<PrizeWheelsOrderPojo>>> orderPage(DaoSearchWithPrizeWheelsIdDto daoSearch){
+        return success(appication.orderRecords(daoSearch));
+    }
 
+
+    @GetMapping("/orderExport")
+    @ApiOperation(value = "订单导出")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public void orderExport(DaoSearchWithPrizeWheelsIdDto daoSearch, HttpServletResponse response) throws SuperCodeException {
+        //导出十万条
+        daoSearch.setCurrent(1);
+        daoSearch.setPageSize(100000);
+        // step-1 查询记录
+        AbstractPageService.PageResults<List<PrizeWheelsOrderPojo>> pageResults=appication.orderRecords(daoSearch);
+        // step-2 获取记录
+        List<PrizeWheelsOrderPojo> list=pageResults.getList();
+        //导出
+        Map<String,String> filedMap;
+        try {
+            filedMap= JsonToMapUtil.toMap(EXCEL_FIELD_MAP);
+        } catch (Exception e) {
+            logger.error("{desc：记录表头解析异常"+e.getMessage()+"}");
+            throw new SuperCodeException("表头解析异常",500);
+        }
+        ExcelUtils.listToExcel(list, filedMap, "订单记录",response);
+    }
 
 
 }
