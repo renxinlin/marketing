@@ -221,7 +221,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(PrizeWheelsForWxErcodeException.class)
 	public RestResult prizeWheelsException(PrizeWheelsForWxErcodeException e) {
 		logger.error("自义定异常：" + e.getClass().getName(), e);
-		RestResult RestResult = new RestResult(500,"来迟啦,码已经被扫啦!" , e.getMessage());
+		RestResult RestResult = new RestResult(202,"来迟啦,码已经被扫啦!" , e.getMessage()); // 状态码前端需求
 		return RestResult;
 	}
 
@@ -230,7 +230,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NotGetPrizeWheelsException.class)
 	public RestResult prizeWheelsException(NotGetPrizeWheelsException e) {
 		logger.error("大转盘概率计算器计算未获取奖：" + e.getClass().getName(), e);
-		RestResult RestResult = new RestResult(201,"来迟啦,码已经被扫啦!" , e.getMessage());
+		RestResult RestResult = new RestResult(201,"来迟啦,码已经被扫啦!" , e.getMessage());// 状态码前端需求
 		return RestResult;
 	}
 
