@@ -127,49 +127,8 @@ public class WheelsController extends SalerCommonController {
     }
 
 
-    /**
-     * 查看订单记录
-     * @return
-     */
 
-    @ResponseBody
     @GetMapping("/pageOrder")
-    @ApiOperation(value = "订单分页", notes = "")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult pageOrder(DaoSearchWithPrizeWheelsIdDto daoSearch) {
-        // appication.pageOrder(daoSearch);
-        return success( );
-    }
-
-
-
-
-
-    @ResponseBody
-    @GetMapping("/exportOrder")
-    @ApiOperation(value = "订单导出", notes = "")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public void exportOrder(DaoSearchWithPrizeWheelsIdDto daoSearch, HttpServletResponse response) throws SuperCodeException {
-        //导出十万条
-        daoSearch.setCurrent(1);
-        daoSearch.setPageSize(100000);
-        // step-1 查询记录
-       //   AbstractPageService.PageResults<List<T>> pageResults= appication.pageOrder(daoSearch);
-
-                // step-2 获取记录
-        List<WheelsRecordPojo> list= null ;//pageResults.getList();
-        //导出
-        Map<String,String> filedMap;
-        try {
-            filedMap= null; //JsonToMapUtil.toMap(EXCEL_ORDER_FIELD_MAP);
-        } catch (Exception e) {
-            logger.error("{desc：记录表头解析异常"+e.getMessage()+"}");
-            throw new SuperCodeException("表头解析异常",500);
-        }
-        ExcelUtils.listToExcel(list, filedMap, "参与记录",response);
-    }
-
-    @GetMapping("/orderPage")
     @ApiOperation(value = "订单分页")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<AbstractPageService.PageResults<List<PrizeWheelsOrderPojo>>> orderPage(DaoSearchWithPrizeWheelsIdDto daoSearch){
@@ -177,7 +136,7 @@ public class WheelsController extends SalerCommonController {
     }
 
 
-    @GetMapping("/orderExport")
+    @GetMapping("/exportOrder")
     @ApiOperation(value = "订单导出")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public void orderExport(DaoSearchWithPrizeWheelsIdDto daoSearch, HttpServletResponse response) throws SuperCodeException {
