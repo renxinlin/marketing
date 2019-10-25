@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -221,7 +222,9 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(PrizeWheelsForWxErcodeException.class)
 	public RestResult prizeWheelsException(PrizeWheelsForWxErcodeException e) {
 		logger.error("自义定异常：" + e.getClass().getName(), e);
-		RestResult RestResult = new RestResult(202,"来迟啦,码已经被扫啦!" , e.getMessage()); // 状态码前端需求
+		HashMap hashMap = new HashMap<>();
+		hashMap.put("type",1);
+		RestResult RestResult = new RestResult(200,"来迟啦,码已经被扫啦!" , hashMap); // 状态码前端需求
 		return RestResult;
 	}
 
@@ -230,7 +233,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NotGetPrizeWheelsException.class)
 	public RestResult prizeWheelsException(NotGetPrizeWheelsException e) {
 		logger.error("大转盘概率计算器计算未获取奖：" + e.getClass().getName(), e);
-		RestResult RestResult = new RestResult(201,"来迟啦,码已经被扫啦!" , e.getMessage());// 状态码前端需求
+		RestResult RestResult = new RestResult(200,"未中奖!!!" , e.getMessage());// 状态码前端需求
 		return RestResult;
 	}
 
