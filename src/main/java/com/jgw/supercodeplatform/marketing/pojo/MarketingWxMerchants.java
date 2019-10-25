@@ -1,7 +1,12 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
-public class MarketingWxMerchants {
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
+@TableName("marketing_wx_merchants")
+public class MarketingWxMerchants {
+    @TableId(value = "Id", type = IdType.AUTO)
     private String id;
     private String mchAppid;//商户账号appid
     private String mchid;//商户号
