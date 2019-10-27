@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.interfaces;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.config.aop.CheckRole;
@@ -12,17 +13,22 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.H5RewardInfo;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsOrderDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsRewardDto;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsDto;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.Asserts;
+import org.modelmapper.internal.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -79,5 +85,22 @@ public class H5WheelsController extends SalerCommonController {
         return success( );
     }
 
+    @PostMapping("/preview/add")
+    @ApiOperation(value = "预览", notes = "")
+    public RestResult add( @RequestBody WheelsDto wheelsDto)   {
+        String uuid = UUID.randomUUID().toString();
+        // 1天
+        redisUtil.set(uuid, JSONObject.toJSONString(wheelsDto),60 * 60 *24L);
+        return success(uuid);
+    }
+
+
+    @PostMapping("/preview")
+    @ApiOperation(value = "预览", notes = "")
+    public RestResult preview( String uuid)   {
+        String wheelsDtoStr = redisUtil.get(uuid);
+        Asserts.check(!StringUtils.isEmpty(wheelsDtoStr),"重新点击预览生成!");
+        return success(JSONObject.parseObject(wheelsDtoStr));
+    }
 
 }
