@@ -12,6 +12,7 @@ import com.jgw.supercodeplatform.marketing.dto.common.UserWechatModel;
 import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsExtMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,10 +35,12 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
     public void addOrUpdateMerchantList(MultipartFile files[], String detail) throws IOException {
         List<UserWechatModel> userWechatModelList = JSON.parseArray(detail, UserWechatModel.class);
         Map<String, byte[]> fileMap = new HashMap<>();
-        for (MultipartFile file : files) {
-            String fileName = file.getOriginalFilename();
-            byte[] fileBytes = file.getBytes();
-            fileMap.put(fileName, fileBytes);
+        if (ArrayUtils.isNotEmpty(files)) {
+            for (MultipartFile file : files) {
+                String fileName = file.getOriginalFilename();
+                byte[] fileBytes = file.getBytes();
+                fileMap.put(fileName, fileBytes);
+            }
         }
         List<MarketingWxMerchants> addMarketingWxMerchantsList = new ArrayList<>();
         List<MarketingWxMerchants> updateMarketingWxMerchantsList = new ArrayList<>();
