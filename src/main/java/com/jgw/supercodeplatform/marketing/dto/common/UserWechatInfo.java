@@ -31,6 +31,5 @@ public class UserWechatInfo {
     private Date createTime;
     private Date updateTime;
     private String organizationId;
-    private String fileName;
 
 }
