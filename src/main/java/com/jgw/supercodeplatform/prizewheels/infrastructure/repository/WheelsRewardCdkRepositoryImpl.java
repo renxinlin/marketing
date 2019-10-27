@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.repository;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,6 +11,8 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardCdkRepository;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsRewardCdkMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRewardCdkPojo;
+import lombok.extern.slf4j.Slf4j;
+import netscape.javascript.JSObject;
 import org.apache.http.util.Asserts;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Slf4j
 @Repository
 public class WheelsRewardCdkRepositoryImpl implements WheelsRewardCdkRepository {
     @Autowired
@@ -40,7 +43,7 @@ public class WheelsRewardCdkRepositoryImpl implements WheelsRewardCdkRepository 
         queryWrapper.eq("prizeRewardId", prizeRewardId);
         IPage<WheelsRewardCdkPojo> ipage   = new Page(1,1); ;
         IPage<WheelsRewardCdkPojo> wheelsRewardCdkPojoIPage = wheelsRewardCdkMapper.selectPage(ipage, queryWrapper);
-
+        log.error("wheelsRewardCdkPojoIPage=>{}", JSONObject.toJSONString(wheelsRewardCdkPojoIPage));
         if(wheelsRewardCdkPojoIPage !=null
                 && !CollectionUtils.isEmpty(wheelsRewardCdkPojoIPage.getRecords())){
             WheelsRewardCdkPojo wheelsRewardCdkPojo = wheelsRewardCdkPojoIPage.getRecords().get(0);

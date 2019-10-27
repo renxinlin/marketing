@@ -109,7 +109,7 @@ public class WheelsRewardDomainService {
         // 领取成功 cdk - 1 领取记录
         if(finalReward.getType().intValue() == RewardTypeConstant.virtual){
             // TODO Repository做了业务，提到上层
-            WheelsRewardCdk cdkWhenH5Reward = wheelsRewardCdkRepository.getCdkWhenH5Reward(prizeWheelsId);
+            WheelsRewardCdk cdkWhenH5Reward = wheelsRewardCdkRepository.getCdkWhenH5Reward(finalReward.getId());
 
 
             WheelsRecord wheelsRecord = new WheelsRecord();
