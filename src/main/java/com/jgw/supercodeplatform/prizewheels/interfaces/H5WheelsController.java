@@ -95,7 +95,7 @@ public class H5WheelsController extends SalerCommonController {
     }
 
 
-    @PostMapping("/preview")
+    @GetMapping("/preview")
     @ApiOperation(value = "预览", notes = "")
     public RestResult preview( String uuid)   {
         String wheelsDtoStr = redisUtil.get(uuid);
