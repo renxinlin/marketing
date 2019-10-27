@@ -36,9 +36,6 @@ public class WheelsRewardDomainService {
     private CdkEventPublisher cdkEventPublisher;
 
     @Autowired
-    private CommonUtil commonUtil;
-
-    @Autowired
     @Qualifier("cdkEventSubscriberImpl")
     private CdkEventSubscriber cdkEventSubscriber;
 
@@ -122,8 +119,8 @@ public class WheelsRewardDomainService {
                     ,user.getMemberId()+""
                     ,user.getMemberName()
                     ,prizeWheelsId,finalReward.getId()
-                    ,commonUtil.getOrganizationName()
-                    ,commonUtil.getOrganizationId());
+                    ,user.getOrganizationName()
+                    ,user.getOrganizationId());
 
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
@@ -141,8 +138,8 @@ public class WheelsRewardDomainService {
                     ,user.getMemberId()+""
                     ,user.getMemberName()
                     ,prizeWheelsId,finalReward.getId()
-                    ,commonUtil.getOrganizationName()
-                    ,commonUtil.getOrganizationId());
+                    ,user.getOrganizationName()
+                    ,user.getOrganizationId());
 
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 

@@ -14,6 +14,7 @@ import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonContr
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.prizewheels.application.service.WheelsPublishAppication;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.PrizeWheelsOrderPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRecordPojo;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
 import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
@@ -47,6 +48,9 @@ public class WheelsController extends SalerCommonController {
 
     @Value("{\"userName\":\"姓名\",\"mobile\":\"手机号\", \"rewardName\":\"奖项名称\",\"createTime\":\"领奖时间\"}")
     private String EXCEL_FIELD_MAP;
+
+    @Value("{\"organizationId\":\"组织ID\",\"organizationName\":\"组织名称\", \"receiverName\":\"收货人\",\"mobile\":\"用户手机\",\"receiverMobile\":\"收货手机\",\"address\":\"用户地址\",\"content\":\"物品\",\"createDate\":\"下单时间\"}")
+    private String EXCEL_ORDER_FIELD_MAP;
 
     @PostMapping("/add")
     @ApiOperation(value = "添加", notes = "分页参见以前接口")
@@ -126,49 +130,36 @@ public class WheelsController extends SalerCommonController {
     }
 
 
-    /**
-     * 查看订单记录
-     * @return
-     */
 
-    @ResponseBody
     @GetMapping("/pageOrder")
-    @ApiOperation(value = "订单分页", notes = "")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult pageOrder(DaoSearchWithPrizeWheelsIdDto daoSearch) {
-        // appication.pageOrder(daoSearch);
-        return success( );
+    @ApiOperation(value = "订单分页")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<AbstractPageService.PageResults<List<PrizeWheelsOrderPojo>>> orderPage(DaoSearchWithPrizeWheelsIdDto daoSearch){
+        return success(appication.orderRecords(daoSearch));
     }
 
 
-
-
-
-    @ResponseBody
     @GetMapping("/exportOrder")
-    @ApiOperation(value = "订单导出", notes = "")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public void exportOrder(DaoSearchWithPrizeWheelsIdDto daoSearch, HttpServletResponse response) throws SuperCodeException {
+    @ApiOperation(value = "订单导出")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public void orderExport(DaoSearchWithPrizeWheelsIdDto daoSearch, HttpServletResponse response) throws SuperCodeException {
         //导出十万条
         daoSearch.setCurrent(1);
         daoSearch.setPageSize(100000);
         // step-1 查询记录
-       //   AbstractPageService.PageResults<List<T>> pageResults= appication.pageOrder(daoSearch);
-
-                // step-2 获取记录
-        List<WheelsRecordPojo> list= null ;//pageResults.getList();
+        AbstractPageService.PageResults<List<PrizeWheelsOrderPojo>> pageResults=appication.orderRecords(daoSearch);
+        // step-2 获取记录
+        List<PrizeWheelsOrderPojo> list=pageResults.getList();
         //导出
         Map<String,String> filedMap;
         try {
-            filedMap= null; //JsonToMapUtil.toMap(EXCEL_ORDER_FIELD_MAP);
+            filedMap= JsonToMapUtil.toMap(EXCEL_ORDER_FIELD_MAP);
         } catch (Exception e) {
             logger.error("{desc：记录表头解析异常"+e.getMessage()+"}");
             throw new SuperCodeException("表头解析异常",500);
         }
-        ExcelUtils.listToExcel(list, filedMap, "参与记录",response);
+        ExcelUtils.listToExcel(list, filedMap, "订单记录",response);
     }
-
-
 
 
 }
