@@ -12,10 +12,10 @@ public interface MarketingWxMerchantsMapper extends BaseMapper<MarketingWxMercha
 	static String allFields="Id id,Mchid mchid,MchAppid mchAppid,MerchantName merchantName,MerchantKey merchantKey,CertificateAddress certificateAddress,"
 			+ "OrganizationId organizationId,OrganizatioIdlName organizatioIdlName,MerchantSecret merchantSecret, MerchantType merchantType, BelongToJgw belongToJgw, DefaultUse defaultUse";
 	
-    @Select("select "+allFields+" from marketing_wx_merchants where OrganizationId=#{organizationId}")
+    @Select("select "+allFields+" from marketing_wx_merchants where OrganizationId=#{organizationId} AND DefaultUse = 1")
 	MarketingWxMerchants get(@Param("organizationId") String organizationId);
 
-	@Select("select "+allFields+" from marketing_wx_merchants where BelongToJgw = 1")
+	@Select("select "+allFields+" from marketing_wx_merchants where BelongToJgw = 1 AND DefaultUse = 1")
 	MarketingWxMerchants getJgw();
 
 	@Insert(" INSERT INTO marketing_wx_merchants(Mchid,MchAppid,MerchantName,MerchantKey,"

@@ -70,20 +70,20 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             Byte defaultUse = userWechatInfo.getDefaultUse();
             if (defaultUse != null && defaultUse.intValue() == 1) {
                 String organizationId = userWechatInfo.getOrganizationId();
-                MarketingWxMerchantsExt wxMerchantsExt = marketingWxMerchantsExtMapper.selectOne(Wrappers.<MarketingWxMerchantsExt>query().eq("organization_id", organizationId).eq("default_use", defaultUse));
+                MarketingWxMerchantsExt wxMerchantsExt = marketingWxMerchantsExtMapper.selectOne(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", organizationId).eq("defaultUse", defaultUse));
                 if (wxMerchantsExt != null) {
                     if (StringUtils.isBlank(wxMerchantsExt.getAppid())) {
                         marketingWxMerchantsExtMapper.deleteById(wxMerchantsExt.getId());
                     } else {
-                        marketingWxMerchantsExtMapper.update(null, Wrappers.<MarketingWxMerchantsExt>update().set("default_use", (byte) 0).eq("organization_id", organizationId).eq("default_use", defaultUse));
+                        marketingWxMerchantsExtMapper.update(null, Wrappers.<MarketingWxMerchantsExt>update().set("defaultUse", (byte) 0).eq("organizationId", organizationId).eq("defaultUse", defaultUse));
                     }
                 }
-                MarketingWxMerchants wxMerchants = getOne(Wrappers.<MarketingWxMerchants>query().eq("organization_id", organizationId).eq("default_use", defaultUse));
+                MarketingWxMerchants wxMerchants = getOne(Wrappers.<MarketingWxMerchants>query().eq("organizationId", organizationId).eq("defaultUse", defaultUse));
                 if (wxMerchants != null) {
                     if (StringUtils.isBlank(wxMerchants.getMchAppid())) {
                         removeById(wxMerchants.getId());
                     } else {
-                        update(null, Wrappers.<MarketingWxMerchants>update().set("default_use", (byte) 0).eq("organization_id", organizationId).eq("default_use", defaultUse));
+                        update(null, Wrappers.<MarketingWxMerchants>update().set("defaultUse", (byte) 0).eq("organizationId", organizationId).eq("defaultUse", defaultUse));
                     }
                 }
             }
@@ -111,7 +111,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             if (!updateMarketingWxMerchantsList.isEmpty()) {
                 for (MarketingWxMerchants wxMerchants : updateMarketingWxMerchantsList) {
                     UpdateWrapper<MarketingWxMerchants> updateWrapper = Wrappers.<MarketingWxMerchants>update()
-                            .eq("organization_id", wxMerchants.getOrganizationId()).eq("mch_appid", wxMerchants.getMchAppid());
+                            .eq("organizationId", wxMerchants.getOrganizationId()).eq("mchAppid", wxMerchants.getMchAppid());
                     update(wxMerchants, updateWrapper);
                 }
             }
@@ -123,7 +123,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             if (!updateMarketingWxMerchantsExtList.isEmpty()) {
                 for (MarketingWxMerchantsExt wxMerchantsExt : updateMarketingWxMerchantsExtList) {
                     UpdateWrapper<MarketingWxMerchantsExt> updateWrapper = Wrappers.<MarketingWxMerchantsExt>update()
-                            .eq("organization_id", wxMerchantsExt.getOrganizationId()).eq("appid", wxMerchantsExt.getAppid());
+                            .eq("organizationId", wxMerchantsExt.getOrganizationId()).eq("appid", wxMerchantsExt.getAppid());
                     marketingWxMerchantsExtMapper.update(wxMerchantsExt, updateWrapper);
                 }
             }
@@ -133,11 +133,11 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
     public void useJgw(String organizationId, String organizationName, String jgwAppid){
         globalRamCache.delWXMerchants(organizationId);
         QueryWrapper<MarketingWxMerchants> merchantQuery = Wrappers.<MarketingWxMerchants>query()
-                .eq("organization_id", organizationId).eq("default_use", (byte)1);
+                .eq("organizationId", organizationId).eq("defaultUse", (byte)1);
         MarketingWxMerchants marketingWxMerchants = getOne(merchantQuery);
         if (marketingWxMerchants != null) {
             UpdateWrapper<MarketingWxMerchants> merchantUpdate = Wrappers.<MarketingWxMerchants>update().set("merchantType", (byte)1)
-                    .eq("organization_id", organizationId).eq("default_use", (byte)1);
+                    .eq("organizationId", organizationId).eq("defaultUse", (byte)1);
             update(null, merchantUpdate);
         } else {
             marketingWxMerchants = new MarketingWxMerchants();
@@ -151,7 +151,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
         }
 
         QueryWrapper<MarketingWxMerchantsExt> merchantExtQuery = Wrappers.<MarketingWxMerchantsExt>query()
-                .eq("organization_id", organizationId).eq("default_use", (byte)1);
+                .eq("organizationId", organizationId).eq("defaultUse", (byte)1);
         MarketingWxMerchantsExt marketingWxMerchantsExt = marketingWxMerchantsExtMapper.selectOne(merchantExtQuery);
         if (marketingWxMerchantsExt == null) {
             marketingWxMerchantsExt = new MarketingWxMerchantsExt();
@@ -167,8 +167,8 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
 
     public void delMerchant(String organizationId, String appid) {
         globalRamCache.delWXMerchants(organizationId);
-        remove(Wrappers.<MarketingWxMerchants>query().eq("organization_id", organizationId).eq("mch_appid", appid));
-        marketingWxMerchantsExtMapper.delete(Wrappers.<MarketingWxMerchantsExt>query().eq("organization_id", organizationId).eq("appid", appid));
+        remove(Wrappers.<MarketingWxMerchants>query().eq("organizationId", organizationId).eq("mchAppid", appid));
+        marketingWxMerchantsExtMapper.delete(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", organizationId).eq("appid", appid));
     }
 
 
