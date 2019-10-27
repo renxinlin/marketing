@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dto.common.UserOrgWechat;
 import com.jgw.supercodeplatform.marketing.dto.common.UserWechatInfo;
@@ -30,6 +31,8 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
 
     @Autowired
     private MarketingWxMerchantsExtMapper marketingWxMerchantsExtMapper;
+    @Autowired
+    private GlobalRamCache globalRamCache;
 
     @Transactional(rollbackFor = Exception.class)
     public void addOrUpdateMerchantList(MultipartFile files[], String detail) throws IOException {
@@ -62,6 +65,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             marketingWxMerchants.setMerchantType(userWechatInfo.getMerchantType());
             marketingWxMerchants.setMerchantSecret(userOrgWechat.getSecret());
             marketingWxMerchants.setOrganizationId(userOrgWechat.getOrganizationId());
+            globalRamCache.delWXMerchants(userOrgWechat.getOrganizationId());
             //删掉无用的或者更改之前的默认使用为非默认
             Byte defaultUse = userWechatInfo.getDefaultUse();
             if (defaultUse != null && defaultUse.intValue() == 1) {
@@ -127,6 +131,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
     }
 
     public void useJgw(String organizationId, String organizationName, String jgwAppid){
+        globalRamCache.delWXMerchants(organizationId);
         QueryWrapper<MarketingWxMerchants> merchantQuery = Wrappers.<MarketingWxMerchants>query()
                 .eq("organization_id", organizationId).eq("default_use", (byte)1);
         MarketingWxMerchants marketingWxMerchants = getOne(merchantQuery);
@@ -161,6 +166,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
     }
 
     public void delMerchant(String organizationId, String appid) {
+        globalRamCache.delWXMerchants(organizationId);
         remove(Wrappers.<MarketingWxMerchants>query().eq("organization_id", organizationId).eq("mch_appid", appid));
         marketingWxMerchantsExtMapper.delete(Wrappers.<MarketingWxMerchantsExt>query().eq("organization_id", organizationId).eq("appid", appid));
     }
