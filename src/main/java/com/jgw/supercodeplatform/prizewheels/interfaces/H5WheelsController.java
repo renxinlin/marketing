@@ -52,7 +52,7 @@ public class H5WheelsController extends SalerCommonController {
 
     @GetMapping("/redrict")
     @ApiOperation(value = "大转盘码管理重定向", notes = "")
-    public String reward(String productBatchId, String outerCodeId, String codeTypeId, String organizationId) {
+    public String reward(String productBatchId, String outerCodeId, String codeTypeId, String organizationId, String uuid) {
         // 扫码重定向到前端 基于产品批次找到活动
         StringBuffer urlparame = new StringBuffer("redirect:");
         urlparame.append(CallBackConstant.TO_WEB_URL)
@@ -60,7 +60,8 @@ public class H5WheelsController extends SalerCommonController {
                 .append("&outerCodeId=").append(outerCodeId)
                 .append("&codeTypeId=").append(codeTypeId)
                 .append("&template=10") // 业务标志字段
-                .append("&organizationId=").append(organizationId);
+                .append("&organizationId=").append(organizationId)
+                .append("&uuid=").append(uuid);
         String url = urlparame.toString();
         log.info("==> 大转盘扫码重定向到前端{} ", url);
         return url;
@@ -85,6 +86,7 @@ public class H5WheelsController extends SalerCommonController {
         return success( );
     }
 
+    @ResponseBody
     @PostMapping("/preview/add")
     @ApiOperation(value = "预览", notes = "")
     public RestResult add( @RequestBody WheelsDto wheelsDto)   {
@@ -94,7 +96,7 @@ public class H5WheelsController extends SalerCommonController {
         return success(uuid);
     }
 
-
+    @ResponseBody
     @GetMapping("/preview")
     @ApiOperation(value = "预览", notes = "")
     public RestResult preview( String uuid)   {
