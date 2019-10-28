@@ -14,6 +14,7 @@ import javax.validation.Valid;
 
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.dto.WxSignPram;
+import com.jgw.supercodeplatform.marketing.dto.coupon.UrlParam;
 import com.jgw.supercodeplatform.marketing.vo.activity.WxSignVo;
 import com.jgw.supercodeplatform.marketing.vo.common.WxMerchants;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -127,10 +128,10 @@ public class CommonController extends CommonUtil {
         return restResult;
     }
 
-    @RequestMapping(value = "/jgwJssdkinfo",method = RequestMethod.GET)
+    @PostMapping("/jgwJssdkinfo")
     @ApiOperation("获取甲骨文微信授权信息")
-    @ApiImplicitParam(name = "url", paramType = "query", defaultValue = "http://www.baidu.com", value = "签名页面url", required = true)
-    public RestResult<Map<String, String>> getJgwJssdkinfo(@RequestParam("url")String url) throws Exception {
+    public RestResult<Map<String, String>> getJgwJssdkinfo(@RequestBody @Valid UrlParam urlParam) throws Exception {
+        String url = urlParam.getUrl();
         MarketingWxMerchants mWxMerchants = marketingWxMerchantsService.getJgw();
         String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), mWxMerchants.getOrganizationId());
         // TODO 测试
