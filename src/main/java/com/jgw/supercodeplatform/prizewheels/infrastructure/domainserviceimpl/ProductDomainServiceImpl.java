@@ -77,7 +77,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
 
     @Override
     public void removeOldProduct(List<Product> product) {
-        List<SbatchUrlUnBindDto> sbatchids = productDomainTranfer.tranferProductsToSbatchUrlDtosWhenUnBinding(product);;
+        List<SbatchUrlUnBindDto> sbatchids = productDomainTranfer.tranferProductsToSbatchUrlDtosWhenUnBinding(product);
         log.info("更新大转盘removeOldProduct(List<Product> sbatchids) =》 {}",JSONObject.toJSONString(sbatchids));
         RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(sbatchids);
         log.info("更新大转盘removeOldProduct(List<Product> product) =》 {}",JSONObject.toJSONString(objectRestResult));
