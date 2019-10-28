@@ -7,8 +7,11 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
 import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -20,7 +23,7 @@ import java.util.Set;
 
 public class MainTest {
 
-    public static void main(String[] args) throws SuperCodeException, UnsupportedEncodingException {
+    public static void main(String[] args) throws SuperCodeException, IOException {
 
 //        List<MarketingPrizeTypeMO> marketingPrizeTypeMOs = new ArrayList<MarketingPrizeTypeMO>();
 //
@@ -72,10 +75,12 @@ public class MainTest {
 //
 //        System.out.println("------>"+ JSON.toJSONString(lto));
 
-        String redirectUri = "https://antifake.h5.kf315.net/?s=52179&uuid=1297cf6ba9fd436aa8cb0468c682d4f0#/h2";
-        String fd = URLEncoder.encode(redirectUri, "UTF-8");
+//        String redirectUri = "https://antifake.h5.kf315.net/?s=52179&uuid=1297cf6ba9fd436aa8cb0468c682d4f0#/h2";
+//        String fd = URLEncoder.encode(redirectUri, "UTF-8");
         //String hg = redirectUri.replaceAll("#", "&");
-        System.out.println("--->" + fd);
+        byte[] files = FileUtils.readFileToByteArray(new File("C:\\Users\\JGW\\Desktop\\acfb9d3fd706442989bde4edaebfec6c.p12"));
+
+        System.out.println("--->" + files.length);
     }
 
 }
