@@ -16,6 +16,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.dto.WxSignPram;
 import com.jgw.supercodeplatform.marketing.vo.activity.WxSignVo;
 import com.jgw.supercodeplatform.marketing.vo.common.WxMerchants;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,6 +124,44 @@ public class CommonController extends CommonUtil {
     	restResult.setResults(data);
     	restResult.setState(200);
     	
+        return restResult;
+    }
+
+    @RequestMapping(value = "/jgwJssdkinfo",method = RequestMethod.GET)
+    @ApiOperation("获取甲骨文微信授权信息")
+    @ApiImplicitParam(name = "url", paramType = "query", defaultValue = "http://www.baidu.com", value = "签名页面url", required = true)
+    public RestResult<Map<String, String>> getJgwJssdkinfo(@RequestParam("url")String url) throws Exception {
+        MarketingWxMerchants mWxMerchants = marketingWxMerchantsService.getJgw();
+        String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), mWxMerchants.getOrganizationId());
+        // TODO 测试
+        HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
+        String tickContent=result.getContent();
+        logger.info("获取到tick的数据："+tickContent);
+        String ticket = JSONObject.parseObject(tickContent).getString("ticket");
+        logger.info("获取到tick的数据："+ticket);
+        // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
+        String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
+        long timestamp=WXPayUtil.getCurrentTimestamp();
+        Map<String, String>sinMap=new HashMap<String, String>();
+        sinMap.put("noncestr", noncestr);
+        sinMap.put("jsapi_ticket", ticket);
+        sinMap.put("timestamp", timestamp+"");
+        sinMap.put("url", url);
+        //
+        String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
+        String signature=DigestUtils.sha1Hex(sha1String1);
+        //String signature=CommonUtil.sha1Encrypt(sha1String1);
+        logger.info("签名前======>{}", sha1String1);
+        logger.info("签名后======>", signature);
+        RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
+        restResult.setState(200);
+        Map<String, String> data=new HashMap<String, String>();
+        data.put("noncestr", noncestr);
+        data.put("timestamp", timestamp+"");
+        data.put("appId", mWxMerchants.getMchAppid());
+        data.put("signature", signature);
+        restResult.setResults(data);
+        restResult.setState(200);
         return restResult;
     }
 
