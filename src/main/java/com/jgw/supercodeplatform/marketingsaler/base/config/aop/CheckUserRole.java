@@ -65,7 +65,7 @@ public class CheckUserRole  implements Ordered {
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            throw new SuperCodeException("角色鉴定失败");
+            throw new RuntimeException("角色鉴定失败");
         }
         // 只校验状态，存在性于业务校验
         User exists = userService.exists(user);
