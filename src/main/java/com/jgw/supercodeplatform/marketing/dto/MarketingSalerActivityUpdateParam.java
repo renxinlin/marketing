@@ -25,7 +25,7 @@ public class MarketingSalerActivityUpdateParam {
     @ApiModelProperty(value = "活动设置中奖奖次")
     private List<MarketingPrizeTypeParam> marketingPrizeTypeParams;
 
-    @ApiModelProperty(value = "本期不传渠道")
+    @ApiModelProperty(value = "渠道")
     private List<MarketingChannelParam> mChannelParams;
 
 

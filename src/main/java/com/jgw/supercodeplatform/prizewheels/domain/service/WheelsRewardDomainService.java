@@ -36,9 +36,6 @@ public class WheelsRewardDomainService {
     private CdkEventPublisher cdkEventPublisher;
 
     @Autowired
-    private CommonUtil commonUtil;
-
-    @Autowired
     @Qualifier("cdkEventSubscriberImpl")
     private CdkEventSubscriber cdkEventSubscriber;
 
@@ -112,7 +109,7 @@ public class WheelsRewardDomainService {
         // 领取成功 cdk - 1 领取记录
         if(finalReward.getType().intValue() == RewardTypeConstant.virtual){
             // TODO Repository做了业务，提到上层
-            WheelsRewardCdk cdkWhenH5Reward = wheelsRewardCdkRepository.getCdkWhenH5Reward(prizeWheelsId);
+            WheelsRewardCdk cdkWhenH5Reward = wheelsRewardCdkRepository.getCdkWhenH5Reward(finalReward.getId());
 
 
             WheelsRecord wheelsRecord = new WheelsRecord();
@@ -122,8 +119,8 @@ public class WheelsRewardDomainService {
                     ,user.getMemberId()+""
                     ,user.getMemberName()
                     ,prizeWheelsId,finalReward.getId()
-                    ,commonUtil.getOrganizationName()
-                    ,commonUtil.getOrganizationId());
+                    ,user.getOrganizationName()
+                    ,user.getOrganizationId());
 
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
@@ -141,8 +138,8 @@ public class WheelsRewardDomainService {
                     ,user.getMemberId()+""
                     ,user.getMemberName()
                     ,prizeWheelsId,finalReward.getId()
-                    ,commonUtil.getOrganizationName()
-                    ,commonUtil.getOrganizationId());
+                    ,user.getOrganizationName()
+                    ,user.getOrganizationId());
 
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 

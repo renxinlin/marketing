@@ -173,7 +173,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
      * 获取需要下架
      * @return
      */
-    @Select("select " + allFileds + " from marketing_integral_exchange ie where ie.Status = 3 and ie.HaveStock = 0 and  DATE_FORMAT(UnderCarriage , '%Y-%m-%d') =  DATE_FORMAT(now(), '%Y-%m-%d') ")
+    @Select("select " + allFileds + " from marketing_integral_exchange ie where ie.Status = 3 and (ie.HaveStock = 0 or  DATE_FORMAT(UnderCarriage , '%Y-%m-%d') <=  DATE_FORMAT(now(), '%Y-%m-%d') )")
     List<IntegralExchange>  getNeedOffExchange();
 
    // 自动下架

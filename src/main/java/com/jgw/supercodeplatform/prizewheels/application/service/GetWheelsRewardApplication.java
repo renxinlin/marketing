@@ -143,9 +143,9 @@ public class GetWheelsRewardApplication {
 
             return reward;
 
-        } catch (Exception e){
+        } catch (RuntimeException e){
             e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+            throw e;
         } finally {
             if (acquireLock) {
                 lock.releaseLock(PREFIXX + outerCodeId);

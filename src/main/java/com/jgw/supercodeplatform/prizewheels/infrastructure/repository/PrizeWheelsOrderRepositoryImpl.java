@@ -24,4 +24,6 @@ public class PrizeWheelsOrderRepositoryImpl implements PrizeWheelsOrderRepositor
     public void addOrder(PrizeWheelsOrder prizeWheelsOrder) {
         mapper.insert(modelMapper.map(prizeWheelsOrder, PrizeWheelsOrderPojo.class));
     }
+
+
 }

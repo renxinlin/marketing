@@ -544,6 +544,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		MarketingWxMember marketingWxMember = marketingWxMemberMapper.selectOne(Wrappers.<MarketingWxMember>query().eq("MemberId",memberId).eq("CurrentUse", 1).eq("MemberType", MemberTypeEnums.SALER.getType()));
 		UserWithWechat userWithWechat = new UserWithWechat();
 		BeanUtils.copyProperties(marketingUser, userWithWechat);
+		userWithWechat.setMemberId(marketingUser.getId());
 		if (marketingWxMember != null) {
 			userWithWechat.setWxName(marketingWxMember.getWxName());
 			userWithWechat.setOpenid(marketingWxMember.getOpenid());
