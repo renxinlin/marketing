@@ -14,14 +14,12 @@ import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsEx
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,8 +91,8 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             marketingWxMerchantsExt.setDefaultUse(userWechatInfo.getDefaultUse());
             String fileName = userWechatInfo.getCertificateAddress();
             if (StringUtils.isNotBlank(fileName)) {
-                byte[] fileBytes = FileUtils.readFileToByteArray(new File(fileName));
-                log.info("-------->读取文件大小为：{}", fileBytes);
+                byte[] fileBytes = File2byte(new File(fileName));
+                log.info("-------->读取文件大小为：{}", fileBytes.length);
                 marketingWxMerchantsExt.setCertificateInfo(fileBytes);
             }
             if (userOrgWechat.getId() != null) {
@@ -168,5 +166,26 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
         marketingWxMerchantsExtMapper.delete(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", organizationId).eq("appid", appid));
     }
 
+    public static byte[] File2byte(File tradeFile) throws FileNotFoundException {
+        byte[] buffer = null;
+        FileInputStream fis = new FileInputStream(tradeFile);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try {
+            byte[] b = new byte[1024];
+            int n;
+            while ((n = fis.read(b)) != -1)
+            {
+                bos.write(b, 0, n);
+            }
+            fis.close();
+            bos.close();
+            buffer = bos.toByteArray();
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        return buffer;
+    }
 
 }
