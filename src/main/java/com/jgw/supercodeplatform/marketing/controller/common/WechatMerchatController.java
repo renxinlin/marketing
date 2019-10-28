@@ -19,8 +19,8 @@ public class WechatMerchatController {
     private WechatMerchatService wechatMerchatService;
 
     @PostMapping("/addOrUpdateMerchantList")
-    public RestResult<?> addOrUpdateMerchantList(@RequestParam MultipartFile files[], @RequestParam String detail) throws IOException {
-        wechatMerchatService.addOrUpdateMerchantList(files, detail);
+    public RestResult<?> addOrUpdateMerchantList(@RequestParam String detail) throws IOException {
+        wechatMerchatService.addOrUpdateMerchantList(detail);
         return RestResult.success();
     }
 
