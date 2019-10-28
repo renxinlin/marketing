@@ -323,6 +323,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		if (null!=productIds && !productIds.isEmpty()) {
 			params.put("excludeProductIds",String.join(",", productIds));
 		}
+		logger.info("CODEMANAGER_RELATION_PRODUCT_URL = /code/relation/list/relation/productRecord : params ==> {}",JSONObject.toJSONString(params));
 		Map<String, String> headerMap = new HashMap<>();
 		headerMap.put("super-token", getSuperToken());
 		ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, headerMap);
