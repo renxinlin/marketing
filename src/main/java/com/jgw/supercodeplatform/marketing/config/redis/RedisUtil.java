@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -293,5 +294,15 @@ public class RedisUtil {
     public Long leftExpireSeconds(String key) {
     	return  stringRedisTemplate.getExpire(key);
     }
-   
+
+    /**
+     * 获取redis中指定key的hashMap entry实体
+     * @param key
+     * @return
+     */
+    public Map<Object, Object> getAllHash(final String key) {
+        Map<Object, Object> map=stringRedisTemplate.opsForHash().entries(key);
+        return  map;
+
+    }
 }
