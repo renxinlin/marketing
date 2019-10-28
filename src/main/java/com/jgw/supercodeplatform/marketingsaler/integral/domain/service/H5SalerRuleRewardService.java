@@ -41,8 +41,9 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
      * @param user
      */
     @Transactional
-    public Integer getIntegral(String outCodeId,SalerRuleReward reward, H5LoginVO user)   {
+    public Integer getIntegral(String outCodeId,String codeTypeId,SalerRuleReward reward, H5LoginVO user)   {
         log.info("扫码入参 outCodeId{}",outCodeId);
+        log.info("扫码入参 codeTypeId{}",codeTypeId);
         log.info("扫码入参 SalerRuleReward{}",reward);
         log.info("扫码入参 H5LoginVO{}", JSONObject.toJSONString(user));
         // 同步扫码
@@ -53,7 +54,7 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             }
             // 码层级获取:销售员只有单码有积分，单码关联的盒码、箱码等其他嵌套码没有积分
             try {
-                RestResult<Long> currentLevel = outerCodeInfoService.getCurrentLevel(new OutCodeInfoDto(outCodeId, UserConstants.MARKETING_CODE_TYPE));
+                RestResult<Long> currentLevel = outerCodeInfoService.getCurrentLevel(new OutCodeInfoDto(outCodeId, codeTypeId));
                 Asserts.check(currentLevel!=null && currentLevel.getResults().intValue() == UserConstants.SINGLE_CODE.intValue(),"非单码");
             } catch (Exception e) {
                 e.printStackTrace();

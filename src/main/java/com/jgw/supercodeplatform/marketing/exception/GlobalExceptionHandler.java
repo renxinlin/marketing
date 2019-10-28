@@ -204,7 +204,7 @@ public class GlobalExceptionHandler {
 	public RestResult prizeWheelsException(PrizeWheelsForWxErcodeException e) {
 		logger.error("自义定异常：" + e.getClass().getName(), e);
 		HashMap hashMap = new HashMap<>();
-		hashMap.put("type",1);
+		hashMap.put("scanType",1); // 前端根据该字段提示相关错误
 		hashMap.put("wxErcode",e.getMessage());
 		RestResult RestResult = new RestResult(200,"来迟啦,码已经被扫啦!" , hashMap); // 状态码前端需求
 		return RestResult;
