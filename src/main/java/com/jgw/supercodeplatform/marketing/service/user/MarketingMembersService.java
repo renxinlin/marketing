@@ -786,6 +786,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if (StringUtils.isNotBlank(memberWithWechat.getMobile())) {
 			MarketingMembers members = new MarketingMembers();
 			BeanUtils.copyProperties(memberWithWechat, members);
+			members.setMobile(memberWithWechat.getMobile());
 			marketingMembersMapper.insert(members);
 			memberWithWechat.setMemberId(members.getId());
 		}
