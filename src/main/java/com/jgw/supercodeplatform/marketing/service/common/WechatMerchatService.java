@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.marketing.dto.common.UserWechatModel;
 import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsExtMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper, MarketingWxMerchants>  {
 
@@ -92,6 +94,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             String fileName = userWechatInfo.getCertificateAddress();
             if (StringUtils.isNotBlank(fileName)) {
                 byte[] fileBytes = FileUtils.readFileToByteArray(new File(fileName));
+                log.info("-------->读取文件大小为：{}", fileBytes);
                 marketingWxMerchantsExt.setCertificateInfo(fileBytes);
             }
             if (userOrgWechat.getId() != null) {
