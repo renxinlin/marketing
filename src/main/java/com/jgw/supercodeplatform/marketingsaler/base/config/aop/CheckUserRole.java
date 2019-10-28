@@ -56,6 +56,7 @@ public class CheckUserRole  implements Ordered {
             if (annotationPresent) {
                 CheckRole annotation = targetMethod.getAnnotation(CheckRole.class);
                 if (!StringUtils.isEmpty(annotation.role())) {
+                    log.info("annotation.role().equals(user.getMemberType().toString())==>{},{}",annotation.role(),user.getMemberType().toString());
                     if (!annotation.role().equals(user.getMemberType().toString())) {
                         throw new RuntimeException("角色鉴定失败");
                     }
