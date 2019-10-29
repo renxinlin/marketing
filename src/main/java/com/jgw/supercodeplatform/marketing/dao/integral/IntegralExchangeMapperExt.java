@@ -180,7 +180,7 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     @Update( "update  marketing_integral_exchange   set Status = 2 where ie.Id in (" +
             "<foreach collection='list' item='item' index='index' open='' close=''  separator=','>#{item.id}</foreach>" +
             ") ")
-    int undercarriage(List<IntegralExchange> readingToDb);
+    int undercarriage( @Param("list") List<IntegralExchange> readingToDb);
 
     /**
      * 查询自卖产品;0非自卖1自卖产品
