@@ -85,8 +85,8 @@ public class ProductDomainTranfer {
             String[] sbatchIds = product.getSbatchId().split(Product.SPLIT_SYMBOL);
             Arrays.asList(sbatchIds).forEach(sbatchId ->{
                 SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
-//                sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
-                sbatchUrlDto.setUrl(CallBackConstant.EMPTY); // 删除不用根据码
+                sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
+//                sbatchUrlDto.setUrl(CallBackConstant.EMPTY); // 删除不用根据码
                 sbatchUrlDto.initAllBusinessType();
                 sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
                 sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
