@@ -56,7 +56,7 @@ public class MarketingWxMerchantsExt {
     /**
      * appid
      */
-    @TableField("appid")
+    @TableField("Appid")
     private String appid;
 
 

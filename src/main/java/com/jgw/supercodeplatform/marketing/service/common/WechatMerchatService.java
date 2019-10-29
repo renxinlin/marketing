@@ -36,10 +36,10 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
     @Transactional(rollbackFor = Exception.class)
     public void addOrUpdateMerchantList(String detail) throws IOException {
         List<UserWechatModel> userWechatModelList = JSON.parseArray(detail, UserWechatModel.class);
-        List<MarketingWxMerchants> addMarketingWxMerchantsList = new ArrayList<>();
-        List<MarketingWxMerchants> updateMarketingWxMerchantsList = new ArrayList<>();
-        List<MarketingWxMerchantsExt> addMarketingWxMerchantsExtList = new ArrayList<>();
-        List<MarketingWxMerchantsExt> updateMarketingWxMerchantsExtList = new ArrayList<>();
+//        List<MarketingWxMerchants> addMarketingWxMerchantsList = new ArrayList<>();
+//        List<MarketingWxMerchants> updateMarketingWxMerchantsList = new ArrayList<>();
+//        List<MarketingWxMerchantsExt> addMarketingWxMerchantsExtList = new ArrayList<>();
+//        List<MarketingWxMerchantsExt> updateMarketingWxMerchantsExtList = new ArrayList<>();
         for (UserWechatModel userWechatModel : userWechatModelList) {
             UserOrgWechat userOrgWechat = userWechatModel.getUserOrgWechat();
             UserWechatInfo userWechatInfo = userWechatModel.getUserWechatInfo();
@@ -58,31 +58,44 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             marketingWxMerchants.setOrganizationId(userOrgWechat.getOrganizationId());
             globalRamCache.delWXMerchants(userOrgWechat.getOrganizationId());
             //删掉无用的或者更改之前的默认使用为非默认
+            String organizationId = userWechatInfo.getOrganizationId();
+//            Byte merchatType = userWechatInfo.getMerchantType();
             Byte defaultUse = userWechatInfo.getDefaultUse();
-            if (defaultUse != null && defaultUse.intValue() == 1) {
-                String organizationId = userWechatInfo.getOrganizationId();
-                MarketingWxMerchantsExt wxMerchantsExt = marketingWxMerchantsExtMapper.selectOne(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", organizationId).eq("defaultUse", defaultUse));
-                if (wxMerchantsExt != null) {
-                    if (StringUtils.isBlank(wxMerchantsExt.getAppid())) {
-                        marketingWxMerchantsExtMapper.deleteById(wxMerchantsExt.getId());
-                    } else {
-                        marketingWxMerchantsExtMapper.update(null, Wrappers.<MarketingWxMerchantsExt>update().set("defaultUse", (byte) 0).eq("organizationId", organizationId).eq("defaultUse", defaultUse));
-                    }
-                }
-                MarketingWxMerchants wxMerchants = getOne(Wrappers.<MarketingWxMerchants>query().eq("organizationId", organizationId).eq("defaultUse", defaultUse));
-                if (wxMerchants != null) {
-                    if (StringUtils.isBlank(wxMerchants.getMchAppid())) {
-                        removeById(wxMerchants.getId());
-                    } else {
-                        update(null, Wrappers.<MarketingWxMerchants>update().set("defaultUse", (byte) 0).eq("organizationId", organizationId).eq("defaultUse", defaultUse));
-                    }
-                }
+            if (defaultUse.intValue() == 1) {
+//                MarketingWxMerchantsExt wxMerchantsExt = marketingWxMerchantsExtMapper.selectOne(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", organizationId).eq("defaultUse", defaultUse));
+                update(null, Wrappers.<MarketingWxMerchants>update().set("defaultUse", (byte) 0).eq("organizationId", organizationId).eq("defaultUse", defaultUse));
+                marketingWxMerchantsExtMapper.update(null, Wrappers.<MarketingWxMerchantsExt>update().set("defaultUse", (byte) 0).eq("organizationId", organizationId).eq("defaultUse", defaultUse));
+//                if (wxMerchantsExt != null) {
+//                    if (StringUtils.isBlank(wxMerchantsExt.getAppid())) {
+//                        marketingWxMerchantsExtMapper.deleteById(wxMerchantsExt.getId());
+//                    } else {
+//                        marketingWxMerchantsExtMapper.update(null, Wrappers.<MarketingWxMerchantsExt>update().set("defaultUse", (byte) 0).eq("organizationId", organizationId).eq("defaultUse", defaultUse));
+//                    }
+//                }
+//                MarketingWxMerchants wxMerchants = getOne(Wrappers.<MarketingWxMerchants>query().eq("organizationId", organizationId).eq("defaultUse", defaultUse));
+//                if (wxMerchants != null) {
+//                    if (StringUtils.isBlank(wxMerchants.getMchAppid())) {
+//                        removeById(wxMerchants.getId());
+//                    } else {
+//                        update(null, Wrappers.<MarketingWxMerchants>update().set("defaultUse", (byte) 0).eq("organizationId", organizationId).eq("defaultUse", defaultUse));
+//                    }
+//                }
             }
-            if (userOrgWechat.getId() != null) {
-                addMarketingWxMerchantsList.add(marketingWxMerchants);
-            } else {
-                updateMarketingWxMerchantsList.add(marketingWxMerchants);
-            }
+//            if (merchatType.intValue() == 1) {
+//                MarketingWxMerchants wxMerchants = getOne(Wrappers.<MarketingWxMerchants>query().eq("organizationId", organizationId).eq("defaultUse", (byte)1));
+//                if (wxMerchants == null) {
+//                    save(marketingWxMerchants);
+//                } else {
+//                    marketingWxMerchants.setId(wxMerchants.getId());
+//                    updateById(marketingWxMerchants);
+//                }
+//                MarketingWxMerchantsExt wxMerchantsExt = marketingWxMerchantsExtMapper.selectOne(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", organizationId).eq("defaultUse", (byte)1));
+//            }
+//            if (userOrgWechat.getId() != null) {
+//                addMarketingWxMerchantsList.add(marketingWxMerchants);
+//            } else {
+//                updateMarketingWxMerchantsList.add(marketingWxMerchants);
+//            }
             MarketingWxMerchantsExt marketingWxMerchantsExt = new MarketingWxMerchantsExt();
             marketingWxMerchantsExt.setAppid(userOrgWechat.getAppId());
             marketingWxMerchantsExt.setBelongToJgw(userWechatInfo.getJgwType());
@@ -95,34 +108,53 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
                 byte[] fileBytes = FileUtils.readFileToByteArray(new File(fileName));
                 marketingWxMerchantsExt.setCertificateInfo(fileBytes);
             }
-            if (userOrgWechat.getId() != null) {
-                addMarketingWxMerchantsExtList.add(marketingWxMerchantsExt);
+            MarketingWxMerchants merchants = getOne(Wrappers.<MarketingWxMerchants>query().eq("platform_id", userOrgWechat.getId()));
+            if (merchants == null) {
+                save(marketingWxMerchants);
+                marketingWxMerchantsExtMapper.insert(marketingWxMerchantsExt);
             } else {
-                updateMarketingWxMerchantsExtList.add(marketingWxMerchantsExt);
-            }
-            if (!addMarketingWxMerchantsList.isEmpty()) {
-                saveBatch(addMarketingWxMerchantsList);
-            }
-            if (!updateMarketingWxMerchantsList.isEmpty()) {
-                for (MarketingWxMerchants wxMerchants : updateMarketingWxMerchantsList) {
-                    UpdateWrapper<MarketingWxMerchants> updateWrapper = Wrappers.<MarketingWxMerchants>update()
-                            .eq("organizationId", wxMerchants.getOrganizationId()).eq("mchAppid", wxMerchants.getMchAppid());
-                    update(wxMerchants, updateWrapper);
+                marketingWxMerchants.setId(merchants.getId());
+                updateById(marketingWxMerchants);
+                MarketingWxMerchantsExt merchantsExt = marketingWxMerchantsExtMapper.selectOne(Wrappers.<MarketingWxMerchantsExt>query().eq("OrganizationId", merchants.getOrganizationId()).eq("Appid", merchants.getMchAppid()));
+                if (merchantsExt == null) {
+                    marketingWxMerchantsExtMapper.insert(marketingWxMerchantsExt);
+                } else {
+                    marketingWxMerchantsExt.setId(merchantsExt.getId());
+                    marketingWxMerchantsExtMapper.updateById(marketingWxMerchantsExt);
                 }
             }
-            if (!addMarketingWxMerchantsExtList.isEmpty()) {
-                for (MarketingWxMerchantsExt wxMerchantsExt : addMarketingWxMerchantsExtList) {
-                    marketingWxMerchantsExtMapper.insert(wxMerchantsExt);
-                }
-            }
-            if (!updateMarketingWxMerchantsExtList.isEmpty()) {
-                for (MarketingWxMerchantsExt wxMerchantsExt : updateMarketingWxMerchantsExtList) {
-                    UpdateWrapper<MarketingWxMerchantsExt> updateWrapper = Wrappers.<MarketingWxMerchantsExt>update()
-                            .eq("organizationId", wxMerchantsExt.getOrganizationId()).eq("appid", wxMerchantsExt.getAppid());
-                    marketingWxMerchantsExtMapper.update(wxMerchantsExt, updateWrapper);
-                }
-            }
-        };
+//
+//
+//
+//
+//            if (userOrgWechat.getId() != null) {
+//                addMarketingWxMerchantsExtList.add(marketingWxMerchantsExt);
+//            } else {
+//                updateMarketingWxMerchantsExtList.add(marketingWxMerchantsExt);
+//            }
+//            if (!addMarketingWxMerchantsList.isEmpty()) {
+//                saveBatch(addMarketingWxMerchantsList);
+//            }
+//            if (!updateMarketingWxMerchantsList.isEmpty()) {
+//                for (MarketingWxMerchants wxMerchants : updateMarketingWxMerchantsList) {
+//                    UpdateWrapper<MarketingWxMerchants> updateWrapper = Wrappers.<MarketingWxMerchants>update()
+//                            .eq("organizationId", wxMerchants.getOrganizationId()).eq("mchAppid", wxMerchants.getMchAppid());
+//                    update(wxMerchants, updateWrapper);
+//                }
+//            }
+//            if (!addMarketingWxMerchantsExtList.isEmpty()) {
+//                for (MarketingWxMerchantsExt wxMerchantsExt : addMarketingWxMerchantsExtList) {
+//                    marketingWxMerchantsExtMapper.insert(wxMerchantsExt);
+//                }
+//            }
+//            if (!updateMarketingWxMerchantsExtList.isEmpty()) {
+//                for (MarketingWxMerchantsExt wxMerchantsExt : updateMarketingWxMerchantsExtList) {
+//                    UpdateWrapper<MarketingWxMerchantsExt> updateWrapper = Wrappers.<MarketingWxMerchantsExt>update()
+//                            .eq("organizationId", wxMerchantsExt.getOrganizationId()).eq("appid", wxMerchantsExt.getAppid());
+//                    marketingWxMerchantsExtMapper.update(wxMerchantsExt, updateWrapper);
+//                }
+//            }
+        }
     }
 
     public void useJgw(String organizationId, String organizationName, String jgwAppid){

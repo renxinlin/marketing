@@ -28,5 +28,7 @@ public class MarketingWxMerchants {
     private Byte merchantType;
     private Byte belongToJgw;
     private Byte defaultUse;
+    private Long platformId;
+
 
 }
