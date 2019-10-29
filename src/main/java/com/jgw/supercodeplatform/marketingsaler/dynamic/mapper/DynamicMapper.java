@@ -110,7 +110,7 @@ public interface DynamicMapper extends CommonSql {
     void updateOrder(List<ColumnnameAndValueDto> columnnameAndValues, String tableName,String id);
     @Update(startScript
             + " update ${tableName} set "
-            + " status = #{status} "
+            + " orderstatus = #{status} "
             + " where id = #{id} "
             + endScript)
     void updateStatus(Long id, byte status, String tableName);
