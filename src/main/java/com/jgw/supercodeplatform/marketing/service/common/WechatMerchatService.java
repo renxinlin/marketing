@@ -13,19 +13,18 @@ import com.jgw.supercodeplatform.marketing.dto.common.UserWechatModel;
 import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsExtMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
-import org.apache.commons.lang3.ArrayUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@Slf4j
 @Service
 public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper, MarketingWxMerchants>  {
 
@@ -35,21 +34,13 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
     private GlobalRamCache globalRamCache;
 
     @Transactional(rollbackFor = Exception.class)
-    public void addOrUpdateMerchantList(MultipartFile files[], String detail) throws IOException {
+    public void addOrUpdateMerchantList(String detail) throws IOException {
         List<UserWechatModel> userWechatModelList = JSON.parseArray(detail, UserWechatModel.class);
-        Map<String, byte[]> fileMap = new HashMap<>();
-        if (ArrayUtils.isNotEmpty(files)) {
-            for (MultipartFile file : files) {
-                String fileName = file.getOriginalFilename();
-                byte[] fileBytes = file.getBytes();
-                fileMap.put(fileName, fileBytes);
-            }
-        }
         List<MarketingWxMerchants> addMarketingWxMerchantsList = new ArrayList<>();
         List<MarketingWxMerchants> updateMarketingWxMerchantsList = new ArrayList<>();
         List<MarketingWxMerchantsExt> addMarketingWxMerchantsExtList = new ArrayList<>();
         List<MarketingWxMerchantsExt> updateMarketingWxMerchantsExtList = new ArrayList<>();
-        userWechatModelList.stream().forEach(userWechatModel -> {
+        for (UserWechatModel userWechatModel : userWechatModelList) {
             UserOrgWechat userOrgWechat = userWechatModel.getUserOrgWechat();
             UserWechatInfo userWechatInfo = userWechatModel.getUserWechatInfo();
             MarketingWxMerchants marketingWxMerchants = new MarketingWxMerchants();
@@ -99,7 +90,11 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             marketingWxMerchantsExt.setOrganizationId(userOrgWechat.getOrganizationId());
             marketingWxMerchantsExt.setOrganizatioIdlName(userOrgWechat.getOrganizationName());
             marketingWxMerchantsExt.setDefaultUse(userWechatInfo.getDefaultUse());
-            marketingWxMerchantsExt.setCertificateInfo(fileMap.get(userWechatInfo.getCertificateAddress()));
+            String fileName = userWechatInfo.getCertificateAddress();
+            if (StringUtils.isNotBlank(fileName)) {
+                byte[] fileBytes = FileUtils.readFileToByteArray(new File(fileName));
+                marketingWxMerchantsExt.setCertificateInfo(fileBytes);
+            }
             if (userOrgWechat.getId() != null) {
                 addMarketingWxMerchantsExtList.add(marketingWxMerchantsExt);
             } else {
@@ -127,7 +122,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
                     marketingWxMerchantsExtMapper.update(wxMerchantsExt, updateWrapper);
                 }
             }
-        });
+        };
     }
 
     public void useJgw(String organizationId, String organizationName, String jgwAppid){
@@ -170,6 +165,5 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
         remove(Wrappers.<MarketingWxMerchants>query().eq("organizationId", organizationId).eq("mchAppid", appid));
         marketingWxMerchantsExtMapper.delete(Wrappers.<MarketingWxMerchantsExt>query().eq("organizationId", organizationId).eq("appid", appid));
     }
-
 
 }
