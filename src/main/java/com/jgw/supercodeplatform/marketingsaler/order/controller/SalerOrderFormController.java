@@ -161,6 +161,15 @@ public class SalerOrderFormController extends SalerCommonController {
     }
 
 
+    @GetMapping("/detailbyId")
+    @ApiOperation(value = "10月21需求 根据id查看详情", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult detailbyId(@RequestParam Long id) throws SuperCodeException {
+
+        return success(service.detailbyId(id));
+    }
+
+
 
 
     @PostMapping("/saveOrder")

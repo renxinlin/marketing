@@ -340,4 +340,8 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         dynamicMapper.delete(id, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
 
     }
+
+    public List<Map<String, Object>> detailbyId(Long id) {
+        return dynamicMapper.selectById(id,SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
+    }
 }
