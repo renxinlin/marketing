@@ -221,7 +221,7 @@ public class PlatformLotteryService {
         String productName = lotteryOprationDto.getScanCodeInfoMO().getProductName();
         String productBatchId = lotteryOprationDto.getScanCodeInfoMO().getProductBatchId();
         //该组织ID为支付的组织ID
-        String organizationId = marketingWxMerchantsMapper.getJgw().getOrganizationId();
+        String organizationId = marketingWxMerchantsMapper.getDefaultJgw().getOrganizationId();
         MarketingPrizeTypeMO prizeTypeMo = lotteryOprationDto.getPrizeTypeMO();
         //转化为分
         Float amount = prizeTypeMo.getPrizeAmount();

@@ -490,7 +490,12 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		}
 		MarketingWxMerchants marketingWxMerchants = mWxMerchantsMapper.get(user.getOrganizationId());
 		if (marketingWxMerchants.getMerchantType() == (byte)1) {
-			marketingWxMerchants = mWxMerchantsMapper.getJgw();
+			if (marketingWxMerchants.getJgwId() != null) {
+				marketingWxMerchants = mWxMerchantsMapper.getJgw(marketingWxMerchants.getJgwId());
+			} else {
+				marketingWxMerchants = mWxMerchantsMapper.getDefaultJgw();
+			}
+			organizationId = marketingWxMerchants.getOrganizationId();
 			addMarketingWxMember.setJgwType((byte)1);
 		} else {
 			addMarketingWxMember.setJgwType((byte)0);

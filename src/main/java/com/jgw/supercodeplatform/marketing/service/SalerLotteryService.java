@@ -216,7 +216,11 @@ public class SalerLotteryService {
             throw new SuperCodeExtException("该组织未绑定公众号信息");
         }
         if (marketingWxMerchants.getMerchantType() == 1) {
-            organizationId = mWxMerchantsMapper.getJgw().getOrganizationId();
+            if (marketingWxMerchants.getJgwId() != null) {
+                organizationId = mWxMerchantsMapper.getJgw(marketingWxMerchants.getJgwId()).getOrganizationId();
+            } else {
+                organizationId = mWxMerchantsMapper.getDefaultJgw().getOrganizationId();
+            }
         }
         // TODO 改成枚举
         logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
@@ -253,7 +257,7 @@ public class SalerLotteryService {
 
     /**
      * 执行中奖逻辑
-     * @param marketingUser 导购用户信息
+     * @param  导购用户信息
      * @param marketingActivitySet 活动信息
      * @param marketingPrizeType 中奖信息
      * @param marketingActivityProduct 产品信息

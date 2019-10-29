@@ -217,7 +217,11 @@ public class ScanCodeController {
         	 return h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode("该产品对应的企业未进行公众号绑定或企业APPID未设置。企业id："+organizationId,"utf-8"),"utf-8");
 		} else {
             if (mWxMerchants.getMerchantType() == 1) {
-                mWxMerchants = mWxMerchantsService.getJgw();
+                if (mWxMerchants.getJgwId() != null) {
+                    mWxMerchants = mWxMerchantsService.getJgw(mWxMerchants.getJgwId());
+                } else {
+                    mWxMerchants = mWxMerchantsService.getDefaultJgw();
+                }
                 organizationId = mWxMerchants.getOrganizationId();
             }
         }

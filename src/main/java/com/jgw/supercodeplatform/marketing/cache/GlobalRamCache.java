@@ -68,10 +68,9 @@ public class GlobalRamCache {
 			// 多节点后可以重复拉取该数据
 			if (null==mWxMerchants) {
 				mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
-				if (null==mWxMerchants) {
-					mWxMerchants=mWxMerchantsMapper.getJgw();
+				if (null != mWxMerchants) {
+					redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));
 				}
-				redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));
 			}
 		}else {
 			mWxMerchants=JSONObject.parseObject(json, MarketingWxMerchants.class);

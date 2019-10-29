@@ -445,8 +445,14 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
 			marketingWxMember.setOrganizationFullName(marketingWxMerchants.getOrganizatioIdlName());
 			if (marketingWxMerchants.getMerchantType() == 1) {
+				if (marketingWxMerchants.getJgwId() != null) {
+					marketingWxMerchants = mWxMerchantsService.getJgw(marketingWxMerchants.getJgwId());
+				} else {
+					marketingWxMerchants = mWxMerchantsService.getDefaultJgw();
+				}
 				marketingWxMember.setJgwType((byte)1);
-				marketingWxMember.setAppid(mWxMerchantsService.getJgw().getMchAppid());
+				marketingWxMember.setAppid(marketingWxMerchants.getMchAppid());
+
 			} else {
 				marketingWxMember.setJgwType((byte)0);
 				marketingWxMember.setAppid(marketingWxMerchants.getMchAppid());
@@ -592,7 +598,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		MemberWithWechat trueMember=null;
 		MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
 		if (marketingWxMerchants.getMerchantType() == 1) {
-			organizationId = mWxMerchantsService.getJgw().getOrganizationId();
+			if (marketingWxMerchants.getJgwId() != null) {
+				marketingWxMerchants = mWxMerchantsService.getJgw(marketingWxMerchants.getJgwId());
+			} else {
+				marketingWxMerchants = mWxMerchantsService.getDefaultJgw();
+			}
+			organizationId = marketingWxMerchants.getOrganizationId();
 		}
 		if (StringUtils.isBlank(openid)) {
 			MemberWithWechat memberWithWechat = selectByMobileOrgid(mobile, organizationId);

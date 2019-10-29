@@ -103,7 +103,11 @@ public class LoginWithWechatService {
         }
         String organizationName = marketingWxMerchants.getOrganizatioIdlName();
         if (marketingWxMerchants.getMerchantType() == 1) {
-            marketingWxMerchants = marketingWxMerchantsService.getJgw();
+            if (marketingWxMerchants.getJgwId() != null) {
+                marketingWxMerchants = marketingWxMerchantsService.getJgw(marketingWxMerchants.getJgwId());
+            } else {
+                marketingWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+            }
         }
         marketingWxMerchants.setOrganizatioIdlName(organizationName);
         return marketingWxMerchants;
