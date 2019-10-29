@@ -108,7 +108,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
                 byte[] fileBytes = FileUtils.readFileToByteArray(new File(fileName));
                 marketingWxMerchantsExt.setCertificateInfo(fileBytes);
             }
-            MarketingWxMerchants merchants = getOne(Wrappers.<MarketingWxMerchants>query().eq("platform_id", userOrgWechat.getId()));
+            MarketingWxMerchants merchants = getOne(Wrappers.<MarketingWxMerchants>query().eq("PlatformId", userOrgWechat.getId()));
             if (merchants == null) {
                 save(marketingWxMerchants);
                 marketingWxMerchantsExtMapper.insert(marketingWxMerchantsExt);
