@@ -23,8 +23,8 @@ public class SalerOrderTransfer {
 //    public static List<String> deafultColumnNames = Arrays.asList(new String[]{"id","shouhuodizhi", "dinghuoren", "dinghuorendianhua", "suoshumendian", "suoshumendianid","dinghuoshijian"});
 //    public static List<String> deafultFormNames = Arrays.asList(new String[]{"id","收货地址", "订货人", "订货人电话", "所属门店","所属门店id", "订货时间"});
 
-    public static List<String> deafultColumnNames = Arrays.asList(new String[]{"shouhuodizhi", "dinghuoren", "dinghuorendianhua", "suoshumendian","dinghuoshijian"});
-    public static List<String> deafultFormNames = Arrays.asList(new String[]{"收货地址", "订货人", "订货人电话", "所属门店", "订货时间"});
+    public static List<String> deafultColumnNames = Arrays.asList(new String[]{"shouhuodizhi", "dinghuoren", "dinghuorendianhua", "suoshumendian","suoshumendianid","dinghuoshijian"});
+    public static List<String> deafultFormNames = Arrays.asList(new String[]{"收货地址", "订货人", "订货人电话", "所属门店","所属门店id", "订货时间"});
     public static String deafultColumnType = "varchar";
     public static String PrimaryKey = "id";
     public static List<SalerOrderFormDto> setFormsOtherField(List<SalerOrderFormSettingDto> salerOrderForms, String organizationId, String organizationName) {
@@ -113,14 +113,14 @@ public class SalerOrderTransfer {
         ColumnnameAndValueDto columnnameAndValue2 = new ColumnnameAndValueDto("dinghuoren",StringUtils.isEmpty(user.getMemberName())? COLUMN_DEFAULT_VALUE:user.getMemberName());
         ColumnnameAndValueDto columnnameAndValue3 = new ColumnnameAndValueDto("dinghuorendianhua",StringUtils.isEmpty(user.getMobile())? COLUMN_DEFAULT_VALUE:user.getMobile());
         ColumnnameAndValueDto columnnameAndValue4 = new ColumnnameAndValueDto("suoshumendian",StringUtils.isEmpty(user.getCustomerName())? COLUMN_DEFAULT_VALUE:user.getCustomerName());
-//        ColumnnameAndValueDto columnnameAndValue5 = new ColumnnameAndValueDto("suoshumendianid",StringUtils.isEmpty(user.getCustomerId())? COLUMN_DEFAULT_VALUE:user.getCustomerId());
+        ColumnnameAndValueDto columnnameAndValue5 = new ColumnnameAndValueDto("suoshumendianid",StringUtils.isEmpty(user.getCustomerId())? COLUMN_DEFAULT_VALUE:user.getCustomerId());
         ColumnnameAndValueDto columnnameAndValue6 = new ColumnnameAndValueDto("dinghuoshijian"
                 , DateUtil.dateFormat(new Date(),"yyyy-MM-dd HH:mm:ss"));
         columnnameAndValues.add(columnnameAndValue1);
         columnnameAndValues.add(columnnameAndValue2);
         columnnameAndValues.add(columnnameAndValue3);
         columnnameAndValues.add(columnnameAndValue4);
-//        columnnameAndValues.add(columnnameAndValue5);
+        columnnameAndValues.add(columnnameAndValue5);
         columnnameAndValues.add(columnnameAndValue6);
 
     }
