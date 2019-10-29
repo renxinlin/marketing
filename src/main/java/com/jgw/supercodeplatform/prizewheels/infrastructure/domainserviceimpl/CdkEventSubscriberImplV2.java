@@ -52,10 +52,11 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
         InputStream is = downExcelStream(excelUrl);
         // excel转list
         List<WheelsRewardCdkPojo> wheelsRewardCdkPojos = excelStreamToList(is);
-        log.info("excel输出{}", JSONObject.toJSONString(wheelsRewardCdkPojos));
+        log.info("excel输出 FIRST{} LAST{}", JSONObject.toJSONString(wheelsRewardCdkPojos.get(0)), JSONObject.toJSONString(wheelsRewardCdkPojos.get(wheelsRewardCdkPojos.size()-1)));
         // 业务属性补充
         wheelsRewardCdkPojos = addOtherFields(wheelsRewardCdkPojos,cdkKey,cdkEvent.getPrizeRewardId());
-        log.info("addOtherFields{}", JSONObject.toJSONString(wheelsRewardCdkPojos));
+        log.info("addOtherFields FIRST{} LAST{}", JSONObject.toJSONString(wheelsRewardCdkPojos.get(0)), JSONObject.toJSONString(wheelsRewardCdkPojos.get(wheelsRewardCdkPojos.size()-1)));
+
 
         // 持久化
         try {
