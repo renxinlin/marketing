@@ -295,7 +295,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues) {
         Asserts.check(!StringUtils.isEmpty(commonUtil.getOrganizationId()), "未获取对应组织");
         Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取订货信息");
-        validAllHaveColumn(columnnameAndValues,commonUtil.getOrganizationId());
+        // validAllHaveColumn(columnnameAndValues,commonUtil.getOrganizationId());
         dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
     }
 
@@ -339,5 +339,9 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     public void delete(Long id) {
         dynamicMapper.delete(id, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
 
+    }
+
+    public List<Map<String, Object>> detailbyId(Long id) {
+        return dynamicMapper.selectById(id,SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
     }
 }

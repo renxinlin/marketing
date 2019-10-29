@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -126,9 +128,17 @@ public class SalerOrderFormController extends SalerCommonController {
     @PostMapping("/updateOrder")
     @ApiOperation(value = "10月21需求 修改更新订单", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult updateOrder(@Valid @RequestBody ColumnnameAndValueListDto columnnameAndValueListDto) throws SuperCodeException {
+    public RestResult updateOrder(@Valid @RequestBody ColumnnameAndValueListNoValidDto columnnameAndValueListDto) throws SuperCodeException {
+        List<ColumnnameAndValueNoValidDto> datas = columnnameAndValueListDto.getDatas();
+        List<ColumnnameAndValueDto> list = new ArrayList<>();
+        datas.forEach(e->{
+            if(!StringUtils.isEmpty(e.getColumnName())&& !StringUtils.isEmpty(e.getColumnValue())){
+                ColumnnameAndValueDto columnnameAndValueDto = modelMapper.map(e, ColumnnameAndValueDto.class);
+                list.add(columnnameAndValueDto);
+            }
 
-        service.updateOrder(columnnameAndValueListDto.getDatas());
+        });
+        service.updateOrder(list);
         return success();
     }
 
@@ -151,14 +161,30 @@ public class SalerOrderFormController extends SalerCommonController {
     }
 
 
+    @GetMapping("/detailbyId")
+    @ApiOperation(value = "10月21需求 根据id查看详情", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult detailbyId(@RequestParam Long id) throws SuperCodeException {
+
+        return success(service.detailbyId(id));
+    }
+
+
 
 
     @PostMapping("/saveOrder")
     @ApiOperation(value = "10月21需求新增订单", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult saveOrder(@Valid @RequestBody ColumnnameAndValueListDto columnnameAndValueListDto) throws SuperCodeException {
-
-        service.saveOrder(columnnameAndValueListDto.getDatas());
+    public RestResult saveOrder(@Valid @RequestBody ColumnnameAndValueListNoValidDto columnnameAndValueListDto) throws SuperCodeException {
+        List<ColumnnameAndValueNoValidDto> datas = columnnameAndValueListDto.getDatas();
+        List<ColumnnameAndValueDto> list = new ArrayList<>();
+        datas.forEach(e->{
+            if(!StringUtils.isEmpty(e.getColumnName())&& !StringUtils.isEmpty(e.getColumnValue())){
+                ColumnnameAndValueDto columnnameAndValueDto = modelMapper.map(e, ColumnnameAndValueDto.class);
+                list.add(columnnameAndValueDto);
+            }
+        });
+        service.saveOrder(list);
         return success();
     }
 

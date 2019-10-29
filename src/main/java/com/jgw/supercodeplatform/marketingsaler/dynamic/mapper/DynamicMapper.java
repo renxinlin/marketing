@@ -119,4 +119,9 @@ public interface DynamicMapper extends CommonSql {
             + " delete from ${tableName} where id = #{id} "
             + endScript)
     void delete(Long id, String tableName);
+
+    @Select(startScript
+            + " select * from ${tableName}  where ID = #{id} "
+            +endScript)
+    List<Map<String, Object>>  selectById(Long id, String  tableName);
 }

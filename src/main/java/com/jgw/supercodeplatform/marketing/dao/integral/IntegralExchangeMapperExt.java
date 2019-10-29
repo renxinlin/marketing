@@ -177,10 +177,10 @@ public interface IntegralExchangeMapperExt extends IntegralExchangeMapper, Commo
     List<IntegralExchange>  getNeedOffExchange();
 
    // 自动下架
-    @Update( "update  marketing_integral_exchange   set Status = 2 where ie.Id in (" +
+    @Update(startScript +  "update  marketing_integral_exchange   set Status = 2 where  Id in (" +
             "<foreach collection='list' item='item' index='index' open='' close=''  separator=','>#{item.id}</foreach>" +
-            ") ")
-    int undercarriage(List<IntegralExchange> readingToDb);
+            ") " +endScript)
+    int undercarriage( @Param("list") List<IntegralExchange> readingToDb);
 
     /**
      * 查询自卖产品;0非自卖1自卖产品
