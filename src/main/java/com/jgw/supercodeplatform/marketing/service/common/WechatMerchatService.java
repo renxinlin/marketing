@@ -56,6 +56,7 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             marketingWxMerchants.setMerchantType(userWechatInfo.getMerchantType());
             marketingWxMerchants.setMerchantSecret(userOrgWechat.getSecret());
             marketingWxMerchants.setOrganizationId(userOrgWechat.getOrganizationId());
+            marketingWxMerchants.setPlatformId(userOrgWechat.getId());
             globalRamCache.delWXMerchants(userOrgWechat.getOrganizationId());
             //删掉无用的或者更改之前的默认使用为非默认
             String organizationId = userWechatInfo.getOrganizationId();
