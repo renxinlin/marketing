@@ -61,7 +61,7 @@ public class WheelsRewardDomainService {
         double pro = 0D;
         for(WheelsReward wheelsReward : wheelsRewards){
             if(wheelsReward.getType().byteValue() == RewardTypeConstant.real){
-                Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物收货时间必填");
+                Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物发货时间必填");
             }
             pro = pro + wheelsReward.getProbability();
         };
