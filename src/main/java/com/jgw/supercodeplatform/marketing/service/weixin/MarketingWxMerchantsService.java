@@ -53,7 +53,14 @@ public class MarketingWxMerchantsService {
 		if (null==merchants) {
 			restResult.setResults(new MarketingWxMerchants());
 		}else {
-			restResult.setResults(merchants);
+			if (merchants.getBelongToJgw() != null && merchants.getBelongToJgw().intValue() == 1) {
+				MarketingWxMerchants jgwMerchant = new MarketingWxMerchants();
+				jgwMerchant.setId(merchants.getId());
+				jgwMerchant.setBelongToJgw(merchants.getBelongToJgw());
+				restResult.setResults(jgwMerchant);
+			} else {
+				restResult.setResults(merchants);
+			}
 		}
 		restResult.setState(200);
 		restResult.setMsg("成功");
