@@ -33,6 +33,10 @@ public class H5RewardInfo {
     @ApiModelProperty("实物产品名称")
     private String name;
 
+
+    @ApiModelProperty("实物产品名称")
+    private Integer sendDay;
+
     public void initVirtualRewardInfo(Long id,String picture, String cdk) {
         Asserts.check(!StringUtils.isEmpty(cdk),"虚拟奖品cdk无");
         this.id=id;
@@ -41,11 +45,12 @@ public class H5RewardInfo {
         this.type = RewardTypeConstant.virtual;
     }
 
-    public void initRealReward(Long id,String picture,String name) {
+    public void initRealReward(Long id,String picture,String name ,Integer sendDay) {
         this.id=id;
         Asserts.check(!StringUtils.isEmpty(name),"实物奖品名称不存在");
         this.name=name;
         this.picture = picture;
         this.type = RewardTypeConstant.real;
+        this.sendDay = sendDay;
     }
 }

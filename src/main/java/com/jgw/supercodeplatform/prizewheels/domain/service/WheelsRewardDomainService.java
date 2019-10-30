@@ -53,7 +53,7 @@ public class WheelsRewardDomainService {
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
 
         for(WheelsReward wheelsReward : wheelsRewards){
-           // Asserts.check(wheelsReward.getId()!= null && wheelsReward.getId() > 0,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+            // Asserts.check(wheelsReward.getId()!= null && wheelsReward.getId() > 0,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
             Asserts.check(wheelsReward.getPrizeWheelId()  != null && wheelsReward.getPrizeWheelId() > 0
                     ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         }
@@ -151,7 +151,7 @@ public class WheelsRewardDomainService {
 
 
             H5RewardInfo rewardInfo = new H5RewardInfo();
-            rewardInfo.initRealReward(finalReward.getId(),finalReward.getPicture(),finalReward.getName());
+            rewardInfo.initRealReward(finalReward.getId(),finalReward.getPicture(),finalReward.getName(),finalReward.getSendDay());
             return rewardInfo;
 
 
