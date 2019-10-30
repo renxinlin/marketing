@@ -60,6 +60,9 @@ public class WheelsRewardDomainService {
 
         double pro = 0D;
         for(WheelsReward wheelsReward : wheelsRewards){
+            if(wheelsReward.getType().byteValue() == RewardTypeConstant.real){
+                Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物收货时间必填");
+            }
             pro = pro + wheelsReward.getProbability();
         };
         Asserts.check(pro == 100D,"概率总和100%");
@@ -78,6 +81,9 @@ public class WheelsRewardDomainService {
 
         for(WheelsReward wheelsReward : wheelsRewards){
             pro = pro + wheelsReward.getProbability();
+            if(wheelsReward.getType().byteValue() == RewardTypeConstant.real){
+                Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物收货时间必填");
+            }
         };
         Asserts.check(pro == 100D,"概率总和100%");
     }

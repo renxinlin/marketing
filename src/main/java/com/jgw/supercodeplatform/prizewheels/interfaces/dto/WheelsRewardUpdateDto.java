@@ -48,4 +48,7 @@ public class WheelsRewardUpdateDto {
     private String name;
 
 
+    @ApiModelProperty("实物几天后送达")
+    private Integer sendDay;
+
 }
