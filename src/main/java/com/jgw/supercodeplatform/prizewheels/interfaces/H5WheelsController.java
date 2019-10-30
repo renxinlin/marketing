@@ -92,7 +92,7 @@ public class H5WheelsController extends SalerCommonController {
     public RestResult add( @RequestBody WheelsDto wheelsDto)   {
         String uuid = UUID.randomUUID().toString();
         // 1天
-        redisUtil.set(uuid, JSONObject.toJSONString(wheelsDto),60 * 60 *24L);
+        redisUtil.set(CallBackConstant.PRIZE_WHEELS_PREIEW + uuid, JSONObject.toJSONString(wheelsDto),60 * 60 *24L);
         return success(uuid);
     }
 
@@ -100,9 +100,10 @@ public class H5WheelsController extends SalerCommonController {
     @GetMapping("/preview")
     @ApiOperation(value = "预览", notes = "")
     public RestResult preview( String uuid)   {
-        String wheelsDtoStr = redisUtil.get(uuid);
+        String wheelsDtoStr = redisUtil.get(CallBackConstant.PRIZE_WHEELS_PREIEW + uuid);
         Asserts.check(!StringUtils.isEmpty(wheelsDtoStr),"重新点击预览生成!");
-        return success(JSONObject.parseObject(wheelsDtoStr));
+        WheelsDto wheelsDto = JSONObject.parseObject(wheelsDtoStr, WheelsDto.class);
+        return success(wheelsDto);
     }
 
 }

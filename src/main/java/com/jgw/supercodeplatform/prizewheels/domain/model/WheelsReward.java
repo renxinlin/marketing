@@ -58,5 +58,8 @@ public class WheelsReward implements Serializable {
     private String cdkUuid;
 
 
+    private Integer sendDay;
+
+
 
 }

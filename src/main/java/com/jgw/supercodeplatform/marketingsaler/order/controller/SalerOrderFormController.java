@@ -12,6 +12,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralS
 import com.jgw.supercodeplatform.marketingsaler.order.dto.*;
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.service.SalerOrderFormService;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -132,8 +133,11 @@ public class SalerOrderFormController extends SalerCommonController {
         List<ColumnnameAndValueNoValidDto> datas = columnnameAndValueListDto.getDatas();
         List<ColumnnameAndValueDto> list = new ArrayList<>();
         datas.forEach(e->{
-            if(!StringUtils.isEmpty(e.getColumnName())&& !StringUtils.isEmpty(e.getColumnValue())){
+            if(!StringUtils.isEmpty(e.getColumnName())){
                 ColumnnameAndValueDto columnnameAndValueDto = modelMapper.map(e, ColumnnameAndValueDto.class);
+                if(StringUtils.isEmpty(columnnameAndValueDto.getColumnValue())){
+                    columnnameAndValueDto.setColumnValue(CallBackConstant.EMPTY);
+                }
                 list.add(columnnameAndValueDto);
             }
 

@@ -41,4 +41,9 @@ public class WheelsRewardDto {
     @NotEmpty(message = "奖项名称不可为空")
     @ApiModelProperty("獎項名")
     private String name;
+
+
+
+    @ApiModelProperty("实物几天后送达")
+    private Integer sendDay;
 }

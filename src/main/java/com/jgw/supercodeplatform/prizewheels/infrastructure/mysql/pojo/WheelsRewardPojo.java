@@ -68,4 +68,7 @@ public class WheelsRewardPojo implements Serializable {
     @TableField("CdkUuid")
     private String cdkUuid;
 
+    @TableField("SendDay")
+    private Integer sendDay;
+
 }
