@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 public class CallBackConstant  implements InitializingBean {
 
     public static final String EMPTY = "";
+    public static final String PRIZE_WHEELS_PREIEW = "marketing:prizewheels:preview:";
     @Value("${marketing.activity.h5page.url:http://market-dev.h5.kf315.net/}")
     String TO_WEB ;
     /**
