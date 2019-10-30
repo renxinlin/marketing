@@ -89,8 +89,15 @@ public class CommonController extends CommonUtil {
     public RestResult<Map<String, String>> get(@RequestParam("organizationId")String organizationId,@RequestParam("url")String url) throws Exception {
     	logger.info("签名信息,organizationId="+organizationId+",url="+url);
     	MarketingWxMerchants mWxMerchants=marketingWxMerchantsService.selectByOrganizationId(organizationId);
-    	if (null==mWxMerchants) {
-            mWxMerchants = marketingWxMerchantsService.getJgw();
+    	if (mWxMerchants == null) {
+    	    mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+        }
+    	if (null!=mWxMerchants && mWxMerchants.getMerchantType().intValue() == 1) {
+            if (mWxMerchants.getJgwId() != null) {
+                mWxMerchants = marketingWxMerchantsService.getJgw(mWxMerchants.getJgwId());
+            } else {
+                mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+            }
 		}
     	String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), organizationId);
         // TODO 测试
@@ -132,7 +139,7 @@ public class CommonController extends CommonUtil {
     @ApiOperation("获取甲骨文微信授权信息")
     public RestResult<Map<String, String>> getJgwJssdkinfo(@RequestBody @Valid UrlParam urlParam) throws Exception {
         String url = urlParam.getUrl();
-        MarketingWxMerchants mWxMerchants = marketingWxMerchantsService.getJgw();
+        MarketingWxMerchants mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
         String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), mWxMerchants.getOrganizationId());
         // TODO 测试
         HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
@@ -214,7 +221,11 @@ public class CommonController extends CommonUtil {
             throw new SuperCodeExtException("该组织对应的微信信息不存在");
         }
         if (mWxMerchants.getMerchantType() == 1) {
-            mWxMerchants = marketingWxMerchantsService.getJgw();
+            if (mWxMerchants.getJgwId() != null) {
+                mWxMerchants = marketingWxMerchantsService.getJgw(mWxMerchants.getJgwId());
+            } else {
+                mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+            }
         }
         WxMerchants wxMerchants = new WxMerchants();
         wxMerchants.setAppid(mWxMerchants.getMchAppid());

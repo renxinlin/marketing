@@ -11,6 +11,7 @@ import java.security.SecureRandom;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -29,6 +30,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 
+@Slf4j
 public class WXPayRequest {
     private WXPayMarketingConfig config;
     public WXPayRequest(WXPayMarketingConfig config) throws Exception{
@@ -116,10 +118,16 @@ public class WXPayRequest {
             String responseData=EntityUtils.toString(httpEntity, "UTF-8");
             return responseData;
 		} catch (Exception e) {
+            log.error("证书流文件异常", e);
 			e.printStackTrace();
 		}finally {
 			if (null!=certStream) {
-				certStream.close();
+			    try {
+                    certStream.close();
+                } catch (Exception e) {
+			        log.error("证书流文件异常", e);
+                    throw e;
+                }
 			}
 		}
        throw new SuperCodeException(errorMsg, 500);

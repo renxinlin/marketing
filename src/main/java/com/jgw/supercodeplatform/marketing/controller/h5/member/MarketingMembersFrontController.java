@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.common.util.BeanPropertyUtil;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.MemberWithWechat;
@@ -176,7 +177,8 @@ public class MarketingMembersFrontController extends CommonUtil {
     @RequestMapping(value = "/register",method = RequestMethod.POST)
     @ApiOperation(value = "招募会员（注册）", notes = "")
     public RestResult<String> register(@Valid@RequestBody MarketingMembersAddParam marketingMembersAddParam) throws Exception {
-        checkPhoneFormat(marketingMembersAddParam.getMobile());
+		marketingMembersAddParam = BeanPropertyUtil.beanBlank2Null(marketingMembersAddParam, MarketingMembersAddParam.class);
+		checkPhoneFormat(marketingMembersAddParam.getMobile());
         marketingMembersService.addMember(marketingMembersAddParam);
         return new RestResult<String>(200, "success",null );
     }
@@ -184,7 +186,8 @@ public class MarketingMembersFrontController extends CommonUtil {
     @RequestMapping(value = "/infoImprove",method = RequestMethod.POST)
     @ApiOperation(value = "h5信息完善", notes = "")
     public RestResult<String> infoImprove(@Valid@RequestBody MarketingMembersUpdateParam marketingMembersUpdateParam) throws Exception {
-    	marketingMembersService.updateMembers(marketingMembersUpdateParam);
+		marketingMembersUpdateParam = BeanPropertyUtil.beanBlank2Null(marketingMembersUpdateParam, MarketingMembersUpdateParam.class);
+		marketingMembersService.updateMembers(marketingMembersUpdateParam);
         return new RestResult<String>(200, "成功", null);
     }
     

@@ -1,5 +1,9 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -152,5 +156,24 @@ public class BeanPropertyUtil {
 		}
 		return returnMap;
 	}
+
+	public static <T>T beanBlank2Null(T t, Class<T> clazz){
+		String tStr = JSON.toJSONString(t);
+		JSONObject jsonObject = JSON.parseObject(tStr);
+		Set<String> keySet = jsonObject.keySet();
+		for (String key : keySet) {
+			Object value = jsonObject.get(key);
+			if (value == null) {
+				continue;
+			}
+			String valueStr = value.toString();
+			if (StringUtils.isBlank(valueStr)) {
+				jsonObject.put(key, null);
+			}
+		}
+		return JSON.parseObject(jsonObject.toJSONString(), clazz);
+
+	}
+
 
 }

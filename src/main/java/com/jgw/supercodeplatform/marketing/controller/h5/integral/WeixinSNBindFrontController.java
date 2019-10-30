@@ -41,11 +41,15 @@ public class WeixinSNBindFrontController extends CommonUtil {
     public RestResult<Map<String, String>> get(String organizationId, Integer jgw) throws Exception {
         MarketingWxMerchants mWxMerchants = null;
         if (jgw != null && jgw.intValue() == 1) {
-            mWxMerchants = marketingWxMerchantsService.getJgw();
+            mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
         } else {
             mWxMerchants = marketingWxMerchantsService.selectByOrganizationId(organizationId);
             if(mWxMerchants!= null && mWxMerchants.getMerchantType() == BelongToJgwConstants.YES){
-                mWxMerchants = marketingWxMerchantsService.getJgw();
+                if (mWxMerchants.getJgwId() != null) {
+                    mWxMerchants = marketingWxMerchantsService.getJgw(mWxMerchants.getJgwId());
+                } else {
+                    mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+                }
             }
         }
     	RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();

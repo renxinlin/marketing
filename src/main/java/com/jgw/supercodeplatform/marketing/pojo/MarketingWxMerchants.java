@@ -15,7 +15,7 @@ import lombok.Setter;
 @TableName("marketing_wx_merchants")
 public class MarketingWxMerchants {
     @TableId(value = "Id", type = IdType.AUTO)
-    private String id;
+    private Long id;
     private String mchAppid;//商户账号appid
     private String mchid;//商户号
     private String merchantName;//商户名称
@@ -29,6 +29,6 @@ public class MarketingWxMerchants {
     private Byte belongToJgw;
     private Byte defaultUse;
     private Long platformId;
-
+    private Long jgwId;
 
 }

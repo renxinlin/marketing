@@ -497,7 +497,11 @@ public class WeixinAuthController {
 		}
 		MarketingWxMerchants marketingWxMerchants = mWxMerchantsMapper.get(organizationId);
 		if (marketingWxMerchants != null && marketingWxMerchants.getMerchantType() == 1) {
-			organizationId = mWxMerchantsMapper.getJgw().getOrganizationId();
+			if (marketingWxMerchants.getJgwId() != null) {
+				organizationId = mWxMerchantsMapper.getJgw(marketingWxMerchants.getJgwId()).getOrganizationId();
+			} else {
+				organizationId = mWxMerchantsMapper.getDefaultJgw().getOrganizationId();
+			}
 		}
 // 导购step-1: 微信授权
 		userInfo=getUserInfo(code, organizationId,null);
@@ -552,7 +556,7 @@ public class WeixinAuthController {
 
 
 	private String doBizPlatform(String redirectUri, String organizationId, String code, HttpServletResponse response) throws Exception {
-		MarketingWxMerchants mWxMerchants = mWxMerchantsMapper.getJgw();
+		MarketingWxMerchants mWxMerchants = mWxMerchantsMapper.getDefaultJgw();
 		String appId = mWxMerchants.getMchAppid().trim();
 		String secret = mWxMerchants.getMerchantSecret().trim();
 		String tokenParams="?appid="+appId+"&secret="+secret+"&code="+code+"&grant_type=authorization_code";

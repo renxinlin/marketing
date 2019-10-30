@@ -66,7 +66,11 @@ public class WXPayService {
 			throw new SuperCodeException("当前企业"+organizationId+"未绑定公众号数据", 500);
 		}
 		if (mWxMerchants.getMerchantType() == 1) {
-			mWxMerchants = mWxMerchantsMapper.getJgw();
+			if (mWxMerchants.getJgwId() != null) {
+				mWxMerchants = mWxMerchantsMapper.getJgw(mWxMerchants.getJgwId());
+			} else {
+				mWxMerchants = mWxMerchantsMapper.getDefaultJgw();
+			}
 		} else if (StringUtils.isBlank(mWxMerchants.getCertificateAddress())) {
 			throw new SuperCodeException("当前企业"+organizationId+"没有上传公众号证书", 500);
 		}
@@ -130,7 +134,11 @@ public class WXPayService {
 			return;
 		}
 		if (mWxMerchants.getMerchantType() == 1) {
-			mWxMerchants = mWxMerchantsMapper.getJgw();
+			if (mWxMerchants.getJgwId() != null) {
+				mWxMerchants = mWxMerchantsMapper.getJgw(mWxMerchants.getJgwId());
+			} else {
+				mWxMerchants = mWxMerchantsMapper.getDefaultJgw();
+			}
 		} else if (StringUtils.isBlank(mWxMerchants.getCertificateAddress())) {
 			logger.info("当前企业"+organizationId+"没有上传公众号证书");
 			return;
@@ -196,7 +204,11 @@ public class WXPayService {
 			throw new SuperCodeException("当前企业"+organizationId+"未绑定公众号数据", 500);
 		}
 		if (mWxMerchants.getMerchantType() == 1) {
-			mWxMerchants = mWxMerchantsMapper.getJgw();
+			if (mWxMerchants.getJgwId() != null) {
+				mWxMerchants = mWxMerchantsMapper.getJgw(mWxMerchants.getJgwId());
+			} else {
+				mWxMerchants = mWxMerchantsMapper.getDefaultJgw();
+			}
 		} else if (StringUtils.isBlank(mWxMerchants.getCertificateAddress())) {
 			throw new SuperCodeException("当前企业"+organizationId+"没有上传公众号证书", 500);
 		}

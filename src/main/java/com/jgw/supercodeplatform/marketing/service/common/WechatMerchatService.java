@@ -57,6 +57,13 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
             marketingWxMerchants.setMerchantSecret(userOrgWechat.getSecret());
             marketingWxMerchants.setOrganizationId(userOrgWechat.getOrganizationId());
             marketingWxMerchants.setPlatformId(userOrgWechat.getId());
+            if (userWechatInfo.getMerchantType() != null && userWechatInfo.getMerchantType().intValue() == 1) {
+                Long jgwUserWechatInfoId = StringUtils.isBlank(userWechatInfo.getJgwAppid()) ? null : Long.valueOf(userWechatInfo.getJgwAppid());
+                if (jgwUserWechatInfoId != null) {
+                    MarketingWxMerchants jgwMerchants = getOne(Wrappers.<MarketingWxMerchants>query().eq("PlatformId", jgwUserWechatInfoId));
+                    marketingWxMerchants.setJgwId(jgwMerchants.getId());
+                }
+            }
             globalRamCache.delWXMerchants(userOrgWechat.getOrganizationId());
             //删掉无用的或者更改之前的默认使用为非默认
             String organizationId = userWechatInfo.getOrganizationId();
@@ -114,6 +121,12 @@ public class WechatMerchatService extends ServiceImpl<MarketingWxMerchantsMapper
                 save(marketingWxMerchants);
                 marketingWxMerchantsExtMapper.insert(marketingWxMerchantsExt);
             } else {
+                /*************兼容甲骨文默认公众号**************/
+                if (merchants.getBelongToJgw().intValue() == 1) {
+                    marketingWxMerchants.setBelongToJgw(null);
+                    marketingWxMerchants.setDefaultUse(null);
+                }
+                /********************************************/
                 marketingWxMerchants.setId(merchants.getId());
                 updateById(marketingWxMerchants);
                 MarketingWxMerchantsExt merchantsExt = marketingWxMerchantsExtMapper.selectOne(Wrappers.<MarketingWxMerchantsExt>query().eq("OrganizationId", merchants.getOrganizationId()).eq("Appid", merchants.getMchAppid()));

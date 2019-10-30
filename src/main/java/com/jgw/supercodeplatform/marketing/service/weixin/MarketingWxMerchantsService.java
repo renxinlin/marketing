@@ -168,9 +168,12 @@ public class MarketingWxMerchantsService {
 		}
 	}
 
-	public MarketingWxMerchants getJgw(){
-		return dao.getJgw();
+	public MarketingWxMerchants getJgw(Long jgwId){
+		return dao.getJgw(jgwId);
 	}
 
+	public MarketingWxMerchants getDefaultJgw() {
+		return dao.getDefaultJgw();
+	}
 
 }
