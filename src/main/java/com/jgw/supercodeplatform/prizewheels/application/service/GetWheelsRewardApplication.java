@@ -104,7 +104,7 @@ public class GetWheelsRewardApplication {
         try {
             acquireLock = lock.lock(PREFIXX + outerCodeId, 60000, 1, 50);
             if (!acquireLock) {
-                log.info("未获取到{}锁", PREFIXX);
+                log.info("未获取到{}锁", PREFIXX + outerCodeId);
                 throw new RuntimeException("该码正在被其他人领取...");
             }
             log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), JSONObject.toJSONString(prizeWheelsRewardDto));

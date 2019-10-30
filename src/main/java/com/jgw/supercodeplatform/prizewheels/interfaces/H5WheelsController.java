@@ -102,7 +102,8 @@ public class H5WheelsController extends SalerCommonController {
     public RestResult preview( String uuid)   {
         String wheelsDtoStr = redisUtil.get(uuid);
         Asserts.check(!StringUtils.isEmpty(wheelsDtoStr),"重新点击预览生成!");
-        return success(JSONObject.parseObject(wheelsDtoStr));
+        WheelsDto wheelsDto = JSONObject.parseObject(wheelsDtoStr, WheelsDto.class);
+        return success(wheelsDto);
     }
 
 }
