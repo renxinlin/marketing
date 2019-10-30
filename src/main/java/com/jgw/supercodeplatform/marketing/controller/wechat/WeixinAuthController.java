@@ -162,7 +162,6 @@ public class WeixinAuthController {
     		redirectUrl=h5BUf.toString();
 		}else {
 			//如果是活动扫码默认也写jwttoken
-			needWriteJwtToken=true;
 			userInfo=getUserInfo(code, scanCodeInfoMO.getOrganizationId(),scanCodeInfoMO.getActivitySetId());
 			openid=userInfo.getString("openid");
 			organizationName = userInfo.getString(organizationName);
