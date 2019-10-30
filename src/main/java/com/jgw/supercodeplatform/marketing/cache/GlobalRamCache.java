@@ -67,8 +67,10 @@ public class GlobalRamCache {
 		if (json != null) {
 			mWxMerchants=JSONObject.parseObject(json, MarketingWxMerchants.class);
 		}
+		//从数据库中查询
 		if (mWxMerchants == null) {
 			mWxMerchants = mWxMerchantsMapper.selectByOrganizationId(organizationId);
+			//查看该用户是否为使用甲骨文的
 			if (mWxMerchants != null && mWxMerchants.getMerchantType() != null && mWxMerchants.getMerchantType().intValue() == 1) {
 				Long jgwId = mWxMerchants.getJgwId();
 				if (jgwId != null) {
@@ -76,6 +78,7 @@ public class GlobalRamCache {
 				} else {
 					mWxMerchants = mWxMerchantsMapper.getDefaultJgw();
 				}
+				return mWxMerchants;
 			}
 			if (mWxMerchants != null) {
 				redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));
