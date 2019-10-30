@@ -47,7 +47,7 @@ public interface MarketingWxMerchantsMapper extends BaseMapper<MarketingWxMercha
 			+ " </script>")
 	int updateWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam);
 
-	@Select("select "+allFields+" from marketing_wx_merchants where OrganizationId=#{organizationId}")
+	@Select("select "+allFields+" from marketing_wx_merchants where OrganizationId=#{organizationId} AND DefaultUse = 1")
 	MarketingWxMerchants selectByOrganizationId(@Param("organizationId")String organizationId);
 
 	@Select("select "+allFields+" from marketing_wx_merchants where MerchantName='甲骨文'")

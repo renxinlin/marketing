@@ -53,10 +53,10 @@ public class MarketingWxMerchantsService {
 		if (null==merchants) {
 			restResult.setResults(new MarketingWxMerchants());
 		}else {
-			if (merchants.getBelongToJgw() != null && merchants.getBelongToJgw().intValue() == 1) {
+			if (merchants.getMerchantType() != null && merchants.getMerchantType().intValue() == 1) {
 				MarketingWxMerchants jgwMerchant = new MarketingWxMerchants();
 				jgwMerchant.setId(merchants.getId());
-				jgwMerchant.setBelongToJgw(merchants.getBelongToJgw());
+				jgwMerchant.setMerchantType(merchants.getMerchantType());
 				restResult.setResults(jgwMerchant);
 			} else {
 				restResult.setResults(merchants);

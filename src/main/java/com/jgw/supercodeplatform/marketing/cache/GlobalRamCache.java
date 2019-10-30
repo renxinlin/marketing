@@ -64,16 +64,22 @@ public class GlobalRamCache {
 		}
 		MarketingWxMerchants mWxMerchants=null;
 		String json = (String) redisUtil.hmGet(MARKETING_GLOBAL_CACHE, organizationId);
-		if (null==json) {
-			// 多节点后可以重复拉取该数据
-			if (null==mWxMerchants) {
-				mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
-				if (null != mWxMerchants) {
-					redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));
+		if (json != null) {
+			mWxMerchants=JSONObject.parseObject(json, MarketingWxMerchants.class);
+		}
+		if (mWxMerchants == null) {
+			mWxMerchants = mWxMerchantsMapper.selectByOrganizationId(organizationId);
+			if (mWxMerchants != null && mWxMerchants.getMerchantType() != null && mWxMerchants.getMerchantType().intValue() == 1) {
+				Long jgwId = mWxMerchants.getJgwId();
+				if (jgwId != null) {
+					mWxMerchants = mWxMerchantsMapper.getJgw(jgwId);
+				} else {
+					mWxMerchants = mWxMerchantsMapper.getDefaultJgw();
 				}
 			}
-		}else {
-			mWxMerchants=JSONObject.parseObject(json, MarketingWxMerchants.class);
+			if (mWxMerchants != null) {
+				redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));
+			}
 		}
 		if (null==mWxMerchants) {
 			throw new SuperCodeExtException("无法根据组织id="+organizationId+"获取组织商户公众号信息", 500);
