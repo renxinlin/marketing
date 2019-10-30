@@ -162,7 +162,8 @@ public class GetWheelsRewardApplication {
     private void newScanRecord(H5LoginVO user, String codeTypeId, String outerCodeId) {
         ScanRecord scanRecord = new ScanRecord(outerCodeId,Integer.parseInt(codeTypeId));
         String userName = !StringUtils.isEmpty(user.getMemberName())?user.getMemberName():user.getMobile();
-        scanRecord.initScanerInfo(user.getMemberId(),userName,user.getMobile(),user.getOrganizationId(),user.getOrganizationName());
+        // TODO wxName找不到
+        scanRecord.initScanerInfo(user.getMemberId(),userName,user.getMobile(),user.getOrganizationId(),user.getOrganizationName(),user.getOpenid(), user.getMemberName());
         scanRecordWhenRewardPublisher.addSubscriber(scanRecordWhenRewardSubscriber);
         scanRecordWhenRewardPublisher.commitAsyncEvent(new ScanRecordWhenRewardEvent(scanRecord));
     }

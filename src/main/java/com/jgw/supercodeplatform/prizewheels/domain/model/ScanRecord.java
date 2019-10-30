@@ -32,13 +32,20 @@ public class ScanRecord implements Serializable {
         this.outerCodeId=outerCodeId;
     }
 
-    public void initScanerInfo(Long scannerId,String scannerName,String mobile, String organizationId,String organizationName){
+    public void initScanerInfo(Long scannerId,String scannerName,String mobile, String organizationId,String organizationName
+            ,String openId,String wxName){
         this.scannerId = scannerId;
         this.scannerName = scannerName;
         this.organizationId = organizationId;
         this.organizationName = organizationName;
         this.mobile = mobile;
+        this.openId = openId;
+        this.wxName = wxName;
     }
+
+    private String openId;
+    private String wxName;
+
 
     private String outerCodeId;
     private String mobile;
