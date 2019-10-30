@@ -68,6 +68,13 @@ public class LoginWithWechatService {
             marketingWxMember.setWxSex(userObj.getByte("sex"));
             marketingWxMemberMapper.insert(marketingWxMember);
             return null;
+        } else {
+            marketingWxMember.setUpdateTime(new Date());
+            marketingWxMember.setAppid(userObj.getString("appid"));
+            marketingWxMember.setWxName(userObj.getString("nickname"));
+            marketingWxMember.setWechatHeadImgUrl(userObj.getString("headimgurl"));
+            marketingWxMember.setWxSex(userObj.getByte("sex"));
+            marketingWxMemberMapper.updateById(marketingWxMember);
         }
         Long memberId = marketingWxMember.getMemberId();
         if (memberId == null) {

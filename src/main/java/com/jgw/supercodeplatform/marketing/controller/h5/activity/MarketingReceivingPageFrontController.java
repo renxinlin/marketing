@@ -18,6 +18,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +50,10 @@ public class MarketingReceivingPageFrontController {
     @ApiOperation(value = "根据活动设置id获取领取页记录，扫码时可以通过该接口获取是否需要领取页", notes = "")
 	@ApiImplicitParams(value= {@ApiImplicitParam(paramType="query",value = "当前扫码唯一id",name="wxstate",required=false),@ApiImplicitParam(paramType="query",value = "获取设置主键id",name="activitySetId",required=false)})
 	public RestResult<MarketingReceivingPage> getByAsId(String wxstate,Long activitySetId) throws Exception{
-		ScanCodeInfoMO scInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
-
+		ScanCodeInfoMO scInfoMO = null;
+		if (StringUtils.isNotBlank(wxstate)) {
+			scInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
+		}
 		if (null==activitySetId) {
 			if (null==scInfoMO) {
 				throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);

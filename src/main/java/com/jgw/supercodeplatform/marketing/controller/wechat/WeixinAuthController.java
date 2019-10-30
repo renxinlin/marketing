@@ -194,7 +194,7 @@ public class WeixinAuthController {
 			memberWithWechat.setMemberType((byte)0);
 			marketingMembersService.insert(memberWithWechat);
 		} else {
-			if (null!=scanCodeInfoMO) {
+			if (null != memberWithWechat && scanCodeInfoMO != null) {
 				scanCodeInfoMO.setUserId(memberWithWechat.getMemberId());
 				globalRamCache.putScanCodeInfoMO(state, scanCodeInfoMO);
 			}

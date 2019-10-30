@@ -73,11 +73,11 @@ public interface MarketingActivityMapper extends CommonSql{
         @Result(column = "ActivityEndDate", property = "activityEndDate", jdbcType = JdbcType.DATE),
         @Result(column = "UpdateUserName", property = "updateUserName", jdbcType = JdbcType.VARCHAR),
         @Result(column = "UpdateDate", property = "updateDate", jdbcType = JdbcType.DATE),
-        @Result(column = "ActivityStatus", property = "activityStatus", jdbcType = JdbcType.VARCHAR),
-        @Result(column = "Id", property = "marketingChannels", javaType = List.class,
-                many = @Many(select = "com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper.selectByActivitySetId")),
-        @Result(column = "Id", property = "maActivityProducts", javaType = List.class,
-                many = @Many(select = "com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper.selectByActivitySetId"))
+        @Result(column = "ActivityStatus", property = "activityStatus", jdbcType = JdbcType.VARCHAR)
+//        @Result(column = "Id", property = "marketingChannels", javaType = List.class,
+//                many = @Many(select = "com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper.selectByActivitySetId")),
+//        @Result(column = "Id", property = "maActivityProducts", javaType = List.class,
+//                many = @Many(select = "com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper.selectByActivitySetId"))
       })
 	List<MarketingActivityListMO> list(MarketingActivityListParam marketingActivityListParam);
 
