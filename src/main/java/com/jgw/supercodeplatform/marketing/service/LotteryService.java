@@ -314,9 +314,9 @@ public class LotteryService {
 		}
 		RestResult restResult = lotteryOprationDto.getRestResult();
 		restResult.setMsg(lotteryResultMO.getMsg());
-		if (amount != null && amount > 0) {
+		if(awardType.intValue() == 4 && amount != null && amount > 0) {
 			WxOrderPayDto wxOrderPayDto = new WxOrderPayDto();
-			wxOrderPayDto.setAmount(amount*100);
+			wxOrderPayDto.setAmount(amount * 100);
 			wxOrderPayDto.setMobile(mobile);
 			wxOrderPayDto.setOpenId(openId);
 			wxOrderPayDto.setOrganizationId(organizationId);
@@ -325,14 +325,20 @@ public class LotteryService {
 			wxOrderPayDto.setRemoteAddr(remoteAddr);
 			wxOrderPayDto.setSendAudit(lotteryOprationDto.getSendAudit());
 			return wxOrderPayDto;
-		} else {
-			lotteryResultMO = new LotteryResultMO("哎呀，手气不好，没抽中");
-			lotteryResultMO.setData("哎呀，手气不好，没抽中");
+		}
+		if (awardType.intValue() != 4 && lotteryOprationDto.getSuccessLottory() == 1) {
+			lotteryResultMO.setWinnOrNot(1);
+			lotteryOprationDto.setLotteryResultMO(lotteryResultMO);
 			restResult.setResults(lotteryResultMO);
 			restResult.setMsg(lotteryResultMO.getMsg());
-			lotteryOprationDto.setRestResult(restResult);
-			lotteryOprationDto.setLotteryResultMO(lotteryResultMO);
+			return null;
 		}
+		lotteryResultMO = new LotteryResultMO("哎呀，手气不好，没抽中");
+		lotteryResultMO.setData("哎呀，手气不好，没抽中");
+		restResult.setResults(lotteryResultMO);
+		restResult.setMsg(lotteryResultMO.getMsg());
+		lotteryOprationDto.setRestResult(restResult);
+		lotteryOprationDto.setLotteryResultMO(lotteryResultMO);
 		return null;
 	}
 
