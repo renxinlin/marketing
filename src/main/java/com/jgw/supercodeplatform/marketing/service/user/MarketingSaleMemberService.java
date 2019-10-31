@@ -489,19 +489,20 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			BeanUtils.copyProperties(marketingWxMember, addMarketingWxMember);
 		}
 		MarketingWxMerchants marketingWxMerchants = mWxMerchantsMapper.get(user.getOrganizationId());
+		String organizationName = marketingWxMerchants.getOrganizatioIdlName();
 		if (marketingWxMerchants.getMerchantType() == (byte)1) {
+			organizationId = marketingWxMerchants.getOrganizationId();
 			if (marketingWxMerchants.getJgwId() != null) {
 				marketingWxMerchants = mWxMerchantsMapper.getJgw(marketingWxMerchants.getJgwId());
 			} else {
 				marketingWxMerchants = mWxMerchantsMapper.getDefaultJgw();
 			}
-			organizationId = marketingWxMerchants.getOrganizationId();
 			addMarketingWxMember.setJgwType((byte)1);
 		} else {
 			addMarketingWxMember.setJgwType((byte)0);
 		}
-		addMarketingWxMember.setOrganizationId(marketingWxMerchants.getOrganizationId());
-		addMarketingWxMember.setOrganizationFullName(marketingWxMerchants.getOrganizatioIdlName());
+		addMarketingWxMember.setOrganizationId(organizationId);
+		addMarketingWxMember.setOrganizationFullName(organizationName);
 		addMarketingWxMember.setAppid(marketingWxMerchants.getMchAppid());
 		addMarketingWxMember.setOpenid(openid);
 		addMarketingWxMember.setCreateTime(new Date());
