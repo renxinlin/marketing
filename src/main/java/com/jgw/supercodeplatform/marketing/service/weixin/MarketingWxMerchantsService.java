@@ -51,7 +51,7 @@ public class MarketingWxMerchantsService {
 		String organizationId=commonUtil.getOrganizationId();
 		MarketingWxMerchants merchants=dao.get(organizationId);
 		if (null==merchants) {
-			restResult.setResults(new MarketingWxMerchants());
+			restResult.setResults(null);
 		}else {
 			if (merchants.getMerchantType() != null && merchants.getMerchantType().intValue() == 1) {
 				MarketingWxMerchants jgwMerchant = new MarketingWxMerchants();
