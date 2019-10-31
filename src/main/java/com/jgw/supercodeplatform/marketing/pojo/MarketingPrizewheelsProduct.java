@@ -18,8 +18,15 @@ public class MarketingPrizewheelsProduct {
 	private Integer autoType;// 1自动追加
 	private Integer type;// 7大转盘
 
+	public void setAutoType(Integer autoType) {
+		this.autoType = autoType;
+	}
 
-    public String getCodeType() {
+	public void setType(Integer type) {
+		this.type = type;
+	}
+
+	public String getCodeType() {
         return codeType;
     }
 

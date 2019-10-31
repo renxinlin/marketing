@@ -114,9 +114,11 @@ public class PrizeWheelsAutoFetchService extends AutoFetchChainAbs<List<Map<Stri
      */
     private boolean updateSbathId(String codeBatch, MarketingPrizewheelsProduct needAutoFetchPrizewheels) {
         boolean needSendToCodeManager = false;
-
+        // 数据转换
         MarketingActivityProduct marketingActivityProduct = new MarketingActivityProduct();
         marketingActivityProduct.setId(needAutoFetchPrizewheels.getId());
+        marketingActivityProduct.setSbatchId(needAutoFetchPrizewheels.getSbatchId());
+
         if(StringUtils.isEmpty(marketingActivityProduct.getSbatchId()) ){
             marketingActivityProduct.setSbatchId(codeBatch);
             needSendToCodeManager = true;
