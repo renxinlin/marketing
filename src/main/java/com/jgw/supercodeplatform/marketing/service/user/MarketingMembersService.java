@@ -16,6 +16,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingWxMemberMapper;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
@@ -293,6 +294,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if(members.getDeviceType() == null){
 			members.setDeviceType((byte) 6);
 		}
+		members.setRegistDate(DateUtil.getTime());
 		int result = marketingMembersMapper.insert(members);
 		// 调用用户模块发送短信
 		if(1 == result){
