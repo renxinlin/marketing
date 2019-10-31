@@ -63,7 +63,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         QueryWrapper<ProductPojo> wapper = new QueryWrapper<>();
         wapper.eq("ActivitySetId",prizeWheelsid);
         List<ProductPojo> productPojos = productMapper.selectList(wapper);
-        Asserts.check(!CollectionUtils.isEmpty(productPojos), ErrorCodeEnum.NOT_EXITS_ERROR.getErrorMessage());
+        // TODO AJBDH Asserts.check(!CollectionUtils.isEmpty(productPojos), ErrorCodeEnum.NOT_EXITS_ERROR.getErrorMessage());
         return productPojoTransfer.tranferPojosToDomains(productPojos);
     }
 
