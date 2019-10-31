@@ -1,10 +1,13 @@
 package com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.bizimpl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.AutoFetchChainAbs;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @Primary
 public class SystemChainService extends AutoFetchChainAbs {
     /**
@@ -19,8 +22,8 @@ public class SystemChainService extends AutoFetchChainAbs {
 
     @Override
     protected void ifDoBiz(Object datafromMq) {
-        // do nothing with biz
-        System.out.println("===============================start chain biz ========================");
+        log.info("==>开始链式处理生码批次与产品绑定{}", JSONObject.toJSONString(datafromMq));
+        // stopTransfer(); 执行完毕调用stopTransfer可以终止其他service执行 取决业务
     }
 
     @Override
