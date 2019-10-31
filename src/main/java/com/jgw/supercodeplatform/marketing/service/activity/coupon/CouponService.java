@@ -179,6 +179,7 @@ public class CouponService {
                 }
             });
         }
+		logger.info(marketingActivityProductList.size()+"得到sbatch:{}", sbatchIdBuffer);
         if(sbatchIdBuffer.length() > 0) {
             String sbatchIds = sbatchIdBuffer.substring(1);
             String[] sbatchIdArray = sbatchIds.split(",");

@@ -495,13 +495,6 @@ public class WeixinAuthController {
 			}
 		}
 		MarketingWxMerchants marketingWxMerchants = mWxMerchantsMapper.get(organizationId);
-		if (marketingWxMerchants != null && marketingWxMerchants.getMerchantType() == 1) {
-			if (marketingWxMerchants.getJgwId() != null) {
-				organizationId = mWxMerchantsMapper.getJgw(marketingWxMerchants.getJgwId()).getOrganizationId();
-			} else {
-				organizationId = mWxMerchantsMapper.getDefaultJgw().getOrganizationId();
-			}
-		}
 // 导购step-1: 微信授权
 		userInfo=getUserInfo(code, organizationId,null);
 		String openid=userInfo.getString("openid");

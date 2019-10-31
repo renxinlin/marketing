@@ -598,12 +598,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		MemberWithWechat trueMember=null;
 		MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
 		if (marketingWxMerchants.getMerchantType() == 1) {
+			organizationId = marketingWxMerchants.getOrganizationId();
 			if (marketingWxMerchants.getJgwId() != null) {
 				marketingWxMerchants = mWxMerchantsService.getJgw(marketingWxMerchants.getJgwId());
 			} else {
 				marketingWxMerchants = mWxMerchantsService.getDefaultJgw();
 			}
-			organizationId = marketingWxMerchants.getOrganizationId();
 		}
 		if (StringUtils.isBlank(openid)) {
 			MemberWithWechat memberWithWechat = selectByMobileOrgid(mobile, organizationId);
