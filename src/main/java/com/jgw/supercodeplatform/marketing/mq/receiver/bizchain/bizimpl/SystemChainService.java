@@ -7,6 +7,11 @@ import org.springframework.stereotype.Service;
 @Service
 @Primary
 public class SystemChainService extends AutoFetchChainAbs {
+    /**
+     *
+     * @param datafromMq
+     * @return 通过return 决定执行 ifDoBiz 还是执行ifNotBiz
+     */
     @Override
     public boolean shouldProcess(Object datafromMq) {
         return true;
