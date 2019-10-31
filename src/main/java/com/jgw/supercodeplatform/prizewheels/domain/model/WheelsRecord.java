@@ -46,9 +46,10 @@ public class WheelsRecord implements Serializable {
     private String organizatioIdName;
     private Long prizeWheelId;
     private Long rewardId;
+    private String cdk;
 
 
-    public void initvirtualInfo(String mobile, String name, String memberId, String memberName, Long prizeWheelsId, Long id, String organizationName, String organizationId) {
+    public void initvirtualInfo(String mobile, String name, String memberId, String memberName, Long prizeWheelsId, Long id, String organizationName, String organizationId,String cdk) {
         this.setCreateTime(new Date());
         this.setMobile(mobile);
         this.setRewardName(name);
@@ -59,6 +60,7 @@ public class WheelsRecord implements Serializable {
         this.setRewardId(id);
         this.setOrganizatioIdName(organizationName);
         this.setOrganizationId(organizationId);
+        this.setCdk(cdk);
     }
 
     public void initrealInfo(String mobile, String name, String memberId, String memberName, Long prizeWheelsId, Long id, String organizationName, String organizationId) {
