@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 @Component
@@ -72,13 +73,16 @@ public class GlobalRamCache {
 			mWxMerchants = mWxMerchantsMapper.selectByOrganizationId(organizationId);
 			//查看该用户是否为使用甲骨文的
 			if (mWxMerchants != null && mWxMerchants.getMerchantType() != null && mWxMerchants.getMerchantType().intValue() == 1) {
+				MarketingWxMerchants jgwMarketingWxMerchants = new MarketingWxMerchants();
 				Long jgwId = mWxMerchants.getJgwId();
 				if (jgwId != null) {
-					mWxMerchants = mWxMerchantsMapper.getJgw(jgwId);
+					jgwMarketingWxMerchants = mWxMerchantsMapper.getJgw(jgwId);
 				} else {
-					mWxMerchants = mWxMerchantsMapper.getDefaultJgw();
+					jgwMarketingWxMerchants = mWxMerchantsMapper.getDefaultJgw();
 				}
-				return mWxMerchants;
+				jgwMarketingWxMerchants.setOrganizatioIdlName(mWxMerchants.getOrganizatioIdlName());
+				jgwMarketingWxMerchants.setOrganizationId(mWxMerchants.getOrganizationId());
+				return jgwMarketingWxMerchants;
 			}
 			if (mWxMerchants != null) {
 				redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));

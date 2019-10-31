@@ -278,7 +278,9 @@ public class WeixinAuthController {
 			MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(organizationId);
 			appId = mWxMerchants.getMchAppid().trim();
 			secret = mWxMerchants.getMerchantSecret().trim();
-			organizationName = mWxMerchants.getOrganizatioIdlName();
+			if (mWxMerchants.getMerchantType().intValue() == 0) {
+				organizationName = mWxMerchants.getOrganizatioIdlName();
+			}
 		}
 
 		logger.info("微信授权回调根据组织id="+organizationId+"获取获取appid"+appId+",secret="+secret);
