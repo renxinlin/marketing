@@ -18,6 +18,7 @@ import com.jgw.supercodeplatform.marketing.dto.coupon.UrlParam;
 import com.jgw.supercodeplatform.marketing.vo.activity.WxSignVo;
 import com.jgw.supercodeplatform.marketing.vo.common.WxMerchants;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,7 +140,13 @@ public class CommonController extends CommonUtil {
     @ApiOperation("获取甲骨文微信授权信息")
     public RestResult<Map<String, String>> getJgwJssdkinfo(@RequestBody @Valid UrlParam urlParam) throws Exception {
         String url = urlParam.getUrl();
-        MarketingWxMerchants mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+        String paramAppid = urlParam.getAppid();
+        MarketingWxMerchants mWxMerchants = null;
+        if (StringUtils.isNotBlank(paramAppid)) {
+            mWxMerchants = marketingWxMerchantsService.getByAppid(paramAppid);
+        } else {
+            mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+        }
         String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), mWxMerchants.getOrganizationId());
         // TODO 测试
         HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");

@@ -19,5 +19,7 @@ public class UrlParam {
     @ApiModelProperty(value = "url", required = true)
     @NotBlank(message = "url不能为空")
     private String url;
+    @ApiModelProperty("appid")
+    private String appid;
 
 }

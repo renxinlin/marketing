@@ -18,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @Service
 public class MarketingWxMerchantsService {
@@ -51,7 +53,14 @@ public class MarketingWxMerchantsService {
 		if (null==merchants) {
 			restResult.setResults(new MarketingWxMerchants());
 		}else {
-			restResult.setResults(merchants);
+			if (merchants.getBelongToJgw() != null && merchants.getBelongToJgw().intValue() == 1) {
+				MarketingWxMerchants jgwMerchant = new MarketingWxMerchants();
+				jgwMerchant.setId(merchants.getId());
+				jgwMerchant.setBelongToJgw(merchants.getBelongToJgw());
+				restResult.setResults(jgwMerchant);
+			} else {
+				restResult.setResults(merchants);
+			}
 		}
 		restResult.setState(200);
 		restResult.setMsg("成功");
@@ -174,6 +183,14 @@ public class MarketingWxMerchantsService {
 
 	public MarketingWxMerchants getDefaultJgw() {
 		return dao.getDefaultJgw();
+	}
+
+	public MarketingWxMerchants getByAppid(String appid) {
+		List<MarketingWxMerchants> merchats = dao.selectList(Wrappers.<MarketingWxMerchants>query().eq("mchAppid", appid));
+		if (!CollectionUtils.isEmpty(merchats)) {
+			return merchats.get(0);
+		}
+		return null;
 	}
 
 }

@@ -19,7 +19,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
        +" from marketing_integral_rule_product"
        +startWhere
        +"<if test='organizationId!=null and organizationId!=&apos;&apos;'> OrganizationId=#{organizationId}</if>"
-       +search
+       +"<if test='search != null and search != &apos;&apos;'> AND ProductName LIKE CONCAT('%',#{search},'%') </if>"
        +endWhere
        +" order by Id desc"
        +page
@@ -33,7 +33,7 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
     	       +" from marketing_integral_rule_product"
     	       +startWhere
     	       +"<if test='organizationId!=null and organizationId!=&apos;&apos;'> OrganizationId=#{organizationId}</if>"
-    	       +search
+				+"<if test='search != null and search != &apos;&apos;'> AND ProductName LIKE CONCAT('%',#{search},'%') </if>"
     	       +endWhere
     	       +endScript
     	    )
