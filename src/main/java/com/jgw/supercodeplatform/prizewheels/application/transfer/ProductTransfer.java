@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.application.transfer;
 
+import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.ProductPojo;

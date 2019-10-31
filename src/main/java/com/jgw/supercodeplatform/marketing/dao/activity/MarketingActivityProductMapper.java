@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.dao.activity;
 import com.jgw.supercodeplatform.marketing.dao.CommonSql;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizewheelsProduct;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -104,5 +105,13 @@ public interface MarketingActivityProductMapper extends CommonSql{
 			endScript)
 	List<MarketingActivityProduct> selectByBatchIds(@Param("set") Set<String> batchIds);
 
-	
+
+	@Select(startScript+
+			" select * from marketing_activity_product where " +
+			" type = #{type} " +
+			" AND AutoType = #{auto} " +
+			" AND ProductBatchId = #{strProductBatchId} " +
+			" AND ProductId =#{strProductId}   "+
+			endScript)
+	MarketingPrizewheelsProduct selectNeedAutoFetchPrizewheels(String strProductId, String strProductBatchId, int auto, int type);
 }

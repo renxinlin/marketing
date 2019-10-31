@@ -95,11 +95,12 @@ public class CommonMqTaskService {
 						Integer bizType = null;
 						//如果是抵扣券，则需要看情况，如果是扫商品领取则需要绑定，如果是领取积分则不需要
 						if(activityId == 4) {
-							MarketingActivitySetCondition validCondition = JSON.parseObject(mActivitySet.getValidCondition(), MarketingActivitySetCondition.class);
-							validCondition.getAcquireCondition();
-							if(CouponAcquireConditionEnum.SHOPPING.getCondition().equals(validCondition.getAcquireCondition())){
-								bizType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
-							}
+							// 抵扣券外部处理
+//							MarketingActivitySetCondition validCondition = JSON.parseObject(mActivitySet.getValidCondition(), MarketingActivitySetCondition.class);
+//							validCondition.getAcquireCondition();
+//							if(CouponAcquireConditionEnum.SHOPPING.getCondition().equals(validCondition.getAcquireCondition())){
+//								bizType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
+//							}
 						} else {
 							bizType = BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType();
 						}
