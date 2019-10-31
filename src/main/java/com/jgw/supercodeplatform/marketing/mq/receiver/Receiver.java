@@ -69,6 +69,7 @@ public class Receiver  implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		//  注意： a p a i
 		// autowired > afterPropertiesSet
+        // 执行链 执行顺序 SystemChainService >  couponAutoFecthService > prizeWheelsAutoFetchService
 		autoFecthProcess.initchains(couponAutoFecthService,prizeWheelsAutoFetchService);
 	}
 }
