@@ -62,4 +62,9 @@ public class WheelsRecordPojo implements Serializable {
 
     @TableField("RewardId")
     private Long rewardId;
+
+
+
+    @TableField("Cdk")
+    private String cdk;
 }

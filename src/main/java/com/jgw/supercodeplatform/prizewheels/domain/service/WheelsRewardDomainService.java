@@ -126,7 +126,8 @@ public class WheelsRewardDomainService {
                     ,user.getMemberName()
                     ,prizeWheelsId,finalReward.getId()
                     ,user.getOrganizationName()
-                    ,user.getOrganizationId());
+                    ,user.getOrganizationId()
+                    ,cdkWhenH5Reward.getCdk());
 
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
