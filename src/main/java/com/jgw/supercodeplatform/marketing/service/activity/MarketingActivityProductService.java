@@ -102,7 +102,7 @@ public class MarketingActivityProductService {
 		params.put("search",search);
 		params.put("pageSize",pageSize);
         params.put("current",current);
-//        params.put("isRelations",1);
+        params.put("isRelations","0,2");
 		Map<String, String> headerMap=new HashMap<>();
 		headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForCodeManager());
         HashMap<String, String> superToken = new HashMap<>();
