@@ -310,7 +310,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			}
 			JSONArray batchArray=obj.getJSONArray("results");
 			if (null==batchArray || batchArray.isEmpty()) {
-				throw new SuperCodeException("该产品的批次未查到码关联信息，前检查是否已做过码关联的批次被删除", 500);
+				throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
 			}
 			List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 			JSONArray array = obj.getJSONArray("results");
@@ -362,7 +362,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			}
 			JSONArray batchArray=obj.getJSONArray("results");
 			if (null==batchArray || batchArray.isEmpty()) {
-				throw new SuperCodeException("该产品的批次未查到码关联信息，前检查是否已做过码关联的批次被删除", 500);
+				throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
 			}
 			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
 			String bindBatchBody=commonService.bindUrlToBatch(batchInfoparams, superToken);

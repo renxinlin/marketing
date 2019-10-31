@@ -147,6 +147,9 @@ public class CommonController extends CommonUtil {
         } else {
             mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
         }
+        if (mWxMerchants == null) {
+            throw new SuperCodeExtException("未找到对应的微信配置信息");
+        }
         String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), mWxMerchants.getOrganizationId());
         // TODO 测试
         HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
