@@ -98,29 +98,29 @@ public class PlatformLotteryService {
         Long activitySetId = scanCodeInfoMO.getActivitySetId();
         MarketingActivitySet mActivitySet = mSetMapper.selectById(activitySetId);
         if (null == mActivitySet) {
-            throw new SuperCodeExtException("该活动设置不存在", 200);
+            throw new SuperCodeExtException("该活动设置不存在", 500);
         }
         if(mActivitySet.getActivityStatus() == 0) {
-            throw new SuperCodeExtException("该活动已停用", 200);
+            throw new SuperCodeExtException("该活动已停用", 500);
         }
         long currentMills = System.currentTimeMillis();
         String startDateStr = mActivitySet.getActivityStartDate();
         if(StringUtils.isNotBlank(startDateStr)) {
             long startMills = DateUtil.parse(startDateStr, "yyyy-MM-dd").getTime();
             if(currentMills < startMills){
-                throw new SuperCodeExtException("该活动还未开始", 200);
+                throw new SuperCodeExtException("该活动还未开始", 500);
             }
         }
         String endDateStr = mActivitySet.getActivityEndDate();
         if(StringUtils.isNotBlank(endDateStr)) {
             long endMills = DateUtil.parse(endDateStr, "yyyy-MM-dd").getTime();
             if(currentMills > endMills){
-                throw new SuperCodeExtException("该活动已经结束", 200);
+                throw new SuperCodeExtException("该活动已经结束", 500);
             }
         }
         MarketingActivity activity = mActivityMapper.selectById(mActivitySet.getActivityId());
         if (null == activity) {
-            throw new SuperCodeExtException("该活动不存在", 200);
+            throw new SuperCodeExtException("该活动不存在", 500);
         }
         Long userId = scanCodeInfoMO.getUserId();
         List<MarketingPrizeTypeMO> moPrizeTypes = marketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
