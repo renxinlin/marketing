@@ -602,7 +602,6 @@ public class WeixinAuthController {
 		if (memberWithWechat.getMemberId() == null) {
 			memberWithWechat.setMemberId(-1L);
 		}
-		memberWithWechat.setMemberId(-1L);
 		String wxstate=commonUtil.getUUID();
 		ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
 		scanCodeInfoMO.setOpenId(openid);
