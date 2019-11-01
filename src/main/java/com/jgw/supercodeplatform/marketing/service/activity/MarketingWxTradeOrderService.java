@@ -37,9 +37,9 @@ public class MarketingWxTradeOrderService {
         if(payTradeOrder == null){
             return "找不到该码对应的订单";
         }
-        if(!organizationId.equals(payTradeOrder.getOrganizationId())){
-            return  "当前登录组织非该订单创建对应的组织";
-        }
+//        if(!organizationId.equals(payTradeOrder.getOrganizationId())){
+//            return  "当前登录组织非该订单创建对应的组织";
+//        }
         payService.qiyePay(payTradeOrder.getOpenId(),payTradeOrder.getRemoteAddr(),payTradeOrder.getAmount().intValue(),payTradeOrder.getPartnerTradeNo(), organizationId);
         return null;
     }
