@@ -599,7 +599,6 @@ public class WeixinAuthController {
 		} else {
 			BeanUtils.copyProperties(marketingWxMember, memberWithWechat);
 		}
-		memberWithWechat.setMemberId(0L);
 		String wxstate=commonUtil.getUUID();
 		ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
 		scanCodeInfoMO.setOpenId(openid);
@@ -610,14 +609,14 @@ public class WeixinAuthController {
 		String[] uris = redirectUri.split("#");
 		if (uris.length > 1) {
 			String startUrl = uris[0].contains("?")? uris[0]+"&" : uris[0]+"?";
-			String firUri = startUrl + "wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+memberWithWechat.getWxMemberId();
+			String firUri = startUrl + "wxstate="+wxstate+"&organizationId="+organizationId;
 			uri = firUri;
 			for (int i= 1;i<uris.length;i++) {
 				uri = uri + "#" + uris[i];
 			}
 		} else {
 			String startUrl = redirectUri.contains("?")? redirectUri+"&" : redirectUri+"?";
-			uri = startUrl + "wxstate="+wxstate+"&organizationId="+organizationId+"&memberId="+memberWithWechat.getWxMemberId();
+			uri = startUrl + "wxstate="+wxstate+"&organizationId="+organizationId;
 		}
 		return "redirect:" + uri;
 	}
