@@ -233,9 +233,9 @@ public class MemberPortraitController extends CommonUtil {
             // 性别统计
             if(marketingMember.getSex() == null){
                 other.add(1);
-            }else if(marketingMember.getSex().equals("1")){
+            }else if(marketingMember.getSex().intValue() == 1){
                 woman.add(1);
-            }else if(marketingMember.getSex().equals("0")){
+            }else if(marketingMember.getSex().intValue() == 0){
                 man.add(1);
             }else{
                 other.add(1);

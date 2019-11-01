@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 @Component
@@ -64,17 +65,28 @@ public class GlobalRamCache {
 		}
 		MarketingWxMerchants mWxMerchants=null;
 		String json = (String) redisUtil.hmGet(MARKETING_GLOBAL_CACHE, organizationId);
-		if (null==json) {
-			// 多节点后可以重复拉取该数据
-			if (null==mWxMerchants) {
-				mWxMerchants=mWxMerchantsMapper.selectByOrganizationId(organizationId);
-				if (null==mWxMerchants) {
-					mWxMerchants=mWxMerchantsMapper.selectDefault();
+		if (json != null) {
+			mWxMerchants=JSONObject.parseObject(json, MarketingWxMerchants.class);
+		}
+		//从数据库中查询
+		if (mWxMerchants == null) {
+			mWxMerchants = mWxMerchantsMapper.selectByOrganizationId(organizationId);
+			//查看该用户是否为使用甲骨文的
+			if (mWxMerchants != null && mWxMerchants.getMerchantType() != null && mWxMerchants.getMerchantType().intValue() == 1) {
+				MarketingWxMerchants jgwMarketingWxMerchants = new MarketingWxMerchants();
+				Long jgwId = mWxMerchants.getJgwId();
+				if (jgwId != null) {
+					jgwMarketingWxMerchants = mWxMerchantsMapper.getJgw(jgwId);
+				} else {
+					jgwMarketingWxMerchants = mWxMerchantsMapper.getDefaultJgw();
 				}
+				jgwMarketingWxMerchants.setOrganizatioIdlName(mWxMerchants.getOrganizatioIdlName());
+				jgwMarketingWxMerchants.setOrganizationId(mWxMerchants.getOrganizationId());
+				return jgwMarketingWxMerchants;
+			}
+			if (mWxMerchants != null) {
 				redisUtil.hmSet (MARKETING_GLOBAL_CACHE,organizationId, JSONObject.toJSONString(mWxMerchants));
 			}
-		}else {
-			mWxMerchants=JSONObject.parseObject(json, MarketingWxMerchants.class);
 		}
 		if (null==mWxMerchants) {
 			throw new SuperCodeExtException("无法根据组织id="+organizationId+"获取组织商户公众号信息", 500);

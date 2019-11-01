@@ -30,6 +30,7 @@ import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.pojo.platform.MarketingPlatformOrganization;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
+import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,8 +39,10 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -74,7 +77,7 @@ public class LotteryService {
 	private WXPayTradeOrderMapper wXPayTradeOrderMapper;
 
 	@Autowired
-	private GlobalRamCache globalRamCache;
+	private MarketingMembersService marketingMembersService;
 
 	@Autowired
 	private WXPayService wxpService;
@@ -133,39 +136,42 @@ public class LotteryService {
 			return lotteryOprationDto.lotterySuccess("该活动设置不存在");
 		}
 		if(mActivitySet.getActivityStatus() == 0) {
-			throw new SuperCodeExtException("该活动已停用", 200);
+			throw new SuperCodeExtException("该活动已停用", 500);
 		}
 		long currentMills = System.currentTimeMillis();
 		String startDateStr = mActivitySet.getActivityStartDate();
 		if(StringUtils.isNotBlank(startDateStr)) {
 			long startMills = DateUtil.parse(startDateStr, "yyyy-MM-dd").getTime();
 			if(currentMills < startMills){
-				throw new SuperCodeExtException("该活动还未开始", 200);
+				throw new SuperCodeExtException("该活动还未开始", 500);
 			}
 		}
 		String endDateStr = mActivitySet.getActivityEndDate();
 		if(StringUtils.isNotBlank(endDateStr)) {
 			long endMills = DateUtil.parse(endDateStr, "yyyy-MM-dd").getTime();
 			if(currentMills > endMills){
-				throw new SuperCodeExtException("该活动已经结束", 200);
+				throw new SuperCodeExtException("该活动已经结束", 500);
 			}
 		}
 		MarketingActivityProduct mActivityProduct = maProductMapper.selectByProductAndProductBatchIdWithReferenceRoleAndSetId(productId, productBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType(), activitySetId);
 		String productSbatchId = mActivityProduct.getSbatchId();
 		if(productSbatchId == null || !productSbatchId.contains(sbatchId)) {
-			throw new SuperCodeExtException("码批次有误", 200);
+			throw new SuperCodeExtException("码批次有误", 500);
 		}
 		MarketingActivity activity = mActivityMapper.selectById(mActivitySet.getActivityId());
 		if (null == activity) {
-			throw new SuperCodeExtException("该活动不存在", 200);
+			throw new SuperCodeExtException("该活动不存在", 500);
 		}
 		Long userId = scanCodeInfoMO.getUserId();
-		MarketingMembers marketingMembersInfo = marketingMembersMapper.getMemberById(userId);
-		if(marketingMembersInfo == null){
-			throw new SuperCodeException("会员信息不存在",200);
+		MemberWithWechat memberWithWechat = marketingMembersService.selectById(userId);
+		if(memberWithWechat == null){
+			throw new SuperCodeException("会员信息不存在",500);
 		}
+		MarketingMembers marketingMembersInfo = new MarketingMembers();
+		BeanUtils.copyProperties(memberWithWechat, marketingMembersInfo);
+		marketingMembersInfo.setId(userId);
 		if( null != marketingMembersInfo.getState() && marketingMembersInfo.getState() == 0){
-			throw new SuperCodeException("对不起,该会员已被加入黑名单",200);
+			throw new SuperCodeException("对不起,该会员已被加入黑名单",500);
 		}
 		String condition = mActivitySet.getValidCondition();
 		MarketingActivitySetCondition mSetCondition = null;
@@ -177,7 +183,7 @@ public class LotteryService {
 		int consumeIntegralNum = mSetCondition.getConsumeIntegral() == null? 0: mSetCondition.getConsumeIntegral();
 		int haveIntegral = marketingMembersInfo.getHaveIntegral() == null? 0:marketingMembersInfo.getHaveIntegral();
 		if (haveIntegral < consumeIntegralNum) {
-			throw new SuperCodeException("对不起,领取本活动需要消耗"+consumeIntegralNum+"积分，您的积分不够",200);
+			throw new SuperCodeException("对不起,领取本活动需要消耗"+consumeIntegralNum+"积分，您的积分不够",500);
 		}
 		List<MarketingPrizeTypeMO> moPrizeTypes = mMarketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
 		if (CollectionUtils.isEmpty(moPrizeTypes)) {
@@ -308,9 +314,9 @@ public class LotteryService {
 		}
 		RestResult restResult = lotteryOprationDto.getRestResult();
 		restResult.setMsg(lotteryResultMO.getMsg());
-		if (amount != null && amount > 0) {
+		if(awardType.intValue() == 4 && amount != null && amount > 0) {
 			WxOrderPayDto wxOrderPayDto = new WxOrderPayDto();
-			wxOrderPayDto.setAmount(amount*100);
+			wxOrderPayDto.setAmount(amount * 100);
 			wxOrderPayDto.setMobile(mobile);
 			wxOrderPayDto.setOpenId(openId);
 			wxOrderPayDto.setOrganizationId(organizationId);
@@ -319,14 +325,20 @@ public class LotteryService {
 			wxOrderPayDto.setRemoteAddr(remoteAddr);
 			wxOrderPayDto.setSendAudit(lotteryOprationDto.getSendAudit());
 			return wxOrderPayDto;
-		} else {
-			lotteryResultMO = new LotteryResultMO("哎呀，手气不好，没抽中");
-			lotteryResultMO.setData("哎呀，手气不好，没抽中");
+		}
+		if (awardType.intValue() != 4 && lotteryOprationDto.getSuccessLottory() == 1) {
+			lotteryResultMO.setWinnOrNot(1);
+			lotteryOprationDto.setLotteryResultMO(lotteryResultMO);
 			restResult.setResults(lotteryResultMO);
 			restResult.setMsg(lotteryResultMO.getMsg());
-			lotteryOprationDto.setRestResult(restResult);
-			lotteryOprationDto.setLotteryResultMO(lotteryResultMO);
+			return null;
 		}
+		lotteryResultMO = new LotteryResultMO("哎呀，手气不好，没抽中");
+		lotteryResultMO.setData("哎呀，手气不好，没抽中");
+		restResult.setResults(lotteryResultMO);
+		restResult.setMsg(lotteryResultMO.getMsg());
+		lotteryOprationDto.setRestResult(restResult);
+		lotteryOprationDto.setLotteryResultMO(lotteryResultMO);
 		return null;
 	}
 
@@ -449,7 +461,7 @@ public class LotteryService {
 	private void weixinpay(byte sendAudit, String winningCode, String mobile, String openId, String organizationId, Float finalAmount, String remoteAddr, byte referenceRole)
 			throws SuperCodeException, Exception {
 		if (StringUtils.isBlank(openId)) {
-			throw  new SuperCodeException("微信支付openid不能为空",200);
+			throw  new SuperCodeException("微信支付openid不能为空",500);
 		}
 		logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
 		//生成订单号
@@ -508,7 +520,7 @@ public class LotteryService {
 			sumprizeProbability += prizeProbability;
 		}
 		if (sumprizeProbability > 100) {
-			throw new SuperCodeException("概率参数非法，总数不能大于100", 200);
+			throw new SuperCodeException("概率参数非法，总数不能大于100", 500);
 		} else if (sumprizeProbability < 100) {
 			int i = 100 - sumprizeProbability;
 			MarketingPrizeTypeMO NoReal = new MarketingPrizeTypeMO();

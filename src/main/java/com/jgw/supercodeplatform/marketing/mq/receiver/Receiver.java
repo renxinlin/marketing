@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.mq.receiver;
 import com.jgw.supercodeplatform.marketing.constants.RabbitMqQueueName;
 import com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.AutoFatchChainCompoment;
 import com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.bizimpl.CouponAutoFecthService;
+import com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.bizimpl.PrizeWheelsAutoFetchService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.mq.CommonMqTaskService;
 
@@ -34,6 +35,11 @@ public class Receiver  implements InitializingBean {
 	 */
 	@Autowired
 	private CouponAutoFecthService couponAutoFecthService;
+	/**
+	 * 大转盘自动追加处理
+	 */
+	@Autowired
+	private PrizeWheelsAutoFetchService prizeWheelsAutoFetchService;
 
 	public  void test(){
 
@@ -53,7 +59,7 @@ public class Receiver  implements InitializingBean {
         logger.info("mq开始消费--------------->>>>>>>>>>接收到数据data="+batchList);
        if (null!=batchList && !batchList.isEmpty()) {
     	   service.handleNewBindBatch(batchList);
-    	   // 业务解耦:处理抵扣券
+    	   // 业务解耦:处理抵扣券 大转盘
 		   autoFecthProcess.fireBiz(batchList);
 	   }
         logger.info("mq消息消费完成");
@@ -61,6 +67,9 @@ public class Receiver  implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		autoFecthProcess.initchains(couponAutoFecthService);
+		//  注意： a p a i
+		// autowired > afterPropertiesSet
+        // 执行链 执行顺序 SystemChainService >  couponAutoFecthService > prizeWheelsAutoFetchService
+		autoFecthProcess.initchains(couponAutoFecthService,prizeWheelsAutoFetchService);
 	}
 }

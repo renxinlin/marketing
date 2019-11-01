@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.alibaba.fastjson.JSON;
+import com.google.gson.JsonArray;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -69,6 +74,10 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 
 	@Autowired
 	private ModelMapper modelMapper;
+
+	@Autowired
+	private GetSbatchIdsByPrizeWheelsFeign getSbatchIdsByPrizeWheelsFeign;
+
 	@Override
 	protected List<IntegralRuleProduct> searchResult(DaoSearch searchParams) throws Exception {
 		String organizationId=commonUtil.getOrganizationId();
@@ -90,8 +99,14 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 	public void deleteByProductIds(List<String> productIds) throws SuperCodeException {
       if (null==productIds || productIds.isEmpty()) {
 	 	throw new SuperCodeException("产品id不能为空", 500);
-	  }	
-      dao.deleteByProductIds(productIds);      
+	  }
+      String superToken = commonUtil.getSuperToken();
+      List<IntegralRuleProduct> productList = dao.selectByProductIdsAndOrgId(productIds, commonUtil.getOrganizationId());
+		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
+		//构建请求生码批次参数
+		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+		integralUrlUnBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
+		  dao.deleteByProductIds(productIds);
 	}
 	/**
 	 * 产品积分设置流程：首先根据前端传的产品去基础平台获取批次，再组装参数请求码管理生码批次，再调用码管理绑定接口进行url与生码批次绑定
@@ -284,6 +299,58 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
      * @param productAndBatchGetCodeMOs
      * @throws SuperCodeException
      */
+	private void integralUrlUnBindBatch(int businessType, String superToken, List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs)
+			throws SuperCodeException {
+		if (null!=productAndBatchGetCodeMOs && !productAndBatchGetCodeMOs.isEmpty()) {
+			String batchInfoBody=commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
+			JSONObject obj=JSONObject.parseObject(batchInfoBody);
+			int batchInfostate=obj.getInteger("state");
+			if (200!=batchInfostate) {
+				throw new SuperCodeException("积分设置时根据产品及批次获取码管理生码批次失败："+batchInfoBody, 500);
+			}
+			JSONArray batchArray=obj.getJSONArray("results");
+			if (null==batchArray || batchArray.isEmpty()) {
+				throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
+			}
+			List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
+			JSONArray array = obj.getJSONArray("results");
+			for(int i=0;i<array.size();i++) {
+				JSONObject batchobj=array.getJSONObject(i);
+				String productId=batchobj.getString("productId");
+				String productBatchId=batchobj.getString("productBatchId");
+				Long codeTotal=batchobj.getLong("codeTotal");
+				String codeBatch=batchobj.getString("globalBatchId");
+				if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+					throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
+				}
+				String[] sbatchIdArray = codeBatch.split(",");
+				for(String sbatchId : sbatchIdArray) {
+					SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+					sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+					List<Integer> bizTypeList = new ArrayList<>();
+					bizTypeList.add(businessType);
+					sbatchUrlDto.setBusinessTypes(bizTypeList);
+					sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+					sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+					deleteProductBatchList.add(sbatchUrlDto);
+				}
+			}
+			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
+			RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
+			logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
+			if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
+				throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
+			}
+		}
+	}
+
+	/**
+	 * 请求生码批次及绑定积分url到生码批次
+	 * @param businessType
+	 * @param superToken
+	 * @param productAndBatchGetCodeMOs
+	 * @throws SuperCodeException
+	 */
 	private void integralUrlBindBatch(int businessType, String superToken, List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs)
 			throws SuperCodeException {
 		if (null!=productAndBatchGetCodeMOs && !productAndBatchGetCodeMOs.isEmpty()) {
@@ -295,7 +362,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			}
 			JSONArray batchArray=obj.getJSONArray("results");
 			if (null==batchArray || batchArray.isEmpty()) {
-				throw new SuperCodeException("该产品的批次未查到码关联信息，前检查是否已做过码关联的批次被删除", 500);
+				throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
 			}
 			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
 			String bindBatchBody=commonService.bindUrlToBatch(batchInfoparams, superToken);
@@ -323,6 +390,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		if (null!=productIds && !productIds.isEmpty()) {
 			params.put("excludeProductIds",String.join(",", productIds));
 		}
+		logger.info("CODEMANAGER_RELATION_PRODUCT_URL = /code/relation/list/relation/productRecord : params ==> {}",JSONObject.toJSONString(params));
 		Map<String, String> headerMap = new HashMap<>();
 		headerMap.put("super-token", getSuperToken());
 		ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, headerMap);

@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -215,7 +216,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     public List<SalerOrderForm> detail() {
         List<SalerOrderForm> salerOrderForms = baseMapper.selectList(query().eq("OrganizationId", commonUtil.getOrganizationId()).getWrapper());
         if(CollectionUtils.isEmpty(salerOrderForms)){
-            return new ArrayList<SalerOrderForm>();
+            return new ArrayList<>();
         }else{
             // 移除预定义字段
             salerOrderForms.removeIf(salerOrderForm -> SalerOrderTransfer.deafultColumnNames.contains(salerOrderForm.getColumnName()));
@@ -272,6 +273,35 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
     }
 
+
+    public void updateOrder(List<ColumnnameAndValueDto> columnnameAndValues) {
+        Asserts.check(!StringUtils.isEmpty(commonUtil.getOrganizationId()), "未获取对应组织");
+        Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取订货信息");
+        //
+        AtomicReference<String> id = new AtomicReference<String> ();
+        columnnameAndValues.forEach(columnnameAndValueDto -> {
+            if(columnnameAndValueDto.getColumnName().equalsIgnoreCase("id")){
+                id.set(columnnameAndValueDto.getColumnValue());
+            }
+        });
+        if(id.get() ==null || id.get() .equals("")){
+            throw new RuntimeException("ID 不存在");
+        }
+        dynamicMapper.updateOrder(columnnameAndValues, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()),id.get());
+
+
+    }
+
+    public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues) {
+        Asserts.check(!StringUtils.isEmpty(commonUtil.getOrganizationId()), "未获取对应组织");
+        Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取订货信息");
+        // validAllHaveColumn(columnnameAndValues,commonUtil.getOrganizationId());
+        dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
+    }
+
+
+
+
     private void validAllHaveColumn(List<ColumnnameAndValueDto> columnnameAndValues,String organizationId) {
         int orderSize = baseMapper.selectCount(query().eq("organizationId", organizationId).getWrapper());
         int size = orderSize-SalerOrderTransfer.deafultColumnNames.size();
@@ -298,5 +328,20 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 address.append(customerInfo.getCountyName());
             }
         }
+    }
+
+
+    public void updateStatus(Long id, byte status) {
+        dynamicMapper.updateStatus(id, status, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
+
+    }
+
+    public void delete(Long id) {
+        dynamicMapper.delete(id, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
+
+    }
+
+    public List<Map<String, Object>> detailbyId(Long id) {
+        return dynamicMapper.selectById(id,SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
     }
 }

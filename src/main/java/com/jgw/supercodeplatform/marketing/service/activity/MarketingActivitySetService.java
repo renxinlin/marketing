@@ -6,13 +6,18 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.jgw.supercodeplatform.marketing.constants.*;
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.*;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.*;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +44,6 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
-import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
-import com.jgw.supercodeplatform.marketing.constants.RedisKey;
-import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
@@ -94,6 +95,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
 	@Value("${marketing.domain.url}")
 	private String marketingDomain;
+
+	@Autowired
+	private GetSbatchIdsByPrizeWheelsFeign getSbatchIdsByPrizeWheelsFeign;
 
 	/**
 	 * 根据活动id获取领取页和中奖页信息
@@ -246,63 +250,31 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
 		}
-		List<Map<String, Object>> deleteProductBatchList = new ArrayList<>();
+		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product
 		List<MarketingActivityProduct> maProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
 		if(maProductList == null) maProductList = new ArrayList<>();
 		maProductList.addAll(upProductList);
 		List<MarketingActivityProduct> marketingActivityProductList = maProductList.stream().distinct().collect(Collectors.toList());
+		StringBuffer sbatchIdBuffer = new StringBuffer();
 		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
-			Set<String> sBatchIdSet = new HashSet<>();
-			Set<Long> activityIdsSet = marketingActivityProductList.stream().map(prd -> prd.getActivitySetId()).collect(Collectors.toSet());
-			//得到绑定过url的product对应的活动
-			List<MarketingActivitySet> marketingActivitySetList = mSetMapper.selectMarketingActivitySetByIds(commonUtil.getOrganizationId(), new ArrayList<>(activityIdsSet));
-			Map<Long, MarketingActivitySet> marketingActivitySetMap = marketingActivitySetList.stream().collect(Collectors.toMap(MarketingActivitySet::getId, marketingActivitySet -> marketingActivitySet));
-			for(MarketingActivityProduct marketingActivityProduct : marketingActivityProductList) {
-				Long aSetId = marketingActivityProduct.getActivitySetId();
-				MarketingActivitySet mas = marketingActivitySetMap.get(aSetId);
-				if(mas != null) {
-					Long activityId = mas.getActivityId();
-					Integer bizType = null;
-					if(activityId.intValue() == 4) {
-						MarketingActivitySetCondition validCondition = JSON.parseObject(mas.getValidCondition(), MarketingActivitySetCondition.class);
-						validCondition.getAcquireCondition();
-						if(CouponAcquireConditionEnum.SHOPPING.getCondition().equals(validCondition.getAcquireCondition())){
-							bizType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
-						}
-					} else {
-						bizType = BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType();
-					}
-					if (bizType != null) {
-						String sbatchIds = marketingActivityProduct.getSbatchId();
-						if (StringUtils.isBlank(sbatchIds)) {
-							continue;
-						}
-						String[] sbatchIdArray = sbatchIds.split(",");
-						for(String sbatchId : sbatchIdArray) {
-							Map<String, Object> delMap = new HashMap<>();
-							sBatchIdSet.add(sbatchId);
-							delMap.put("batchId", sbatchId);
-							delMap.put("businessType", bizType);
-							delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
-							deleteProductBatchList.add(delMap);
-						}
-					}
+			marketingActivityProductList.forEach(marketingActivityProduct -> {
+				String sbatchIds = marketingActivityProduct.getSbatchId();
+				if (StringUtils.isNotBlank(sbatchIds)) {
+					sbatchIdBuffer.append(",").append(sbatchIds);
 				}
-			}
-			if (!sBatchIdSet.isEmpty()) {
-				List<MarketingActivityProduct> productBatchList = mProductMapper.selectByBatchIds(sBatchIdSet);
-				productBatchList.removeAll(marketingActivityProductList);
-				Set<String> alBatchIdSet = new HashSet<>();
-				productBatchList.forEach(prod -> alBatchIdSet.addAll(Arrays.asList(prod.getSbatchId().split(","))));
-				Iterator<Map<String, Object>> it = deleteProductBatchList.listIterator();
-				while (it.hasNext()) {
-					Map<String, Object> delMap = it.next();
-					String batchId = (String) delMap.get("batchId");
-					if (alBatchIdSet.contains(batchId)) {
-						it.remove();
-					}
-				}
+			});
+		}
+		if(sbatchIdBuffer.length() > 0) {
+			String sbatchIds = sbatchIdBuffer.substring(1);
+			String[] sbatchIdArray = sbatchIds.split(",");
+			for(String sbatchId : sbatchIdArray) {
+				SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+				sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+				sbatchUrlDto.initAllBusinessType();
+				sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+				sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+				deleteProductBatchList.add(sbatchUrlDto);
 			}
 		}
 		/***************************************************/
@@ -487,7 +459,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void saveProductBatchs(List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs, List<Map<String,Object>> deleteProductBatchList, List<MarketingActivityProduct> mList, int referenceRole) throws SuperCodeException {
+	public void saveProductBatchs(List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs, List<SbatchUrlUnBindDto> deleteProductBatchList, List<MarketingActivityProduct> mList, int referenceRole) throws SuperCodeException {
 		//如果是会员活动需要去绑定扫码连接到批次号
 		String superToken = commonUtil.getSuperToken();
 		String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
@@ -503,18 +475,17 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr,bindUrl,
 					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType(), referenceRole);
 			if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
-				String delbatchBody = commonService.deleteUrlToBatch(deleteProductBatchList, superToken);
-				JSONObject delBatchobj = JSONObject.parseObject(delbatchBody);
-				Integer delBatchstate = delBatchobj.getInteger("state");
-				if (null != delBatchstate && delBatchstate.intValue() != 200) {
-					throw new SuperCodeException("请求码删除生码批次和url错误：" + delbatchBody, 500);
+				RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
+				logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
+				if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
+					throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
 				}
 			}
 			// 绑定生码批次到url
 			String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
 			JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
 			Integer batchstate = bindBatchobj.getInteger("state");
-			if (null != batchstate && batchstate.intValue() != 200) {
+			if (null == batchstate || batchstate.intValue() != 200) {
 				throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, 500);
 			}
 			Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,bindUrl,
@@ -564,63 +535,31 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
 		}
-		List<Map<String, Object>> deleteProductBatchList = new ArrayList<>();
+		StringBuffer sbatchIdBuffer = new StringBuffer();
+		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product
 		List<MarketingActivityProduct> marketingActivityProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+		//拼接所有的sbatchId
 		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
-			Set<String> sBatchIdSet = new HashSet<>();
-			Set<Long> activityIdsSet = marketingActivityProductList.stream().map(prd -> prd.getActivitySetId()).collect(Collectors.toSet());
-			//得到绑定过url的product对应的活动
-			List<MarketingActivitySet> marketingActivitySetList = mSetMapper.selectMarketingActivitySetByIds(commonUtil.getOrganizationId(), new ArrayList<>(activityIdsSet));
-			Map<Long, MarketingActivitySet> marketingActivitySetMap = marketingActivitySetList.stream().collect(Collectors.toMap(MarketingActivitySet::getId, marketingActivitySet -> marketingActivitySet));
-			for(MarketingActivityProduct marketingActivityProduct : marketingActivityProductList) {
-				Long aSetId = marketingActivityProduct.getActivitySetId();
-				MarketingActivitySet mas = marketingActivitySetMap.get(aSetId);
-				if(mas != null) {
-					Long activityId = mas.getActivityId();
-					Integer bizType = null;
-					if(activityId.intValue() == 4) {
-						MarketingActivitySetCondition validCondition = JSON.parseObject(mas.getValidCondition(), MarketingActivitySetCondition.class);
-						validCondition.getAcquireCondition();
-						if(CouponAcquireConditionEnum.SHOPPING.getCondition().equals(validCondition.getAcquireCondition())){
-							bizType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
-						}
-					} else {
-						bizType = BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType();
-					}
-					if (bizType != null) {
-						String sbatchIds = marketingActivityProduct.getSbatchId();
-						if (StringUtils.isBlank(sbatchIds)) {
-							continue;
-						}
-						String[] sbatchIdArray = sbatchIds.split(",");
-						for(String sbatchId : sbatchIdArray) {
-							sBatchIdSet.add(sbatchId);
-							Map<String, Object> delMap = new HashMap<>();
-							delMap.put("batchId", sbatchId);
-							delMap.put("businessType", bizType);
-							delMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
-							deleteProductBatchList.add(delMap);
-						}
-					}
+			marketingActivityProductList.forEach(marketingActivityProduct -> {
+				String sbatchIds = marketingActivityProduct.getSbatchId();
+				if (StringUtils.isNotBlank(sbatchIds)) {
+					sbatchIdBuffer.append(",").append(sbatchIds);
 				}
-			}
-			if (!sBatchIdSet.isEmpty()) {
-				List<MarketingActivityProduct> productBatchList = mProductMapper.selectByBatchIds(sBatchIdSet);
-				productBatchList.removeAll(marketingActivityProductList);
-				Set<String> alBatchIdSet = new HashSet<>();
-				productBatchList.forEach(prod -> alBatchIdSet.addAll(Arrays.asList(prod.getSbatchId().split(","))));
-				Iterator<Map<String, Object>> it = deleteProductBatchList.listIterator();
-				while (it.hasNext()) {
-					Map<String, Object> delMap = it.next();
-					String batchId = (String) delMap.get("batchId");
-					if (alBatchIdSet.contains(batchId)) {
-						it.remove();
-					}
-				}
+			});
+		}
+		if(sbatchIdBuffer.length() > 0) {
+			String sbatchIds = sbatchIdBuffer.substring(1);
+			String[] sbatchIdArray = sbatchIds.split(",");
+			for(String sbatchId : sbatchIdArray) {
+				SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+				sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+				sbatchUrlDto.initAllBusinessType();
+				sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+				sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+				deleteProductBatchList.add(sbatchUrlDto);
 			}
 		}
-		/***************************************************/
 		mSetMapper.insert(activitySet);
 		mList.forEach(prd -> prd.setActivitySetId(activitySet.getId()));
 		saveProductBatchs(productAndBatchGetCodeMOs, deleteProductBatchList, mList, referenceRole);

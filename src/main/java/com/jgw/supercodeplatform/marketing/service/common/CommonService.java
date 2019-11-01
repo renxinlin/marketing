@@ -14,7 +14,13 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSON;
+import com.jgw.supercodeplatform.common.pojo.common.JsonResult;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity;
+import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity.OuterCode;
+import com.jgw.supercodeplatform.marketing.enums.CodeTypeEnum;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -50,6 +56,8 @@ import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 @Service
 public class CommonService {
@@ -166,7 +174,7 @@ public class CommonService {
 
     /**
      * 获取绑定批次和url的请求参数
-     * @param obj：通过产品和产品批次获取的码管理平台生码批次信息
+     * @param ：通过产品和产品批次获取的码管理平台生码批次信息
      * @param url
      * @return
      * @throws SuperCodeException
@@ -204,7 +212,7 @@ public class CommonService {
 
 	/**
 	 * 生码批次绑定url
-	 * @param url
+	 * @param
 	 * @param superToken
 	 * @return
 	 * @throws SuperCodeException
@@ -285,9 +293,9 @@ public class CommonService {
 		params.put("organizationIds", JSONObject.toJSONString(orgIds));
 		Map<String,String>headerMap=new HashMap<String, String>();
 		headerMap.put(commonUtil.getSysAuthHeaderKey(), commonUtil.getSecretKeyForBaseInfo());
-		HashMap<String, String> superToken = new HashMap<>();
-		superToken.put("super-token",commonUtil.getSuperToken());
-		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, superToken);
+//		HashMap<String, String> superToken = new HashMap<>();
+//		superToken.put("super-token",commonUtil.getSuperToken());
+		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, null);
 		String body=responseEntity.getBody();
 		logger.info("请求基础平台批量获取组织信息接口返回信息："+body);
 
@@ -370,7 +378,7 @@ public class CommonService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void checkCodeValid(String codeId, String codeTypeId) {
+	public String checkCodeValid(String codeId, String codeTypeId) {
 		Map<String, String> headerparams = new HashMap<String, String>();
 		headerparams.put("token",commonUtil.getCodePlatformToken() );
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
@@ -381,6 +389,7 @@ public class CommonService {
 		if (StringUtils.isBlank(sBatchId)) {
 			throw  new SuperCodeExtException("对不起,该码不存在",500);
 		}
+		return sBatchId;
 	}
 
 
@@ -391,11 +400,11 @@ public class CommonService {
 	 * @return
 	 * @throws SuperCodeException
 	 */
-	public void checkCodeTypeValid( Long codeTypeId) {
+	public void checkCodeTypeValid(Long codeTypeId) {
 		if(codeTypeId == null){
 			throw  new SuperCodeExtException("对不起,非营销码制");
 		}
-		if (SystemLabelEnum.MARKETING.getCodeTypeId().intValue() != codeTypeId.intValue()) {
+		if (SystemLabelEnum.MARKETING_12.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.MARKETING_13.getCodeTypeId().intValue() != codeTypeId.intValue()) {
             throw  new SuperCodeExtException("对不起,非营销码制");
 		}
 	}
@@ -410,7 +419,7 @@ public class CommonService {
 		if(codeTypeId == null){
 			throw  new SuperCodeExtException("对不起,码制不合法");
 		}
-		if (SystemLabelEnum.MARKETING.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.FAKE.getCodeTypeId().intValue() != codeTypeId.intValue()) {
+		if (SystemLabelEnum.MARKETING_12.getCodeTypeId().intValue() != codeTypeId.intValue()&& SystemLabelEnum.MARKETING_13.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.FAKE.getCodeTypeId().intValue() != codeTypeId.intValue()) {
 			throw  new SuperCodeExtException("对不起,码制不合法");
 		}
 	}
@@ -483,19 +492,23 @@ public class CommonService {
      * @return
      * @throws SuperCodeException
      */
-    public Map<String, String> queryCurrentCustomer(String outerCodeId) {
-    	Map<String, Object> params = new HashMap<>();
-    	params.put("outerCodeIds", outerCodeId);
-    	ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(logisticsUrl+CommonConstants.OUTERCODE_CUSTOMER, params, null);
+    public Map<String, String> queryCurrentCustomer(String codeTypeId, String outerCodeId) {
+		Map<String, String> customerMap = new HashMap<>();
+    	List<String> logisticsList = getLogisticsCodeIds(codeTypeId, outerCodeId);
+		if (CollectionUtils.isEmpty(logisticsList)) {
+			return customerMap;
+		}
+		StringBuffer paramBuff = new StringBuffer();
+		logisticsList.forEach(code -> paramBuff.append("&outerCodeIds=").append(code));
+    	ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(logisticsUrl+CommonConstants.OUTERCODE_CUSTOMER + "?" +paramBuff.substring(1), null, null);
     	String body = responseEntity.getBody();
 		JSONObject jsonObject=JSONObject.parseObject(body);
 		Integer state=jsonObject.getInteger("state");
 		if (null == state || state.intValue()!=200) {
 			throw new SuperCodeExtException("码查询客户信息出错:"+body, 500);
 		}
-		Map<String, String> customerMap = new HashMap<>();
 		JSONObject resultJson = jsonObject.getJSONObject("results");
-		if(resultJson != null) {
+		if(MapUtils.isNotEmpty(resultJson)) {
 			String customerId = resultJson.getString("customerId");
 			String customerName = resultJson.getString("customerName");
 			customerMap.put("customerId", customerId);
@@ -507,7 +520,7 @@ public class CommonService {
 
 	/**
 	 * 根据码制和码获取内码
-	 * @param codeId
+	 * @param
 	 * @param codeTypeId
 	 * @return 内码
 	 */
@@ -527,5 +540,37 @@ public class CommonService {
 			return resultJson.getString("innerCodeId");
 		}
 		throw new SuperCodeExtException("查询到不对应的内码");
+	}
+
+	private List<String> getLogisticsCodeIds(String codeTypeId, String outerCodeId){
+		//String param = "codeTypeId="+codeTypeId+"&outerCodeIdList=[\""+outerCodeId+"\"]";
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("codeTypeId", codeTypeId);
+		paramMap.put("outerCodeIdList", "[\""+outerCodeId+"\"]");
+		ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(logisticsUrl + CommonConstants.OUTER_LIST, paramMap, null);
+		String body = responseEntity.getBody();
+		JsonResult<?> outerCodeEntityJson = JSON.parseObject(body, JsonResult.class);
+		Assert.isTrue(outerCodeEntityJson != null && outerCodeEntityJson.getResults() != null, "调用码平台获取码失败");
+		Object resObj = outerCodeEntityJson.getResults();
+		String resStr;
+		if(resObj instanceof String) resStr = (String)resObj;
+		else resStr = JSON.toJSONString(resObj);
+		OuterCodesEntity outerCodesEntity = JSON.parseObject(resStr, OuterCodesEntity.class);
+		List<List<OuterCode>> outerCodeListList = outerCodesEntity.getOuterCodeIdList();
+		Assert.notEmpty(outerCodeListList, "调用码平台获取码为空");
+		String logisticsCodeId = null, sequenceCodeId = null;
+		for(List<OuterCode> outerCodeList : outerCodeListList) {
+			for(OuterCode outerCode : outerCodeList) {
+				if(CodeTypeEnum.LOGISTICS.getTypeId().equals(outerCode.getCodeTypeId()))
+					logisticsCodeId = outerCode.getOutCodeId();
+				if(CodeTypeEnum.SEQUENCE.getTypeId().equals(outerCode.getCodeTypeId()))
+					sequenceCodeId = outerCode.getOutCodeId();
+			}
+		}
+		Assert.isTrue(StringUtils.isNotBlank(logisticsCodeId) || StringUtils.isNotBlank(sequenceCodeId), "调用码平台获取不到对应的物流码或顺序码");
+		List<String> logisticsList = new ArrayList<>();
+		if(StringUtils.isNotBlank(logisticsCodeId)) logisticsList.add(logisticsCodeId);
+		if(StringUtils.isNotBlank(sequenceCodeId)) logisticsList.add(sequenceCodeId);
+		return logisticsList;
 	}
 }

@@ -669,7 +669,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 */
 	public void addPlatformScanCodeRecord(ProductInfoDto productInfoDto, String innerCode, String productId, String productBatchId, String codeId,String openId,Long userId, Integer memberType, Long activityId,
 										  String codeType, Long activitySetId, Long scanCodeTime, String organizationId, String organizationFullName,float amount) throws SuperCodeException {
-		if (StringUtils.isBlank(openId) || userId == null
+		if (StringUtils.isBlank(openId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime || memberType == null
 				|| null == activitySetId|| StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
@@ -803,10 +803,11 @@ public class CodeEsService extends AbstractEsSearch {
 	 * @return
 	 */
 	public List<PieChartVo> dayActivityStatistic(long timeStart, long timeEnd, Integer status){
+	    Long countSize = (timeEnd - timeStart)/(1000*60*60*24);
 		SearchRequestBuilder searchRequestBuilder = eClient.prepareSearch(EsIndex.MARKET_PLATFORM_SCAN_INFO.getIndex()).setTypes( EsType.INFO.getType());
 		// 创建查询条件 >= <=
 		QueryBuilder queryBuilderDate = QueryBuilders.rangeQuery("scanCodeTime").gte(timeStart).lt(timeEnd);
-		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).field("scanCodeDate");
+		TermsAggregationBuilder callTypeTeamAgg = AggregationBuilders.terms(AggregationName).field("scanCodeDate").size(countSize.intValue());
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery().must(queryBuilderDate);
 		if (status != null) {
 			QueryBuilder queryBuilderStatus = QueryBuilders.termQuery("status", status);

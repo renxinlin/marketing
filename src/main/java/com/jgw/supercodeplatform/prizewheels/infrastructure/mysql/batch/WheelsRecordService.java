@@ -2,7 +2,7 @@ package com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.batch;
 
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRecord;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRecordPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsRecordMapper;
 import org.springframework.stereotype.Service;
 /**
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  * @since 2019-10-09
  */
 @Service
-public class WheelsRecordService extends ServiceImpl<WheelsRecordMapper, WheelsRecord> {
+public class WheelsRecordService extends ServiceImpl<WheelsRecordMapper, WheelsRecordPojo> {
 
 
 }

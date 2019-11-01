@@ -198,10 +198,9 @@ public class MarketingActivityChannelService {
      * @return
      */
 
-    public MarketingChannel checkCodeIdConformChannel(String codeId, Long activitySetId) {
+    public MarketingChannel checkCodeIdConformChannel(String codeTypeId, String codeId, Long activitySetId) {
         // TODO 先直接返回，等到物流系统和码平台那边功能完成后，再启用
-        return new MarketingChannel();
-//        Map<String, String> customerMap = commonService.queryCurrentCustomer(codeId);
+//        Map<String, String> customerMap = commonService.queryCurrentCustomer(codeTypeId, codeId);
 //        if (customerMap.isEmpty()){
 //            return null;
 //        }
@@ -211,6 +210,7 @@ public class MarketingActivityChannelService {
 //            return null;
 //        }
 //        return marketChannelList.get(0);
+        return new MarketingChannel();
     }
 
 

@@ -6,8 +6,11 @@ import javax.validation.Valid;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.common.util.BeanPropertyUtil;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
+import com.jgw.supercodeplatform.marketing.pojo.MemberWithWechat;
+import com.jgw.supercodeplatform.marketing.pojo.UserWithWechat;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
@@ -174,7 +177,8 @@ public class MarketingMembersFrontController extends CommonUtil {
     @RequestMapping(value = "/register",method = RequestMethod.POST)
     @ApiOperation(value = "招募会员（注册）", notes = "")
     public RestResult<String> register(@Valid@RequestBody MarketingMembersAddParam marketingMembersAddParam) throws Exception {
-        checkPhoneFormat(marketingMembersAddParam.getMobile());
+		marketingMembersAddParam = BeanPropertyUtil.beanBlank2Null(marketingMembersAddParam, MarketingMembersAddParam.class);
+		checkPhoneFormat(marketingMembersAddParam.getMobile());
         marketingMembersService.addMember(marketingMembersAddParam);
         return new RestResult<String>(200, "success",null );
     }
@@ -182,7 +186,8 @@ public class MarketingMembersFrontController extends CommonUtil {
     @RequestMapping(value = "/infoImprove",method = RequestMethod.POST)
     @ApiOperation(value = "h5信息完善", notes = "")
     public RestResult<String> infoImprove(@Valid@RequestBody MarketingMembersUpdateParam marketingMembersUpdateParam) throws Exception {
-    	marketingMembersService.updateMembers(marketingMembersUpdateParam);
+		marketingMembersUpdateParam = BeanPropertyUtil.beanBlank2Null(marketingMembersUpdateParam, MarketingMembersUpdateParam.class);
+		marketingMembersService.updateMembers(marketingMembersUpdateParam);
         return new RestResult<String>(200, "成功", null);
     }
     
@@ -193,35 +198,35 @@ public class MarketingMembersFrontController extends CommonUtil {
     })
     public void getJwtToken(@RequestParam Long memberId, Byte memberType) throws Exception {
     	try {
-			MarketingMembers marketingMembers = null;
+            MemberWithWechat memberWithWechat = null;
     		if (memberType != null && memberType.intValue() == MemberTypeEnums.SALER.getType().intValue()) {
-				MarketingUser marketingUser = marketingSaleMemberService.selectById(memberId);
-				marketingMembers = modelMapper.map(marketingUser, MarketingMembers.class);
+				UserWithWechat userWithWechat = marketingSaleMemberService.selectById(memberId);
+                memberWithWechat = modelMapper.map(userWithWechat, MemberWithWechat.class);
 			} else {
-				marketingMembers = marketingMembersService.selectById(memberId);
+                memberWithWechat = marketingMembersService.selectById(memberId);
 			}
-			if (null==marketingMembers) {
+			if (null == memberWithWechat) {
 				throw new SuperCodeException("无此用户", 500);
 			}
 			H5LoginVO hVo=new H5LoginVO();
 			hVo.setMemberId(memberId);
-			String userName=marketingMembers.getUserName();
-			hVo.setMemberName(userName==null?marketingMembers.getWxName():userName);
-			hVo.setMobile(marketingMembers.getMobile());
+			String userName=memberWithWechat.getUserName();
+			hVo.setMemberName(userName==null?memberWithWechat.getWxName():userName);
+			hVo.setMobile(memberWithWechat.getMobile());
 			hVo.setRegistered(1);
-			hVo.setMemberType(marketingMembers.getMemberType());
+			hVo.setMemberType(memberWithWechat.getMemberType());
 			String orgnazationName="";
 			try {
-				orgnazationName=commonService.getOrgNameByOrgId(marketingMembers.getOrganizationId());
+				orgnazationName=commonService.getOrgNameByOrgId(memberWithWechat.getOrganizationId());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			hVo.setOrganizationId(marketingMembers.getOrganizationId());
+			hVo.setOrganizationId(memberWithWechat.getOrganizationId());
 			hVo.setOrganizationName(orgnazationName);
-			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
-			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());
-			hVo.setCustomerId(marketingMembers.getCustomerId());
-			hVo.setCustomerName(marketingMembers.getCustomerName());
+			hVo.setHaveIntegral(memberWithWechat.getHaveIntegral());
+			hVo.setWechatHeadImgUrl(memberWithWechat.getWechatHeadImgUrl());
+			hVo.setCustomerId(memberWithWechat.getCustomerId());
+			hVo.setCustomerName(memberWithWechat.getCustomerName());
 			String jwtToken=JWTUtil.createTokenWithClaim(hVo);
 			Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
 			// jwt有效期为2小时，保持一致
@@ -250,9 +255,9 @@ public class MarketingMembersFrontController extends CommonUtil {
 				restResult.setMsg("登录用户与参数id不符合不是同一个用户");
 				return restResult;
 			}
-			
-			MarketingMembers marketingMembers=marketingMembersService.selectById(id);
-			if (null==marketingMembers) {
+
+            MemberWithWechat memberWithWechat = marketingMembersService.selectById(id);
+			if (null == memberWithWechat) {
 				restResult.setState(500);
 				restResult.setMsg("根据id="+id+"无法查找到用户");
 				return restResult;
@@ -260,21 +265,21 @@ public class MarketingMembersFrontController extends CommonUtil {
 			
 			H5LoginVO hVo=new H5LoginVO();
 			hVo.setMemberId(id);
-			String userName=marketingMembers.getUserName();
-			hVo.setMemberName(userName==null?marketingMembers.getWxName():userName);
-			hVo.setMobile(marketingMembers.getMobile());
+			String userName=memberWithWechat.getUserName();
+			hVo.setMemberName(userName==null?memberWithWechat.getWxName():userName);
+			hVo.setMobile(memberWithWechat.getMobile());
 			hVo.setRegistered(1);
 			String orgnazationName="";
 			try {
-				orgnazationName=commonService.getOrgNameByOrgId(marketingMembers.getOrganizationId());
+				orgnazationName=commonService.getOrgNameByOrgId(memberWithWechat.getOrganizationId());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			hVo.setOrganizationName(orgnazationName);
-			hVo.setHaveIntegral(marketingMembers.getHaveIntegral());
-			hVo.setWechatHeadImgUrl(marketingMembers.getWechatHeadImgUrl());
-			hVo.setCustomerId(marketingMembers.getCustomerId());
-			hVo.setCustomerName(marketingMembers.getCustomerName());
+			hVo.setHaveIntegral(memberWithWechat.getHaveIntegral());
+			hVo.setWechatHeadImgUrl(memberWithWechat.getWechatHeadImgUrl());
+			hVo.setCustomerId(memberWithWechat.getCustomerId());
+			hVo.setCustomerName(memberWithWechat.getCustomerName());
 			restResult.setState(200);
 			restResult.setResults(hVo);
 		} catch (Exception e) {

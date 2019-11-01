@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.prizewheels.domain.model;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -30,16 +31,16 @@ public class WheelsReward implements Serializable {
     /**
      * 奖励类型:1 虚拟2 实物
      */
-    private Integer type;
+    private Integer type = (int) RewardTypeConstant.virtual;
 
     private String name;
 
     /**
      * 概率
      */
-    private String probability;
+    private double probability;
 
-    private String num;
+    private Integer num;
 
     private String picture;
 
@@ -47,8 +48,18 @@ public class WheelsReward implements Serializable {
      * 图片规格
      */
     private String pictureSpecs;
-    // 绑定excel的key
-    private String cdkKey;
+
+
+    private Byte loseAward;
+
+
+    private String cdkName;
+
+    private String cdkUuid;
+
+
+    private Integer sendDay;
+
 
 
 }

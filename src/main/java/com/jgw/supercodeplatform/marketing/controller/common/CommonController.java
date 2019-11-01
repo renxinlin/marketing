@@ -12,8 +12,13 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.dto.WxSignPram;
+import com.jgw.supercodeplatform.marketing.dto.coupon.UrlParam;
 import com.jgw.supercodeplatform.marketing.vo.activity.WxSignVo;
+import com.jgw.supercodeplatform.marketing.vo.common.WxMerchants;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,8 +90,15 @@ public class CommonController extends CommonUtil {
     public RestResult<Map<String, String>> get(@RequestParam("organizationId")String organizationId,@RequestParam("url")String url) throws Exception {
     	logger.info("签名信息,organizationId="+organizationId+",url="+url);
     	MarketingWxMerchants mWxMerchants=marketingWxMerchantsService.selectByOrganizationId(organizationId);
-    	if (null==mWxMerchants) {
-           throw new SuperCodeException("无法获取商户公众号信息", 500);
+    	if (mWxMerchants == null) {
+    	    mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+        }
+    	if (null!=mWxMerchants && mWxMerchants.getMerchantType().intValue() == 1) {
+            if (mWxMerchants.getJgwId() != null) {
+                mWxMerchants = marketingWxMerchantsService.getJgw(mWxMerchants.getJgwId());
+            } else {
+                mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+            }
 		}
     	String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), organizationId);
         // TODO 测试
@@ -121,6 +133,53 @@ public class CommonController extends CommonUtil {
     	restResult.setResults(data);
     	restResult.setState(200);
     	
+        return restResult;
+    }
+
+    @PostMapping("/jgwJssdkinfo")
+    @ApiOperation("获取甲骨文微信授权信息")
+    public RestResult<Map<String, String>> getJgwJssdkinfo(@RequestBody @Valid UrlParam urlParam) throws Exception {
+        String url = urlParam.getUrl();
+        String paramAppid = urlParam.getAppid();
+        MarketingWxMerchants mWxMerchants = null;
+        if (StringUtils.isNotBlank(paramAppid)) {
+            mWxMerchants = marketingWxMerchantsService.getByAppid(paramAppid);
+        } else {
+            mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+        }
+        if (mWxMerchants == null) {
+            throw new SuperCodeExtException("未找到对应的微信配置信息");
+        }
+        String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), mWxMerchants.getOrganizationId());
+        // TODO 测试
+        HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
+        String tickContent=result.getContent();
+        logger.info("获取到tick的数据："+tickContent);
+        String ticket = JSONObject.parseObject(tickContent).getString("ticket");
+        logger.info("获取到tick的数据："+ticket);
+        // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
+        String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
+        long timestamp=WXPayUtil.getCurrentTimestamp();
+        Map<String, String>sinMap=new HashMap<String, String>();
+        sinMap.put("noncestr", noncestr);
+        sinMap.put("jsapi_ticket", ticket);
+        sinMap.put("timestamp", timestamp+"");
+        sinMap.put("url", url);
+        //
+        String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
+        String signature=DigestUtils.sha1Hex(sha1String1);
+        //String signature=CommonUtil.sha1Encrypt(sha1String1);
+        logger.info("签名前======>{}", sha1String1);
+        logger.info("签名后======>", signature);
+        RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
+        restResult.setState(200);
+        Map<String, String> data=new HashMap<String, String>();
+        data.put("noncestr", noncestr);
+        data.put("timestamp", timestamp+"");
+        data.put("appId", mWxMerchants.getMchAppid());
+        data.put("signature", signature);
+        restResult.setResults(data);
+        restResult.setState(200);
         return restResult;
     }
 
@@ -162,6 +221,25 @@ public class CommonController extends CommonUtil {
         wxSignVo.setSignature(signature);
         wxSignVo.setTimestamp(timestamp + "");
         return RestResult.successWithData(wxSignVo);
+    }
+
+    @GetMapping("/wxMerchants")
+    @ApiOperation("根据organizationId获取微信公众号信息")
+    public RestResult<WxMerchants> getWxMerchants(@RequestParam String organizationId) {
+        MarketingWxMerchants mWxMerchants = marketingWxMerchantsService.selectByOrganizationId(organizationId);
+        if (mWxMerchants == null ) {
+            throw new SuperCodeExtException("该组织对应的微信信息不存在");
+        }
+        if (mWxMerchants.getMerchantType() == 1) {
+            if (mWxMerchants.getJgwId() != null) {
+                mWxMerchants = marketingWxMerchantsService.getJgw(mWxMerchants.getJgwId());
+            } else {
+                mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
+            }
+        }
+        WxMerchants wxMerchants = new WxMerchants();
+        wxMerchants.setAppid(mWxMerchants.getMchAppid());
+        return RestResult.successWithData(wxMerchants);
     }
 
 }

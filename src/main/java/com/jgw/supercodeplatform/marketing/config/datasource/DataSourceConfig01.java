@@ -31,7 +31,11 @@ import javax.sql.DataSource;
         "com.jgw.supercodeplatform.marketing.mybatisplusdao",
         "com.jgw.supercodeplatform.marketingsaler.order",
         // 大转盘
-        "com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper"},
+        "com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper",
+        //大转盘埋点
+        "com.jgw.supercodeplatform.burypoint.prizewheels.mapper",
+        //签到埋点
+        "com.jgw.supercodeplatform.burypoint.signin.mapper"},
         sqlSessionFactoryRef="marketingsalerSqlSessionFactory")
 public class DataSourceConfig01 {
 

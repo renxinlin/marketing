@@ -98,44 +98,36 @@ public class PlatformLotteryService {
         Long activitySetId = scanCodeInfoMO.getActivitySetId();
         MarketingActivitySet mActivitySet = mSetMapper.selectById(activitySetId);
         if (null == mActivitySet) {
-            throw new SuperCodeExtException("该活动设置不存在", 200);
+            throw new SuperCodeExtException("该活动设置不存在", 500);
         }
         if(mActivitySet.getActivityStatus() == 0) {
-            throw new SuperCodeExtException("该活动已停用", 200);
+            throw new SuperCodeExtException("该活动已停用", 500);
         }
         long currentMills = System.currentTimeMillis();
         String startDateStr = mActivitySet.getActivityStartDate();
         if(StringUtils.isNotBlank(startDateStr)) {
             long startMills = DateUtil.parse(startDateStr, "yyyy-MM-dd").getTime();
             if(currentMills < startMills){
-                throw new SuperCodeExtException("该活动还未开始", 200);
+                throw new SuperCodeExtException("该活动还未开始", 500);
             }
         }
         String endDateStr = mActivitySet.getActivityEndDate();
         if(StringUtils.isNotBlank(endDateStr)) {
             long endMills = DateUtil.parse(endDateStr, "yyyy-MM-dd").getTime();
             if(currentMills > endMills){
-                throw new SuperCodeExtException("该活动已经结束", 200);
+                throw new SuperCodeExtException("该活动已经结束", 500);
             }
         }
         MarketingActivity activity = mActivityMapper.selectById(mActivitySet.getActivityId());
         if (null == activity) {
-            throw new SuperCodeExtException("该活动不存在", 200);
+            throw new SuperCodeExtException("该活动不存在", 500);
         }
         Long userId = scanCodeInfoMO.getUserId();
-        MarketingMembers marketingMembersInfo = marketingMembersMapper.getMemberById(userId);
-        if(marketingMembersInfo == null){
-            throw new SuperCodeExtException("会员信息不存在",200);
-        }
-        if( null != marketingMembersInfo.getState() && marketingMembersInfo.getState() == 0){
-            throw new SuperCodeExtException("对不起,该会员已被加入黑名单",200);
-        }
         List<MarketingPrizeTypeMO> moPrizeTypes = marketingPrizeTypeMapper.selectMOByActivitySetIdIncludeUnreal(activitySetId);
         if (moPrizeTypes == null || moPrizeTypes.size() <= 1) {
             return lotteryOprationDto.lotterySuccess("该活动未设置中奖奖次");
         }
         lotteryOprationDto.setSendAudit(mActivitySet.getSendAudit());
-        lotteryOprationDto.setMarketingMembersInfo(marketingMembersInfo);
         lotteryOprationDto.setOrganizationId(scanCodeInfoMO.getOrganizationId());
         MarketingPlatformOrganization marketingPlatformOrganization = marketingPlatformOrganizationMapper.selectByActivitySetIdAndOrganizationId(mActivitySet.getId(), scanCodeInfoMO.getOrganizationId());
         if (marketingPlatformOrganization == null) {
@@ -156,7 +148,7 @@ public class PlatformLotteryService {
             }
             lotteryOprationDto.setSourceLink(conditionJson.getString("sourceLink"));
         }
-        MarketingPrizeTypeMO prizeTypeMo = getPrizeMo(moPrizeTypes, activitySetId, marketingMembersInfo.getOpenid());
+        MarketingPrizeTypeMO prizeTypeMo = getPrizeMo(moPrizeTypes, activitySetId, scanCodeInfoMO.getOpenId());
         lotteryOprationDto.setPrizeTypeMO(prizeTypeMo);
         //执行抽奖逻辑
         return lotteryOprationDto;
@@ -229,7 +221,7 @@ public class PlatformLotteryService {
         String productName = lotteryOprationDto.getScanCodeInfoMO().getProductName();
         String productBatchId = lotteryOprationDto.getScanCodeInfoMO().getProductBatchId();
         //该组织ID为支付的组织ID
-        String organizationId = marketingWxMerchantsMapper.getJgw().getOrganizationId();
+        String organizationId = marketingWxMerchantsMapper.getDefaultJgw().getOrganizationId();
         MarketingPrizeTypeMO prizeTypeMo = lotteryOprationDto.getPrizeTypeMO();
         //转化为分
         Float amount = prizeTypeMo.getPrizeAmount();

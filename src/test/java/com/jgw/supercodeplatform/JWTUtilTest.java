@@ -144,7 +144,7 @@ public class JWTUtilTest {
 	public static void main(String[] args) throws Exception {
 		JWTUtil demo = new JWTUtil();
 		H5LoginVO j = new H5LoginVO();
-		j.setMemberId(82L);
+		j.setMemberId(83L);
 		j.setMemberType((byte)1);
 		j.setMobile("15728043579");
 		j.setOrganizationId("86ff1c47b5204e88918cb89bbd739f12");

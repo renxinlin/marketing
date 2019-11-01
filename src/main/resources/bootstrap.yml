@@ -29,4 +29,3 @@ eureka:
     service-url: 
       defaultZone: http://192.168.20.220:8761/eureka/
 
-

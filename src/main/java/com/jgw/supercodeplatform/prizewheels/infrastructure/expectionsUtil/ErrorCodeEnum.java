@@ -13,7 +13,9 @@ public enum ErrorCodeEnum implements BaseErrorCode {
     PARAMS_ERROR(500 , "2000103" , "参数{}不正确"),
 
 
-    NULL_ERROR(500 , "2000104" , "数据不存在")
+    NULL_ERROR(500 , "2000104" , "参数不存在"),
+    BIZ_VALID_ERROR(500 , "2000105" , "业务异常"),
+    NOT_EXITS_ERROR(500 , "2000106" , "数据不存在");
     ;
 
     private int code;

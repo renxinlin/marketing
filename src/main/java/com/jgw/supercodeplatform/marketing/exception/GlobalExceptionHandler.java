@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
+import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -199,6 +200,29 @@ public class GlobalExceptionHandler {
 
 
 	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(PrizeWheelsForWxErcodeException.class)
+	public RestResult prizeWheelsException(PrizeWheelsForWxErcodeException e) {
+		logger.error("自义定异常：" + e.getClass().getName(), e);
+		HashMap hashMap = new HashMap<>();
+		hashMap.put("scanType",1); // 前端根据该字段提示相关错误
+		hashMap.put("wxErcode",e.getMessage());
+		RestResult RestResult = new RestResult(200,"来迟啦,码已经被扫啦!" , hashMap); // 状态码前端需求
+		return RestResult;
+	}
+
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(NotGetPrizeWheelsException.class)
+	public RestResult notGetPrizeWheelsException(NotGetPrizeWheelsException e) {
+		logger.error("大转盘概率计算器计算未获取奖：" + e.getClass().getName(), e);
+		RestResult RestResult = new RestResult(200,"未中奖!!!" , e.getMessage());// 状态码前端需求
+		return RestResult;
+	}
+
+
+
+
+	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(RuntimeException.class)
 	public RestResult runtimeException(RuntimeException e) {
 		logger.error("运行时异常：" + e.getClass().getName(), e);
@@ -215,6 +239,10 @@ public class GlobalExceptionHandler {
 		RestResult RestResult = new RestResult(e.getStatus() == 0 ? HttpStatus.INTERNAL_SERVER_ERROR.value() : e.getStatus(), e.getMessage(), null);
 		return RestResult;
 	}
+
+
+
+
 
 	/**
 	 * 自定义异常

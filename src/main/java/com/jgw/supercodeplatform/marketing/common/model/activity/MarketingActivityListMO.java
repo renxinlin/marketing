@@ -22,7 +22,8 @@ public class MarketingActivityListMO {
 	private Integer activityRangeMark;// 活动范围标志(1、表示部分产品有效 2、表示全部产品有效 )
 	private Integer autoFetch;// 是否自动获取(1、自动获取 2、仅此一次 )
 	private Long codeTotalNum;// 参与该活动一共的码数
-	
+	private Long id1;// 大转盘签到活动
+
 	private String activityName;
 	private List<MarketingChannel> marketingChannels;
 	private List<MarketingActivityProduct> maActivityProducts;
@@ -140,6 +141,13 @@ public class MarketingActivityListMO {
 	public void setMaActivityProducts(List<MarketingActivityProduct> maActivityProducts) {
 		this.maActivityProducts = maActivityProducts;
 	}
-	
-    
+
+
+	public Long getId1() {
+		return id1;
+	}
+
+	public void setId1(Long id1) {
+		this.id1 = id1;
+	}
 }

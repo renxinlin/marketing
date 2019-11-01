@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,32 +62,32 @@ public class IntegralFrontController {
 
 	@Autowired
 	private IntegralRuleService ruleService;
-	
+
 	@Autowired
 	private MarketingMembersService memberService;
 
 	@Autowired
 	private IntegralRecordService integralRecordService;
-	
+
 	@Autowired
 	private CodeEsService esService;
-	
+
 	@Autowired
 	private RedisLockUtil lockUtil;
-	
+
 	@Autowired
 	private MarketingMemberProductIntegralService productIntegralService;
 
 	@Autowired
-	private GlobalRamCache globalRamCache;
-	
+	private CommonService commonService;
+
 	/**
 	 * 领取积分
-	 * 
+	 *
 	 * @param
 	 * @return
 	 * @throws SuperCodeException
-	 * @throws ParseException 
+	 * @throws ParseException
 	 * @throws Exception
 	 */
 	@SuppressWarnings({ "unchecked" })
@@ -126,13 +128,8 @@ public class IntegralFrontController {
 			result.setMsg("该产品对应的码未参与积分");
 			return result;
 		}
-		
-		Long marketingcodeTypeId=SystemLabelEnum.MARKETING.getCodeTypeId();
-		if (!marketingcodeTypeId.equals(Long.parseLong(codeTypeId))) {
-			result.setState(500);
-			result.setMsg("该码不是营销码无法参与积分");
-			return result;
-		}
+		commonService.checkCodeValid(outerCodeId, codeTypeId);
+		commonService.checkCodeTypeValid(Long.valueOf(codeTypeId));
 		
 		// 5.查询ES中当前码和码制的积分是否被领取
 		String nowTime=null;
@@ -171,7 +168,7 @@ public class IntegralFrontController {
 		    	productIntegral.setOrganizationId(organizationId);
 		    	productIntegral.setProductBatchId(productBatchId);
 		    	productIntegral.setProductId(productId);
-		    	productIntegralService.obtainCoupon(productIntegral, members, inRuleProduct.getProductName(),outerCodeId);
+		    	productIntegralService.obtainCoupon(productIntegral, members, inRuleProduct.getProductName(),codeTypeId,outerCodeId);
 		    }
 			// 7.把当前码存入积分ES。注意6,7是一个事务保证一致性且需在redis的同步锁里以防多个用户同时操作
 			esService.addCodeIntegral(members.getId(), outerCodeId, codeTypeId, productId, productBatchId, organizationId, staticESSafeFormat.parse(nowTime).getTime());

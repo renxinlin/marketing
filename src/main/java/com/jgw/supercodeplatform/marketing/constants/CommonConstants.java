@@ -96,4 +96,9 @@ public class CommonConstants {
      */
     public static final String CUSTOMER_ENABLE_CHILD_PAGE_LIST = "/customer/enable/child/page/list";
 
+    /**
+     * 通过码和码制查询其他码
+     */
+    public static final String OUTER_LIST = "/outer/list";
+
 }

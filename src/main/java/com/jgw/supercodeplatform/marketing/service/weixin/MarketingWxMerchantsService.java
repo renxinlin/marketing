@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.service.weixin;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -13,9 +14,11 @@ import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsEx
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
 import com.jgw.supercodeplatform.marketing.service.weixin.constants.BelongToJgwConstants;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @Service
 public class MarketingWxMerchantsService {
@@ -47,9 +51,16 @@ public class MarketingWxMerchantsService {
 		String organizationId=commonUtil.getOrganizationId();
 		MarketingWxMerchants merchants=dao.get(organizationId);
 		if (null==merchants) {
-			restResult.setResults(new MarketingWxMerchants());
+			restResult.setResults(null);
 		}else {
-			restResult.setResults(merchants);
+			if (merchants.getMerchantType() != null && merchants.getMerchantType().intValue() == 1) {
+				MarketingWxMerchants jgwMerchant = new MarketingWxMerchants();
+				jgwMerchant.setId(merchants.getId());
+				jgwMerchant.setMerchantType(merchants.getMerchantType());
+				restResult.setResults(jgwMerchant);
+			} else {
+				restResult.setResults(merchants);
+			}
 		}
 		restResult.setState(200);
 		restResult.setMsg("成功");
@@ -59,28 +70,45 @@ public class MarketingWxMerchantsService {
 	public int addWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam) throws SuperCodeException{
 		String organizationId=commonUtil.getOrganizationId();
 		String organizationName=commonUtil.getOrganizationName();
+		UpdateWrapper<MarketingWxMerchants> updateWrapper = Wrappers.<MarketingWxMerchants>update().set("DefaultUse", 0).eq("OrganizationId", organizationId).eq("DefaultUse", 1);
+		dao.update(null, updateWrapper);
 		marketingWxMerchantsParam.setOrganizatioIdlName(organizationName);
 		marketingWxMerchantsParam.setOrganizationId(organizationId);
+		globalRamCache.delWXMerchants(marketingWxMerchantsParam.getOrganizationId());
 		return dao.addWxMerchants(marketingWxMerchantsParam);
 	}
 
 	public int updateWxMerchants(MarketingWxMerchantsParam marketingWxMerchantsParam){
-		globalRamCache.delWXMerchants(marketingWxMerchantsParam.getOrganizationId());
-		int er = dao.updateWxMerchants(marketingWxMerchantsParam);
+		String organizationId = marketingWxMerchantsParam.getOrganizationId();
+		UpdateWrapper<MarketingWxMerchants> updateWrapper = Wrappers.<MarketingWxMerchants>update().set("DefaultUse", 0).eq("OrganizationId", organizationId).eq("DefaultUse", 1);
+		dao.update(null, updateWrapper);
+		globalRamCache.delWXMerchants(organizationId);
+		MarketingWxMerchants marketingWxMerchants = new MarketingWxMerchants();
+		BeanUtils.copyProperties(marketingWxMerchantsParam, marketingWxMerchants);
+		marketingWxMerchants.setDefaultUse((byte)1);
+		UpdateWrapper<MarketingWxMerchants> updateMerchants = Wrappers.<MarketingWxMerchants>update().eq("OrganizationId", organizationId).eq("MchAppid", marketingWxMerchants.getMchAppid());
+		int er = dao.update(marketingWxMerchants, updateMerchants);
 		return er;
 	}
 
 	public MarketingWxMerchants selectByOrganizationId(String organizationId) {
-		MarketingWxMerchants mWxMerchants=dao.selectByOrganizationId(organizationId);
-		return mWxMerchants;
+		return get(organizationId);
+	}
+
+	public MarketingWxMerchants selectByOrganizationId(String organizationId, String appid) {
+		QueryWrapper<MarketingWxMerchants> queryWrapper = Wrappers.<MarketingWxMerchants>query().eq("OrganizationId", organizationId).eq("MchAppid", appid);
+		return dao.selectOne(queryWrapper);
 	}
 
 	public MarketingWxMerchants get(String organizationId){
-		MarketingWxMerchants mWxMerchants=dao.get(organizationId);
-		if (null==mWxMerchants) {
-			mWxMerchants=dao.selectDefault();
-		}
+		QueryWrapper<MarketingWxMerchants> queryWrapper = Wrappers.<MarketingWxMerchants>query().eq("OrganizationId", organizationId).eq("DefaultUse", 1);
+		MarketingWxMerchants mWxMerchants=dao.selectOne(queryWrapper);
 		return mWxMerchants;
+	}
+
+	private void updateNotDefaultMerchant(String organizationId){
+		UpdateWrapper<MarketingWxMerchants> updateWrapper = Wrappers.<MarketingWxMerchants>update().set("DefaultUse", 0).eq("OrganizationId", organizationId).eq("DefaultUse", 1);
+		dao.update(null, updateWrapper);
 	}
 
 	/**
@@ -149,9 +177,20 @@ public class MarketingWxMerchantsService {
 		}
 	}
 
-	public MarketingWxMerchants getJgw(){
-		return dao.getJgw();
+	public MarketingWxMerchants getJgw(Long jgwId){
+		return dao.getJgw(jgwId);
 	}
 
+	public MarketingWxMerchants getDefaultJgw() {
+		return dao.getDefaultJgw();
+	}
+
+	public MarketingWxMerchants getByAppid(String appid) {
+		List<MarketingWxMerchants> merchats = dao.selectList(Wrappers.<MarketingWxMerchants>query().eq("mchAppid", appid));
+		if (!CollectionUtils.isEmpty(merchats)) {
+			return merchats.get(0);
+		}
+		return null;
+	}
 
 }

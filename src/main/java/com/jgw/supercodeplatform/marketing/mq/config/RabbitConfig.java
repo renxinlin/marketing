@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class RabbitConfig {
-	
+
 	@Bean(name = "publishBatch")   //SEARCH_TEST_QUEUE  || SEARCH_COUNT_QUEUE
 	public Queue publishBatch() {
 		return new Queue(RabbitMqQueueName.PUSH_BATCH_DATA_QUEUE);

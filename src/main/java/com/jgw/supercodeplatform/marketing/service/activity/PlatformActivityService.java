@@ -2,16 +2,13 @@ package com.jgw.supercodeplatform.marketing.service.activity;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPlatformOrganizationMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingPrizeTypeMapper;
@@ -23,12 +20,10 @@ import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.Priz
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityDisable;
 import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityUpdate;
 import com.jgw.supercodeplatform.marketing.dto.platform.ProductInfoDto;
-import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.pojo.platform.AbandonPlatform;
 import com.jgw.supercodeplatform.marketing.pojo.platform.MarketingPlatformOrganization;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizeType;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformActivityVo;
 import com.jgw.supercodeplatform.marketing.vo.platform.PlatformOrganizationDataVo;
@@ -44,7 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -96,7 +90,7 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void createOrUpdatePlatformActivitySet(PlatformActivityAdd platformActivityAdd){
+    public void createOrUpdatePlatformActivitySet(PlatformActivityAdd platformActivityAdd) {
         MarketingActivitySet marketingActivitySet = new MarketingActivitySet();
         BeanUtils.copyProperties(platformActivityAdd, marketingActivitySet);
         JSONObject validConditionJson = new JSONObject();
@@ -254,11 +248,11 @@ public class PlatformActivityService extends AbstractPageService<DaoSearchWithUs
     public void addAbandonPlatform(String innerCode, AbandonPlatform abandonPlatform, ProductInfoDto productInfoDto) {
         MarketingActivitySet marketingActivitySet = mSetMapper.getOnlyPlatformActivity();
         if (marketingActivitySet == null) {
-            throw new SuperCodeExtException("当前暂无全网运营红包上线", 200);
+            throw new SuperCodeExtException("当前暂无全网运营红包上线", 500);
         }
         MarketingPlatformOrganization marketingPlatformOrganization = marketingPlatformOrganizationMapper.selectByActivitySetIdAndOrganizationId(marketingActivitySet.getId(), abandonPlatform.getOrganizationId());
         if (marketingPlatformOrganization == null) {
-            throw new SuperCodeExtException("当前组织没有参加全网运营活动", 200);
+            throw new SuperCodeExtException("当前组织没有参加全网运营活动", 500);
         }
         abandonPlatform.setOrganizationFullName(marketingPlatformOrganization.getOrganizationFullName());
         odeEsService.addAbandonPlatformScanCodeRecord(productInfoDto, innerCode, abandonPlatform.getProductId(), abandonPlatform.getProductBatchId(), abandonPlatform.getCodeId(),

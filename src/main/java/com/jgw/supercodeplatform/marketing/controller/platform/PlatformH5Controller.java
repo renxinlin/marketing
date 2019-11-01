@@ -1,16 +1,15 @@
 package com.jgw.supercodeplatform.marketing.controller.platform;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.dto.platform.ProductInfoDto;
 import com.jgw.supercodeplatform.marketing.dto.platform.SourceLinkBuryPoint;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingSourcelinkBury;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
 import com.jgw.supercodeplatform.marketing.pojo.platform.AbandonPlatform;
 import com.jgw.supercodeplatform.marketing.pojo.platform.LotteryPlatform;
@@ -57,6 +56,8 @@ public class PlatformH5Controller {
 
     @Autowired
     private MarketingSourcelinkBuryService marketingSourcelinkBuryService;
+    @Autowired
+    private GlobalRamCache globalRamCache;
 
     @ApiOperation("获取该码是否被扫过<true表示被扫过，false表示没有被扫过>")
     @ApiImplicitParams({
@@ -91,20 +92,17 @@ public class PlatformH5Controller {
     @ApiOperation("抽奖")
     @PostMapping("/lottery")
     public RestResult<LotteryResultMO> lottery(@RequestBody @Valid LotteryPlatform lotteryPlatform,  HttpServletRequest request) throws Exception {
-        MarketingMembers marketingMembers = marketingMembersService.getMemberById(lotteryPlatform.getMemberId());
         String codeId = lotteryPlatform.getCodeId();
         String codeTypeId = lotteryPlatform.getCodeType();
         commonService.checkCodeMarketFakeValid(Long.valueOf(codeTypeId));
         commonService.checkCodeValid(codeId, codeTypeId);
         String innerCode = commonService.getInnerCode(codeId, codeTypeId);
         MarketingActivitySet marketingActivitySet = marketingActivitySetService.getOnlyPlatformActivity();
-        MarketingMembers memberUser = marketingMembersService.getMemberById(lotteryPlatform.getMemberId());
-        ScanCodeInfoMO scanCodeInfoMO = new ScanCodeInfoMO();
+        ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(lotteryPlatform.getWxstate());
+        if (scanCodeInfoMO == null) {
+            throw new SuperCodeExtException("获取微信信息失败");
+        }
         BeanUtils.copyProperties(lotteryPlatform, scanCodeInfoMO);
-        scanCodeInfoMO.setUserId(marketingMembers.getId());
-        scanCodeInfoMO.setOpenId(marketingMembers.getOpenid());
-        scanCodeInfoMO.setMobile(marketingMembers.getMobile());
-        scanCodeInfoMO.setUserId(memberUser.getId());
         scanCodeInfoMO.setActivitySetId(marketingActivitySet.getId());
         scanCodeInfoMO.setCodeTypeId(lotteryPlatform.getCodeType());
         LotteryOprationDto lotteryOprationDto = new LotteryOprationDto();

@@ -47,8 +47,17 @@ public class MarketingWxMerchantsExt {
     @TableField(value = "CertificateInfo")
     private byte[] certificateInfo;
 
+    /**
+     * 当前是否为默认公众号
+     */
+    @TableField("DefaultUse")
+    private Byte defaultUse;
 
-
+    /**
+     * appid
+     */
+    @TableField("Appid")
+    private String appid;
 
 
 }
