@@ -14,7 +14,7 @@ import java.util.Map;
 public interface DynamicMapper extends CommonSql {
 
     @Update(startScript +
-            " CREATE TABLE `jgw_marketing_dynamic`.`${tableName}`  ( " +
+            " CREATE TABLE `${tableName}`  ( " +
             " `Id` bigint(20) NOT NULL AUTO_INCREMENT , " +
             " `orderstatus` tinyint(2) NULL DEFAULT 0  , " +
             " <foreach collection='list' item='item' index='index'  open='  ' close='  ' separator=' ' > " +
