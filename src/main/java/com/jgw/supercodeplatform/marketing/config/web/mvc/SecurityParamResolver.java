@@ -78,26 +78,9 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
                 }
             }
             H5LoginVO jwtUser = JWTUtil.verifyToken(token);
-            Byte memberType = jwtUser.getMemberType();
-
-            if(RoleTypeEnum.GUIDE.getMemberType() == memberType.intValue()){
-                // 验证导购合法性
-                User user = userMapper.selectById(jwtUser.getMemberId());
-                if(user.getState() != 3){
-                    throw new BizRuntimeException("用户未启用");
-                }
-
-            }else if(RoleTypeEnum.MEMBER.getMemberType() == memberType.intValue()){
-                // 验证会员合法性
-                MembersPojo membersPojo = membersMapper.selectById(jwtUser.getMemberId());
-                if(membersPojo.getState() != 1){
-                    throw new BizRuntimeException("用户未启用");
-                }
 
 
-            }else {
-
-            }
+            checkUserStatus(jwtUser);
 
 
             if (jwtUser == null || jwtUser.getMemberId() == null) {
@@ -124,6 +107,29 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
             e.printStackTrace();
             // 重新登录的异常信息
             throw new UserExpireException("用户信息获取失败...");
+        }
+    }
+
+    private void checkUserStatus(H5LoginVO jwtUser) {
+        Byte memberType = jwtUser.getMemberType();
+        if(RoleTypeEnum.GUIDE.getMemberType() == memberType.intValue()){
+            // 验证导购合法性
+            User user = userMapper.selectById(jwtUser.getMemberId());
+            if(user.getState() != 3){
+                throw new BizRuntimeException("用户未启用");
+            }
+
+        }else if(RoleTypeEnum.MEMBER.getMemberType() == memberType.intValue()){
+            // 验证会员合法性
+            MembersPojo membersPojo = membersMapper.selectById(jwtUser.getMemberId());
+            if(membersPojo.getState() != 1){
+                throw new BizRuntimeException("用户未启用");
+            }
+
+
+        }else {
+            throw new BizRuntimeException("用户角色非法");
+
         }
     }
 }
