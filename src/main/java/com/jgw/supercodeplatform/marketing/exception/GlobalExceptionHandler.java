@@ -212,7 +212,7 @@ public class GlobalExceptionHandler {
         RestResult RestResult;
         String eMessages = e.getMessage();
         if (eMessages.contains("doesn't exist")) {
-            RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "请先设置【表单】", "请先设置【表单】");
+            RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "请先【设置表单】", "请先【设置表单】");
         } else {
             RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getCause().getLocalizedMessage() == null ? e.getMessage() : e.getCause().getLocalizedMessage(), null);
         }
