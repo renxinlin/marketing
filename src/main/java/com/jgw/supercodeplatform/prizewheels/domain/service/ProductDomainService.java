@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.domain.service;
 
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.ProductUpdateDto;
@@ -45,13 +46,13 @@ public interface ProductDomainService {
                 return true;
             }
         }
-        throw new RuntimeException(ErrorCodeEnum.BIZ_VALID_ERROR.getErrorMessage());
+        throw new BizRuntimeException(ErrorCodeEnum.BIZ_VALID_ERROR.getErrorMessage());
     }
 
     default void checkSbatchId(List<Product> products){
         for(Product product:products){
             if(StringUtils.isEmpty(product.getSbatchId())){
-                throw new RuntimeException("产品"+ product.getProductName() + "未绑定码");
+                throw new BizRuntimeException("产品"+ product.getProductName() + "未绑定码");
             }
 
         }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CdkStatus;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
 import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
@@ -61,7 +62,7 @@ public class WheelsRewardCdkRepositoryImpl implements WheelsRewardCdkRepository 
             return modelMapper.map(wheelsRewardCdkPojo,WheelsRewardCdk.class);
         }
 
-        throw new RuntimeException("活动cdk已经被领完");
+        throw new BizRuntimeException("活动cdk已经被领完");
     }
 
     @Override

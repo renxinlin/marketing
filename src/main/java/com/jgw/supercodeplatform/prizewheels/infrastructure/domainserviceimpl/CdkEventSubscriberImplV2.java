@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.exception.base.ExcelException;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CdkStatus;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.QiNiuYunConfigConstant;
@@ -63,7 +64,7 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
             wheelsRewardCdkService.saveBatch(wheelsRewardCdkPojos);
         } catch (PersistenceException e) {
             e.printStackTrace();
-            throw new RuntimeException("cdk保存失败,excel格式错误或cdk重复");
+            throw new BizRuntimeException("cdk保存失败,excel格式错误或cdk重复");
         }
 
 
@@ -89,7 +90,7 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
             return wheelsRewardCdkPojos;
         } catch (ExcelException e) {
             e.printStackTrace();
-            throw new RuntimeException("excel解析失败");
+            throw new BizRuntimeException("excel解析失败");
         }
 
     }
@@ -107,12 +108,12 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
                 return is;
             } else {
                 log.error("七牛云响应失败{}", resp.isSuccessful());
-                throw new RuntimeException("七牛云excel读取失败");
+                throw new BizRuntimeException("七牛云excel读取失败");
             }
         } catch (IOException e) {
             log.error("excel读取失败{}", e.getMessage());
             e.printStackTrace();
-            throw new RuntimeException("七牛云excel读取失败");
+            throw new BizRuntimeException("七牛云excel读取失败");
         }
     }
 

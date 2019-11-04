@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.page.Page;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.exception.TableSaveException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
@@ -153,7 +154,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             } catch (Exception e) {
                 e.printStackTrace();
                 // 产品需求..........................................
-                throw new RuntimeException("请输入中文或英文或其他合法字符");
+                throw new BizRuntimeException("请输入中文或英文或其他合法字符");
             }
         }else{
             // 数据库字段名
@@ -174,7 +175,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 dynamicMapper.alterTableAndDropOrAddColumns(SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()),deleteColumns,addColumns);
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException("请输入中文或英文或其他合法字符");
+                throw new BizRuntimeException("请输入中文或英文或其他合法字符");
             }
             if(!CollectionUtils.isEmpty(deleteColumns)){
                 baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).notIn(!CollectionUtils.isEmpty(updateids),"id",updateids).getWrapper());
@@ -205,10 +206,10 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         Asserts.check(formNames.size() == withDefaultsalerOrderFormDtos.size(),"存在重名表单名，或表单名与预定义表单名冲突");
         for(SalerOrderFormDto salerOrderFormDto:withDefaultsalerOrderFormDtos){
             if(SalerOrderTransfer.deafultColumnNames.contains(salerOrderFormDto.getColumnName())){
-                throw new RuntimeException("该表单名为默认字段");
+                throw new BizRuntimeException("该表单名为默认字段");
             }
             if(SalerOrderTransfer.PrimaryKey.equalsIgnoreCase(salerOrderFormDto.getColumnName())){
-                throw new RuntimeException("id字段为特殊字段，不可设置");
+                throw new BizRuntimeException("id字段为特殊字段，不可设置");
             }
 
         }
@@ -286,7 +287,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             }
         });
         if(id.get() ==null || id.get() .equals("")){
-            throw new RuntimeException("ID 不存在");
+            throw new BizRuntimeException("ID 不存在");
         }
         dynamicMapper.updateOrder(columnnameAndValues, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()),id.get());
 
@@ -312,7 +313,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         int orderSize = baseMapper.selectCount(query().eq("organizationId", organizationId).getWrapper());
         int size = orderSize-SalerOrderTransfer.deafultColumnNames.size();
         if(columnnameAndValues.size() != size){
-            throw new RuntimeException("数据为必填...");
+            throw new BizRuntimeException("数据为必填...");
         }
 
     }

@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer;
 
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketingsaler.integral.constants.RewardRuleConstant;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleReward;
 import org.apache.http.util.Asserts;
@@ -22,11 +23,11 @@ public class H5SalerRuleRewardTransfer {
                 return rewardIntegral;
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException("奖励积分异常");
+                throw new BizRuntimeException("奖励积分异常");
             }
 
         }
-        throw new RuntimeException("奖励积分规则未获取成功");
+        throw new BizRuntimeException("奖励积分规则未获取成功");
     }
 
 }

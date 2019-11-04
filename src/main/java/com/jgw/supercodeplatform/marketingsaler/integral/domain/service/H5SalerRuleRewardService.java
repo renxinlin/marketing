@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
@@ -50,7 +51,7 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
         try {
             boolean lock = lockUtil.lock(UserConstants.SALER_INTEGRAL_REWARD_PREFIX + outCodeId);
             if(!lock){
-                throw new RuntimeException("哎呀,被别人抢啦!请稍后重试...");
+                throw new BizRuntimeException("哎呀,被别人抢啦!请稍后重试...");
             }
             // 码层级获取:销售员只有单码有积分，单码关联的盒码、箱码等其他嵌套码没有积分
             try {
@@ -58,12 +59,12 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
                 Asserts.check(currentLevel!=null && currentLevel.getResults().intValue() == UserConstants.SINGLE_CODE.intValue(),"非单码");
             } catch (Exception e) {
                 e.printStackTrace();
-                throw new RuntimeException("非单码或获取码信息失败");
+                throw new BizRuntimeException("非单码或获取码信息失败");
             }
             // 有没有被扫
             boolean exists = salerRuleRewardNumService.exists(outCodeId);
             if(exists){
-                throw new RuntimeException("该码已经被领取");
+                throw new BizRuntimeException("该码已经被领取");
             }
             //
             // 用户信息校验
@@ -90,9 +91,9 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             // 导购积分添加
             userService.addIntegral(realRewardIntegral,userPojo);
             return rewardPojo.getRewardIntegral();
-        } catch (RuntimeException e) {
+        } catch (BizRuntimeException e) {
             e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
+            throw new BizRuntimeException(e.getMessage());
         } finally {
             lockUtil.releaseLock(UserConstants.SALER_INTEGRAL_REWARD_PREFIX + outCodeId);
         }
