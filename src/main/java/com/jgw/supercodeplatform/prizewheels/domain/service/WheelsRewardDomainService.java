@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.prizewheels.domain.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
@@ -158,6 +159,6 @@ public class WheelsRewardDomainService {
 
         }
 
-        throw new RuntimeException("奖励类型暂不支持...");
+        throw new BizRuntimeException("奖励类型暂不支持...");
     }
 }

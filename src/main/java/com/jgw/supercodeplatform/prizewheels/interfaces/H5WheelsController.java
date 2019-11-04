@@ -88,7 +88,7 @@ public class H5WheelsController extends SalerCommonController {
 
     @ResponseBody
     @PostMapping("/preview/add")
-    @ApiOperation(value = "预览", notes = "")
+    @ApiOperation(value = "预览add", notes = "")
     public RestResult add( @RequestBody WheelsDto wheelsDto)   {
         String uuid = UUID.randomUUID().toString();
         // 1天

@@ -112,14 +112,14 @@ public class WechatAuthLoginService {
         String[] uris = redirectUri.split("#");
         if (uris.length > 1) {
             String startUrl = uris[0].contains("?")? uris[0]+"&" : uris[0]+"?";
-            String firUri = startUrl + "&openid=" + openid;
+            String firUri = startUrl + "openid=" + openid;
             uri = firUri;
             for (int i= 1;i<uris.length;i++) {
                 uri = uri + "#" + uris[i];
             }
         } else {
             String startUrl = redirectUri.contains("?")? redirectUri+"&" : redirectUri+"?";
-            uri = startUrl + "&openid=" + openid;
+            uri = startUrl + "openid=" + openid;
         }
         return uri;
     }

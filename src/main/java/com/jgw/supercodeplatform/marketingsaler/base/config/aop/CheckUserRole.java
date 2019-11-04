@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketingsaler.base.config.aop;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.service.UserService;
@@ -50,7 +51,7 @@ public class CheckUserRole  implements Ordered {
             }
         }
         if (user == null) {
-            throw new RuntimeException("角色鉴定失败");
+            throw new BizRuntimeException("角色鉴定失败");
         }
         try {
             if (annotationPresent) {
@@ -58,15 +59,15 @@ public class CheckUserRole  implements Ordered {
                 if (!StringUtils.isEmpty(annotation.role())) {
                     log.info("annotation.role().equals(user.getMemberType().toString())==>{},{}",annotation.role(),user.getMemberType().toString());
                     if (!annotation.role().equals(user.getMemberType().toString())) {
-                        throw new RuntimeException("角色鉴定失败");
+                        throw new BizRuntimeException("角色鉴定失败");
                     }
                 }else {
-                    throw new RuntimeException("角色鉴定失败");
+                    throw new BizRuntimeException("角色鉴定失败");
                 }
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            throw new RuntimeException("角色鉴定失败");
+            throw new BizRuntimeException("角色鉴定失败");
         }
         // 只校验状态，存在性于业务校验
         User exists = userService.exists(user);

@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.infrastructure;
 
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleExchange;
 import org.apache.http.util.Asserts;
 
@@ -12,12 +13,12 @@ public class MoneyCalculator {
         // 中奖概率
         Integer prizeProbability = salerRuleExchange.getPrizeProbability();
         if(prizeProbability ==null || prizeProbability<=0){
-            throw new RuntimeException("同学,没中奖!");
+            throw new BizRuntimeException("同学,没中奖!");
         }
         double random = Math.random(); // [0,1)
         long round = Math.round(random * 100.0D);//[0,100) -> [0,100] 0-prizeProbability 中奖 prizeProbability-100 未中奖
         if(round > prizeProbability){
-            throw new RuntimeException("同学,没中奖!");
+            throw new BizRuntimeException("同学,没中奖!");
         }
         // 获取金额
         Double money = 0.00D;

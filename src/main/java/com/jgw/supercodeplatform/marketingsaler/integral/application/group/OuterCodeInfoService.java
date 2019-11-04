@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketingsaler.integral.application.group;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.OutCodeInfoVo;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.OuterCodeInfoFeign;
@@ -35,7 +36,7 @@ public class OuterCodeInfoService {
 
             }
         }
-        throw new RuntimeException("获取码服务层级信息失败");
+        throw new BizRuntimeException("获取码服务层级信息失败");
     }
 
 }

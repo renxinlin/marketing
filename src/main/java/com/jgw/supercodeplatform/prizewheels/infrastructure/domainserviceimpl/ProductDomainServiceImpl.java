@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.vo.OutCodeInfoVo;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.service.ProductDomainService;
@@ -58,7 +59,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
 
         }else {
             log.info("initSbatchIds(List<Product> products) =》 {}",JSONObject.toJSONString(getBatchInfoDtoList));
-            throw new RuntimeException("获取码管理生码信息失败");
+            throw new BizRuntimeException("获取码管理生码信息失败");
         }
         // 携带生码批次
         return products;

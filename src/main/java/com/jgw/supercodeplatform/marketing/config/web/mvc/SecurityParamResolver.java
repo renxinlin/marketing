@@ -1,11 +1,20 @@
 package com.jgw.supercodeplatform.marketing.config.web.mvc;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.exception.UserExpireException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.mapper.UserMapper;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.MembersMapper;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.MembersPojo;
+import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -24,6 +33,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Component
 public class SecurityParamResolver implements HandlerMethodArgumentResolver {
+    @Autowired private MembersMapper membersMapper;
+    @Autowired private UserMapper userMapper;
     private static Logger logger = LoggerFactory.getLogger(SecurityParamResolver.class);
 
     @Value("${cookie.domain}")
@@ -68,6 +79,11 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
                 }
             }
             H5LoginVO jwtUser = JWTUtil.verifyToken(token);
+
+
+            checkUserStatus(jwtUser);
+
+
             if (jwtUser == null || jwtUser.getMemberId() == null) {
                 logger.error("jwt信息不全" + jwtUser);
                 // 重新登录的异常信息
@@ -92,6 +108,38 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
             e.printStackTrace();
             // 重新登录的异常信息
             throw new UserExpireException("用户信息获取失败...");
+        }
+    }
+
+    /**
+     * 导购status 用户状态(1、 待审核，2 停用3启用)导购员状态
+     * 会员status 会员状态(1、 表示正常，0 表示下线)状态2表示临时数据
+     * @desc 以上状态copy自数据库comment
+     * @param jwtUser
+     */
+    private void checkUserStatus(H5LoginVO jwtUser) {
+        Byte memberType = jwtUser.getMemberType();
+        Asserts.check( memberType!=null,"会员角色无法鉴定...");
+        if(RoleTypeEnum.GUIDE.getMemberType() == memberType.intValue()){
+            // 验证导购合法性
+            User user = userMapper.selectById(jwtUser.getMemberId());
+            if(user.getState() != 3){
+                throw new BizRuntimeException("用户未启用");
+            }
+        }else if(RoleTypeEnum.MEMBER.getMemberType() == memberType.intValue()){
+            // 验证会员合法性
+            MembersPojo membersPojo = membersMapper.selectById(jwtUser.getMemberId());
+
+            if(membersPojo.getState() != 1){
+                throw new BizRuntimeException("用户未启用");
+            }
+//
+//            if(!membersPojo.getIsRegistered()){
+//                throw new BizRuntimeException("用户未注册");
+//            }
+        }else {
+            throw new BizRuntimeException("用户角色非法");
+
         }
     }
 }
