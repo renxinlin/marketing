@@ -172,6 +172,17 @@ public class GlobalExceptionHandler {
 		return RestResult;
 	}
 
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(RuntimeException.class)
+	public RestResult runtimeException(RuntimeException e) {
+		logger.error("运行时异常：" + e.getClass().getName(), e);
+		if(showErrorInfo){
+			RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "server error", e.getMessage());
+			return RestResult;
+		}
+		RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务端运行异常", "服务端运行异常");
+		return RestResult;
+	}
 	/**
 	 * 操作数据库出现异常:名称重复，外键关联
 	 */
@@ -229,13 +240,6 @@ public class GlobalExceptionHandler {
 
 
 
-	@ResponseStatus(HttpStatus.OK)
-	@ExceptionHandler(RuntimeException.class)
-	public RestResult runtimeException(RuntimeException e) {
-		logger.error("运行时异常：" + e.getClass().getName(), e);
-		RestResult RestResult = new RestResult(500, e.getMessage(), e.getMessage());
-		return RestResult;
-	}
 	/**
 	 * 自定义异常
 	 */
