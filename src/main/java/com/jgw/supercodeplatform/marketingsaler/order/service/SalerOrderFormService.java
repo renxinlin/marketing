@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.page.Page;
+import com.jgw.supercodeplatform.marketing.exception.TableSaveException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
@@ -296,7 +297,12 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         Asserts.check(!StringUtils.isEmpty(commonUtil.getOrganizationId()), "未获取对应组织");
         Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取订货信息");
         // validAllHaveColumn(columnnameAndValues,commonUtil.getOrganizationId());
-        dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
+        try {
+            dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new TableSaveException(e.getMessage());
+        }
     }
 
 

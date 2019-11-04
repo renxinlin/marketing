@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO
 import com.jgw.supercodeplatform.marketing.exception.base.UserSqlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -39,6 +40,8 @@ import java.util.Set;
 @ResponseBody
 @ControllerAdvice
 public class GlobalExceptionHandler {
+	@Value("${marketing.global.expetion.print:false}")
+	private boolean showErrorInfo;
 
 	private static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
@@ -161,9 +164,43 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public RestResult handleException(Exception e) {
 		logger.error("系统异常:" + e.getClass(), e);
-		RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "server error", e.getMessage());
+		if(showErrorInfo){
+			RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "server error", e.getMessage());
+			return RestResult;
+		}
+		RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务端异常", "服务端异常");
 		return RestResult;
 	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(RuntimeException.class)
+	public RestResult runtimeException(RuntimeException e) {
+		logger.error("运行时异常：" + e.getClass().getName(), e);
+		if(showErrorInfo){
+			RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "server error", e.getMessage());
+			return RestResult;
+		}
+		RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务端运行异常", "服务端运行异常");
+		return RestResult;
+	}
+
+    /**
+     * 销售员动态订货表
+     * @param e
+     * @return
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(TableSaveException.class)
+    public RestResult handleTableSaveException(TableSaveException e) {
+        RestResult RestResult;
+        String eMessages = e.getMessage();
+        if (eMessages.contains("doesn't exist")) {
+            RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "请先设置动态表单", "请先设置动态表单");
+        } else {
+            RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getCause().getLocalizedMessage() == null ? e.getMessage() : e.getCause().getLocalizedMessage(), null);
+        }
+        return RestResult;
+    }
 
 	/**
 	 * 操作数据库出现异常:名称重复，外键关联
@@ -222,13 +259,6 @@ public class GlobalExceptionHandler {
 
 
 
-	@ResponseStatus(HttpStatus.OK)
-	@ExceptionHandler(RuntimeException.class)
-	public RestResult runtimeException(RuntimeException e) {
-		logger.error("运行时异常：" + e.getClass().getName(), e);
-		RestResult RestResult = new RestResult(500, e.getMessage(), e.getMessage());
-		return RestResult;
-	}
 	/**
 	 * 自定义异常
 	 */
