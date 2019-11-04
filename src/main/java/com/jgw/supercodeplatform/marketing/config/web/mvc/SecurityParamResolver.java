@@ -110,6 +110,12 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
         }
     }
 
+    /**
+     * 导购status 用户状态(1、 待审核，2 停用3启用)导购员状态
+     * 会员status 会员状态(1、 表示正常，0 表示下线)状态2表示临时数据
+     * @desc 以上状态copy自数据库comment
+     * @param jwtUser
+     */
     private void checkUserStatus(H5LoginVO jwtUser) {
         Byte memberType = jwtUser.getMemberType();
         if(RoleTypeEnum.GUIDE.getMemberType() == memberType.intValue()){
