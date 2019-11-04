@@ -1,11 +1,19 @@
 package com.jgw.supercodeplatform.marketing.config.web.mvc;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.exception.UserExpireException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.mapper.UserMapper;
+import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.MembersMapper;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.MembersPojo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -24,6 +32,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Component
 public class SecurityParamResolver implements HandlerMethodArgumentResolver {
+    @Autowired private MembersMapper membersMapper;
+    @Autowired private UserMapper userMapper;
     private static Logger logger = LoggerFactory.getLogger(SecurityParamResolver.class);
 
     @Value("${cookie.domain}")
@@ -68,6 +78,28 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
                 }
             }
             H5LoginVO jwtUser = JWTUtil.verifyToken(token);
+            Byte memberType = jwtUser.getMemberType();
+
+            if(RoleTypeEnum.GUIDE.getMemberType() == memberType.intValue()){
+                // 验证导购合法性
+                User user = userMapper.selectById(jwtUser.getMemberId());
+                if(user.getState() != 3){
+                    throw new BizRuntimeException("用户未启用");
+                }
+
+            }else if(RoleTypeEnum.MEMBER.getMemberType() == memberType.intValue()){
+                // 验证会员合法性
+                MembersPojo membersPojo = membersMapper.selectById(jwtUser.getMemberId());
+                if(membersPojo.getState() != 1){
+                    throw new BizRuntimeException("用户未启用");
+                }
+
+
+            }else {
+
+            }
+
+
             if (jwtUser == null || jwtUser.getMemberId() == null) {
                 logger.error("jwt信息不全" + jwtUser);
                 // 重新登录的异常信息
