@@ -139,7 +139,7 @@ public class CommonController extends CommonUtil {
     @PostMapping("/jgwJssdkinfo")
     @ApiOperation("获取甲骨文微信授权信息")
     public RestResult<Map<String, String>> getJgwJssdkinfo(@RequestBody @Valid UrlParam urlParam) throws Exception {
-        String url = urlParam.getUrl();
+        String url = StringUtils.split(urlParam.getUrl(), "#")[0];
         String paramAppid = urlParam.getAppid();
         MarketingWxMerchants mWxMerchants = null;
         if (StringUtils.isNotBlank(paramAppid)) {
