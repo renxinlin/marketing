@@ -55,7 +55,7 @@ public class WeixinSNBindFrontController extends CommonUtil {
     	RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
     	restResult.setState(200);
     	Map<String, String> data=new HashMap<String, String>();
-    	if (null==mWxMerchants) 
+    	if (null==mWxMerchants) //该企业还未绑定公众号哦，请联系管理员
     		throw new SuperCodeException("公众号信息不存在");
     	data.put("appId", mWxMerchants.getMchAppid());
     	//微信授权需要对redirect_uri进行urlencode
