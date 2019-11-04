@@ -11,6 +11,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.domain.mapper.UserMappe
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.MembersMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.MembersPojo;
+import org.apache.http.util.Asserts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,6 +119,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
      */
     private void checkUserStatus(H5LoginVO jwtUser) {
         Byte memberType = jwtUser.getMemberType();
+        Asserts.check( memberType!=null,"会员角色无法鉴定...");
         if(RoleTypeEnum.GUIDE.getMemberType() == memberType.intValue()){
             // 验证导购合法性
             User user = userMapper.selectById(jwtUser.getMemberId());
