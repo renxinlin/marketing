@@ -183,6 +183,25 @@ public class GlobalExceptionHandler {
 		RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务端运行异常", "服务端运行异常");
 		return RestResult;
 	}
+
+    /**
+     * 销售员动态订货表
+     * @param e
+     * @return
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(TableSaveException.class)
+    public RestResult handleTableSaveException(TableSaveException e) {
+        RestResult RestResult;
+        String eMessages = e.getMessage();
+        if (eMessages.contains("doesn't exist")) {
+            RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "请先设置动态表单", "请先设置动态表单");
+        } else {
+            RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getCause().getLocalizedMessage() == null ? e.getMessage() : e.getCause().getLocalizedMessage(), null);
+        }
+        return RestResult;
+    }
+
 	/**
 	 * 操作数据库出现异常:名称重复，外键关联
 	 */
