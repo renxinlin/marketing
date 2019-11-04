@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO
 import com.jgw.supercodeplatform.marketing.exception.base.UserSqlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -39,6 +40,8 @@ import java.util.Set;
 @ResponseBody
 @ControllerAdvice
 public class GlobalExceptionHandler {
+	@Value("${marketing.global.expetion.print:false}")
+	private boolean showErrorInfo;
 
 	private static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
@@ -161,7 +164,11 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(Exception.class)
 	public RestResult handleException(Exception e) {
 		logger.error("系统异常:" + e.getClass(), e);
-		RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "server error", e.getMessage());
+		if(showErrorInfo){
+			RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "server error", e.getMessage());
+			return RestResult;
+		}
+		RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "服务端异常", "服务端异常");
 		return RestResult;
 	}
 
