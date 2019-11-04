@@ -193,6 +193,14 @@ public class GlobalExceptionHandler {
 		return restResult;
 	}
 
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(IllegalStateException.class)
+	public RestResult bizException(IllegalStateException e) {
+		logger.error("运行时异常：" + e.getClass().getName(), e);
+		RestResult restResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(),  e.getMessage(), null);
+		return restResult;
+	}
+
 	/**
      * 销售员动态订货表
      * @param e
