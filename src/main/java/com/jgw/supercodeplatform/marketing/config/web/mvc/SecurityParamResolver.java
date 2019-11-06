@@ -133,10 +133,10 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
             if(membersPojo.getState() != 1){
                 throw new BizRuntimeException("用户未启用");
             }
-
-            if(!membersPojo.getIsRegistered()){
-                throw new BizRuntimeException("用户未注册");
-            }
+//
+//            if(!membersPojo.getIsRegistered()){
+//                throw new BizRuntimeException("用户未注册");
+//            }
         }else {
             throw new BizRuntimeException("用户角色非法");
 

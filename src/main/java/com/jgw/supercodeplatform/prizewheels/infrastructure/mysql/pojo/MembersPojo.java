@@ -206,11 +206,4 @@ public class MembersPojo implements Serializable {
     @TableField("DeviceType")
     private Boolean deviceType;
 
-    /**
-     * 代币
-     */
-    @TableField("FalseMoney")
-    private Double falseMoney;
-
-
 }
