@@ -135,12 +135,13 @@ public class Wheels implements Serializable {
         checkBase();
     }
 
-    public void checkAcitivyStatusWhenHReward() {
-
+    public void checkAcitivyStatusWhenHReward(String organizatioId) {
+        Asserts.check(!StringUtils.isEmpty(organizatioId),"用户关联的组织不存在");
         Date date = new Date();
         Asserts.check(startTime.getTime() <= date.getTime(),"活动未开始");
         Asserts.check(endTime.getTime() > date.getTime(),"活动已结束");
         Asserts.check(ActivityStatusConstant.UP.equals(activityStatus),"活动未启用");
+        Asserts.check(this.organizationId.equals(organizatioId),"组织越权");
     }
 
 

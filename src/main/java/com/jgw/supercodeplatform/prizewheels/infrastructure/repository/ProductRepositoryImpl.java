@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.prizewheels.infrastructure.repository;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Product;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.ProductRepository;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
@@ -12,7 +13,9 @@ import com.jgw.supercodeplatform.prizewheels.infrastructure.transfer.ProductPojo
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,9 +78,12 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<ProductPojo> getPojoByBatchId(String productBatchId) {
+    public List<ProductPojo> getPojoByBatchId(String productId,String productBatchId) {
+        Asserts.check(!StringUtils.isEmpty(productId),"产品不存在");
         QueryWrapper<ProductPojo> wapper = new QueryWrapper<>();
-        wapper.eq("ProductBatchId",productBatchId);
+        wapper.eq(!StringUtils.isEmpty(productBatchId),"ProductBatchId",productBatchId);
+        wapper.eq("productId",productId);
+        wapper.eq("Type", ActivityTypeConstant.wheels);
         List<ProductPojo> productPojos = productMapper.selectList(wapper);
         return productPojos;
     }

@@ -659,7 +659,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			} else {
 				member = marketingMembersMapper.selectById(memberid);
 			}
-			if(wxMemberByOpenid.getCurrentUse() == 0) {
+			if(wxMemberByOpenid. getCurrentUse() == 0) {
 				UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte)1).eq("MemberType", MemberTypeEnums.VIP.getType());
 				marketingWxMemberMapper.update(null, nouseUpdateWrapper);
 				UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse",(byte)1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
