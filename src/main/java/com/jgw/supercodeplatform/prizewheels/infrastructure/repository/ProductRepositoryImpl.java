@@ -1,6 +1,5 @@
 package com.jgw.supercodeplatform.prizewheels.infrastructure.repository;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CommonConstant;
@@ -13,8 +12,6 @@ import com.jgw.supercodeplatform.prizewheels.infrastructure.transfer.ProductPojo
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -77,12 +74,12 @@ public class ProductRepositoryImpl implements ProductRepository {
         return productMapper.selectList(wapper);
     }
 
-    @Override
     public List<ProductPojo> getPojoByBatchId(String productBatchId) {
         return null;
     }
 
-    public List<ProductPojo> getPojoByBatchId(String productId,String productBatchId) {
+    @Override
+    public List<ProductPojo> getPojoByBatchId(String productId, String productBatchId) {
         Asserts.check(!StringUtils.isEmpty(productId),"产品不存在");
         QueryWrapper<ProductPojo> wapper = new QueryWrapper<>();
         wapper.eq(!StringUtils.isEmpty(productBatchId) && !CommonConstant.NULL.equalsIgnoreCase(productBatchId),"ProductBatchId",productBatchId);
