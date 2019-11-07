@@ -14,6 +14,9 @@ import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonContr
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.prizewheels.application.service.WheelsPublishAppication;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.QiNiuYunConfigConstant;
+import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl.CdkEventSubscriberImplV2;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.PrizeWheelsOrderPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRecordPojo;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.*;
@@ -32,6 +35,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +49,8 @@ public class WheelsController extends SalerCommonController {
     @Autowired
     private WheelsPublishAppication appication;
 
+    @Autowired
+    private CdkEventSubscriberImplV2 cdkEventSubscriberImplV2;
 
     @Value("{\"userName\":\"姓名\",\"mobile\":\"手机号\", \"rewardName\":\"奖项名称\",\"createTime\":\"领奖时间\"}")
     private String EXCEL_FIELD_MAP;
@@ -161,5 +167,32 @@ public class WheelsController extends SalerCommonController {
         ExcelUtils.listToExcel(list, filedMap, "订单记录",response);
     }
 
+    @ResponseBody
+    @GetMapping("/down")
+    @ApiOperation(value = "下载模板",notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult down(@RequestParam String cdkKey, HttpServletResponse response) throws IOException {
+        // 根据cdkkey去七牛云读取文件
+        String excelUrl = QiNiuYunConfigConstant.URL + cdkKey;
 
+        // 读取excel流
+        InputStream in = cdkEventSubscriberImplV2.downExcelStream(excelUrl);
+        try {
+            in=this.getClass().getResourceAsStream("/template.xls");
+            byte[] buf=new byte[1024];
+            int len=0;
+            while((len=in.read(buf))!=-1) {
+                response.getOutputStream().write(buf, 0, len);
+                response.getOutputStream().flush();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            if (null!=in) {
+                in.close();
+            }
+        }
+        return null;
+    }
 }
