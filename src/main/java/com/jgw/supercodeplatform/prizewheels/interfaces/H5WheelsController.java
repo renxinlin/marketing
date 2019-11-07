@@ -52,7 +52,7 @@ public class H5WheelsController extends SalerCommonController {
 
     @GetMapping("/redrict")
     @ApiOperation(value = "大转盘码管理重定向", notes = "")
-    public String reward(String productBatchId, String outerCodeId, String codeTypeId, String organizationId, String uuid) {
+    public String reward(String productId, String productBatchId, String outerCodeId, String codeTypeId, String organizationId, String uuid) {
         // 扫码重定向到前端 基于产品批次找到活动
         StringBuffer urlparame = new StringBuffer("redirect:");
         urlparame.append(CallBackConstant.TO_WEB_URL)
@@ -61,6 +61,7 @@ public class H5WheelsController extends SalerCommonController {
                 .append("&codeTypeId=").append(codeTypeId)
                 .append("&template=10") // 业务标志字段
                 .append("&organizationId=").append(organizationId)
+                .append("&productId=").append(productId)
                 .append("&uuid=").append(uuid);
         String url = urlparame.toString();
         log.info("==> 大转盘扫码重定向到前端{} ", url);
@@ -72,8 +73,8 @@ public class H5WheelsController extends SalerCommonController {
     @GetMapping("/detail")
     @ApiOperation(value = "H5大转盘详情", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult detail(@RequestParam String productBatchId) {
-        WheelsDetailsVo wheelsDetailsVO = application.detail(productBatchId);
+    public RestResult detail(@RequestParam String productBatchId, String productId) {
+        WheelsDetailsVo wheelsDetailsVO = application.detail(productBatchId,productId);
         return success(wheelsDetailsVO);
     }
 
@@ -88,7 +89,7 @@ public class H5WheelsController extends SalerCommonController {
 
     @ResponseBody
     @PostMapping("/preview/add")
-    @ApiOperation(value = "预览", notes = "")
+    @ApiOperation(value = "预览add", notes = "")
     public RestResult add( @RequestBody WheelsDto wheelsDto)   {
         String uuid = UUID.randomUUID().toString();
         // 1天

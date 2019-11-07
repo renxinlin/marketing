@@ -14,6 +14,11 @@ import java.util.Date;
 
 /**
  * <p>
+ *     TODO 大转盘回顾：领域实体设计不合理,尤其是大转盘缺少聚合根
+ *     TODO 领域服务过多，除去大转盘之外 其他实体大多数存在一定的贫血情况
+ *     TODO 实体业务过少 除去addPublisher 基本是校验类业务 其他实体基本没有业务
+ *
+ *     单一实体集合处理问题：单一实体集合实在领域实体内部处理业务 还是在领域服务中处理 有待商榷
  *
  * </p>
  *
@@ -130,12 +135,13 @@ public class Wheels implements Serializable {
         checkBase();
     }
 
-    public void checkAcitivyStatusWhenHReward() {
-
+    public void checkAcitivyStatusWhenHReward(String organizatioId) {
+        Asserts.check(!StringUtils.isEmpty(organizatioId),"用户关联的组织不存在");
         Date date = new Date();
         Asserts.check(startTime.getTime() <= date.getTime(),"活动未开始");
         Asserts.check(endTime.getTime() > date.getTime(),"活动已结束");
         Asserts.check(ActivityStatusConstant.UP.equals(activityStatus),"活动未启用");
+        Asserts.check(this.organizationId.equals(organizatioId),"组织越权");
     }
 
 

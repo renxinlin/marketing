@@ -34,8 +34,8 @@ public class WechatAuthLoginController {
 
     @ApiOperation("前端要进行时微信登录跳转地址")
     @GetMapping("/redirect")
-    public String wechatRedirect(@RequestParam String uuid){
-        String redirectUrl = wechatAuthLoginService.wechatRedirect(uuid);
+    public String wechatRedirect(@RequestParam String redirectkey){
+        String redirectUrl = wechatAuthLoginService.wechatRedirect(redirectkey);
         return "redirect:" + redirectUrl;
     }
 

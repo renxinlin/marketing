@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
@@ -111,7 +112,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
            } catch (Exception e) {
                e.printStackTrace();
                log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,JSONObject.toJSONString(user));
-               throw new RuntimeException("微信支付，支付失败啦！");
+               throw new BizRuntimeException("微信支付，支付失败啦！");
            }
            int i = salerRuleExchangeMapper.reduceHaveStock(salerRuleExchange);
            Asserts.check(i==1,"扣减库存失败");
@@ -155,7 +156,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         if(salerRuleExchange.getUndercarriageSetWay().intValue() == UndercarriageSetWayConstant.timecoming
                 && new Date().getTime() > salerRuleExchange.getUnderCarriage().getTime()
         ) {
-            throw new RuntimeException("当前兑换正在下架中...");
+            throw new BizRuntimeException("当前兑换正在下架中...");
         }
     }
 

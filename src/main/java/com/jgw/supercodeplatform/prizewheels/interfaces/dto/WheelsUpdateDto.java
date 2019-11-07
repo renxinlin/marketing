@@ -44,13 +44,13 @@ public class WheelsUpdateDto {
     @ApiModelProperty("企业logo") private String logo;
 
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8") @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "活动时间不可为空")
     @ApiModelProperty("活动开始时间")  private Date startTime;
 
 
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8") @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @NotNull(message = "活动时间不可为空")
     @ApiModelProperty("活动结束时间")  private Date endTime;
 

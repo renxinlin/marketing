@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.prizewheels.application.service;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisLockUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.PrizeWheelsOrderTransfer;
 import com.jgw.supercodeplatform.prizewheels.application.transfer.ProductTransfer;
@@ -105,7 +106,7 @@ public class GetWheelsRewardApplication {
             acquireLock = lock.lock(PREFIXX + outerCodeId, 60000, 1, 50);
             if (!acquireLock) {
                 log.info("未获取到{}锁", PREFIXX + outerCodeId);
-                throw new RuntimeException("该码正在被其他人领取...");
+                throw new BizRuntimeException("该码正在被其他人领取...");
             }
             log.info("大转盘领奖:用户{}，领取活动{}", JSONObject.toJSONString(user), JSONObject.toJSONString(prizeWheelsRewardDto));
             // 数据获取
@@ -126,7 +127,7 @@ public class GetWheelsRewardApplication {
             codeDomainService.noscanedOrTerminated(mayBeScanedCode, wheelsInfo.getWxErcode());
 
             // 2 活动校验
-            wheelsInfo.checkAcitivyStatusWhenHReward();
+            wheelsInfo.checkAcitivyStatusWhenHReward(user.getOrganizationId());
 
 
             // 业务执行
@@ -143,7 +144,7 @@ public class GetWheelsRewardApplication {
 
             return reward;
 
-        } catch (RuntimeException e){
+        } catch (BizRuntimeException e){
             e.printStackTrace();
             throw e;
         } finally {
@@ -174,13 +175,13 @@ public class GetWheelsRewardApplication {
      * @param productBatchId
      * @return
      */
-    public WheelsDetailsVo detail(String productBatchId) {
-        log.info("H5大转盘详情:产品批次ID{}", productBatchId);
+    public WheelsDetailsVo detail(String productBatchId, String productId) {
+        log.info("H5大转盘详情:产品ID{}:产品批次ID{}",productId, productBatchId);
         //
         WheelsDetailsVo wheelsDetailsVo=new WheelsDetailsVo();
         //获取产品
         // TODO 仓库获取的数据经转换后成领域实体而非pojo
-        List<ProductPojo> productPojos = productRepository.getPojoByBatchId(productBatchId);
+        List<ProductPojo> productPojos = productRepository.getPojoByBatchId(productId,productBatchId);
         // TODO 应用层无业务:下沉 Asserts
         Asserts.check(!CollectionUtils.isEmpty(productPojos),"未获取到产品信息");
         // 大转盘活动ID
