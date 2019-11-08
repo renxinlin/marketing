@@ -16,7 +16,7 @@ public class CdkTemplate {
     public  String getCdkKey() {
         return URL;
     }
-    // e656173fbfd24113a3ced2e43b9a7700
+    // 2404b1c888824c8e8f3266a806537b24
     @Value("${marketing.prizeWheels.cdktemplate.excel}")
     public  void setCdkKey(String cdkKey) {
         URL = QiNiuYunConfigConstant.URL +cdkKey;
