@@ -7,6 +7,8 @@ import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.http.util.Asserts;
+import org.springframework.util.Assert;
 
 import java.io.Serializable;
 
@@ -29,7 +31,7 @@ public class WheelsReward implements Serializable {
     private Long prizeWheelId;
 
     /**
-     * 奖励类型:1 虚拟2 实物
+     * 奖励类型:1 虚拟2 实物  //TODO 剔除
      */
     private Integer type = (int) RewardTypeConstant.virtual;
 
@@ -60,6 +62,22 @@ public class WheelsReward implements Serializable {
 
     private Integer sendDay;
 
+    /**
+     * 库存
+     */
+    private Integer stock;
+    /**
+     * 初始化库存
+     */
+    private Integer initialStock;
+
+
+    public void initInitialStock(){
+        if(RewardTypeConstant.real == type.byteValue()){
+            Asserts.check(stock!= null && stock > 0 ,"初始库存大于0");
+            this.initialStock = stock;
+        }
+    }
 
 
 }

@@ -98,7 +98,7 @@ public class GetWheelsRewardApplication {
      * @param user
      * @return
      */
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(rollbackFor = {RuntimeException.class,Exception.class})
     public H5RewardInfo reward(PrizeWheelsRewardDto prizeWheelsRewardDto, H5LoginVO user) {
         String outerCodeId = prizeWheelsRewardDto.getOuterCodeId();
         boolean acquireLock = false;

@@ -71,4 +71,11 @@ public class WheelsRewardPojo implements Serializable {
     @TableField("SendDay")
     private Integer sendDay;
 
+    @TableField("Stock")
+    private Integer stock;
+
+    @TableField("InitialStock")
+    private Integer initialStock;
+
+
 }

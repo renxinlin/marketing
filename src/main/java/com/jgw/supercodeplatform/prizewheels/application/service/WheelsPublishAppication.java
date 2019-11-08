@@ -114,6 +114,8 @@ public class WheelsPublishAppication {
         // 2 奖励
         wheelsRewardDomainService.initPrizeWheelsid(wheelsRewards,prizeWheelsid);
         wheelsRewardDomainService.checkWhenAdd(wheelsRewards);
+        wheelsRewardDomainService.initInitialStock(wheelsRewards);
+
         // 持久化返回主键
         wheelsRewardRepository.batchSave(wheelsRewards);
 
@@ -173,6 +175,7 @@ public class WheelsPublishAppication {
         List<WheelsReward> oldwheelsRewards = wheelsRewardRepository.getDomainByPrizeWheelsId(prizeWheelsid);
 
         wheelsRewardDomainService.checkWhenUpdate(wheelsRewards);
+        wheelsRewardDomainService.initInitialStock(wheelsRewards);
         wheelsRewardRepository.deleteByPrizeWheelsId(prizeWheelsid);
         wheelsRewardRepository.batchSave(wheelsRewards);
 
