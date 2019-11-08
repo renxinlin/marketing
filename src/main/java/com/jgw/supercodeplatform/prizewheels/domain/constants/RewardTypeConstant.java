@@ -5,4 +5,6 @@ public interface RewardTypeConstant {
     byte virtual = 1;
     // 实物奖励类型
     byte real = 2;
+    // 红包奖励类型
+    byte money = 3;
 }

@@ -1,12 +1,10 @@
 package com.jgw.supercodeplatform.prizewheels.domain.model;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.http.util.Asserts;
 
 import java.io.Serializable;
 
@@ -29,7 +27,7 @@ public class WheelsReward implements Serializable {
     private Long prizeWheelId;
 
     /**
-     * 奖励类型:1 虚拟2 实物
+     * 奖励类型:1 虚拟2 实物  //TODO 剔除
      */
     private Integer type = (int) RewardTypeConstant.virtual;
 
@@ -60,6 +58,38 @@ public class WheelsReward implements Serializable {
 
     private Integer sendDay;
 
+    /**
+     * 库存
+     */
+    private Integer stock;
+    /**
+     * 初始化库存
+     */
+    private Integer initialStock;
+
+
+    private Integer randLowMoney;
+
+    private Integer randHighMoney;
+
+    private Integer fixedMoney;
+
+    private Integer moneyType;
+
+
+    public void initInitialStock(){
+        // 业务分开写
+        if(RewardTypeConstant.real == type.byteValue()){
+            Asserts.check(stock!= null && stock >= 0 ,"实物奖项初始库存不小于0");
+            this.initialStock = stock;
+        }
+
+        if(RewardTypeConstant.money == type.byteValue()){
+            Asserts.check(stock!= null && stock >= 0 ,"金额奖项初始库存不小于0");
+            this.initialStock = stock;
+        }
+
+    }
 
 
 }

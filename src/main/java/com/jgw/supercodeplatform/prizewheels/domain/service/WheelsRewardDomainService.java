@@ -1,7 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.domain.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
@@ -13,8 +12,8 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
 import com.jgw.supercodeplatform.prizewheels.domain.publisher.CdkEventPublisher;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.RecordRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardCdkRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.subscribers.CdkEventSubscriber;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl.CdkEventSubscriberImplV2;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,6 +48,11 @@ public class WheelsRewardDomainService {
     private RecordRepository recordRepository;
 
 
+
+    @Autowired
+    private WheelsRewardRepository wheelsRewardRepository;
+
+
     public void checkWhenUpdate(List<WheelsReward> wheelsRewards) {
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
 
@@ -63,6 +66,7 @@ public class WheelsRewardDomainService {
         for(WheelsReward wheelsReward : wheelsRewards){
             if(wheelsReward.getType().byteValue() == RewardTypeConstant.real){
                 Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物发货时间必填");
+                Asserts.check(wheelsReward.getStock() != null && wheelsReward.getStock() >= 0,"实物库存必填");
             }
             pro = pro + wheelsReward.getProbability();
         };
@@ -84,6 +88,7 @@ public class WheelsRewardDomainService {
             pro = pro + wheelsReward.getProbability();
             if(wheelsReward.getType().byteValue() == RewardTypeConstant.real){
                 Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物收货时间必填");
+                Asserts.check(wheelsReward.getStock() != null && wheelsReward.getStock() >= 0,"实物库存必填");
             }
         };
         Asserts.check(pro == 100D,"概率总和100%");
@@ -139,15 +144,19 @@ public class WheelsRewardDomainService {
         }
 
         if(finalReward.getType().intValue() == RewardTypeConstant.real){
+            int success = wheelsRewardRepository.reduceStockForReal(finalReward);
+            Asserts.check(success == 1,"您好，库存不足啦");
+
             WheelsRecord wheelsRecord = new WheelsRecord();
             wheelsRecord.initrealInfo(
                     user.getMobile()
                     ,finalReward.getName()
-                    ,user.getMemberId()+""
+                    ,user.getMemberId().toString()
                     ,user.getMemberName()
                     ,prizeWheelsId,finalReward.getId()
                     ,user.getOrganizationName()
                     ,user.getOrganizationId());
+
 
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
@@ -160,5 +169,13 @@ public class WheelsRewardDomainService {
         }
 
         throw new BizRuntimeException("奖励类型暂不支持...");
+    }
+
+    /**
+     * 初始化初始库存
+     * @param wheelsRewards
+     */
+    public void initInitialStock(List<WheelsReward> wheelsRewards) {
+        wheelsRewards.forEach(wheelsReward->wheelsReward.initInitialStock());
     }
 }
