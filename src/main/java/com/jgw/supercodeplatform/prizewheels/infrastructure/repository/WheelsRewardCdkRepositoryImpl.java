@@ -44,7 +44,7 @@ public class WheelsRewardCdkRepositoryImpl implements WheelsRewardCdkRepository 
         queryWrapper.eq("prizeRewardId", prizeRewardId);
         IPage<WheelsRewardCdkPojo> ipage   = new Page(1,1); ;
         IPage<WheelsRewardCdkPojo> wheelsRewardCdkPojoIPage = wheelsRewardCdkMapper.selectPage(ipage, queryWrapper);
-        log.error("wheelsRewardCdkPojoIPage=>{}", JSONObject.toJSONString(wheelsRewardCdkPojoIPage));
+        log.info("wheelsRewardCdkPojoIPage=>{}", JSONObject.toJSONString(wheelsRewardCdkPojoIPage));
         if(wheelsRewardCdkPojoIPage !=null
                 && !CollectionUtils.isEmpty(wheelsRewardCdkPojoIPage.getRecords())){
             WheelsRewardCdkPojo wheelsRewardCdkPojo = wheelsRewardCdkPojoIPage.getRecords().get(0);
