@@ -14,6 +14,7 @@ import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonContr
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.prizewheels.application.service.WheelsPublishAppication;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.CdkTemplate;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.QiNiuYunConfigConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl.CdkEventSubscriberImplV2;
@@ -51,6 +52,9 @@ public class WheelsController extends SalerCommonController {
 
     @Autowired
     private CdkEventSubscriberImplV2 cdkEventSubscriberImplV2;
+
+    @Value("")
+    private String cdkKey;
 
     @Value("{\"userName\":\"姓名\",\"mobile\":\"手机号\", \"rewardName\":\"奖项名称\",\"createTime\":\"领奖时间\"}")
     private String EXCEL_FIELD_MAP;
@@ -171,14 +175,13 @@ public class WheelsController extends SalerCommonController {
     @GetMapping("/down")
     @ApiOperation(value = "下载模板",notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult down(@RequestParam String cdkKey, HttpServletResponse response) throws IOException {
+    public RestResult down(HttpServletResponse response) throws IOException {
         // 根据cdkkey去七牛云读取文件
-        String excelUrl = QiNiuYunConfigConstant.URL + cdkKey;
+        String excelUrl = QiNiuYunConfigConstant.URL + CdkTemplate.CDK_KEY;
 
         // 读取excel流
         InputStream in = cdkEventSubscriberImplV2.downExcelStream(excelUrl);
         try {
-            in=this.getClass().getResourceAsStream("/template.xls");
             byte[] buf=new byte[1024];
             int len=0;
             while((len=in.read(buf))!=-1) {
