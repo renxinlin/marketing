@@ -72,11 +72,27 @@ public class WheelsReward implements Serializable {
     private Integer initialStock;
 
 
+    private Integer randLowMoney;
+
+    private Integer randHighMoney;
+
+    private Integer fixedMoney;
+
+    private Integer moneyType;
+
+
     public void initInitialStock(){
+        // 业务分开写
         if(RewardTypeConstant.real == type.byteValue()){
-            Asserts.check(stock!= null && stock > 0 ,"初始库存大于0");
+            Asserts.check(stock!= null && stock > 0 ,"实物奖项初始库存大于0");
             this.initialStock = stock;
         }
+
+        if(RewardTypeConstant.money == type.byteValue()){
+            Asserts.check(stock!= null && stock > 0 ,"金额奖项初始库存大于0");
+            this.initialStock = stock;
+        }
+
     }
 
 
