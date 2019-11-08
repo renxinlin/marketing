@@ -147,6 +147,9 @@ public class WheelsRewardDomainService {
         }
 
         if(finalReward.getType().intValue() == RewardTypeConstant.real){
+            int success = wheelsRewardRepository.reduceStockForReal(finalReward);
+            Asserts.check(success == 1,"您好，库存不足啦");
+
             WheelsRecord wheelsRecord = new WheelsRecord();
             wheelsRecord.initrealInfo(
                     user.getMobile()
@@ -156,9 +159,7 @@ public class WheelsRewardDomainService {
                     ,prizeWheelsId,finalReward.getId()
                     ,user.getOrganizationName()
                     ,user.getOrganizationId());
-            // 减库存
-            int success = wheelsRewardRepository.reduceStock(finalReward);
-            Asserts.check(success == 1,"您好，库存不足啦");
+
 
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 

@@ -17,5 +17,5 @@ public interface WheelsRewardRepository {
 
     List<WheelsReward> getDomainByPrizeWheelsId(Long id);
 
-    int reduceStock(WheelsReward finalReward);
+    int reduceStockForReal(WheelsReward finalReward);
 }
