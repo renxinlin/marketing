@@ -46,4 +46,8 @@ public class WheelsRewardDto {
 
     @ApiModelProperty("实物几天后送达")
     private Integer sendDay;
+
+
+    @ApiModelProperty("库存")
+    private Integer stock;
 }
