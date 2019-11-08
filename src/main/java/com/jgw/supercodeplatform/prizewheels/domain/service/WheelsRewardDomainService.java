@@ -154,7 +154,7 @@ public class WheelsRewardDomainService {
             wheelsRecord.initrealInfo(
                     user.getMobile()
                     ,finalReward.getName()
-                    ,user.getMemberId()+""
+                    ,user.getMemberId().toString()
                     ,user.getMemberName()
                     ,prizeWheelsId,finalReward.getId()
                     ,user.getOrganizationName()
