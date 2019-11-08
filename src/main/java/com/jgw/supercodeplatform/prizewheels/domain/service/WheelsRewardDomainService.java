@@ -1,7 +1,6 @@
 package com.jgw.supercodeplatform.prizewheels.domain.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
@@ -15,7 +14,6 @@ import com.jgw.supercodeplatform.prizewheels.domain.repository.RecordRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardCdkRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.subscribers.CdkEventSubscriber;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl.CdkEventSubscriberImplV2;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
@@ -25,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -69,7 +66,7 @@ public class WheelsRewardDomainService {
         for(WheelsReward wheelsReward : wheelsRewards){
             if(wheelsReward.getType().byteValue() == RewardTypeConstant.real){
                 Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物发货时间必填");
-                Asserts.check(wheelsReward.getStock() != null && wheelsReward.getStock() > 0,"实物库存必填");
+                Asserts.check(wheelsReward.getStock() != null && wheelsReward.getStock() >= 0,"实物库存必填");
             }
             pro = pro + wheelsReward.getProbability();
         };
@@ -91,7 +88,7 @@ public class WheelsRewardDomainService {
             pro = pro + wheelsReward.getProbability();
             if(wheelsReward.getType().byteValue() == RewardTypeConstant.real){
                 Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物收货时间必填");
-                Asserts.check(wheelsReward.getStock() != null && wheelsReward.getStock() > 0,"实物库存必填");
+                Asserts.check(wheelsReward.getStock() != null && wheelsReward.getStock() >= 0,"实物库存必填");
             }
         };
         Asserts.check(pro == 100D,"概率总和100%");
