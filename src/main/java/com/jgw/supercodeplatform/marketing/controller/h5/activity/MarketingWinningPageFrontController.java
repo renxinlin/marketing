@@ -42,7 +42,8 @@ public class MarketingWinningPageFrontController {
 		ScanCodeInfoMO scInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
         if (null==activitySetId) {
         	if (null==scInfoMO) {
-        		throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
+        		return new RestResult<>(500, "授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", null);
+//        		throw new SuperCodeException("授权回调方法无法根据state="+wxstate+"获取到用户扫码缓存信息请重试", 500);
         	}
         	activitySetId=scInfoMO.getActivitySetId();
 		}
