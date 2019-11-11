@@ -15,5 +15,5 @@ import org.apache.ibatis.annotations.Update;
 public interface WheelsRewardMapper extends BaseMapper<WheelsRewardPojo> {
 
 @Update("update marketing_activity_prize_wheels_reward set Stock  = Stock - 1 where id = #{id} and Stock > 0")
-    int reduceStockForReal(Long id);
+    int reduceStock(Long id);
 }
