@@ -1,14 +1,10 @@
 package com.jgw.supercodeplatform.prizewheels.domain.model;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.apache.http.util.Asserts;
-import org.springframework.util.Assert;
 
 import java.io.Serializable;
 
@@ -84,12 +80,12 @@ public class WheelsReward implements Serializable {
     public void initInitialStock(){
         // 业务分开写
         if(RewardTypeConstant.real == type.byteValue()){
-            Asserts.check(stock!= null && stock > 0 ,"实物奖项初始库存大于0");
+            Asserts.check(stock!= null && stock >= 0 ,"实物奖项初始库存不小于0");
             this.initialStock = stock;
         }
 
         if(RewardTypeConstant.money == type.byteValue()){
-            Asserts.check(stock!= null && stock > 0 ,"金额奖项初始库存大于0");
+            Asserts.check(stock!= null && stock >= 0 ,"金额奖项初始库存不小于0");
             this.initialStock = stock;
         }
 
