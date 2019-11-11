@@ -71,6 +71,9 @@ public class ProductDomainTranfer {
                 sbatchUrlDto.setBusinessType(ActivityTypeConstant.wheels);
                 sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
                 sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+                sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+                sbatchUrlDto.setProductBatchId(product.getProductBatchId());
+                sbatchUrlDto.setProductId(product.getProductId());
                 list.add(sbatchUrlDto);
             });
         });
