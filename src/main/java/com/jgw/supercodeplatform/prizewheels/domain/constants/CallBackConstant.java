@@ -31,6 +31,16 @@ public class CallBackConstant  implements InitializingBean {
     public static String PRIZE_WHEELS_URL ="/marketing/front/prizeWheels/redrict"  ;
 
 
+    public static  String serverIp;
+
+
+    public  String getServerIp() {
+        return serverIp;
+    }
+    @Value("${marketing.server.ip}")
+    public  void setServerIp(String serverIp) {
+        CallBackConstant.serverIp = serverIp;
+    }
 
     @Override
     public void afterPropertiesSet(){

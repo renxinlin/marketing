@@ -23,8 +23,8 @@ public class WheelsRewardDto {
     /**
      * 奖励类型:1 虚拟2 实物
      */
-    @NotNull @Min(1) @Max(2)
-    @ApiModelProperty("奖励类型:1 虚拟2 实物")    private Integer type;
+    @NotNull @Min(1) @Max(3)
+    @ApiModelProperty("奖励类型:1 虚拟2 实物 3 红包")    private Integer type;
 
 
     @NotNull(message = "奖励概率不可为空") @Min(0) @Max(100)
@@ -46,4 +46,26 @@ public class WheelsRewardDto {
 
     @ApiModelProperty("实物几天后送达")
     private Integer sendDay;
+
+
+    @ApiModelProperty("库存")
+    private Integer stock;
+
+
+    @ApiModelProperty("随机金额下限")
+    private Double randLowMoney;
+    @ApiModelProperty("随机金额上限")
+    private Double randHighMoney;
+    @ApiModelProperty("固定金额")
+    private Double fixedMoney;
+
+    /**
+     * todo 测试是不是可以支持null
+     */
+    @Min(1) @Max(2)
+    @ApiModelProperty("固定金额 1 随机金额2 ")
+    private Integer moneyType;
+
+
+
 }

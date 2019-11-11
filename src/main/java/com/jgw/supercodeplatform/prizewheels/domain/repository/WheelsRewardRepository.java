@@ -16,4 +16,8 @@ public interface WheelsRewardRepository {
     List<WheelsRewardPojo> getByPrizeWheelsId(Long id);
 
     List<WheelsReward> getDomainByPrizeWheelsId(Long id);
+
+    int reduceStockForReal(WheelsReward finalReward);
+
+    int reduceStockForMoney(WheelsReward finalReward);
 }

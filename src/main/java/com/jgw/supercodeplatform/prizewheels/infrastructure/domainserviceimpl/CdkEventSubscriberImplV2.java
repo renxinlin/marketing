@@ -95,7 +95,7 @@ public class CdkEventSubscriberImplV2 implements CdkEventSubscriber {
 
     }
 
-    private InputStream downExcelStream(String url) {
+    public InputStream downExcelStream(String url) {
         OkHttpClient client = new OkHttpClient();
         Request req = new Request.Builder().url(url).build();
         Response resp = null;

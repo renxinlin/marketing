@@ -23,7 +23,7 @@ public class WheelsRewardUpdateDto {
      */
     @NotNull
     @Min(1) @Max(2)
-    @ApiModelProperty("奖励类型:1 虚拟2 实物")    private Integer type;
+    @ApiModelProperty("奖励类型:1 虚拟2 实物 3红包")    private Integer type;
 
 
     @NotNull(message = "奖励概率不可为空") @Min(0) @Max(100)
@@ -50,5 +50,28 @@ public class WheelsRewardUpdateDto {
 
     @ApiModelProperty("实物几天后送达")
     private Integer sendDay;
+
+
+     @ApiModelProperty("库存")
+    private Integer stock;
+
+
+    @Min(0)
+    @ApiModelProperty("随机金额下限")
+    private Double randLowMoney;
+    @Min(0)
+    @ApiModelProperty("随机金额上限")
+    private Double randHighMoney;
+
+    @Min(0)
+    @ApiModelProperty("固定金额")
+    private Double fixedMoney;
+
+
+    @Min(1) @Max(2)
+    @ApiModelProperty("固定金额 1 随机金额2 ")
+    private Integer moneyType;
+
+
 
 }

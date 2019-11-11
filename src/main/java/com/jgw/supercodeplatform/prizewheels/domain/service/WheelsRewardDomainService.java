@@ -1,20 +1,19 @@
 package com.jgw.supercodeplatform.prizewheels.domain.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
+import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.MoneyTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.event.CdkEvent;
-import com.jgw.supercodeplatform.prizewheels.domain.model.H5RewardInfo;
-import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRecord;
-import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsReward;
-import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRewardCdk;
+import com.jgw.supercodeplatform.prizewheels.domain.model.*;
 import com.jgw.supercodeplatform.prizewheels.domain.publisher.CdkEventPublisher;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.RecordRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardCdkRepository;
+import com.jgw.supercodeplatform.prizewheels.domain.repository.WheelsRewardRepository;
 import com.jgw.supercodeplatform.prizewheels.domain.subscribers.CdkEventSubscriber;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl.CdkEventSubscriberImplV2;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.expectionsUtil.ErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
@@ -24,8 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 领域服务 : 仅处理WheelsReward 直接实现类
@@ -50,6 +49,13 @@ public class WheelsRewardDomainService {
     private RecordRepository recordRepository;
 
 
+    @Autowired
+    private WXPayService wxPayService;
+
+    @Autowired
+    private WheelsRewardRepository wheelsRewardRepository;
+
+
     public void checkWhenUpdate(List<WheelsReward> wheelsRewards) {
         Asserts.check(!CollectionUtils.isEmpty(wheelsRewards), ErrorCodeEnum.NULL_ERROR.getErrorMessage());
 
@@ -63,7 +69,26 @@ public class WheelsRewardDomainService {
         for(WheelsReward wheelsReward : wheelsRewards){
             if(wheelsReward.getType().byteValue() == RewardTypeConstant.real){
                 Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物发货时间必填");
+                Asserts.check(wheelsReward.getStock() != null && wheelsReward.getStock() >= 0,"实物库存必填");
             }
+
+            if(wheelsReward.getType().byteValue() == RewardTypeConstant.money){
+                Asserts.check(wheelsReward.getMoneyType() !=null,"未指定固定金额或随机金额");
+                if(wheelsReward.getMoneyType() == MoneyTypeConstant.fixed){
+                    Asserts.check(wheelsReward.getFixedMoney()!=null,"请填写固定金额");
+                }
+
+                if(wheelsReward.getMoneyType() == MoneyTypeConstant.random){
+                    Asserts.check(wheelsReward.getRandLowMoney()!=null,"请填写下限金额");
+                    Asserts.check(wheelsReward.getRandHighMoney()!=null,"请填写上限金额");
+                    Asserts.check(
+                            wheelsReward.getRandHighMoney().doubleValue()
+                                    >= wheelsReward.getRandLowMoney()
+                            ,"上限金额应该大于下限");
+                }
+
+            }
+
             pro = pro + wheelsReward.getProbability();
         };
         Asserts.check(pro == 100D,"概率总和100%");
@@ -84,6 +109,24 @@ public class WheelsRewardDomainService {
             pro = pro + wheelsReward.getProbability();
             if(wheelsReward.getType().byteValue() == RewardTypeConstant.real){
                 Asserts.check(wheelsReward.getSendDay() != null && wheelsReward.getSendDay() > 0,"实物收货时间必填");
+                Asserts.check(wheelsReward.getStock() != null && wheelsReward.getStock() >= 0,"实物库存必填");
+            }
+
+            if(wheelsReward.getType().byteValue() == RewardTypeConstant.money){
+                Asserts.check(wheelsReward.getMoneyType() !=null,"未指定固定金额或随机金额");
+                if(wheelsReward.getMoneyType() == MoneyTypeConstant.fixed){
+                    Asserts.check(wheelsReward.getFixedMoney()!=null,"请填写固定金额");
+                }
+
+                if(wheelsReward.getMoneyType() == MoneyTypeConstant.random){
+                    Asserts.check(wheelsReward.getRandLowMoney()!=null,"请填写下限金额");
+                    Asserts.check(wheelsReward.getRandHighMoney()!=null,"请填写上限金额");
+                    Asserts.check(
+                            wheelsReward.getRandHighMoney().doubleValue()
+                            >= wheelsReward.getRandLowMoney()
+                            ,"上限金额应该大于下限");
+                }
+
             }
         };
         Asserts.check(pro == 100D,"概率总和100%");
@@ -139,18 +182,24 @@ public class WheelsRewardDomainService {
         }
 
         if(finalReward.getType().intValue() == RewardTypeConstant.real){
+            int success = wheelsRewardRepository.reduceStockForReal(finalReward);
+            Asserts.check(success == 1,"您好，库存不足啦");
+
             WheelsRecord wheelsRecord = new WheelsRecord();
+            //  TODO 记录领取金额
             wheelsRecord.initrealInfo(
                     user.getMobile()
                     ,finalReward.getName()
-                    ,user.getMemberId()+""
+                    ,user.getMemberId().toString()
                     ,user.getMemberName()
                     ,prizeWheelsId,finalReward.getId()
                     ,user.getOrganizationName()
                     ,user.getOrganizationId());
 
+
             recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
+            //
 
             H5RewardInfo rewardInfo = new H5RewardInfo();
             rewardInfo.initRealReward(finalReward.getId(),finalReward.getPicture(),finalReward.getName(),finalReward.getSendDay());
@@ -159,6 +208,50 @@ public class WheelsRewardDomainService {
 
         }
 
+
+
+        if(finalReward.getType().intValue() == RewardTypeConstant.money){
+            int success = wheelsRewardRepository.reduceStockForMoney(finalReward);
+            Asserts.check(success == 1,"您好,奖池领完啦");
+            double rewardMoneyForUser = MoneyCalculator.buildRewardMoney(finalReward);
+            try {
+                // (int)(rewardMoneyForUser*100)微信精度分 奖项精度元
+                wxPayService.qiyePaySync(user.getOpenid(), CallBackConstant.serverIp,(int)(rewardMoneyForUser*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("大转盘红包支付失败.........................finalReward{},user{}",finalReward,JSONObject.toJSONString(user));
+                throw new BizRuntimeException("微信支付，支付失败啦！");
+            }
+            WheelsRecord wheelsRecord = new WheelsRecord();
+            // TODO money 奖励记录等产品提出需求，那些字段
+            wheelsRecord.initrealInfo(
+                    user.getMobile()
+                    ,finalReward.getName()
+                    ,user.getMemberId().toString()
+                    ,user.getMemberName()
+                    ,prizeWheelsId,finalReward.getId()
+                    ,user.getOrganizationName()
+                    ,user.getOrganizationId());
+
+
+            recordRepository.newRecordWhenH5Reward(wheelsRecord);
+
+
+            H5RewardInfo rewardInfo = new H5RewardInfo();
+            rewardInfo. initMoneyReward(finalReward.getId(),finalReward.getPicture(),finalReward.getName(),rewardMoneyForUser);
+            return rewardInfo;
+
+
+        }
+
         throw new BizRuntimeException("奖励类型暂不支持...");
+    }
+
+    /**
+     * 初始化初始库存
+     * @param wheelsRewards
+     */
+    public void initInitialStock(List<WheelsReward> wheelsRewards) {
+        wheelsRewards.forEach(wheelsReward->wheelsReward.initInitialStock());
     }
 }

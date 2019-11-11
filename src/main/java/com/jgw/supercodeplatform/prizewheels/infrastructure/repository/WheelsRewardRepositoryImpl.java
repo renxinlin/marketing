@@ -61,5 +61,16 @@ public class WheelsRewardRepositoryImpl implements WheelsRewardRepository {
 
     }
 
+    @Override
+    public int reduceStockForReal(WheelsReward finalReward) {
+        int success = wheelsRewardMapper.reduceStock(finalReward.getId());
+        return success;
+    }
+
+    @Override
+    public int reduceStockForMoney(WheelsReward finalReward) {
+        int success = wheelsRewardMapper.reduceStock(finalReward.getId());
+        return success;    }
+
 
 }
