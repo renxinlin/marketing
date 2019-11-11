@@ -101,7 +101,7 @@ public class ScanCodeController {
      */
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
-    public String bind(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId, HttpServletRequest request) throws Exception {
+    public String bind(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId, @RequestParam Integer businessType, HttpServletRequest request) throws Exception {
     	Map<String, String> uriVariables = new HashMap<>();
     	uriVariables.put("judgeType", "2");
     	uriVariables.put("outerCodeId", outerCodeId);
@@ -120,7 +120,7 @@ public class ScanCodeController {
 		}
     	String wxstate=commonUtil.getUUID();
         logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+",sBatchId="+sBatchId);
-    	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0, sBatchId);
+    	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0, sBatchId, businessType);
     	
         ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
         if(scanCodeInfoMO != null ){
@@ -202,8 +202,8 @@ public class ScanCodeController {
      * @throws ParseException
      * @throws SuperCodeException
      */
-    public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate, byte referenceRole,String sbatchId) throws UnsupportedEncodingException, ParseException, SuperCodeException {
-    	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole);
+    public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate, byte referenceRole,String sbatchId, Integer businessType) throws UnsupportedEncodingException, ParseException {
+    	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole, businessType);
     	if (restResult.getState()==500) {
     		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
     		 return h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
