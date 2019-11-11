@@ -10,10 +10,13 @@ import java.util.Date;
 public class MarketingMembers {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;//序号
+    private String wxName;//微信昵称
+    private String openid;//微信id号
     private String mobile;//手机
     private String userId;//用户Id
     private String userName;//用户姓名
     private Byte sex;//性别
+    private String sexStr;//性别
     private String birthday;//生日
     private String provinceCode;// 省编码
     private String provinceName;// 省名
@@ -263,5 +266,11 @@ public class MarketingMembers {
 
     public void setProvinceName(String provinceName) {
         this.provinceName = provinceName;
+    }
+    public void setSexStr(String sexStr){
+        this.sexStr=sexStr;
+    }
+    public String getSexStr(){
+        return sexStr;
     }
 }

@@ -31,6 +31,16 @@ public class SbatchUrlDto {
 
 
 
+    /**
+     * 产品批次号
+     */
+    private String productBatchId;
+
+
+    /**
+     * 活动产品Id
+     */
+    private String productId;
 
 
 }
