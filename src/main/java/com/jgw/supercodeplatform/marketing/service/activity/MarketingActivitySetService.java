@@ -1,34 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.activity;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.jgw.supercodeplatform.marketing.constants.*;
-import com.jgw.supercodeplatform.marketing.dao.activity.*;
-import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
-import com.jgw.supercodeplatform.marketing.dto.activity.*;
-import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd;
-import com.jgw.supercodeplatform.marketing.dto.platform.PlatformActivityAdd.*;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
-import com.jgw.supercodeplatform.marketing.pojo.*;
-import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
-import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -44,14 +15,39 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
+import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.RedisKey;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
+import com.jgw.supercodeplatform.marketing.dto.activity.*;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
-import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 import com.jgw.supercodeplatform.pojo.cache.AccountCache;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketingActivitySetService extends AbstractPageService<DaoSearchWithOrganizationIdParam> {
@@ -651,6 +647,10 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		return restResult;
 	}
 
+
+	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String outerCodeId, String codeTypeId, String productId, String productBatchId, byte referenceRole) throws ParseException {
+		return judgeActivityScanCodeParam(outerCodeId, codeTypeId, productId, productBatchId, referenceRole, null);
+	}
 	/**
 	 * 活动扫码跳转授权前判断逻辑
 	 * @param productBatchId
@@ -662,7 +662,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @throws SuperCodeException
 	 * @throws ParseException
 	 */
-	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String outerCodeId, String codeTypeId, String productId, String productBatchId, byte referenceRole) throws ParseException {
+	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String outerCodeId, String codeTypeId, String productId, String productBatchId, byte referenceRole, Integer businessType) throws ParseException {
 		RestResult<ScanCodeInfoMO> restResult=new RestResult<ScanCodeInfoMO>();
 		if (StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(outerCodeId)||StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)) {
 			restResult.setState(500);
@@ -690,6 +690,16 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			restResult.setState(500);
 			restResult.setMsg("活动已停止");
 			return restResult;
+		}
+		if (businessType != null) {
+			Long activityId = mActivitySet.getActivityId();
+			Integer bizType = ActivityDefaultConstant.ActivityBizTypeMap.get(activityId);
+			if (bizType != null && !businessType.equals(bizType)) {
+				restResult.setState(500);
+				restResult.setMsg("该产品对应的活动与业务类型不匹配");
+				return restResult;
+			}
+
 		}
 		//2、如果活动开始或结束时间不为空的话则判断扫码时间是否处于活动时间之内
 		String startdate=mActivitySet.getActivityStartDate();
@@ -724,7 +734,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		pMo.setActivitySetId(activitySetId);
 		pMo.setOrganizationId(mActivitySet.getOrganizationId());
 
-		Long id = mActivitySet.getId();
 		// 此方法统一活动类型！！！不可是其他业务
 		pMo.setActivityType(ActivityIdEnum.ACTIVITY_2.getType());
 		pMo.setActivityId(mActivitySet.getActivityId());

@@ -1,16 +1,31 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingWxMemberMapper;
 import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper;
-import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersAddParam;
+import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.SaleMemberBatchStatusParam;
+import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMember;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
+import com.jgw.supercodeplatform.marketing.pojo.UserWithWechat;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -22,19 +37,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import com.alibaba.fastjson.JSONObject;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
-import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersAddParam;
-import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.SaleMemberBatchStatusParam;
-import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
-import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
-import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketingSaleMemberService extends AbstractPageService<MarketingMembersListParam> {
@@ -70,6 +76,12 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 	@Autowired
 	private MarketingWxMemberMapper marketingWxMemberMapper;
+
+	@Autowired
+	private CommonUtil commonUtil;
+
+	@Autowired
+	private MarketingUserMapper marketingUserMapper;
 
 	@Override
 	protected List<MarketingUser> searchResult(MarketingMembersListParam searchParams) throws SuperCodeException{
@@ -578,6 +590,32 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		}
 		UpdateWrapper<MarketingWxMember> updateWrapper = Wrappers.<MarketingWxMember>update().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.SALER.getType());
 		return marketingWxMemberMapper.update(marketingWxMember, updateWrapper);
+	}
+
+	/**
+	 * 导购员资料
+	 */
+	public List<MarketingUser> getSalerInfoList() throws SuperCodeException {
+		String organoizationId= commonUtil.getOrganizationId();
+		if(StringUtils.isBlank(organoizationId)){
+			throw new SuperCodeException("组织不存在...");
+		}
+		QueryWrapper queryWrapper=new QueryWrapper();
+		queryWrapper.eq("OrganizationId",organoizationId);
+		//默认0会员，1导购员,其他员工等
+		queryWrapper.eq("MemberType",1);
+		List<MarketingUser> list= marketingUserMapper.selectList(queryWrapper);
+		list.stream().filter(marketingUser -> {
+			if (SexConstants.WOMEN.equals(marketingUser.getSex())){
+				marketingUser.setSex("女");
+			}else if(SexConstants.MEN.equals(marketingUser.getSex())){
+				marketingUser.setSex("男");
+			}else {
+				marketingUser.setSex("--");
+			}
+			return true;
+		}).collect(Collectors.toList());
+		return list;
 	}
 }
 

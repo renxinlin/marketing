@@ -1,24 +1,17 @@
 package com.jgw.supercodeplatform.marketing.dao.user;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.jgw.supercodeplatform.marketing.dto.platform.ActivityDataParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
-import jdk.nashorn.internal.objects.annotations.Setter;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import org.springframework.stereotype.Service;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 会员类
@@ -329,5 +322,14 @@ public interface MarketingMembersMapper extends BaseMapper<MarketingMembers> {
     @Select("SELECT provinceName name, COUNT(ProvinceName) value FROM marketing_members WHERE RegistDate >= #{startTime} AND RegistDate < #{endTime} AND State <> 2 AND ProvinceName <> '' AND ProvinceName IS NOT NULL GROUP BY ProvinceName")
     Set<PieChartVo> statisticArea(@Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
+    @Select({
+            "select",
+            "Id, WxName, Openid, Mobile, UserId, UserName, Sex as sexStr, Birthday, ProvinceCode, CountyCode, ",
+            "CityCode, ProvinceName, CountyName, CityName, OrganizationId, CreateDate, UpdateDate, ",
+            "CustomerName, CustomerId, PCCcode, WechatHeadImgUrl, MemberType, State, DeviceType,HaveIntegral",
+            "from marketing_members",
+            "where OrganizationId = #{OrganizationId}"
+    })
+    List<MarketingMembers> getMarketingUserList(String OrganizationId);
 
 }

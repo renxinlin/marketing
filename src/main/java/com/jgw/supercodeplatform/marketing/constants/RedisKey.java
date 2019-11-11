@@ -19,4 +19,6 @@ public interface RedisKey {
 	 String ACTIVITY_PLATFORM_PREVIEW_PREFIX = "marketing:platform_preview:";
 
 	 String WECHAT_OPENID_INFO = "marketing:openid:info:";
+
+	 String CUSTOM_PRESTORE = "custom:prestore:";
 }
