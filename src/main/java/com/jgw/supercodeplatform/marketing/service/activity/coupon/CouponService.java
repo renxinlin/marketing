@@ -14,8 +14,10 @@ import java.util.stream.Collectors;
 
 import com.jgw.supercodeplatform.marketing.enums.market.*;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,28 +172,38 @@ public class CouponService {
 		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product
 		List<MarketingActivityProduct> marketingActivityProductList = productMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
-        StringBuffer sbatchIdBuffer = new StringBuffer();
+//        StringBuffer sbatchIdBuffer = new StringBuffer();
         if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
             marketingActivityProductList.forEach(marketingActivityProduct -> {
                 String sbatchIds = marketingActivityProduct.getSbatchId();
                 if (StringUtils.isNotBlank(sbatchIds)) {
-                    sbatchIdBuffer.append(",").append(sbatchIds);
+					String[] sbatchIdArray = sbatchIds.split(",");
+					for(String sbatchId : sbatchIdArray) {
+						SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+						sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+						sbatchUrlDto.initAllBusinessType();
+						sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+						sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+						sbatchUrlDto.setProductBatchId(marketingActivityProduct.getProductBatchId());
+						sbatchUrlDto.setProductId(marketingActivityProduct.getProductId());
+						deleteProductBatchList.add(sbatchUrlDto);
+					}
                 }
             });
         }
-		logger.info(marketingActivityProductList.size()+"得到sbatch:{}", sbatchIdBuffer);
-        if(sbatchIdBuffer.length() > 0) {
-            String sbatchIds = sbatchIdBuffer.substring(1);
-            String[] sbatchIdArray = sbatchIds.split(",");
-            for(String sbatchId : sbatchIdArray) {
-                SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
-                sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
-                sbatchUrlDto.initAllBusinessType();
-                sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
-                sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
-                deleteProductBatchList.add(sbatchUrlDto);
-            }
-        }
+//		logger.info(marketingActivityProductList.size()+"得到sbatch:{}", sbatchIdBuffer);
+//        if(sbatchIdBuffer.length() > 0) {
+//            String sbatchIds = sbatchIdBuffer.substring(1);
+//            String[] sbatchIdArray = sbatchIds.split(",");
+//            for(String sbatchId : sbatchIdArray) {
+//                SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+//                sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+//                sbatchUrlDto.initAllBusinessType();
+//                sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+//                sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+//                deleteProductBatchList.add(sbatchUrlDto);
+//            }
+//        }
 		/***************************************************/
 		// 返回主键
 		MarketingActivitySet activitySet = changeVoToDtoForMarketingActivitySet(addVO);
@@ -250,13 +262,12 @@ public class CouponService {
 			}
 			if(send) {
 				int businessType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
-				List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,businessType);
+				List<SbatchUrlDto> paramsList = commonService.getUrlToBatchDto(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,businessType);
 				// 绑定生码批次到url
-				String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
-				JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
-				Integer batchstate = bindBatchobj.getInteger("state");
-				if (null != batchstate && batchstate.intValue() != HttpStatus.SC_OK) {
-					throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, HttpStatus.SC_INTERNAL_SERVER_ERROR);
+				RestResult bindBatchobj = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(paramsList);
+				Integer batchstate = bindBatchobj.getState();
+				if (ObjectUtils.notEqual(batchstate, HttpStatus.SC_OK)) {
+					throw new SuperCodeException("请求码管理生码批次和url错误：" + JSON.toJSONString(bindBatchobj), HttpStatus.SC_INTERNAL_SERVER_ERROR);
 				}
 			}
 			Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,

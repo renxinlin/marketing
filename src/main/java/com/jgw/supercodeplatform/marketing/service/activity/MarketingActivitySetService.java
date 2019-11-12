@@ -31,9 +31,11 @@ import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.ReceivingAndWinningPageVO;
 import com.jgw.supercodeplatform.pojo.cache.AccountCache;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -257,22 +259,32 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			marketingActivityProductList.forEach(marketingActivityProduct -> {
 				String sbatchIds = marketingActivityProduct.getSbatchId();
 				if (StringUtils.isNotBlank(sbatchIds)) {
-					sbatchIdBuffer.append(",").append(sbatchIds);
+					String[] sbatchIdArray = sbatchIds.split(",");
+					for(String sbatchId : sbatchIdArray) {
+						SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+						sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+						sbatchUrlDto.initAllBusinessType();
+						sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+						sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+						sbatchUrlDto.setProductId(marketingActivityProduct.getProductId());
+						sbatchUrlDto.setProductBatchId(marketingActivityProduct.getProductBatchId());
+						deleteProductBatchList.add(sbatchUrlDto);
+					}
 				}
 			});
 		}
-		if(sbatchIdBuffer.length() > 0) {
-			String sbatchIds = sbatchIdBuffer.substring(1);
-			String[] sbatchIdArray = sbatchIds.split(",");
-			for(String sbatchId : sbatchIdArray) {
-				SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
-				sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
-				sbatchUrlDto.initAllBusinessType();
-				sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
-				sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
-				deleteProductBatchList.add(sbatchUrlDto);
-			}
-		}
+//		if(sbatchIdBuffer.length() > 0) {
+//			String sbatchIds = sbatchIdBuffer.substring(1);
+//			String[] sbatchIdArray = sbatchIds.split(",");
+//			for(String sbatchId : sbatchIdArray) {
+//				SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+//				sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+//				sbatchUrlDto.initAllBusinessType();
+//				sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+//				sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+//				deleteProductBatchList.add(sbatchUrlDto);
+//			}
+//		}
 		/***************************************************/
 		mSetMapper.update(mActivitySet);
 		mPrizeTypeMapper.deleteByActivitySetId(activitySetId);
@@ -468,8 +480,8 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				bindUrl = marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL;
 			}
 			JSONArray arr = obj.getJSONArray("results");
-			List<Map<String, Object>> paramsList = commonService.getUrlToBatchParam(arr,bindUrl,
-					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType(), referenceRole);
+			List<SbatchUrlDto> paramsList = commonService.getUrlToBatchDto(arr,bindUrl,
+					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
 			if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
 				RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
 				logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
@@ -478,11 +490,10 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				}
 			}
 			// 绑定生码批次到url
-			String bindbatchBody = commonService.bindUrlToBatch(paramsList, superToken);
-			JSONObject bindBatchobj = JSONObject.parseObject(bindbatchBody);
-			Integer batchstate = bindBatchobj.getInteger("state");
-			if (null == batchstate || batchstate.intValue() != 200) {
-				throw new SuperCodeException("请求码管理生码批次和url错误：" + bindbatchBody, 500);
+			RestResult bindBatchobj = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(paramsList);
+			Integer batchstate = bindBatchobj.getState();
+			if (ObjectUtils.notEqual(batchstate, HttpStatus.SC_OK)) {
+				throw new SuperCodeException("请求码管理生码批次和url错误：" + JSON.toJSONString(bindBatchobj), 500);
 			}
 			Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,bindUrl,
 					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
@@ -531,7 +542,6 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
 		}
-		StringBuffer sbatchIdBuffer = new StringBuffer();
 		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product
 		List<MarketingActivityProduct> marketingActivityProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
@@ -540,22 +550,32 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			marketingActivityProductList.forEach(marketingActivityProduct -> {
 				String sbatchIds = marketingActivityProduct.getSbatchId();
 				if (StringUtils.isNotBlank(sbatchIds)) {
-					sbatchIdBuffer.append(",").append(sbatchIds);
+					String[] sbatchIdArray = sbatchIds.split(",");
+					for(String sbatchId : sbatchIdArray) {
+						SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+						sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+						sbatchUrlDto.initAllBusinessType();
+						sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+						sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType() + "");
+						sbatchUrlDto.setProductBatchId(marketingActivityProduct.getProductBatchId());
+						sbatchUrlDto.setProductId(marketingActivityProduct.getProductId());
+						deleteProductBatchList.add(sbatchUrlDto);
+					}
 				}
 			});
 		}
-		if(sbatchIdBuffer.length() > 0) {
-			String sbatchIds = sbatchIdBuffer.substring(1);
-			String[] sbatchIdArray = sbatchIds.split(",");
-			for(String sbatchId : sbatchIdArray) {
-				SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
-				sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
-				sbatchUrlDto.initAllBusinessType();
-				sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
-				sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
-				deleteProductBatchList.add(sbatchUrlDto);
-			}
-		}
+//		if(sbatchIdBuffer.length() > 0) {
+//			String sbatchIds = sbatchIdBuffer.substring(1);
+//			String[] sbatchIdArray = sbatchIds.split(",");
+//			for(String sbatchId : sbatchIdArray) {
+//				SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+//				sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+//				sbatchUrlDto.initAllBusinessType();
+//				sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+//				sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+//				deleteProductBatchList.add(sbatchUrlDto);
+//			}
+//		}
 		mSetMapper.insert(activitySet);
 		mList.forEach(prd -> prd.setActivitySetId(activitySet.getId()));
 		saveProductBatchs(productAndBatchGetCodeMOs, deleteProductBatchList, mList, referenceRole);
