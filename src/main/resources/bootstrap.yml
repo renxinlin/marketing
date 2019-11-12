@@ -21,11 +21,4 @@ spring:
     sampler:
       probability: 1.0
 
-eureka: 
-  instance:
-    prefer-ip-address: true
-    non-secure-port: ${server.port}
-  client:
-    service-url: 
-      defaultZone: http://192.168.20.220:8761/eureka/
 
