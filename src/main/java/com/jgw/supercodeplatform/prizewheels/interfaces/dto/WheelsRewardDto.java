@@ -20,6 +20,7 @@ import java.util.List;
 @ApiModel("大转盘奖励")
 public class WheelsRewardDto {
 
+
     /**
      * 奖励类型:1 虚拟2 实物
      */
