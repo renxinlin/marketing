@@ -13,7 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.dto.WxSignPram;
+import com.jgw.supercodeplatform.marketing.dto.common.CustomPreStore;
 import com.jgw.supercodeplatform.marketing.dto.coupon.UrlParam;
 import com.jgw.supercodeplatform.marketing.vo.activity.WxSignVo;
 import com.jgw.supercodeplatform.marketing.vo.common.WxMerchants;
@@ -53,6 +56,9 @@ public class CommonController extends CommonUtil {
 	protected static Logger logger = LoggerFactory.getLogger(CommonController.class);
     @Autowired
     private CommonService service;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Autowired
     private MarketingWxMerchantsService marketingWxMerchantsService;
@@ -240,6 +246,27 @@ public class CommonController extends CommonUtil {
         WxMerchants wxMerchants = new WxMerchants();
         wxMerchants.setAppid(mWxMerchants.getMchAppid());
         return RestResult.successWithData(wxMerchants);
+    }
+
+    @ApiOperation("用户自定义根据码和码制预存数据")
+    @PostMapping("/custom/prestore")
+    public RestResult<Void> customPrestore(@RequestBody @Valid CustomPreStore customPreStore) {
+        String key = RedisKey.CUSTOM_PRESTORE + customPreStore.getCodeType() + ":" + customPreStore.getCode() + ":" + customPreStore.getStoreType();
+        redisUtil.set(key, customPreStore.getStoreData(), 3600L);
+        return RestResult.success();
+    }
+
+    @ApiOperation("用户获取预存信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "codeType", paramType = "query",  value = "码制", required = true),
+            @ApiImplicitParam(name = "code", paramType = "query",  value = "码", required = true),
+            @ApiImplicitParam(name = "storeType", paramType = "query",  value = "存储类型", required = true),
+    })
+    @GetMapping("/custom/getstore")
+    public RestResult<String> getCustomStore(@RequestParam String codeType, @RequestParam String code, @RequestParam Integer storeType){
+        String key = RedisKey.CUSTOM_PRESTORE + codeType + ":" + code + ":" + storeType;
+        String data = redisUtil.get(key);
+        return RestResult.successDefault(data);
     }
 
 }

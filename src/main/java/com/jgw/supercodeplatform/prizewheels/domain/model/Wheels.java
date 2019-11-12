@@ -115,6 +115,7 @@ public class Wheels implements Serializable {
 
         Asserts.check(startTime !=null ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
         Asserts.check(endTime !=null ,ErrorCodeEnum.NULL_ERROR.getErrorMessage());
+        Asserts.check(startTime.before(endTime) ,"起始时间应早于结束时间");
 
         if(activityStatus == null){
             activityStatus =ActivityStatusConstant.UP;
