@@ -21,9 +21,4 @@ spring:
     sampler:
       probability: 1.0
 
-eureka: 
-  instance:
-    prefer-ip-address: true
-    non-secure-port: ${server.port}
-
 
