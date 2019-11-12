@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -16,6 +17,7 @@ public class MarketingMembers {
     private String userId;//用户Id
     private String userName;//用户姓名
     private Byte sex;//性别
+    @TableField(exist=false)
     private String sexStr;//性别
     private String birthday;//生日
     private String provinceCode;// 省编码
