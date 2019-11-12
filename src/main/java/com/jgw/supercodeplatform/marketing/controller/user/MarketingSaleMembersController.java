@@ -7,8 +7,6 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
-import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingUserVO;
 import com.jgw.supercodeplatform.marketing.dto.SaleMemberBatchStatusParam;
@@ -24,9 +22,11 @@ import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -44,8 +44,6 @@ public class MarketingSaleMembersController extends CommonUtil {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Value("{\"id\":\"序号\",\"mobile\":\"手机\", \"userId\":\"用户Id\",\"userName\":\"用户姓名\",\"sex\":\"性别\", \"birthday\":\"生日\",\"provinceName\":\"省名称\",\"countyName\":\"县名称\",\"cityName\":\"市名称\",\"createDate\":\"建立日期\",\"updateDate\":\"修改日期\",\"customerName\":\"门店名称\",\"customerId\":\"门店编码\",\"pCCcode\":\"省市区前端编码\",\"memberType\":\"类型\",\"state\":\"用户状态\",\"deviceType\":\"扫码设备类型\",\"haveIntegral\":\"添加可用积分\"}")
-    private String MARKET_SELEMEMBERS_EXCEL_FIELD_MAP;
 
     @RequestMapping(value = "/list",method = RequestMethod.GET)
     @ApiOperation(value = "销售员列表", notes = "")
@@ -174,21 +172,6 @@ public class MarketingSaleMembersController extends CommonUtil {
         return new RestResult(200, "success", null);
     }
 
-    @GetMapping(value = "/exportSalemembers")
-    @ApiOperation(value = "导出导购员资料")
-    @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "token",name="super-token")})
-    public void exportSalemembers(HttpServletResponse response) throws Exception {
-        // 查询组织导购员列表
-        List<MarketingUser> list=service.getSalerInfoList();
-        // step-3:处理excel字段映射 转换excel {filedMap:[ {key:英文} ,  {value:中文} ]} 有序
-        Map filedMap = null;
-        try {
-            filedMap = JsonToMapUtil.toMap(MARKET_SELEMEMBERS_EXCEL_FIELD_MAP);
-        } catch (Exception e) {
-            throw new SuperCodeException("导购员资料表头解析异常", 500);
-        }
-        // step-4: 导出前端
-        ExcelUtils.listToExcel(list, filedMap, "导购员资料", response);
-    }
+
 
 }
