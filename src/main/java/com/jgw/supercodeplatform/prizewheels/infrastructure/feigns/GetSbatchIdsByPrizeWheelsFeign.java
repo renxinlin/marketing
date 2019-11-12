@@ -23,6 +23,7 @@ public interface GetSbatchIdsByPrizeWheelsFeign {
 
 
 
-    @RequestMapping(value = "/code/sbatchUrl/addSbatchUrl",method = RequestMethod.POST)
+//    @RequestMapping(value = "/code/sbatchUrl/addSbatchUrl",method = RequestMethod.POST)
+    @RequestMapping(value = "/code/manager/batch/url/add/list",method = RequestMethod.POST)
     RestResult bindingUrlAndBizType(List<SbatchUrlDto> sbatchUrlDtoList);
 }
