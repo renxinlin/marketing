@@ -19,13 +19,12 @@ import java.util.Date;
 
 /**
  * 该领域服务处理大转盘活动到老活动的业务
+ *
  */
 @Service
 public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainService {
 
 
-    @Autowired
-    private WheelsMapper wheelsMapper;
 
 
     @Autowired
@@ -37,15 +36,13 @@ public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainSe
 
     public ActivitySet formPrizeWheelsToOldActivity(Wheels wheels,Integer autoFetch){
         ActivitySet activitySet = new ActivitySet();
-
-        WheelsPojo prizeWheels = wheelsMapper.selectById(wheels.getId());
-        activitySet.setActivityEndDate(wheels.getEndTime());
+         activitySet.setActivityEndDate(wheels.getEndTime());
         activitySet.setActivityId(ActivityTypeConstant.wheels.longValue());
         activitySet.setActivityStartDate(wheels.getStartTime());
         activitySet.setActivityTitle(wheels.getTitle1());
         activitySet.setAutoFetch(autoFetch);
         activitySet.setActivityDesc("大转盘活动");
-        activitySet.setId1(prizeWheels.getId());
+        activitySet.setId1(wheels.getId());
         activitySet.setActivityStatus(wheels.getActivityStatus());
         activitySet.setUpdateDate(new Date());
         activitySet.setUpdateUserId(commonUtil.getUserLoginCache().getAccountId());
