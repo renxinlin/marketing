@@ -2,7 +2,7 @@ package com.jgw.supercodeplatform.burypoint.prizewheels.service.set;
 
 import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointTemplateTbMapper;
 import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointTemplateTb;
-import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,13 +17,16 @@ public class BuryPointTemplateTbService {
     @Autowired
     private BuryPointTemplateTbMapper buryPointTemplateTbMapper;
 
-    public void buryPointTemplateTb(String templateId, H5LoginVO user){
+    @Autowired
+    private CommonUtil commonUtil;
+
+    public void buryPointTemplateTb(String templateId){
         BuryPointTemplateTb buryPointTemplateTb =new BuryPointTemplateTb();
-        buryPointTemplateTb.setCreateUser(user.getMemberName());
-        buryPointTemplateTb.setCreateUserId(String.valueOf(user.getMemberId()));
+        buryPointTemplateTb.setCreateUser(commonUtil.getUserLoginCache().getUserName());
+        buryPointTemplateTb.setCreateUserId(commonUtil.getUserLoginCache().getUserId());
         buryPointTemplateTb.setCreateDate(new Date());
-        buryPointTemplateTb.setOrganizationId(user.getOrganizationId());
-        buryPointTemplateTb.setOrganizationName(user.getOrganizationName());
+        buryPointTemplateTb.setOrganizationId(commonUtil.getOrganizationId());
+        buryPointTemplateTb.setOrganizationName(commonUtil.getOrganizationName());
         buryPointTemplateTb.setTemplateId(templateId);
         try{
             buryPointTemplateTbMapper.insert(buryPointTemplateTb);

@@ -32,7 +32,7 @@ public class MarketingMembersController extends CommonUtil {
 
     @RequestMapping(value = "/list",method = RequestMethod.GET)
     @ApiOperation(value = "会员列表", notes = "")
-    @ApiImplicitParam(name = "sudper-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<PageResults<List<Map<String, Object>>>> memberList(MarketingMembersListParam param) throws Exception {
         return new RestResult(200, "success", marketingMembersService.listSearchViewLike(param));
     }

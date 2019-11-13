@@ -71,9 +71,9 @@ public class BuryPointDataSetController extends SalerCommonController {
 
     @PostMapping(value = "/addBTemplate")
     @ApiOperation(value = "B端配置模板相关埋点数据")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult buryPointTemplateTbc(@RequestParam String templateId,@ApiIgnore H5LoginVO user){
-        buryPointTemplateTbService.buryPointTemplateTb(templateId,user);
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointTemplateTbc(@RequestParam String templateId){
+        buryPointTemplateTbService.buryPointTemplateTb(templateId);
         return success();
     }
 
@@ -95,9 +95,9 @@ public class BuryPointDataSetController extends SalerCommonController {
 
     @PostMapping(value = "/addWxTb")
     @ApiOperation(value = "B端配置公众号埋点数据")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult buryPointWxMerchantsTb(@RequestParam String WxPicture, @ApiIgnore H5LoginVO user){
-        buryPointWxMerchantsTbService.buryPointWxMerchantsTb(WxPicture,user);
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointWxMerchantsTb(@RequestParam String WxPicture){
+        buryPointWxMerchantsTbService.buryPointWxMerchantsTb(WxPicture);
         return success();
     }
 

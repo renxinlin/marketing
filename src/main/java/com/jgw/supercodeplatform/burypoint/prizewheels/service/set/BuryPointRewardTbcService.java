@@ -37,7 +37,7 @@ public class BuryPointRewardTbcService {
         buryPointWheelsClickTc.setCreateDate(new Date());
         buryPointWheelsClickTc.setOrganizationId(user.getOrganizationId());
         buryPointWheelsClickTc.setOrganizationName(user.getOrganizationName());
-        buryPointWheelsClickTc.setActivityId(buryPointWheelsClickTcDto.getActivityId());
+        buryPointWheelsClickTc.setWheelsId(buryPointWheelsClickTcDto.getWheelsId());
         try{
             buryPointWheelsClickTcMapper.insert(buryPointWheelsClickTc);
         }catch (Exception e) {

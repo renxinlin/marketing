@@ -2,7 +2,7 @@ package com.jgw.supercodeplatform.burypoint.prizewheels.service.set;
 
 import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointWxMerchantsTbMapper;
 import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointWxMerchantsTb;
-import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +16,17 @@ import java.util.Date;
 public class BuryPointWxMerchantsTbService {
     @Autowired
     private BuryPointWxMerchantsTbMapper buryPointWxMerchantsTbMapper;
-    
-    public void buryPointWxMerchantsTb(String wxPicture, H5LoginVO user){
+
+    @Autowired
+    private CommonUtil commonUtil;
+
+    public void buryPointWxMerchantsTb(String wxPicture){
         BuryPointWxMerchantsTb buryPointWxMerchantsTb=new BuryPointWxMerchantsTb();
-        buryPointWxMerchantsTb.setCreateUser(user.getMemberName());
-        buryPointWxMerchantsTb.setCreateUserId(String.valueOf(user.getMemberId()));
+        buryPointWxMerchantsTb.setCreateUser(commonUtil.getUserLoginCache().getUserName());
+        buryPointWxMerchantsTb.setCreateUserId(commonUtil.getUserLoginCache().getUserId());
         buryPointWxMerchantsTb.setCreateDate(new Date());
-        buryPointWxMerchantsTb.setOrganizationId(user.getOrganizationId());
-        buryPointWxMerchantsTb.setOrganizationName(user.getOrganizationName());
+        buryPointWxMerchantsTb.setOrganizationId(commonUtil.getOrganizationId());
+        buryPointWxMerchantsTb.setOrganizationName(commonUtil.getOrganizationName());
         buryPointWxMerchantsTb.setWxPicture(wxPicture);
         try {
             buryPointWxMerchantsTbMapper.insert(buryPointWxMerchantsTb);

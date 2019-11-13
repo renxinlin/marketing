@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
+import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -25,10 +26,7 @@ import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingWxMemberMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
+import com.jgw.supercodeplatform.marketing.dto.members.*;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
@@ -36,6 +34,7 @@ import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.apache.commons.lang.StringUtils;
@@ -109,6 +108,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	@Autowired
 	private CommonUtil commonUtil;
+
+	@Autowired
+	private CommonService commonService;
 
 	@Override
 	protected List<Map<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
@@ -891,6 +893,36 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			return true;
 		}).collect(Collectors.toList());
 		return list;
+	}
+
+	/**
+	 * 绑定手机号
+	 * @param marketingMembersBindMobileParam
+	 * @throws SuperCodeException
+	 */
+	public RestResult bindMobile(MarketingMembersBindMobileParam marketingMembersBindMobileParam) throws SuperCodeException{
+		if(StringUtils.isBlank(marketingMembersBindMobileParam.getMobile())){
+			throw new SuperCodeException("手机不存在");
+		}
+
+		if(StringUtils.isBlank(marketingMembersBindMobileParam.getVerificationCode())){
+			throw new SuperCodeException("验证码不存在");
+		}
+		boolean success = commonService.validateMobileCode(marketingMembersBindMobileParam.getMobile(), marketingMembersBindMobileParam.getVerificationCode());
+		if(!success){
+			throw new SuperCodeException("验证码校验失败");
+		}
+		MarketingMembers marketingMembers=new MarketingMembers();
+		marketingMembers.setId(marketingMembersBindMobileParam.getId());
+		marketingMembers.setMobile(marketingMembersBindMobileParam.getMobile());
+		Integer result=marketingMembersMapper.updateById(marketingMembers);
+		if (result.equals(BindConstants.RESULT)){
+			MarketingMembers newMarketingMembers=marketingMembersMapper.selectById(marketingMembersBindMobileParam.getId());
+			newMarketingMembers.setHaveIntegral(newMarketingMembers.getHaveIntegral()+BindConstants.SUCCESS);
+			marketingMembersMapper.updateById(newMarketingMembers);
+			return RestResult.success();
+		}
+		return RestResult.failDefault("绑定失败");
 	}
 }
 

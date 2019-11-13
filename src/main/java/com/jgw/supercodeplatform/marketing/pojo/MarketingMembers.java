@@ -40,6 +40,8 @@ public class MarketingMembers {
     private Date integralReceiveDate; // 最新一次积分领取时间
     private Byte userSource;// 注册来源1招募会员
     private Byte deviceType;// 设备来源
+    private String loginName;//2.0登录用户名
+    private String password;//2.0登录用户密码
 
     public String getCityCode() {
         return cityCode;
@@ -272,5 +274,21 @@ public class MarketingMembers {
     }
     public String getSexStr(){
         return sexStr;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

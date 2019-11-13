@@ -73,6 +73,18 @@ public class MarketingUser {
     private Byte deviceType;
 
     private Integer haveIntegral;
+    /** 累计积分*/
+    private Integer totalIntegral;
+    /** 来源1商城2积分网站*/
+    private Byte source;
+    /**
+     * 2.0登录用户名
+     */
+    private String loginName;
+    /**
+     * 2.0登录用户密码
+     */
+    private String password;
 
     public Integer getHaveIntegral() {
         return haveIntegral;
@@ -248,5 +260,37 @@ public class MarketingUser {
 
     public void setDeviceType(Byte deviceType) {
         this.deviceType = deviceType;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Integer getTotalIntegral() {
+        return totalIntegral;
+    }
+
+    public void setTotalIntegral(Integer totalIntegral) {
+        this.totalIntegral = totalIntegral;
+    }
+
+    public Byte getSource() {
+        return source;
+    }
+
+    public void setSource(Byte source) {
+        this.source = source;
     }
 }
