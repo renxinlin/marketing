@@ -55,7 +55,7 @@ public class UserLoginController {
         return commonService.sendPhoneCode(mobile);
     }
 
-    @GetMapping("/bind")
+    @PostMapping("/bind")
     @ApiOperation(value = "导购员绑定手机号", notes = "2.0绑定手机号")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult bind(@RequestBody MarketingSaleUserBindMobileParam marketingSaleUserBindMobileParam) throws SuperCodeException {
