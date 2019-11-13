@@ -1,9 +1,6 @@
 package com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author fangshiping
@@ -18,7 +15,7 @@ public class BuryPointRewardTbcDto {
 
     private String rewardName;
 
-    private String activityId;
+    private String wheelsId;
 
     private String thirdUrl;
 }

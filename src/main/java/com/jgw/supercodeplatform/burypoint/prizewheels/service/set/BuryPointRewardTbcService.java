@@ -57,7 +57,7 @@ public class BuryPointRewardTbcService {
         buryPointRewardTbc.setCreateDate(new Date());
         buryPointRewardTbc.setOrganizationId(user.getOrganizationId());
         buryPointRewardTbc.setOrganizationName(user.getOrganizationName());
-        buryPointRewardTbc.setActivityId(buryPointRewardTbcDto.getActivityId());
+        buryPointRewardTbc.setWheelsId(buryPointRewardTbcDto.getWheelsId());
         buryPointRewardTbc.setRewardId(buryPointRewardTbcDto.getRewardId());
         buryPointRewardTbc.setRewardName(buryPointRewardTbcDto.getRewardName());
         buryPointRewardTbc.setThirdUrl(buryPointRewardTbcDto.getThirdUrl());

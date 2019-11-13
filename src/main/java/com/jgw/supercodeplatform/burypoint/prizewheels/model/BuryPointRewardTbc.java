@@ -52,8 +52,8 @@ public class BuryPointRewardTbc {
     @TableField("CreateDate")
     private Date createDate;
 
-    @TableField("ActivityId")
-    private String activityId;
+    @TableField("WheelsId")
+    private String wheelsId;
 
     @TableField("ThirdUrl")
     private String thirdUrl;
