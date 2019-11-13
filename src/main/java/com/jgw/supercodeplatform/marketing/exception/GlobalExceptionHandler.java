@@ -193,6 +193,19 @@ public class GlobalExceptionHandler {
 		return restResult;
 	}
 
+
+
+
+	@ResponseStatus(HttpStatus.OK)
+	@ExceptionHandler(PrizeWheelsWeixinPayException.class)
+	public RestResult bizException(PrizeWheelsWeixinPayException e) {
+		logger.error("运行时异常：" + e.getClass().getName(), e);
+		HashMap<Object, Object> weixinPayError = new HashMap<>();
+		weixinPayError.put("weixinPayError",1);
+		RestResult restResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(),  e.getMessage(),weixinPayError );
+		return restResult;
+	}
+
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(IllegalStateException.class)
 	public RestResult bizException(IllegalStateException e) {
