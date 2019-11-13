@@ -56,7 +56,7 @@ public class MemberLoginController {
         return commonService.sendPhoneCode(mobile);
     }
 
-    @GetMapping("/bind")
+    @PostMapping("/bind")
     @ApiOperation(value = "会员绑定手机号", notes = "2.0绑定手机号")
     public RestResult bind(@RequestBody MarketingMembersBindMobileParam marketingMembersBindMobileParam) throws SuperCodeException {
         return marketingMembersService.bindMobile(marketingMembersBindMobileParam);
