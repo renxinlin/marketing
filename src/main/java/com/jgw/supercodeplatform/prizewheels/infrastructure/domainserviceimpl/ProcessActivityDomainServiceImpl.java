@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 /**
+ *  todo formPrizeWheelsToOldActivity上提到领域层 commonUtil拉到应用层
  * 该领域服务处理大转盘活动到老活动的业务
  *
  */
@@ -29,6 +30,8 @@ public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainSe
 
     @Autowired
     private ActivitySetMapper setMapper;
+
+
 
 
     @Autowired

@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.prizewheels.domain.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
+import com.jgw.supercodeplatform.marketing.exception.PrizeWheelsWeixinPayException;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
@@ -220,7 +221,9 @@ public class WheelsRewardDomainService {
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("大转盘红包支付失败.........................finalReward{},user{}",finalReward,JSONObject.toJSONString(user));
-                throw new BizRuntimeException("微信支付，支付失败啦！");
+//                throw new BizRuntimeException("微信支付，支付失败啦！");
+                // restresult结果给前端打标 异常内容产品提供
+                throw new PrizeWheelsWeixinPayException("支付失败=未中奖");
             }
             WheelsRecord wheelsRecord = new WheelsRecord();
             // TODO money 奖励记录等产品提出需求，那些字段
