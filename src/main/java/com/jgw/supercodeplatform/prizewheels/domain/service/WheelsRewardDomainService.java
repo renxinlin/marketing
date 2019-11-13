@@ -217,7 +217,7 @@ public class WheelsRewardDomainService {
             double rewardMoneyForUser = MoneyCalculator.buildRewardMoney(finalReward);
             try {
                 // (int)(rewardMoneyForUser*100)微信精度分 奖项精度元
-                wxPayService.qiyePaySync(user.getOpenid(), CallBackConstant.serverIp,(int)(rewardMoneyForUser*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
+                wxPayService.qiyePaySyncWithResend(user.getOpenid(), CallBackConstant.serverIp,(int)(rewardMoneyForUser*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId(),1);
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("大转盘红包支付失败.........................finalReward{},user{}",finalReward,JSONObject.toJSONString(user));
