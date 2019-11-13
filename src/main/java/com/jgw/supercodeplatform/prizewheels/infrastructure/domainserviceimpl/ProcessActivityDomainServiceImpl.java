@@ -15,6 +15,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
  * 该领域服务处理大转盘活动到老活动的业务
  */
@@ -37,15 +39,15 @@ public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainSe
         ActivitySet activitySet = new ActivitySet();
 
         WheelsPojo prizeWheels = wheelsMapper.selectById(wheels.getId());
-        activitySet.setActivityEndDate(prizeWheels.getEndTime());
+        activitySet.setActivityEndDate(wheels.getEndTime());
         activitySet.setActivityId(ActivityTypeConstant.wheels.longValue());
-        activitySet.setActivityStartDate(prizeWheels.getStartTime());
-        activitySet.setActivityTitle(prizeWheels.getTitle1());
+        activitySet.setActivityStartDate(wheels.getStartTime());
+        activitySet.setActivityTitle(wheels.getTitle1());
         activitySet.setAutoFetch(autoFetch);
         activitySet.setActivityDesc("大转盘活动");
         activitySet.setId1(prizeWheels.getId());
         activitySet.setActivityStatus(wheels.getActivityStatus());
-        activitySet.setUpdateDate(prizeWheels.getUpdateDate() == null ? prizeWheels.getCreateDate():prizeWheels.getUpdateDate());
+        activitySet.setUpdateDate(new Date());
         activitySet.setUpdateUserId(commonUtil.getUserLoginCache().getAccountId());
         activitySet.setUpdateUserName(commonUtil.getUserLoginCache().getUserName());
         activitySet.setOrganizatioIdlName(commonUtil.getOrganizationName());
