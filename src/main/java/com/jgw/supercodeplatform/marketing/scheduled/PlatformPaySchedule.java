@@ -52,7 +52,7 @@ public class PlatformPaySchedule {
                     String  partner_trade_no = order.getPartnerTradeNo();
                     String organizationId = order.getOrganizationId();
                     payService.qiyePayAsycPlatform(openid, spbill_create_ip, amount, partner_trade_no, organizationId);
-                };
+                }
             }
 
         } catch (Exception e){
