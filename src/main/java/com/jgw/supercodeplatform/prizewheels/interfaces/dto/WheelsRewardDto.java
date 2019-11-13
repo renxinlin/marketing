@@ -20,11 +20,12 @@ import java.util.List;
 @ApiModel("大转盘奖励")
 public class WheelsRewardDto {
 
+
     /**
      * 奖励类型:1 虚拟2 实物
      */
     @NotNull @Min(1) @Max(3)
-    @ApiModelProperty("奖励类型:1 虚拟2 实物 3 红包")    private Integer type;
+    @ApiModelProperty("奖励类型:1 虚拟的2 实物 3 红包 ")    private Integer type;
 
 
     @NotNull(message = "奖励概率不可为空") @Min(0) @Max(100)

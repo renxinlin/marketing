@@ -20,6 +20,8 @@ import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity;
 import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity.OuterCode;
 import com.jgw.supercodeplatform.marketing.enums.CodeTypeEnum;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.client.transport.TransportClient;
@@ -170,6 +172,35 @@ public class CommonService {
 
 	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
 		return getUrlToBatchParam(array, url, businessType, null);
+	}
+
+	/**
+	 * 拼接绑定信息
+	 * @param array
+	 * @param url
+	 * @param businessType
+	 * @return
+	 */
+	public List<SbatchUrlDto> getUrlToBatchDto(JSONArray array, String url, int businessType) {
+		List<SbatchUrlDto> bindBatchList=new ArrayList<>();
+		for(int i=0;i<array.size();i++) {
+			JSONObject batchobj=array.getJSONObject(i);
+			String productId=batchobj.getString("productId");
+			String productBatchId=batchobj.getString("productBatchId");
+			Long codeTotal=batchobj.getLong("codeTotal");
+			String codeBatch=batchobj.getString("globalBatchId");
+			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+				throw new SuperCodeExtException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
+			}
+			SbatchUrlDto batchUrlDto = new SbatchUrlDto();
+			batchUrlDto.setBatchId(Long.valueOf(codeBatch));
+			batchUrlDto.setBusinessType(businessType);
+			batchUrlDto.setUrl(url);
+			batchUrlDto.setProductId(productId);
+			batchUrlDto.setProductBatchId(productBatchId);
+			bindBatchList.add(batchUrlDto);
+		}
+		return bindBatchList;
 	}
 
     /**

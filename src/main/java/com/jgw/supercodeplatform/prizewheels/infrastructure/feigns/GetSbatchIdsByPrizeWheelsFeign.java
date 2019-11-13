@@ -18,11 +18,13 @@ public interface GetSbatchIdsByPrizeWheelsFeign {
     RestResult<Object> getSbatchIds(List<GetBatchInfoDto> getBatchInfoDtoList);
 
 
-    @RequestMapping(value = "/code/sbatchUrl/delete/one",method = RequestMethod.POST)
+//    @RequestMapping(value = "/code/sbatchUrl/delete/one",method = RequestMethod.POST)
+    @RequestMapping(value = "/code/manager/batch/url/delete/list",method = RequestMethod.POST)
     RestResult<Object> removeOldProduct(List<SbatchUrlUnBindDto> sbatchUrlDtoList);
 
 
 
-    @RequestMapping(value = "/code/sbatchUrl/addSbatchUrl",method = RequestMethod.POST)
+//    @RequestMapping(value = "/code/sbatchUrl/addSbatchUrl",method = RequestMethod.POST)
+    @RequestMapping(value = "/code/manager/batch/url/add/list",method = RequestMethod.POST)
     RestResult bindingUrlAndBizType(List<SbatchUrlDto> sbatchUrlDtoList);
 }

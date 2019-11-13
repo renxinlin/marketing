@@ -22,7 +22,7 @@ public class WheelsRewardUpdateDto {
      * 奖励类型:1 虚拟2 实物
      */
     @NotNull
-    @Min(1) @Max(2)
+    @Min(1) @Max(3)
     @ApiModelProperty("奖励类型:1 虚拟2 实物 3红包")    private Integer type;
 
 
