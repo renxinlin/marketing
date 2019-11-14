@@ -38,6 +38,7 @@ public class BuryPointRewardTbcService {
         buryPointWheelsClickTc.setOrganizationId(user.getOrganizationId());
         buryPointWheelsClickTc.setOrganizationName(user.getOrganizationName());
         buryPointWheelsClickTc.setWheelsId(buryPointWheelsClickTcDto.getWheelsId());
+        buryPointWheelsClickTc.setMemberType(user.getMemberType());
         try{
             buryPointWheelsClickTcMapper.insert(buryPointWheelsClickTc);
         }catch (Exception e) {
@@ -61,6 +62,7 @@ public class BuryPointRewardTbcService {
         buryPointRewardTbc.setRewardId(buryPointRewardTbcDto.getRewardId());
         buryPointRewardTbc.setRewardName(buryPointRewardTbcDto.getRewardName());
         buryPointRewardTbc.setThirdUrl(buryPointRewardTbcDto.getThirdUrl());
+        buryPointRewardTbc.setMemberType(user.getMemberType());
         try {
             buryPointRewardTbcMapper.insert(buryPointRewardTbc);
         } catch (Exception e) {

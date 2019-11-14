@@ -45,4 +45,7 @@ public class BuryPointTemplateTc {
 
     @TableField("TemplateId")
     private String templateId;
+
+    @TableField("MemberType")
+    private Byte memberType;
 }

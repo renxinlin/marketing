@@ -25,6 +25,7 @@ public class BuryPointPageViewTcService {
         buryPointPageViewTc.setOrganizationId(user.getOrganizationId());
         buryPointPageViewTc.setOrganizationName(user.getOrganizationName());
         buryPointPageViewTc.setDevice(device);
+        buryPointPageViewTc.setMemberType(user.getMemberType());
         try {
             buryPointPageViewTcMapper.insert(buryPointPageViewTc);
         } catch (Exception e) {

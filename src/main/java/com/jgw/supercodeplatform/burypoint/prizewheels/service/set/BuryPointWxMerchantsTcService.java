@@ -27,6 +27,7 @@ public class BuryPointWxMerchantsTcService {
         buryPointWxMerchantsTc.setOrganizationName(user.getOrganizationName());
         buryPointWxMerchantsTc.setMchAppid(buryPointWxMerchantsTcDto.getMchAppid());
         buryPointWxMerchantsTc.setMerchantName(buryPointWxMerchantsTcDto.getMerchantName());
+        buryPointWxMerchantsTc.setMemberType(user.getMemberType());
         try {
             buryPointWxMerchantsTcMapper.insert(buryPointWxMerchantsTc);
         } catch (Exception e) {

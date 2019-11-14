@@ -28,6 +28,7 @@ public class BuryPointOuterChainTcService {
         buryPointOuterChainTc.setThirdUrl(buryPointOuterChainTcDto.getThirdUrl());
         buryPointOuterChainTc.setWheelsId(buryPointOuterChainTcDto.getWheelsId());
         buryPointOuterChainTc.setCreateDate(new Date());
+        buryPointOuterChainTc.setMemberType(user.getMemberType());
         try {
             buryPointOuterChainTcMapper.insert(buryPointOuterChainTc);
         } catch (Exception e) {

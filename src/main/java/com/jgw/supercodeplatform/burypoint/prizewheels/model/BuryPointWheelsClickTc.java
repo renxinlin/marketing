@@ -46,4 +46,7 @@ public class BuryPointWheelsClickTc {
     @TableField("WheelsId")
     private String wheelsId;
 
+    @TableField("MemberType")
+    private Byte memberType;
+
 }

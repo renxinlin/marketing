@@ -60,6 +60,9 @@ public class BuryPointOuterChainTc implements Serializable {
     @TableField("WheelsId")
     private String wheelsId;
 
+    @TableField("MemberType")
+    private Byte memberType;
+
 
 }
 

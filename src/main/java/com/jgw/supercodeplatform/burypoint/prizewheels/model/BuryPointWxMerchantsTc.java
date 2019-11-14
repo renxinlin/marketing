@@ -56,5 +56,6 @@ public class BuryPointWxMerchantsTc implements Serializable {
     @TableField("MchAppid")
     private String mchAppid;
 
-
+    @TableField("MemberType")
+    private Byte memberType;
 }

@@ -57,4 +57,7 @@ public class BuryPointRewardTbc {
 
     @TableField("ThirdUrl")
     private String thirdUrl;
+
+    @TableField("MemberType")
+    private Byte memberType;
 }
