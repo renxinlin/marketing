@@ -44,8 +44,8 @@ public class MarketingWxTradeOrderService {
         return null;
     }
 
-    public List<WXPayTradeOrder> searchFailOrder(Long activityId, Date limitDate){
-        return payTradeOrderMapper.searchFailOrder(activityId, limitDate);
+    public List<WXPayTradeOrder> searchFailOrder(Date limitDate){
+        return payTradeOrderMapper.searchFailOrder(limitDate);
     }
 
 }

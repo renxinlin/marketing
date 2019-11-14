@@ -1,9 +1,18 @@
 package com.jgw.supercodeplatform.marketing.pojo.pay;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * 企业付款订单表
  * @author czm
  *
  */
+
+@Setter
+@Getter
+@NoArgsConstructor
 public class WXPayTradeOrder {
 	private Long id;
 
@@ -24,6 +33,8 @@ public class WXPayTradeOrder {
 	private String winningCode;
 
 	private Byte ReferenceRole;
+
+	private Integer reSend;
 
 	/**
      * SUCCESS/FAIL
@@ -54,134 +65,4 @@ public class WXPayTradeOrder {
 
 	private Long activityId;
 
-	public WXPayTradeOrder() {
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getPartnerTradeNo() {
-		return partnerTradeNo;
-	}
-
-	public void setPartnerTradeNo(String partnerTradeNo) {
-		this.partnerTradeNo = partnerTradeNo;
-	}
-
-	public String getOpenId() {
-		return openId;
-	}
-
-	public void setOpenId(String openId) {
-		this.openId = openId;
-	}
-
-	public Float getAmount() {
-		return amount;
-	}
-
-	public void setAmount(Float amount) {
-		this.amount = amount;
-	}
-
-	public String getOrganizationId() {
-		return organizationId;
-	}
-
-	public void setOrganizationId(String organizationId) {
-		this.organizationId = organizationId;
-	}
-
-	public String getTradeDate() {
-		return tradeDate;
-	}
-
-	public void setTradeDate(String tradeDate) {
-		this.tradeDate = tradeDate;
-	}
-
-	public Byte getTradeStatus() {
-		return tradeStatus;
-	}
-
-	public void setTradeStatus(Byte tradeStatus) {
-		this.tradeStatus = tradeStatus;
-	}
-
-	public String getReturnCode() {
-		return returnCode;
-	}
-
-	public void setReturnCode(String returnCode) {
-		this.returnCode = returnCode;
-	}
-
-	public String getReturnMsg() {
-		return returnMsg;
-	}
-
-	public void setReturnMsg(String returnMsg) {
-		this.returnMsg = returnMsg;
-	}
-
-	public String getResultCode() {
-		return resultCode;
-	}
-
-	public void setResultCode(String resultCode) {
-		this.resultCode = resultCode;
-	}
-
-	public String getErrCode() {
-		return errCode;
-	}
-
-	public void setErrCode(String errCode) {
-		this.errCode = errCode;
-	}
-
-	public String getErrCodeDes() {
-		return errCodeDes;
-	}
-
-	public void setErrCodeDes(String errCodeDes) {
-		this.errCodeDes = errCodeDes;
-	}
-
-	public void setRemoteAddr(String remoteAddr) {
-		this.remoteAddr = remoteAddr;
-	}
-
-	public String getRemoteAddr() {
-		return remoteAddr;
-	}
-
-	public void setWinningCode(String winningCode) {
-		this.winningCode = winningCode;
-	}
-
-	public String getWinningCode() {
-		return winningCode;
-	}
-
-	public void setReferenceRole(Byte referenceRole) {
-		ReferenceRole = referenceRole;
-	}
-
-	public Byte getReferenceRole() {
-		return ReferenceRole;
-	}
-
-	public void setActivityId(Long activityId) {
-		this.activityId = activityId;
-	}
-
-	public Long getActivityId() {
-		return activityId;
-	}
 }

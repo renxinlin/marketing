@@ -312,6 +312,7 @@ public class WXPayService {
 		tradeOrder.setPartnerTradeNo(partner_trade_no);
 		tradeOrder.setTradeDate(format.format(new Date()));
 		tradeOrder.setOrganizationId(organizationId);
+		tradeOrder.setReSend(reSend);
 		wXPayTradeOrderMapper.insert(tradeOrder);
 
 

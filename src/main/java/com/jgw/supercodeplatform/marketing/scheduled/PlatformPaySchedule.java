@@ -29,7 +29,7 @@ public class PlatformPaySchedule {
     private RedisLockUtil lock;
 
     /**
-     * 每天早晨八点钟处理全网运营活动红包雨失败的微信订单，只处理气七天之内的
+     * 每天早晨八点钟处理失败的微信订单，只处理五十天之内的
      */
     @Scheduled(cron = "0 0 * * * ?")
     public void sendFailWxOrder(){
@@ -43,7 +43,7 @@ public class PlatformPaySchedule {
             //只查找50天之内的
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.DATE, -50);
-            List<WXPayTradeOrder> orderList = tradeOrderService.searchFailOrder(5L, cal.getTime());
+            List<WXPayTradeOrder> orderList = tradeOrderService.searchFailOrder(cal.getTime());
             if (CollectionUtils.isNotEmpty(orderList)) {
                 for (WXPayTradeOrder order : orderList) {
                     String  openid = order.getOpenId();
