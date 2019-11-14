@@ -181,7 +181,7 @@ public class CommonService {
 	 * @param businessType
 	 * @return
 	 */
-	public List<SbatchUrlDto> getUrlToBatchDto(JSONArray array, String url, int businessType) {
+	public List<SbatchUrlDto> getUrlToBatchDto(JSONArray array, String url, int businessType, Integer clientRole) {
 		List<SbatchUrlDto> bindBatchList=new ArrayList<>();
 		for(int i=0;i<array.size();i++) {
 			JSONObject batchobj=array.getJSONObject(i);
@@ -197,10 +197,19 @@ public class CommonService {
 			batchUrlDto.setBusinessType(businessType);
 			batchUrlDto.setUrl(url);
 			batchUrlDto.setProductId(productId);
+			if (clientRole != null) {
+				batchUrlDto.setClientRole(clientRole.toString());
+			} else {
+				batchUrlDto.setClientRole("0");
+			}
 			batchUrlDto.setProductBatchId(productBatchId);
 			bindBatchList.add(batchUrlDto);
 		}
 		return bindBatchList;
+	}
+
+	public List<SbatchUrlDto> getUrlToBatchDto(JSONArray array, String url, int businessType) {
+		return getUrlToBatchDto(array, url, businessType, null);
 	}
 
     /**

@@ -15,10 +15,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
-import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
-import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
-import com.jgw.supercodeplatform.marketing.constants.RedisKey;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.constants.*;
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
@@ -481,7 +478,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			}
 			JSONArray arr = obj.getJSONArray("results");
 			List<SbatchUrlDto> paramsList = commonService.getUrlToBatchDto(arr,bindUrl,
-					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType(), RoleTypeEnum.GUIDE.getMemberType());
 			if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
 				RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
 				logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));

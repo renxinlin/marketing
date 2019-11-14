@@ -155,7 +155,7 @@ public class MarketingActivitySalerSetService   {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {SuperCodeException.class,RuntimeException.class})
-	public RestResult<String> salerAdd(MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
+	public RestResult<String> salerAdd(MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException {
 		// 业务逻辑
 		// 1新增set表信息
 		// 2新增产品表信息

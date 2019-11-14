@@ -69,7 +69,8 @@ static String allFields="Id id,PartnerTradeNo partnerTradeNo,OpenId openId,Amoun
 	WXPayTradeOrder selectByCodeId(@Param("tradeNo") String tradeNo, @Param("winningCode") String winningCode);
 
 	//查找到支付失败的订单，
-	@Select("SELECT "+allFields+" FROM marketing_wx_trade_order WHERE TradeDate > #{limitDate} AND TradeStatus = 2 AND ActivityId = #{activityId}")
-	List<WXPayTradeOrder> searchFailOrder(@Param("activityId") Long activityId, @Param("limitDate")Date limitDate);
+//	@Select("SELECT "+allFields+" FROM marketing_wx_trade_order WHERE TradeDate > #{limitDate} AND TradeStatus = 2 AND ReSend = 0 AND ActivityId = #{activityId}")
+	@Select("SELECT "+allFields+" FROM marketing_wx_trade_order WHERE TradeDate > #{limitDate} AND TradeStatus = 2 AND ReSend = 0")
+	List<WXPayTradeOrder> searchFailOrder(@Param("limitDate")Date limitDate);
 
 }
