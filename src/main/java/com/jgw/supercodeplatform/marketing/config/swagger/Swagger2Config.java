@@ -251,7 +251,7 @@ public class Swagger2Config {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("2.0登录迁移")
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.marketing.controller.two"))
+                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.two.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .apiInfo(apiInfo())

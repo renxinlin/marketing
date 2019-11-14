@@ -11,6 +11,10 @@ public class MarketingUser {
     /** 序号 */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+    /** 微信昵称*/
+    private String wxName;
+    /** 微信id号*/
+    private String openid;
 
     /** 手机 */
     private String mobile;
@@ -85,6 +89,8 @@ public class MarketingUser {
      * 2.0登录用户密码
      */
     private String password;
+
+    private String wechatHeadImgUrl;
 
     public Integer getHaveIntegral() {
         return haveIntegral;
@@ -292,5 +298,30 @@ public class MarketingUser {
 
     public void setSource(Byte source) {
         this.source = source;
+    }
+
+    public String getWxName() {
+        return wxName;
+    }
+
+    public void setWxName(String wxName) {
+        this.wxName = wxName;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+
+    public String getWechatHeadImgUrl() {
+        return wechatHeadImgUrl;
+    }
+
+    public void setWechatHeadImgUrl(String wechatHeadImgUrl) {
+        this.wechatHeadImgUrl = wechatHeadImgUrl;
     }
 }
