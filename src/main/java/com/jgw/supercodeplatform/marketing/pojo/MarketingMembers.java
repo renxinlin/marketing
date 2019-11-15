@@ -44,6 +44,11 @@ public class MarketingMembers {
     private Byte deviceType;// 设备来源
     private String loginName;//2.0登录用户名
     private String password;//2.0登录用户密码
+    private Integer version;//0为3.0原会员1为2.0迁移会员
+    private String detailAdress;//详细地址
+    private String iDNumber;//身份证
+    private String registrationApproach;//注册途径
+    private Integer totalIntegral;//累计积分
 
     public String getCityCode() {
         return cityCode;
@@ -308,5 +313,45 @@ public class MarketingMembers {
 
     public void setOpenid(String openid) {
         this.openid = openid;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public String getDetailAdress() {
+        return detailAdress;
+    }
+
+    public void setDetailAdress(String detailAdress) {
+        this.detailAdress = detailAdress;
+    }
+
+    public String getiDNumber() {
+        return iDNumber;
+    }
+
+    public void setiDNumber(String iDNumber) {
+        this.iDNumber = iDNumber;
+    }
+
+    public String getRegistrationApproach() {
+        return registrationApproach;
+    }
+
+    public void setRegistrationApproach(String registrationApproach) {
+        this.registrationApproach = registrationApproach;
+    }
+
+    public Integer getTotalIntegral() {
+        return totalIntegral;
+    }
+
+    public void setTotalIntegral(Integer totalIntegral) {
+        this.totalIntegral = totalIntegral;
     }
 }

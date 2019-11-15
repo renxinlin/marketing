@@ -91,6 +91,10 @@ public class MarketingUser {
     private String password;
 
     private String wechatHeadImgUrl;
+    /**
+     * 0为3.0原会员1为2.0迁移会员
+     */
+    private Integer version;
 
     public Integer getHaveIntegral() {
         return haveIntegral;
@@ -323,5 +327,13 @@ public class MarketingUser {
 
     public void setWechatHeadImgUrl(String wechatHeadImgUrl) {
         this.wechatHeadImgUrl = wechatHeadImgUrl;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 }
