@@ -90,7 +90,7 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             salerRecordService.save(salerRecord);
             // 导购积分添加
             userService.addIntegral(realRewardIntegral,userPojo);
-            return rewardPojo.getRewardIntegral();
+            return realRewardIntegral;
         } catch (BizRuntimeException e) {
             e.printStackTrace();
             throw new BizRuntimeException(e.getMessage());
