@@ -293,4 +293,20 @@ public class MarketingMembers {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getWxName() {
+        return wxName;
+    }
+
+    public void setWxName(String wxName) {
+        this.wxName = wxName;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
 }

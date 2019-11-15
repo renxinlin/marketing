@@ -895,35 +895,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		return list;
 	}
 
-	/**
-	 * 绑定手机号
-	 * @param marketingMembersBindMobileParam
-	 * @throws SuperCodeException
-	 */
-	public RestResult bindMobile(MarketingMembersBindMobileParam marketingMembersBindMobileParam) throws SuperCodeException{
-		if(StringUtils.isBlank(marketingMembersBindMobileParam.getMobile())){
-			throw new SuperCodeException("手机不存在");
-		}
 
-		if(StringUtils.isBlank(marketingMembersBindMobileParam.getVerificationCode())){
-			throw new SuperCodeException("验证码不存在");
-		}
-		boolean success = commonService.validateMobileCode(marketingMembersBindMobileParam.getMobile(), marketingMembersBindMobileParam.getVerificationCode());
-		if(!success){
-			throw new SuperCodeException("验证码校验失败");
-		}
-		MarketingMembers marketingMembers=new MarketingMembers();
-		marketingMembers.setId(marketingMembersBindMobileParam.getId());
-		marketingMembers.setMobile(marketingMembersBindMobileParam.getMobile());
-		Integer result=marketingMembersMapper.updateById(marketingMembers);
-		if (result.equals(BindConstants.RESULT)){
-			MarketingMembers newMarketingMembers=marketingMembersMapper.selectById(marketingMembersBindMobileParam.getId());
-			newMarketingMembers.setHaveIntegral(newMarketingMembers.getHaveIntegral()+BindConstants.SUCCESS);
-			marketingMembersMapper.updateById(newMarketingMembers);
-			return RestResult.success();
-		}
-		return RestResult.failDefault("绑定失败");
-	}
 }
 
 

@@ -6,10 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
-import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
@@ -21,7 +19,6 @@ import com.jgw.supercodeplatform.marketing.dto.MarketingSaleMembersUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.SaleMemberBatchStatusParam;
 import com.jgw.supercodeplatform.marketing.dto.SalerLoginParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingSaleUserBindMobileParam;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
@@ -620,37 +617,6 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		}).collect(Collectors.toList());
 		return list;
 	}
-
-	/**
-	 * 绑定手机号
-	 * @param marketingSaleUserBindMobileParam
-	 * @throws SuperCodeException
-	 */
-	public RestResult bindMobile(MarketingSaleUserBindMobileParam marketingSaleUserBindMobileParam) throws SuperCodeException{
-		if(StringUtils.isBlank(marketingSaleUserBindMobileParam.getMobile())){
-			throw new SuperCodeException("手机号不存在");
-		}
-
-		if(StringUtils.isBlank(marketingSaleUserBindMobileParam.getVerificationCode())){
-			throw new SuperCodeException("验证码不存在");
-		}
-		boolean success = commonService.validateMobileCode(marketingSaleUserBindMobileParam.getMobile(), marketingSaleUserBindMobileParam.getVerificationCode());
-		if(!success){
-			throw new SuperCodeException("验证码校验失败");
-		}
-		MarketingUser marketingUser=new MarketingUser();
-		marketingUser.setId(marketingSaleUserBindMobileParam.getId());
-		marketingUser.setMobile(marketingSaleUserBindMobileParam.getMobile());
-		Integer result=marketingUserMapper.updateById(marketingUser);
-		if (result.equals(BindConstants.RESULT)){
-			MarketingUser newMarketingUser=marketingUserMapper.selectById(marketingSaleUserBindMobileParam.getId());
-			marketingUser.setHaveIntegral(newMarketingUser.getHaveIntegral()+BindConstants.SUCCESS);
-			marketingUserMapper.updateById(newMarketingUser);
-			return RestResult.success();
-		}
-		return RestResult.failDefault("绑定失败");
-	}
-
 
 }
 
