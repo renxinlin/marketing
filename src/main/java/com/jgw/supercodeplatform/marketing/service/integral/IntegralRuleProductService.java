@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.gson.JsonArray;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -364,10 +365,11 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			if (null==batchArray || batchArray.isEmpty()) {
 				throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
 			}
-			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
-			String bindBatchBody=commonService.bindUrlToBatch(batchInfoparams, superToken);
-			JSONObject bindBatchobj=JSONObject.parseObject(bindBatchBody);
-			int bindBatchstate=bindBatchobj.getInteger("state");
+			List<SbatchUrlDto> batchInfoparams=commonService.getUrlToBatchDto(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
+			logger.info("码管理绑定积分入参：{}", JSON.toJSONString(batchInfoparams));
+			RestResult bindBatchBody=getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(batchInfoparams);
+			logger.info("码管理绑定积分返回：{}", JSON.toJSONString(bindBatchBody));
+			int bindBatchstate=bindBatchBody.getState();
 			if (200!=bindBatchstate) {
 				throw new SuperCodeException("积分设置时根据生码批次绑定url失败："+bindBatchBody, 500);
 			}
