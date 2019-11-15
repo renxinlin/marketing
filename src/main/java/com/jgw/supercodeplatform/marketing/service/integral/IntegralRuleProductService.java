@@ -333,6 +333,8 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 					sbatchUrlDto.setBusinessTypes(bizTypeList);
 					sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
 					sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+					sbatchUrlDto.setProductId(productId);
+					sbatchUrlDto.setProductBatchId(productBatchId);
 					deleteProductBatchList.add(sbatchUrlDto);
 				}
 			}
