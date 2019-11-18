@@ -33,6 +33,8 @@ public class NoRepeatTransaction implements HandlerInterceptor {
             boolean set = redisUtil.set(MARKETING_UNIQUE + uniqueKey, EXIST,3L);
             return true;
         }
+        response.addHeader("Content-Type", "application/json");
+        response.setCharacterEncoding("utf-8");
         response.getWriter().write(JSON.toJSONString(new RestResult( 500, "请勿重复提交", (Object)null)));
         return false;
     }

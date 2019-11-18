@@ -25,7 +25,9 @@ public class WebConfig  extends WebMvcConfigurerAdapter{
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-        registry.addInterceptor(noRepeatTransaction).addPathPatterns("/marketing/h5/salerRuleExchange/exchange");
+        registry.addInterceptor(noRepeatTransaction).addPathPatterns(
+                "/marketing/h5/salerRuleExchange/exchange"
+        );
 
 
         super.addInterceptors(registry);
