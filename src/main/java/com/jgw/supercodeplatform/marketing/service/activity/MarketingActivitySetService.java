@@ -467,42 +467,34 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	public void saveProductBatchs(List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs, List<SbatchUrlUnBindDto> deleteProductBatchList, List<MarketingActivityProduct> mList, int referenceRole) throws SuperCodeException {
 		//如果是会员活动需要去绑定扫码连接到批次号
 		String superToken = commonUtil.getSuperToken();
-		String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
-				WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
-		JSONObject obj = JSONObject.parseObject(body);
-		int state = obj.getInteger("state");
-		if (200 == state) {
-			String bindUrl = marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL;
-			if (referenceRole == ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue()) {
-				bindUrl = marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL;
-			}
-			JSONArray arr = obj.getJSONArray("results");
-			List<SbatchUrlDto> paramsList = commonService.getUrlToBatchDto(arr,bindUrl,
-					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType(), referenceRole);
-			if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
-				RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
-				logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
-				if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
-					throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
-				}
-			}
-			// 绑定生码批次到url
-			RestResult bindBatchobj = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(paramsList);
-			Integer batchstate = bindBatchobj.getState();
-			if (ObjectUtils.notEqual(batchstate, HttpStatus.SC_OK)) {
-				throw new SuperCodeException("请求码管理生码批次和url错误：" + JSON.toJSONString(bindBatchobj), 500);
-			}
-			Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,bindUrl,
-					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
-			mList.forEach(marketingActivityProduct -> {
-				String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
-				Map<String, Object> batchMap = paramsMap.get(key);
-				if(batchMap != null)
-					marketingActivityProduct.setSbatchId((String)batchMap.get("batchId"));
-			});
-		} else {
-			throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
+		JSONArray arr = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+		String bindUrl = marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL;
+		if (referenceRole == ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue()) {
+			bindUrl = marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL;
 		}
+		List<SbatchUrlDto> paramsList = commonService.getUrlToBatchDto(arr,bindUrl,
+				BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType(), referenceRole);
+		if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
+			RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
+			logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
+			if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
+				throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
+			}
+		}
+		// 绑定生码批次到url
+		RestResult bindBatchobj = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(paramsList);
+		Integer batchstate = bindBatchobj.getState();
+		if (ObjectUtils.notEqual(batchstate, HttpStatus.SC_OK)) {
+			throw new SuperCodeException("请求码管理生码批次和url错误：" + JSON.toJSONString(bindBatchobj), 500);
+		}
+		Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,bindUrl,
+				BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+		mList.forEach(marketingActivityProduct -> {
+			String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
+			Map<String, Object> batchMap = paramsMap.get(key);
+			if(batchMap != null)
+				marketingActivityProduct.setSbatchId((String)batchMap.get("batchId"));
+		});
 		//插入对应活动产品数据
 		mProductMapper.batchDeleteByProBatchsAndRole(mList, referenceRole);
 		mProductMapper.activityProductInsert(mList);
@@ -516,28 +508,33 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
-			if (null != batchParams && !batchParams.isEmpty()) {
-				ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
-				List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
-				for (ProductBatchParam prBatchParam : batchParams) {
-					String productBatchId = prBatchParam.getProductBatchId();
-					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
-					mActivityProduct.setProductBatchId(productBatchId);
-					mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
-					mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
-					mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
-					mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
-					mList.add(mActivityProduct);
-					// 拼装请求码管理批次信息接口商品批次参数
-					Map<String, String> batchmap = new HashMap<String, String>();
-					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
-					productBatchList.add(batchmap);
-				}
-				// 拼装请求码管理批次信息接口商品参数
-				productAndBatchGetCodeMO.setProductBatchList(productBatchList);
-				productAndBatchGetCodeMO.setProductId(productId);
-				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
-			}
+			if (CollectionUtils.isEmpty(batchParams)) {
+                //TODO
+
+
+
+			    continue;
+            }
+            ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+            List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+            for (ProductBatchParam prBatchParam : batchParams) {
+                String productBatchId = prBatchParam.getProductBatchId();
+                MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+                mActivityProduct.setProductBatchId(productBatchId);
+                mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
+                mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+                mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+                mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+                mList.add(mActivityProduct);
+                // 拼装请求码管理批次信息接口商品批次参数
+                Map<String, String> batchmap = new HashMap<String, String>();
+                batchmap.put("productBatchId", prBatchParam.getProductBatchId());
+                productBatchList.add(batchmap);
+            }
+            // 拼装请求码管理批次信息接口商品参数
+            productAndBatchGetCodeMO.setProductBatchList(productBatchList);
+            productAndBatchGetCodeMO.setProductId(productId);
+            productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 		}
 		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product

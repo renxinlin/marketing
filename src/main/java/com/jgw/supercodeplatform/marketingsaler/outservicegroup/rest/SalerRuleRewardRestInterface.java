@@ -48,17 +48,8 @@ public class SalerRuleRewardRestInterface {
     public void integralUrlBindBatch(int businessType, String superToken, List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs)
             throws SuperCodeException {
         if (null!=productAndBatchGetCodeMOs && !productAndBatchGetCodeMOs.isEmpty()) {
-            String batchInfoBody=commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
-            JSONObject obj=JSONObject.parseObject(batchInfoBody);
-            int batchInfostate=obj.getInteger("state");
-            if (200!=batchInfostate) {
-                throw new SuperCodeException("积分设置时根据产品及批次获取码管理生码批次失败："+batchInfoBody, 500);
-            }
-            JSONArray batchArray=obj.getJSONArray("results");
-            if (null==batchArray || batchArray.isEmpty()) {
-                throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
-            }
-            List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
+            JSONArray arr = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+            List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(arr, marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
             String bindBatchBody=commonService.bindUrlToBatch(batchInfoparams, superToken);
             JSONObject bindBatchobj=JSONObject.parseObject(bindBatchBody);
             int bindBatchstate=bindBatchobj.getInteger("state");

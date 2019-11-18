@@ -131,14 +131,34 @@ public class CommonService {
 	}
 
 
-	public String getBatchInfo(List<ProductAndBatchGetCodeMO>productAndBatchGetCodeMOs,String superToken,String url) throws SuperCodeException {
+	public JSONArray getBatchInfo(List<ProductAndBatchGetCodeMO>productAndBatchGetCodeMOs,String superToken,String url) throws SuperCodeException {
 		String jsonData=JSONObject.toJSONString(productAndBatchGetCodeMOs);
 		Map<String,String> headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
 		ResponseEntity<String>  response=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+url, jsonData, headerMap);
 		logger.info("请求码管理批次信息返回数据:"+response.toString());
-		String body=response.getBody();
-		return body;
+		String batchInfoBody=response.getBody();
+		JSONObject obj=JSONObject.parseObject(batchInfoBody);
+		int batchInfostate=obj.getInteger("state");
+		if (200!=batchInfostate) {
+			throw new SuperCodeException("时根据产品及批次获取码管理生码批次失败："+batchInfoBody, 500);
+		}
+		JSONArray array=obj.getJSONArray("results");
+		if (null==array || array.isEmpty()) {
+			throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
+		}
+		Map<String, JSONObject> map = new HashMap<>();
+		for(int i=0;i<array.size();i++) {
+			JSONObject batchobj = array.getJSONObject(i);
+			String productId = batchobj.getString("productId");
+			String productBatchId = batchobj.getString("productBatchId");
+			String codeBatch = batchobj.getString("globalBatchId");
+			String key = productId + "," + productBatchId + "," + codeBatch;
+			if (map.get(key) == null) {
+				map.put(key, batchobj);
+			}
+		}
+		return new JSONArray(new ArrayList<>(map.values()));
 	}
     /**
      * 获取绑定批次和url的请求参数

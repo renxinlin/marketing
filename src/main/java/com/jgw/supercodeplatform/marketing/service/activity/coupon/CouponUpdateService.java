@@ -255,39 +255,32 @@ public class CouponUpdateService {
         couponService.getProductBatchSbatchId(productAndBatchGetCodeMOs, mList);
         // TODO 等待建强那边处理交互协议
     	String superToken = commonUtil.getSuperToken();
-		String body = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,
-				WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
-		JSONObject obj = JSONObject.parseObject(body);
-		int state = obj.getInteger("state");
-		if (200 == state) {
-			JSONArray arr = obj.getJSONArray("results");
-            if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
-                RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
-                logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
-                if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
-                    throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
-                }
+        JSONArray arr = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+        if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
+            RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
+            logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
+            if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
+                throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
             }
-			if(send) {
-				int businessType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
-                List<SbatchUrlDto> paramsList = commonService.getUrlToBatchDto(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,businessType);
-				// 绑定生码批次到url
-				RestResult bindBatchobj = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(paramsList);
-				Integer batchstate = bindBatchobj.getState();
-				if (ObjectUtils.notEqual(batchstate, HttpStatus.SC_OK)) {
-					throw new SuperCodeException("请求码管理生码批次和url错误：" + JSON.toJSONString(bindBatchobj), HttpStatus.SC_INTERNAL_SERVER_ERROR);
-				}
-			}
-			Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
-					marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
-					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
-			mList.forEach(marketingActivityProduct -> {
-				String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
-				marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
-			});
-		} else {
-			throw new SuperCodeException("通过产品及产品批次获取码信息错误：" + body, 500);
-		}
+        }
+        if(send) {
+            int businessType = BusinessTypeEnum.MARKETING_COUPON.getBusinessType();
+            List<SbatchUrlDto> paramsList = commonService.getUrlToBatchDto(arr, marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,businessType);
+            // 绑定生码批次到url
+            RestResult bindBatchobj = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(paramsList);
+            Integer batchstate = bindBatchobj.getState();
+            if (ObjectUtils.notEqual(batchstate, HttpStatus.SC_OK)) {
+                throw new SuperCodeException("请求码管理生码批次和url错误：" + JSON.toJSONString(bindBatchobj), HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            }
+        }
+        Map<String, Map<String, Object>> paramsMap = commonService.getUrlToBatchParamMap(arr,
+                marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL,
+                BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+        mList.forEach(marketingActivityProduct -> {
+            String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
+            marketingActivityProduct.setSbatchId((String)paramsMap.get(key).get("batchId"));
+        });
+
         //插入对应活动产品数据
         productMapper.batchDeleteByProBatchsAndRole(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
         productMapper.activityProductInsert(mList);
