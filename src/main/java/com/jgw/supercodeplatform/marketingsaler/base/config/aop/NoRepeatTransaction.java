@@ -23,7 +23,7 @@ public class NoRepeatTransaction implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String uniqueKey = request.getRequestURI() + IpUtils.getClientIpAddr(request);
-         log.info(uniqueKey);
+         log.info("防止重复...{}",uniqueKey);
         String exists = redisUtil.get(uniqueKey);
         if(StringUtils.isEmpty(exists)){
             // todo 抽到外部配置
