@@ -30,7 +30,7 @@ public class NoRepeatTransaction implements HandlerInterceptor {
         String exists = redisUtil.get(MARKETING_UNIQUE + uniqueKey);
         if(StringUtils.isEmpty(exists)){
             // todo 抽到外部配置
-            boolean set = redisUtil.set(MARKETING_UNIQUE + uniqueKey, EXIST,3L);
+            boolean set = redisUtil.set(MARKETING_UNIQUE + uniqueKey, EXIST,1L);
             return true;
         }
         response.addHeader("Content-Type", "application/json");
