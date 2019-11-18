@@ -51,7 +51,7 @@ public class CheckUserRole  implements Ordered {
             }
         }
         if (user == null) {
-            throw new BizRuntimeException("角色鉴定失败");
+            throw new BizRuntimeException("角色鉴定失败.");
         }
         try {
             if (annotationPresent) {
@@ -59,15 +59,15 @@ public class CheckUserRole  implements Ordered {
                 if (!StringUtils.isEmpty(annotation.role())) {
                     log.info("annotation.role().equals(user.getMemberType().toString())==>{},{}",annotation.role(),user.getMemberType().toString());
                     if (!annotation.role().equals(user.getMemberType().toString())) {
-                        throw new BizRuntimeException("角色鉴定失败");
+                        throw new BizRuntimeException("角色鉴定失败..");
                     }
                 }else {
-                    throw new BizRuntimeException("角色鉴定失败");
+                    throw new BizRuntimeException("角色鉴定失败...");
                 }
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
-            throw new BizRuntimeException("角色鉴定失败");
+            throw new BizRuntimeException("角色鉴定失败....");
         }
         // 只校验状态，存在性于业务校验
         User exists = userService.exists(user);
