@@ -21,6 +21,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,6 +43,7 @@ public class MarketingSaleMembersController extends CommonUtil {
     private MarketingSaleMemberService service;
     @Autowired
     private ModelMapper modelMapper;
+
 
     @RequestMapping(value = "/list",method = RequestMethod.GET)
     @ApiOperation(value = "销售员列表", notes = "")
@@ -169,9 +171,6 @@ public class MarketingSaleMembersController extends CommonUtil {
         service.updateMembersStatus(id,state,getOrganizationId());
         return new RestResult(200, "success", null);
     }
-
-
-
 
 
 

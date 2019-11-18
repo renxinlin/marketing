@@ -8,5 +8,5 @@ import lombok.Data;
  */
 @Data
 public class BuryPointWheelsClickTcDto {
-    private String activityId;
+    private String wheelsId;
 }

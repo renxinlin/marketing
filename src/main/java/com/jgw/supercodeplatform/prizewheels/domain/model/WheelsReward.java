@@ -68,11 +68,11 @@ public class WheelsReward implements Serializable {
     private Integer initialStock;
 
 
-    private Integer randLowMoney;
+    private Double randLowMoney;
 
-    private Integer randHighMoney;
+    private Double randHighMoney;
 
-    private Integer fixedMoney;
+    private Double fixedMoney;
 
     private Integer moneyType;
 

@@ -29,6 +29,19 @@ public class SbatchUrlUnBindDto {
     @ApiModelProperty(value = "用户角色")
     private String clientRole;
 
+
+
+    /**
+     * 产品批次号
+     */
+    private String productBatchId;
+
+
+    /**
+     * 活动产品Id
+     */
+    private String productId;
+
     /**
      *
      解绑活动锦囊的所有活动

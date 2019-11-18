@@ -3,6 +3,9 @@ package com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.bizimpl;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.BizTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dto.codemanagerservice.CouponActivity;
@@ -15,6 +18,8 @@ import com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.AutoFetchChainAb
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +62,7 @@ public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, 
     private MarketingActivitySetMapper mSetMapper;
 
     @Autowired
-    private RestTemplateUtil restTemplateUtil;
+    private GetSbatchIdsByPrizeWheelsFeign getSbatchIdsByPrizeWheelsFeign;
 
     @Value("${marketing.domain.url}")
     private String marketingDomain;
@@ -75,24 +80,26 @@ public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, 
         return true;
     }
 
-    private void sendToCodeManager(  List<CouponActivity>  couponActivitys ) throws SuperCodeException {
+    private void sendToCodeManager(  List<SbatchUrlDto>  couponActivitys ) {
         // TODO 待实现，等待建强协商交互
         if(CollectionUtils.isEmpty(couponActivitys)){
             return;
         }
-        String jsonData=JSONObject.toJSONString(couponActivitys);
-        restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, null);
+//        String jsonData=JSONObject.toJSONString(couponActivitys);
+        getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(couponActivitys);
+//        restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl, jsonData, null);
     }
 
     private void updateSbathId(Object codeBatch, MarketingActivityProduct marketingActivityProduct) {
         // TODO 类型还不知道
-        marketingActivityProduct.setSbatchId((String) codeBatch+","+marketingActivityProduct.getSbatchId());
+        marketingActivityProduct.setSbatchId(codeBatch+","+marketingActivityProduct.getSbatchId());
         mProductMapper.updateWhenAutoFetch(marketingActivityProduct);
     }
 
     @Override
     protected void ifDoBiz(List<Map<String, Object>> batchList) {
-        List<CouponActivity>  bindCouponActivitys = new ArrayList<>();
+        String bindUrl = marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL;
+        List<SbatchUrlDto>  bindCouponActivitys = new ArrayList<>();
         for (Map<String, Object> map : batchList) {
             Object productId=map.get("productId");
             Object productBatchId=map.get("productBatchId");
@@ -118,20 +125,27 @@ public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, 
             }
             if(activitySet.getAutoFetch() == AutoGetEnum.BY_AUTO.getAuto()){
                 // 如果自动追加就处理 业务处理1
-                updateSbathId((String) codeBatch,marketingActivityProduct);
+                updateSbathId(codeBatch,marketingActivityProduct);
                 // 业务处理2
                 String validCondition = activitySet.getValidCondition();
                 MarketingActivitySetCondition marketingActivitySetCondition = JSONObject.parseObject(validCondition, MarketingActivitySetCondition.class);
                 Byte acquireCondition = marketingActivitySetCondition.getAcquireCondition();
                 if(acquireCondition!=null && CouponAcquireConditionEnum.SHOPPING.getCondition().intValue() == acquireCondition.intValue() ){
-                    CouponActivity couponActivity = new CouponActivity();
-                    couponActivity.setProductId(strProductId);
-                    couponActivity.setProductBatchId(strProductBatchId);
-                    List<String> codeBatchs = new ArrayList<>();
-                    codeBatchs.add((String) codeBatch);
-                    couponActivity.setCodeBatchIds(codeBatchs);
-                    couponActivity.setStatus(BindCouponRelationToCodeManagerEnum.BIND.getBinding());
-                    bindCouponActivitys.add(couponActivity);
+                    SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
+                    sbatchUrlDto.setProductBatchId(productBatchId.toString());
+                    sbatchUrlDto.setProductId(productId.toString());
+                    sbatchUrlDto.setBusinessType(BizTypeEnum.MARKETING_COUPON.getBusinessType());
+                    sbatchUrlDto.setBatchId(Long.valueOf(codeBatch.toString()));
+                    sbatchUrlDto.setUrl(bindUrl);
+                    sbatchUrlDto.setClientRole(RoleTypeEnum.MEMBER.getMemberType() + "");
+//                    CouponActivity couponActivity = new CouponActivity();
+//                    couponActivity.setProductId(strProductId);
+//                    couponActivity.setProductBatchId(strProductBatchId);
+//                    List<String> codeBatchs = new ArrayList<>();
+//                    codeBatchs.add((String) codeBatch);
+//                    couponActivity.setCodeBatchIds(codeBatchs);
+//                    couponActivity.setStatus(BindCouponRelationToCodeManagerEnum.BIND.getBinding());
+                    bindCouponActivitys.add(sbatchUrlDto);
                 }
             }
 
@@ -139,7 +153,7 @@ public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, 
         // 业务处理2
         try {
             sendToCodeManager(bindCouponActivitys);
-        } catch (SuperCodeException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             logger.error("CouponAutoFecthService do biz error when custome code mamaner {}",e.getMessage());
         }

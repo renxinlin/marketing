@@ -7,6 +7,8 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatch
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingChannelMapper;
@@ -19,6 +21,7 @@ import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
 import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.pojo.cache.AccountCache;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import com.jgw.supercodeplatform.utils.SpringContextUtil;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -155,7 +158,7 @@ public class MarketingActivitySalerSetService   {
 	 * @return
 	 */
 	@Transactional(rollbackFor = {SuperCodeException.class,RuntimeException.class})
-	public RestResult<String> salerAdd(MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
+	public RestResult<String> salerAdd(MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException {
 		// 业务逻辑
 		// 1新增set表信息
 		// 2新增产品表信息
@@ -554,11 +557,33 @@ public class MarketingActivitySalerSetService   {
 
 
 	private void saveProductBatchsWithSaler(List<MarketingActivityProductParam> maProductParams, Long activitySetId) throws SuperCodeException {
-		mProductMapper.deleteByActivitySetId(activitySetId);
+
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
 //		Map<String, MarketingActivityProduct> activityProductMap = new HashMap<String, MarketingActivityProduct>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
-
+		List<MarketingActivityProduct> upProductList = mProductMapper.selectByActivitySetId(activitySetId);
+		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
+		if (!CollectionUtils.isEmpty(upProductList)) {
+			upProductList.forEach(marketingActivityProduct -> {
+				String sbatchIds = marketingActivityProduct.getSbatchId();
+				if (org.apache.commons.lang3.StringUtils.isNotBlank(sbatchIds)) {
+					String[] sbatchIdArray = sbatchIds.split(",");
+					for(String sbatchId : sbatchIdArray) {
+						SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+						sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL);
+						List<Integer> bizTypeList = new ArrayList<>();
+						bizTypeList.add(BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+						sbatchUrlDto.setBusinessTypes(bizTypeList);
+						sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+						sbatchUrlDto.setClientRole(MemberTypeEnums.SALER.getType()+"");
+						sbatchUrlDto.setProductId(marketingActivityProduct.getProductId());
+						sbatchUrlDto.setProductBatchId(marketingActivityProduct.getProductBatchId());
+						deleteProductBatchList.add(sbatchUrlDto);
+					}
+				}
+			});
+		}
+		mProductMapper.deleteByActivitySetId(activitySetId);
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
@@ -587,7 +612,7 @@ public class MarketingActivitySalerSetService   {
 				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
 		}
-		marketingActivitySetService.saveProductBatchs(productAndBatchGetCodeMOs, null,mList, MemberTypeEnums.SALER.getType());
+		marketingActivitySetService.saveProductBatchs(productAndBatchGetCodeMOs, deleteProductBatchList,mList, MemberTypeEnums.SALER.getType());
 	}
 
 	/**

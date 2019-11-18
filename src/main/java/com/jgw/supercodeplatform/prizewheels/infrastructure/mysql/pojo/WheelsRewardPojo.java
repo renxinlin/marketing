@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 
 /**
@@ -76,6 +79,17 @@ public class WheelsRewardPojo implements Serializable {
 
     @TableField("InitialStock")
     private Integer initialStock;
+
+
+
+    @TableField("randLowMoney")
+    private Double randLowMoney;
+    @TableField("randHighMoney")
+    private Double randHighMoney;
+    @TableField("fixedMoney")
+    private Double fixedMoney;
+    @TableField("moneyType")
+    private Integer moneyType;
 
 
 }

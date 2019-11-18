@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -10,10 +11,14 @@ import java.util.Date;
 public class MarketingMembers {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;//序号
+    private String wxName;//微信昵称
+    private String openid;//微信id号
     private String mobile;//手机
     private String userId;//用户Id
     private String userName;//用户姓名
     private Byte sex;//性别
+    @TableField(exist=false)
+    private String sexStr;//性别
     private String birthday;//生日
     private String provinceCode;// 省编码
     private String provinceName;// 省名
@@ -37,6 +42,13 @@ public class MarketingMembers {
     private Date integralReceiveDate; // 最新一次积分领取时间
     private Byte userSource;// 注册来源1招募会员
     private Byte deviceType;// 设备来源
+    private String loginName;//2.0登录用户名
+    private String password;//2.0登录用户密码
+    private Byte version;//0为3.0原会员1为2.0迁移会员
+    private String detailAddress;//详细地址
+    private String iDNumber;//身份证
+    private Byte registrationApproach;//注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、"外部网站 8、码上淘 9、短信 10、微盟
+    private Integer totalIntegral;//累计积分
 
     public String getCityCode() {
         return cityCode;
@@ -263,5 +275,83 @@ public class MarketingMembers {
 
     public void setProvinceName(String provinceName) {
         this.provinceName = provinceName;
+    }
+    public void setSexStr(String sexStr){
+        this.sexStr=sexStr;
+    }
+    public String getSexStr(){
+        return sexStr;
+    }
+
+    public String getLoginName() {
+        return loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getWxName() {
+        return wxName;
+    }
+
+    public void setWxName(String wxName) {
+        this.wxName = wxName;
+    }
+
+    public String getOpenid() {
+        return openid;
+    }
+
+    public void setOpenid(String openid) {
+        this.openid = openid;
+    }
+
+    public Byte getVersion() {
+        return version;
+    }
+
+    public void setVersion(Byte version) {
+        this.version = version;
+    }
+
+    public String getiDNumber() {
+        return iDNumber;
+    }
+
+    public void setiDNumber(String iDNumber) {
+        this.iDNumber = iDNumber;
+    }
+
+    public Byte getRegistrationApproach() {
+        return registrationApproach;
+    }
+
+    public void setRegistrationApproach(Byte registrationApproach) {
+        this.registrationApproach = registrationApproach;
+    }
+
+    public Integer getTotalIntegral() {
+        return totalIntegral;
+    }
+
+    public void setTotalIntegral(Integer totalIntegral) {
+        this.totalIntegral = totalIntegral;
+    }
+
+    public String getDetailAddress() {
+        return detailAddress;
+    }
+
+    public void setDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
     }
 }

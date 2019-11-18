@@ -69,15 +69,15 @@ public class BuryPointDataSetController extends SalerCommonController {
         return success();
     }
 
-    @PostMapping(value = "/addBTemplate")
+    @GetMapping(value = "/addBTemplate")
     @ApiOperation(value = "B端配置模板相关埋点数据")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult buryPointTemplateTbc(@RequestParam String templateId,@ApiIgnore H5LoginVO user){
-        buryPointTemplateTbService.buryPointTemplateTb(templateId,user);
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointTemplateTbc(@RequestParam String templateId){
+        buryPointTemplateTbService.buryPointTemplateTb(templateId);
         return success();
     }
 
-    @PostMapping(value = "/addCTemplate")
+    @GetMapping(value = "/addCTemplate")
     @ApiOperation(value = "C端扫描模板相关埋点数据")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult buryPointTemplateTc(@RequestParam String templateId,@ApiIgnore H5LoginVO user){
@@ -93,15 +93,15 @@ public class BuryPointDataSetController extends SalerCommonController {
         return success();
     }
 
-    @PostMapping(value = "/addWxTb")
+    @GetMapping(value = "/addWxTb")
     @ApiOperation(value = "B端配置公众号埋点数据")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult buryPointWxMerchantsTb(@RequestParam String WxPicture, @ApiIgnore H5LoginVO user){
-        buryPointWxMerchantsTbService.buryPointWxMerchantsTb(WxPicture,user);
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult buryPointWxMerchantsTb(@RequestParam String WxPicture){
+        buryPointWxMerchantsTbService.buryPointWxMerchantsTb(WxPicture);
         return success();
     }
 
-    @PostMapping(value = "/addPv")
+    @GetMapping(value = "/addPv")
     @ApiOperation(value = "C端PV埋点数据")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult buryPointPageVisitTc(@RequestParam String device, @ApiIgnore H5LoginVO user){

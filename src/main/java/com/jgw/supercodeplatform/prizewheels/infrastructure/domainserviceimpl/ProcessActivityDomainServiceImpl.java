@@ -15,19 +15,23 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 /**
+ *  todo formPrizeWheelsToOldActivity上提到领域层 commonUtil拉到应用层
  * 该领域服务处理大转盘活动到老活动的业务
+ *
  */
 @Service
 public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainService {
 
 
-    @Autowired
-    private WheelsMapper wheelsMapper;
 
 
     @Autowired
     private ActivitySetMapper setMapper;
+
+
 
 
     @Autowired
@@ -35,17 +39,15 @@ public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainSe
 
     public ActivitySet formPrizeWheelsToOldActivity(Wheels wheels,Integer autoFetch){
         ActivitySet activitySet = new ActivitySet();
-
-        WheelsPojo prizeWheels = wheelsMapper.selectById(wheels.getId());
-        activitySet.setActivityEndDate(prizeWheels.getEndTime());
+         activitySet.setActivityEndDate(wheels.getEndTime());
         activitySet.setActivityId(ActivityTypeConstant.wheels.longValue());
-        activitySet.setActivityStartDate(prizeWheels.getStartTime());
-        activitySet.setActivityTitle(prizeWheels.getTitle1());
+        activitySet.setActivityStartDate(wheels.getStartTime());
+        activitySet.setActivityTitle(wheels.getTitle1());
         activitySet.setAutoFetch(autoFetch);
         activitySet.setActivityDesc("大转盘活动");
-        activitySet.setId1(prizeWheels.getId());
+        activitySet.setId1(wheels.getId());
         activitySet.setActivityStatus(wheels.getActivityStatus());
-        activitySet.setUpdateDate(prizeWheels.getUpdateDate() == null ? prizeWheels.getCreateDate():prizeWheels.getUpdateDate());
+        activitySet.setUpdateDate(new Date());
         activitySet.setUpdateUserId(commonUtil.getUserLoginCache().getAccountId());
         activitySet.setUpdateUserName(commonUtil.getUserLoginCache().getUserName());
         activitySet.setOrganizatioIdlName(commonUtil.getOrganizationName());

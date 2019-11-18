@@ -1,12 +1,12 @@
 package com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jgw.supercodeplatform.marketing.dao.activity.generator.provider.MarketingUserSqlProvider;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 
-public interface MarketingUserMapper {
+public interface MarketingUserMapper extends BaseMapper<MarketingUser> {
     @Delete({
         "delete from marketing_user",
         "where Id = #{id,jdbcType=BIGINT}"
@@ -114,5 +114,8 @@ public interface MarketingUserMapper {
             + " </where>"
             + " </script>")
     int updateByPrimaryKeySelectiveWithBiz(MarketingUser record);
+
+
+
 
 }

@@ -1,8 +1,6 @@
 package com.jgw.supercodeplatform.burypoint.prizewheels.service.set;
 
-import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointTemplateTbMapper;
 import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointTemplateTcMapper;
-import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointTemplateTb;
 import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointTemplateTc;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ public class BuryPointTemplateTcService {
         buryPointTemplateTc.setOrganizationId(user.getOrganizationId());
         buryPointTemplateTc.setOrganizationName(user.getOrganizationName());
         buryPointTemplateTc.setTemplateId(templateId);
+        buryPointTemplateTc.setMemberType(user.getMemberType());
         try{
             buryPointTemplateTcMapper.insert(buryPointTemplateTc);
         }catch (Exception e) {

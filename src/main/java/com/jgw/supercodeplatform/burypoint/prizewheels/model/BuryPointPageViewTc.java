@@ -53,7 +53,8 @@ public class BuryPointPageViewTc implements Serializable {
     @TableField("Device")
     private String device;
 
-
+    @TableField("MemberType")
+    private Byte memberType;
 
 
 

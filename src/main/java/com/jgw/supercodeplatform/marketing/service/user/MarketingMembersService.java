@@ -1,27 +1,42 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
+import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
+import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
+import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
+import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.constants.RedisKey;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingWxMemberMapper;
+import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
+import com.jgw.supercodeplatform.marketing.dto.members.*;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
+import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
+import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
+import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
+import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -36,30 +51,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
-import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
-import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
-import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.constants.RedisKey;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivitySetMapper;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
-import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
-import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
-import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
-import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
@@ -107,6 +105,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	@Autowired
 	private MarketingWxMemberMapper marketingWxMemberMapper;
+
+	@Autowired
+	private CommonUtil commonUtil;
+
+	@Autowired
+	private CommonService commonService;
 
 	@Override
 	protected List<Map<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
@@ -866,6 +870,31 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	public MarketingWxMember getWxMemberByOpenidAndOrgid(String openid, String organizationId) {
 		return marketingWxMemberMapper.selectOne(Wrappers.<MarketingWxMember>query().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType()));
 	}
+
+	/**
+	 * 组织下的全部会员
+	 * @param
+	 * @return
+	 */
+	public List<MarketingMembers> getMemberInfoList() throws SuperCodeException {
+		String organoizationId= commonUtil.getOrganizationId();
+		if(StringUtils.isBlank(organoizationId)){
+			throw new SuperCodeException("组织不存在...");
+		}
+		List<MarketingMembers> list=marketingMembersMapper.getMarketingUserList(organoizationId);
+		list.stream().filter(marketingUser -> {
+			if (SexConstants.WOMEN.equals(marketingUser.getSexStr())){
+				marketingUser.setSexStr("女");
+			}else if(SexConstants.MEN.equals(marketingUser.getSexStr())){
+				marketingUser.setSexStr("男");
+			}else {
+				marketingUser.setSexStr("--");
+			}
+			return true;
+		}).collect(Collectors.toList());
+		return list;
+	}
+
 
 }
 

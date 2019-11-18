@@ -20,6 +20,8 @@ import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity;
 import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity.OuterCode;
 import com.jgw.supercodeplatform.marketing.enums.CodeTypeEnum;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.client.transport.TransportClient;
@@ -129,14 +131,34 @@ public class CommonService {
 	}
 
 
-	public String getBatchInfo(List<ProductAndBatchGetCodeMO>productAndBatchGetCodeMOs,String superToken,String url) throws SuperCodeException {
+	public JSONArray getBatchInfo(List<ProductAndBatchGetCodeMO>productAndBatchGetCodeMOs,String superToken,String url) throws SuperCodeException {
 		String jsonData=JSONObject.toJSONString(productAndBatchGetCodeMOs);
 		Map<String,String> headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
 		ResponseEntity<String>  response=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+url, jsonData, headerMap);
 		logger.info("请求码管理批次信息返回数据:"+response.toString());
-		String body=response.getBody();
-		return body;
+		String batchInfoBody=response.getBody();
+		JSONObject obj=JSONObject.parseObject(batchInfoBody);
+		int batchInfostate=obj.getInteger("state");
+		if (200!=batchInfostate) {
+			throw new SuperCodeException("时根据产品及批次获取码管理生码批次失败："+batchInfoBody, 500);
+		}
+		JSONArray array=obj.getJSONArray("results");
+		if (null==array || array.isEmpty()) {
+			throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
+		}
+		Map<String, JSONObject> map = new HashMap<>();
+		for(int i=0;i<array.size();i++) {
+			JSONObject batchobj = array.getJSONObject(i);
+			String productId = batchobj.getString("productId");
+			String productBatchId = batchobj.getString("productBatchId");
+			String codeBatch = batchobj.getString("globalBatchId");
+			String key = productId + "," + productBatchId + "," + codeBatch;
+			if (map.get(key) == null) {
+				map.put(key, batchobj);
+			}
+		}
+		return new JSONArray(new ArrayList<>(map.values()));
 	}
     /**
      * 获取绑定批次和url的请求参数
@@ -170,6 +192,44 @@ public class CommonService {
 
 	public List<Map<String, Object>> getUrlToBatchParam(JSONArray array,String url,int businessType) throws SuperCodeException {
 		return getUrlToBatchParam(array, url, businessType, null);
+	}
+
+	/**
+	 * 拼接绑定信息
+	 * @param array
+	 * @param url
+	 * @param businessType
+	 * @return
+	 */
+	public List<SbatchUrlDto> getUrlToBatchDto(JSONArray array, String url, int businessType, Integer clientRole) {
+		List<SbatchUrlDto> bindBatchList=new ArrayList<>();
+		for(int i=0;i<array.size();i++) {
+			JSONObject batchobj=array.getJSONObject(i);
+			String productId=batchobj.getString("productId");
+			String productBatchId=batchobj.getString("productBatchId");
+			Long codeTotal=batchobj.getLong("codeTotal");
+			String codeBatch=batchobj.getString("globalBatchId");
+			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+				throw new SuperCodeExtException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
+			}
+			SbatchUrlDto batchUrlDto = new SbatchUrlDto();
+			batchUrlDto.setBatchId(Long.valueOf(codeBatch));
+			batchUrlDto.setBusinessType(businessType);
+			batchUrlDto.setUrl(url);
+			batchUrlDto.setProductId(productId);
+			if (clientRole != null) {
+				batchUrlDto.setClientRole(clientRole.toString());
+			} else {
+				batchUrlDto.setClientRole("0");
+			}
+			batchUrlDto.setProductBatchId(productBatchId);
+			bindBatchList.add(batchUrlDto);
+		}
+		return bindBatchList;
+	}
+
+	public List<SbatchUrlDto> getUrlToBatchDto(JSONArray array, String url, int businessType) {
+		return getUrlToBatchDto(array, url, businessType, null);
 	}
 
     /**

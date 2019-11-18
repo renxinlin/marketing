@@ -62,6 +62,8 @@ public class ProductDomainTranfer {
      */
     public List<SbatchUrlDto> tranferProductsToSbatchUrlDtosWhenBinding(List<Product> products) {
         log.info(" tranferProductsToSbatchUrlDtos(List<Product> products) {}",JSONObject.toJSONString(products));
+
+
         List<SbatchUrlDto> list = new ArrayList<>();
         products.forEach(product -> {
             String[] sbatchIds = product.getSbatchId().split(Product.SPLIT_SYMBOL);
@@ -70,10 +72,14 @@ public class ProductDomainTranfer {
                 sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
                 sbatchUrlDto.setBusinessType(ActivityTypeConstant.wheels);
                 sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
-                sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+                sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType().toString());
+                sbatchUrlDto.setProductBatchId(product.getProductBatchId());
+                sbatchUrlDto.setProductId(product.getProductId());
                 list.add(sbatchUrlDto);
             });
         });
+        log.info(" tranferProductsToSbatchUrlDtos( List<SbatchUrlDto>) {}",JSONObject.toJSONString(list));
+
         return list;
     }
 
@@ -89,7 +95,11 @@ public class ProductDomainTranfer {
 //                sbatchUrlDto.setUrl(CallBackConstant.EMPTY); // 删除不用根据
                 sbatchUrlDto.initAllBusinessType();
                 sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+                sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+                sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
                 sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+                sbatchUrlDto.setProductId(product.getProductId());
+                sbatchUrlDto.setProductBatchId(product.getProductBatchId());
                 list.add(sbatchUrlDto);
             });
         });

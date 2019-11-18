@@ -14,15 +14,18 @@ import java.util.List;
 @FeignClient(name = "${platform.codemanager.mircosoft.name:platform-codemanager-supercode-dev}",fallback = GetSbatchIdsByPrizeWheelsFallbackFeign.class )
 public interface GetSbatchIdsByPrizeWheelsFeign {
     // object 会返回2种类型
-    @RequestMapping(value = "/code/relation/getBatchInfoWithoutType",method = RequestMethod.POST)
+   // @RequestMapping(value = "/code/relation/getBatchInfoWithoutType",method = RequestMethod.POST) 码管理业务bug修改
+    @RequestMapping(value = "/code/relation/getRelationCodeList/batchInfoList",method = RequestMethod.POST)
     RestResult<Object> getSbatchIds(List<GetBatchInfoDto> getBatchInfoDtoList);
 
 
-    @RequestMapping(value = "/code/sbatchUrl/delete/one",method = RequestMethod.POST)
+//    @RequestMapping(value = "/code/sbatchUrl/delete/one",method = RequestMethod.POST)
+    @RequestMapping(value = "/code/manager/batch/url/delete/list",method = RequestMethod.POST)
     RestResult<Object> removeOldProduct(List<SbatchUrlUnBindDto> sbatchUrlDtoList);
 
 
 
-    @RequestMapping(value = "/code/sbatchUrl/addSbatchUrl",method = RequestMethod.POST)
+//    @RequestMapping(value = "/code/sbatchUrl/addSbatchUrl",method = RequestMethod.POST)
+    @RequestMapping(value = "/code/manager/batch/url/add/list",method = RequestMethod.POST)
     RestResult bindingUrlAndBizType(List<SbatchUrlDto> sbatchUrlDtoList);
 }

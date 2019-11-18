@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +41,7 @@ public class CommonMqTaskService {
 	private MarketingActivitySetMapper mSetMapper;
 	
 	@Autowired
-	private RestTemplateUtil restTemplateUtil;
+	private GetSbatchIdsByPrizeWheelsFeign getSbatchIdsByPrizeWheelsFeign;
 	
 	@Value("${marketing.domain.url}")
 	private String marketingDomain;
@@ -52,7 +56,7 @@ public class CommonMqTaskService {
 	 */
 	public void handleNewBindBatch(List<Map<String, Object>> batchList) {
 			Map<Long, Long> activityCodeSumMap=new HashMap<Long, Long>();
-			List<Map<String, Object>> bindBatchList=new ArrayList<Map<String,Object>>();
+			List<SbatchUrlDto> bindBatchList=new ArrayList<>();
 			for (Map<String, Object> map : batchList) {
 				Object productId=map.get("productId");
 				Object productBatchId=map.get("productBatchId");
@@ -105,17 +109,20 @@ public class CommonMqTaskService {
 							bizType = BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType();
 						}
 						if (bizType != null) {
-							Map<String, Object> batchMap = new HashMap<String, Object>();
+							SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
 							//导购红包
 							if (activityId == 3) {
-								batchMap.put("clientRole", 1);
-								batchMap.put("url", marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL);
+								sbatchUrlDto.setClientRole("1");
+								sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL);
 							} else {
-								batchMap.put("url", marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
+								sbatchUrlDto.setClientRole("0");
+								sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL);
 							}
-							batchMap.put("batchId", codeBatch);
-							batchMap.put("businessType", bizType);
-							bindBatchList.add(batchMap);
+							sbatchUrlDto.setProductId(strProductId);
+							sbatchUrlDto.setProductBatchId(strProductBatchId);
+							sbatchUrlDto.setBatchId(Long.valueOf(codeBatch.toString()));
+							sbatchUrlDto.setBusinessType(bizType);
+							bindBatchList.add(sbatchUrlDto);
 						}
 					}
 				}
@@ -126,13 +133,14 @@ public class CommonMqTaskService {
 				}
 				//绑定生码批次与url的关系
 				//生码批次跟url绑定
-				String bindJson=JSONObject.toJSONString(bindBatchList);
-				ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_BIND_BATCH_TO_URL, bindJson, null);
-				String batchBody=bindBatchresponse.getBody();
-				JSONObject batchobj=JSONObject.parseObject(batchBody);
-				Integer batchstate=batchobj.getInteger("state");
-				if (batchstate.intValue()!=200) {
-					logger.error("处理码管理推送的mq消息时绑定生码批次与url的关系出错，错误信息："+bindBatchresponse.toString()+",批次信息："+bindJson);
+				RestResult restResult = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(bindBatchList);
+//				String bindJson=JSONObject.toJSONString(bindBatchList);
+//				ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_BIND_BATCH_TO_URL, bindJson, null);
+//				String batchBody=bindBatchresponse.getBody();
+//				JSONObject batchobj=JSONObject.parseObject(batchBody);
+//				Integer batchstate=batchobj.getInteger("state");
+				if (restResult.getState() != HttpStatus.SC_OK) {
+					logger.error("处理码管理推送的mq消息时绑定生码批次与url的关系出错，错误信息："+JSON.toJSONString(restResult)+",批次信息：");
 					return;
 				}
 //				if (!activityCodeSumMap.isEmpty()){
@@ -143,7 +151,7 @@ public class CommonMqTaskService {
 //						}
 //					}
 //				}
-			} catch (SuperCodeException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

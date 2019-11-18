@@ -3,6 +3,8 @@ package com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.bizimpl;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.BizTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dto.codemanagerservice.CouponActivity;
 import com.jgw.supercodeplatform.marketing.enums.market.ActivityIdEnum;
@@ -17,6 +19,8 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingPrizewheelsProduct;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConstant;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,7 +39,7 @@ import java.util.Map;
 @Service
 public class PrizeWheelsAutoFetchService extends AutoFetchChainAbs<List<Map<String, Object>>> {
     @Autowired
-    private RestTemplateUtil restTemplateUtil;
+    private GetSbatchIdsByPrizeWheelsFeign getSbatchIdsByPrizeWheelsFeign;
 
     @Value("${marketing.domain.url}")
     private String marketingDomain;
@@ -50,7 +54,7 @@ public class PrizeWheelsAutoFetchService extends AutoFetchChainAbs<List<Map<Stri
 
     @Override
     protected void ifDoBiz(List<Map<String, Object>> batchList) {
-        List<CouponActivity>  bindCouponActivitys = new ArrayList<>();
+        List<SbatchUrlDto>  bindCouponActivitys = new ArrayList<>();
         for (Map<String, Object> map : batchList) {
             // 数据转换
             Object productId=map.get("productId");
@@ -74,17 +78,24 @@ public class PrizeWheelsAutoFetchService extends AutoFetchChainAbs<List<Map<Stri
             boolean needSend = updateSbathId((String) codeBatch, needAutoFetchPrizewheels);
             // 自动追加成功 绑定码管理
             if(needSend){
-                CouponActivity couponActivity = new CouponActivity();
-                couponActivity.setProductId(strProductId);
-                couponActivity.setProductBatchId(strProductBatchId);
-                List<String> codeBatchs = new ArrayList<>();
-                codeBatchs.add((String) codeBatch);
-                couponActivity.setCodeBatchIds(codeBatchs);
-                couponActivity.setStatus(BindCouponRelationToCodeManagerEnum.BIND.getBinding());
-                bindCouponActivitys.add(couponActivity);
+                SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
+                sbatchUrlDto.setProductBatchId(productBatchId.toString());
+                sbatchUrlDto.setProductId(productId.toString());
+                sbatchUrlDto.setBusinessType(BizTypeEnum.MARKETING_COUPON.getBusinessType());
+                sbatchUrlDto.setBatchId(Long.valueOf(codeBatch.toString()));
+                sbatchUrlDto.setUrl(CallBackConstant.PRIZE_WHEELS_URL);
+                sbatchUrlDto.setClientRole(RoleTypeEnum.MEMBER.getMemberType() + "");
+//                CouponActivity couponActivity = new CouponActivity();
+//                couponActivity.setProductId(strProductId);
+//                couponActivity.setProductBatchId(strProductBatchId);
+//                List<String> codeBatchs = new ArrayList<>();
+//                codeBatchs.add((String) codeBatch);
+//                couponActivity.setCodeBatchIds(codeBatchs);
+//                couponActivity.setStatus(BindCouponRelationToCodeManagerEnum.BIND.getBinding());
+                bindCouponActivitys.add(sbatchUrlDto);
                 try {
                     sendToCodeManager(bindCouponActivitys);
-                } catch (SuperCodeException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     log.error("CouponAutoFecthService do biz error when custome code mamaner {}",e.getMessage());
                 }
@@ -98,12 +109,13 @@ public class PrizeWheelsAutoFetchService extends AutoFetchChainAbs<List<Map<Stri
      * @param activitys
      * @throws SuperCodeException
      */
-    private void sendToCodeManager(List<CouponActivity> activitys) throws SuperCodeException {
+    private void sendToCodeManager(List<SbatchUrlDto> activitys) {
         if(CollectionUtils.isEmpty(activitys)){
             return;
         }
-        String jsonData=JSONObject.toJSONString(activitys);
-        restTemplateUtil.postJsonDataAndReturnJosn(CallBackConstant.PRIZE_WHEELS_URL, jsonData, null);
+        getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(activitys);
+//        String jsonData=JSONObject.toJSONString(activitys);
+//        restTemplateUtil.postJsonDataAndReturnJosn(CallBackConstant.PRIZE_WHEELS_URL, jsonData, null);
     }
 
     /**

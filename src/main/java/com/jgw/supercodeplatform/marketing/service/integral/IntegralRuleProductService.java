@@ -10,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.gson.JsonArray;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -302,18 +303,8 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 	private void integralUrlUnBindBatch(int businessType, String superToken, List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs)
 			throws SuperCodeException {
 		if (null!=productAndBatchGetCodeMOs && !productAndBatchGetCodeMOs.isEmpty()) {
-			String batchInfoBody=commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
-			JSONObject obj=JSONObject.parseObject(batchInfoBody);
-			int batchInfostate=obj.getInteger("state");
-			if (200!=batchInfostate) {
-				throw new SuperCodeException("积分设置时根据产品及批次获取码管理生码批次失败："+batchInfoBody, 500);
-			}
-			JSONArray batchArray=obj.getJSONArray("results");
-			if (null==batchArray || batchArray.isEmpty()) {
-				throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
-			}
+			JSONArray array = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
 			List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
-			JSONArray array = obj.getJSONArray("results");
 			for(int i=0;i<array.size();i++) {
 				JSONObject batchobj=array.getJSONObject(i);
 				String productId=batchobj.getString("productId");
@@ -332,10 +323,12 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 					sbatchUrlDto.setBusinessTypes(bizTypeList);
 					sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
 					sbatchUrlDto.setClientRole(MemberTypeEnums.VIP.getType()+"");
+					sbatchUrlDto.setProductId(productId);
+					sbatchUrlDto.setProductBatchId(productBatchId);
 					deleteProductBatchList.add(sbatchUrlDto);
 				}
 			}
-			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
+//			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
 			RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
 			logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
 			if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
@@ -354,20 +347,12 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 	private void integralUrlBindBatch(int businessType, String superToken, List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs)
 			throws SuperCodeException {
 		if (null!=productAndBatchGetCodeMOs && !productAndBatchGetCodeMOs.isEmpty()) {
-			String batchInfoBody=commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL_WITH_ALL_RELATIONTYPE);
-			JSONObject obj=JSONObject.parseObject(batchInfoBody);
-			int batchInfostate=obj.getInteger("state");
-			if (200!=batchInfostate) {
-				throw new SuperCodeException("积分设置时根据产品及批次获取码管理生码批次失败："+batchInfoBody, 500);
-			}
-			JSONArray batchArray=obj.getJSONArray("results");
-			if (null==batchArray || batchArray.isEmpty()) {
-				throw new SuperCodeException("该产品的批次未查到码关联信息，请检查是否已做过码关联的批次被删除", 500);
-			}
-			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
-			String bindBatchBody=commonService.bindUrlToBatch(batchInfoparams, superToken);
-			JSONObject bindBatchobj=JSONObject.parseObject(bindBatchBody);
-			int bindBatchstate=bindBatchobj.getInteger("state");
+			JSONArray array = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+			List<SbatchUrlDto> batchInfoparams=commonService.getUrlToBatchDto(array, marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
+			logger.info("码管理绑定积分入参：{}", JSON.toJSONString(batchInfoparams));
+			RestResult bindBatchBody=getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(batchInfoparams);
+			logger.info("码管理绑定积分返回：{}", JSON.toJSONString(bindBatchBody));
+			int bindBatchstate=bindBatchBody.getState();
 			if (200!=bindBatchstate) {
 				throw new SuperCodeException("积分设置时根据生码批次绑定url失败："+bindBatchBody, 500);
 			}

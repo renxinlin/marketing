@@ -3,12 +3,7 @@ package com.jgw.supercodeplatform.burypoint.prizewheels.service.set;
 import com.jgw.supercodeplatform.burypoint.prizewheels.dto.outerchain.BuryPointOuterChainTcDto;
 import com.jgw.supercodeplatform.burypoint.prizewheels.mapper.BuryPointOuterChainTcMapper;
 import com.jgw.supercodeplatform.burypoint.prizewheels.model.BuryPointOuterChainTc;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +26,9 @@ public class BuryPointOuterChainTcService {
         buryPointOuterChainTc.setOrganizationId(user.getOrganizationId());
         buryPointOuterChainTc.setOrganizationName(user.getOrganizationName());
         buryPointOuterChainTc.setThirdUrl(buryPointOuterChainTcDto.getThirdUrl());
-        buryPointOuterChainTc.setActivityId(buryPointOuterChainTcDto.getActivityId());
+        buryPointOuterChainTc.setWheelsId(buryPointOuterChainTcDto.getWheelsId());
         buryPointOuterChainTc.setCreateDate(new Date());
+        buryPointOuterChainTc.setMemberType(user.getMemberType());
         try {
             buryPointOuterChainTcMapper.insert(buryPointOuterChainTc);
         } catch (Exception e) {
