@@ -20,12 +20,12 @@ import java.util.List;
 public class WebConfig  extends WebMvcConfigurerAdapter{
     @Autowired
     SecurityParamResolver securityParamResolver;
-
-
+    @Autowired
+    NoRepeatTransaction noRepeatTransaction;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
-        registry.addInterceptor(new NoRepeatTransaction()).addPathPatterns("/marketing/h5/salerRuleExchange/exchange");
+        registry.addInterceptor(noRepeatTransaction).addPathPatterns("/marketing/h5/salerRuleExchange/exchange");
 
 
         super.addInterceptors(registry);
