@@ -4,6 +4,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.constants.ActivityTypeConsta
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
@@ -19,6 +20,7 @@ import java.io.Serializable;
  * @author renxinlin
  * @since 2019-10-09
  */
+@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
@@ -87,7 +89,11 @@ public class Product implements Serializable {
         if(StringUtils.isEmpty(this.sbatchId)){
             this.sbatchId = sbatchId;
         }else {
-            this.sbatchId = this.sbatchId + SPLIT_SYMBOL + sbatchId;
+            if(!this.sbatchId.contains(sbatchId)){
+                this.sbatchId = this.sbatchId + SPLIT_SYMBOL + sbatchId;
+            }else {
+                log.info("生码批次重复 this.sbatchId.contains(sbatchId)  => this.{}.contains({}}) ",this.sbatchId,sbatchId);
+            }
         }
 
     }
