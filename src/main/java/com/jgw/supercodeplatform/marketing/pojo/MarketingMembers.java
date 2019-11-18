@@ -44,10 +44,10 @@ public class MarketingMembers {
     private Byte deviceType;// 设备来源
     private String loginName;//2.0登录用户名
     private String password;//2.0登录用户密码
-    private Integer version;//0为3.0原会员1为2.0迁移会员
-    private String detailAdress;//详细地址
+    private Byte version;//0为3.0原会员1为2.0迁移会员
+    private String detailAddress;//详细地址
     private String iDNumber;//身份证
-    private String registrationApproach;//注册途径
+    private Byte registrationApproach;//注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、"外部网站 8、码上淘 9、短信 10、微盟
     private Integer totalIntegral;//累计积分
 
     public String getCityCode() {
@@ -315,20 +315,12 @@ public class MarketingMembers {
         this.openid = openid;
     }
 
-    public Integer getVersion() {
+    public Byte getVersion() {
         return version;
     }
 
-    public void setVersion(Integer version) {
+    public void setVersion(Byte version) {
         this.version = version;
-    }
-
-    public String getDetailAdress() {
-        return detailAdress;
-    }
-
-    public void setDetailAdress(String detailAdress) {
-        this.detailAdress = detailAdress;
     }
 
     public String getiDNumber() {
@@ -339,11 +331,11 @@ public class MarketingMembers {
         this.iDNumber = iDNumber;
     }
 
-    public String getRegistrationApproach() {
+    public Byte getRegistrationApproach() {
         return registrationApproach;
     }
 
-    public void setRegistrationApproach(String registrationApproach) {
+    public void setRegistrationApproach(Byte registrationApproach) {
         this.registrationApproach = registrationApproach;
     }
 
@@ -353,5 +345,13 @@ public class MarketingMembers {
 
     public void setTotalIntegral(Integer totalIntegral) {
         this.totalIntegral = totalIntegral;
+    }
+
+    public String getDetailAddress() {
+        return detailAddress;
+    }
+
+    public void setDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
     }
 }

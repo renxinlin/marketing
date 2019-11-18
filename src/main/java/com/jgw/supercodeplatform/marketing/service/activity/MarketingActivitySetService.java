@@ -478,7 +478,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			}
 			JSONArray arr = obj.getJSONArray("results");
 			List<SbatchUrlDto> paramsList = commonService.getUrlToBatchDto(arr,bindUrl,
-					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType(), RoleTypeEnum.GUIDE.getMemberType());
+					BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType(), referenceRole);
 			if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
 				RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
 				logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
