@@ -557,7 +557,7 @@ public class MarketingActivitySalerSetService   {
 
 
 	private void saveProductBatchsWithSaler(List<MarketingActivityProductParam> maProductParams, Long activitySetId) throws SuperCodeException {
-		mProductMapper.deleteByActivitySetId(activitySetId);
+
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
 //		Map<String, MarketingActivityProduct> activityProductMap = new HashMap<String, MarketingActivityProduct>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
@@ -583,6 +583,7 @@ public class MarketingActivitySalerSetService   {
 				}
 			});
 		}
+		mProductMapper.deleteByActivitySetId(activitySetId);
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
