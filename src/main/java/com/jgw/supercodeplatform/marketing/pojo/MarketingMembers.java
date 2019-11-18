@@ -45,7 +45,7 @@ public class MarketingMembers {
     private String loginName;//2.0登录用户名
     private String password;//2.0登录用户密码
     private Integer version;//0为3.0原会员1为2.0迁移会员
-    private String detailAdress;//详细地址
+    private String detailAddress;//详细地址
     private String iDNumber;//身份证
     private String registrationApproach;//注册途径
     private Integer totalIntegral;//累计积分
@@ -323,14 +323,6 @@ public class MarketingMembers {
         this.version = version;
     }
 
-    public String getDetailAdress() {
-        return detailAdress;
-    }
-
-    public void setDetailAdress(String detailAdress) {
-        this.detailAdress = detailAdress;
-    }
-
     public String getiDNumber() {
         return iDNumber;
     }
@@ -353,5 +345,13 @@ public class MarketingMembers {
 
     public void setTotalIntegral(Integer totalIntegral) {
         this.totalIntegral = totalIntegral;
+    }
+
+    public String getDetailAddress() {
+        return detailAddress;
+    }
+
+    public void setDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
     }
 }
