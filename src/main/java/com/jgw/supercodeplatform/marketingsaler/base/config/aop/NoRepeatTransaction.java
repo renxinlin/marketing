@@ -1,5 +1,8 @@
 package com.jgw.supercodeplatform.marketingsaler.base.config.aop;
 
+import com.alibaba.fastjson.JSON;
+import com.jgw.supercodeplatform.interceptor.InterceptorCommon;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.IpUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
@@ -27,9 +30,10 @@ public class NoRepeatTransaction implements HandlerInterceptor {
         String exists = redisUtil.get(uniqueKey);
         if(StringUtils.isEmpty(exists)){
             // todo 抽到外部配置
-            boolean set = redisUtil.set(MARKETING_UNIQUE + uniqueKey, EXIST,5L);
+            boolean set = redisUtil.set(MARKETING_UNIQUE + uniqueKey, EXIST,3L);
             return true;
         }
+        response.getWriter().write(JSON.toJSONString(new RestResult( 500, "请勿重复提交", (Object)null)));
         return false;
     }
 
