@@ -20,6 +20,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity;
 import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity.OuterCode;
 import com.jgw.supercodeplatform.marketing.enums.CodeTypeEnum;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import org.apache.commons.collections.MapUtils;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -441,11 +443,21 @@ public class CommonService {
 	public String checkCodeValid(String codeId, String codeTypeId) {
 		Map<String, String> headerparams = new HashMap<String, String>();
 		headerparams.put("token",commonUtil.getCodePlatformToken() );
+		logger.info("根据码和码制获取码平台码信息入参outerCodeId{}，codeTypeId{}：",codeId,codeTypeId);
+
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
 		logger.info("根据码和码制获取码平台码信息："+responseEntity.toString());
+		if(responseEntity.getStatusCode() != HttpStatus.OK ){
+			throw new BizRuntimeException("码管理调用获取批次信息服务调用异常！");
+		}
+
 		String codeBody=responseEntity.getBody();
 		JSONObject jsonCodeBody=JSONObject.parseObject(codeBody);
-		String sBatchId=jsonCodeBody.getJSONObject("results").getString("sBatchId");
+		JSONObject results = jsonCodeBody.getJSONObject("results");
+		if(results == null){
+			throw new BizRuntimeException("码管理调用获取批次信息异常！！");
+		}
+		String sBatchId=results.getString("sBatchId");
 		if (StringUtils.isBlank(sBatchId)) {
 			throw  new SuperCodeExtException("对不起,该码不存在",500);
 		}
