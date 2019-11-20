@@ -37,6 +37,8 @@ public class CodeManagerService {
         log.info("准备获取外码对应的产品信息{}",outCodeInfoDto);
         // 防伪码转营销码
         outCodeInfoDto = codeFromfakeToMarket(outCodeInfoDto);
+        log.info("转换后的码:{}",JSONObject.toJSONString(outCodeInfoDto));
+
         if (outCodeInfoDto == null) return null;
         Asserts.check(UserConstants.MARKETING_CODE_TYPE.equals(outCodeInfoDto.getCodeTypeId())|| UserConstants.MARKETING_CODE_TYPE_13.equals(outCodeInfoDto.getCodeTypeId()),"非营销码");
 
@@ -71,7 +73,9 @@ public class CodeManagerService {
                 Object results = niuniuResult.getResults();
                 for (Object feignResult : (List<?>) results) {
                     // 只会有一个元素返回【对方服务同时支持其他服务调用】
-                    return modelMapper.map(feignResult,OutCodeInfoDto.class);
+                    OutCodeInfoDto marketOutCodeInfoDto = modelMapper.map(feignResult, OutCodeInfoDto.class);
+                    log.info("防伪转营销返回:{}",JSONObject.toJSONString(niuniuResult));
+                    return marketOutCodeInfoDto;
                 }
             }
 
