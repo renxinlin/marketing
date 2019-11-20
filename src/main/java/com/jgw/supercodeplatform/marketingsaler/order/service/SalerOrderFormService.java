@@ -181,7 +181,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                         ,addColumns
                         ,updateColumns
                 );
-                dynamicMapper.alterTableAndDropOrAddColumnsOrUpdate(SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()),deleteColumns,addColumns,updateColumns);
+                dynamicMapper.alterTableAndDropOrAddOrUpdate(SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()),deleteColumns,addColumns,updateColumns);
 
             } catch (Exception e) {
                 e.printStackTrace();
