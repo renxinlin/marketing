@@ -52,6 +52,12 @@ public class MarketingMembersAddParam {
     @ApiModelProperty(value = "设备类型 1微信2 支付宝3app 4 浏览器5 qq6其他")
     private  Byte deviceType;
 
+    @ApiModelProperty(value = "详细地址")
+    private String detailAddress;
+
+    @ApiModelProperty(value = "身份证号")
+    private String iDNumber;
+
     public Byte getDeviceType() {
         return deviceType;
     }
@@ -174,5 +180,20 @@ public class MarketingMembersAddParam {
 	public void setpCCcode(String pCCcode) {
 		this.pCCcode = pCCcode;
 	}
-    
+
+    public String getDetailAddress() {
+        return detailAddress;
+    }
+
+    public void setDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
+    }
+
+    public String getiDNumber() {
+        return iDNumber;
+    }
+
+    public void setiDNumber(String iDNumber) {
+        this.iDNumber = iDNumber;
+    }
 }
