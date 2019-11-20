@@ -168,7 +168,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 List<Long> ids = updateOrderForms.stream().map(data -> data.getId()).collect(Collectors.toList());
                 List<SalerOrderForm> oldSalerOrderForms = baseMapper.selectBatchIds(ids);
                 Asserts.check(ids.size() == oldSalerOrderForms.size(),"字段id不存在");
-                updateColumns  =  SalerOrderTransfer.setColumnInfoWhenUpdate(salerOrderForms, oldSalerOrderForms,commonUtil.getOrganizationId());
+                updateColumns  =  SalerOrderTransfer.setColumnInfoWhenUpdate(updateOrderForms, oldSalerOrderForms,commonUtil.getOrganizationId());
 
             }
 
