@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketing.dto.members;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -34,6 +35,17 @@ public class MarketingMembersUpdateParam {
     @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     private Date integralReceiveDate; // 最新一次积分领取时间
     private String wechatHeadImgUrl;
+
+    //如下2.0迁移字段
+    @ApiModelProperty(value = "2.0详细地址")
+    private String detailAddress;
+    @ApiModelProperty(value = "2.0身份证号")
+    private String iDNumber;
+    @ApiModelProperty(value = "2.0注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、\"外部网站 8、码上淘 9、短信 10、微盟")
+    private Byte registrationApproach;//注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、"外部网站 8、码上淘 9、短信 10、微盟
+    @ApiModelProperty(value = "2.0累计积分(不可编辑)")
+    private Integer totalIntegral;//累计积分
+
 
 
     public String getVerificationCode() {
@@ -231,4 +243,35 @@ public class MarketingMembersUpdateParam {
     }
 
 
+    public String getDetailAddress() {
+        return detailAddress;
+    }
+
+    public void setDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
+    }
+
+    public String getiDNumber() {
+        return iDNumber;
+    }
+
+    public void setiDNumber(String iDNumber) {
+        this.iDNumber = iDNumber;
+    }
+
+    public Byte getRegistrationApproach() {
+        return registrationApproach;
+    }
+
+    public void setRegistrationApproach(Byte registrationApproach) {
+        this.registrationApproach = registrationApproach;
+    }
+
+    public Integer getTotalIntegral() {
+        return totalIntegral;
+    }
+
+    public void setTotalIntegral(Integer totalIntegral) {
+        this.totalIntegral = totalIntegral;
+    }
 }
