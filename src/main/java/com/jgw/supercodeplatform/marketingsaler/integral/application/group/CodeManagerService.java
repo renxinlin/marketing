@@ -53,6 +53,7 @@ public class CodeManagerService {
             return null;
         }
         ProductInfoByCodeDto results =  modelMapper.map(restResult.getResults(),ProductInfoByCodeDto.class);
+        results.setMarketingCode(outCodeInfoDto);
         return results;
     }
 

@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketingsaler.integral.application.group.dto;
 
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -14,5 +15,8 @@ public class ProductInfoByCodeDto {
     private String organizationFullName;
     private String productBatch;
     private String productName;
+
+
+    private OutCodeInfoDto marketingCode;
 
 }
