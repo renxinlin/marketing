@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(name = "${platform.code.mircoservice.name:platform-ms-codetest}",fallback = CodeManagerFromFadeToMarketingFallbackFeign.class )
 public interface CodeManagerFromFadeToMarketingFeign {
     // object 会返回2种类型
-    @RequestMapping(value = "/outer/info/inner/need",method = RequestMethod.GET)
+    @RequestMapping(value = "/outer/info/inner/need",method = RequestMethod.POST)
     RestResult<Object> getCodeManagerFromFadeToMarketingByCode(FromFakeOutCodeToMarketingInfoDto outCodeInfoDto);
 
 }

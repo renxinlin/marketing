@@ -10,6 +10,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeI
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CodeManagerFeign;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.dto.ProductInfoByCodeDto;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CodeManagerFromFadeToMarketingFeign;
+import feign.ResponseMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.modelmapper.ModelMapper;
@@ -17,11 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Slf4j
 @Service
 public class CodeManagerService {
+
     @Autowired
     private CodeManagerFeign codeManagerFeign;
     @Autowired
@@ -60,12 +63,15 @@ public class CodeManagerService {
             needsCodeType.add(UserConstants.MARKETING_CODE_TYPE_13);
             fromFakeOutCodeToMarketingInfoDto.setNeedCodeTypeIds(needsCodeType);
             // 获取防伪码对应营销码
+            log.info("防伪转营销入参:{}",JSONObject.toJSONString(fromFakeOutCodeToMarketingInfoDto));
             RestResult<Object> niuniuResult = codeManagerFromFadeToMarketingFeign.getCodeManagerFromFadeToMarketingByCode(fromFakeOutCodeToMarketingInfoDto);
+            log.info("防伪转营销出参:{}",JSONObject.toJSONString(niuniuResult));
+
             if(niuniuResult != null && niuniuResult.getState() == 200 && niuniuResult.getResults() != null ) {
                 Object results = niuniuResult.getResults();
                 for (Object feignResult : (List<?>) results) {
                     // 只会有一个元素返回【对方服务同时支持其他服务调用】
-                    return OutCodeInfoDto.class.cast(feignResult);
+                    return modelMapper.map(feignResult,OutCodeInfoDto.class);
                 }
             }
 
