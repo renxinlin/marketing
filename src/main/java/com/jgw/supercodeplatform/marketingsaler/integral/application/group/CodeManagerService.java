@@ -54,7 +54,7 @@ public class CodeManagerService {
         return results;
     }
 
-    private OutCodeInfoDto codeFromfakeToMarket(OutCodeInfoDto outCodeInfoDto) {
+    public OutCodeInfoDto codeFromfakeToMarket(OutCodeInfoDto outCodeInfoDto) {
         if(UserConstants.MARKETING_CODE_TYPE_FADE.equals(outCodeInfoDto.getCodeTypeId())){
             // 创建入参
             FromFakeOutCodeToMarketingInfoDto fromFakeOutCodeToMarketingInfoDto = modelMapper.map(outCodeInfoDto, FromFakeOutCodeToMarketingInfoDto.class);
