@@ -147,14 +147,28 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 // 产品需求..........................................
                 throw new BizRuntimeException("请输入中文或英文或其他合法字符");
             }
+            if(!CollectionUtils.isEmpty(pojos)){
+                this.saveBatch(pojos);
+            }
         }else{
             // 数据库字段名
             List<String> createsMetadatasColumnName = createsMetadatas.stream().map(createsMetadata -> createsMetadata.getColumnName()).collect(Collectors.toList());
             // 网页新增
             List<String> withDefaultsalerOrderFormColumnNames = withDefaultsalerOrderFormDtos.stream().map(withDefaultsalerOrderFormDto -> withDefaultsalerOrderFormDto.getColumnName()).collect(Collectors.toList());
 
+            // add column元信息实体集合
             List<String> addColumns = modelMapper.map(withDefaultsalerOrderFormColumnNames,List.class);
             addColumns.removeIf(addColumn->createsMetadatasColumnName.contains(addColumn));
+            List<SalerOrderForm> addColumnPojos = new ArrayList<>();
+            if(!CollectionUtils.isEmpty(addColumns)){
+                for(SalerOrderFormDto salerOrderFormDto:withDefaultsalerOrderFormDtos){
+                    if(addColumns.contains(salerOrderFormDto.getColumnName())){
+                        SalerOrderForm add = modelMapper.map(salerOrderFormDto, SalerOrderForm.class);
+                        addColumnPojos.add(add);
+                    }
+
+                }
+            }
 
             List<String> deleteColumns = modelMapper.map(createsMetadatasColumnName,List.class);
             // 去除不需要删除的字段
@@ -197,11 +211,12 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 this.updateBatchById(SalerOrderTransfer.initUpdateSalerOrderFormInfo(updateColumns));
             }
 
+            if(!CollectionUtils.isEmpty(addColumnPojos)){
 
+                this.saveBatch(addColumnPojos);
+            }
         }
-        if(!CollectionUtils.isEmpty(pojos)){
-            this.saveBatch(pojos);
-        }
+
 
     }
 
