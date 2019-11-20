@@ -74,6 +74,7 @@ public class CodeManagerService {
                 for (Object feignResult : (List<?>) results) {
                     // 只会有一个元素返回【对方服务同时支持其他服务调用】
                     OutCodeInfoDto marketOutCodeInfoDto = modelMapper.map(feignResult, OutCodeInfoDto.class);
+                    log.info("防伪转营销返回:{}",JSONObject.toJSONString(niuniuResult));
                     return marketOutCodeInfoDto;
                 }
             }
