@@ -434,6 +434,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		members.setUserName(membersUpdateParam.getUserName());
 		members.setId(membersUpdateParam.getId());
 		members.setIsRegistered((byte)1);
+		if (StringUtils.isNotBlank(membersUpdateParam.getiDNumber())) {
+			members.setiDNumber(membersUpdateParam.getiDNumber());
+		}
+		if (StringUtils.isNotBlank(membersUpdateParam.getDetailAddress())) {
+			members.setDetailAddress(membersUpdateParam.getDetailAddress());
+		}
 		int upNum = marketingMembersMapper.updateById(members);
 		String openid = membersUpdateParam.getOpenid();
 		if (StringUtils.isBlank(openid)) {
