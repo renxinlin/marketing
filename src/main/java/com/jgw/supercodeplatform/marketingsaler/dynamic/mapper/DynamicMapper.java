@@ -43,9 +43,14 @@ public interface DynamicMapper extends CommonSql {
             + " ADD COLUMN ${item} varchar(255) NULL "
             + " </foreach> "
             + " </if> "
-            + ";"
+
             + " <if  test='list2 !=null and list2.size() > 0 ' > "
-            + " ALTER TABLE ${tableName} "
+            + " <if  test=' (list !=null and list.size() > 0 ) or ( list1 !=null and list1.size() > 0 ) ' > "
+            + " , "
+            + " </if> "
+
+
+            + " <if  test='list2 !=null and list2.size() > 0 ' > "
             + " <foreach collection='list2' item='item' index='index'  open='  ' close='  ' separator=',' > "
             + " CHANGE COLUMN ${item.oldColumnName} ${item.newColumnName}   varchar(255) NULL  DEFAULT NULL "
             + " </foreach> "
