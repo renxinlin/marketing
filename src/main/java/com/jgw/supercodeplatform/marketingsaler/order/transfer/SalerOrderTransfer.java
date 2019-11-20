@@ -155,7 +155,7 @@ public class SalerOrderTransfer {
         return updateColumns;
     }
 
-    public static Collection<SalerOrderForm> initUpdateSalerOrderFormInfo(List<ChangeColumDto> updateColumns) {
+    public static List<SalerOrderForm> initUpdateSalerOrderFormInfo(List<ChangeColumDto> updateColumns) {
         List<SalerOrderForm> list = new ArrayList<>();
         updateColumns.forEach(updateColumn->{
             SalerOrderForm salerOrderForm = new SalerOrderForm();

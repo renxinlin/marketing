@@ -23,6 +23,7 @@ import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,9 +76,22 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 updateids.add(salerOrderForm.getId());
             }
         };
+        // 动态库
+        Map map = deleteOrAdd(deleteOrAddForms, updateids);
+        List<SalerOrderForm> salerOrderForms1 = updateName(updateOrderForms);// 只能更新名称 数据库类型字段等都不可以
+        // 主库
+        List<String> deleteColumns = (List<String>) map.get("deleteColumns");
+        if(!CollectionUtils.isEmpty(deleteColumns)){
+            baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).notIn(!CollectionUtils.isEmpty(updateids),"id",updateids).getWrapper());
+        }
+        List<SalerOrderForm> pojos = (List<SalerOrderForm>) map.get("pojos");
+        if(!CollectionUtils.isEmpty(pojos)){
+            this.saveBatch(pojos);
+        }
 
-        deleteOrAdd(deleteOrAddForms,updateids);
-        updateName(updateOrderForms); // 只能更新名称 数据库类型字段等都不可以
+        if(!CollectionUtils.isEmpty(salerOrderForms1)){
+            this.updateBatchById(salerOrderForms1);
+        }
 
     }
 
@@ -103,16 +117,18 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
     }
 
-    private void updateName(List<SalerOrderFormSettingDto> salerOrderForms) {
+    private List<SalerOrderForm>  updateName(List<SalerOrderFormSettingDto> salerOrderForms) {
         if(CollectionUtils.isEmpty(salerOrderForms)){
-            return;
+            return null;
         }
         List<Long> ids = salerOrderForms.stream().map(data -> data.getId()).collect(Collectors.toList());
         List<SalerOrderForm> oldSalerOrderForms = baseMapper.selectBatchIds(ids);
         Asserts.check(ids.size() == oldSalerOrderForms.size(),"字段id不存在");
         List<ChangeColumDto> updateColumns =  SalerOrderTransfer.setColumnInfoWhenUpdate(salerOrderForms, oldSalerOrderForms,commonUtil.getOrganizationId());
         dynamicMapper.alterTableAndUpdateColumns(updateColumns.get(0).getTableName(),updateColumns);
-        this.updateBatchById(SalerOrderTransfer.initUpdateSalerOrderFormInfo(updateColumns));
+        List<SalerOrderForm> salerOrderForms1 = SalerOrderTransfer.initUpdateSalerOrderFormInfo(updateColumns);
+
+        return salerOrderForms1;
      }
 
     /**
@@ -120,9 +136,10 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
      * @param salerOrderForms
      * @param updateids 更新的数据不能被删除
      */
-    private void deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms,List<Long> updateids) {
+    private   Map deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms,List<Long> updateids) {
+        Map map = new HashMap();
         if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(updateids)){
-            return;
+            return null;
         }
         // 被更新的数据不删除
         List<SalerOrderForm> undeleteBecauseofUpdates = new ArrayList<>();
@@ -177,13 +194,19 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 e.printStackTrace();
                 throw new BizRuntimeException("请输入中文或英文或其他合法字符");
             }
-            if(!CollectionUtils.isEmpty(deleteColumns)){
-                baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).notIn(!CollectionUtils.isEmpty(updateids),"id",updateids).getWrapper());
-            }
+
+            map.put("deleteColumns",deleteColumns);
+//            if(!CollectionUtils.isEmpty(deleteColumns)){
+//                baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).notIn(!CollectionUtils.isEmpty(updateids),"id",updateids).getWrapper());
+//            }
 
         }
-        this.saveBatch(pojos);
+
+        map.put("pojos",pojos);
+
+        return map ;
     }
+
 
     private void log(List<String> addColumns, List<String> deleteColumns) {
         StringBuffer sbadd =new StringBuffer("");
