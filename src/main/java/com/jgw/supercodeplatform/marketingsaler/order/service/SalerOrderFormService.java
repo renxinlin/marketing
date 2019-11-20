@@ -65,7 +65,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         valid(salerOrderForms);
         List<SalerOrderFormSettingDto> updateOrderForms = new ArrayList<>();
         List<SalerOrderFormSettingDto> deleteOrAddForms = new ArrayList<>();
-        log.info("接收的参数{}",salerOrderForms);
+        log.info("动态表接收的网页参数{}",salerOrderForms);
         List updateids = new ArrayList();
         for(SalerOrderFormSettingDto salerOrderForm : salerOrderForms){
             if(salerOrderForm.getId() == null || salerOrderForm.getId() <= 0 ){
@@ -76,7 +76,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             }
         };
 
-        deleteOrAdd(deleteOrAddForms,updateids,updateOrderForms);
+        deleteOrAddOrUpdate(deleteOrAddForms,updateids,updateOrderForms);
 
     }
 
@@ -102,20 +102,20 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
     }
 
-    private void updateName(List<SalerOrderFormSettingDto> salerOrderForms) {
-
-    }
 
     /**
+     * 根据新增和更新找出需要删除的
+     * @param salerOrderForms 新增
+     * @param updateids 更新
      *
-     * @param salerOrderForms
-     * @param updateids 更新的数据不能被删除
+     * @param updateOrderForms 更新
      */
-    private void deleteOrAdd(List<SalerOrderFormSettingDto> salerOrderForms,List<Long> updateids,List<SalerOrderFormSettingDto> updateOrderForms) {
-        if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(updateids)){
+    private void deleteOrAddOrUpdate(List<SalerOrderFormSettingDto> salerOrderForms,List<Long> updateids,List<SalerOrderFormSettingDto> updateOrderForms) {
+        if(CollectionUtils.isEmpty(salerOrderForms) && CollectionUtils.isEmpty(updateOrderForms)){
             return;
         }
         // 被更新的数据不删除
+
         List<SalerOrderForm> undeleteBecauseofUpdates = new ArrayList<>();
         if(!CollectionUtils.isEmpty(updateids)){
             undeleteBecauseofUpdates = baseMapper.selectBatchIds(updateids);
@@ -164,7 +164,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
 
             List<ChangeColumDto> updateColumns = null;
-            if(CollectionUtils.isEmpty(updateOrderForms)){
+            if(!CollectionUtils.isEmpty(updateOrderForms)){
                 List<Long> ids = updateOrderForms.stream().map(data -> data.getId()).collect(Collectors.toList());
                 List<SalerOrderForm> oldSalerOrderForms = baseMapper.selectBatchIds(ids);
                 Asserts.check(ids.size() == oldSalerOrderForms.size(),"字段id不存在");
@@ -181,7 +181,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                         ,addColumns
                         ,updateColumns
                 );
-                dynamicMapper.alterTableAndDropOrAddColumns(SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()),deleteColumns,addColumns,updateColumns);
+                dynamicMapper.alterTableAndDropOrAddColumnsOrUpdate(SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()),deleteColumns,addColumns,updateColumns);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -192,11 +192,17 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             if(!CollectionUtils.isEmpty(deleteColumns)){
                 baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).notIn(!CollectionUtils.isEmpty(updateids),"id",updateids).getWrapper());
             }
-            this.updateBatchById(SalerOrderTransfer.initUpdateSalerOrderFormInfo(updateColumns));
+
+            if(!CollectionUtils.isEmpty(updateColumns)){
+                this.updateBatchById(SalerOrderTransfer.initUpdateSalerOrderFormInfo(updateColumns));
+            }
 
 
         }
-        this.saveBatch(pojos);
+        if(!CollectionUtils.isEmpty(pojos)){
+            this.saveBatch(pojos);
+        }
+
     }
 
     private void log(List<String> addColumns, List<String> deleteColumns) {

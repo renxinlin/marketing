@@ -52,18 +52,18 @@ public interface DynamicMapper extends CommonSql {
             + " </if> "
 
             + endScript)
-    int alterTableAndDropOrAddColumns(@Param("tableName") String tableName, @Param("list") List<String> deleteColumnNames,@Param("list1") List<String> addcolumnNames, @Param("list2") List<ChangeColumDto> updateColumnNames);
+    int alterTableAndDropOrAddColumnsOrUpdate(@Param("tableName") String tableName, @Param("list") List<String> deleteColumnNames,@Param("list1") List<String> addcolumnNames, @Param("list2") List<ChangeColumDto> updateColumnNames);
 
 
-
-    @Update(startScript
-
-
-
-
-            + endScript)
-    int alterTableAndUpdateColumns(@Param("tableName") String tableName, @Param("list") List<ChangeColumDto> updateColumnNames);
-
+//
+//    @Update(startScript
+//
+//
+//
+//
+//            + endScript)
+//    int alterTableAndUpdateColumns(@Param("tableName") String tableName, @Param("list") List<ChangeColumDto> updateColumnNames);
+//
 
 
     @Select(startScript
