@@ -48,6 +48,8 @@ public interface DynamicMapper extends CommonSql {
             + " <if  test=' (list !=null and list.size() > 0 ) or ( list1 !=null and list1.size() > 0 ) ' > "
             + " , "
             + " </if> "
+            + " </if> "
+
 
 
             + " <if  test='list2 !=null and list2.size() > 0 ' > "
