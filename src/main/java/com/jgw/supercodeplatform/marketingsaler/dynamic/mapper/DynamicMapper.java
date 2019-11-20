@@ -43,17 +43,20 @@ public interface DynamicMapper extends CommonSql {
             + " ADD COLUMN ${item} varchar(255) NULL "
             + " </foreach> "
             + " </if> "
+            + ";"
+            + " <if  test='list2 !=null and list2.size() > 0 ' > "
+            + " ALTER TABLE ${tableName} "
+            + " <foreach collection='list2' item='item' index='index'  open='  ' close='  ' separator=',' > "
+            + " CHANGE COLUMN ${item.oldColumnName} ${item.newColumnName}   varchar(255) NULL  DEFAULT NULL "
+            + " </foreach> "
+            + " </if> "
 
             + endScript)
-    int alterTableAndDropOrAddColumns(@Param("tableName") String tableName, @Param("list") List<String> deleteColumnNames,@Param("list1") List<String> addcolumnNames);
+    int alterTableAndDropOrAddColumns(@Param("tableName") String tableName, @Param("list") List<String> deleteColumnNames,@Param("list1") List<String> addcolumnNames, @Param("list2") List<ChangeColumDto> updateColumnNames);
 
 
 
     @Update(startScript
-            + " ALTER TABLE ${tableName} "
-            + " <foreach collection='list' item='item' index='index'  open='  ' close='  ' separator=',' > "
-            + " CHANGE COLUMN ${item.oldColumnName} ${item.newColumnName}   varchar(255) NULL  DEFAULT NULL "
-            + " </foreach> "
 
 
 
