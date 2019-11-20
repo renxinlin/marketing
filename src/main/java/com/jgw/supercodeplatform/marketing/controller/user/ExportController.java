@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +44,7 @@ public class ExportController extends CommonUtil {
     @Value("{\"id\":\"序号\",\"mobile\":\"手机\", \"userId\":\"用户Id\",\"userName\":\"用户姓名\",\"sex\":\"性别\", \"birthday\":\"生日\",\"provinceName\":\"省名称\",\"countyName\":\"县名称\",\"cityName\":\"市名称\",\"createDate\":\"建立日期\",\"updateDate\":\"修改日期\",\"customerName\":\"门店名称\",\"customerId\":\"门店编码\",\"pCCcode\":\"省市区前端编码\",\"memberType\":\"类型\",\"state\":\"用户状态\",\"deviceType\":\"扫码设备类型\",\"haveIntegral\":\"添加可用积分\"}")
     private String MARKET_SELEMEMBERS_EXCEL_FIELD_MAP;
 
-    @GetMapping(value = "/exportMemberInfo")
+    @PostMapping(value = "/exportMemberInfo")
     @ApiOperation(value = "导出会员资料")
     @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "token",name="super-token")})
     public void exportInfo(HttpServletResponse response) throws Exception {
@@ -60,7 +61,7 @@ public class ExportController extends CommonUtil {
     }
 
 
-    @GetMapping(value = "/exportSalemembers")
+    @PostMapping(value = "/exportSalemembers")
     @ApiOperation(value = "导出导购员资料")
     @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "token",name="super-token")})
     public void exportSalemembers(HttpServletResponse response) throws Exception {
