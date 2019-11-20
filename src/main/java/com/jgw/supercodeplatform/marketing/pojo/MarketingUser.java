@@ -96,6 +96,21 @@ public class MarketingUser {
      */
     private Integer version;
 
+    /**
+     * 所属机构代码
+     */
+    private String mechanismID;
+
+    /**
+     * 所属机构
+     */
+    private String mechanismName;
+
+    /**
+     * 机构类型
+     */
+    private String mechanismType;
+
     public Integer getHaveIntegral() {
         return haveIntegral;
     }
@@ -335,5 +350,29 @@ public class MarketingUser {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public String getMechanismID() {
+        return mechanismID;
+    }
+
+    public void setMechanismID(String mechanismID) {
+        this.mechanismID = mechanismID;
+    }
+
+    public String getMechanismName() {
+        return mechanismName;
+    }
+
+    public void setMechanismName(String mechanismName) {
+        this.mechanismName = mechanismName;
+    }
+
+    public String getMechanismType() {
+        return mechanismType;
+    }
+
+    public void setMechanismType(String mechanismType) {
+        this.mechanismType = mechanismType;
     }
 }
