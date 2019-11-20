@@ -60,7 +60,10 @@ public class CodeManagerService {
             needsCodeType.add(UserConstants.MARKETING_CODE_TYPE_13);
             fromFakeOutCodeToMarketingInfoDto.setNeedCodeTypeIds(needsCodeType);
             // 获取防伪码对应营销码
+            log.info("防伪转营销入参:{}",JSONObject.toJSONString(fromFakeOutCodeToMarketingInfoDto));
             RestResult<Object> niuniuResult = codeManagerFromFadeToMarketingFeign.getCodeManagerFromFadeToMarketingByCode(fromFakeOutCodeToMarketingInfoDto);
+            log.info("防伪转营销出参:{}",JSONObject.toJSONString(niuniuResult));
+
             if(niuniuResult != null && niuniuResult.getState() == 200 && niuniuResult.getResults() != null ) {
                 Object results = niuniuResult.getResults();
                 for (Object feignResult : (List<?>) results) {
