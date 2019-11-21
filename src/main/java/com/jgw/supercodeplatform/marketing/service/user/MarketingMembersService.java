@@ -115,11 +115,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	private CommonService commonService;
 
 	@Override
-	protected List<Map<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
+	protected List<HashMap<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
 
 		String listSQl = listSql(searchParams,false);
 		logger.info("listSQL----"+listSQl);
-		List<Map<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
+		List<HashMap<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
 		if (data != null) {
 			data.stream().forEach(dat -> {
 				if(Boolean.TRUE.equals(dat.get("Sex"))){
