@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -328,8 +329,24 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 					deleteProductBatchList.add(sbatchUrlDto);
 				}
 			}
+			//对于用户积分，只需要绑定productId和batchId,不需要加productBatchId;
+			Map<String, SbatchUrlUnBindDto> sbatchUrlUnbindDtoMap = new HashMap<>();
+			deleteProductBatchList.forEach(sbatchUrlUnbindDto -> {
+				Long batchId = sbatchUrlUnbindDto.getBatchId();
+				String productId = sbatchUrlUnbindDto.getProductId();
+				String bpKey = batchId + "_" +productId;
+				SbatchUrlUnBindDto childSbatchUrlUnbindDto = sbatchUrlUnbindDtoMap.get(bpKey);
+				if (childSbatchUrlUnbindDto == null) {
+					childSbatchUrlUnbindDto = new SbatchUrlUnBindDto();
+					BeanUtils.copyProperties(sbatchUrlUnbindDto, childSbatchUrlUnbindDto);
+					childSbatchUrlUnbindDto.setProductBatchId(null);
+					sbatchUrlUnbindDtoMap.put(bpKey, childSbatchUrlUnbindDto);
+				}
+			});
+			List<SbatchUrlUnBindDto> sbatchUrlUnBindDtoList = new ArrayList<>(sbatchUrlUnbindDtoMap.values());
 //			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
-			RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
+			logger.info("积分请求删除绑定{}", JSON.toJSONString(sbatchUrlUnBindDtoList));
+			RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(sbatchUrlUnBindDtoList);
 			logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
 			if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
 				throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
@@ -349,8 +366,23 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		if (null!=productAndBatchGetCodeMOs && !productAndBatchGetCodeMOs.isEmpty()) {
 			JSONArray array = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken,WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
 			List<SbatchUrlDto> batchInfoparams=commonService.getUrlToBatchDto(array, marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
-			logger.info("码管理绑定积分入参：{}", JSON.toJSONString(batchInfoparams));
-			RestResult bindBatchBody=getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(batchInfoparams);
+			//对于用户积分，只需要绑定productId和batchId,不需要加productBatchId;
+			Map<String, SbatchUrlDto> sbatchUrlDtoMap = new HashMap<>();
+			batchInfoparams.forEach(sbatchUrlDto -> {
+				Long batchId = sbatchUrlDto.getBatchId();
+				String productId = sbatchUrlDto.getProductId();
+				String bpKey = batchId + "_" +productId;
+				SbatchUrlDto childSbatchUrlDto = sbatchUrlDtoMap.get(bpKey);
+				if (childSbatchUrlDto == null) {
+					childSbatchUrlDto = new SbatchUrlDto();
+					BeanUtils.copyProperties(sbatchUrlDto, childSbatchUrlDto);
+					childSbatchUrlDto.setProductBatchId(null);
+					sbatchUrlDtoMap.put(bpKey, childSbatchUrlDto);
+				}
+			});
+			List<SbatchUrlDto> sbatchUrlDtoList = new ArrayList<>(sbatchUrlDtoMap.values());
+			logger.info("码管理绑定积分入参：{}", JSON.toJSONString(sbatchUrlDtoList));
+			RestResult bindBatchBody=getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(sbatchUrlDtoList);
 			logger.info("码管理绑定积分返回：{}", JSON.toJSONString(bindBatchBody));
 			int bindBatchstate=bindBatchBody.getState();
 			if (200!=bindBatchstate) {
