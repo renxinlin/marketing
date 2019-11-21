@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.constants.OpenIntegralS
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRecord;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.service.UserService;
+import com.jgw.supercodeplatform.marketingsaler.integral.infrastructure.ErrorMsg;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.DaoSearchWithOrganizationId;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.H5SalerRuleExchangeDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
@@ -92,7 +93,7 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
     public RestResult reward(@Valid @RequestBody OutCodeInfoDto codeInfo, @ApiIgnore H5LoginVO user) throws Exception {
         // TODO 拉到application层
         ProductInfoByCodeDto productByCode = codeManagerService.getProductByCode(codeInfo);
-        Asserts.check(productByCode!=null ,"码关联信息查询数据失败...");
+        Asserts.check(productByCode!=null , ErrorMsg.no_setting_integral);
         Integer integral = rewardService.getIntegral(productByCode.getMarketingCode().getOuterCodeId(), productByCode.getMarketingCode().getCodeTypeId(),H5SalerRuleExchangeTransfer.getRewardValueObject(productByCode), user);
         return success("恭喜获得"+integral+"积分");
     }
