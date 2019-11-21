@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
-import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -26,7 +25,10 @@ import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingWxMemberMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
-import com.jgw.supercodeplatform.marketing.dto.members.*;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
@@ -116,6 +118,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	protected List<Map<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
 
 		String listSQl = listSql(searchParams,false);
+		logger.info("listSQL----"+listSQl);
 		List<Map<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
 		if (data != null) {
 			data.stream().forEach(dat -> {
@@ -164,7 +167,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					+ " OR State LIKE binary CONCAT('%','"+search+"','%') "
 					+ ")");
 		}
-		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate ");
+		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate,Version ");
 		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
 			fieldsbuf.append(",");
 			String code=marketingOrganizationPortraitListParam.getCodeId();
@@ -205,6 +208,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String from=" from marketing_members ";
 		String where=" where State!=2 and OrganizationId='"+organizationId+"'";
 		String sql=null;
+		logger.info("fieldsbuf---------"+fieldsbuf);
 		if (isCount) {
 			sql=" select count(*) "+from+where;
 			if (commonsearch) {
@@ -221,6 +225,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				sql+=" order by RegistDate desc limit "+startNum+","+pagesize;
 			}
 		}
+		logger.info("sql---------------"+sql);
 		return sql;
 	}
 
