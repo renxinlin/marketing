@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.marketing.service.common;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
@@ -59,22 +60,29 @@ public class LoginWithWechatService {
             marketingWxMember.setCreateTime(new Date());
             marketingWxMember.setCurrentUse((byte)0);
             marketingWxMember.setOpenid(openid);
-            marketingWxMember.setOrganizationFullName(userObj.getString("organizationName"));
+            marketingWxMember.setOrganizationFullName(marketingWxMerchants.getOrganizatioIdlName());
             marketingWxMember.setMemberType(MemberTypeEnums.VIP.getType());
-            marketingWxMember.setAppid(userObj.getString("appid"));
+            marketingWxMember.setAppid(marketingWxMerchants.getMchAppid());
             marketingWxMember.setJgwType(marketingWxMerchants.getBelongToJgw());
             marketingWxMember.setWxName(userObj.getString("nickname"));
             marketingWxMember.setWechatHeadImgUrl(userObj.getString("headimgurl"));
             marketingWxMember.setWxSex(userObj.getByte("sex"));
             marketingWxMemberMapper.insert(marketingWxMember);
+            UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte) 1).eq("MemberType", MemberTypeEnums.VIP.getType());
+            marketingWxMemberMapper.update(null, nouseUpdateWrapper);
+            UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
+            marketingWxMemberMapper.update(null, currentUpdateWrapper);
             return null;
         } else {
             marketingWxMember.setUpdateTime(new Date());
-            marketingWxMember.setAppid(userObj.getString("appid"));
             marketingWxMember.setWxName(userObj.getString("nickname"));
             marketingWxMember.setWechatHeadImgUrl(userObj.getString("headimgurl"));
             marketingWxMember.setWxSex(userObj.getByte("sex"));
             marketingWxMemberMapper.updateById(marketingWxMember);
+            UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte) 1).eq("MemberType", MemberTypeEnums.VIP.getType());
+            marketingWxMemberMapper.update(null, nouseUpdateWrapper);
+            UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
+            marketingWxMemberMapper.update(null, currentUpdateWrapper);
         }
         Long memberId = marketingWxMember.getMemberId();
         if (memberId == null) {
