@@ -94,7 +94,9 @@ public interface  IntegralRuleProductMapperExt extends IntegralRuleProductMapper
          + "</foreach>"
          +endScript)
 	List<IntegralRuleProduct> selectByProductIdsAndOrgId(@Param("productIds")List<String> productIds, @Param("organizationId")String organizationId);
-    
-    
+
+    @Select("select count(*) from marketing_integral_rule_product where ProductId = #{productId}")
+    long countProductId(@Param("productId") String productId);
+
     
 }

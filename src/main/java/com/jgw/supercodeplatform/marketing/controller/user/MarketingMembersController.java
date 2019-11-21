@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageR
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
 import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -44,7 +45,7 @@ public class MarketingMembersController extends CommonUtil {
             @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true),
             @ApiImplicitParam(name = "id", paramType = "query", defaultValue = "1", value = "用户Id,必需", required = true),
     })
-    public RestResult<String> getUserMember(Long id) throws Exception {
+    public RestResult<MarketingMembers> getUserMember(Long id) throws Exception {
         return new RestResult(200, "success",marketingMembersService.getMemberById(id));
     }
 
