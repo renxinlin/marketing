@@ -294,6 +294,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		dto.setCityName(city.getString(PcccodeConstants.areaName));
 		dto.setCountyName(country.getString(PcccodeConstants.areaName));
 		dto.setpCCcode(pcccode);
+		dto.setMechanismType(marketingMembersUpdateParam.getMechanismType());
 		dto.setCustomerId(marketingMembersUpdateParam.getCustomerId());
 		dto.setCustomerName(marketingMembersUpdateParam.getCustomerName());
 		// 更新操作 pcccode不为空则修改省市区全部字段
