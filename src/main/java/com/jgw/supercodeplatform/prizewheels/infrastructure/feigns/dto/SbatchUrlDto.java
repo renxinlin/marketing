@@ -22,7 +22,7 @@ public class SbatchUrlDto {
     @NotNull(message = "url必传")
     private String url;
 
-    @ApiModelProperty(value = "业务类型 业务标识（1.营销积分,2.溯源,3.防伪,4.物流，5.营销活动,6.营销抵扣券[活动锦囊，抵扣券] 7.大转盘 ,,8.签到）")
+    @ApiModelProperty(value = "业务类型 业务标识（1.营销积分,2.溯源,3.防伪,4.物流，5.营销活动【微信红包 锦鲤翻牌 】,6.营销抵扣券[活动锦囊，抵扣券] 7.大转盘 ,,8.签到）")
     @Range(min = 1,max = 6,message = "businessType的值只能为:1、2、3、4、5、6 ")
     private Integer businessType;
 

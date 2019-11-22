@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 
@@ -42,14 +43,29 @@ public class MarketingMembers {
     private Date integralReceiveDate; // 最新一次积分领取时间
     private Byte userSource;// 注册来源1招募会员
     private Byte deviceType;// 设备来源
+    //下述为2.0迁移
+    @ApiModelProperty(value = "2.0登录用户名")
     private String loginName;//2.0登录用户名
+    @ApiModelProperty(value = "2.0登录用户密码")
     private String password;//2.0登录用户密码
+    @ApiModelProperty(value = "0为3.0原会员1为2.0迁移会员")
     private Byte version;//0为3.0原会员1为2.0迁移会员
+    @ApiModelProperty(value = "详细地址")
     private String detailAddress;//详细地址
+    @ApiModelProperty(value = "身份证")
     private String iDNumber;//身份证
+    @ApiModelProperty(value = "注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、\"外部网站 8、码上淘 9、短信 10、微盟")
     private Byte registrationApproach;//注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、"外部网站 8、码上淘 9、短信 10、微盟
+    @ApiModelProperty(value = "累计积分")
     private Integer totalIntegral;//累计积分
-
+    @ApiModelProperty(value = "会员等级")
+    private Byte memberGrade;//会员等级
+    @ApiModelProperty(value = "推荐人")
+    private String recommender;//推荐人
+    @ApiModelProperty(value = "二级推荐人")
+    private String secondLevelRecommender;//二级推荐人
+    @ApiModelProperty(value = "备注")
+    private String remarks;
     public String getCityCode() {
         return cityCode;
     }
@@ -353,5 +369,37 @@ public class MarketingMembers {
 
     public void setDetailAddress(String detailAddress) {
         this.detailAddress = detailAddress;
+    }
+
+    public Byte getMemberGrade() {
+        return memberGrade;
+    }
+
+    public void setMemberGrade(Byte memberGrade) {
+        this.memberGrade = memberGrade;
+    }
+
+    public String getRecommender() {
+        return recommender;
+    }
+
+    public void setRecommender(String recommender) {
+        this.recommender = recommender;
+    }
+
+    public String getSecondLevelRecommender() {
+        return secondLevelRecommender;
+    }
+
+    public void setSecondLevelRecommender(String secondLevelRecommender) {
+        this.secondLevelRecommender = secondLevelRecommender;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }

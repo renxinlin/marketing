@@ -8,10 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 会员类
@@ -188,7 +185,7 @@ public interface MarketingMembersMapper extends BaseMapper<MarketingMembers> {
 //
 
     @Select("${sql}")
-	List<Map<String, Object>> dynamicList(@Param("sql")String listSQl);
+	List<HashMap<String, Object>> dynamicList(@Param("sql")String listSQl);
 
     @Select("${sql}")
 	Integer dynamicCount(@Param("sql")String listSQl);

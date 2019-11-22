@@ -18,7 +18,9 @@ import com.jgw.supercodeplatform.marketing.enums.market.AccessProtocol;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.SaleUserStatus;
 import com.jgw.supercodeplatform.marketing.pojo.*;
+import com.jgw.supercodeplatform.marketing.pojo.platform.MarketingPlatformOrganization;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingPlatformOrganizationService;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
@@ -32,11 +34,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -59,7 +63,7 @@ public class WeixinAuthController {
 	private MarketingMembersService marketingMembersService;
 
 	@Autowired
-	private MarketingActivitySetMapper marketingActivitySetMapper;
+	private MarketingPlatformOrganizationService marketingPlatformOrganizationService;
 
 	@Autowired
 	private MarketingSaleMemberService marketingSaleMemberService;
@@ -116,7 +120,7 @@ public class WeixinAuthController {
     	ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(statevalue);
     	logger.info("根据code="+code+" 查询到的scanCodeInfoMO="+scanCodeInfoMO+",statecode="+statecode+",statevalue="+statevalue);
     	boolean needWriteJwtToken=false;
-
+		Byte jgwType = null;
 		String appId = null;
 		String organizationName = null;
     	MemberWithWechat memberWithWechat=null;
@@ -136,7 +140,8 @@ public class WeixinAuthController {
     		organizationId=statearr[1];
     		userInfo=getUserInfo(code, organizationId,null);
 			appId = userInfo.getString("appId");
-			organizationName = userInfo.getString(organizationName);
+			jgwType = userInfo.getByte("jgwType");
+			organizationName = userInfo.getString("organizationName");
     		openid=userInfo.getString("openid");
     		StringBuffer h5BUf=new StringBuffer();
     		h5BUf.append("redirect:");
@@ -164,7 +169,8 @@ public class WeixinAuthController {
 			//如果是活动扫码默认也写jwttoken
 			userInfo=getUserInfo(code, scanCodeInfoMO.getOrganizationId(),scanCodeInfoMO.getActivitySetId());
 			openid=userInfo.getString("openid");
-			organizationName = userInfo.getString(organizationName);
+			jgwType = userInfo.getByte("jgwType");
+			organizationName = userInfo.getString("organizationName");
 			organizationId=scanCodeInfoMO.getOrganizationId();
 			appId = userInfo.getString("appId");
 			//表示是从扫码产品防伪码入口进入
@@ -191,6 +197,7 @@ public class WeixinAuthController {
 			memberWithWechat.setOrganizationId(organizationId);
 			memberWithWechat.setOrganizationFullName(organizationName);
 			memberWithWechat.setMemberType((byte)0);
+			memberWithWechat.setJgwType(jgwType);
 			marketingMembersService.insert(memberWithWechat);
 		} else {
 			if (null != memberWithWechat && scanCodeInfoMO != null) {
@@ -273,14 +280,14 @@ public class WeixinAuthController {
 //				secret = merchantJson.getString("merchantSecret");
 //			}
 //		}
+		Byte jgwType = null;
 		String organizationName = null;
     	if (appId == null || secret == null){
 			MarketingWxMerchants mWxMerchants=globalRamCache.getWXMerchants(organizationId);
 			appId = mWxMerchants.getMchAppid().trim();
 			secret = mWxMerchants.getMerchantSecret().trim();
-			if (mWxMerchants.getMerchantType().intValue() == 0) {
-				organizationName = mWxMerchants.getOrganizatioIdlName();
-			}
+			organizationName = mWxMerchants.getOrganizatioIdlName();
+			jgwType = mWxMerchants.getBelongToJgw();
 		}
 
 		logger.info("微信授权回调根据组织id="+organizationId+"获取获取appid"+appId+",secret="+secret);
@@ -310,6 +317,7 @@ public class WeixinAuthController {
 				JSONObject userObj=JSONObject.parseObject(userInfoBody);
 				userObj.put("organizationName", organizationName);
 				userObj.put("appId", appId);
+				userObj.put("jgwType", jgwType);
                 return userObj;
 			}
 		}
@@ -501,7 +509,6 @@ public class WeixinAuthController {
 		userInfo=getUserInfo(code, organizationId,null);
 		String openid=userInfo.getString("openid");
 
-
 // 导购step-2: 刷新头像
 		// 需要返回前端组织Id和用户id[id或者-1]以及openid
 
@@ -577,6 +584,11 @@ public class WeixinAuthController {
 			}
 			userInfo = JSONObject.parseObject(userInfoBody);
 		}
+		List<MarketingPlatformOrganization> marketingPlatformOrganizationList = marketingPlatformOrganizationService.selectByOrgId(organizationId);
+		String organizationFullName = null;
+		if (!CollectionUtils.isEmpty(marketingPlatformOrganizationList)) {
+			organizationFullName = marketingPlatformOrganizationList.get(0).getOrganizationFullName();
+		}
 		// 微信授权
 		openid = userInfo.getString("openid");
 // 导购step-2: 刷新头像
@@ -595,6 +607,9 @@ public class WeixinAuthController {
 			memberWithWechat.setIsRegistered((byte) 0);
 			memberWithWechat.setDeviceType((byte)1);
 			memberWithWechat.setMemberType((byte)0);
+			memberWithWechat.setAppid(appId);
+			memberWithWechat.setJgwType((byte)1);
+			memberWithWechat.setOrganizationFullName(organizationFullName);
 			marketingMembersService.insert(memberWithWechat);
 		} else {
 			BeanUtils.copyProperties(marketingWxMember, memberWithWechat);

@@ -1,6 +1,8 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.activity;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,11 +10,16 @@ import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
+import com.jgw.supercodeplatform.marketing.constants.SystemLabelEnum;
 import com.jgw.supercodeplatform.marketing.dto.WxOrderPayDto;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
+import com.jgw.supercodeplatform.marketingsaler.integral.application.group.CodeManagerService;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.FromFakeOutCodeToMarketingInfoDto;
+import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CodeManagerFromFadeToMarketingFeign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +73,7 @@ public class LotteryController extends CommonUtil {
     private GlobalRamCache globalRamCache;
 
     @Autowired
-    private MarketingActivitySetService marketingActivitySetService;
+    private CodeManagerService codeManagerService;
 
     @Value("${cookie.domain}")
 	private String cookieDomain;
@@ -139,9 +146,16 @@ public class LotteryController extends CommonUtil {
         ScanCodeInfoMO scanCodeInfoMO = salerLotteryService.validateBasicBySalerlottery(wxstate, jwtUser);
         Long codeTypeId = Long.valueOf(scanCodeInfoMO.getCodeTypeId());
         String codeId = scanCodeInfoMO.getCodeId();
-        // 是不是营销码制，不是不可通过
-        commonService.checkCodeTypeValid(codeTypeId);
+        // 是不是营销码或者防伪码，不是不可通过
+        commonService.checkCodeMarketFakeValid(codeTypeId);
         commonService.checkCodeValid(codeId,codeTypeId+"");
+        //如果是防伪码，则先去查询对应的营销码
+        OutCodeInfoDto outCodeInfoDto = new OutCodeInfoDto(codeId, codeTypeId.toString());
+        outCodeInfoDto.setCodeTypeId(codeTypeId.toString());
+        outCodeInfoDto.setOuterCodeId(codeId);
+        OutCodeInfoDto marketOutCodeInfoDto = codeManagerService.codeFromfakeToMarket(outCodeInfoDto);
+        scanCodeInfoMO.setCodeTypeId(marketOutCodeInfoDto.getCodeTypeId());
+        scanCodeInfoMO.setCodeId(marketOutCodeInfoDto.getOuterCodeId());
         MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeTypeId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
         if (marketingChannel == null){
             throw new SuperCodeExtException("渠道信息不对");

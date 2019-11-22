@@ -79,7 +79,7 @@ public class MarketingUser {
     private Integer haveIntegral;
     /** 累计积分*/
     private Integer totalIntegral;
-    /** 来源1商城2积分网站*/
+    /** 来源3、H5 4、系统后台*/
     private Byte source;
     /**
      * 2.0登录用户名
@@ -95,6 +95,11 @@ public class MarketingUser {
      * 0为3.0原会员1为2.0迁移会员
      */
     private Integer version;
+
+    /**
+     * 机构类型
+     */
+    private String mechanismType;
 
     public Integer getHaveIntegral() {
         return haveIntegral;
@@ -335,5 +340,13 @@ public class MarketingUser {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public String getMechanismType() {
+        return mechanismType;
+    }
+
+    public void setMechanismType(String mechanismType) {
+        this.mechanismType = mechanismType;
     }
 }

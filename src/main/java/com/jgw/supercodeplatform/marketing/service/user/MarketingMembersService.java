@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
-import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -26,7 +25,10 @@ import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingWxMemberMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.OrganizationPortraitMapper;
-import com.jgw.supercodeplatform.marketing.dto.members.*;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersAddParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersListParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingMembersUpdateParam;
+import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPortraitListParam;
 import com.jgw.supercodeplatform.marketing.enums.market.BrowerTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
@@ -113,10 +115,11 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	private CommonService commonService;
 
 	@Override
-	protected List<Map<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
+	protected List<HashMap<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
 
 		String listSQl = listSql(searchParams,false);
-		List<Map<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
+		logger.info("listSQL----"+listSQl);
+		List<HashMap<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
 		if (data != null) {
 			data.stream().forEach(dat -> {
 				if(Boolean.TRUE.equals(dat.get("Sex"))){
@@ -164,7 +167,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					+ " OR State LIKE binary CONCAT('%','"+search+"','%') "
 					+ ")");
 		}
-		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate ");
+		fieldsbuf.append("Id,State,Openid,WxName,date_format(RegistDate ,'%Y-%m-%d %H:%i:%S') RegistDate,Version ");
 		for (MarketingOrganizationPortraitListParam marketingOrganizationPortraitListParam : mPortraitListParams) {
 			fieldsbuf.append(",");
 			String code=marketingOrganizationPortraitListParam.getCodeId();
@@ -205,6 +208,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String from=" from marketing_members ";
 		String where=" where State!=2 and OrganizationId='"+organizationId+"'";
 		String sql=null;
+		logger.info("fieldsbuf---------"+fieldsbuf);
 		if (isCount) {
 			sql=" select count(*) "+from+where;
 			if (commonsearch) {
@@ -221,6 +225,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				sql+=" order by RegistDate desc limit "+startNum+","+pagesize;
 			}
 		}
+		logger.info("sql---------------"+sql);
 		return sql;
 	}
 
@@ -316,7 +321,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					integralRecord.setCustomerName(members.getCustomerName());
 					integralRecord.setMemberId(members.getId());
 					integralRecord.setMemberName(members.getUserName());
-					integralRecord.setMemberType(members.getMemberType());
+					integralRecord.setMemberType(MemberTypeEnums.VIP.getType());
 					integralRecord.setMobile(members.getMobile());
 					integralRecord.setOrganizationId(organizationId);
 					integralRecord.setIntegralType(0);
@@ -434,6 +439,12 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		members.setUserName(membersUpdateParam.getUserName());
 		members.setId(membersUpdateParam.getId());
 		members.setIsRegistered((byte)1);
+		if (StringUtils.isNotBlank(membersUpdateParam.getiDNumber())) {
+			members.setiDNumber(membersUpdateParam.getiDNumber());
+		}
+		if (StringUtils.isNotBlank(membersUpdateParam.getDetailAddress())) {
+			members.setDetailAddress(membersUpdateParam.getDetailAddress());
+		}
 		int upNum = marketingMembersMapper.updateById(members);
 		String openid = membersUpdateParam.getOpenid();
 		if (StringUtils.isBlank(openid)) {
@@ -450,7 +461,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			marketingWxMember.setOrganizationId(organizationId);
 			MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
 			marketingWxMember.setOrganizationFullName(marketingWxMerchants.getOrganizatioIdlName());
-			if (marketingWxMerchants.getMerchantType() == 1) {
+			if (marketingWxMerchants.getMerchantType().intValue() == 1) {
 				if (marketingWxMerchants.getJgwId() != null) {
 					marketingWxMerchants = mWxMerchantsService.getJgw(marketingWxMerchants.getJgwId());
 				} else {
@@ -752,6 +763,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if (StringUtils.isBlank(openid) || StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeExtException("openid或者组织ID不能为空");
 		}
+		UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte) 1).eq("MemberType", MemberTypeEnums.VIP.getType());
+		marketingWxMemberMapper.update(null, nouseUpdateWrapper);
 		UpdateWrapper<MarketingWxMember> updateWrapper = Wrappers.<MarketingWxMember>update().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
 		marketingWxMemberMapper.update(marketingWxMember, updateWrapper);
 	}
@@ -814,6 +827,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			if (marketingWxMember == null ) {
 				marketingWxMember = new MarketingWxMember();
 				BeanUtils.copyProperties(memberWithWechat, marketingWxMember);
+				marketingWxMember.setJgwType(memberWithWechat.getJgwType());
 				marketingWxMember.setCreateTime(new Date());
 				marketingWxMember.setUpdateTime(new Date());
 				marketingWxMember.setCurrentUse((byte)0);
