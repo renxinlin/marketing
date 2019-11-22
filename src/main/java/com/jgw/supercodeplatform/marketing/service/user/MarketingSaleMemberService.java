@@ -368,29 +368,15 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if(userDto != null){
 			throw new SuperCodeException("手机号已存在...");
 		}
-		if(!StringUtils.isBlank(userInfo.getOpenId())){
-			MarketingUser marketingUser = mapper.selectByOpenid(userInfo.getOpenId());
-			if(marketingUser != null){
-				throw new SuperCodeException("该微信号已经绑定其他手机...");
-			}
-
-		}
-
 
 		// 3数据转换和保存
-		UserWithWechat userDo =changeToDo(userInfo);
+		UserWithWechat userDo = changeToDo(userInfo);
 		if (StringUtils.isNotBlank(userDo.getMobile())) {
 			MarketingUser marketingUser = new MarketingUser();
 			BeanUtils.copyProperties(userDo, marketingUser);
 			mapper.insertSelective(marketingUser);
-			userDo.setMemberId(marketingUser.getId());
 		}
-		if (StringUtils.isNotBlank(userDo.getOpenid()) && StringUtils.isNotBlank(userDo.getOrganizationId())) {
-			MarketingWxMember marketingWxMember = new MarketingWxMember();
-			BeanUtils.copyProperties(userDo, marketingWxMember);
-			marketingWxMember.setCurrentUse((byte)1);
-			marketingWxMemberMapper.insert(marketingWxMember);
-		}
+
 		return userDo;
 
 	}
