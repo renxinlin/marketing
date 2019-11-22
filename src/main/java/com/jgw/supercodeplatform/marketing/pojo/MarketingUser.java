@@ -79,7 +79,7 @@ public class MarketingUser {
     private Integer haveIntegral;
     /** 累计积分*/
     private Integer totalIntegral;
-    /** 来源1商城2积分网站*/
+    /** 来源3、H5 4、系统后台*/
     private Byte source;
     /**
      * 2.0登录用户名

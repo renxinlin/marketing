@@ -52,7 +52,7 @@ public class MarketingSaleUserParam {
 
     private Integer version;
 
-    /** 来源1商城2积分网站*/
+    @ApiModelProperty("来源3、H5 4、系统后台")
     private Byte source;
 
 

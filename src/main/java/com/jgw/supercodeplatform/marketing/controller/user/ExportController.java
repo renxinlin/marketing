@@ -43,10 +43,10 @@ public class ExportController extends CommonUtil {
     @Autowired
     private MarketingSaleMemberService service;
 
-    @Value("{\"id\":\"序号\", \"wxName\":\"微信昵称\",\"mobile\":\"手机\",\"userId\":\"用户Id\",\"userName\":\"用户姓名\",\"sexStr\":\"性别\", \"birthday\":\"生日\",\"provinceName\":\"省名称\",\"countyName\":\"县名称\",\"cityName\":\"市名称\",\"registDate\":\"注册时间\",\"state\":\"会员状态\",\"newRegisterFlag\":\"是否新注册的标志\",\"createDate\":\"建立日期\",\"updateDate\":\"修改日期\",\"customerName\":\"门店名称\",\"babyBirthday\":\"宝宝生日\",\"isRegistered\":\"是否已完善(1、表示已完善，0 表示未完善)\",\"haveIntegral\":\"添加可用积分\",\"memberType\":\"类型\",\"integralReceiveDate\":\"最新一次积分领取时间\",\"userSource\":\"注册来源1招募会员\",\"deviceType\":\"扫码设备类型\"}")
+    @Value("{\"mobile\":\"手机\",\"userName\":\"用户姓名\",\"sexStr\":\"性别\", \"birthday\":\"生日\",\"provinceName\":\"省名称\",\"countyName\":\"县名称\",\"cityName\":\"市名称\",\"registDate\":\"注册时间\",\"state\":\"会员状态\",\"newRegisterFlag\":\"是否新注册的标志\",\"createDate\":\"建立日期\",\"updateDate\":\"修改日期\",\"customerName\":\"门店名称\",\"babyBirthday\":\"宝宝生日\",\"isRegistered\":\"是否已完善(1、表示已完善，0 表示未完善)\",\"haveIntegral\":\"添加可用积分\",\"memberType\":\"类型\",\"integralReceiveDate\":\"最新一次积分领取时间\",\"userSource\":\"注册来源1招募会员\",\"deviceType\":\"扫码设备类型\"}")
     private String MARKET_MEMBERS_EXCEL_FIELD_MAP;
 
-    @Value("{\"id\":\"序号\",\"mobile\":\"手机\", \"userId\":\"用户Id\",\"userName\":\"用户姓名\",\"sex\":\"性别\", \"birthday\":\"生日\",\"provinceName\":\"省名称\",\"countyName\":\"县名称\",\"cityName\":\"市名称\",\"createDate\":\"建立日期\",\"updateDate\":\"修改日期\",\"customerName\":\"门店名称\",\"customerId\":\"门店编码\",\"pCCcode\":\"省市区前端编码\",\"memberType\":\"类型\",\"state\":\"用户状态\",\"deviceType\":\"扫码设备类型\",\"haveIntegral\":\"添加可用积分\"}")
+    @Value("{\"mobile\":\"手机\",\"userName\":\"用户姓名\",\"sex\":\"性别\", \"birthday\":\"生日\",\"provinceName\":\"省名称\",\"countyName\":\"县名称\",\"cityName\":\"市名称\",\"createDate\":\"建立日期\",\"updateDate\":\"修改日期\",\"customerName\":\"门店名称\",\"customerId\":\"门店编码\",\"pCCcode\":\"省市区前端编码\",\"memberType\":\"类型\",\"state\":\"用户状态\",\"deviceType\":\"扫码设备类型\",\"haveIntegral\":\"添加可用积分\"}")
     private String MARKET_SELEMEMBERS_EXCEL_FIELD_MAP;
 
     private String CUSTOMER_EXCEL_FIELD_MAP;
