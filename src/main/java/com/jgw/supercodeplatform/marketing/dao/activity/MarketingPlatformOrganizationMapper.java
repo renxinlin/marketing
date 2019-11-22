@@ -25,4 +25,8 @@ public interface MarketingPlatformOrganizationMapper {
     @Select("SELECT * FROM marketing_platform_organization WHERE ActivitySetId = #{activitySetId} AND OrganizationId = #{organizationId}")
     MarketingPlatformOrganization selectByActivitySetIdAndOrganizationId(@Param("activitySetId") Long activitySetId, @Param("organizationId") String organizationId);
 
+    @Select("SELECT * FROM marketing_platform_organization WHERE OrganizationId = #{organizationId}")
+    List<MarketingPlatformOrganization> selectByOrgId(@Param("organizationId") String organizationId);
+
+
 }

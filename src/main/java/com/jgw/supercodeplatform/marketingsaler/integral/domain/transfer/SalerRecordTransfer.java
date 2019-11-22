@@ -41,6 +41,7 @@ public class SalerRecordTransfer extends CommonTransfer{
     public static Wrapper<SalerRecord> getPageParam(DaoSearch daoSearch,String organizationId) {
         QueryWrapper<SalerRecord> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("OrganizationId",organizationId);
+        queryWrapper.isNotNull("IntegralNum");
         if(daoSearch != null && !StringUtils.isEmpty(daoSearch.getSearch())){
             queryWrapper.and(query ->query.like("SalerName",daoSearch.getSearch())
                     .or().like("SalerMobile",daoSearch.getSearch())

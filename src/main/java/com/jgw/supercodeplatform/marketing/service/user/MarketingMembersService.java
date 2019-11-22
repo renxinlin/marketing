@@ -321,7 +321,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					integralRecord.setCustomerName(members.getCustomerName());
 					integralRecord.setMemberId(members.getId());
 					integralRecord.setMemberName(members.getUserName());
-					integralRecord.setMemberType(members.getMemberType());
+					integralRecord.setMemberType(MemberTypeEnums.VIP.getType());
 					integralRecord.setMobile(members.getMobile());
 					integralRecord.setOrganizationId(organizationId);
 					integralRecord.setIntegralType(0);
@@ -461,7 +461,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			marketingWxMember.setOrganizationId(organizationId);
 			MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
 			marketingWxMember.setOrganizationFullName(marketingWxMerchants.getOrganizatioIdlName());
-			if (marketingWxMerchants.getMerchantType() == 1) {
+			if (marketingWxMerchants.getMerchantType().intValue() == 1) {
 				if (marketingWxMerchants.getJgwId() != null) {
 					marketingWxMerchants = mWxMerchantsService.getJgw(marketingWxMerchants.getJgwId());
 				} else {
@@ -763,6 +763,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		if (StringUtils.isBlank(openid) || StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeExtException("openid或者组织ID不能为空");
 		}
+		UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte) 1).eq("MemberType", MemberTypeEnums.VIP.getType());
+		marketingWxMemberMapper.update(null, nouseUpdateWrapper);
 		UpdateWrapper<MarketingWxMember> updateWrapper = Wrappers.<MarketingWxMember>update().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());
 		marketingWxMemberMapper.update(marketingWxMember, updateWrapper);
 	}
@@ -825,6 +827,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			if (marketingWxMember == null ) {
 				marketingWxMember = new MarketingWxMember();
 				BeanUtils.copyProperties(memberWithWechat, marketingWxMember);
+				marketingWxMember.setJgwType(memberWithWechat.getJgwType());
 				marketingWxMember.setCreateTime(new Date());
 				marketingWxMember.setUpdateTime(new Date());
 				marketingWxMember.setCurrentUse((byte)0);
