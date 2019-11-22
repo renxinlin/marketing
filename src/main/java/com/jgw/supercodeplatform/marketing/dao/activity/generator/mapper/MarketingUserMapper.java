@@ -49,7 +49,7 @@ public interface MarketingUserMapper extends BaseMapper<MarketingUser> {
         "select",
         "Id, WxName, Openid, Mobile, UserId, UserName, Sex, Birthday, ProvinceCode, CountyCode, ",
         "CityCode, ProvinceName, CountyName, CityName, OrganizationId, CreateDate, UpdateDate, ",
-        "CustomerName, CustomerId, PCCcode, WechatHeadImgUrl, MemberType, State, DeviceType,HaveIntegral",
+        "CustomerName, CustomerId, PCCcode, WechatHeadImgUrl, MemberType, State, DeviceType,HaveIntegral,TotalIntegral,Source,LoginName,Password,Version,MechanismType",
         "from marketing_user",
         "where Id = #{id,jdbcType=BIGINT}"
     })
@@ -75,7 +75,13 @@ public interface MarketingUserMapper extends BaseMapper<MarketingUser> {
         @Result(column="MemberType", property="memberType", jdbcType=JdbcType.TINYINT),
         @Result(column="State", property="state", jdbcType=JdbcType.TINYINT),
         @Result(column="DeviceType", property="deviceType", jdbcType=JdbcType.TINYINT),
-        @Result(column="HaveIntegral", property="haveIntegral", jdbcType=JdbcType.INTEGER)
+        @Result(column="HaveIntegral", property="haveIntegral", jdbcType=JdbcType.INTEGER),
+        @Result(column="TotalIntegral", property="totalIntegral", jdbcType=JdbcType.INTEGER),
+        @Result(column="Source", property="source", jdbcType=JdbcType.TINYINT),
+        @Result(column="LoginName", property="loginName", jdbcType=JdbcType.VARCHAR),
+        @Result(column="Password", property="password", jdbcType=JdbcType.VARCHAR),
+        @Result(column="Version", property="version", jdbcType=JdbcType.INTEGER),
+        @Result(column="MechanismType", property="mechanismType", jdbcType=JdbcType.TINYINT)
     })
     MarketingUser selectByPrimaryKey(Long id);
 
