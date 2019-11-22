@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.IntegralRecordParam;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import io.swagger.annotations.Api;
@@ -48,6 +49,7 @@ public class IntegralRecordController extends CommonUtil {
 
         IntegralRecord record = modelMapper.map(integralRecord, IntegralRecord.class);
         record.setOrganizationId(organizationId);
+        record.setMemberType(MemberTypeEnums.VIP.getType());
         // 获取积分记录分页结果
         AbstractPageService.PageResults<List<IntegralRecord>> pages = integralRecordService.listSearchViewLike(record);
         restResult.setState(200);

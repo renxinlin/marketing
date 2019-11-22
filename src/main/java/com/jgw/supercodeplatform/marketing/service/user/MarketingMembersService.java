@@ -321,7 +321,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 					integralRecord.setCustomerName(members.getCustomerName());
 					integralRecord.setMemberId(members.getId());
 					integralRecord.setMemberName(members.getUserName());
-					integralRecord.setMemberType(members.getMemberType());
+					integralRecord.setMemberType(MemberTypeEnums.VIP.getType());
 					integralRecord.setMobile(members.getMobile());
 					integralRecord.setOrganizationId(organizationId);
 					integralRecord.setIntegralType(0);
