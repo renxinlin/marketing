@@ -626,6 +626,7 @@ public class MarketingActivitySalerSetService   {
 				}
 			});
 		}
+		mList.forEach(prd -> prd.setActivitySetId(activitySetId));
 		marketingActivitySetService.saveProductBatchs(productAndBatchGetCodeMOs, deleteProductBatchList,mList, MemberTypeEnums.SALER.getType());
 	}
 

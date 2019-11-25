@@ -298,6 +298,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		standActicityParamCheck.basePrizeTypeCheck(mPrizeTypeParams);
 		//检查产品
 	    standActicityParamCheck.baseProductBatchCheck(maProductParams);
+		mList.forEach(prd -> prd.setActivitySetId(mActivitySet.getId()));
 		//保存商品批次活动总共批次参与的码总数
 		saveProductBatchs(productAndBatchGetCodeMOs, deleteProductBatchList, mList, 0);
 		if (null!=mChannelParams && mChannelParams.size()!=0) {

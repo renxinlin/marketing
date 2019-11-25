@@ -191,6 +191,7 @@ public class CouponUpdateService {
         if(updateVo.getAcquireCondition().intValue() == CouponAcquireConditionEnum.SHOPPING.getCondition().intValue() ){
             send = true;
         }
+        mList.forEach(prd -> prd.setActivitySetId(activitySet.getId()));
         // 覆盖: 去除重复
         saveProductBatchsWhenUpdate(productAndBatchGetCodeMOs, deleteProductBatchList, mList, send);
         // 保存抵扣券规则
