@@ -106,13 +106,13 @@ public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, 
             Object codeBatch=map.get("codeBatch");
             logger.info("收到mq:productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
             // 校验
-            if (null==productId || null==productBatchId || null==codeBatch) {
+            if (null==productId || null==codeBatch) {
                 logger.error("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
                 continue;
             }
             // 校验
             String strProductId=String.valueOf(productId);
-            String strProductBatchId=String.valueOf(productBatchId);
+            String strProductBatchId=(String) productBatchId;
             MarketingActivityProduct marketingActivityProduct = mProductMapper.selectByProductAndProductBatchIdWithReferenceRole(strProductId, strProductBatchId, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
             if(marketingActivityProduct == null ){
                 continue;
@@ -132,8 +132,8 @@ public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, 
                 Byte acquireCondition = marketingActivitySetCondition.getAcquireCondition();
                 if(acquireCondition!=null && CouponAcquireConditionEnum.SHOPPING.getCondition().intValue() == acquireCondition.intValue() ){
                     SbatchUrlDto sbatchUrlDto = new SbatchUrlDto();
-                    sbatchUrlDto.setProductBatchId(productBatchId.toString());
-                    sbatchUrlDto.setProductId(productId.toString());
+                    sbatchUrlDto.setProductBatchId(strProductBatchId);
+                    sbatchUrlDto.setProductId(strProductId);
                     sbatchUrlDto.setBusinessType(BizTypeEnum.MARKETING_COUPON.getBusinessType());
                     sbatchUrlDto.setBatchId(Long.valueOf(codeBatch.toString()));
                     sbatchUrlDto.setUrl(bindUrl);
