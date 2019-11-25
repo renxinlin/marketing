@@ -593,11 +593,12 @@ public class MarketingActivitySalerSetService   {
 					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
 					productBatchList.add(batchmap);
 				}
-				// 拼装请求码管理批次信息接口商品参数
-				productAndBatchGetCodeMO.setProductBatchList(productBatchList);
-				productAndBatchGetCodeMO.setProductId(productId);
-				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
+
 			}
+			// 拼装请求码管理批次信息接口商品参数
+			productAndBatchGetCodeMO.setProductBatchList(productBatchList);
+			productAndBatchGetCodeMO.setProductId(productId);
+			productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 		}
 		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product

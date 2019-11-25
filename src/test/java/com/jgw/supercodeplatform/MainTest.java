@@ -16,10 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class MainTest {
 
@@ -78,9 +75,14 @@ public class MainTest {
 //        String redirectUri = "https://antifake.h5.kf315.net/?s=52179&uuid=1297cf6ba9fd436aa8cb0468c682d4f0#/h2";
 //        String fd = URLEncoder.encode(redirectUri, "UTF-8");
         //String hg = redirectUri.replaceAll("#", "&");
-        byte[] files = FileUtils.readFileToByteArray(new File("C:\\Users\\JGW\\Desktop\\acfb9d3fd706442989bde4edaebfec6c.p12"));
+//        byte[] files = FileUtils.readFileToByteArray(new File("C:\\Users\\JGW\\Desktop\\acfb9d3fd706442989bde4edaebfec6c.p12"));
 
-        System.out.println("--->" + files.length);
+//        System.out.println("--->" + files.length);
+
+        Map<String, List<String>> map = new HashMap<>();
+        map.put("q", new ArrayList<>());
+        System.out.println("---->" + JSON.toJSONString(map));
+
     }
 
 }
