@@ -70,10 +70,12 @@ public class MarketingActivityProductService {
             for(MarketingActivityProduct marketingActivityProduct : marketingActivityProducts){
                 // 校验该批次是否属于该产品
                 if(transferData.getProductId().equals(marketingActivityProduct.getProductId())){
-                    ProductBatchParam batch = new ProductBatchParam();
-                    batch.setProductBatchId(marketingActivityProduct.getProductBatchId());
-                    batch.setProductBatchName(marketingActivityProduct.getProductBatchName());
-                    productParams.add(batch);
+                    if (StringUtils.isNotBlank(marketingActivityProduct.getProductBatchId())) {
+                        ProductBatchParam batch = new ProductBatchParam();
+                        batch.setProductBatchId(marketingActivityProduct.getProductBatchId());
+                        batch.setProductBatchName(marketingActivityProduct.getProductBatchName());
+                        productParams.add(batch);
+                    }
                 }
             }
             transferData.setProductBatchParams(productParams);
