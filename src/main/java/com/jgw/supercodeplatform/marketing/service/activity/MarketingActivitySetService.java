@@ -473,7 +473,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	public void saveProductBatchs(List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs, List<SbatchUrlUnBindDto> deleteProductBatchList, List<MarketingActivityProduct> mList, int referenceRole) throws SuperCodeException {
 		//如果是会员活动需要去绑定扫码连接到批次号
 		String superToken = commonUtil.getSuperToken();
+		logger.info("调用码管理平台获取生码批次信息入参：{}", JSON.toJSONString(productAndBatchGetCodeMOs));
 		JSONArray arr = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+		logger.info("调用码管理平台获取生码批次信息返回：{}", arr.toJSONString());
 		String bindUrl = marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL;
 		if (referenceRole == ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue()) {
 			bindUrl = marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL;
