@@ -116,9 +116,15 @@ public class CouponUpdateService {
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
-			if (null != batchParams && !batchParams.isEmpty()) {
-				ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
-				List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+            ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+            List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+            if (CollectionUtils.isEmpty(batchParams)) {
+                MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+                mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+                mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+                mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+                mList.add(mActivityProduct);
+            } else {
 				for (ProductBatchParam prBatchParam : batchParams) {
 					String productBatchId = prBatchParam.getProductBatchId();
 					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();

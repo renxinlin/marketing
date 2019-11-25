@@ -221,9 +221,15 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
-			if (null != batchParams && !batchParams.isEmpty()) {
-				ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
-				List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+			ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+			List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+			if (CollectionUtils.isEmpty(batchParams)) {
+				MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+				mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+				mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+				mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+				mList.add(mActivityProduct);
+			} else {
 				for (ProductBatchParam prBatchParam : batchParams) {
 					String productBatchId = prBatchParam.getProductBatchId();
 					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
@@ -508,29 +514,30 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
+			ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+			List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
 			if (CollectionUtils.isEmpty(batchParams)) {
-                //TODO
-
-
-
-			    continue;
-            }
-            ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
-            List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
-            for (ProductBatchParam prBatchParam : batchParams) {
-                String productBatchId = prBatchParam.getProductBatchId();
-                MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
-                mActivityProduct.setProductBatchId(productBatchId);
-                mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
-                mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
-                mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
-                mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
-                mList.add(mActivityProduct);
-                // 拼装请求码管理批次信息接口商品批次参数
-                Map<String, String> batchmap = new HashMap<String, String>();
-                batchmap.put("productBatchId", prBatchParam.getProductBatchId());
-                productBatchList.add(batchmap);
-            }
+				MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+				mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+				mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+				mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+				mList.add(mActivityProduct);
+            } else {
+				for (ProductBatchParam prBatchParam : batchParams) {
+					String productBatchId = prBatchParam.getProductBatchId();
+					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+					mActivityProduct.setProductBatchId(productBatchId);
+					mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
+					mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+					mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+					mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+					mList.add(mActivityProduct);
+					// 拼装请求码管理批次信息接口商品批次参数
+					Map<String, String> batchmap = new HashMap<String, String>();
+					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
+					productBatchList.add(batchmap);
+				}
+			}
             // 拼装请求码管理批次信息接口商品参数
             productAndBatchGetCodeMO.setProductBatchList(productBatchList);
             productAndBatchGetCodeMO.setProductId(productId);

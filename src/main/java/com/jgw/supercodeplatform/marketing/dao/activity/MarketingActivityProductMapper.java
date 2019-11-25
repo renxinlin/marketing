@@ -57,13 +57,13 @@ public interface MarketingActivityProductMapper extends CommonSql{
 	@Select("SELECT  ap.ProductBatchId FROM marketing_activity_product ap left join marketing_activity_set aset on ap.ActivitySetId=aset.Id WHERE aset.OrganizationId = #{organizationId} ")
 	List<String> usedProductBatchIds(@Param("organizationId")String organizationId);
 
-    @Delete(startScript
-    		+"delete FROM marketing_activity_product where ReferenceRole=#{referenceRole} and ("
-    		+" <foreach item='item' collection='list' separator='or'>" +
-    		"  (ProductId=#{item.productId} and ProductBatchId=#{item.productBatchId})" +
-    		" </foreach>"
-    		+")"
-    		+endScript
+    @Delete(startScript +
+    		"delete FROM marketing_activity_product where ReferenceRole=#{referenceRole} and " +
+			" <foreach item='product' collection='list' separator='or' open='(' close=')'>"+
+			" (ProductId=#{product.productId} and (ProductBatchId = '' or ProductBatchId IS NULL "+
+			" <if test = 'product.productBatchId != null' > or ProductBatchId=#{product.productBatchId} </if> " +
+			" )</foreach>"+
+    		endScript
     		)
 	void batchDeleteByProBatchsAndRole( @Param(value="list")List<MarketingActivityProduct> mList, @Param(value="referenceRole")int referenceRole);
 
@@ -90,10 +90,11 @@ public interface MarketingActivityProductMapper extends CommonSql{
 	List<MarketingActivityProduct> selectByProductWithReferenceRole(@Param("productId") String productId, @Param("referenceRole") byte referenceRole);
 
 	@Select(startScript+
-		" select "+selectSql+" from marketing_activity_product where ReferenceRole=0 and "+
+		" select "+selectSql+" from marketing_activity_product where ReferenceRole= #{referenceRole} and "+
 		" <foreach item='product' collection='list' separator='or' open='(' close=')'>"+
-		" (ProductId=#{product.productId} and ProductBatchId=#{product.productBatchId}) "+
-		" </foreach>"+
+		" (ProductId=#{product.productId} and (ProductBatchId = '' or ProductBatchId IS NULL "+
+		" <if test = 'product.productBatchId != null' > or ProductBatchId=#{product.productBatchId} </if> " +
+		" )</foreach>"+
 		endScript)
 	List<MarketingActivityProduct> selectByProductAndBatch(@Param("list") List<MarketingActivityProduct> mList, @Param("referenceRole")int referenceRole);
 
