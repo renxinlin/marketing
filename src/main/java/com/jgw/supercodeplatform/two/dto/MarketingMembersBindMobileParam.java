@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 @ApiModel(value = "会员绑定手机")
 public class MarketingMembersBindMobileParam {
+    private Long id;
+    private String organizationId;
     private String mobile;
     private String verificationCode;
 }
