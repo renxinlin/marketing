@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketingActivitySalerSetService   {
@@ -562,9 +563,51 @@ public class MarketingActivitySalerSetService   {
 //		Map<String, MarketingActivityProduct> activityProductMap = new HashMap<String, MarketingActivityProduct>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
 		List<MarketingActivityProduct> upProductList = mProductMapper.selectByActivitySetId(activitySetId);
+
+		mProductMapper.deleteByActivitySetId(activitySetId);
+		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
+			String productId = marketingActivityProductParam.getProductId();
+			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
+			ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+			List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+			if (CollectionUtils.isEmpty(batchParams)) {
+				MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+				mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+				mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+				mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_SALER.getType());
+				mList.add(mActivityProduct);
+			} else {
+				for (ProductBatchParam prBatchParam : batchParams) {
+					String productBatchId = prBatchParam.getProductBatchId();
+					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+					mActivityProduct.setActivitySetId(activitySetId);
+					mActivityProduct.setProductBatchId(productBatchId);
+					mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
+					mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+					mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+					mActivityProduct.setReferenceRole(MemberTypeEnums.SALER.getType());
+//					activityProductMap.put(productId + productBatchId, mActivityProduct);
+					mList.add(mActivityProduct);
+					// 拼装请求码管理批次信息接口商品批次参数
+					Map<String, String> batchmap = new HashMap<String, String>();
+					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
+					productBatchList.add(batchmap);
+				}
+
+			}
+			// 拼装请求码管理批次信息接口商品参数
+			productAndBatchGetCodeMO.setProductBatchList(productBatchList);
+			productAndBatchGetCodeMO.setProductId(productId);
+			productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
+		}
 		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
-		if (!CollectionUtils.isEmpty(upProductList)) {
-			upProductList.forEach(marketingActivityProduct -> {
+		//得到已经绑定过url的product
+		List<MarketingActivityProduct> maProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_SALER.getType());
+		if(maProductList == null) maProductList = new ArrayList<>();
+		maProductList.addAll(upProductList);
+		List<MarketingActivityProduct> marketingActivityProductList = maProductList.stream().distinct().collect(Collectors.toList());
+		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
+			marketingActivityProductList.forEach(marketingActivityProduct -> {
 				String sbatchIds = marketingActivityProduct.getSbatchId();
 				if (org.apache.commons.lang3.StringUtils.isNotBlank(sbatchIds)) {
 					String[] sbatchIdArray = sbatchIds.split(",");
@@ -583,35 +626,7 @@ public class MarketingActivitySalerSetService   {
 				}
 			});
 		}
-		mProductMapper.deleteByActivitySetId(activitySetId);
-		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
-			String productId = marketingActivityProductParam.getProductId();
-			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
-			if (null != batchParams && !batchParams.isEmpty()) {
-				ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
-				List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
-				for (ProductBatchParam prBatchParam : batchParams) {
-					String productBatchId = prBatchParam.getProductBatchId();
-					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
-					mActivityProduct.setActivitySetId(activitySetId);
-					mActivityProduct.setProductBatchId(productBatchId);
-					mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
-					mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
-					mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
-					mActivityProduct.setReferenceRole(MemberTypeEnums.SALER.getType());
-//					activityProductMap.put(productId + productBatchId, mActivityProduct);
-					mList.add(mActivityProduct);
-					// 拼装请求码管理批次信息接口商品批次参数
-					Map<String, String> batchmap = new HashMap<String, String>();
-					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
-					productBatchList.add(batchmap);
-				}
-				// 拼装请求码管理批次信息接口商品参数
-				productAndBatchGetCodeMO.setProductBatchList(productBatchList);
-				productAndBatchGetCodeMO.setProductId(productId);
-				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
-			}
-		}
+		mList.forEach(prd -> prd.setActivitySetId(activitySetId));
 		marketingActivitySetService.saveProductBatchs(productAndBatchGetCodeMOs, deleteProductBatchList,mList, MemberTypeEnums.SALER.getType());
 	}
 

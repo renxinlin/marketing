@@ -8,8 +8,10 @@ import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingMembersBindMobileParam;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,8 @@ public class MemberLoginService {
     @Autowired
     private CommonService commonService;
 
+    @Autowired
+    protected ModelMapper modelMapper;
 
     /**
      * 设置H5LoginVO
@@ -56,7 +60,7 @@ public class MemberLoginService {
      * @param marketingMembersBindMobileParam
      * @throws SuperCodeException
      */
-    public RestResult bindMobile(MarketingMembersBindMobileParam marketingMembersBindMobileParam,H5LoginVO h5LoginVO) throws SuperCodeException{
+    public RestResult bindMobile(MarketingMembersBindMobileParam marketingMembersBindMobileParam) throws SuperCodeException{
         if(StringUtils.isBlank(marketingMembersBindMobileParam.getMobile())){
             throw new SuperCodeException("手机号不存在");
         }
@@ -64,28 +68,49 @@ public class MemberLoginService {
         if(StringUtils.isBlank(marketingMembersBindMobileParam.getVerificationCode())){
             throw new SuperCodeException("验证码不存在");
         }
-        //会员：一个组织中一个手机号唯一
-        QueryWrapper queryWrapper=new QueryWrapper();
-        queryWrapper.eq("Mobile",marketingMembersBindMobileParam.getMobile());
-        queryWrapper.eq("OrganizationId",h5LoginVO.getOrganizationId());
-        MarketingMembers exitMarketingMembers=marketingMembersMapper.selectOne(queryWrapper);
-        if (exitMarketingMembers != null){
-            throw new SuperCodeException("该手机号已被绑定");
-        }
 
         boolean success = commonService.validateMobileCode(marketingMembersBindMobileParam.getMobile(), marketingMembersBindMobileParam.getVerificationCode());
         if(!success){
             throw new SuperCodeException("验证码校验失败");
         }
-        MarketingMembers marketingMembers=new MarketingMembers();
-        marketingMembers.setId(h5LoginVO.getMemberId());
-        marketingMembers.setMobile(marketingMembersBindMobileParam.getMobile());
-        Integer result=marketingMembersMapper.updateById(marketingMembers);
+
+        //ID用于获取2.0数据
+        MarketingMembers marketingMembersTwo=marketingMembersMapper.selectById(marketingMembersBindMobileParam.getId());
+        if (marketingMembersTwo==null){
+            throw new SuperCodeException("绑定2.0失败");
+        }
+        //会员：一个组织中一个手机号唯一
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq("Mobile",marketingMembersBindMobileParam.getMobile());
+        queryWrapper.eq("OrganizationId",marketingMembersBindMobileParam.getOrganizationId());
+        MarketingMembers exitMarketingMembers=marketingMembersMapper.selectOne(queryWrapper);
+        Integer result;
+        if (exitMarketingMembers != null){
+            /*throw new SuperCodeException("该手机号已被绑定");*/
+            //说明3.0数据中已绑定手机号
+            //进行积分转移
+            //可用积分和总积分
+            exitMarketingMembers.setHaveIntegral(exitMarketingMembers.getHaveIntegral()+marketingMembersTwo.getHaveIntegral()+BindConstants.SUCCESS);
+            exitMarketingMembers.setTotalIntegral(exitMarketingMembers.getTotalIntegral()+marketingMembersTwo.getTotalIntegral());
+            marketingMembersTwo.setHaveIntegral(0);
+            marketingMembersTwo.setTotalIntegral(0);
+            result=marketingMembersMapper.updateById(exitMarketingMembers);
+            marketingMembersMapper.updateById(marketingMembersTwo);
+        }else{
+            //不存在则将2.0的数据复制到3.0
+            MarketingMembers marketingMembersNew=new MarketingMembers();
+            marketingMembersNew=modelMapper.map(marketingMembersTwo,MarketingMembers.class);
+            marketingMembersNew.setMobile(marketingMembersBindMobileParam.getMobile());
+            marketingMembersNew.setHaveIntegral(marketingMembersNew.getHaveIntegral()+BindConstants.SUCCESS);
+            marketingMembersNew.setTotalIntegral(marketingMembersNew.getTotalIntegral()+BindConstants.SUCCESS);
+            marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
+            //插入一条新数据
+            result=marketingMembersMapper.insert(marketingMembersNew);
+            marketingMembersMapper.updateById(marketingMembersTwo);
+        }
+
         if (result.equals(BindConstants.RESULT)){
-            MarketingMembers newMarketingMembers=marketingMembersMapper.selectById(h5LoginVO.getMemberId());
-            newMarketingMembers.setHaveIntegral(newMarketingMembers.getHaveIntegral()+BindConstants.SUCCESS);
-            marketingMembersMapper.updateById(newMarketingMembers);
-            return RestResult.success();
+            return RestResult.success(200,"success","绑定成功");
         }
         return RestResult.failDefault("绑定失败");
     }

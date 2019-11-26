@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -62,6 +63,10 @@ public class MarketingUserVO {
     /** 修改日期 */
     private Date updateDate;
 
+    /** 门店类型 */
+    @ApiModelProperty("机构类型1总部2子公司3经销商4门店5库房10子门店15地方政府16公司20销售公司25农场31其他")
+    private String mechanismType;
+
     /** 门店名称 */
     private String customerName;
 
@@ -82,4 +87,18 @@ public class MarketingUserVO {
 
     /** 扫码设备类型 */
     private Byte deviceType;
+
+    /** 累计积分*/
+    @ApiModelProperty("累计积分")
+    private Integer totalIntegral;
+
+    /** 可用积分*/
+    @ApiModelProperty("可用积分")
+    private Integer haveIntegral;
+
+    private Integer version;
+
+    /** 来源1商城2积分网站*/
+    @ApiModelProperty("来源3、H5 4、系统后台")
+    private Byte source;
 }
