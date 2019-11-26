@@ -11,9 +11,11 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingMembersBindMobileParam;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author fangshiping
@@ -21,6 +23,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class MemberLoginService {
+
+    private static Logger logger = Logger.getLogger(MemberLoginService.class);
 
     @Autowired
     private MarketingMembersMapper marketingMembersMapper;
@@ -60,6 +64,7 @@ public class MemberLoginService {
      * @param marketingMembersBindMobileParam
      * @throws SuperCodeException
      */
+    @Transactional(rollbackFor = Exception.class)
     public RestResult bindMobile(MarketingMembersBindMobileParam marketingMembersBindMobileParam) throws SuperCodeException{
         if(StringUtils.isBlank(marketingMembersBindMobileParam.getMobile())){
             throw new SuperCodeException("手机号不存在");
@@ -95,17 +100,22 @@ public class MemberLoginService {
             marketingMembersTwo.setHaveIntegral(0);
             marketingMembersTwo.setTotalIntegral(0);
             result=marketingMembersMapper.updateById(exitMarketingMembers);
+            logger.info("------marketingMembersTwo-----"+marketingMembersTwo);
             marketingMembersMapper.updateById(marketingMembersTwo);
         }else{
             //不存在则将2.0的数据复制到3.0
-            MarketingMembers marketingMembersNew=new MarketingMembers();
+            MarketingMembers marketingMembersNew;
             marketingMembersNew=modelMapper.map(marketingMembersTwo,MarketingMembers.class);
             marketingMembersNew.setMobile(marketingMembersBindMobileParam.getMobile());
             marketingMembersNew.setHaveIntegral(marketingMembersNew.getHaveIntegral()+BindConstants.SUCCESS);
             marketingMembersNew.setTotalIntegral(marketingMembersNew.getTotalIntegral()+BindConstants.SUCCESS);
+            marketingMembersNew.setLoginName("");
+            marketingMembersNew.setPassword("");
             marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
+            marketingMembersTwo.setId(marketingMembersTwo.getId());
             //插入一条新数据
             result=marketingMembersMapper.insert(marketingMembersNew);
+            logger.info("------marketingMembersTwo-----"+marketingMembersTwo);
             marketingMembersMapper.updateById(marketingMembersTwo);
         }
 
