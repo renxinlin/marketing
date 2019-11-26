@@ -67,7 +67,7 @@ public interface MarketingActivityProductMapper extends CommonSql{
     		"delete FROM marketing_activity_product where ReferenceRole=#{referenceRole} and " +
 			" <foreach item='product' collection='list' separator='or' open='(' close=')'>"+
 			" (ProductId=#{product.productId} and (ProductBatchId = '' or ProductBatchId IS NULL "+
-			" <if test = 'product.productBatchId != null' > or ProductBatchId=#{product.productBatchId} )</if> " +
+			" <if test = 'product.productBatchId != null' > or ProductBatchId=#{product.productBatchId}</if> )" +
 			" )</foreach>"+
     		endScript
     		)

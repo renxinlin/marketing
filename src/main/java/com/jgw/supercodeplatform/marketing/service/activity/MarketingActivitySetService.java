@@ -245,11 +245,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
 					productBatchList.add(batchmap);
 				}
-				// 拼装请求码管理批次信息接口商品参数
-				productAndBatchGetCodeMO.setProductBatchList(productBatchList);
-				productAndBatchGetCodeMO.setProductId(productId);
-				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
+			// 拼装请求码管理批次信息接口商品参数
+			productAndBatchGetCodeMO.setProductBatchList(productBatchList);
+			productAndBatchGetCodeMO.setProductId(productId);
+			productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 		}
 		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product
@@ -298,6 +298,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		standActicityParamCheck.basePrizeTypeCheck(mPrizeTypeParams);
 		//检查产品
 	    standActicityParamCheck.baseProductBatchCheck(maProductParams);
+		mList.forEach(prd -> prd.setActivitySetId(mActivitySet.getId()));
 		//保存商品批次活动总共批次参与的码总数
 		saveProductBatchs(productAndBatchGetCodeMOs, deleteProductBatchList, mList, 0);
 		if (null!=mChannelParams && mChannelParams.size()!=0) {
@@ -473,7 +474,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	public void saveProductBatchs(List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs, List<SbatchUrlUnBindDto> deleteProductBatchList, List<MarketingActivityProduct> mList, int referenceRole) throws SuperCodeException {
 		//如果是会员活动需要去绑定扫码连接到批次号
 		String superToken = commonUtil.getSuperToken();
+		logger.info("调用码管理平台获取生码批次信息入参：{}", JSON.toJSONString(productAndBatchGetCodeMOs));
 		JSONArray arr = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+		logger.info("调用码管理平台获取生码批次信息返回：{}", arr.toJSONString());
 		String bindUrl = marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL;
 		if (referenceRole == ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue()) {
 			bindUrl = marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL;
