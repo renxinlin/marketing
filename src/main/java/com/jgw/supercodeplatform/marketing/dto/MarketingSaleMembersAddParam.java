@@ -28,9 +28,17 @@ public class MarketingSaleMembersAddParam {
     @ApiModelProperty(value = "门店编码",required=true)
     private String customerId;//门店编码
 
+    private Integer mechanismType; // 机构类型
 
+    public Integer getMechanismType() {
+        return mechanismType;
+    }
 
-//    @ApiModelProperty(value = "门店信息")
+    public void setMechanismType(Integer mechanismType) {
+        this.mechanismType = mechanismType;
+    }
+
+    //    @ApiModelProperty(value = "门店信息")
 //    private List<CustomerInfo> customer;
     @ApiModelProperty(value = "用户姓名")
     private String verificationCode;
