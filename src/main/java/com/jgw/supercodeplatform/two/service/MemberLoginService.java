@@ -100,7 +100,9 @@ public class MemberLoginService {
             //不存在则将2.0的数据复制到3.0
             MarketingMembers marketingMembersNew=new MarketingMembers();
             marketingMembersNew=modelMapper.map(marketingMembersTwo,MarketingMembers.class);
+            marketingMembersNew.setMobile(marketingMembersBindMobileParam.getMobile());
             marketingMembersNew.setHaveIntegral(marketingMembersNew.getHaveIntegral()+BindConstants.SUCCESS);
+            marketingMembersNew.setTotalIntegral(marketingMembersNew.getTotalIntegral()+BindConstants.SUCCESS);
             marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
             //插入一条新数据
             result=marketingMembersMapper.insert(marketingMembersNew);

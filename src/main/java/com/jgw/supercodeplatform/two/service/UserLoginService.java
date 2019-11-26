@@ -94,12 +94,14 @@ public class UserLoginService {
         }
         else{
             //不存在则将2.0的数据复制到3.0
-            MarketingUser marketingMembersNew;
-            marketingMembersNew=modelMapper.map(marketingUserTwo,MarketingUser.class);
-            marketingMembersNew.setHaveIntegral(marketingMembersNew.getHaveIntegral()+BindConstants.SUCCESS);
+            MarketingUser marketingUserNew;
+            marketingUserNew=modelMapper.map(marketingUserTwo,MarketingUser.class);
+            marketingUserNew.setMobile(marketingSaleUserBindMobileParam.getMobile());
+            marketingUserNew.setHaveIntegral(marketingUserNew.getHaveIntegral()+BindConstants.SUCCESS);
+            marketingUserNew.setTotalIntegral(marketingUserNew.getTotalIntegral()+BindConstants.SUCCESS);
             marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);
             //插入一条新数据
-            result=marketingUserMapper.insert(marketingMembersNew);
+            result=marketingUserMapper.insert(marketingUserNew);
         }
         if (result.equals(BindConstants.RESULT)){
             return RestResult.success(200,"success","绑定成功");
