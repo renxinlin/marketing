@@ -1,25 +1,8 @@
 package com.jgw.supercodeplatform;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
-import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
-import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class MainTest {
 
@@ -78,9 +61,11 @@ public class MainTest {
 //        String redirectUri = "https://antifake.h5.kf315.net/?s=52179&uuid=1297cf6ba9fd436aa8cb0468c682d4f0#/h2";
 //        String fd = URLEncoder.encode(redirectUri, "UTF-8");
         //String hg = redirectUri.replaceAll("#", "&");
-        byte[] files = FileUtils.readFileToByteArray(new File("C:\\Users\\JGW\\Desktop\\acfb9d3fd706442989bde4edaebfec6c.p12"));
+       /* byte[] files = FileUtils.readFileToByteArray(new File("C:\\Users\\JGW\\Desktop\\acfb9d3fd706442989bde4edaebfec6c.p12"));
 
-        System.out.println("--->" + files.length);
+        System.out.println("--->" + files.length);*/
+       String string="SupplierName\":\"供应商名称\"";
+        System.out.println(string.toLowerCase());
     }
 
 }
