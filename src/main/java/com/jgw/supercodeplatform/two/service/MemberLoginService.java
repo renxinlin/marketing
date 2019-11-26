@@ -106,6 +106,7 @@ public class MemberLoginService {
             marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
             //插入一条新数据
             result=marketingMembersMapper.insert(marketingMembersNew);
+            marketingMembersMapper.updateById(marketingMembersTwo);
         }
 
         if (result.equals(BindConstants.RESULT)){

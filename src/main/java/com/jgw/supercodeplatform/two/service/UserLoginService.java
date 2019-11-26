@@ -102,6 +102,7 @@ public class UserLoginService {
             marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);
             //插入一条新数据
             result=marketingUserMapper.insert(marketingUserNew);
+            marketingUserMapper.updateById(marketingUserTwo);
         }
         if (result.equals(BindConstants.RESULT)){
             return RestResult.success(200,"success","绑定成功");
