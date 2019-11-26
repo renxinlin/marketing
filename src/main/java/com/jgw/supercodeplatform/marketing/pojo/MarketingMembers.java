@@ -61,9 +61,9 @@ public class MarketingMembers {
     @ApiModelProperty(value = "会员等级")
     private Byte memberGrade;//会员等级
     @ApiModelProperty(value = "推荐人")
-    private String recommender;//推荐人
+    private Long recommenderId;//推荐人
     @ApiModelProperty(value = "二级推荐人")
-    private String secondLevelRecommender;//二级推荐人
+    private Long secondLevelRecommenderId;//二级推荐人
     @ApiModelProperty(value = "备注")
     private String remarks;
     public String getCityCode() {
@@ -379,21 +379,6 @@ public class MarketingMembers {
         this.memberGrade = memberGrade;
     }
 
-    public String getRecommender() {
-        return recommender;
-    }
-
-    public void setRecommender(String recommender) {
-        this.recommender = recommender;
-    }
-
-    public String getSecondLevelRecommender() {
-        return secondLevelRecommender;
-    }
-
-    public void setSecondLevelRecommender(String secondLevelRecommender) {
-        this.secondLevelRecommender = secondLevelRecommender;
-    }
 
     public String getRemarks() {
         return remarks;
@@ -401,5 +386,21 @@ public class MarketingMembers {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public Long getRecommenderId() {
+        return recommenderId;
+    }
+
+    public void setRecommenderId(Long recommenderId) {
+        this.recommenderId = recommenderId;
+    }
+
+    public Long getSecondLevelRecommenderId() {
+        return secondLevelRecommenderId;
+    }
+
+    public void setSecondLevelRecommenderId(Long secondLevelRecommenderId) {
+        this.secondLevelRecommenderId = secondLevelRecommenderId;
     }
 }
