@@ -11,9 +11,11 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingSaleUserBindMobileParam;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author fangshiping
@@ -21,6 +23,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserLoginService {
+    private static Logger logger = Logger.getLogger(UserLoginService.class);
+
     @Autowired
     private MarketingUserMapper marketingUserMapper;
 
@@ -57,6 +61,7 @@ public class UserLoginService {
      * @param marketingSaleUserBindMobileParam
      * @throws SuperCodeException
      */
+    @Transactional(rollbackFor = Exception.class)
     public RestResult bindMobile(MarketingSaleUserBindMobileParam marketingSaleUserBindMobileParam) throws SuperCodeException{
         if(StringUtils.isBlank(marketingSaleUserBindMobileParam.getMobile())){
             throw new SuperCodeException("手机号不存在");
@@ -99,9 +104,13 @@ public class UserLoginService {
             marketingUserNew.setMobile(marketingSaleUserBindMobileParam.getMobile());
             marketingUserNew.setHaveIntegral(marketingUserNew.getHaveIntegral()+BindConstants.SUCCESS);
             marketingUserNew.setTotalIntegral(marketingUserNew.getTotalIntegral()+BindConstants.SUCCESS);
+            marketingUserNew.setLoginName("");
+            marketingUserNew.setPassword("");
             marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);
+            marketingUserTwo.setId(marketingUserTwo.getId());
             //插入一条新数据
             result=marketingUserMapper.insert(marketingUserNew);
+            logger.info("------marketingMembersTwo-----"+marketingUserTwo);
             marketingUserMapper.updateById(marketingUserTwo);
         }
         if (result.equals(BindConstants.RESULT)){
