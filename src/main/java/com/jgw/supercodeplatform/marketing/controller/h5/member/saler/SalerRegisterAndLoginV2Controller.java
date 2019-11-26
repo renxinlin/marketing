@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -157,7 +158,7 @@ public class SalerRegisterAndLoginV2Controller {
    @PostMapping("/tempRegister")
    @ResponseBody
    @ApiOperation(value = "此版本为前端授权后调用的注册接口", notes = "")
-   public RestResult loadingRegisterBeforeWxReturnOpenId(@RequestBody  MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
+   public RestResult loadingRegisterBeforeWxReturnOpenId(@Valid  @RequestBody  MarketingSaleMembersAddParam userInfo, HttpServletResponse response) throws SuperCodeException, IOException {
            // 直接保存 有微信用户时携带openiD访问该接口
          service.saveRegisterUser(userInfo);
          return RestResult.success();
