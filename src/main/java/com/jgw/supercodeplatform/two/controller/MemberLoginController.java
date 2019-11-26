@@ -44,12 +44,13 @@ public class MemberLoginController {
     private String cookieDomain;
 
     @GetMapping("/login")
-    @ApiOperation(value = "会员账号密码登录", notes = "2.0登陆")
+    @ApiOperation(value = "2.0账号存在性", notes = "2.0登陆")
     public RestResult<?> login(@RequestParam String loginName, @RequestParam String password,HttpServletResponse response) throws SuperCodeException {
         String md5Password= DigestUtils.md5DigestAsHex(password.getBytes()).toUpperCase();
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("LoginName",loginName);
         queryWrapper.eq("Password",md5Password);
+        queryWrapper.eq("binding",0); //未绑定
         MarketingMembers marketingMembers =marketingMembersMapper.selectOne(queryWrapper);
         if (marketingMembers!=null){
             H5LoginVO h5LoginVO=memberLoginService.setH5LoginVO(marketingMembers);
@@ -68,7 +69,7 @@ public class MemberLoginController {
             response.addHeader("Access-Control-Allow-Credentials", "true");
             response.addHeader("Access-Control-Allow-Headers", "Content-Type, ActivitySet-Cookie, *");
             return RestResult.success();
-        }
+        }   
         return RestResult.success(500,"不存在该用户",null);
     }
 
