@@ -13,6 +13,5 @@ public class MarketingMembersBindMobileParam {
     private Long id;
     private String organizationId;
     private String mobile;
-    private String id; //会员
     private String verificationCode;
 }
