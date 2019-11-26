@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service
 public class MarketingActivitySalerSetService   {
@@ -562,34 +563,20 @@ public class MarketingActivitySalerSetService   {
 //		Map<String, MarketingActivityProduct> activityProductMap = new HashMap<String, MarketingActivityProduct>();
 		List<MarketingActivityProduct> mList = new ArrayList<MarketingActivityProduct>();
 		List<MarketingActivityProduct> upProductList = mProductMapper.selectByActivitySetId(activitySetId);
-		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
-		if (!CollectionUtils.isEmpty(upProductList)) {
-			upProductList.forEach(marketingActivityProduct -> {
-				String sbatchIds = marketingActivityProduct.getSbatchId();
-				if (org.apache.commons.lang3.StringUtils.isNotBlank(sbatchIds)) {
-					String[] sbatchIdArray = sbatchIds.split(",");
-					for(String sbatchId : sbatchIdArray) {
-						SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
-						sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL);
-						List<Integer> bizTypeList = new ArrayList<>();
-						bizTypeList.add(BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
-						sbatchUrlDto.setBusinessTypes(bizTypeList);
-						sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
-						sbatchUrlDto.setClientRole(MemberTypeEnums.SALER.getType()+"");
-						sbatchUrlDto.setProductId(marketingActivityProduct.getProductId());
-						sbatchUrlDto.setProductBatchId(marketingActivityProduct.getProductBatchId());
-						deleteProductBatchList.add(sbatchUrlDto);
-					}
-				}
-			});
-		}
+
 		mProductMapper.deleteByActivitySetId(activitySetId);
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
-			if (null != batchParams && !batchParams.isEmpty()) {
-				ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
-				List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+			ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+			List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+			if (CollectionUtils.isEmpty(batchParams)) {
+				MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+				mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+				mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+				mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_SALER.getType());
+				mList.add(mActivityProduct);
+			} else {
 				for (ProductBatchParam prBatchParam : batchParams) {
 					String productBatchId = prBatchParam.getProductBatchId();
 					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
@@ -611,6 +598,32 @@ public class MarketingActivitySalerSetService   {
 				productAndBatchGetCodeMO.setProductId(productId);
 				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
+		}
+		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
+		//得到已经绑定过url的product
+		List<MarketingActivityProduct> maProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_SALER.getType());
+		if(maProductList == null) maProductList = new ArrayList<>();
+		maProductList.addAll(upProductList);
+		List<MarketingActivityProduct> marketingActivityProductList = maProductList.stream().distinct().collect(Collectors.toList());
+		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {
+			marketingActivityProductList.forEach(marketingActivityProduct -> {
+				String sbatchIds = marketingActivityProduct.getSbatchId();
+				if (org.apache.commons.lang3.StringUtils.isNotBlank(sbatchIds)) {
+					String[] sbatchIdArray = sbatchIds.split(",");
+					for(String sbatchId : sbatchIdArray) {
+						SbatchUrlUnBindDto sbatchUrlDto = new SbatchUrlUnBindDto();
+						sbatchUrlDto.setUrl(marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL);
+						List<Integer> bizTypeList = new ArrayList<>();
+						bizTypeList.add(BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType());
+						sbatchUrlDto.setBusinessTypes(bizTypeList);
+						sbatchUrlDto.setBatchId(Long.parseLong(sbatchId));
+						sbatchUrlDto.setClientRole(MemberTypeEnums.SALER.getType()+"");
+						sbatchUrlDto.setProductId(marketingActivityProduct.getProductId());
+						sbatchUrlDto.setProductBatchId(marketingActivityProduct.getProductBatchId());
+						deleteProductBatchList.add(sbatchUrlDto);
+					}
+				}
+			});
 		}
 		marketingActivitySetService.saveProductBatchs(productAndBatchGetCodeMOs, deleteProductBatchList,mList, MemberTypeEnums.SALER.getType());
 	}
