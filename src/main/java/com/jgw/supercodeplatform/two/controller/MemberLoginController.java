@@ -3,12 +3,10 @@ package com.jgw.supercodeplatform.two.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
-import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
-import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingMembersBindMobileParam;
 import com.jgw.supercodeplatform.two.service.MemberLoginService;
 import io.swagger.annotations.Api;
@@ -18,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -43,6 +39,7 @@ public class MemberLoginController {
     @Value("${cookie.domain}")
     private String cookieDomain;
 
+
     @GetMapping("/login")
     @ApiOperation(value = "会员账号密码登录", notes = "2.0登陆")
     public RestResult<?> login(@RequestParam String loginName, @RequestParam String password,HttpServletResponse response) throws SuperCodeException {
@@ -50,9 +47,16 @@ public class MemberLoginController {
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("LoginName",loginName);
         queryWrapper.eq("Password",md5Password);
+        //1 代表已经绑定
         MarketingMembers marketingMembers =marketingMembersMapper.selectOne(queryWrapper);
         if (marketingMembers!=null){
-            H5LoginVO h5LoginVO=memberLoginService.setH5LoginVO(marketingMembers);
+            if (JudgeBindConstants.HAVEBIND.equals(marketingMembers.getBinding())){
+                throw new SuperCodeException("该用户已经绑定！");
+            }else{
+                //返回会员主键Id
+                return RestResult.success(200,"success",marketingMembers.getId());
+            }
+            /*H5LoginVO h5LoginVO=memberLoginService.setH5LoginVO(marketingMembers);
             if (h5LoginVO == null) {
                 return RestResult.fail("根据openid无法登录");
             }
@@ -66,8 +70,9 @@ public class MemberLoginController {
             response.addCookie(jwtTokenCookie);
             response.addHeader("Access-Control-Allow-Origin", "");
             response.addHeader("Access-Control-Allow-Credentials", "true");
-            response.addHeader("Access-Control-Allow-Headers", "Content-Type, ActivitySet-Cookie, *");
-            return RestResult.success();
+            response.addHeader("Access-Control-Allow-Headers", "Content-Type, ActivitySet-Cookie, *");*/
+
+
         }
         return RestResult.success(500,"不存在该用户",null);
     }
@@ -82,8 +87,7 @@ public class MemberLoginController {
 
     @PostMapping("/bind")
     @ApiOperation(value = "会员绑定手机号", notes = "2.0绑定手机号")
-    @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult bind(@RequestBody MarketingMembersBindMobileParam marketingMembersBindMobileParam,@ApiIgnore H5LoginVO h5LoginVO) throws SuperCodeException {
-        return memberLoginService.bindMobile(marketingMembersBindMobileParam,h5LoginVO);
+    public RestResult bind(@RequestBody MarketingMembersBindMobileParam marketingMembersBindMobileParam) throws SuperCodeException {
+        return memberLoginService.bindMobile(marketingMembersBindMobileParam);
     }
 }
