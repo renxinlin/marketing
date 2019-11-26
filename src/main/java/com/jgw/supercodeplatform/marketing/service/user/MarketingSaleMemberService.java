@@ -535,9 +535,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			marketingWxMemberMapper.update(null, currentUpdateWrapper);
 		}
 		UserWithWechat userWithWechat = new UserWithWechat();
-		BeanUtils.copyProperties(marketingWxMember, userWithWechat);
 		MarketingUser marketingUser = mapper.selectByPrimaryKey(marketingWxMember.getMemberId());
 		BeanUtils.copyProperties(marketingUser, userWithWechat);
+		BeanUtils.copyProperties(marketingWxMember, userWithWechat);
 		return userWithWechat;
 	}
 
