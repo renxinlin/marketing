@@ -899,7 +899,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				if(marketingActivityProductParam == null) {
 					marketingActivityProductParam = new MarketingActivityProductParam();
 					marketingActivityProductParam.setProductId(product.getProductId());
-					marketingActivityProductParam.setProductName(product.getProductBatchName());
+					marketingActivityProductParam.setProductName(product.getProductName());
 					//添加批次
 					List<ProductBatchParam> prdBatchList = new ArrayList<>();
 					if (StringUtils.isNotBlank(product.getProductBatchId())) {
@@ -918,7 +918,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				}
 			}
 		}
-		marketingActivityCreateParam.setmProductParams(new ArrayList<MarketingActivityProductParam>(mActivityProductParamMap.values()));
+		marketingActivityCreateParam.setmProductParams(new ArrayList<>(mActivityProductParamMap.values()));
 		//获取设置中奖奖次
 		List<MarketingPrizeType> marketingPrizeTypeList = mPrizeTypeMapper.selectByActivitySetId(activitySetId);
 		if(!CollectionUtils.isEmpty(marketingPrizeTypeList)) {
