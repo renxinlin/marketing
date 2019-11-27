@@ -107,7 +107,6 @@ public class UserLoginService {
 
             MarketingUser  marketingUserNew = new MarketingUser();
             BeanUtils.copyProperties(marketingUserTwo,marketingUserNew,"id");
-            marketingUserNew.setId(null);
             marketingUserNew.setMobile(marketingSaleUserBindMobileParam.getMobile());
             marketingUserNew.setHaveIntegral(marketingUserNew.getHaveIntegral()+BindConstants.SUCCESS);
             marketingUserNew.setTotalIntegral(marketingUserNew.getTotalIntegral()+BindConstants.SUCCESS);
@@ -116,7 +115,6 @@ public class UserLoginService {
             marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);
             marketingUserTwo.setId(marketingSaleUserBindMobileParam.getId());
             //插入一条新数据
-            logger.info("------marketingUserNew-----"+marketingUserNew.toString());
             logger.info("------marketingUserNew-----"+marketingUserNew.toString());
             result=marketingUserMapper.insert(marketingUserNew);
             logger.info("------marketingMembersTwo-----"+marketingUserTwo );

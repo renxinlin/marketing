@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.two.dto.MarketingMembersBindMobileParam;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -97,7 +98,7 @@ public class MemberLoginService {
             //可用积分和总积分
             if (exitMarketingMembers.getBinding()==null ||JudgeBindConstants.NOBIND.equals(exitMarketingMembers.getBinding())){
                 exitMarketingMembers.setHaveIntegral(exitMarketingMembers.getHaveIntegral()+marketingMembersTwo.getHaveIntegral()+BindConstants.SUCCESS);
-                exitMarketingMembers.setTotalIntegral(exitMarketingMembers.getTotalIntegral()+marketingMembersTwo.getTotalIntegral());
+                exitMarketingMembers.setTotalIntegral(exitMarketingMembers.getTotalIntegral()+marketingMembersTwo.getTotalIntegral()+BindConstants.SUCCESS);
                 marketingMembersTwo.setHaveIntegral(0);
                 marketingMembersTwo.setTotalIntegral(0);
                 result=marketingMembersMapper.updateById(exitMarketingMembers);
@@ -106,9 +107,8 @@ public class MemberLoginService {
             }
         }else{
             //不存在则将2.0的数据复制到3.0
-            MarketingMembers marketingMembersNew;
-            marketingMembersNew=modelMapper.map(marketingMembersTwo,MarketingMembers.class);
-            marketingMembersNew.setId(null);
+            MarketingMembers marketingMembersNew=new MarketingMembers();
+            BeanUtils.copyProperties(marketingMembersTwo,marketingMembersNew,"id");
             marketingMembersNew.setMobile(marketingMembersBindMobileParam.getMobile());
             marketingMembersNew.setHaveIntegral(marketingMembersNew.getHaveIntegral()+BindConstants.SUCCESS);
             marketingMembersNew.setTotalIntegral(marketingMembersNew.getTotalIntegral()+BindConstants.SUCCESS);
