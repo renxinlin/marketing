@@ -56,6 +56,10 @@ public class MarketingMembers {
     private String iDNumber;//身份证
     @ApiModelProperty(value = "注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、\"外部网站 8、码上淘 9、短信 10、微盟")
     private Byte registrationApproach;//注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、"外部网站 8、码上淘 9、短信 10、微盟
+
+    @TableField(exist=false)
+    private String registrationApproachStr;
+
     @ApiModelProperty(value = "累计积分")
     private Integer totalIntegral;//累计积分
     @ApiModelProperty(value = "会员等级")
@@ -66,6 +70,11 @@ public class MarketingMembers {
     private Long secondLevelRecommenderId;//二级推荐人
     @ApiModelProperty(value = "备注")
     private String remarks;
+    @ApiModelProperty(value = "是否已经绑定账号密码")
+    private Byte binding;
+    @ApiModelProperty(value = "2.0迁移的手机号")
+    private String phone;
+
     public String getCityCode() {
         return cityCode;
     }
@@ -402,5 +411,29 @@ public class MarketingMembers {
 
     public void setSecondLevelRecommenderId(Long secondLevelRecommenderId) {
         this.secondLevelRecommenderId = secondLevelRecommenderId;
+    }
+
+    public String getRegistrationApproachStr() {
+        return registrationApproachStr;
+    }
+
+    public void setRegistrationApproachStr(String registrationApproachStr) {
+        this.registrationApproachStr = registrationApproachStr;
+    }
+
+    public Byte getBinding() {
+        return binding;
+    }
+
+    public void setBinding(Byte binding) {
+        this.binding = binding;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

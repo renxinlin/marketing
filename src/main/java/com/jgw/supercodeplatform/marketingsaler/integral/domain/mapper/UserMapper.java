@@ -17,6 +17,6 @@ public interface UserMapper extends CommonMapper<User> {
     @Update(" update marketing_user set  HaveIntegral = HaveIntegral -  #{exchangeIntegral} where id = #{id} and organizationId = #{organizationId} and HaveIntegral -  #{exchangeIntegral} >= 0 ")
     int reduceIntegral(Integer exchangeIntegral, Long id, String organizationId);
 
-    @Update(" update marketing_user set  HaveIntegral = HaveIntegral +  #{addIntegral} where id = #{id} and organizationId = #{organizationId}  ")
+    @Update(" update marketing_user set TotalIntegral = TotalIntegral + #{addIntegral},  HaveIntegral = HaveIntegral +  #{addIntegral} where id = #{id} and organizationId = #{organizationId}  ")
     int addIntegral(Integer addIntegral, Long id, String organizationId);
 }

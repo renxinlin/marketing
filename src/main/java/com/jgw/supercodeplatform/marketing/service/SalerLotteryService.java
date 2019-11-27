@@ -303,7 +303,6 @@ public class SalerLotteryService {
                 indexSuccess = true;
             } catch (SuperCodeException e) {
                 e.printStackTrace();
-                // TODO 这里抛出版本号过期导致的信息
             }finally {
                 lock.releaseLock(lockName);
             }

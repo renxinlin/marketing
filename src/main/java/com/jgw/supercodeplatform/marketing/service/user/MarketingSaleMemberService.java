@@ -374,7 +374,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		UserWithWechat userDo = changeToDo(userInfo);
 		if (StringUtils.isNotBlank(userDo.getMobile())) {
 			MarketingUser marketingUser = new MarketingUser();
+			marketingUser.setSource(SourceType.H5); //    3、H5 4
 			BeanUtils.copyProperties(userDo, marketingUser);
+			marketingUser.setMechanismType(userInfo.getMechanismType() != null ?userInfo.getMechanismType().byteValue():null);
 			mapper.insertSelective(marketingUser);
 		}
 
