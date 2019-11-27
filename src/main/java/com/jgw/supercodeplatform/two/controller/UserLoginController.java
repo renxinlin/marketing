@@ -18,6 +18,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 
 /**
  * @author fangshiping
@@ -52,7 +53,10 @@ public class UserLoginController {
                 throw new SuperCodeException("该用户已经绑定！");
             }else{
                 //返回会员主键Id
-                return RestResult.success(200,"success",marketingUser.getId());
+                HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
+                objectObjectHashMap.put("id",marketingUser.getId());
+                objectObjectHashMap.put("organizationId",marketingUser.getOrganizationId());
+                return RestResult.success(200,"success",objectObjectHashMap);
             }
             /*String jwtToken= JWTUtil.createTokenWithClaim(h5LoginVO);
             Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
