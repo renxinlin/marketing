@@ -4,7 +4,8 @@ package com.jgw.supercodeplatform.marketing.common.constants;
  * @author fangshiping
  * @date 2019/11/26 11:44
  */
-public class MerchanismTypeConstants {
+public class MechanismTypeConstants {
+    public static final String mechanismType="mechanismType";
     public static final Byte HEADQUARTER=1;
     public static final Byte SUB_SIDIARY=2;
     public static final Byte DISTRIBUTOR=3;
@@ -14,6 +15,6 @@ public class MerchanismTypeConstants {
     public static final Byte LOCAL_GOV=15;
     public static final Byte COMPANY=16;
     public static final Byte SALE_LOCAL_GOV=20;
-    public static final Byte FARM=15;
+    public static final Byte FARM=25;
     public static final Byte OTHER=31;
 }

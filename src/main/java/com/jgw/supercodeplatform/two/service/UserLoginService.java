@@ -3,6 +3,7 @@ package com.jgw.supercodeplatform.two.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
@@ -122,6 +123,8 @@ public class UserLoginService {
                             +BindConstants.SUCCESS);
             marketingUserNew.setLoginName("");
             marketingUserNew.setPassword("");
+            //启用
+            marketingUserNew.setState(StateConstants.ENABLE);
             marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);
             marketingUserTwo.setId(marketingSaleUserBindMobileParam.getId());
             //插入一条新数据

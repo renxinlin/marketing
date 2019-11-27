@@ -18,6 +18,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.HashMap;
 
 /**
@@ -82,7 +83,7 @@ public class UserLoginController {
 
     @PostMapping("/bind")
     @ApiOperation(value = "导购员绑定手机号", notes = "2.0绑定手机号")
-    public RestResult bind(@RequestBody MarketingSaleUserBindMobileParam marketingSaleUserBindMobileParam) throws SuperCodeException {
+    public RestResult bind(@Valid @RequestBody MarketingSaleUserBindMobileParam marketingSaleUserBindMobileParam) throws SuperCodeException {
         return service.bindMobile(marketingSaleUserBindMobileParam);
     }
 }

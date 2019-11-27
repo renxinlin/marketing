@@ -2,10 +2,7 @@ package com.jgw.supercodeplatform.marketing.controller.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
-import com.jgw.supercodeplatform.marketing.common.constants.RegistrationApproachConstants;
-import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
-import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.*;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
@@ -88,6 +85,12 @@ public class ExportController extends CommonUtil {
             }
             NEW_EXCEL_FIELD=NEW_EXCEL_FIELD.replaceAll("state","stateStr");
         }
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(RegistrationApproachConstants.registrationApproach)!=-1){
+            if (NEW_EXCEL_FIELD == null){
+                NEW_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
+            }
+            NEW_EXCEL_FIELD=NEW_EXCEL_FIELD.replaceAll("registrationApproach","registrationApproachStr");
+        }
         logger.info("-----------自定义表头-----------" + CUSTOMER_EXCEL_FIELD_MAP);
         // step-3:处理excel字段映射 转换excel {filedMap:[ {key:英文} ,  {value:中文} ]} 有序
         Map filedMap = null;
@@ -124,27 +127,20 @@ public class ExportController extends CommonUtil {
         CUSTOMER_EXCEL_FIELD_MAP = request.getParameter("exportMetadata");
         logger.info("-----------自定义表头-----------" + CUSTOMER_EXCEL_FIELD_MAP);
         String NEW_USER_EXCEL_FIELD = null;
-        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(SexConstants.SEX) != -1) {
-            NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP.replaceAll("sex", "sexStr");
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(MechanismTypeConstants.mechanismType)!=-1){
+            NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP.replaceAll("mechanismType","mechanismTypeStr");
         }
-        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(PcccodeConstants.pCCcode)!=-1){
-            if (NEW_USER_EXCEL_FIELD == null){
-                NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
-            }
-            NEW_USER_EXCEL_FIELD=NEW_USER_EXCEL_FIELD.replaceAll("pCCcode","codeStr");
-        }
-        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(RegistrationApproachConstants.registrationApproach)!=-1){
-            if (NEW_USER_EXCEL_FIELD == null){
-                NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
-            }
-            NEW_USER_EXCEL_FIELD=NEW_USER_EXCEL_FIELD.replaceAll("registrationApproach","registrationApproachStr");
-        }
-
         if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(StateConstants.STATE) != -1) {
             if (NEW_USER_EXCEL_FIELD == null){
                 NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
             }
             NEW_USER_EXCEL_FIELD=NEW_USER_EXCEL_FIELD.replaceAll("state","stateStr");
+        }
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(UserSourceConstants.source) != -1) {
+            if (NEW_USER_EXCEL_FIELD == null){
+                NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
+            }
+            NEW_USER_EXCEL_FIELD=NEW_USER_EXCEL_FIELD.replaceAll("source","sourceStr");
         }
         // step-3:处理excel字段映射 转换excel {filedMap:[ {key:英文} ,  {value:中文} ]} 有序
         Map filedMap = null;
