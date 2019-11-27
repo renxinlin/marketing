@@ -6,9 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.common.constants.MechanismTypeConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
-import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.UserSourceConstants;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
@@ -604,28 +605,10 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	public List<MarketingUser> changeList(List<MarketingUser> list){
 		list.stream().filter(marketingUser -> {
 
-			if(StringUtils.isNotBlank(marketingUser.getpCCcode())){
-				List<JSONObject> objects = JSONObject.parseArray(marketingUser.getpCCcode(),JSONObject.class);
-				int size = objects.size();
-				JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
-				JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
-				JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
-				marketingUser.setProvinceCode(province.getString(PcccodeConstants.areaCode));
-				marketingUser.setCityCode(city.getString(PcccodeConstants.areaCode));
-				marketingUser.setCountyCode(country.getString(PcccodeConstants.areaCode));
-				marketingUser.setProvinceName(province.getString(PcccodeConstants.areaName));
-				marketingUser.setCityName(city.getString(PcccodeConstants.areaName));
-				marketingUser.setCountyName(country.getString(PcccodeConstants.areaName));
-				marketingUser.setCodeStr(province.getString(PcccodeConstants.areaName)+"/"+city.getString(PcccodeConstants.areaName)+"/"+country.getString(PcccodeConstants.areaName));
-			}
-
-
-			if (SexConstants.WOMEN.equals(marketingUser.getSex())){
-				marketingUser.setSex("女");
-			}else if(SexConstants.MEN.equals(marketingUser.getSex())){
-				marketingUser.setSex("男");
+			if (UserSourceConstants.H5.equals(marketingUser.getSource())){
+				marketingUser.setSourceStr("H5");
 			}else {
-				marketingUser.setSex("---");
+				marketingUser.setSourceStr("系统后台");
 			}
 
 			if (StateConstants.TO_EXAMINE_ING.equals(marketingUser.getState())){
@@ -635,6 +618,31 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			}else {
 				marketingUser.setStateStr("启用中");
 			}
+
+			if (MechanismTypeConstants.HEADQUARTER.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("总部");
+			}else if (MechanismTypeConstants.SUB_SIDIARY.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("子公司");
+			}else if (MechanismTypeConstants.DISTRIBUTOR.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("经销商");
+			}else if (MechanismTypeConstants.STORE.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("门店");
+			}else if (MechanismTypeConstants.STORAGE_ROOM.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("库房");
+			}else if (MechanismTypeConstants.SUB_STORE.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("子门店");
+			}else if (MechanismTypeConstants.LOCAL_GOV.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("地方政府");
+			}else if (MechanismTypeConstants.COMPANY.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("公司");
+			}else if (MechanismTypeConstants.SALE_LOCAL_GOV.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("销售公司");
+			}else if (MechanismTypeConstants.FARM.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("农场");
+			}else {
+				marketingUser.setMechanismTypeStr("其他");
+			}
+
 			return true;
 		}).collect(Collectors.toList());
 		return list;

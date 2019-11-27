@@ -107,6 +107,10 @@ public class MarketingUser {
      */
     private Integer version;
 
+    @TableField(exist=false)
+    //导出使用 无业务需求
+    private String address;
+
     /**
      * 机构类型
      */
@@ -416,5 +420,13 @@ public class MarketingUser {
 
     public void setCodeStr(String codeStr) {
         this.codeStr = codeStr;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
