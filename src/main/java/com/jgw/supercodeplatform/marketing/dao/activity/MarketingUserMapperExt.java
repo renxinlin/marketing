@@ -26,6 +26,8 @@ public interface MarketingUserMapperExt extends MarketingUserMapper , CommonSql 
             + " a.MemberType memberType, "
             + " a.Source as source, a.TotalIntegral as totalIntegral, "
             + " a.State as state, a.DeviceType as deviceType, "
+            + " a.MechanismType as mechanismType "
+
             + " a.HaveIntegral haveIntegral ";
 
 
