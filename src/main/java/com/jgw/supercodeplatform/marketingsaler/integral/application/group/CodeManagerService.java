@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketingsaler.common.UserConstants;
+import com.jgw.supercodeplatform.marketingsaler.integral.infrastructure.ErrorMsg;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.FromFakeOutCodeToMarketingInfoDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CodeManagerFeign;
@@ -40,7 +41,7 @@ public class CodeManagerService {
         log.info("转换后的码:{}",JSONObject.toJSONString(outCodeInfoDto));
 
         if (outCodeInfoDto == null) return null;
-        Asserts.check(UserConstants.MARKETING_CODE_TYPE.equals(outCodeInfoDto.getCodeTypeId())|| UserConstants.MARKETING_CODE_TYPE_13.equals(outCodeInfoDto.getCodeTypeId()),"非营销码");
+        Asserts.check(UserConstants.MARKETING_CODE_TYPE.equals(outCodeInfoDto.getCodeTypeId())|| UserConstants.MARKETING_CODE_TYPE_13.equals(outCodeInfoDto.getCodeTypeId()), ErrorMsg.no_setting_integral);
 
 
         RestResult<Object>  restResult = null;
