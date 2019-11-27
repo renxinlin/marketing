@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2019/11/14 15:23
  */
 @RestController
-@RequestMapping("/two/user")
+@RequestMapping("marketing/two/user")
 @Api(tags = "2.0登录迁移接口")
 public class UserLoginController {
     @Autowired
@@ -39,7 +39,7 @@ public class UserLoginController {
     @Value("${cookie.domain}")
     private String cookieDomain;
 
-    @GetMapping("login")
+    @GetMapping("/login")
     @ApiOperation(value = "导购员账号密码登录", notes = "2.0登陆")
     public RestResult<?> login(@RequestParam String loginName, @RequestParam String password, HttpServletResponse response) throws SuperCodeException {
         String md5Password= DigestUtils.md5DigestAsHex(password.getBytes()).toUpperCase();
