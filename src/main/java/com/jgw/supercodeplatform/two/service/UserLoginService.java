@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.two.dto.MarketingSaleUserBindMobileParam;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,27 +91,34 @@ public class UserLoginService {
             //说明3.0数据中已绑定手机号
             //进行积分转移
             //可用积分和总积分
-            exitMarketingUser.setHaveIntegral(exitMarketingUser.getHaveIntegral()+marketingUserTwo.getHaveIntegral()+BindConstants.SUCCESS);
-            exitMarketingUser.setTotalIntegral(exitMarketingUser.getTotalIntegral()+marketingUserTwo.getTotalIntegral());
-            marketingUserTwo.setHaveIntegral(0);
-            marketingUserTwo.setTotalIntegral(0);
-            result=marketingUserMapper.updateById(exitMarketingUser);
-            marketingUserMapper.updateById(marketingUserTwo);
+            //未绑定进行绑定
+            if (exitMarketingUser.getBinding()==null ||JudgeBindConstants.NOBIND.equals(exitMarketingUser.getBinding())){
+                exitMarketingUser.setHaveIntegral(exitMarketingUser.getHaveIntegral()+marketingUserTwo.getHaveIntegral()+BindConstants.SUCCESS);
+                exitMarketingUser.setTotalIntegral(exitMarketingUser.getTotalIntegral()+marketingUserTwo.getTotalIntegral()+BindConstants.SUCCESS);
+                exitMarketingUser.setBinding(JudgeBindConstants.HAVEBIND);
+                marketingUserTwo.setHaveIntegral(0);
+                marketingUserTwo.setTotalIntegral(0);
+                result=marketingUserMapper.updateById(exitMarketingUser);
+                marketingUserMapper.updateById(marketingUserTwo);
+            }
         }
         else{
             //不存在则将2.0的数据复制到3.0
-            MarketingUser marketingUserNew;
-            marketingUserNew=modelMapper.map(marketingUserTwo,MarketingUser.class);
+            MarketingUser marketingUserNew = new MarketingUser();
+            BeanUtils.copyProperties(marketingUserTwo,marketingUserNew,"marketingUserTwo.getId()");
+//            marketingUserNew=modelMapper.map(marketingUserTwo,MarketingUser.class);
+//            marketingUserNew.setId(null);
             marketingUserNew.setMobile(marketingSaleUserBindMobileParam.getMobile());
             marketingUserNew.setHaveIntegral(marketingUserNew.getHaveIntegral()+BindConstants.SUCCESS);
             marketingUserNew.setTotalIntegral(marketingUserNew.getTotalIntegral()+BindConstants.SUCCESS);
             marketingUserNew.setLoginName("");
             marketingUserNew.setPassword("");
             marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);
-            marketingUserTwo.setId(marketingUserTwo.getId());
+            marketingUserTwo.setId(marketingSaleUserBindMobileParam.getId());
             //插入一条新数据
+            logger.info("------marketingUserNew-----"+marketingUserNew.toString());
             result=marketingUserMapper.insert(marketingUserNew);
-            logger.info("------marketingMembersTwo-----"+marketingUserTwo);
+            logger.info("------marketingMembersTwo-----"+marketingUserTwo.toString());
             marketingUserMapper.updateById(marketingUserTwo);
         }
         if (result.equals(BindConstants.RESULT)){

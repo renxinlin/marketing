@@ -89,19 +89,21 @@ public class MemberLoginService {
         queryWrapper.eq("Mobile",marketingMembersBindMobileParam.getMobile());
         queryWrapper.eq("OrganizationId",marketingMembersBindMobileParam.getOrganizationId());
         MarketingMembers exitMarketingMembers=marketingMembersMapper.selectOne(queryWrapper);
-        Integer result;
+        Integer result = null;
         if (exitMarketingMembers != null){
             /*throw new SuperCodeException("该手机号已被绑定");*/
             //说明3.0数据中已绑定手机号
             //进行积分转移
             //可用积分和总积分
-            exitMarketingMembers.setHaveIntegral(exitMarketingMembers.getHaveIntegral()+marketingMembersTwo.getHaveIntegral()+BindConstants.SUCCESS);
-            exitMarketingMembers.setTotalIntegral(exitMarketingMembers.getTotalIntegral()+marketingMembersTwo.getTotalIntegral());
-            marketingMembersTwo.setHaveIntegral(0);
-            marketingMembersTwo.setTotalIntegral(0);
-            result=marketingMembersMapper.updateById(exitMarketingMembers);
-            logger.info("------marketingMembersTwo-----"+marketingMembersTwo);
-            marketingMembersMapper.updateById(marketingMembersTwo);
+            if (exitMarketingMembers.getBinding()==null ||JudgeBindConstants.NOBIND.equals(exitMarketingMembers.getBinding())){
+                exitMarketingMembers.setHaveIntegral(exitMarketingMembers.getHaveIntegral()+marketingMembersTwo.getHaveIntegral()+BindConstants.SUCCESS);
+                exitMarketingMembers.setTotalIntegral(exitMarketingMembers.getTotalIntegral()+marketingMembersTwo.getTotalIntegral());
+                marketingMembersTwo.setHaveIntegral(0);
+                marketingMembersTwo.setTotalIntegral(0);
+                result=marketingMembersMapper.updateById(exitMarketingMembers);
+                logger.info("------marketingMembersTwo-----"+marketingMembersTwo);
+                marketingMembersMapper.updateById(marketingMembersTwo);
+            }
         }else{
             //不存在则将2.0的数据复制到3.0
             MarketingMembers marketingMembersNew;
