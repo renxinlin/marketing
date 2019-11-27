@@ -7,4 +7,5 @@ package com.jgw.supercodeplatform.marketing.common.constants;
 public class SexConstants {
     public static final Byte WOMEN=0;
     public static final Byte MEN=1;
+    public static final String SEX="sex";
 }

@@ -29,6 +29,8 @@ public class MarketingMembers {
     private String countyName;
     private String registDate;//注册时间
     private Byte state;//状态(1、 表示正常，0 表示下线)
+    @TableField(exist=false)
+    private String stateStr;
     private String organizationId;//组织Id
     private String newRegisterFlag;//是否新注册的标志(1  表示是，0 表示不是)
     private String createDate;//建立日期
@@ -435,5 +437,13 @@ public class MarketingMembers {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getStateStr() {
+        return stateStr;
+    }
+
+    public void setStateStr(String stateStr) {
+        this.stateStr = stateStr;
     }
 }
