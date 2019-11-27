@@ -20,14 +20,19 @@ public class BuryPointPageViewTcService {
 
     public void buryPointPageVisitTc(BuryPointPageVisitTcDto buryPointPageVisitTcDto, H5LoginVO user){
         BuryPointPageViewTc buryPointPageViewTc =new BuryPointPageViewTc();
-        buryPointPageViewTc.setCreateUser(user.getMemberName());
-        buryPointPageViewTc.setCreateUserId(String.valueOf(user.getMemberId()));
+        if (user != null){
+            buryPointPageViewTc.setCreateUser(user.getMemberName());
+            buryPointPageViewTc.setCreateUserId(String.valueOf(user.getMemberId()));
+            buryPointPageViewTc.setOrganizationId(user.getOrganizationId());
+            buryPointPageViewTc.setOrganizationName(user.getOrganizationName());
+            buryPointPageViewTc.setMemberType(user.getMemberType());
+            buryPointPageViewTc.setMobile(user.getMobile());
+        }
+
         buryPointPageViewTc.setCreateDate(new Date());
-        buryPointPageViewTc.setOrganizationId(user.getOrganizationId());
-        buryPointPageViewTc.setOrganizationName(user.getOrganizationName());
+
         buryPointPageViewTc.setDevice(buryPointPageVisitTcDto.getDevice());
-        buryPointPageViewTc.setMemberType(user.getMemberType());
-        buryPointPageViewTc.setMobile(buryPointPageVisitTcDto.getMobile());
+
         buryPointPageViewTc.setMobileModel(buryPointPageVisitTcDto.getMobileModel());
         buryPointPageViewTc.setSystemModel(buryPointPageVisitTcDto.getSystemModel());
         buryPointPageViewTc.setBrowser(buryPointPageVisitTcDto.getBrowser());
