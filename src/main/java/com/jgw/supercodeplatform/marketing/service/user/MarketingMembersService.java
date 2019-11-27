@@ -906,6 +906,25 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 	public List<MarketingMembers> changeList(List<MarketingMembers> list){
 		list.stream().filter(marketingUser -> {
+
+
+			if(StringUtils.isNotBlank(marketingUser.getpCCcode())){
+				List<JSONObject> objects = JSONObject.parseArray(marketingUser.getpCCcode(),JSONObject.class);
+				int size = objects.size();
+				JSONObject province = size > 0 ? objects.get(0)  : new JSONObject()  ;
+				JSONObject city = size > 1  ? objects.get(1) : new JSONObject() ;
+				JSONObject country = size > 2 ? objects.get(2) : new JSONObject();
+				marketingUser.setProvinceCode(province.getString(PcccodeConstants.areaCode));
+				marketingUser.setCityCode(city.getString(PcccodeConstants.areaCode));
+				marketingUser.setCountyCode(country.getString(PcccodeConstants.areaCode));
+				marketingUser.setProvinceName(province.getString(PcccodeConstants.areaName));
+				marketingUser.setCityName(city.getString(PcccodeConstants.areaName));
+				marketingUser.setCountyName(country.getString(PcccodeConstants.areaName));
+				marketingUser.setCodeStr(province.getString(PcccodeConstants.areaName)+"/"+city.getString(PcccodeConstants.areaName)+"/"+country.getString(PcccodeConstants.areaName));
+			}
+
+
+
 			if (SexConstants.WOMEN.equals(marketingUser.getSexStr())){
 				marketingUser.setSexStr("女");
 			}else if(SexConstants.MEN.equals(marketingUser.getSexStr())){
@@ -913,6 +932,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			}else {
 				marketingUser.setSexStr("--");
 			}
+
 
 			if (StateConstants.TO_EXAMINE_ING.equals(marketingUser.getState())){
 				marketingUser.setStateStr("正常");
