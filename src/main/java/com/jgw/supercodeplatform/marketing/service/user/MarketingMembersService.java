@@ -8,7 +8,9 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.RegistrationApproachConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
@@ -896,6 +898,13 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			throw new SuperCodeException("组织不存在...");
 		}
 		List<MarketingMembers> list=marketingMembersMapper.getMarketingUserList(organoizationId);
+		if (list == null){
+			throw new SuperCodeException("会员信息不存在");
+		}
+		return list;
+	}
+
+	public List<MarketingMembers> changeList(List<MarketingMembers> list){
 		list.stream().filter(marketingUser -> {
 			if (SexConstants.WOMEN.equals(marketingUser.getSexStr())){
 				marketingUser.setSexStr("女");
@@ -903,6 +912,34 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				marketingUser.setSexStr("男");
 			}else {
 				marketingUser.setSexStr("--");
+			}
+
+			if (StateConstants.TO_EXAMINE_ING.equals(marketingUser.getState())){
+				marketingUser.setStateStr("正常");
+			}else {
+				marketingUser.setStateStr("下线");
+			}
+
+			if (RegistrationApproachConstants.MOBILE_MAll.equals(marketingUser.getRegistrationApproach())){
+				marketingUser.setRegistrationApproachStr("手机积分商城");
+			}else if (RegistrationApproachConstants.SCORE_MALL.equals(marketingUser.getRegistrationApproach())){
+				marketingUser.setRegistrationApproachStr("PC积分网站");
+			}else if (RegistrationApproachConstants.MOBILE_RECHARGE.equals(marketingUser.getRegistrationApproach())){
+				marketingUser.setRegistrationApproachStr("手机充值");
+			}else if (RegistrationApproachConstants.WEB_BACK.equals(marketingUser.getRegistrationApproach())){
+				marketingUser.setRegistrationApproachStr("网站后台");
+			}else if (RegistrationApproachConstants.MOBILE_CLIENT.equals(marketingUser.getRegistrationApproach())){
+				marketingUser.setRegistrationApproachStr("手机客户端");
+			}else if (RegistrationApproachConstants.WX.equals(marketingUser.getRegistrationApproach())){
+				marketingUser.setRegistrationApproachStr("微信");
+			}else if (RegistrationApproachConstants.OUT_WEB.equals(marketingUser.getRegistrationApproach())){
+				marketingUser.setRegistrationApproachStr("外部网站");
+			}else if (RegistrationApproachConstants.MA_SHANG_TAO.equals(marketingUser.getRegistrationApproach())){
+				marketingUser.setRegistrationApproachStr("码上淘");
+			}else if (RegistrationApproachConstants.SHORT_MESSAGE.equals(marketingUser.getRegistrationApproach())){
+				marketingUser.setRegistrationApproachStr("短信");
+			}else {
+				marketingUser.setRegistrationApproachStr("微盟");
 			}
 			return true;
 		}).collect(Collectors.toList());

@@ -2,6 +2,8 @@ package com.jgw.supercodeplatform.marketing.controller.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
@@ -54,27 +56,38 @@ public class ExportController extends CommonUtil {
 
     @PostMapping(value = "/exportMemberInfo")
     @ApiOperation(value = "导出会员资料")
-    @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "token",name="super-token")})
-    public void exportInfo(HttpServletResponse response,HttpServletRequest request) throws Exception {
-        /*HashMap<String,Object> hashMap= (HashMap) request.getParameterMap();
-        if (hashMap != null){
-            for(Map.Entry<String,Object> entry:hashMap.entrySet()){
-
-            }
-        }*/
+    @ApiImplicitParams({@ApiImplicitParam(paramType = "header", value = "token", name = "super-token")})
+    public void exportInfo(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        List<MarketingMembers> list;
         //自定义表头
         String dataList = request.getParameter("dataList");
-        List<MarketingMembers> marketingMembers = JSONObject.parseArray(dataList, MarketingMembers.class);
-        CUSTOMER_EXCEL_FIELD_MAP=request.getParameter("exportMetadata");
-        logger.info("-----------自定义表头-----------"+CUSTOMER_EXCEL_FIELD_MAP);
-        List<MarketingMembers> list = marketingMembersService.getMemberInfoList();
+        if (StringUtils.isNotBlank(dataList)) {
+            list = JSONObject.parseArray(dataList, MarketingMembers.class);
+        } else {
+            list = marketingMembersService.getMemberInfoList();
+        }
+        //转换字符
+        list = marketingMembersService.changeList(list);
+        //处理表头
+        CUSTOMER_EXCEL_FIELD_MAP = request.getParameter("exportMetadata");
+        String NEW_EXCEL_FIELD = null;
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(SexConstants.SEX) != -1) {
+            NEW_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP.replaceAll("sex", "sexStr");
+        }
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(StateConstants.STATE) != -1) {
+            if (NEW_EXCEL_FIELD == null){
+                NEW_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
+            }
+            NEW_EXCEL_FIELD=NEW_EXCEL_FIELD.replaceAll("state","stateStr");
+        }
+        logger.info("-----------自定义表头-----------" + CUSTOMER_EXCEL_FIELD_MAP);
         // step-3:处理excel字段映射 转换excel {filedMap:[ {key:英文} ,  {value:中文} ]} 有序
         Map filedMap = null;
         try {
-            if(StringUtils.isNotBlank(CUSTOMER_EXCEL_FIELD_MAP)){
-                filedMap=JsonToMapUtil.toMap(CUSTOMER_EXCEL_FIELD_MAP);
-            }else {
-            filedMap = JsonToMapUtil.toMap(MARKET_MEMBERS_EXCEL_FIELD_MAP);
+            if (StringUtils.isNotBlank(NEW_EXCEL_FIELD)) {
+                filedMap = JsonToMapUtil.toMap(NEW_EXCEL_FIELD);
+            } else {
+                filedMap = JsonToMapUtil.toMap(CUSTOMER_EXCEL_FIELD_MAP);
             }
         } catch (Exception e) {
             throw new SuperCodeException("会员资料表头解析异常", 500);
@@ -87,19 +100,38 @@ public class ExportController extends CommonUtil {
     @ResponseBody
     @PostMapping(value = "/exportSalemembers")
     @ApiOperation(value = "导出导购员资料")
-    @ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "token",name="super-token")})
-    public void exportSalemembers(HttpServletResponse response,HttpServletRequest request) throws Exception {
-        CUSTOMER_EXCEL_FIELD_MAP=request.getParameter("exportMetadata");
-        logger.info("-----------自定义表头-----------"+CUSTOMER_EXCEL_FIELD_MAP);
+    @ApiImplicitParams({@ApiImplicitParam(paramType = "header", value = "token", name = "super-token")})
+    public void exportSalemembers(HttpServletResponse response, HttpServletRequest request) throws Exception {
         // 查询组织导购员列表
-        List<MarketingUser> list=service.getSalerInfoList();
+        List<MarketingUser> list;
+        String dataList = request.getParameter("dataList");
+        if (StringUtils.isNotBlank(dataList)) {
+            list = JSONObject.parseArray(dataList, MarketingUser.class);
+        } else {
+            list = service.getSalerInfoList();
+        }
+        //转换字符
+        list = service.changeList(list);
+
+        CUSTOMER_EXCEL_FIELD_MAP = request.getParameter("exportMetadata");
+        logger.info("-----------自定义表头-----------" + CUSTOMER_EXCEL_FIELD_MAP);
+        String NEW_USER_EXCEL_FIELD = null;
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(SexConstants.SEX) != -1) {
+            NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP.replaceAll("sex", "sexStr");
+        }
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(StateConstants.STATE) != -1) {
+            if (NEW_USER_EXCEL_FIELD == null){
+                NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
+            }
+            NEW_USER_EXCEL_FIELD=NEW_USER_EXCEL_FIELD.replaceAll("state","stateStr");
+        }
         // step-3:处理excel字段映射 转换excel {filedMap:[ {key:英文} ,  {value:中文} ]} 有序
         Map filedMap = null;
         try {
-            if(StringUtils.isNotBlank(CUSTOMER_EXCEL_FIELD_MAP)){
+            if (StringUtils.isNotBlank(NEW_USER_EXCEL_FIELD)) {
+                filedMap = JsonToMapUtil.toMap(NEW_USER_EXCEL_FIELD);
+            } else {
                 filedMap = JsonToMapUtil.toMap(CUSTOMER_EXCEL_FIELD_MAP);
-            }else{
-                filedMap = JsonToMapUtil.toMap(MARKET_SELEMEMBERS_EXCEL_FIELD_MAP);
             }
 
         } catch (Exception e) {

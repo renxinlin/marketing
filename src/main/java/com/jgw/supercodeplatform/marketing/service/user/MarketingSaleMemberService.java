@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
@@ -594,6 +595,13 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		//默认0会员，1导购员,其他员工等
 		queryWrapper.eq("MemberType",1);
 		List<MarketingUser> list= marketingUserMapper.selectList(queryWrapper);
+		if (list == null){
+			throw new SuperCodeException("导购员信息不存在");
+		}
+		return list;
+	}
+
+	public List<MarketingUser> changeList(List<MarketingUser> list){
 		list.stream().filter(marketingUser -> {
 			if (SexConstants.WOMEN.equals(marketingUser.getSex())){
 				marketingUser.setSex("女");
@@ -602,11 +610,18 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			}else {
 				marketingUser.setSex("--");
 			}
+
+			if (StateConstants.TO_EXAMINE_ING.equals(marketingUser.getState())){
+				marketingUser.setStateStr("审核中");
+			}else if (StateConstants.PROHIBIT.equals(marketingUser.getState())){
+				marketingUser.setStateStr("禁用中");
+			}else {
+				marketingUser.setStateStr("启用中");
+			}
 			return true;
 		}).collect(Collectors.toList());
 		return list;
 	}
-
 }
 
 

@@ -8,4 +8,5 @@ public class StateConstants {
     public static final Byte TO_EXAMINE_ING=1;
     public static final Byte PROHIBIT=2;
     public static final Byte ENABLE=3;
+    public static final String STATE="state";
 }
