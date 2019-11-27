@@ -53,6 +53,14 @@ public class CodeManagerService {
         if(restResult.getState() != 200 ){
             return null;
         }
+        if(restResult.getState() == 500  && "您所查询的码暂未激活".equals(restResult.getMsg()) ){
+            //////////////////////////////////////////
+            //           ----      ------            //
+            //                                       //
+            //                 |                      //
+            //               ---------               //
+            throw new BizRuntimeException("您所查询的码暂未激活，请联系企业");
+        }
         ProductInfoByCodeDto results =  modelMapper.map(restResult.getResults(),ProductInfoByCodeDto.class);
         results.setMarketingCode(outCodeInfoDto);
         return results;
