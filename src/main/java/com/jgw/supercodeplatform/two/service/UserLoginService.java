@@ -93,8 +93,14 @@ public class UserLoginService {
             //可用积分和总积分
             //未绑定进行绑定
             if (exitMarketingUser.getBinding()==null ||JudgeBindConstants.NOBIND.equals(exitMarketingUser.getBinding())){
-                exitMarketingUser.setHaveIntegral(exitMarketingUser.getHaveIntegral()+marketingUserTwo.getHaveIntegral()+BindConstants.SUCCESS);
-                exitMarketingUser.setTotalIntegral(exitMarketingUser.getTotalIntegral()+marketingUserTwo.getTotalIntegral()+BindConstants.SUCCESS);
+                exitMarketingUser.setHaveIntegral(
+                        (exitMarketingUser.getHaveIntegral()== null ? 0:exitMarketingUser.getHaveIntegral())
+                                +(marketingUserTwo.getHaveIntegral()== null ? 0:marketingUserTwo.getHaveIntegral())
+                                +BindConstants.SUCCESS);
+                exitMarketingUser.setTotalIntegral(
+                        (exitMarketingUser.getTotalIntegral()== null ? 0:exitMarketingUser.getTotalIntegral())
+                                +(marketingUserTwo.getTotalIntegral()== null ? 0:marketingUserTwo.getTotalIntegral())
+                                +BindConstants.SUCCESS);
                 exitMarketingUser.setBinding(JudgeBindConstants.HAVEBIND);
                 marketingUserTwo.setHaveIntegral(0);
                 marketingUserTwo.setTotalIntegral(0);
@@ -108,8 +114,12 @@ public class UserLoginService {
             MarketingUser  marketingUserNew = new MarketingUser();
             BeanUtils.copyProperties(marketingUserTwo,marketingUserNew,"id");
             marketingUserNew.setMobile(marketingSaleUserBindMobileParam.getMobile());
-            marketingUserNew.setHaveIntegral(marketingUserNew.getHaveIntegral()+BindConstants.SUCCESS);
-            marketingUserNew.setTotalIntegral(marketingUserNew.getTotalIntegral()+BindConstants.SUCCESS);
+            marketingUserNew.setHaveIntegral(
+                    (marketingUserNew.getHaveIntegral()== null ? 0:marketingUserNew.getHaveIntegral())
+                            +BindConstants.SUCCESS);
+            marketingUserNew.setTotalIntegral(
+                    (marketingUserNew.getTotalIntegral()== null ? 0:marketingUserNew.getTotalIntegral())
+                            +BindConstants.SUCCESS);
             marketingUserNew.setLoginName("");
             marketingUserNew.setPassword("");
             marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);

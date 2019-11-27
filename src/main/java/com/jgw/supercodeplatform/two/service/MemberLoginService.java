@@ -97,7 +97,10 @@ public class MemberLoginService {
             //进行积分转移
             //可用积分和总积分
             if (exitMarketingMembers.getBinding()==null ||JudgeBindConstants.NOBIND.equals(exitMarketingMembers.getBinding())){
-                exitMarketingMembers.setHaveIntegral(exitMarketingMembers.getHaveIntegral()+marketingMembersTwo.getHaveIntegral()+BindConstants.SUCCESS);
+                exitMarketingMembers.setHaveIntegral(
+                        (exitMarketingMembers.getHaveIntegral() == null ? 0: exitMarketingMembers.getHaveIntegral())
+                                +(marketingMembersTwo.getHaveIntegral() == null ? 0: marketingMembersTwo.getHaveIntegral())
+                                +BindConstants.SUCCESS);
                 exitMarketingMembers.setTotalIntegral(
                         (exitMarketingMembers.getTotalIntegral() == null ? 0: exitMarketingMembers.getTotalIntegral())
                                 + (marketingMembersTwo.getTotalIntegral()  == null ? 0: marketingMembersTwo.getTotalIntegral())
@@ -113,8 +116,12 @@ public class MemberLoginService {
             MarketingMembers marketingMembersNew=new MarketingMembers();
             BeanUtils.copyProperties(marketingMembersTwo,marketingMembersNew,"id");
             marketingMembersNew.setMobile(marketingMembersBindMobileParam.getMobile());
-            marketingMembersNew.setHaveIntegral(marketingMembersNew.getHaveIntegral()+BindConstants.SUCCESS);
-            marketingMembersNew.setTotalIntegral(marketingMembersNew.getTotalIntegral()+BindConstants.SUCCESS);
+            marketingMembersNew.setHaveIntegral(
+                    (marketingMembersNew.getHaveIntegral()== null ? 0:marketingMembersNew.getHaveIntegral())
+                            +BindConstants.SUCCESS);
+            marketingMembersNew.setTotalIntegral(
+                    (marketingMembersNew.getTotalIntegral()== null ? 0:marketingMembersNew.getTotalIntegral())
+                            +BindConstants.SUCCESS);
             marketingMembersNew.setLoginName("");
             marketingMembersNew.setPassword("");
             marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
