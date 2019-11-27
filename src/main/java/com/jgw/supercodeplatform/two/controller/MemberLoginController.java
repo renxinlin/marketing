@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2019/11/14 14:23
  */
 @RestController
-@RequestMapping("/two/member")
+@RequestMapping("marketing/two/member")
 @Api(tags = "2.0登录迁移接口")
 public class MemberLoginController {
     @Autowired
