@@ -2,6 +2,8 @@ package com.jgw.supercodeplatform.marketing.controller.user;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.RegistrationApproachConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
@@ -74,6 +76,12 @@ public class ExportController extends CommonUtil {
         if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(SexConstants.SEX) != -1) {
             NEW_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP.replaceAll("sex", "sexStr");
         }
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(PcccodeConstants.pCCcode)!=-1){
+            if (NEW_EXCEL_FIELD == null){
+                NEW_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
+            }
+            NEW_EXCEL_FIELD=NEW_EXCEL_FIELD.replaceAll("pCCcode","codeStr");
+        }
         if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(StateConstants.STATE) != -1) {
             if (NEW_EXCEL_FIELD == null){
                 NEW_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
@@ -119,6 +127,19 @@ public class ExportController extends CommonUtil {
         if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(SexConstants.SEX) != -1) {
             NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP.replaceAll("sex", "sexStr");
         }
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(PcccodeConstants.pCCcode)!=-1){
+            if (NEW_USER_EXCEL_FIELD == null){
+                NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
+            }
+            NEW_USER_EXCEL_FIELD=NEW_USER_EXCEL_FIELD.replaceAll("pCCcode","codeStr");
+        }
+        if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(RegistrationApproachConstants.registrationApproach)!=-1){
+            if (NEW_USER_EXCEL_FIELD == null){
+                NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;
+            }
+            NEW_USER_EXCEL_FIELD=NEW_USER_EXCEL_FIELD.replaceAll("registrationApproach","registrationApproachStr");
+        }
+
         if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(StateConstants.STATE) != -1) {
             if (NEW_USER_EXCEL_FIELD == null){
                 NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP;

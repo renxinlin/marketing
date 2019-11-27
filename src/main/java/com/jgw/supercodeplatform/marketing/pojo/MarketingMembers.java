@@ -40,6 +40,9 @@ public class MarketingMembers {
     private String babyBirthday;//宝宝生日
     private Byte isRegistered;// 是否已完善(1、表示已完善，0 表示未完善)
     private String pCCcode;
+    @TableField(exist=false)
+    //导出省市区字符串无业务需求
+    private String codeStr;
     private Integer haveIntegral; //  会员积分
     private Byte memberType; // 会员类型默认0
     private Date integralReceiveDate; // 最新一次积分领取时间
@@ -445,5 +448,14 @@ public class MarketingMembers {
 
     public void setStateStr(String stateStr) {
         this.stateStr = stateStr;
+    }
+
+
+    public String getCodeStr() {
+        return codeStr;
+    }
+
+    public void setCodeStr(String codeStr) {
+        this.codeStr = codeStr;
     }
 }

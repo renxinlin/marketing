@@ -5,6 +5,7 @@ package com.jgw.supercodeplatform.marketing.common.constants;
  * @date 2019/11/26 11:26
  */
 public class RegistrationApproachConstants {
+    public static final String registrationApproach="registrationApproach";
     public static final Byte MOBILE_MAll=1;
     public static final Byte SCORE_MALL=2;
     public static final Byte MOBILE_RECHARGE=3;
