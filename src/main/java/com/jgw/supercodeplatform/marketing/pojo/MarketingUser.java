@@ -69,6 +69,9 @@ public class MarketingUser {
     /** 省市区前端编码 */
     private String pCCcode;
 
+    @TableField(exist = false)
+    private String codeStr;
+
     /** 默认1导购员,其他员工等 */
     private Byte memberType;
 
@@ -405,5 +408,13 @@ public class MarketingUser {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getCodeStr() {
+        return codeStr;
+    }
+
+    public void setCodeStr(String codeStr) {
+        this.codeStr = codeStr;
     }
 }
