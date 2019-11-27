@@ -47,7 +47,7 @@ public class MySessionExcludePathInterceptor implements WebMvcSessionInterceptor
                 "/marketing/wechat/**",
                 "/marketing/wx/**",
                 "/marketing/prizeWheels/cdktemplate/download",
-                "/two/user/**",
+                "/marketing/two/user/**",
                 "/two/member/**"
 
         };
