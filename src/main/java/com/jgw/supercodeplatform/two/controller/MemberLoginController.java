@@ -18,7 +18,10 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+
 import javax.validation.Valid;
+
+import java.util.HashMap;
 
 /**
  * @author fangshiping
@@ -55,6 +58,9 @@ public class MemberLoginController {
                 throw new SuperCodeException("该用户已经绑定！");
             }else{
                 //返回会员主键Id
+                HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
+                objectObjectHashMap.put("id",marketingMembers.getId());
+                objectObjectHashMap.put("organizationId",marketingMembers.getOrganizationId());
                 return RestResult.success(200,"success",marketingMembers.getId());
             }
             /*H5LoginVO h5LoginVO=memberLoginService.setH5LoginVO(marketingMembers);

@@ -1,22 +1,8 @@
 package com.jgw.supercodeplatform;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.activity.MarketingPrizeTypeMO;
-import com.jgw.supercodeplatform.marketing.common.util.LotteryUtilWithOutCodeNum;
-import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.text.DecimalFormat;
-import java.util.*;
 
 public class MainTest {
 
@@ -79,10 +65,22 @@ public class MainTest {
 
 //        System.out.println("--->" + files.length);
 
-        Map<String, List<String>> map = new HashMap<>();
+        /*Map<String, List<String>> map = new HashMap<>();
         map.put("q", new ArrayList<>());
-        System.out.println("---->" + JSON.toJSONString(map));
-
+        System.out.println("---->" + JSON.toJSONString(map));*/
+        String stringBuffer="1213asd456";
+        String newString = null;
+        if (stringBuffer.indexOf("23")!=-1){
+            newString=stringBuffer.replaceAll("23","2c");
+        }
+        if (stringBuffer.indexOf("45")!=-1){
+            if (newString==null){
+                newString=stringBuffer;
+            }
+            newString=newString.replaceAll("45","cc");
+        }
+        System.out.println(newString);
     }
+
 
 }
