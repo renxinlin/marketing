@@ -21,15 +21,17 @@ public class BuryPointOuterChainTcService {
 
     public void buryPointOuterChainTc(BuryPointOuterChainTcDto buryPointOuterChainTcDto, H5LoginVO user){
         BuryPointOuterChainTc buryPointOuterChainTc=new BuryPointOuterChainTc();
-        buryPointOuterChainTc.setCreateUser(user.getMemberName());
-        buryPointOuterChainTc.setCreateUserId(String.valueOf(user.getMemberId()));
-        buryPointOuterChainTc.setOrganizationId(user.getOrganizationId());
-        buryPointOuterChainTc.setOrganizationName(user.getOrganizationName());
+        if (user != null){
+            buryPointOuterChainTc.setCreateUserId(String.valueOf(user.getMemberId()));
+            buryPointOuterChainTc.setCreateUser(user.getMemberName());
+            buryPointOuterChainTc.setOrganizationId(user.getOrganizationId());
+            buryPointOuterChainTc.setOrganizationName(user.getOrganizationName());
+            buryPointOuterChainTc.setMemberType(user.getMemberType());
+            buryPointOuterChainTc.setMobile(user.getMobile());
+        }
         buryPointOuterChainTc.setThirdUrl(buryPointOuterChainTcDto.getThirdUrl());
         buryPointOuterChainTc.setWheelsId(buryPointOuterChainTcDto.getWheelsId());
         buryPointOuterChainTc.setCreateDate(new Date());
-        buryPointOuterChainTc.setMemberType(user.getMemberType());
-        buryPointOuterChainTc.setMobile(buryPointOuterChainTcDto.getMobile());
         buryPointOuterChainTc.setMobileModel(buryPointOuterChainTcDto.getMobileModel());
         buryPointOuterChainTc.setSystemModel(buryPointOuterChainTcDto.getSystemModel());
         buryPointOuterChainTc.setBrowser(buryPointOuterChainTcDto.getBrowser());

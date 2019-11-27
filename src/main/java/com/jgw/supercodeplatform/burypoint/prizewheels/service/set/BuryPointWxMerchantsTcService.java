@@ -20,15 +20,20 @@ public class BuryPointWxMerchantsTcService {
 
     public void buryPointWxMerchantsTc(BuryPointWxMerchantsTcDto buryPointWxMerchantsTcDto, H5LoginVO user){
         BuryPointWxMerchantsTc buryPointWxMerchantsTc=new BuryPointWxMerchantsTc();
-        buryPointWxMerchantsTc.setCreateUser(user.getMemberName());
-        buryPointWxMerchantsTc.setCreateUserId(String.valueOf(user.getMemberId()));
+        if (user !=null ){
+            buryPointWxMerchantsTc.setCreateUser(user.getMemberName());
+            buryPointWxMerchantsTc.setCreateUserId(String.valueOf(user.getMemberId()));
+            buryPointWxMerchantsTc.setOrganizationId(user.getOrganizationId());
+            buryPointWxMerchantsTc.setOrganizationName(user.getOrganizationName());
+            buryPointWxMerchantsTc.setMemberType(user.getMemberType());
+            buryPointWxMerchantsTc.setMobile(user.getMobile());
+        }
+
         buryPointWxMerchantsTc.setCreateDate(new Date());
-        buryPointWxMerchantsTc.setOrganizationId(user.getOrganizationId());
-        buryPointWxMerchantsTc.setOrganizationName(user.getOrganizationName());
+
         buryPointWxMerchantsTc.setMchAppid(buryPointWxMerchantsTcDto.getMchAppid());
         buryPointWxMerchantsTc.setMerchantName(buryPointWxMerchantsTcDto.getMerchantName());
-        buryPointWxMerchantsTc.setMemberType(user.getMemberType());
-        buryPointWxMerchantsTc.setMobile(buryPointWxMerchantsTcDto.getMobile());
+
         buryPointWxMerchantsTc.setMobileModel(buryPointWxMerchantsTcDto.getMobileModel());
         buryPointWxMerchantsTc.setSystemModel(buryPointWxMerchantsTcDto.getSystemModel());
         buryPointWxMerchantsTc.setBrowser(buryPointWxMerchantsTcDto.getBrowser());
