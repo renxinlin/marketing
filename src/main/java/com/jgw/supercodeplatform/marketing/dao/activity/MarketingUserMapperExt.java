@@ -24,6 +24,7 @@ public interface MarketingUserMapperExt extends MarketingUserMapper , CommonSql 
             + " a.CustomerName as customerName,a.CustomerId as customerId,"
             + " a.PCCcode as pCCcode, a.WechatHeadImgUrl as wechatHeadImgUrl, "
             + " a.MemberType memberType, "
+            + " a.Source as source, a.TotalIntegral as totalIntegral, "
             + " a.State as state, a.DeviceType as deviceType, "
             + " a.HaveIntegral haveIntegral ";
 
