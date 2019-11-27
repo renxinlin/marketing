@@ -1,15 +1,19 @@
-package com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward;
+package com.jgw.supercodeplatform.burypoint.prizewheels.dto.outerchain;
 
+
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
  * @author fangshiping
- * @date 2019/10/18 11:53
+ * @date 2019/10/16 13:14
  */
 @Data
-public class BuryPointWheelsClickTcDto {
-    private String wheelsId;
+@ApiModel(value = "b端大转盘外链点击入参")
+public class BuryPointOuterChainTbDto {
+    @ApiModelProperty(value = "第三方链接")
+    private String thirdUrl;
 
     @ApiModelProperty(value = "手机")
     private String mobile;

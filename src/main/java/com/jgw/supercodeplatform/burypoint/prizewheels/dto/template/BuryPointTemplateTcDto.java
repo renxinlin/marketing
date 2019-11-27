@@ -1,15 +1,16 @@
-package com.jgw.supercodeplatform.burypoint.prizewheels.dto.reward;
+package com.jgw.supercodeplatform.burypoint.prizewheels.dto.template;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
  * @author fangshiping
- * @date 2019/10/18 11:53
+ * @date 2019/11/27 11:38
  */
 @Data
-public class BuryPointWheelsClickTcDto {
-    private String wheelsId;
+public class BuryPointTemplateTcDto {
+    @ApiModelProperty(value = "模板id")
+    private String templateId;
 
     @ApiModelProperty(value = "手机")
     private String mobile;

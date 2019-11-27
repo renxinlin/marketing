@@ -29,6 +29,11 @@ public class BuryPointOuterChainTcService {
         buryPointOuterChainTc.setWheelsId(buryPointOuterChainTcDto.getWheelsId());
         buryPointOuterChainTc.setCreateDate(new Date());
         buryPointOuterChainTc.setMemberType(user.getMemberType());
+        buryPointOuterChainTc.setMobile(buryPointOuterChainTcDto.getMobile());
+        buryPointOuterChainTc.setMobileModel(buryPointOuterChainTcDto.getMobileModel());
+        buryPointOuterChainTc.setSystemModel(buryPointOuterChainTcDto.getSystemModel());
+        buryPointOuterChainTc.setBrowser(buryPointOuterChainTcDto.getBrowser());
+        buryPointOuterChainTc.setBrowserModel(buryPointOuterChainTcDto.getBrowserModel());
         try {
             buryPointOuterChainTcMapper.insert(buryPointOuterChainTc);
         } catch (Exception e) {

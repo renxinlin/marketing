@@ -28,6 +28,11 @@ public class BuryPointWxMerchantsTcService {
         buryPointWxMerchantsTc.setMchAppid(buryPointWxMerchantsTcDto.getMchAppid());
         buryPointWxMerchantsTc.setMerchantName(buryPointWxMerchantsTcDto.getMerchantName());
         buryPointWxMerchantsTc.setMemberType(user.getMemberType());
+        buryPointWxMerchantsTc.setMobile(buryPointWxMerchantsTcDto.getMobile());
+        buryPointWxMerchantsTc.setMobileModel(buryPointWxMerchantsTcDto.getMobileModel());
+        buryPointWxMerchantsTc.setSystemModel(buryPointWxMerchantsTcDto.getSystemModel());
+        buryPointWxMerchantsTc.setBrowser(buryPointWxMerchantsTcDto.getBrowser());
+        buryPointWxMerchantsTc.setBrowserModel(buryPointWxMerchantsTcDto.getBrowserModel());
         try {
             buryPointWxMerchantsTcMapper.insert(buryPointWxMerchantsTc);
         } catch (Exception e) {
