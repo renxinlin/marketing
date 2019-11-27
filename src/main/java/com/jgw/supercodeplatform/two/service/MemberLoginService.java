@@ -98,7 +98,10 @@ public class MemberLoginService {
             //可用积分和总积分
             if (exitMarketingMembers.getBinding()==null ||JudgeBindConstants.NOBIND.equals(exitMarketingMembers.getBinding())){
                 exitMarketingMembers.setHaveIntegral(exitMarketingMembers.getHaveIntegral()+marketingMembersTwo.getHaveIntegral()+BindConstants.SUCCESS);
-                exitMarketingMembers.setTotalIntegral(exitMarketingMembers.getTotalIntegral()+marketingMembersTwo.getTotalIntegral()+BindConstants.SUCCESS);
+                exitMarketingMembers.setTotalIntegral(
+                        (exitMarketingMembers.getTotalIntegral() == null ? 0: exitMarketingMembers.getTotalIntegral())
+                                + (marketingMembersTwo.getTotalIntegral()  == null ? 0: marketingMembersTwo.getTotalIntegral())
+                                +BindConstants.SUCCESS);
                 marketingMembersTwo.setHaveIntegral(0);
                 marketingMembersTwo.setTotalIntegral(0);
                 result=marketingMembersMapper.updateById(exitMarketingMembers);
