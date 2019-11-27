@@ -90,7 +90,7 @@ public class H5SalerRuleExchangeController extends SalerCommonController {
     @PostMapping("/reward")
     @ApiOperation(value = "积分领取", notes = "")
     @ApiImplicitParam(name = "jwt-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult reward(@Valid @RequestBody OutCodeInfoDto codeInfo, @ApiIgnore H5LoginVO user) throws Exception {
+    public RestResult reward(@Valid @RequestBody OutCodeInfoDto codeInfo, @ApiIgnore H5LoginVO user)   {
         // TODO 拉到application层
         ProductInfoByCodeDto productByCode = codeManagerService.getProductByCode(codeInfo);
         Asserts.check(productByCode!=null , ErrorMsg.no_setting_integral);

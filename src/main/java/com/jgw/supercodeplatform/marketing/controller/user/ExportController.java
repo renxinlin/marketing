@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.user;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
@@ -62,6 +63,8 @@ public class ExportController extends CommonUtil {
             }
         }*/
         //自定义表头
+        String dataList = request.getParameter("dataList");
+        List<MarketingMembers> marketingMembers = JSONObject.parseArray(dataList, MarketingMembers.class);
         CUSTOMER_EXCEL_FIELD_MAP=request.getParameter("exportMetadata");
         logger.info("-----------自定义表头-----------"+CUSTOMER_EXCEL_FIELD_MAP);
         List<MarketingMembers> list = marketingMembersService.getMemberInfoList();
