@@ -104,10 +104,10 @@ public class UserLoginService {
         }
         else{
             //不存在则将2.0的数据复制到3.0
-            MarketingUser marketingUserNew = new MarketingUser();
-            BeanUtils.copyProperties(marketingUserTwo,marketingUserNew,"marketingUserTwo.getId()");
-//            marketingUserNew=modelMapper.map(marketingUserTwo,MarketingUser.class);
-//            marketingUserNew.setId(null);
+
+            MarketingUser  marketingUserNew = new MarketingUser();
+            BeanUtils.copyProperties(marketingUserTwo,marketingUserNew,"id");
+            marketingUserNew.setId(null);
             marketingUserNew.setMobile(marketingSaleUserBindMobileParam.getMobile());
             marketingUserNew.setHaveIntegral(marketingUserNew.getHaveIntegral()+BindConstants.SUCCESS);
             marketingUserNew.setTotalIntegral(marketingUserNew.getTotalIntegral()+BindConstants.SUCCESS);
@@ -117,8 +117,9 @@ public class UserLoginService {
             marketingUserTwo.setId(marketingSaleUserBindMobileParam.getId());
             //插入一条新数据
             logger.info("------marketingUserNew-----"+marketingUserNew.toString());
+            logger.info("------marketingUserNew-----"+marketingUserNew.toString());
             result=marketingUserMapper.insert(marketingUserNew);
-            logger.info("------marketingMembersTwo-----"+marketingUserTwo.toString());
+            logger.info("------marketingMembersTwo-----"+marketingUserTwo );
             marketingUserMapper.updateById(marketingUserTwo);
         }
         if (result.equals(BindConstants.RESULT)){

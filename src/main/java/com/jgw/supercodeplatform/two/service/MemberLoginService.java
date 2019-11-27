@@ -108,13 +108,13 @@ public class MemberLoginService {
             //不存在则将2.0的数据复制到3.0
             MarketingMembers marketingMembersNew;
             marketingMembersNew=modelMapper.map(marketingMembersTwo,MarketingMembers.class);
+            marketingMembersNew.setId(null);
             marketingMembersNew.setMobile(marketingMembersBindMobileParam.getMobile());
             marketingMembersNew.setHaveIntegral(marketingMembersNew.getHaveIntegral()+BindConstants.SUCCESS);
             marketingMembersNew.setTotalIntegral(marketingMembersNew.getTotalIntegral()+BindConstants.SUCCESS);
             marketingMembersNew.setLoginName("");
             marketingMembersNew.setPassword("");
             marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
-            marketingMembersTwo.setId(marketingMembersTwo.getId());
             //插入一条新数据
             result=marketingMembersMapper.insert(marketingMembersNew);
             logger.info("------marketingMembersTwo-----"+marketingMembersTwo);
