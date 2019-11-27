@@ -58,7 +58,7 @@ public class MemberLoginController {
                 HashMap<Object, Object> objectObjectHashMap = new HashMap<>();
                 objectObjectHashMap.put("id",marketingMembers.getId());
                 objectObjectHashMap.put("organizationId",marketingMembers.getOrganizationId());
-                return RestResult.success(200,"success",marketingMembers.getId());
+                return RestResult.success(200,"success",objectObjectHashMap);
             }
             /*H5LoginVO h5LoginVO=memberLoginService.setH5LoginVO(marketingMembers);
             if (h5LoginVO == null) {
