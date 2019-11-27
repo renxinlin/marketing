@@ -50,9 +50,7 @@ public class CodeManagerService {
         if(restResult == null ){
             return null;
         }
-        if(restResult.getState() != 200 ){
-            return null;
-        }
+
         if(restResult.getState() == 500  && "您所查询的码暂未激活".equals(restResult.getMsg()) ){
             //////////////////////////////////////////
             //           ----      ------            //
@@ -60,6 +58,10 @@ public class CodeManagerService {
             //                 |                      //
             //               ---------               //
             throw new BizRuntimeException("您所查询的码暂未激活，请联系企业");
+        }
+
+        if(restResult.getState() != 200 ){
+            return null;
         }
         ProductInfoByCodeDto results =  modelMapper.map(restResult.getResults(),ProductInfoByCodeDto.class);
         results.setMarketingCode(outCodeInfoDto);
