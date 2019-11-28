@@ -7,7 +7,9 @@ import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingMembersBindMobileParam;
@@ -37,6 +39,9 @@ public class MemberLoginService {
 
     @Autowired
     protected ModelMapper modelMapper;
+
+    @Autowired
+    private IntegralRuleService integralRuleService;
 
     /**
      * 设置H5LoginVO
@@ -92,6 +97,7 @@ public class MemberLoginService {
         queryWrapper.eq("OrganizationId",marketingMembersBindMobileParam.getOrganizationId());
         MarketingMembers exitMarketingMembers=marketingMembersMapper.selectOne(queryWrapper);
         Integer result = null;
+        IntegralRule integralRule=integralRuleService.selectByOrgId(marketingMembersBindMobileParam.getOrganizationId());
         if (exitMarketingMembers != null){
             /*throw new SuperCodeException("该手机号已被绑定");*/
             //说明3.0数据中已绑定手机号
@@ -101,11 +107,11 @@ public class MemberLoginService {
                 exitMarketingMembers.setHaveIntegral(
                         (exitMarketingMembers.getHaveIntegral() == null ? 0: exitMarketingMembers.getHaveIntegral())
                                 +(marketingMembersTwo.getHaveIntegral() == null ? 0: marketingMembersTwo.getHaveIntegral())
-                                +BindConstants.SUCCESS);
+                                );
                 exitMarketingMembers.setTotalIntegral(
                         (exitMarketingMembers.getTotalIntegral() == null ? 0: exitMarketingMembers.getTotalIntegral())
                                 + (marketingMembersTwo.getTotalIntegral()  == null ? 0: marketingMembersTwo.getTotalIntegral())
-                                +BindConstants.SUCCESS);
+                                );
                 marketingMembersTwo.setHaveIntegral(0);
                 marketingMembersTwo.setTotalIntegral(0);
                 result=marketingMembersMapper.updateById(exitMarketingMembers);
@@ -119,10 +125,10 @@ public class MemberLoginService {
             marketingMembersNew.setMobile(marketingMembersBindMobileParam.getMobile());
             marketingMembersNew.setHaveIntegral(
                     (marketingMembersNew.getHaveIntegral()== null ? 0:marketingMembersNew.getHaveIntegral())
-                            +BindConstants.SUCCESS);
+                            +(integralRule.getIntegralByRegister()== null ? 0:integralRule.getIntegralByRegister()));
             marketingMembersNew.setTotalIntegral(
                     (marketingMembersNew.getTotalIntegral()== null ? 0:marketingMembersNew.getTotalIntegral())
-                            +BindConstants.SUCCESS);
+                            +(integralRule.getIntegralByRegister()== null ? 0:integralRule.getIntegralByRegister()));
             marketingMembersNew.setLoginName("");
             marketingMembersNew.setPassword("");
             marketingMembersNew.setState(StateConstants.ENABLE);

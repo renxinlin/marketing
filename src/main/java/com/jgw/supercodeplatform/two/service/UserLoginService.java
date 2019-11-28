@@ -97,11 +97,11 @@ public class UserLoginService {
                 exitMarketingUser.setHaveIntegral(
                         (exitMarketingUser.getHaveIntegral()== null ? 0:exitMarketingUser.getHaveIntegral())
                                 +(marketingUserTwo.getHaveIntegral()== null ? 0:marketingUserTwo.getHaveIntegral())
-                                +BindConstants.SUCCESS);
+                                );
                 exitMarketingUser.setTotalIntegral(
                         (exitMarketingUser.getTotalIntegral()== null ? 0:exitMarketingUser.getTotalIntegral())
                                 +(marketingUserTwo.getTotalIntegral()== null ? 0:marketingUserTwo.getTotalIntegral())
-                                +BindConstants.SUCCESS);
+                                );
                 exitMarketingUser.setBinding(JudgeBindConstants.HAVEBIND);
                 marketingUserTwo.setHaveIntegral(0);
                 marketingUserTwo.setTotalIntegral(0);
@@ -117,10 +117,10 @@ public class UserLoginService {
             marketingUserNew.setMobile(marketingSaleUserBindMobileParam.getMobile());
             marketingUserNew.setHaveIntegral(
                     (marketingUserNew.getHaveIntegral()== null ? 0:marketingUserNew.getHaveIntegral())
-                            +BindConstants.SUCCESS);
+                            );
             marketingUserNew.setTotalIntegral(
                     (marketingUserNew.getTotalIntegral()== null ? 0:marketingUserNew.getTotalIntegral())
-                            +BindConstants.SUCCESS);
+                            );
             marketingUserNew.setLoginName("");
             marketingUserNew.setPassword("");
             //启用
