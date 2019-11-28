@@ -3,7 +3,6 @@ package com.jgw.supercodeplatform.two.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
-import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
@@ -11,10 +10,10 @@ import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingSaleUserBindMobileParam;
+import com.jgw.supercodeplatform.two.service.transfer.UserTransfer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,9 @@ public class UserLoginService {
 
     @Autowired
     protected ModelMapper modelMapper;
+
+    @Autowired
+    private UserTransfer userTransfer;
 
     /**
      * 设置H5LoginVO
@@ -82,57 +84,34 @@ public class UserLoginService {
         if (marketingUserTwo ==null){
             throw new SuperCodeException("绑定2.0失败");
         }
-        //导购员:手机号全局唯一
+        if (marketingUserTwo.getBinding() != null || marketingUserTwo.getBinding().byteValue() == JudgeBindConstants.HAVEBIND){
+            throw new SuperCodeException("用户已经绑定"); //导购员:手机号全局唯一
+        }
+        // .............................................
+        //       ......                      ......
+        //
+        //               采用3.0的注册送
+        //               ............
+        // .............................................
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("Mobile",marketingSaleUserBindMobileParam.getMobile());
         MarketingUser exitMarketingUser=marketingUserMapper.selectOne(queryWrapper);
         Integer result = null;
         if (exitMarketingUser != null){
-            /*throw new SuperCodeException("该手机号已被绑定");*/
-            //说明3.0数据中已绑定手机号
-            //进行积分转移
-            //可用积分和总积分
-            //未绑定进行绑定
-            if (exitMarketingUser.getBinding()==null ||JudgeBindConstants.NOBIND.equals(exitMarketingUser.getBinding())){
-                exitMarketingUser.setHaveIntegral(
-                        (exitMarketingUser.getHaveIntegral()== null ? 0:exitMarketingUser.getHaveIntegral())
-                                +(marketingUserTwo.getHaveIntegral()== null ? 0:marketingUserTwo.getHaveIntegral())
-                                );
-                exitMarketingUser.setTotalIntegral(
-                        (exitMarketingUser.getTotalIntegral()== null ? 0:exitMarketingUser.getTotalIntegral())
-                                +(marketingUserTwo.getTotalIntegral()== null ? 0:marketingUserTwo.getTotalIntegral())
-                                );
-                exitMarketingUser.setBinding(JudgeBindConstants.HAVEBIND);
-                marketingUserTwo.setHaveIntegral(0);
-                marketingUserTwo.setTotalIntegral(0);
-                result=marketingUserMapper.updateById(exitMarketingUser);
-                marketingUserMapper.updateById(marketingUserTwo);
-            }
+            //说明3.0数据中已绑定手机号 进行积分转移 可用积分和总积分
+            userTransfer.transferExists(marketingUserTwo,exitMarketingUser);
+            result=marketingUserMapper.updateById(exitMarketingUser);
         }
         else{
             //不存在则将2.0的数据复制到3.0
-
-            MarketingUser  marketingUserNew = new MarketingUser();
-            BeanUtils.copyProperties(marketingUserTwo,marketingUserNew,"id");
-            marketingUserNew.setMobile(marketingSaleUserBindMobileParam.getMobile());
-            marketingUserNew.setHaveIntegral(
-                    (marketingUserNew.getHaveIntegral()== null ? 0:marketingUserNew.getHaveIntegral())
-                            );
-            marketingUserNew.setTotalIntegral(
-                    (marketingUserNew.getTotalIntegral()== null ? 0:marketingUserNew.getTotalIntegral())
-                            );
-            marketingUserNew.setLoginName("");
-            marketingUserNew.setPassword("");
-            //启用
-            marketingUserNew.setState(StateConstants.ENABLE);
-            marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);
-            marketingUserTwo.setId(marketingSaleUserBindMobileParam.getId());
-            //插入一条新数据
-            logger.info("------marketingUserNew-----"+marketingUserNew.toString());
+            MarketingUser marketingUserNew = userTransfer.transferNotExists0(marketingSaleUserBindMobileParam,marketingUserTwo);
             result=marketingUserMapper.insert(marketingUserNew);
-            logger.info("------marketingMembersTwo-----"+marketingUserTwo );
-            marketingUserMapper.updateById(marketingUserTwo);
         }
+
+        //统一处理处理2.0
+        marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);
+        marketingUserMapper.updateById(marketingUserTwo);
+
         if (result.equals(BindConstants.RESULT)){
             return RestResult.success(200,"success","绑定成功");
         }
