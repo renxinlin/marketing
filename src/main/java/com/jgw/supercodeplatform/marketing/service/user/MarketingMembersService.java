@@ -956,7 +956,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				marketingUser.setRegistrationApproachStr("码上淘");
 			}else if (RegistrationApproachConstants.SHORT_MESSAGE.equals(marketingUser.getRegistrationApproach())){
 				marketingUser.setRegistrationApproachStr("短信");
-			}else {
+			}else if (RegistrationApproachConstants.MICRONE.equals(marketingUser.getRegistrationApproach())){
 				marketingUser.setRegistrationApproachStr("微盟");
 			}
 			return true;
