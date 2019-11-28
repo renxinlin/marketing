@@ -489,10 +489,10 @@ public class CommonService {
 	 */
 	public void checkCodeMarketFakeValid(Long codeTypeId) {
 		if(codeTypeId == null){
-			throw  new SuperCodeExtException("对不起,码制不合法");
+			throw  new SuperCodeExtException("对不起，您所扫码的产品未参与活动");
 		}
 		if (SystemLabelEnum.MARKETING_12.getCodeTypeId().intValue() != codeTypeId.intValue()&& SystemLabelEnum.MARKETING_13.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.FAKE.getCodeTypeId().intValue() != codeTypeId.intValue()) {
-			throw  new SuperCodeExtException("对不起,码制不合法");
+			throw  new SuperCodeExtException("对不起，您所扫码的产品未参与活动");
 		}
 	}
 

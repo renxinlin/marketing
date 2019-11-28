@@ -85,7 +85,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		String organizationId=commonUtil.getOrganizationId();
 		DaoSearchWithOrganizationIdParam searchParamsDTO = modelMapper.map(searchParams, DaoSearchWithOrganizationIdParam.class);
 		searchParamsDTO.setOrganizationId(organizationId);
-		searchParamsDTO.setCurrent((searchParamsDTO.getCurrent() -1)*searchParamsDTO.getPageSize());
+		searchParamsDTO.setStartNumber((searchParamsDTO.getCurrent() -1)*searchParamsDTO.getPageSize());
 		List<IntegralRuleProduct> list=dao.list(searchParamsDTO);
 		return list;
 	}
