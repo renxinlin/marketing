@@ -25,7 +25,13 @@ public class MemberTransfer {
 
     }
 
-
+    /**
+     *
+     * @param marketingMembersBindMobileParam 网页入参
+     * @param marketingMembersTwo  2.0用户
+     * @param integralByRegister 注册送积分
+     * @return
+     */
     public MarketingMembers transferNotExists0(MarketingMembersBindMobileParam marketingMembersBindMobileParam, MarketingMembers marketingMembersTwo, int integralByRegister) {
         MarketingMembers marketingMembersNew=new MarketingMembers();
         BeanUtils.copyProperties(marketingMembersTwo,marketingMembersNew,"id");

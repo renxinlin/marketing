@@ -27,7 +27,12 @@ public class UserTransfer {
         marketingUserTwo.setHaveIntegral(0);
         marketingUserTwo.setTotalIntegral(0);
     }
-
+    /**
+     *
+     * @param marketingSaleUserBindMobileParam 网页入参
+     * @param marketingUserTwo  2.0用户
+     * @return
+     */
     public MarketingUser transferNotExists0(MarketingSaleUserBindMobileParam marketingSaleUserBindMobileParam,MarketingUser marketingUserTwo){
         MarketingUser marketingUserNew = new MarketingUser();
         BeanUtils.copyProperties(marketingUserTwo,marketingUserNew,"id");
