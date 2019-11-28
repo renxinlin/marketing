@@ -323,7 +323,7 @@ public interface MarketingMembersMapper extends BaseMapper<MarketingMembers> {
             "select",
             "Id, WxName, Openid, Mobile, UserId, UserName, Sex as sexStr, Sex as sex, Birthday, ProvinceCode, CountyCode, ",
             "CityCode, ProvinceName, CountyName, CityName, OrganizationId, CreateDate, UpdateDate, ",
-            "CustomerName, CustomerId, PCCcode, WechatHeadImgUrl, MemberType, State, DeviceType,HaveIntegral,BabyBirthday as babyBirthday,RegistrationApproach as registrationApproach" +
+            "CustomerName, CustomerId, PCCcode, WechatHeadImgUrl, MemberType, State, DeviceType,HaveIntegral,BabyBirthday as babyBirthday,RegistrationApproach as registrationApproach, " +
                     " detailAddress,IDNumber as iDNumber ,TotalIntegral as totalIntegral ,CreateDate as createDate ,CreateDate as registDate  ",
             "from marketing_members",
             "where OrganizationId = #{OrganizationId}"
