@@ -63,13 +63,13 @@ public class CommonMqTaskService {
 				Object codeTotal=map.get("codeTotal");
 				Object codeBatch=map.get("codeBatch");
 				logger.info("收到mq:productId="+productId+",productBatchId="+productBatchId+",codeTotal="+codeTotal+",codeBatch="+codeBatch);
-				if (null==productId || null==productBatchId ||null==codeTotal|| null==codeBatch) {
+				if (null==productId || null==codeTotal|| null==codeBatch) {
 					logger.error("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeTotal="+codeTotal+",codeBatch="+codeBatch);
 					continue;
 				}
 				Long codeTotalLon=Long.parseLong(String.valueOf(codeTotal));
 				String strProductId=String.valueOf(productId);
-				String strProductBatchId=String.valueOf(productBatchId);
+				String strProductBatchId=(String)productBatchId;
 				List<MarketingActivityProduct> mProducts=mProductMapper.selectByProductAndProductBatchId(strProductId, strProductBatchId);
 				if (null==mProducts || mProducts.isEmpty()) {
 					return;

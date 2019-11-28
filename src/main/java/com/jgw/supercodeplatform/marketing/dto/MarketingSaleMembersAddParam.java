@@ -3,6 +3,8 @@ package com.jgw.supercodeplatform.marketing.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
+
 @ApiModel("注册参数")
 public class MarketingSaleMembersAddParam {
     @ApiModelProperty(value = "组织ID",required=true)
@@ -28,9 +30,19 @@ public class MarketingSaleMembersAddParam {
     @ApiModelProperty(value = "门店编码",required=true)
     private String customerId;//门店编码
 
+//    @NotNull(message = "机构类型必填")
+    @ApiModelProperty(value = "2.0要的机构类型",required=false)
+    private Integer mechanismType; // 机构类型
 
+    public Integer getMechanismType() {
+        return mechanismType;
+    }
 
-//    @ApiModelProperty(value = "门店信息")
+    public void setMechanismType(Integer mechanismType) {
+        this.mechanismType = mechanismType;
+    }
+
+    //    @ApiModelProperty(value = "门店信息")
 //    private List<CustomerInfo> customer;
     @ApiModelProperty(value = "用户姓名")
     private String verificationCode;

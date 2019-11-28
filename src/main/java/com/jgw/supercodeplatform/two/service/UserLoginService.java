@@ -5,13 +5,19 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingSaleUserBindMobileParam;
+import com.jgw.supercodeplatform.two.service.transfer.UserTransfer;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author fangshiping
@@ -19,12 +25,19 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserLoginService {
+    private static Logger logger = Logger.getLogger(UserLoginService.class);
+
     @Autowired
     private MarketingUserMapper marketingUserMapper;
 
     @Autowired
     private CommonService commonService;
 
+    @Autowired
+    protected ModelMapper modelMapper;
+
+    @Autowired
+    private UserTransfer userTransfer;
 
     /**
      * 设置H5LoginVO
@@ -53,7 +66,8 @@ public class UserLoginService {
      * @param marketingSaleUserBindMobileParam
      * @throws SuperCodeException
      */
-    public RestResult bindMobile(MarketingSaleUserBindMobileParam marketingSaleUserBindMobileParam, H5LoginVO h5LoginVO) throws SuperCodeException{
+    @Transactional(rollbackFor = Exception.class)
+    public RestResult bindMobile(MarketingSaleUserBindMobileParam marketingSaleUserBindMobileParam) throws SuperCodeException{
         if(StringUtils.isBlank(marketingSaleUserBindMobileParam.getMobile())){
             throw new SuperCodeException("手机号不存在");
         }
@@ -62,27 +76,46 @@ public class UserLoginService {
             throw new SuperCodeException("验证码不存在");
         }
 
-        //导购员:手机号全局唯一
-        QueryWrapper queryWrapper=new QueryWrapper();
-        queryWrapper.eq("Mobile",marketingSaleUserBindMobileParam.getMobile());
-        MarketingUser exitMarketingUser=marketingUserMapper.selectOne(queryWrapper);
-        if (exitMarketingUser != null){
-            throw new SuperCodeException("该手机号已被绑定");
-        }
         boolean success = commonService.validateMobileCode(marketingSaleUserBindMobileParam.getMobile(), marketingSaleUserBindMobileParam.getVerificationCode());
         if(!success){
             throw new SuperCodeException("验证码校验失败");
         }
-        MarketingUser marketingUser=new MarketingUser();
-        marketingUser.setId(h5LoginVO.getMemberId());
-        marketingUser.setMobile(marketingSaleUserBindMobileParam.getMobile());
-        Integer result=marketingUserMapper.updateById(marketingUser);
-        if (result.equals(BindConstants.RESULT)){
-            MarketingUser newMarketingUser=marketingUserMapper.selectById(h5LoginVO.getMemberId());
-            newMarketingUser.setHaveIntegral(newMarketingUser.getHaveIntegral()+BindConstants.SUCCESS);
-            marketingUserMapper.updateById(newMarketingUser);
-            return RestResult.success();
+
+        MarketingUser marketingUserTwo=marketingUserMapper.selectById(marketingSaleUserBindMobileParam.getId());
+        if (marketingUserTwo ==null){
+            throw new SuperCodeException("绑定2.0失败");
         }
-        return RestResult.failDefault("绑定失败");
+        if (marketingUserTwo.getBinding() != null && marketingUserTwo.getBinding().byteValue() == JudgeBindConstants.HAVEBIND){
+            throw new SuperCodeException("用户已经绑定"); //导购员:手机号全局唯一
+        }
+        // .............................................
+        //       ......                      ......
+        //
+        //               采用3.0的注册送
+        //               ............
+        // .............................................
+        QueryWrapper queryWrapper=new QueryWrapper();
+        queryWrapper.eq("Mobile",marketingSaleUserBindMobileParam.getMobile());
+        MarketingUser exitMarketingUser=marketingUserMapper.selectOne(queryWrapper);
+        Integer result = null;
+        if (exitMarketingUser != null){
+            //说明3.0数据中已绑定手机号 进行积分转移 可用积分和总积分
+            userTransfer.transferExists(marketingUserTwo,exitMarketingUser);
+            result=marketingUserMapper.updateById(exitMarketingUser);
+        }
+        else{
+            //不存在则将2.0的数据复制到3.0
+            MarketingUser marketingUserNew = userTransfer.transferNotExists0(marketingSaleUserBindMobileParam,marketingUserTwo);
+            result=marketingUserMapper.insert(marketingUserNew);
+        }
+
+        //统一处理处理2.0
+        marketingUserTwo.setBinding(JudgeBindConstants.HAVEBIND);
+        marketingUserMapper.updateById(marketingUserTwo);
+
+        if (result.equals(BindConstants.RESULT)){
+            return RestResult.success(200,"success","绑定成功");
+        }
+        throw new BizRuntimeException("绑定失败");
     }
 }

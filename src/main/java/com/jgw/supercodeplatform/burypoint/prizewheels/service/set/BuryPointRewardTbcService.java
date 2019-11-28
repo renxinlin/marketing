@@ -32,13 +32,22 @@ public class BuryPointRewardTbcService {
      */
     public void buryPointWheelsClickTc(BuryPointWheelsClickTcDto buryPointWheelsClickTcDto,H5LoginVO user){
         BuryPointWheelsClickTc buryPointWheelsClickTc=new BuryPointWheelsClickTc();
-        buryPointWheelsClickTc.setCreateUser(user.getMemberName());
-        buryPointWheelsClickTc.setCreateUserId(String.valueOf(user.getMemberId()));
+        if (user != null){
+            buryPointWheelsClickTc.setCreateUser(user.getMemberName());
+            buryPointWheelsClickTc.setCreateUserId(String.valueOf(user.getMemberId()));
+            buryPointWheelsClickTc.setOrganizationId(user.getOrganizationId());
+            buryPointWheelsClickTc.setOrganizationName(user.getOrganizationName());
+            buryPointWheelsClickTc.setMemberType(user.getMemberType());
+            buryPointWheelsClickTc.setMobile(user.getMobile());
+        }
+
+
         buryPointWheelsClickTc.setCreateDate(new Date());
-        buryPointWheelsClickTc.setOrganizationId(user.getOrganizationId());
-        buryPointWheelsClickTc.setOrganizationName(user.getOrganizationName());
         buryPointWheelsClickTc.setWheelsId(buryPointWheelsClickTcDto.getWheelsId());
-        buryPointWheelsClickTc.setMemberType(user.getMemberType());
+        buryPointWheelsClickTc.setMobileModel(buryPointWheelsClickTcDto.getMobileModel());
+        buryPointWheelsClickTc.setSystemModel(buryPointWheelsClickTcDto.getSystemModel());
+        buryPointWheelsClickTc.setBrowser(buryPointWheelsClickTcDto.getBrowser());
+        buryPointWheelsClickTc.setBrowserModel(buryPointWheelsClickTcDto.getBrowserModel());
         try{
             buryPointWheelsClickTcMapper.insert(buryPointWheelsClickTc);
         }catch (Exception e) {
@@ -53,16 +62,25 @@ public class BuryPointRewardTbcService {
      */
     public void buryPointRewardTbc(BuryPointRewardTbcDto buryPointRewardTbcDto, H5LoginVO user){
         BuryPointRewardTbc buryPointRewardTbc=new BuryPointRewardTbc();
-        buryPointRewardTbc.setCreateUser(user.getMemberName());
-        buryPointRewardTbc.setCreateUserId(String.valueOf(user.getMemberId()));
+        if (user != null){
+            buryPointRewardTbc.setCreateUser(user.getMemberName());
+            buryPointRewardTbc.setCreateUserId(String.valueOf(user.getMemberId()));
+            buryPointRewardTbc.setOrganizationId(user.getOrganizationId());
+            buryPointRewardTbc.setOrganizationName(user.getOrganizationName());
+            buryPointRewardTbc.setMemberType(user.getMemberType());
+            buryPointRewardTbc.setMobile(user.getMobile());
+        }
         buryPointRewardTbc.setCreateDate(new Date());
-        buryPointRewardTbc.setOrganizationId(user.getOrganizationId());
-        buryPointRewardTbc.setOrganizationName(user.getOrganizationName());
+
         buryPointRewardTbc.setWheelsId(buryPointRewardTbcDto.getWheelsId());
         buryPointRewardTbc.setRewardId(buryPointRewardTbcDto.getRewardId());
         buryPointRewardTbc.setRewardName(buryPointRewardTbcDto.getRewardName());
         buryPointRewardTbc.setThirdUrl(buryPointRewardTbcDto.getThirdUrl());
-        buryPointRewardTbc.setMemberType(user.getMemberType());
+
+        buryPointRewardTbc.setMobileModel(buryPointRewardTbcDto.getMobileModel());
+        buryPointRewardTbc.setSystemModel(buryPointRewardTbcDto.getSystemModel());
+        buryPointRewardTbc.setBrowser(buryPointRewardTbcDto.getBrowser());
+        buryPointRewardTbc.setBrowserModel(buryPointRewardTbcDto.getBrowserModel());
         try {
             buryPointRewardTbcMapper.insert(buryPointRewardTbc);
         } catch (Exception e) {

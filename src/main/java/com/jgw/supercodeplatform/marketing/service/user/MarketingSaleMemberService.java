@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.common.constants.MechanismTypeConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
-import com.jgw.supercodeplatform.marketing.common.constants.SexConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
+import com.jgw.supercodeplatform.marketing.common.constants.UserSourceConstants;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
@@ -26,6 +29,9 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMember;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.UserWithWechat;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.BaseCustomerFeignService;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CustomerIdDto;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -53,6 +59,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 	@Value("${marketing.activity.h5page.url}")
 	private  String WEB_SALER_CENTER_DOMAIN;
+
+	@Autowired
+	private BaseCustomerFeignService baseCustomerFeignService;
 
 
 	protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberService.class);
@@ -374,12 +383,28 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		UserWithWechat userDo = changeToDo(userInfo);
 		if (StringUtils.isNotBlank(userDo.getMobile())) {
 			MarketingUser marketingUser = new MarketingUser();
+			marketingUser.setSource(SourceType.H5); //    3、H5 4
 			BeanUtils.copyProperties(userDo, marketingUser);
+
+			setMechanismType(userInfo, marketingUser);
 			mapper.insertSelective(marketingUser);
 		}
 
 		return userDo;
 
+	}
+
+	/**
+	 * 初始化机构类型
+	 * @param userInfo
+	 * @param marketingUser
+	 */
+	private void setMechanismType(MarketingSaleMembersAddParam userInfo, MarketingUser marketingUser) {
+		RestResult<CustomerInfoView> customerInfo = baseCustomerFeignService.getCustomerInfo(new CustomerIdDto(userInfo.getCustomerId()));
+		if(customerInfo != null && customerInfo.getState() == 200 && customerInfo.getResults() != null){
+			Integer customerType = customerInfo.getResults().getCustomerType();
+			marketingUser.setMechanismType(customerType == null ? null : customerType.byteValue());
+		}
 	}
 
 	/**
@@ -535,9 +560,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			marketingWxMemberMapper.update(null, currentUpdateWrapper);
 		}
 		UserWithWechat userWithWechat = new UserWithWechat();
-		BeanUtils.copyProperties(marketingWxMember, userWithWechat);
 		MarketingUser marketingUser = mapper.selectByPrimaryKey(marketingWxMember.getMemberId());
 		BeanUtils.copyProperties(marketingUser, userWithWechat);
+		BeanUtils.copyProperties(marketingWxMember, userWithWechat);
 		return userWithWechat;
 	}
 
@@ -592,19 +617,49 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		//默认0会员，1导购员,其他员工等
 		queryWrapper.eq("MemberType",1);
 		List<MarketingUser> list= marketingUserMapper.selectList(queryWrapper);
+		if (list == null){
+			throw new SuperCodeException("导购员信息不存在");
+		}
+		list.forEach(user->{
+			String p = user.getProvinceName()== null ?"":user.getCountyName();
+			String city = user.getCityName()== null ?"":user.getCountyName();
+			String c =user.getCountyName() == null? "":user.getCountyName();
+			user.setAddress(p+city+c);
+		});
+		return list;
+	}
+
+	public List<MarketingUser> changeList(List<MarketingUser> list){
 		list.stream().filter(marketingUser -> {
-			if (SexConstants.WOMEN.equals(marketingUser.getSex())){
-				marketingUser.setSex("女");
-			}else if(SexConstants.MEN.equals(marketingUser.getSex())){
-				marketingUser.setSex("男");
+
+			if (UserSourceConstants.H5.equals(marketingUser.getSource())){
+				marketingUser.setSourceStr("H5");
 			}else {
-				marketingUser.setSex("--");
+				marketingUser.setSourceStr("系统后台");
 			}
+
+			if (StateConstants.TO_EXAMINE_ING.equals(marketingUser.getState())){
+				marketingUser.setStateStr("审核");
+			}else if (StateConstants.PROHIBIT.equals(marketingUser.getState())){
+				marketingUser.setStateStr("停用");
+			}else {
+				marketingUser.setStateStr("启用");
+			}
+
+			if (MechanismTypeConstants.HEADQUARTER.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("渠道经销");
+			}else if (MechanismTypeConstants.SUB_SIDIARY.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("门店");
+			}else if (MechanismTypeConstants.DISTRIBUTOR.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("个人");
+			} else {
+				marketingUser.setMechanismTypeStr("其他");
+			}
+
 			return true;
 		}).collect(Collectors.toList());
 		return list;
 	}
-
 }
 
 

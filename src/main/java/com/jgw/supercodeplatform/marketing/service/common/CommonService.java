@@ -211,7 +211,7 @@ public class CommonService {
 			String productBatchId=batchobj.getString("productBatchId");
 			Long codeTotal=batchobj.getLong("codeTotal");
 			String codeBatch=batchobj.getString("globalBatchId");
-			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+			if (StringUtils.isBlank(productId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
 				throw new SuperCodeExtException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
 			}
 			SbatchUrlDto batchUrlDto = new SbatchUrlDto();
@@ -249,7 +249,7 @@ public class CommonService {
 			String productBatchId=batchobj.getString("productBatchId");
 			Long codeTotal=batchobj.getLong("codeTotal");
 			String codeBatch=batchobj.getString("globalBatchId");
-			if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+			if (StringUtils.isBlank(productId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
 				throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
 			}
 			String key = productId + "," + productBatchId;
@@ -489,10 +489,10 @@ public class CommonService {
 	 */
 	public void checkCodeMarketFakeValid(Long codeTypeId) {
 		if(codeTypeId == null){
-			throw  new SuperCodeExtException("对不起,码制不合法");
+			throw  new SuperCodeExtException("对不起，您所扫码的产品未参与活动");
 		}
 		if (SystemLabelEnum.MARKETING_12.getCodeTypeId().intValue() != codeTypeId.intValue()&& SystemLabelEnum.MARKETING_13.getCodeTypeId().intValue() != codeTypeId.intValue() && SystemLabelEnum.FAKE.getCodeTypeId().intValue() != codeTypeId.intValue()) {
-			throw  new SuperCodeExtException("对不起,码制不合法");
+			throw  new SuperCodeExtException("对不起，您所扫码的产品未参与活动");
 		}
 	}
 

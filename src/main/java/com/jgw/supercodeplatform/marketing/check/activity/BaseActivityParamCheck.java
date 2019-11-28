@@ -31,8 +31,8 @@ public abstract class BaseActivityParamCheck {
 		for (MarketingActivityProductParam mProductParam : maProductParams) {
 			String productId = mProductParam.getProductId();
 			List<ProductBatchParam> batchParams=mProductParam.getProductBatchParams();
-			if (StringUtils.isBlank(productId) || null==batchParams || batchParams.isEmpty()) {
-				throw new SuperCodeException("产品id和批次信息不能为空", 500);
+			if (StringUtils.isBlank(productId)) {
+				throw new SuperCodeException("产品id信息不能为空", 500);
 			}
 			
 			for (ProductBatchParam productBatch:mProductParam.getProductBatchParams()){

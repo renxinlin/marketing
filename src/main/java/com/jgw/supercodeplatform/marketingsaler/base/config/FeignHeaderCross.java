@@ -34,12 +34,15 @@ public class FeignHeaderCross implements RequestInterceptor {
 
         if(StringUtils.isEmpty(superToken)){
             Cookie[] cookies = getHttpServletRequest().getCookies();
-            for(Cookie cookie : cookies){
-                if(UserConstants.SUPER_TOKEN.equals(cookie.getName())){
-                    superToken = cookie.getValue();
+            if(cookies !=null){
+                for(Cookie cookie : cookies){
+                    if(UserConstants.SUPER_TOKEN.equals(cookie.getName())){
+                        superToken = cookie.getValue();
+                    }
                 }
+                log.info("服务调用请求头cookie{}", JSONObject.toJSONString(cookies));
+
             }
-        log.info("服务调用请求头cookie{}", JSONObject.toJSONString(cookies));
         }
 
         requestTemplate.header(UserConstants.SUPER_TOKEN, superToken);
@@ -74,4 +77,5 @@ public class FeignHeaderCross implements RequestInterceptor {
         }
         return map;
     }
+
 }

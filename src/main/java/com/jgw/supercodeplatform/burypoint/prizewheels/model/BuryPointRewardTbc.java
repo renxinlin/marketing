@@ -60,4 +60,19 @@ public class BuryPointRewardTbc {
 
     @TableField("MemberType")
     private Byte memberType;
+
+    @TableField("Mobile")
+    private String mobile;
+
+    @TableField("MobileModel")
+    private String mobileModel;
+
+    @TableField("SystemModel")
+    private String systemModel;
+
+    @TableField("Browser")
+    private String browser;
+
+    @TableField("BrowserModel")
+    private String browserModel;
 }

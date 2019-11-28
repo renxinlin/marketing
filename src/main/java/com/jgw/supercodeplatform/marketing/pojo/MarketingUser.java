@@ -1,8 +1,10 @@
 package com.jgw.supercodeplatform.marketing.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.Date;
 
@@ -67,11 +69,17 @@ public class MarketingUser {
     /** 省市区前端编码 */
     private String pCCcode;
 
+    @TableField(exist = false)
+    private String codeStr;
+
     /** 默认1导购员,其他员工等 */
     private Byte memberType;
 
-    /** 用户状态(1、 表示正常，0 表示下线)导购员状态 */
+    /** 用户状态(1、 待审核，2 停用3启用)导购员状态 */
     private Byte state;
+
+    @TableField(exist = false)
+    private String stateStr;
 
     /** 扫码设备类型 */
     private Byte deviceType;
@@ -81,6 +89,9 @@ public class MarketingUser {
     private Integer totalIntegral;
     /** 来源3、H5 4、系统后台*/
     private Byte source;
+
+    @TableField(exist=false)
+    private String sourceStr;
     /**
      * 2.0登录用户名
      */
@@ -96,10 +107,22 @@ public class MarketingUser {
      */
     private Integer version;
 
+    @TableField(exist=false)
+    //导出使用 无业务需求
+    private String address;
+
     /**
      * 机构类型
      */
-    private String mechanismType;
+    private Byte mechanismType;
+
+    @TableField(exist=false)
+    private String mechanismTypeStr;
+
+    @ApiModelProperty(value = "是否已经绑定账号密码")
+    private Byte binding;
+    @ApiModelProperty(value = "2.0迁移的手机号")
+    private String phone;
 
     public Integer getHaveIntegral() {
         return haveIntegral;
@@ -342,11 +365,68 @@ public class MarketingUser {
         this.version = version;
     }
 
-    public String getMechanismType() {
+
+    public Byte getMechanismType() {
         return mechanismType;
     }
 
-    public void setMechanismType(String mechanismType) {
+    public void setMechanismType(Byte mechanismType) {
         this.mechanismType = mechanismType;
+    }
+
+    public String getMechanismTypeStr() {
+        return mechanismTypeStr;
+    }
+
+    public void setMechanismTypeStr(String mechanismTypeStr) {
+        this.mechanismTypeStr = mechanismTypeStr;
+    }
+
+    public String getSourceStr() {
+        return sourceStr;
+    }
+
+    public void setSourceStr(String sourceStr) {
+        this.sourceStr = sourceStr;
+    }
+
+    public String getStateStr() {
+        return stateStr;
+    }
+
+    public void setStateStr(String stateStr) {
+        this.stateStr = stateStr;
+    }
+
+    public Byte getBinding() {
+        return binding;
+    }
+
+    public void setBinding(Byte binding) {
+        this.binding = binding;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getCodeStr() {
+        return codeStr;
+    }
+
+    public void setCodeStr(String codeStr) {
+        this.codeStr = codeStr;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

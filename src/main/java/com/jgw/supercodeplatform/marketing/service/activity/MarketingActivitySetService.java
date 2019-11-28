@@ -221,9 +221,15 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
-			if (null != batchParams && !batchParams.isEmpty()) {
-				ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
-				List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+			ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+			List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
+			if (CollectionUtils.isEmpty(batchParams)) {
+				MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+				mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+				mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+				mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+				mList.add(mActivityProduct);
+			} else {
 				for (ProductBatchParam prBatchParam : batchParams) {
 					String productBatchId = prBatchParam.getProductBatchId();
 					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
@@ -239,11 +245,11 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
 					productBatchList.add(batchmap);
 				}
-				// 拼装请求码管理批次信息接口商品参数
-				productAndBatchGetCodeMO.setProductBatchList(productBatchList);
-				productAndBatchGetCodeMO.setProductId(productId);
-				productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 			}
+			// 拼装请求码管理批次信息接口商品参数
+			productAndBatchGetCodeMO.setProductBatchList(productBatchList);
+			productAndBatchGetCodeMO.setProductId(productId);
+			productAndBatchGetCodeMOs.add(productAndBatchGetCodeMO);
 		}
 		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product
@@ -292,6 +298,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		standActicityParamCheck.basePrizeTypeCheck(mPrizeTypeParams);
 		//检查产品
 	    standActicityParamCheck.baseProductBatchCheck(maProductParams);
+		mList.forEach(prd -> prd.setActivitySetId(mActivitySet.getId()));
 		//保存商品批次活动总共批次参与的码总数
 		saveProductBatchs(productAndBatchGetCodeMOs, deleteProductBatchList, mList, 0);
 		if (null!=mChannelParams && mChannelParams.size()!=0) {
@@ -467,7 +474,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	public void saveProductBatchs(List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs, List<SbatchUrlUnBindDto> deleteProductBatchList, List<MarketingActivityProduct> mList, int referenceRole) throws SuperCodeException {
 		//如果是会员活动需要去绑定扫码连接到批次号
 		String superToken = commonUtil.getSuperToken();
+		logger.info("调用码管理平台获取生码批次信息入参：{}", JSON.toJSONString(productAndBatchGetCodeMOs));
 		JSONArray arr = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
+		logger.info("调用码管理平台获取生码批次信息返回：{}", arr.toJSONString());
 		String bindUrl = marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL;
 		if (referenceRole == ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue()) {
 			bindUrl = marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL;
@@ -508,29 +517,30 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		for (MarketingActivityProductParam marketingActivityProductParam : maProductParams) {
 			String productId = marketingActivityProductParam.getProductId();
 			List<ProductBatchParam> batchParams = marketingActivityProductParam.getProductBatchParams();
+			ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+			List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
 			if (CollectionUtils.isEmpty(batchParams)) {
-                //TODO
-
-
-
-			    continue;
-            }
-            ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
-            List<Map<String, String>> productBatchList = new ArrayList<Map<String, String>>();
-            for (ProductBatchParam prBatchParam : batchParams) {
-                String productBatchId = prBatchParam.getProductBatchId();
-                MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
-                mActivityProduct.setProductBatchId(productBatchId);
-                mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
-                mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
-                mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
-                mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
-                mList.add(mActivityProduct);
-                // 拼装请求码管理批次信息接口商品批次参数
-                Map<String, String> batchmap = new HashMap<String, String>();
-                batchmap.put("productBatchId", prBatchParam.getProductBatchId());
-                productBatchList.add(batchmap);
-            }
+				MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+				mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+				mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+				mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+				mList.add(mActivityProduct);
+            } else {
+				for (ProductBatchParam prBatchParam : batchParams) {
+					String productBatchId = prBatchParam.getProductBatchId();
+					MarketingActivityProduct mActivityProduct = new MarketingActivityProduct();
+					mActivityProduct.setProductBatchId(productBatchId);
+					mActivityProduct.setProductBatchName(prBatchParam.getProductBatchName());
+					mActivityProduct.setProductId(marketingActivityProductParam.getProductId());
+					mActivityProduct.setProductName(marketingActivityProductParam.getProductName());
+					mActivityProduct.setReferenceRole(ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
+					mList.add(mActivityProduct);
+					// 拼装请求码管理批次信息接口商品批次参数
+					Map<String, String> batchmap = new HashMap<String, String>();
+					batchmap.put("productBatchId", prBatchParam.getProductBatchId());
+					productBatchList.add(batchmap);
+				}
+			}
             // 拼装请求码管理批次信息接口商品参数
             productAndBatchGetCodeMO.setProductBatchList(productBatchList);
             productAndBatchGetCodeMO.setProductId(productId);
@@ -687,7 +697,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		MarketingActivityProduct mProduct=mProductMapper.selectByProductAndProductBatchIdWithReferenceRole(productId,productBatchId,referenceRole);
 		if (null==mProduct) {
 			restResult.setState(500);
-			restResult.setMsg("该码对应的产品批次未参与活动");
+			restResult.setMsg("对不起，您所扫码的产品未参与活动");
 			return restResult;
 		}
 
@@ -710,7 +720,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			Integer bizType = ActivityDefaultConstant.ActivityBizTypeMap.get(activityId);
 			if (bizType != null && !businessType.equals(bizType)) {
 				restResult.setState(500);
-				restResult.setMsg("该产品对应的活动与业务类型不匹配");
+				restResult.setMsg("对不起，您所扫码的产品未参与活动");
 				return restResult;
 			}
 
@@ -889,12 +899,16 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				if(marketingActivityProductParam == null) {
 					marketingActivityProductParam = new MarketingActivityProductParam();
 					marketingActivityProductParam.setProductId(product.getProductId());
-					marketingActivityProductParam.setProductName(product.getProductBatchName());
+					marketingActivityProductParam.setProductName(product.getProductName());
 					//添加批次
-					ProductBatchParam productBatchParam = new ProductBatchParam();
-					productBatchParam.setProductBatchId(product.getProductBatchId());
-					productBatchParam.setProductBatchName(product.getProductBatchName());
-					marketingActivityProductParam.setProductBatchParams(Lists.newArrayList(productBatchParam));
+					List<ProductBatchParam> prdBatchList = new ArrayList<>();
+					if (StringUtils.isNotBlank(product.getProductBatchId())) {
+						ProductBatchParam productBatchParam = new ProductBatchParam();
+						productBatchParam.setProductBatchId(product.getProductBatchId());
+						productBatchParam.setProductBatchName(product.getProductBatchName());
+						prdBatchList.add(productBatchParam);
+					}
+					marketingActivityProductParam.setProductBatchParams(prdBatchList);
 					mActivityProductParamMap.put(productId, marketingActivityProductParam);
 				} else {
 					ProductBatchParam productBatchParam = new ProductBatchParam();
@@ -904,7 +918,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				}
 			}
 		}
-		marketingActivityCreateParam.setmProductParams(new ArrayList<MarketingActivityProductParam>(mActivityProductParamMap.values()));
+		marketingActivityCreateParam.setmProductParams(new ArrayList<>(mActivityProductParamMap.values()));
 		//获取设置中奖奖次
 		List<MarketingPrizeType> marketingPrizeTypeList = mPrizeTypeMapper.selectByActivitySetId(activitySetId);
 		if(!CollectionUtils.isEmpty(marketingPrizeTypeList)) {

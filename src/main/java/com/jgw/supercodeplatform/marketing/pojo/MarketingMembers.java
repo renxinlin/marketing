@@ -29,6 +29,8 @@ public class MarketingMembers {
     private String countyName;
     private String registDate;//注册时间
     private Byte state;//状态(1、 表示正常，0 表示下线)
+    @TableField(exist=false)
+    private String stateStr;
     private String organizationId;//组织Id
     private String newRegisterFlag;//是否新注册的标志(1  表示是，0 表示不是)
     private String createDate;//建立日期
@@ -38,6 +40,9 @@ public class MarketingMembers {
     private String babyBirthday;//宝宝生日
     private Byte isRegistered;// 是否已完善(1、表示已完善，0 表示未完善)
     private String pCCcode;
+    @TableField(exist=false)
+    //导出省市区字符串无业务需求
+    private String codeStr;
     private Integer haveIntegral; //  会员积分
     private Byte memberType; // 会员类型默认0
     private Date integralReceiveDate; // 最新一次积分领取时间
@@ -56,16 +61,25 @@ public class MarketingMembers {
     private String iDNumber;//身份证
     @ApiModelProperty(value = "注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、\"外部网站 8、码上淘 9、短信 10、微盟")
     private Byte registrationApproach;//注册途径1、手机积分商城2、PC积分网站3、手机充值H5 4、网站后台 5、手机客户端 6、微信 7、"外部网站 8、码上淘 9、短信 10、微盟
+
+    @TableField(exist=false)
+    private String registrationApproachStr;
+
     @ApiModelProperty(value = "累计积分")
     private Integer totalIntegral;//累计积分
     @ApiModelProperty(value = "会员等级")
     private Byte memberGrade;//会员等级
     @ApiModelProperty(value = "推荐人")
-    private String recommender;//推荐人
+    private Long recommenderId;//推荐人
     @ApiModelProperty(value = "二级推荐人")
-    private String secondLevelRecommender;//二级推荐人
+    private Long secondLevelRecommenderId;//二级推荐人
     @ApiModelProperty(value = "备注")
     private String remarks;
+    @ApiModelProperty(value = "是否已经绑定账号密码")
+    private Byte binding;
+    @ApiModelProperty(value = "2.0迁移的手机号")
+    private String phone;
+
     public String getCityCode() {
         return cityCode;
     }
@@ -379,21 +393,6 @@ public class MarketingMembers {
         this.memberGrade = memberGrade;
     }
 
-    public String getRecommender() {
-        return recommender;
-    }
-
-    public void setRecommender(String recommender) {
-        this.recommender = recommender;
-    }
-
-    public String getSecondLevelRecommender() {
-        return secondLevelRecommender;
-    }
-
-    public void setSecondLevelRecommender(String secondLevelRecommender) {
-        this.secondLevelRecommender = secondLevelRecommender;
-    }
 
     public String getRemarks() {
         return remarks;
@@ -401,5 +400,62 @@ public class MarketingMembers {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public Long getRecommenderId() {
+        return recommenderId;
+    }
+
+    public void setRecommenderId(Long recommenderId) {
+        this.recommenderId = recommenderId;
+    }
+
+    public Long getSecondLevelRecommenderId() {
+        return secondLevelRecommenderId;
+    }
+
+    public void setSecondLevelRecommenderId(Long secondLevelRecommenderId) {
+        this.secondLevelRecommenderId = secondLevelRecommenderId;
+    }
+
+    public String getRegistrationApproachStr() {
+        return registrationApproachStr;
+    }
+
+    public void setRegistrationApproachStr(String registrationApproachStr) {
+        this.registrationApproachStr = registrationApproachStr;
+    }
+
+    public Byte getBinding() {
+        return binding;
+    }
+
+    public void setBinding(Byte binding) {
+        this.binding = binding;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getStateStr() {
+        return stateStr;
+    }
+
+    public void setStateStr(String stateStr) {
+        this.stateStr = stateStr;
+    }
+
+
+    public String getCodeStr() {
+        return codeStr;
+    }
+
+    public void setCodeStr(String codeStr) {
+        this.codeStr = codeStr;
     }
 }
