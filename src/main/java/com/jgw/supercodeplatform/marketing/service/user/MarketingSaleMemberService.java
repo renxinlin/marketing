@@ -61,7 +61,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	private  String WEB_SALER_CENTER_DOMAIN;
 
 	@Autowired
-	BaseCustomerFeignService baseCustomerFeignService;
+	private BaseCustomerFeignService baseCustomerFeignService;
 
 
 	protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberService.class);
