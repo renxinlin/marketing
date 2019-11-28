@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserTransfer {
     public void transferExists(MarketingUser marketingUserTwo, MarketingUser exitMarketingUser){
-        BeanUtils.copyProperties(marketingUserTwo,exitMarketingUser,"id","mobile","userId","haveIntegral","totalIntegral");
+        BeanUtils.copyProperties(marketingUserTwo,exitMarketingUser,"id","openid","mobile","userId","haveIntegral","totalIntegral");
         exitMarketingUser.setHaveIntegral(
                 (exitMarketingUser.getHaveIntegral()== null ? 0:exitMarketingUser.getHaveIntegral())
                         +(marketingUserTwo.getHaveIntegral()== null ? 0:marketingUserTwo.getHaveIntegral())

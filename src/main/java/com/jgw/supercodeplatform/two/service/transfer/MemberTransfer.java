@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class MemberTransfer {
     public void transferExists(MarketingMembers marketingMembersTwo, MarketingMembers exitMarketingMembers) {
         //说明3.0数据中已绑定手机号 可用积分和总积分进行积分转移 其他属性转义
-        BeanUtils.copyProperties(marketingMembersTwo,exitMarketingMembers,"id","mobile","userId","haveIntegral","totalIntegral");
+        BeanUtils.copyProperties(marketingMembersTwo,exitMarketingMembers,"id","openid","mobile","userId","haveIntegral","totalIntegral");
         exitMarketingMembers.setHaveIntegral(
                 (exitMarketingMembers.getHaveIntegral() == null ? 0: exitMarketingMembers.getHaveIntegral())
                         +(marketingMembersTwo.getHaveIntegral() == null ? 0: marketingMembersTwo.getHaveIntegral())
