@@ -48,6 +48,8 @@ public class UserLoginController {
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("LoginName",loginName);
         queryWrapper.eq("Password",md5Password);
+        queryWrapper.eq("Version",1); // 1 数据来自2.0
+
         MarketingUser marketingUser=marketingUserMapper.selectOne(queryWrapper);
         if (marketingUser!=null){
             if (JudgeBindConstants.HAVEBIND.equals(marketingUser.getBinding())){

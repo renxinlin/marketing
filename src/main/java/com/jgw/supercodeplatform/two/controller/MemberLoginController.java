@@ -51,6 +51,7 @@ public class MemberLoginController {
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("LoginName",loginName);
         queryWrapper.eq("Password",md5Password);
+        queryWrapper.eq("Version",1); // 1 数据来自2.0
         //1 代表已经绑定
         MarketingMembers marketingMembers =marketingMembersMapper.selectOne(queryWrapper);
         if (marketingMembers!=null){
@@ -97,4 +98,5 @@ public class MemberLoginController {
     public RestResult bind(@Valid @RequestBody MarketingMembersBindMobileParam marketingMembersBindMobileParam) throws SuperCodeException {
         return memberLoginService.bindMobile(marketingMembersBindMobileParam);
     }
+
 }
