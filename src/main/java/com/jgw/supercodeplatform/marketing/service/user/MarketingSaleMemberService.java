@@ -10,6 +10,7 @@ import com.jgw.supercodeplatform.marketing.common.constants.MechanismTypeConstan
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.UserSourceConstants;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingUserMapperExt;
@@ -28,6 +29,9 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMember;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.UserWithWechat;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.BaseCustomerFeignService;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CustomerIdDto;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -55,6 +59,9 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 
 	@Value("${marketing.activity.h5page.url}")
 	private  String WEB_SALER_CENTER_DOMAIN;
+
+	@Autowired
+	BaseCustomerFeignService baseCustomerFeignService;
 
 
 	protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberService.class);
@@ -378,12 +385,26 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			MarketingUser marketingUser = new MarketingUser();
 			marketingUser.setSource(SourceType.H5); //    3、H5 4
 			BeanUtils.copyProperties(userDo, marketingUser);
-			marketingUser.setMechanismType(userInfo.getMechanismType() != null ?userInfo.getMechanismType().byteValue():null);
+
+			setMechanismType(userInfo, marketingUser);
 			mapper.insertSelective(marketingUser);
 		}
 
 		return userDo;
 
+	}
+
+	/**
+	 * 初始化机构类型
+	 * @param userInfo
+	 * @param marketingUser
+	 */
+	private void setMechanismType(MarketingSaleMembersAddParam userInfo, MarketingUser marketingUser) {
+		RestResult<CustomerInfoView> customerInfo = baseCustomerFeignService.getCustomerInfo(new CustomerIdDto(userInfo.getCustomerId()));
+		if(customerInfo != null && customerInfo.getState() == 200 && customerInfo.getResults() != null){
+			Integer customerType = customerInfo.getResults().getCustomerType();
+			marketingUser.setMechanismType(customerType == null ? null : customerType.byteValue());
+		}
 	}
 
 	/**
