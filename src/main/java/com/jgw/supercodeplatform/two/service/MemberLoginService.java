@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
@@ -131,7 +132,7 @@ public class MemberLoginService {
         if (result.equals(BindConstants.RESULT)){
             return RestResult.success(200,"success","绑定成功");
         }
-        return RestResult.failDefault("绑定失败");
+        throw new BizRuntimeException("绑定失败");
     }
 
 
