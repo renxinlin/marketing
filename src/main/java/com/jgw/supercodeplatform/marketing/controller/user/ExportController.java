@@ -113,6 +113,10 @@ public class ExportController extends CommonUtil {
             throw new SuperCodeException("会员资料表头解析异常", 500);
         }
         // step-4: 导出前端
+        // 近X个月为计算数据不导出
+        filedMap.remove(NoIntegralWithMonthConstant.One);
+        filedMap.remove(NoIntegralWithMonthConstant.Three);
+        filedMap.remove(NoIntegralWithMonthConstant.Six);
         ExcelUtils.listToExcel(list, filedMap, "会员资料", response);
     }
 
