@@ -46,6 +46,7 @@ public class ExportController extends CommonUtil {
     private MarketingSaleMemberService service;
 
     @Value("{\"mobile\":\"手机\",\"userName\":\"用户\",\"sexStr\":\"性别\",\"iDNumber\":\"身份证号\",\"birthday\":\"生日\",\"babyBirthday\":\"宝宝生日\",\"provinceName\":\"省名称\",\"cityName\":\"市名称\",\"countyName\":\"县名称\",\"detailAddress\":\"详细地址\",\"customerName\":\"门店名称\",\"totalIntegral\":\"累计积分\",\"registrationApproach\":\"注册途径\"" +
+            " ,\"registDate\":\"注册时间\" " +
             " ,\"codeStr\":\"省市区\" " +
             "}")
     private String MARKET_MEMBERS_EXCEL_FIELD_MAP;
