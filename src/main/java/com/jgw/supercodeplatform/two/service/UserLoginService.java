@@ -84,7 +84,7 @@ public class UserLoginService {
         if (marketingUserTwo ==null){
             throw new SuperCodeException("绑定2.0失败");
         }
-        if (marketingUserTwo.getBinding() != null || marketingUserTwo.getBinding().byteValue() == JudgeBindConstants.HAVEBIND){
+        if (marketingUserTwo.getBinding() != null && marketingUserTwo.getBinding().byteValue() == JudgeBindConstants.HAVEBIND){
             throw new SuperCodeException("用户已经绑定"); //导购员:手机号全局唯一
         }
         // .............................................
