@@ -84,7 +84,7 @@ public class MarketingActivityProductService {
         // 返回
         restResult.setState(200);
         restResult.setMsg("success");
-        restResult.setResults(transferDatas);
+        restResult.setResults(transferDatas.values());
         return  restResult;
     }
 
