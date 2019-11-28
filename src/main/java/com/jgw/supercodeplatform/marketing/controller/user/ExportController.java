@@ -57,6 +57,8 @@ public class ExportController extends CommonUtil {
     @ApiOperation(value = "导出会员资料")
     @ApiImplicitParams({@ApiImplicitParam(paramType = "header", value = "token", name = "super-token")})
     public void exportInfo(HttpServletResponse response, HttpServletRequest request) throws Exception {
+        logger.info("导出会员资料入参==={}",JSONObject.toJSONString(request.getParameterMap()));
+        logger.info("导出会员资料入参==={}", request.getParameter("dataList"));
         List<MarketingMembers> list;
         //自定义表头
         String dataList = request.getParameter("dataList");
