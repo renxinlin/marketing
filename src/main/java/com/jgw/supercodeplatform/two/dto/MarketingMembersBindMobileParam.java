@@ -18,7 +18,7 @@ public class MarketingMembersBindMobileParam {
     @ApiModelProperty("2.0会员")
     private Long id;
 
-    @ApiModelProperty("2.0会员挂的组织")
+    @ApiModelProperty("2.0会员挂的 组织")
     @NotBlank(message = "组织id不能为空")
     private String organizationId;
 
