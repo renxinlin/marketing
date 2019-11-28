@@ -924,7 +924,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			}
 
 
-
+			marketingUser.setSexStr(marketingUser.getSex().toString());
 			if (SexConstants.WOMEN.equals(marketingUser.getSexStr())){
 				marketingUser.setSexStr("女");
 			}else if(SexConstants.MEN.equals(marketingUser.getSexStr())){
