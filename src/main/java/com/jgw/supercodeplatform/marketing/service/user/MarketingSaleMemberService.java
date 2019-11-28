@@ -618,11 +618,11 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			}
 
 			if (StateConstants.TO_EXAMINE_ING.equals(marketingUser.getState())){
-				marketingUser.setStateStr("审核中");
+				marketingUser.setStateStr("审核");
 			}else if (StateConstants.PROHIBIT.equals(marketingUser.getState())){
-				marketingUser.setStateStr("禁用中");
+				marketingUser.setStateStr("停用");
 			}else {
-				marketingUser.setStateStr("启用中");
+				marketingUser.setStateStr("启用");
 			}
 
 			if (MechanismTypeConstants.HEADQUARTER.equals(marketingUser.getMechanismType())){
