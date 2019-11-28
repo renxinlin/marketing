@@ -45,7 +45,9 @@ public class ExportController extends CommonUtil {
     @Autowired
     private MarketingSaleMemberService service;
 
-    @Value("{\"mobile\":\"手机\",\"userName\":\"用户\",\"sexStr\":\"性别\",\"iDNumber\":\"身份证号\",\"birthday\":\"生日\",\"babyBirthday\":\"宝宝生日\",\"provinceName\":\"省名称\",\"cityName\":\"市名称\",\"countyName\":\"县名称\",\"detailAddress\":\"详细地址\",\"customerName\":\"门店名称\",\"totalIntegral\":\"累计积分\",\"registrationApproach\":\"注册途径\"}")
+    @Value("{\"mobile\":\"手机\",\"userName\":\"用户\",\"sexStr\":\"性别\",\"iDNumber\":\"身份证号\",\"birthday\":\"生日\",\"babyBirthday\":\"宝宝生日\",\"provinceName\":\"省名称\",\"cityName\":\"市名称\",\"countyName\":\"县名称\",\"detailAddress\":\"详细地址\",\"customerName\":\"门店名称\",\"totalIntegral\":\"累计积分\",\"registrationApproach\":\"注册途径\"" +
+            " ,\"pCCcode\":\"省市区\" " +
+            "}")
     private String MARKET_MEMBERS_EXCEL_FIELD_MAP;
 
     @Value("{\"mobile\":\"手机\",\"userName\":\"用户\",\"mechanismType\":\"机构类型\", \"customerId\":\"机构代码\", \"customerName\":\"机构名\",\"provinceName\":\"省名称\",\"countyName\":\"县名称\",\"cityName\":\"市名称\",\"haveIntegral\":\"可用积分\",\"totalIntegral\":\"累计积分\",\"source\":\"来源\",\"state\":\"用户状态\",\"createDate\":\"建立日期\"}")
