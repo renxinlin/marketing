@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingMembersBindMobileParam;
+import com.jgw.supercodeplatform.two.service.transfer.MemberTransfer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
@@ -29,6 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberLoginService {
 
     private static Logger logger = Logger.getLogger(MemberLoginService.class);
+
+    @Autowired
+    private MemberTransfer memberTransfer;
 
     @Autowired
     private MarketingMembersMapper marketingMembersMapper;
@@ -89,59 +93,47 @@ public class MemberLoginService {
         //ID用于获取2.0数据
         MarketingMembers marketingMembersTwo=marketingMembersMapper.selectById(marketingMembersBindMobileParam.getId());
         if (marketingMembersTwo==null){
-            throw new SuperCodeException("绑定2.0失败");
+               throw new SuperCodeException("绑定2.0失败"); //会员：一个组织中一个手机号唯一
         }
-        //会员：一个组织中一个手机号唯一
+        if (marketingMembersTwo.getBinding() != null && marketingMembersTwo.getBinding().byteValue() == JudgeBindConstants.HAVEBIND){
+           throw new SuperCodeException("用户已经绑定"); //会员：一个组织中一个手机号唯一
+        }
+
+        // .............................................
+        //       ......                      ......
+        //
+        //               采用3.0的注册送
+        //               ............
+        // .............................................
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("Mobile",marketingMembersBindMobileParam.getMobile());
         queryWrapper.eq("OrganizationId",marketingMembersBindMobileParam.getOrganizationId());
         MarketingMembers exitMarketingMembers=marketingMembersMapper.selectOne(queryWrapper);
         Integer result = null;
         IntegralRule integralRule=integralRuleService.selectByOrgId(marketingMembersBindMobileParam.getOrganizationId());
+
         if (exitMarketingMembers != null){
-            /*throw new SuperCodeException("该手机号已被绑定");*/
-            //说明3.0数据中已绑定手机号
-            //进行积分转移
-            //可用积分和总积分
-            if (exitMarketingMembers.getBinding()==null ||JudgeBindConstants.NOBIND.equals(exitMarketingMembers.getBinding())){
-                exitMarketingMembers.setHaveIntegral(
-                        (exitMarketingMembers.getHaveIntegral() == null ? 0: exitMarketingMembers.getHaveIntegral())
-                                +(marketingMembersTwo.getHaveIntegral() == null ? 0: marketingMembersTwo.getHaveIntegral())
-                                );
-                exitMarketingMembers.setTotalIntegral(
-                        (exitMarketingMembers.getTotalIntegral() == null ? 0: exitMarketingMembers.getTotalIntegral())
-                                + (marketingMembersTwo.getTotalIntegral()  == null ? 0: marketingMembersTwo.getTotalIntegral())
-                                );
-                marketingMembersTwo.setHaveIntegral(0);
-                marketingMembersTwo.setTotalIntegral(0);
+                //说明3.0数据中已绑定手机号 可用积分和总积分进行积分转移 其他属性转义
+                memberTransfer.transferExists(marketingMembersTwo,exitMarketingMembers);
                 result=marketingMembersMapper.updateById(exitMarketingMembers);
-                logger.info("------marketingMembersTwo-----"+marketingMembersTwo);
-                marketingMembersMapper.updateById(marketingMembersTwo);
-            }
         }else{
-            //不存在则将2.0的数据复制到3.0
-            MarketingMembers marketingMembersNew=new MarketingMembers();
-            BeanUtils.copyProperties(marketingMembersTwo,marketingMembersNew,"id");
-            marketingMembersNew.setMobile(marketingMembersBindMobileParam.getMobile());
-            marketingMembersNew.setHaveIntegral(
-                    (marketingMembersNew.getHaveIntegral()== null ? 0:marketingMembersNew.getHaveIntegral())
-                            +(integralRule.getIntegralByRegister()== null ? 0:integralRule.getIntegralByRegister()));
-            marketingMembersNew.setTotalIntegral(
-                    (marketingMembersNew.getTotalIntegral()== null ? 0:marketingMembersNew.getTotalIntegral())
-                            +(integralRule.getIntegralByRegister()== null ? 0:integralRule.getIntegralByRegister()));
-            marketingMembersNew.setLoginName("");
-            marketingMembersNew.setPassword("");
-            marketingMembersNew.setState(StateConstants.ENABLE);
-            marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
-            //插入一条新数据
+            //不存在则将2.0的数据新增到3.0
+            MarketingMembers marketingMembersNew = memberTransfer.transferNotExists0(marketingMembersBindMobileParam, marketingMembersTwo, integralRule.getIntegralByRegister());
             result=marketingMembersMapper.insert(marketingMembersNew);
-            logger.info("------marketingMembersTwo-----"+marketingMembersTwo);
-            marketingMembersMapper.updateById(marketingMembersTwo);
         }
+
+         // 处理2.0 数值型数据剪掉
+         marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
+         marketingMembersMapper.updateById(marketingMembersTwo);
 
         if (result.equals(BindConstants.RESULT)){
             return RestResult.success(200,"success","绑定成功");
         }
         return RestResult.failDefault("绑定失败");
     }
+
+
+
+
+
 }
