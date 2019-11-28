@@ -599,6 +599,12 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		if (list == null){
 			throw new SuperCodeException("导购员信息不存在");
 		}
+		list.forEach(user->{
+			String p = user.getProvinceName()== null ?"":user.getCountyName();
+			String city = user.getCityName()== null ?"":user.getCountyName();
+			String c =user.getCountyName() == null? "":user.getCountyName();
+			user.setAddress(p+city+c);
+		});
 		return list;
 	}
 
@@ -620,26 +626,12 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			}
 
 			if (MechanismTypeConstants.HEADQUARTER.equals(marketingUser.getMechanismType())){
-				marketingUser.setMechanismTypeStr("总部");
+				marketingUser.setMechanismTypeStr("渠道经销");
 			}else if (MechanismTypeConstants.SUB_SIDIARY.equals(marketingUser.getMechanismType())){
-				marketingUser.setMechanismTypeStr("子公司");
-			}else if (MechanismTypeConstants.DISTRIBUTOR.equals(marketingUser.getMechanismType())){
-				marketingUser.setMechanismTypeStr("经销商");
-			}else if (MechanismTypeConstants.STORE.equals(marketingUser.getMechanismType())){
 				marketingUser.setMechanismTypeStr("门店");
-			}else if (MechanismTypeConstants.STORAGE_ROOM.equals(marketingUser.getMechanismType())){
-				marketingUser.setMechanismTypeStr("库房");
-			}else if (MechanismTypeConstants.SUB_STORE.equals(marketingUser.getMechanismType())){
-				marketingUser.setMechanismTypeStr("子门店");
-			}else if (MechanismTypeConstants.LOCAL_GOV.equals(marketingUser.getMechanismType())){
-				marketingUser.setMechanismTypeStr("地方政府");
-			}else if (MechanismTypeConstants.COMPANY.equals(marketingUser.getMechanismType())){
-				marketingUser.setMechanismTypeStr("公司");
-			}else if (MechanismTypeConstants.SALE_LOCAL_GOV.equals(marketingUser.getMechanismType())){
-				marketingUser.setMechanismTypeStr("销售公司");
-			}else if (MechanismTypeConstants.FARM.equals(marketingUser.getMechanismType())){
-				marketingUser.setMechanismTypeStr("农场");
-			}else {
+			}else if (MechanismTypeConstants.DISTRIBUTOR.equals(marketingUser.getMechanismType())){
+				marketingUser.setMechanismTypeStr("个人");
+			} else {
 				marketingUser.setMechanismTypeStr("其他");
 			}
 

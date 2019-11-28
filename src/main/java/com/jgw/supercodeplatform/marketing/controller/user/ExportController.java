@@ -51,7 +51,11 @@ public class ExportController extends CommonUtil {
             "}")
     private String MARKET_MEMBERS_EXCEL_FIELD_MAP;
 
-    @Value("{\"mobile\":\"手机\",\"userName\":\"用户\",\"mechanismType\":\"机构类型\", \"customerId\":\"机构代码\", \"customerName\":\"机构名\",\"provinceName\":\"省名称\",\"countyName\":\"县名称\",\"cityName\":\"市名称\",\"haveIntegral\":\"可用积分\",\"totalIntegral\":\"累计积分\",\"source\":\"来源\",\"state\":\"用户状态\",\"createDate\":\"建立日期\"}")
+    @Value("{\"mobile\":\"手机\",\"userName\":\"用户\",\"mechanismType\":\"机构类型\", \"customerId\":\"机构代码\", \"customerName\":\"机构名\",\"provinceName\":\"省名称\",\"countyName\":\"县名称\",\"cityName\":\"市名称\",\"haveIntegral\":\"可用积分\",\"totalIntegral\":\"累计积分\",\"source\":\"来源\",\"state\":\"用户状态\"" +
+            ",\"createDate\":\"建立日期\"" +
+            ",\"address\":\"所在地\"" +
+
+            "}")
     private String MARKET_SELEMEMBERS_EXCEL_FIELD_MAP;
 
     private String CUSTOMER_EXCEL_FIELD_MAP;
