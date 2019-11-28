@@ -124,6 +124,8 @@ public class MemberLoginService {
 
          // 处理2.0 数值型数据剪掉
          marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
+         marketingMembersTwo.setHaveIntegral(0);
+         marketingMembersTwo.setTotalIntegral(0);
          marketingMembersMapper.updateById(marketingMembersTwo);
 
         if (result.equals(BindConstants.RESULT)){
