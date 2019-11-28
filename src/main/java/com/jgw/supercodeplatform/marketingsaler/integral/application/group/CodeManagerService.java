@@ -80,7 +80,7 @@ public class CodeManagerService {
                 }
             }
 
-            throw new BizRuntimeException("防伪码转对应的营销码失败");
+            throw new BizRuntimeException("对不起，您所扫码的产品未参与活动");
         }else {
             // 非防伪码无需处理
             return outCodeInfoDto;

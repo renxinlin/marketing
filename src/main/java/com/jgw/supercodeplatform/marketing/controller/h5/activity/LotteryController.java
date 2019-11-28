@@ -158,7 +158,7 @@ public class LotteryController extends CommonUtil {
         scanCodeInfoMO.setCodeId(marketOutCodeInfoDto.getOuterCodeId());
         MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeTypeId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
         if (marketingChannel == null){
-            throw new SuperCodeExtException("渠道信息不对");
+            throw new SuperCodeExtException("对不起，您所扫码的产品未参与活动");
         }
         LotteryResultMO lotteryResultMO = salerLotteryService.salerlottery(scanCodeInfoMO,jwtUser,request);
         RestResult<LotteryResultMO> restResult = RestResult.success();

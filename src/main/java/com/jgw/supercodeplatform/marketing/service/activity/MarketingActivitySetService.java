@@ -697,7 +697,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		MarketingActivityProduct mProduct=mProductMapper.selectByProductAndProductBatchIdWithReferenceRole(productId,productBatchId,referenceRole);
 		if (null==mProduct) {
 			restResult.setState(500);
-			restResult.setMsg("该码对应的产品批次未参与活动");
+			restResult.setMsg("对不起，您所扫码的产品未参与活动");
 			return restResult;
 		}
 
@@ -720,7 +720,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 			Integer bizType = ActivityDefaultConstant.ActivityBizTypeMap.get(activityId);
 			if (bizType != null && !businessType.equals(bizType)) {
 				restResult.setState(500);
-				restResult.setMsg("该产品对应的活动与业务类型不匹配");
+				restResult.setMsg("对不起，您所扫码的产品未参与活动");
 				return restResult;
 			}
 
