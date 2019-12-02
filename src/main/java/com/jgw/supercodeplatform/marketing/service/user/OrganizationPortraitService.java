@@ -42,7 +42,7 @@ public class OrganizationPortraitService extends CommonUtil {
     		 organizationName = getOrganizationName();
 		}
     	List<MarketingOrganizationPortraitListParam> portraitList = organizationPortraitMapper.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
-        String customerName="CustomerName";
+        /*String customerName="CustomerName";
         //如果配置了门店名称，则追加门店编码
     	if (portraitList.stream().anyMatch(portrait ->ObjectUtils.equals(customerName,portrait.getCodeId()))){
 
@@ -58,7 +58,7 @@ public class OrganizationPortraitService extends CommonUtil {
             BeanUtils.copyProperties(marketingUnitcode, portraitParam);
             BeanUtils.copyProperties(organizationPortrait, portraitParam);
             portraitList.add(portraitParam);
-        }
+        }*/
 
     	MarketingUnitcode marketingUnitcode = organizationPortraitMapper.getMobilePortrait();
     	//有配置mobile不做处理，否则默认添加
