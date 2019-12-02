@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserTransfer {
     public void transferExists(MarketingUser marketingUserTwo, MarketingUser exitMarketingUser){
-        BeanUtils.copyProperties(marketingUserTwo,exitMarketingUser,"id","mobile","userId","haveIntegral","totalIntegral");
+        BeanUtils.copyProperties(marketingUserTwo,exitMarketingUser,"id","openid","mobile","userId","haveIntegral","totalIntegral");
         exitMarketingUser.setHaveIntegral(
                 (exitMarketingUser.getHaveIntegral()== null ? 0:exitMarketingUser.getHaveIntegral())
                         +(marketingUserTwo.getHaveIntegral()== null ? 0:marketingUserTwo.getHaveIntegral())
@@ -23,7 +23,6 @@ public class UserTransfer {
                 (exitMarketingUser.getTotalIntegral()== null ? 0:exitMarketingUser.getTotalIntegral())
                         +(marketingUserTwo.getTotalIntegral()== null ? 0:marketingUserTwo.getTotalIntegral())
         );
-        exitMarketingUser.setBinding(JudgeBindConstants.HAVEBIND);
         marketingUserTwo.setHaveIntegral(0);
         marketingUserTwo.setTotalIntegral(0);
     }
@@ -37,15 +36,14 @@ public class UserTransfer {
         MarketingUser marketingUserNew = new MarketingUser();
         BeanUtils.copyProperties(marketingUserTwo,marketingUserNew,"id");
         marketingUserNew.setMobile(marketingSaleUserBindMobileParam.getMobile());
-        marketingUserNew.setHaveIntegral(
-                (marketingUserNew.getHaveIntegral()== null ? 0:marketingUserNew.getHaveIntegral())
-        );
-        marketingUserNew.setTotalIntegral(
-                (marketingUserNew.getTotalIntegral()== null ? 0:marketingUserNew.getTotalIntegral())
-        );
+
+
+        marketingUserTwo.setHaveIntegral(0);
+        marketingUserTwo.setTotalIntegral(0);
+
+
         marketingUserNew.setLoginName("");
         marketingUserNew.setPassword("");
-        //启用
         marketingUserNew.setState(StateConstants.ENABLE);
 
         return marketingUserNew;

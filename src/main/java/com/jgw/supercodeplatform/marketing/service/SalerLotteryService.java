@@ -503,21 +503,21 @@ public class SalerLotteryService {
         // 第一部分
         if(StringUtils.isBlank(jwtUser.getOrganizationId())){
             // 系统写token丢失参数
-            throw new SuperCodeException("用户数据获取失败001");
+            throw new SuperCodeException("用户数据获取失败");
         }
 
         if(StringUtils.isBlank(jwtUser.getMobile())){
             // 系统写token丢失参数
-            throw new SuperCodeException("用户数据获取失败002");
+            throw new SuperCodeException("用户数据获取失败");
         }
 
         if(jwtUser.getMemberId() == null){
             // 系统写token丢失参数
-            throw new SuperCodeException("用户数据获取失败003");
+            throw new SuperCodeException("用户数据获取失败");
         }
 
         if(jwtUser.getMemberType() == null || MemberTypeEnums.SALER.getType().intValue() != jwtUser.getMemberType() ){
-            throw new SuperCodeException("用户角色错误004");
+            throw new SuperCodeException("用户角色错误");
         }
         // 第二部分
         ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
@@ -532,7 +532,7 @@ public class SalerLotteryService {
 
         // 用户角色校验
         if(MemberTypeEnums.SALER.getType().intValue() != jwtUser.getMemberType().intValue()){
-            throw new SuperCodeException("您非导购用户，无法领奖");
+            throw new SuperCodeException("您不是销售员用户，无法领奖");
         }
 
 
@@ -550,19 +550,19 @@ public class SalerLotteryService {
 
         // 活动参数校验1
         if(scanCodeInfoMO.getActivitySetId() == null ){
-            throw new SuperCodeException("活动设置id不存在");
+            throw new SuperCodeException("活动不存在");
         }
         // 活动参数校验2
         if(scanCodeInfoMO.getCodeId() == null ){
-            throw new SuperCodeException("码信息不存在");
+            throw new SuperCodeException("对不起，您所扫码的产品未参与活动");
         }
         // 活动参数校验3
         if(scanCodeInfoMO.getProductId() == null ){
-            throw new SuperCodeException("产品信息不存在");
+            throw new SuperCodeException("对不起，您所扫码的产品未参与活动");
         }
         // 活动参数校验4
         if(scanCodeInfoMO.getProductBatchId()  == null ){
-            throw new SuperCodeException("产品批次信息不存在");
+            throw new SuperCodeException("对不起，您所扫码的产品未参与活动");
         }
         // 活动参数校验5:这个参数不在乐观锁判断;不校验
         //        if(scanCodeInfoMO.getCreateTime() == null ){

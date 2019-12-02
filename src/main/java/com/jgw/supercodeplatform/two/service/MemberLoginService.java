@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
@@ -124,12 +125,14 @@ public class MemberLoginService {
 
          // 处理2.0 数值型数据剪掉
          marketingMembersTwo.setBinding(JudgeBindConstants.HAVEBIND);
+         marketingMembersTwo.setHaveIntegral(0);
+         marketingMembersTwo.setTotalIntegral(0);
          marketingMembersMapper.updateById(marketingMembersTwo);
 
         if (result.equals(BindConstants.RESULT)){
             return RestResult.success(200,"success","绑定成功");
         }
-        return RestResult.failDefault("绑定失败");
+        throw new BizRuntimeException("绑定失败");
     }
 
 

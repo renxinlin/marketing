@@ -11,7 +11,7 @@ public interface CommonSql {
     String startScript = "<script>";
     String endScript = "</script>";
     String count = "count(*)";
-    String page = "<if test='startNumber != null and startNumber != 0 and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>";
+    String page = "<if test='startNumber != null and pageSize != null and pageSize != 0'> LIMIT #{startNumber},#{pageSize}</if>";
     String page_limit = "LIMIT #{startNum},#{pageSize}";
     
     String startWhere = "<where>";

@@ -30,8 +30,8 @@ public class MarketingSaleMembersAddParam {
     @ApiModelProperty(value = "门店编码",required=true)
     private String customerId;//门店编码
 
-    @NotNull(message = "机构类型必填")
-    @ApiModelProperty(value = "2.0要的机构类型",required=true)
+//    @NotNull(message = "机构类型必填")
+    @ApiModelProperty(value = "2.0要的机构类型",required=false)
     private Integer mechanismType; // 机构类型
 
     public Integer getMechanismType() {

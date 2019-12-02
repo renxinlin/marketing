@@ -126,27 +126,6 @@ public class SalerOrderFormController extends SalerCommonController {
 
 
 
-    @PostMapping("/updateOrder")
-    @ApiOperation(value = "10月21需求 修改更新订单", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult updateOrder(@Valid @RequestBody ColumnnameAndValueListNoValidDto columnnameAndValueListDto) throws SuperCodeException {
-        List<ColumnnameAndValueNoValidDto> datas = columnnameAndValueListDto.getDatas();
-        List<ColumnnameAndValueDto> list = new ArrayList<>();
-        datas.forEach(e->{
-            if(!StringUtils.isEmpty(e.getColumnName())){
-                ColumnnameAndValueDto columnnameAndValueDto = modelMapper.map(e, ColumnnameAndValueDto.class);
-                if(StringUtils.isEmpty(columnnameAndValueDto.getColumnValue())){
-                    columnnameAndValueDto.setColumnValue(CallBackConstant.EMPTY);
-                }
-                list.add(columnnameAndValueDto);
-            }
-
-        });
-        service.updateOrder(list);
-        return success();
-    }
-
-
     @GetMapping("/updateStatus")
     @ApiOperation(value = "10月21需求 更新状态0未发货1发货", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
@@ -189,6 +168,27 @@ public class SalerOrderFormController extends SalerCommonController {
             }
         });
         service.saveOrder(list);
+        return success();
+    }
+
+
+    @PostMapping("/updateOrder")
+    @ApiOperation(value = "10月21需求 修改更新订单", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult updateOrder(@Valid @RequestBody ColumnnameAndValueListNoValidDto columnnameAndValueListDto) throws SuperCodeException {
+        List<ColumnnameAndValueNoValidDto> datas = columnnameAndValueListDto.getDatas();
+        List<ColumnnameAndValueDto> list = new ArrayList<>();
+        datas.forEach(e->{
+            if(!StringUtils.isEmpty(e.getColumnName())){
+                ColumnnameAndValueDto columnnameAndValueDto = modelMapper.map(e, ColumnnameAndValueDto.class);
+                if(StringUtils.isEmpty(columnnameAndValueDto.getColumnValue())){
+                    columnnameAndValueDto.setColumnValue(CallBackConstant.EMPTY);
+                }
+                list.add(columnnameAndValueDto);
+            }
+
+        });
+        service.updateOrder(list);
         return success();
     }
 

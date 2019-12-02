@@ -40,6 +40,7 @@ public class SalerOrderTransfer {
             salerOrderFormsResult.setColumnType(deafultColumnType);
             salerOrderFormsResult.setOrganizationId(organizationId);
             salerOrderFormsResult.setOrganizationName(organizationName);
+            salerOrderFormsResult.setStatus(salerOrderFormDto.getStatus());
             salerOrderFormsResults.add(salerOrderFormsResult);
         });
 

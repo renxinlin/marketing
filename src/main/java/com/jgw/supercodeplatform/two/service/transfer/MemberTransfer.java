@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class MemberTransfer {
     public void transferExists(MarketingMembers marketingMembersTwo, MarketingMembers exitMarketingMembers) {
         //说明3.0数据中已绑定手机号 可用积分和总积分进行积分转移 其他属性转义
-        BeanUtils.copyProperties(marketingMembersTwo,exitMarketingMembers,"id","mobile","userId","haveIntegral","totalIntegral");
+        BeanUtils.copyProperties(marketingMembersTwo,exitMarketingMembers,"id","openid","mobile","userId","haveIntegral","totalIntegral");
         exitMarketingMembers.setHaveIntegral(
                 (exitMarketingMembers.getHaveIntegral() == null ? 0: exitMarketingMembers.getHaveIntegral())
                         +(marketingMembersTwo.getHaveIntegral() == null ? 0: marketingMembersTwo.getHaveIntegral())
@@ -19,8 +19,7 @@ public class MemberTransfer {
                 (exitMarketingMembers.getTotalIntegral() == null ? 0: exitMarketingMembers.getTotalIntegral())
                         + (marketingMembersTwo.getTotalIntegral()  == null ? 0: marketingMembersTwo.getTotalIntegral())
         );
-        marketingMembersTwo.setHaveIntegral(0);
-        marketingMembersTwo.setTotalIntegral(0);
+
 
 
     }
@@ -36,15 +35,13 @@ public class MemberTransfer {
         MarketingMembers marketingMembersNew=new MarketingMembers();
         BeanUtils.copyProperties(marketingMembersTwo,marketingMembersNew,"id");
         marketingMembersNew.setMobile(marketingMembersBindMobileParam.getMobile());
-        marketingMembersNew.setHaveIntegral(
-                (marketingMembersNew.getHaveIntegral()== null ? 0:marketingMembersNew.getHaveIntegral())
-                        +integralByRegister);
-        marketingMembersNew.setTotalIntegral(
-                (marketingMembersNew.getTotalIntegral()== null ? 0:marketingMembersNew.getTotalIntegral())
-                        +(integralByRegister));
+
         marketingMembersNew.setLoginName("");
         marketingMembersNew.setPassword("");
+
         marketingMembersNew.setState(StateConstants.ENABLE);
+
+
         return marketingMembersNew;
     }
 }

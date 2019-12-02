@@ -53,18 +53,18 @@ public class MarketingActivityProductService {
         List<MarketingActivityProduct> marketingActivityProducts = mapper.selectByActivitySetId(activitySetId);
 
         // 产品批次转换成网页格式数据转换1==产品去重
-        Set<MarketingActivityProductParam> transferDatas = new HashSet<MarketingActivityProductParam>();
+        Map<String, MarketingActivityProductParam> transferDatas = new HashMap<>();
         for (MarketingActivityProduct marketingActivityProduct : marketingActivityProducts) {
             // 数据转换 产品去重
             MarketingActivityProductParam transferData = new MarketingActivityProductParam();
             transferData.setProductId(marketingActivityProduct.getProductId());
             transferData.setProductName(marketingActivityProduct.getProductName());
             // 产品信息集合
-            transferDatas.add(transferData);
+            transferDatas.put(marketingActivityProduct.getProductId(), transferData);
         }
 
         // 产品批次转换成网页格式数据转换2==产品关联相关批次
-        for (MarketingActivityProductParam transferData : transferDatas) {
+        for (MarketingActivityProductParam transferData : transferDatas.values()) {
             // 产品批次对象
             List<ProductBatchParam> productParams = new ArrayList<ProductBatchParam>() ;
             for(MarketingActivityProduct marketingActivityProduct : marketingActivityProducts){
@@ -84,7 +84,7 @@ public class MarketingActivityProductService {
         // 返回
         restResult.setState(200);
         restResult.setMsg("success");
-        restResult.setResults(transferDatas);
+        restResult.setResults(transferDatas.values());
         return  restResult;
     }
 

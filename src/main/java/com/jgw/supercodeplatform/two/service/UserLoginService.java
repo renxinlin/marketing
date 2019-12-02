@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
@@ -84,7 +85,7 @@ public class UserLoginService {
         if (marketingUserTwo ==null){
             throw new SuperCodeException("绑定2.0失败");
         }
-        if (marketingUserTwo.getBinding() != null || marketingUserTwo.getBinding().byteValue() == JudgeBindConstants.HAVEBIND){
+        if (marketingUserTwo.getBinding() != null && marketingUserTwo.getBinding().byteValue() == JudgeBindConstants.HAVEBIND){
             throw new SuperCodeException("用户已经绑定"); //导购员:手机号全局唯一
         }
         // .............................................
@@ -115,6 +116,6 @@ public class UserLoginService {
         if (result.equals(BindConstants.RESULT)){
             return RestResult.success(200,"success","绑定成功");
         }
-        return RestResult.failDefault("绑定失败");
+        throw new BizRuntimeException("绑定失败");
     }
 }

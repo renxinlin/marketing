@@ -1,6 +1,7 @@
 package com.jgw.supercodeplatform.marketingsaler.order.service;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
@@ -148,6 +149,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
                 throw new BizRuntimeException("请输入中文或英文或其他合法字符");
             }
             if(!CollectionUtils.isEmpty(pojos)){
+                log.info("1创建表单时候的POJO=>{}", JSONObject.toJSONString(pojos));
                 this.saveBatch(pojos);
             }
         }else{
@@ -204,15 +206,17 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             }
 
             if(!CollectionUtils.isEmpty(deleteColumns)){
+                log.info("2删除表单时相关的POJO=>{}", JSONObject.toJSONString(pojos));
                 baseMapper.delete(query().eq("OrganizationId",commonUtil.getOrganizationId()).in("ColumnName",deleteColumns).notIn(!CollectionUtils.isEmpty(updateids),"id",updateids).getWrapper());
             }
 
             if(!CollectionUtils.isEmpty(updateColumns)){
+                log.info("3更新表单时相关的POJO=>{}", JSONObject.toJSONString(pojos));
                 this.updateBatchById(SalerOrderTransfer.initUpdateSalerOrderFormInfo(updateColumns));
             }
 
             if(!CollectionUtils.isEmpty(addColumnPojos)){
-
+                log.info("4修改表单时新增的POJO=>{}", JSONObject.toJSONString(pojos));
                 this.saveBatch(addColumnPojos);
             }
         }
@@ -296,6 +300,11 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     }
 
 
+    /**
+     * TODO 处理必填字段 不为空业务
+     * @param columnnameAndValues
+     * @param user
+     */
     public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, H5LoginVO user) {
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()), "未获取对应组织");
         Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取订货信息");
