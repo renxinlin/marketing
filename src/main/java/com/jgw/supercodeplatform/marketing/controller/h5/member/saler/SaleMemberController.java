@@ -6,7 +6,6 @@ import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
-import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
@@ -14,7 +13,6 @@ import com.jgw.supercodeplatform.marketing.dto.SaleInfo;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.UserWithWechat;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
@@ -22,11 +20,15 @@ import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketing.vo.h5.SalerPreFillInfoVo;
+import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
+import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -68,6 +70,12 @@ public class SaleMemberController {
 
     @Autowired
     private MarketingSaleMemberService marketingSaleMemberService;
+
+    @Autowired
+    private BaseCustomerService baseCustomerService;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Value("${cookie.domain}")
     private String cookieDomain;
@@ -231,4 +239,16 @@ public class SaleMemberController {
         return RestResult.success("success","wxstate12345678900987654321");
     }
 
+
+    @GetMapping("preFill")
+    @ApiOperation(value = "销售员中心预填信息", notes = "")
+    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "请求头",name="jwt-token")})
+    public SalerPreFillInfoVo getPreFill(@ApiIgnore H5LoginVO jwtUser){
+        SalerPreFillInfoVo salerPreFillInfoVo= modelMapper.map(jwtUser,SalerPreFillInfoVo.class);
+        if (StringUtils.isNotBlank(jwtUser.getCustomerId())){
+            CustomerInfoView customerInfoView=baseCustomerService.getCustomerInfo(jwtUser.getCustomerId());
+            logger.info("准备从基础信息获取地址customerInfoView-{}",customerInfoView);
+        }
+        return salerPreFillInfoVo;
+    }
 }
