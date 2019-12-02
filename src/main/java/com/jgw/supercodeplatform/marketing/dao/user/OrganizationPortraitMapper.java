@@ -87,7 +87,7 @@ public interface OrganizationPortraitMapper extends CommonSql{
      * @return
      */
 
-    @Select(" SELECT Id,OrganizationId,OrganizationFullName,FiledWeight,UnitCodeId FROM marketing_organization_portrait  WHERE OrganizationId = #{OrganizationId} and UnitCodeId= #{UnitCodeId} ")
+    @Select(" SELECT Id,OrganizationId,OrganizationFullName,FieldWeight,UnitCodeId FROM marketing_organization_portrait  WHERE OrganizationId = #{OrganizationId} and UnitCodeId= #{UnitCodeId} ")
     MarketingOrganizationPortrait getMarketingOrganizationPortrait(String OrganizationId,Long UnitCodeId);
 
 
