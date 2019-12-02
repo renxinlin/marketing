@@ -78,4 +78,8 @@ public class SalerOrderForm implements Serializable {
     private String columnName;
 
 
+    @TableField("Status")
+    private Integer status;
+
+
 }

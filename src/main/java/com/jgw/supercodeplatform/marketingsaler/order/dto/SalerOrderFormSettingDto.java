@@ -48,6 +48,12 @@ public class SalerOrderFormSettingDto implements Serializable {
     private String value;
 
 
+    @ApiModelProperty("1必填2非必填")
+    @Min(value = 1,message = "表单类型不合法")
+    @Max(value = 2,message = "表单类型不合法")
+    private Integer status;
+
+
 
 
 }

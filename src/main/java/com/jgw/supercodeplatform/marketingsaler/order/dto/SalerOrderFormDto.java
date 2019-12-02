@@ -73,5 +73,7 @@ public class SalerOrderFormDto implements Serializable {
      */
     private String columnName;
 
+    private Integer status;
+
 
 }

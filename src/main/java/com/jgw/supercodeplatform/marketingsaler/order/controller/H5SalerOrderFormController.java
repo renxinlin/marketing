@@ -46,6 +46,7 @@ public class H5SalerOrderFormController extends SalerCommonController {
         return success(service.showOrder(user));
     }
 
+    // todo 必填属性检查
     @CheckRole(role = "1")
     @PostMapping("/saveOrder")
     @ApiOperation(value = "h5订货", notes = "")

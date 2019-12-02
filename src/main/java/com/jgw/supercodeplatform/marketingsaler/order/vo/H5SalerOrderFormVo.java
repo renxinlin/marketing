@@ -67,5 +67,7 @@ public class H5SalerOrderFormVo implements Serializable {
      */
     private String columnName;
 
+    private Integer status;
+
 
 }
