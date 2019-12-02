@@ -244,13 +244,15 @@ public class SaleMemberController {
     @ApiOperation(value = "销售员中心预填信息", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "请求头",name="jwt-token")})
     public SalerPreFillInfoVo getPreFill(@ApiIgnore H5LoginVO jwtUser){
-        SalerPreFillInfoVo salerPreFillInfoVo= modelMapper.map(jwtUser,SalerPreFillInfoVo.class);
+        SalerPreFillInfoVo salerPreFillInfoVo= new SalerPreFillInfoVo();
+        salerPreFillInfoVo.setDinghuoren(jwtUser.getMemberName());
+        salerPreFillInfoVo.setDinghuorendianhua(jwtUser.getMobile());
         StringBuffer address = new StringBuffer("");
         if (StringUtils.isNotBlank(jwtUser.getCustomerId())){
             CustomerInfoView customerInfoView=baseCustomerService.getCustomerInfo(jwtUser.getCustomerId());
             logger.info("准备从基础信息获取地址customerInfoView-{}",customerInfoView);
             getAddress(address,customerInfoView);
-            salerPreFillInfoVo.setAddress(address.toString());
+            salerPreFillInfoVo.setShouhuodizhi(address.toString());
         }
         return salerPreFillInfoVo;
     }

@@ -10,10 +10,10 @@ import lombok.Data;
 @Data
 public class SalerPreFillInfoVo {
     @ApiModelProperty("收货人")
-    private String memberName;
+    private String dinghuoren;
     @ApiModelProperty("联系电话")
-    private String mobile;
+    private String dinghuorendianhua;
     @ApiModelProperty("收获地址")
-    private String address;
+    private String shouhuodizhi;
 
 }
