@@ -304,7 +304,9 @@ public class CommonUtil extends UserInfoUtil {
                 continue;
             }
             if (data.get(k).trim().length() > 0) // 参数值为空，则不参与签名
+            {
                 sb.append(k).append("=").append(data.get(k).trim()).append("&");
+            }
         }
         if (SignType.MD5.equals(signType)) {
             return MD5(sb.toString()).toUpperCase();

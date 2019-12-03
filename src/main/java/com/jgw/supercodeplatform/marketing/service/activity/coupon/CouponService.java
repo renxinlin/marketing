@@ -487,10 +487,12 @@ public class CouponService {
 				|| addVO.getAcquireCondition().intValue() == CouponAcquireConditionEnum.LIMIT.getCondition().intValue())
 				&& (addVO.getAcquireConditionIntegral() ==null || addVO.getAcquireConditionIntegral() <= 0  )){
 			String messe = "积分数值输入错误";
-			if(addVO.getAcquireCondition().intValue() == 2)
-				messe = "一次积分达到数值输入错误";
-			if(addVO.getAcquireCondition().intValue() == 3)
-				messe = "累计积分达到数值输入错误";
+			if(addVO.getAcquireCondition().intValue() == 2) {
+                messe = "一次积分达到数值输入错误";
+            }
+			if(addVO.getAcquireCondition().intValue() == 3) {
+                messe = "累计积分达到数值输入错误";
+            }
 			throw new SuperCodeException(messe);
 		}
 
@@ -797,8 +799,9 @@ public class CouponService {
 				parentChannel.setChildrens(Lists.newArrayList(channel));
 				reChannel = putChildrenChannel(marketingChannelMap, parentChannel);
 			} else {
-				if(!childList.contains(channel))
-					childList.add(channel);
+				if(!childList.contains(channel)) {
+                    childList.add(channel);
+                }
 			}
 		} else {
 			reChannel = channel;

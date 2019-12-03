@@ -95,6 +95,7 @@ public class RedisLockUtil extends AbstractRedisLock {
             // spring自带的执行脚本方法中，集群模式直接抛出不支持执行脚本的异常，所以只能拿到原redis的connection来执行脚本
 
             Long result = redisTemplate.execute(new RedisCallback<Long>() {
+                @Override
                 public Long doInRedis(RedisConnection connection) throws DataAccessException {
                     Object nativeConnection = connection.getNativeConnection();
                     // 集群模式和单机模式虽然执行脚本的方法一样，但是没有共同的接口，所以只能分开执行

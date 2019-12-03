@@ -1,18 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.user;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
@@ -22,6 +9,18 @@ import com.jgw.supercodeplatform.marketing.dto.members.MarketingOrganizationPort
 import com.jgw.supercodeplatform.marketing.enums.portrait.PortraitTypeEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingOrganizationPortrait;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingUnitcode;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class OrganizationPortraitService extends CommonUtil {
@@ -31,8 +30,8 @@ public class OrganizationPortraitService extends CommonUtil {
 
     /**
      * 根据组织id获取已选画像关系
-     * @param organizationId2 
-     * @param params
+     * @param
+     * @param
      * @return
      * @throws SuperCodeException 
      */
@@ -43,7 +42,26 @@ public class OrganizationPortraitService extends CommonUtil {
     		 organizationName = getOrganizationName();
 		}
     	List<MarketingOrganizationPortraitListParam> portraitList = organizationPortraitMapper.getSelectedPortrait(organizationId, PortraitTypeEnum.PORTRAIT.getTypeId());
+        /*String customerName="CustomerName";
+        //如果配置了门店名称，则追加门店编码
+    	if (portraitList.stream().anyMatch(portrait ->ObjectUtils.equals(customerName,portrait.getCodeId()))){
+
+            MarketingOrganizationPortraitListParam portraitParam = new MarketingOrganizationPortraitListParam();
+            MarketingUnitcode marketingUnitcode = organizationPortraitMapper.getCustomerIdPortrait();
+            //门店编码id
+            Long unitCodeId=7L;
+            MarketingOrganizationPortrait organizationPortrait = organizationPortraitMapper.getMarketingOrganizationPortrait(organizationId,unitCodeId);
+            //获取门店编码权重
+            if (organizationPortrait ==null){
+                throw new SuperCodeException("门店编码出错", 500);
+            }
+            BeanUtils.copyProperties(marketingUnitcode, portraitParam);
+            BeanUtils.copyProperties(organizationPortrait, portraitParam);
+            portraitList.add(portraitParam);
+        }*/
+
     	MarketingUnitcode marketingUnitcode = organizationPortraitMapper.getMobilePortrait();
+    	//有配置mobile不做处理，否则默认添加
     	if(marketingUnitcode != null) {
     		if(!portraitList.stream().anyMatch(portrait -> ObjectUtils.equals(marketingUnitcode.getCodeId(), portrait.getCodeId()))) {
     			MarketingOrganizationPortrait organizationPortrait = new MarketingOrganizationPortrait();
@@ -65,7 +83,7 @@ public class OrganizationPortraitService extends CommonUtil {
     /**
      * 根据组织id获取未选画像关系
      * @param organizationId 
-     * @param params
+     * @param
      * @return
      * @throws SuperCodeException 
      */

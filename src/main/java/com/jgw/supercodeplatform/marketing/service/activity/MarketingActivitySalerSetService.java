@@ -461,7 +461,7 @@ public class MarketingActivitySalerSetService   {
 
 	/**
 	 * 校验活动创建时间
-	 * @param mActivitySet
+	 * @param
 	 * @throws SuperCodeException
 	 */
 	private void activityTimeCheck(String activityStartDate,String activityEndDate) throws SuperCodeException {
@@ -603,7 +603,9 @@ public class MarketingActivitySalerSetService   {
 		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product
 		List<MarketingActivityProduct> maProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_SALER.getType());
-		if(maProductList == null) maProductList = new ArrayList<>();
+		if(maProductList == null) {
+            maProductList = new ArrayList<>();
+        }
 		maProductList.addAll(upProductList);
 		List<MarketingActivityProduct> marketingActivityProductList = maProductList.stream().distinct().collect(Collectors.toList());
 		if(!CollectionUtils.isEmpty(marketingActivityProductList)) {

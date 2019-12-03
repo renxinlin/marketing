@@ -75,7 +75,20 @@ public interface OrganizationPortraitMapper extends CommonSql{
     @Select(" SELECT "+selectSql+",b.CodeName as codeName,b.TypeId as typeId,b.CodeId as codeId FROM marketing_organization_portrait a left join marketing_unitcode b on a.UnitCodeId = b.Id WHERE a.OrganizationId = #{organizationId}  ORDER BY a.FieldWeight")
     List<MarketingOrganizationPortraitListParam> getSelectedPortraitAndLabel(@Param("organizationId")String organizationId);
 
+    /**
+     * 获取门店编码
+     * @return
+     */
+    @Select(" SELECT "+selectSqlUnitcode+" FROM marketing_unitcode WHERE CodeId = 'CustomerId' ")
+    MarketingUnitcode getCustomerIdPortrait();
 
+    /**
+     * 获取组织画像
+     * @return
+     */
+
+    @Select(" SELECT Id,OrganizationId,OrganizationFullName,FieldWeight,UnitCodeId FROM marketing_organization_portrait  WHERE OrganizationId = #{OrganizationId} and UnitCodeId= #{UnitCodeId} ")
+    MarketingOrganizationPortrait getMarketingOrganizationPortrait(String OrganizationId,Long UnitCodeId);
 
 
 

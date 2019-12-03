@@ -37,7 +37,8 @@ public class ProcessActivityDomainServiceImpl implements ProcessActivityDomainSe
     @Autowired
     private CommonUtil commonUtil;
 
-    public ActivitySet formPrizeWheelsToOldActivity(Wheels wheels,Integer autoFetch){
+    @Override
+    public ActivitySet formPrizeWheelsToOldActivity(Wheels wheels, Integer autoFetch){
         ActivitySet activitySet = new ActivitySet();
          activitySet.setActivityEndDate(wheels.getEndTime());
         activitySet.setActivityId(ActivityTypeConstant.wheels.longValue());

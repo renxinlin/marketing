@@ -107,7 +107,9 @@ public class CouponUpdateService {
         activitySet.setId(activitySetId);
         //查到本次修改的活动的所有产品列表
         List<MarketingActivityProduct> upProductList = mProductMapper.selectByActivitySetId(activitySet.getId());
-        if(upProductList == null) upProductList = new ArrayList<>();
+        if(upProductList == null) {
+            upProductList = new ArrayList<>();
+        }
         /************************查询需要去码平台删除关联关系的产品批次************************/
 		//绑定生码批次列表
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
@@ -397,10 +399,12 @@ public class CouponUpdateService {
                 || updateVo.getAcquireCondition().intValue() == CouponAcquireConditionEnum.LIMIT.getCondition().intValue())
                 && (updateVo.getAcquireConditionIntegral() ==null || updateVo.getAcquireConditionIntegral() <= 0  )){
 			String messe = "积分数值输入错误";
-			if(updateVo.getAcquireCondition().intValue() == 2)
-				messe = "一次积分达到数值输入错误";
-			if(updateVo.getAcquireCondition().intValue() == 3)
-				messe = "累计积分达到数值输入错误";
+			if(updateVo.getAcquireCondition().intValue() == 2) {
+                messe = "一次积分达到数值输入错误";
+            }
+			if(updateVo.getAcquireCondition().intValue() == 3) {
+                messe = "累计积分达到数值输入错误";
+            }
 			throw new SuperCodeException(messe);
         }
 
