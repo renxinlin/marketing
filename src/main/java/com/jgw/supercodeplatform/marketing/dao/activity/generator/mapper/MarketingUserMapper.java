@@ -13,6 +13,7 @@ public interface MarketingUserMapper extends BaseMapper<MarketingUser> {
     })
     int deleteByPrimaryKey(Long id);
 
+    @Override
     @Insert({
         "insert into marketing_user (Id, WxName, ",
         "Openid, Mobile, ",

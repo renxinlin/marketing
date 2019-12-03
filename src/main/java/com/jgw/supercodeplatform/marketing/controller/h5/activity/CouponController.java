@@ -99,29 +99,35 @@ public class CouponController {
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")})
 	public RestResult<?> obtainCoupon(@Valid @RequestBody CouponObtainParam couponObtainParam, @ApiIgnore H5LoginVO jwtUser, HttpServletRequest request) throws Exception{
 		List<MarketingActivityProduct> marketingActivityProductList = marketingActivityProductMapper.selectByProductWithReferenceRole(couponObtainParam.getProductId(), MemberTypeEnums.VIP.getType());
-		if(CollectionUtils.isEmpty(marketingActivityProductList))
-			throw new SuperCodeException("‘活动产品为空’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		if(CollectionUtils.isEmpty(marketingActivityProductList)) {
+            throw new SuperCodeException("‘活动产品为空’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
 		String productName = marketingActivityProductList.get(0).getProductName();
 		Long activitySetId = marketingActivityProductList.get(0).getActivitySetId();
 		MarketingActivitySet marketingActivitySet = marketingActivitySetService.selectById(activitySetId);
-		if(marketingActivitySet == null)
-			throw new SuperCodeException("‘活动设置不存在’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		if(marketingActivitySet == null) {
+            throw new SuperCodeException("‘活动设置不存在’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
 		Integer activityStatus = marketingActivitySet.getActivityStatus();
-		if(activityStatus == null || activityStatus.intValue() != 1)
-			throw new SuperCodeException("‘活动已下架’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		if(activityStatus == null || activityStatus.intValue() != 1) {
+            throw new SuperCodeException("‘活动已下架’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
 		long activityId = marketingActivitySet.getActivityId();
-		if(activityId != 4)
-			throw new SuperCodeException("‘非抵扣券活动’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		if(activityId != 4) {
+            throw new SuperCodeException("‘非抵扣券活动’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
 		String activityStartDateStr = marketingActivitySet.getActivityStartDate();
 		String activityEndDateStr = marketingActivitySet.getActivityEndDate();
 		long currentMills = System.currentTimeMillis();
 		long activityStartMills = StringUtils.isBlank(activityStartDateStr)?0L:DateUtils.parseDate(activityStartDateStr, CommonConstants.DATE_PATTERNS).getTime();
 		long activityEndMills = StringUtils.isBlank(activityEndDateStr)?0L:DateUtils.parseDate(activityEndDateStr, CommonConstants.DATE_PATTERNS).getTime();
 		if(activityStartMills != 0 && activityEndMills != 0) {
-			if(activityStartMills > currentMills)
-				throw new SuperCodeException("‘活动未开始’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
-			if(activityEndMills < currentMills)
-				throw new SuperCodeException("‘活动已结束’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+			if(activityStartMills > currentMills) {
+                throw new SuperCodeException("‘活动未开始’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            }
+			if(activityEndMills < currentMills) {
+                throw new SuperCodeException("‘活动已结束’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+            }
 		}
 		String validCondition = marketingActivitySet.getValidCondition();
 		MarketingActivitySetCondition activityCondtion = JSON.parseObject(validCondition, MarketingActivitySetCondition.class);
@@ -160,21 +166,26 @@ public class CouponController {
 	@ApiImplicitParams({@ApiImplicitParam(paramType="header",value = "新平台token",name="jwt-token")})
 	public RestResult<Double> couponVerify(@Valid @RequestBody CouponVerifyPram couponVerifyPram, @ApiIgnore H5LoginVO jwtUser) throws SuperCodeException{
 		MarketingMemberCoupon marketingMemberCoupon = couponMemberService.getMarketingMemberCouponByCouponCode(couponVerifyPram.getCouponCode());
-		if(marketingMemberCoupon == null)
-			throw new SuperCodeException("‘抵扣券不存在’（输入错误）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		if(marketingMemberCoupon == null) {
+            throw new SuperCodeException("‘抵扣券不存在’（输入错误）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
 		String phone = marketingMemberCoupon.getMemberPhone();
-		if(!couponVerifyPram.getMemberPhone().equals(phone))
-			throw new SuperCodeException("‘会员手机号与抵扣券不匹配’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		if(!couponVerifyPram.getMemberPhone().equals(phone)) {
+            throw new SuperCodeException("‘会员手机号与抵扣券不匹配’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
 		Byte used = marketingMemberCoupon.getUsed();
-		if(used != null && used.intValue() == 1)
-			throw new SuperCodeException("‘抵扣券已被使用’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		if(used != null && used.intValue() == 1) {
+            throw new SuperCodeException("‘抵扣券已被使用’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
 		long currentMills = System.currentTimeMillis();
 		Date deductionStartDate = marketingMemberCoupon.getDeductionStartDate();
-		if(deductionStartDate != null && deductionStartDate.getTime() > currentMills)
-			throw new SuperCodeException("‘抵扣券无法使用’ （没到抵扣时间）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		if(deductionStartDate != null && deductionStartDate.getTime() > currentMills) {
+            throw new SuperCodeException("‘抵扣券无法使用’ （没到抵扣时间）", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
 		Date deductionEndDate = marketingMemberCoupon.getDeductionEndDate();
-		if(deductionEndDate != null && deductionEndDate.getTime() < currentMills)
-			throw new SuperCodeException("‘抵扣券已过期’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+		if(deductionEndDate != null && deductionEndDate.getTime() < currentMills) {
+            throw new SuperCodeException("‘抵扣券已过期’", HttpStatus.SC_INTERNAL_SERVER_ERROR);
+        }
 		String marketingCouponStr = marketingMemberCoupon.getCouponCondition();
 		CouponConditionDto marketingCoupon = StringUtils.isBlank(marketingCouponStr)?null:JSON.parseObject(marketingCouponStr,CouponConditionDto.class);
 		if(marketingCoupon != null) {

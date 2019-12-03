@@ -21,8 +21,9 @@ public enum CodeTypeEnum {
 	public static CodeTypeEnum getCodeTypeEnum(String typeId) {
 		CodeTypeEnum[] codeTypeEnums = CodeTypeEnum.values();
 		for(CodeTypeEnum codeTypeEnum : codeTypeEnums) {
-			if(codeTypeEnum.typeId.equals(typeId))
-				return codeTypeEnum;
+			if(codeTypeEnum.typeId.equals(typeId)) {
+                return codeTypeEnum;
+            }
 		}
 		return null;
 	}

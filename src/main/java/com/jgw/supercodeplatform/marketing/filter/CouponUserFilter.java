@@ -57,21 +57,25 @@ public class CouponUserFilter implements Filter {
 				}
 			}
 			H5LoginVO jwtUser = JWTUtil.verifyToken(token);
-			if(jwtUser == null) 
-				throw new UserExpireException("用户不存在...");
+			if(jwtUser == null) {
+                throw new UserExpireException("用户不存在...");
+            }
 			String servletPath = ((HttpServletRequest) request).getServletPath();
-			if(jwtUser.getMemberType() == null)
-				throw new UserExpireException("用户类型不对...");
+			if(jwtUser.getMemberType() == null) {
+                throw new UserExpireException("用户类型不对...");
+            }
 			if(jwtUser.getMemberType().byteValue() == MemberTypeEnums.VIP.getType().byteValue()) {
 				for(String path : salerPaths) {
-					if(servletPath.contains(path))
-						throw new SuperCodeException("无权限,会员用户不能操作导购");
+					if(servletPath.contains(path)) {
+                        throw new SuperCodeException("无权限,会员用户不能操作导购");
+                    }
 				}
 			}
 			if(jwtUser.getMemberType().byteValue() == MemberTypeEnums.SALER.getType().byteValue()) {
 				for(String path : memberPaths) {
-					if(servletPath.contains(path))
-						throw new SuperCodeException("无权限,导购不能操作会员");
+					if(servletPath.contains(path)) {
+                        throw new SuperCodeException("无权限,导购不能操作会员");
+                    }
 				}
 			}
 		} catch (Exception e) {

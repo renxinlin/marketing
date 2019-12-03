@@ -625,24 +625,33 @@ public class CommonService {
 		Assert.isTrue(outerCodeEntityJson != null && outerCodeEntityJson.getResults() != null, "调用码平台获取码失败");
 		Object resObj = outerCodeEntityJson.getResults();
 		String resStr;
-		if(resObj instanceof String) resStr = (String)resObj;
-		else resStr = JSON.toJSONString(resObj);
+		if(resObj instanceof String) {
+            resStr = (String)resObj;
+        } else {
+            resStr = JSON.toJSONString(resObj);
+        }
 		OuterCodesEntity outerCodesEntity = JSON.parseObject(resStr, OuterCodesEntity.class);
 		List<List<OuterCode>> outerCodeListList = outerCodesEntity.getOuterCodeIdList();
 		Assert.notEmpty(outerCodeListList, "调用码平台获取码为空");
 		String logisticsCodeId = null, sequenceCodeId = null;
 		for(List<OuterCode> outerCodeList : outerCodeListList) {
 			for(OuterCode outerCode : outerCodeList) {
-				if(CodeTypeEnum.LOGISTICS.getTypeId().equals(outerCode.getCodeTypeId()))
-					logisticsCodeId = outerCode.getOutCodeId();
-				if(CodeTypeEnum.SEQUENCE.getTypeId().equals(outerCode.getCodeTypeId()))
-					sequenceCodeId = outerCode.getOutCodeId();
+				if(CodeTypeEnum.LOGISTICS.getTypeId().equals(outerCode.getCodeTypeId())) {
+                    logisticsCodeId = outerCode.getOutCodeId();
+                }
+				if(CodeTypeEnum.SEQUENCE.getTypeId().equals(outerCode.getCodeTypeId())) {
+                    sequenceCodeId = outerCode.getOutCodeId();
+                }
 			}
 		}
 		Assert.isTrue(StringUtils.isNotBlank(logisticsCodeId) || StringUtils.isNotBlank(sequenceCodeId), "调用码平台获取不到对应的物流码或顺序码");
 		List<String> logisticsList = new ArrayList<>();
-		if(StringUtils.isNotBlank(logisticsCodeId)) logisticsList.add(logisticsCodeId);
-		if(StringUtils.isNotBlank(sequenceCodeId)) logisticsList.add(sequenceCodeId);
+		if(StringUtils.isNotBlank(logisticsCodeId)) {
+            logisticsList.add(logisticsCodeId);
+        }
+		if(StringUtils.isNotBlank(sequenceCodeId)) {
+            logisticsList.add(sequenceCodeId);
+        }
 		return logisticsList;
 	}
 }

@@ -40,7 +40,9 @@ public class CodeManagerService {
         outCodeInfoDto = codeFromfakeToMarket(outCodeInfoDto);
         log.info("转换后的码:{}",JSONObject.toJSONString(outCodeInfoDto));
 
-        if (outCodeInfoDto == null) return null;
+        if (outCodeInfoDto == null) {
+            return null;
+        }
         Asserts.check(UserConstants.MARKETING_CODE_TYPE.equals(outCodeInfoDto.getCodeTypeId())|| UserConstants.MARKETING_CODE_TYPE_13.equals(outCodeInfoDto.getCodeTypeId()), ErrorMsg.no_setting_integral);
 
 

@@ -1,7 +1,6 @@
 package com.jgw.supercodeplatform.marketing.common.util;
 
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
-import org.apache.tomcat.jni.Time;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -100,7 +99,9 @@ public class DateUtil
 	  
 	        if (monthNow <= monthBirth) {  
 	            if (monthNow == monthBirth) {  
-	                if (dayOfMonthNow < dayOfMonthBirth) age--;  
+	                if (dayOfMonthNow < dayOfMonthBirth) {
+                        age--;
+                    }
 	            }else{  
 	                age--;  
 	            }  
@@ -120,14 +121,17 @@ public class DateUtil
 		SortedSet<PieChartVo> valueSet = new TreeSet<>();
 		Calendar cal = Calendar.getInstance();
 		long nowMills = cal.getTimeInMillis();
-		if(monDate.getTime() >= cal.getTimeInMillis())
-			return valueSet;
+		if(monDate.getTime() >= cal.getTimeInMillis()) {
+            return valueSet;
+        }
 		cal.setTime(monDate);
 		int sorYear = cal.get(Calendar.YEAR);
 		int sorMonth = cal.get(Calendar.MONTH) + 1;
 		while(cal.getTimeInMillis() <= nowMills) {
 			String sorMonthStr = "" + sorMonth;
-			if(sorMonth < 10) sorMonthStr = "0" + sorMonth;
+			if(sorMonth < 10) {
+                sorMonthStr = "0" + sorMonth;
+            }
 			PieChartVo value = new PieChartVo(sorYear+"-"+sorMonthStr, 0L);
 			valueSet.add(value);
 			cal.add(Calendar.MONTH, 1);
@@ -150,9 +154,13 @@ public class DateUtil
 		int sorDay = cal.get(Calendar.DATE);
 		while(cal.getTimeInMillis() <= endMills) {
 			String sorMonthStr = "" + sorMonth;
-			if(sorMonth < 10) sorMonthStr = "0" + sorMonth;
+			if(sorMonth < 10) {
+                sorMonthStr = "0" + sorMonth;
+            }
 			String sorDayStr = "" + sorDay;
-			if(sorDay < 10) sorDayStr = "0" + sorDay;
+			if(sorDay < 10) {
+                sorDayStr = "0" + sorDay;
+            }
 			PieChartVo value = new PieChartVo(sorYear+"-"+sorMonthStr+"-"+sorDayStr, 0L);
 			valueSet.add(value);
 			cal.add(Calendar.DATE, 1);

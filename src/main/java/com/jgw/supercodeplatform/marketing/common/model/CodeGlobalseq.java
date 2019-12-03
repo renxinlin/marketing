@@ -57,26 +57,35 @@ public class CodeGlobalseq implements Serializable{
 	}
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) {
+            return true;
+        }
+		if (obj == null) {
+            return false;
+        }
+		if (getClass() != obj.getClass()) {
+            return false;
+        }
 		CodeGlobalseq other = (CodeGlobalseq) obj;
-		if (currentMax != other.currentMax)
-			return false;
-		if (expectedMax != other.expectedMax)
-			return false;
-		if (intervaData != other.intervaData)
-			return false;
+		if (currentMax != other.currentMax) {
+            return false;
+        }
+		if (expectedMax != other.expectedMax) {
+            return false;
+        }
+		if (intervaData != other.intervaData) {
+            return false;
+        }
 		if (keysType == null) {
-			if (other.keysType != null)
-				return false;
-		} else if (!keysType.equals(other.keysType))
-			return false;
-		if (neardataDiffer != other.neardataDiffer)
-			return false;
+			if (other.keysType != null) {
+                return false;
+            }
+		} else if (!keysType.equals(other.keysType)) {
+            return false;
+        }
+		if (neardataDiffer != other.neardataDiffer) {
+            return false;
+        }
 		return true;
 	}
 	

@@ -58,8 +58,9 @@ public class HanzhiToPinyinUtil{
                         String[] temp = PinyinHelper.toHanyuPinyinStringArray(  
                                 input[i], format);  
                         output += temp[0];  
-                    } else  
-                        output += java.lang.Character.toString(input[i]);  
+                    } else {
+                        output += Character.toString(input[i]);
+                    }
                 }  
             } catch (BadHanyuPinyinOutputFormatCombination e) {  
                 e.printStackTrace();  
