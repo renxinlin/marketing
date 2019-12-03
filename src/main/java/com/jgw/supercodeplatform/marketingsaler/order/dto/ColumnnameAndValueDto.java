@@ -26,5 +26,5 @@ public class ColumnnameAndValueDto {
     @ApiModelProperty("订货字段值")
     String columnValue;
 
-    Integer status;
+
 }

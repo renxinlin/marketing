@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
+import com.jgw.supercodeplatform.marketing.constants.RoleTypeEnum;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
 import com.jgw.supercodeplatform.marketing.dto.SaleInfo;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
@@ -21,6 +22,8 @@ import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordServic
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.marketing.vo.h5.SalerPreFillInfoVo;
+import com.jgw.supercodeplatform.marketingsaler.base.config.aop.CheckRole;
+import com.jgw.supercodeplatform.marketingsaler.common.Role;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import io.swagger.annotations.Api;
@@ -239,7 +242,7 @@ public class SaleMemberController {
         return RestResult.success("success","wxstate12345678900987654321");
     }
 
-
+    @CheckRole(role=Role.vip)
     @GetMapping("/preFill")
     @ApiOperation(value = "销售员中心预填信息", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "请求头",name="jwt-token")})
