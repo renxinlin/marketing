@@ -118,20 +118,20 @@ public class SalerOrderTransfer {
         // 默认字段id自增，无须处理
 //        ColumnnameAndValueDto columnnameAndValue2 = new ColumnnameAndValueDto("dinghuoren",StringUtils.isEmpty(user.getMemberName())? COLUMN_DEFAULT_VALUE:user.getMemberName());
 //        ColumnnameAndValueDto columnnameAndValue3 = new ColumnnameAndValueDto("dinghuorendianhua",StringUtils.isEmpty(user.getMobile())? COLUMN_DEFAULT_VALUE:user.getMobile());
-//        ColumnnameAndValueDto columnnameAndValue6 = new ColumnnameAndValueDto("dinghuoshijian"
-//                , DateUtil.dateFormat(new Date(),"yyyy-MM-dd HH:mm:ss"));
+//        ColumnnameAndValueDto columnnameAndValue1 = new ColumnnameAndValueDto("shouhuodizhi",StringUtils.isEmpty(address)? COLUMN_DEFAULT_VALUE:address);
 //
 //
-//
-        ColumnnameAndValueDto columnnameAndValue1 = new ColumnnameAndValueDto("shouhuodizhi",StringUtils.isEmpty(address)? COLUMN_DEFAULT_VALUE:address);
-        ColumnnameAndValueDto columnnameAndValue4 = new ColumnnameAndValueDto("suoshumendian",StringUtils.isEmpty(user.getCustomerName())? COLUMN_DEFAULT_VALUE:user.getCustomerName());
-        ColumnnameAndValueDto columnnameAndValue5 = new ColumnnameAndValueDto("suoshumendianid",StringUtils.isEmpty(user.getCustomerId())? COLUMN_DEFAULT_VALUE:user.getCustomerId());
-        columnnameAndValues.add(columnnameAndValue1);
-        columnnameAndValues.add(columnnameAndValue4);
-        columnnameAndValues.add(columnnameAndValue5);
+//        columnnameAndValues.add(columnnameAndValue1);
 //        columnnameAndValues.add(columnnameAndValue2);
 //        columnnameAndValues.add(columnnameAndValue3);
-//        columnnameAndValues.add(columnnameAndValue6);
+//
+        ColumnnameAndValueDto columnnameAndValue4 = new ColumnnameAndValueDto("suoshumendian",StringUtils.isEmpty(user.getCustomerName())? COLUMN_DEFAULT_VALUE:user.getCustomerName());
+        ColumnnameAndValueDto columnnameAndValue5 = new ColumnnameAndValueDto("suoshumendianid",StringUtils.isEmpty(user.getCustomerId())? COLUMN_DEFAULT_VALUE:user.getCustomerId());
+        ColumnnameAndValueDto columnnameAndValue6 = new ColumnnameAndValueDto("dinghuoshijian"
+                , DateUtil.dateFormat(new Date(),"yyyy-MM-dd HH:mm:ss"));
+        columnnameAndValues.add(columnnameAndValue4);
+        columnnameAndValues.add(columnnameAndValue6);
+        columnnameAndValues.add(columnnameAndValue5);
 
     }
 
