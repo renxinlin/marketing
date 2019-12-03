@@ -243,7 +243,7 @@ public class SaleMemberController {
     @GetMapping("/preFill")
     @ApiOperation(value = "销售员中心预填信息", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "请求头",name="jwt-token")})
-    public SalerPreFillInfoVo getPreFill(@ApiIgnore H5LoginVO jwtUser){
+    public RestResult<SalerPreFillInfoVo> getPreFill(@ApiIgnore H5LoginVO jwtUser){
         SalerPreFillInfoVo salerPreFillInfoVo= new SalerPreFillInfoVo();
         salerPreFillInfoVo.setDinghuoren(jwtUser.getMemberName());
         salerPreFillInfoVo.setDinghuorendianhua(jwtUser.getMobile());
@@ -254,7 +254,7 @@ public class SaleMemberController {
             getAddress(address,customerInfoView);
             salerPreFillInfoVo.setShouhuodizhi(address.toString());
         }
-        return salerPreFillInfoVo;
+        return RestResult.success("success",salerPreFillInfoVo);
     }
 
     private void getAddress(StringBuffer address, CustomerInfoView customerInfo) {
