@@ -6,14 +6,14 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
 
-public interface MarketingUserMapper extends BaseMapper<MarketingUser> {
+public interface MarketingUserMapper  extends BaseMapper<MarketingUser> {
     @Delete({
         "delete from marketing_user",
         "where Id = #{id,jdbcType=BIGINT}"
     })
     int deleteByPrimaryKey(Long id);
 
-    @Override
+
     @Insert({
         "insert into marketing_user (Id, WxName, ",
         "Openid, Mobile, ",
@@ -40,7 +40,7 @@ public interface MarketingUserMapper extends BaseMapper<MarketingUser> {
         "#{wechatHeadImgUrl,jdbcType=VARCHAR}, #{memberType,jdbcType=TINYINT}, ",
             "#{state,jdbcType=TINYINT}, #{deviceType,jdbcType=TINYINT}, #{haveIntegral,jdbcType=INTEGER})"
     })
-    int insert(MarketingUser record);
+    int insert0(MarketingUser record);
 
     @InsertProvider(type= MarketingUserSqlProvider.class, method="insertSelective")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "Id")

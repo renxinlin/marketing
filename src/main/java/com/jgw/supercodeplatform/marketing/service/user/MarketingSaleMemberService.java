@@ -313,21 +313,6 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		}
 	}
 
-	/**
-	 *
-	 *
-	 * 此方法为注册用户微信授权获取openid专用
-	 * @param marketingUser
-	 */
-	public MarketingUser saveUser(MarketingUser marketingUser) throws SuperCodeException{
-		// 业务校验: 判断用户是否存在,全局唯一，产品定义
-		MarketingUser userDto = mapper.selectByPhone(marketingUser.getMobile());
-		if(userDto != null){
-			throw new SuperCodeException("手机号已存在...");
-		}
-		mapper.insert(marketingUser);
-		return marketingUser;
-	}
 
 	public MarketingUser selectBylogin(SalerLoginParam loginUser) throws SuperCodeException{
 
