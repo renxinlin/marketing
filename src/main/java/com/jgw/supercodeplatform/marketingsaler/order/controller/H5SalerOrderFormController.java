@@ -71,7 +71,7 @@ public class H5SalerOrderFormController extends SalerCommonController {
         }
     }
 
-    @CheckRole(role= Role.vip)
+    @CheckRole(role= Role.salerRole)
     @GetMapping("/preFill")
     @ApiOperation(value = "销售员中心预填信息", notes = "")
     @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "请求头",name="jwt-token")})
