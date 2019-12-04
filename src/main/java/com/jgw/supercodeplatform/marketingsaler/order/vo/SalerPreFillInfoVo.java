@@ -1,4 +1,4 @@
-package com.jgw.supercodeplatform.marketing.vo.h5;
+package com.jgw.supercodeplatform.marketingsaler.order.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -9,7 +9,7 @@ import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.exception.TableSaveException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-import com.jgw.supercodeplatform.marketing.vo.h5.SalerPreFillInfoVo;
+import com.jgw.supercodeplatform.marketingsaler.order.vo.SalerPreFillInfoVo;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
