@@ -157,6 +157,7 @@ public class SalerOrderTransfer {
 
                     updateColumn.setTableName(initTableName(organizationId));
                     updateColumn.setValue(newSalerOrderForm.getValue());
+                    updateColumn.setStatus(newSalerOrderForm.getStatus());
                     updateColumns.add(updateColumn);
 
                 }
@@ -173,6 +174,7 @@ public class SalerOrderTransfer {
             salerOrderForm.setColumnName(updateColumn.getNewColumnName());
             salerOrderForm.setValue(updateColumn.getValue());
             salerOrderForm.setFormName(updateColumn.getNewFormName());
+            salerOrderForm.setStatus(updateColumn.getStatus());
             list.add(salerOrderForm);
         });
         return list;

@@ -16,4 +16,5 @@ public class ChangeColumDto {
     private String tableName;
 
     private String value;
+    private Integer status;
 }
