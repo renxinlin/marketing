@@ -43,6 +43,7 @@
 		<dependency>
 			<groupId>com.alipay.sofa</groupId>
 			<artifactId>tracer-sofa-boot-starter</artifactId>
+			<version>2.4.0</version>
 		</dependency>
 
 <!--		-->
