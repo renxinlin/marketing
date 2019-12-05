@@ -543,7 +543,7 @@ public class CommonService {
 
     public void indexScanInfo(MarketingMemberAndScanCodeInfoParam infoParam) throws SuperCodeException{
 		if(infoParam.getMemberType() == null ){
-			logger.error("扫码MemberType不存在{}",JSONObject.toJSONString(infoParam));
+			logger.warn("扫码MemberType不存在{}",JSONObject.toJSONString(infoParam));
 			throw new SuperCodeException("扫码MemberType不存在");
 		}
 		JSONObject.toJSONString(infoParam);

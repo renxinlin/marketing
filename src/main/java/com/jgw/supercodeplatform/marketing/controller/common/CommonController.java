@@ -125,9 +125,9 @@ public class CommonController extends CommonUtil {
     	//
         String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
     	String signature=CommonUtil.sha1Encrypt(sha1String1);
-        logger.error("==================start log=====================");
-    	logger.error(sha1String1);
-        logger.error(signature);
+        logger.info("==================start log=====================");
+    	logger.info(sha1String1);
+        logger.info(signature);
     	
     	RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
     	restResult.setState(200);
@@ -216,9 +216,9 @@ public class CommonController extends CommonUtil {
         long timestamp=WXPayUtil.getCurrentTimestamp();
         String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
         String signature=CommonUtil.sha1Encrypt(sha1String1);
-        logger.error("==================start log=====================");
-        logger.error(sha1String1);
-        logger.error(signature);
+        logger.info("==================start log=====================");
+        logger.info(sha1String1);
+        logger.info(signature);
 
         WxSignVo wxSignVo = new WxSignVo();
         wxSignVo.setAppId(appId);

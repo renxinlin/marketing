@@ -310,7 +310,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(UserSqlException.class)
 	public RestResult<?> commonException(UserSqlException e) {
-		logger.error("自义定异常：" + e.getClass().getName(), e);
+		logger.warn("自义定异常：" + e.getClass().getName(), e);
 		RestResult<?> RestResult = new RestResult<>(e.getStatus() == 0 ? HttpStatus.INTERNAL_SERVER_ERROR.value() : e.getStatus(), e.getMessage(), null);
 		return RestResult;
 	}
@@ -323,7 +323,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(UserExpireException.class)
 	public RestResult<?> handleMissingUserExpireException(UserExpireException e) {
 		// 未登录异常
-		logger.error("会员未登录异常{}",e.getMessage());
+		logger.warn("会员未登录异常{}",e.getMessage());
 		RestResult<?> restResult = new RestResult<>();
 		restResult.setState(401);
 		restResult.setMsg(e.getMessage());
@@ -336,7 +336,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(SalerLotteryException.class)
 	public RestResult<LotteryResultMO> handlerSalerLotteryException(SalerLotteryException e) {
-		logger.error("会员未登录异常{}",e.getMessage());
+		logger.warn("会员未登录异常{}",e.getMessage());
 		RestResult<LotteryResultMO> restResult = new RestResult<>();
 		// 前端格式:不可修改
 		restResult.setState(200);
