@@ -137,7 +137,7 @@ public class WheelsController extends SalerCommonController {
         try {
             filedMap= JsonToMapUtil.toMap(EXCEL_FIELD_MAP);
         } catch (Exception e) {
-            logger.error("{desc：记录表头解析异常"+e.getMessage()+"}");
+            logger.warn("{desc：记录表头解析异常"+e.getMessage()+"}");
             throw new SuperCodeException("表头解析异常",500);
         }
         ExcelUtils.listToExcel(list, filedMap, "参与记录",response);
@@ -163,7 +163,7 @@ public class WheelsController extends SalerCommonController {
         try {
             filedMap= JsonToMapUtil.toMap(EXCEL_ORDER_FIELD_MAP);
         } catch (Exception e) {
-            logger.error("{desc：记录表头解析异常"+e.getMessage()+"}");
+            logger.warn("{desc：记录表头解析异常"+e.getMessage()+"}");
             throw new SuperCodeException("表头解析异常",500);
         }
         ExcelUtils.listToExcel(list, filedMap, "订单记录",response);
