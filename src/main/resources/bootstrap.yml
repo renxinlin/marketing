@@ -15,5 +15,3 @@ spring:
     name: platform-marketing-supercode
 
 
-#  ALTER TABLE `jgw_marketing`.`marketing_saler_order_form`
-#  MODIFY COLUMN `Status` tinyint(2) NULL DEFAULT 1 COMMENT '必填1非必填2' AFTER `ColumnName`;
