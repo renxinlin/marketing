@@ -34,23 +34,53 @@
 
 
 
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-zipkin</artifactId>
-        </dependency>
+		<!-- 公共组件 -->
+		<dependency>
+			<groupId>net.app315</groupId>
+			<artifactId>nail-common</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.app315</groupId>
+			<artifactId>nail-lock</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.app315</groupId>
+			<artifactId>nail-mypoint</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+
+
+
+		<!--        <dependency>-->
+<!--            <groupId>org.springframework.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-zipkin</artifactId>-->
+<!--        </dependency>-->
+		<dependency>
+			<groupId>com.alipay.sofa</groupId>
+			<artifactId>tracer-sofa-boot-starter</artifactId>
+			<version>3.0.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.zipkin.zipkin2</groupId>
+			<artifactId>zipkin</artifactId>
+			<version>2.11.12</version>
+		</dependency>
+		<dependency>
+			<groupId>io.zipkin.reporter2</groupId>
+			<artifactId>zipkin-reporter</artifactId>
+			<version>2.7.13</version>
+		</dependency>
+
+
 
 
 <!--		<dependency>-->
-<!--			<groupId>com.alipay.sofa</groupId>-->
-<!--			<artifactId>tracer-sofa-boot-starter</artifactId>-->
-<!--			<version>2.4.0</version>-->
+<!--			<groupId>org.springframework.cloud</groupId>-->
+<!--			<artifactId>spring-cloud-starter-sleuth</artifactId>-->
 <!--		</dependency>-->
-
-
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-sleuth</artifactId>
-		</dependency>
 
 
 
