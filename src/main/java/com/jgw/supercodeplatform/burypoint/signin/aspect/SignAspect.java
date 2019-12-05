@@ -58,7 +58,7 @@ public class SignAspect {
         try {
             signBuryPointOuterChainTbMapper.insert(buryPointOuterChainTb);
         } catch (Exception e) {
-            logger.warn("插入b端签到链接埋点数据出错："+buryPointOuterChainTb.toString());
+            logger.info("插入b端签到链接埋点数据出错："+buryPointOuterChainTb.toString());
             e.printStackTrace();
         }
         logger.info("成功插入b端签到链接埋点数据："+buryPointOuterChainTb.toString());
