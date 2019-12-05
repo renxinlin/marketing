@@ -107,7 +107,7 @@ public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, 
             logger.info("收到mq:productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
             // 校验
             if (null==productId || null==codeBatch) {
-                logger.error("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
+                logger.warn("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
                 continue;
             }
             // 校验

@@ -62,7 +62,7 @@ public class PrizeWheelsAutoFetchService extends AutoFetchChainAbs<List<Map<Stri
             Object codeBatch=map.get("codeBatch");
             log.info("大转盘自动追加:productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
             if (null==productId || null==productBatchId || null==codeBatch) {
-                log.error("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
+                log.warn("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
                 continue;
             }
             String strProductId=String.valueOf(productId);
