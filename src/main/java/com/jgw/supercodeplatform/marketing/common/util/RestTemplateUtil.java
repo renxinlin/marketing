@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -26,7 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 
-
+@Slf4j
 @Component
 public class RestTemplateUtil {
 
@@ -42,6 +44,10 @@ public class RestTemplateUtil {
 	 * @throws SuperCodeException
 	 */
 	public ResponseEntity<String> getRequestAndReturnJosn(String url,Map<String, Object> params,Map<String, String> headerMap) {
+		log.info("resttemplate  getRequestAndReturnJosn 入参 =》  ");
+		log.info(url);
+		log.info(JSONObject.toJSONString(params));
+		log.info(JSONObject.toJSONString(headerMap));
 		if (StringUtils.isBlank(url)) {
 			throw new SuperCodeExtException("sendGetRequestAndReturnJosn参数url不能为空", 500);
 		}
