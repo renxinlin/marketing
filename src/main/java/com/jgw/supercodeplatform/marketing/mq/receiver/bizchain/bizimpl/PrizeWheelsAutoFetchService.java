@@ -97,6 +97,7 @@ public class PrizeWheelsAutoFetchService extends AutoFetchChainAbs<List<Map<Stri
                     sendToCodeManager(bindCouponActivitys);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    // todo 保留日志级别:  码管理服务调用失败
                     log.error("CouponAutoFecthService do biz error when custome code mamaner {}",e.getMessage());
                 }
             }
