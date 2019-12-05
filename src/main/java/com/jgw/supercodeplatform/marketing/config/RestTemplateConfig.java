@@ -26,7 +26,9 @@ public class RestTemplateConfig {
 		//设置读取资料超时时间
 		factory.setReadTimeout(2000);
 		//设置异步任务（线程不会重用，每次调用时都会重新启动一个新的线程）
-		factory.setTaskExecutor(new SimpleAsyncTaskExecutor());
+		SimpleAsyncTaskExecutor simpleAsyncTaskExecutor = new SimpleAsyncTaskExecutor();
+		simpleAsyncTaskExecutor.setConcurrencyLimit(15);
+		factory.setTaskExecutor(simpleAsyncTaskExecutor);
 		return new AsyncRestTemplate(factory);
 	}
 
