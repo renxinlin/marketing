@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
@@ -57,7 +58,7 @@ public class ScanCodeController {
     private MarketingWxMerchantsService mWxMerchantsService;
     
     @Autowired
-    private AsyncRestTemplate asyncRestTemplate;
+    private RestTemplate asyncRestTemplate;
 
     @Value("${marketing.domain.url}")
     private String wxauthRedirectUri;
