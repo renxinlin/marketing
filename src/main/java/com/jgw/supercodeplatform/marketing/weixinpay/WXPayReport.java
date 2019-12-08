@@ -14,10 +14,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
+import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * 交易保障
@@ -117,7 +115,9 @@ public class WXPayReport {
     private WXPayConfig config;
     private ExecutorService executorService;
 
-    private volatile static WXPayReport INSTANCE;
+    private volatile static ConcurrentMap<String,WXPayReport> payReportMap = new ConcurrentHashMap<>();
+
+//    private volatile static WXPayReport INSTANCE;
 
     private WXPayReport(final WXPayConfig config) {
         this.config = config;
@@ -181,16 +181,31 @@ public class WXPayReport {
      * @param config
      * @return
      */
+//    public static WXPayReport getInstance(WXPayConfig config) {
+//        if (INSTANCE == null) {
+//            synchronized (WXPayReport.class) {
+//                if (INSTANCE == null) {
+//                    INSTANCE = new WXPayReport(config);
+//                }
+//            }
+//        }
+//        return INSTANCE;
+//    }
+
     public static WXPayReport getInstance(WXPayConfig config) {
-        if (INSTANCE == null) {
-            synchronized (WXPayReport.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new WXPayReport(config);
+        String appId = config.getAppID();
+        WXPayReport payReport = payReportMap.get(appId);
+        if (payReport == null) {
+            synchronized (appId) {
+                payReport = payReportMap.get(appId);
+                if (payReport == null) {
+                    payReportMap.putIfAbsent(appId, new WXPayReport(config));
                 }
             }
         }
-        return INSTANCE;
+        return payReportMap.get(appId);
     }
+
 
     public void report(String uuid, long elapsedTimeMillis,
                        String firstDomain, boolean primaryDomain, int firstConnectTimeoutMillis, int firstReadTimeoutMillis,
