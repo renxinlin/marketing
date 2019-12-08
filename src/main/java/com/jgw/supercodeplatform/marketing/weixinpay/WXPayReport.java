@@ -196,12 +196,7 @@ public class WXPayReport {
         String appId = config.getAppID();
         WXPayReport payReport = payReportMap.get(appId);
         if (payReport == null) {
-            synchronized (appId) {
-                payReport = payReportMap.get(appId);
-                if (payReport == null) {
-                    payReportMap.putIfAbsent(appId, new WXPayReport(config));
-                }
-            }
+            payReportMap.putIfAbsent(appId, new WXPayReport(config));
         }
         return payReportMap.get(appId);
     }
