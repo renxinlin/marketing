@@ -688,7 +688,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 */
 	public RestResult<ScanCodeInfoMO> judgeActivityScanCodeParam(String outerCodeId, String codeTypeId, String productId, String productBatchId, byte referenceRole, Integer businessType) throws ParseException {
 		RestResult<ScanCodeInfoMO> restResult=new RestResult<ScanCodeInfoMO>();
-		if (StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(outerCodeId)||StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)) {
+		if (StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(outerCodeId)||StringUtils.isBlank(productId)) {
 			restResult.setState(500);
 			restResult.setMsg("接收到码平台扫码信息有空值");
 			return restResult;

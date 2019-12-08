@@ -1,9 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import com.alibaba.fastjson.JSON;
@@ -103,10 +100,10 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 	 	throw new SuperCodeException("产品id不能为空", 500);
 	  }
       String superToken = commonUtil.getSuperToken();
-      List<IntegralRuleProduct> productList = dao.selectByProductIdsAndOrgId(productIds, commonUtil.getOrganizationId());
-		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
+//      List<IntegralRuleProduct> productList = dao.selectByProductIdsAndOrgId(productIds, commonUtil.getOrganizationId());
+//		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
 		//构建请求生码批次参数
-		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByProductIds(productIds);
 		integralUrlUnBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
 		  dao.deleteByProductIds(productIds);
 	}
@@ -154,9 +151,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		}
 		String superToken=commonUtil.getSuperToken();
 		//根据产品id集合去基础平台请求对应的产品批次
-		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
+//		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
 		//构建请求生码批次参数
-		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByProductIds(productIds);
 		List<Map<String, Object>> updateProductList=new ArrayList<Map<String,Object>>();
 		for (Product product : products) {
 			String productId=product.getProductId();
@@ -209,9 +206,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			
 			productIds.add(productId);
 			//根据产品id集合去基础平台请求对应的产品批次
-			JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
+//			JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
 			//构建请求生码批次参数
-			List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+			List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByProductIds(productIds);
 			integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
 			
 			//更新产品营销信息
@@ -257,6 +254,20 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
     		}
 		}
     }
+
+	private List<ProductAndBatchGetCodeMO> constructProductAndBatchMOByProductIds(Collection<String> productIds) {
+		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOList = new ArrayList<>();
+		if (productIds == null) {
+			return productAndBatchGetCodeMOList;
+		}
+		productIds.forEach(productId -> {
+			ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+			productAndBatchGetCodeMO.setProductId(productId);
+			productAndBatchGetCodeMO.setProductBatchList(new ArrayList<>());
+			productAndBatchGetCodeMOList.add(productAndBatchGetCodeMO);
+		});
+		return productAndBatchGetCodeMOList;
+	}
 
 	/**
      * 通过产品及产品批次对象集合封装通过产品及产品批次请求生码批次的参数
