@@ -323,7 +323,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 				String productBatchId=batchobj.getString("productBatchId");
 				Long codeTotal=batchobj.getLong("codeTotal");
 				String codeBatch=batchobj.getString("globalBatchId");
-				if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+				if (StringUtils.isBlank(productId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
 					throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
 				}
 				String[] sbatchIdArray = codeBatch.split(",");
