@@ -22,8 +22,9 @@ public enum CouponVerifyEnum {
 	public static CouponVerifyEnum getConditionEnumByType(byte type) {
 		CouponVerifyEnum[] conditionEnums = CouponVerifyEnum.values();
 		for(CouponVerifyEnum conditionEnum : conditionEnums) {
-			if(conditionEnum.type == type)
-				return conditionEnum;
+			if(conditionEnum.type == type) {
+                return conditionEnum;
+            }
 		}
 		return null;
 	}
@@ -35,8 +36,9 @@ public enum CouponVerifyEnum {
 	 */
 	public static String getConditionByType(byte type) {
 		CouponVerifyEnum conditionEnum = getConditionEnumByType(type);
-		if(conditionEnum != null)
-			return conditionEnum.condition;
+		if(conditionEnum != null) {
+            return conditionEnum.condition;
+        }
 		return null;
 	}
 

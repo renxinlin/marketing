@@ -42,14 +42,14 @@ public class H5LoginUtil {
 
 
             if (jwtUser == null || jwtUser.getMemberId() == null) {
-                logger.error("jwt信息不全" + jwtUser);
+                logger.warn("jwt信息不全" + jwtUser);
                 // 重新登录的异常信息
                 throw new UserExpireException("用户信息不存在...");
             }
 
             return jwtUser;
         } catch (Exception e) {
-            logger.error("解析jwt异常" + token);
+            logger.warn("解析jwt异常" + token);
             e.printStackTrace();
             // 重新登录的异常信息
             return null;

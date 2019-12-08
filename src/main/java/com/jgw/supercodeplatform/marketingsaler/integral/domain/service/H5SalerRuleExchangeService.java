@@ -20,6 +20,7 @@ import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.H5SalerRuleExchangeTransfer;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.SalerRecordTransfer;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.SalerRuleExchangeTransfer;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.CallBackConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.util.Asserts;
@@ -108,7 +109,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
            recordService.save(SalerRecordTransfer.buildRecord(salerRuleExchange,user,money));
            // 支付
            try {
-               wxPayService.qiyePaySync(user.getOpenid(),serverIp,(int)(money*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId());
+               wxPayService.qiyePaySyncWithResend(user.getOpenid(), CallBackConstant.serverIp,(int)(money*100), UUID.randomUUID().toString().replaceAll("-",""),user.getOrganizationId(),1);
            } catch (Exception e) {
                e.printStackTrace();
                log.error("积分换红包支付失败.........................参数salerRuleExchangeDto{},user{}",salerRuleExchangeDto,JSONObject.toJSONString(user));

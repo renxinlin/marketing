@@ -1,15 +1,6 @@
 package com.jgw.supercodeplatform.marketing.controller.activity;
 
 
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
@@ -18,10 +9,13 @@ import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpd
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.activity.coupon.CouponService;
 import com.jgw.supercodeplatform.marketing.service.activity.coupon.CouponUpdateService;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/marketing/activity/coupon")
@@ -37,7 +31,7 @@ public class MarketingCouponController {
 
     /**
      * 新建优惠券活动
-     * @param marketingActivityParam
+     * @param
      * @return
      * @throws Exception
      */
@@ -52,8 +46,9 @@ public class MarketingCouponController {
     @ApiOperation("编辑优惠券活动")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> couponActivityUpdate(@Valid @RequestBody MarketingActivityCouponUpdateParam updateVo) throws SuperCodeException {
-        if(updateVo.getId() == null)
-        	throw new SuperCodeException("ID不能为空");
+        if(updateVo.getId() == null) {
+            throw new SuperCodeException("ID不能为空");
+        }
     	return updateService.update(updateVo);
     }
 

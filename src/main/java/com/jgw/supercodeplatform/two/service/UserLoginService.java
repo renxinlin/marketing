@@ -97,8 +97,14 @@ public class UserLoginService {
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("Mobile",marketingSaleUserBindMobileParam.getMobile());
         MarketingUser exitMarketingUser=marketingUserMapper.selectOne(queryWrapper);
+
+
         Integer result = null;
         if (exitMarketingUser != null){
+            if(!exitMarketingUser.getOrganizationId().equals(marketingUserTwo.getOrganizationId())){
+                throw new BizRuntimeException("该手机号已注册其他企业");
+            }
+
             //说明3.0数据中已绑定手机号 进行积分转移 可用积分和总积分
             userTransfer.transferExists(marketingUserTwo,exitMarketingUser);
             result=marketingUserMapper.updateById(exitMarketingUser);

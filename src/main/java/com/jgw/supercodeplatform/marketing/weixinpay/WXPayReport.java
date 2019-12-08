@@ -125,6 +125,7 @@ public class WXPayReport {
 
         // 添加处理线程
         executorService = Executors.newFixedThreadPool(config.getReportWorkerNum(), new ThreadFactory() {
+            @Override
             public Thread newThread(Runnable r) {
                 Thread t = Executors.defaultThreadFactory().newThread(r);
                 t.setDaemon(true);
@@ -136,6 +137,7 @@ public class WXPayReport {
             WXPayUtil.getLogger().info("report worker num: {}", config.getReportWorkerNum());
             for (int i = 0; i < config.getReportWorkerNum(); ++i) {
                 executorService.execute(new Runnable() {
+                    @Override
                     public void run() {
                         while (true) {
                             // 先用 take 获取数据
@@ -213,6 +215,7 @@ public class WXPayReport {
     @Deprecated
     private void reportAsync(final String data) throws Exception {
         new Thread(new Runnable() {
+            @Override
             public void run() {
                 try {
                     httpRequest(data, DEFAULT_CONNECT_TIMEOUT_MS, DEFAULT_READ_TIMEOUT_MS);

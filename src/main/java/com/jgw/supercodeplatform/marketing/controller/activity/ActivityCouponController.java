@@ -66,8 +66,9 @@ public class ActivityCouponController extends CommonUtil{
 		marketingCouponPageParam.setUsed((byte)1);
 		MarketingActivitySet marketingActivitySet = marketingActivitySetService.selectById(marketingCouponPageParam.getActivitySetId());
 		String validCondition = marketingActivitySet == null? null : marketingActivitySet.getValidCondition();
-		if(StringUtils.isBlank(validCondition)) 
-			throw new SuperCodeException("活动条件为空", 500);
+		if(StringUtils.isBlank(validCondition)) {
+            throw new SuperCodeException("活动条件为空", 500);
+        }
 		PageResults<List<MarketingMemberCoupon>> couponResult = couponVerifyService.listSearchViewLike(marketingCouponPageParam);
 		MarketingActivitySetCondition marketingActivitySetCondition = JSON.parseObject(validCondition, MarketingActivitySetCondition.class);
 		Byte acquireCondition = marketingActivitySetCondition.getAcquireCondition();
@@ -77,8 +78,9 @@ public class ActivityCouponController extends CommonUtil{
 			if(memberCouponList != null) {
 				memberCouponList.forEach(marketingMemberCoupon -> {
 					String desc = CouponAcquireConditionEnum.getConditionDescByType(acquireConditionByte);
-					if(acquireConditionByte == 2 || acquireConditionByte == 3)
-						desc = desc + marketingActivitySetCondition.getAcquireConditionIntegral();
+					if(acquireConditionByte == 2 || acquireConditionByte == 3) {
+                        desc = desc + marketingActivitySetCondition.getAcquireConditionIntegral();
+                    }
 					marketingMemberCoupon.setObtainCondition(desc);
 				});
 			}
@@ -94,20 +96,24 @@ public class ActivityCouponController extends CommonUtil{
 		marketingCouponPageParam.setUsed((byte)1);
 		MarketingActivitySet marketingActivitySet = marketingActivitySetService.selectById(marketingCouponPageParam.getActivitySetId());
 		String validCondition = marketingActivitySet == null? null : marketingActivitySet.getValidCondition();
-		if(StringUtils.isBlank(validCondition))
-			throw new SuperCodeException("活动条件为空", 500);
+		if(StringUtils.isBlank(validCondition)) {
+            throw new SuperCodeException("活动条件为空", 500);
+        }
 		List<MarketingMemberCoupon> marketingMemberCouponList = couponVerifyService.searchVerfiyList(marketingCouponPageParam);
 		MarketingActivitySetCondition marketingActivitySetCondition = JSON.parseObject(validCondition, MarketingActivitySetCondition.class);
 		Byte acquireCondition = marketingActivitySetCondition.getAcquireCondition();
-		if(acquireCondition == null)
-			throw new SuperCodeException("抵扣券获得条件类型为空", 500);
+		if(acquireCondition == null) {
+            throw new SuperCodeException("抵扣券获得条件类型为空", 500);
+        }
 		byte acquireConditionByte = acquireCondition.byteValue();
-		if(marketingMemberCouponList == null)
-			throw new ExcelException("抵扣券列表为空", 500);
+		if(marketingMemberCouponList == null) {
+            throw new ExcelException("抵扣券列表为空", 500);
+        }
 		marketingMemberCouponList.forEach(marketingMemberCoupon -> {
 			String desc = CouponAcquireConditionEnum.getConditionDescByType(acquireConditionByte);
-			if(acquireConditionByte == 2 || acquireConditionByte == 3)
-				desc = desc + marketingActivitySetCondition.getAcquireConditionIntegral();
+			if(acquireConditionByte == 2 || acquireConditionByte == 3) {
+                desc = desc + marketingActivitySetCondition.getAcquireConditionIntegral();
+            }
 			marketingMemberCoupon.setObtainCondition(desc);
 		});
 		ExcelUtils.listToExcel(marketingMemberCouponList, FILED_MAP, "核销记录", response);

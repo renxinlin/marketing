@@ -20,9 +20,7 @@ import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-import com.jgw.supercodeplatform.marketing.vo.h5.SalerPreFillInfoVo;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
-import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -240,34 +238,4 @@ public class SaleMemberController {
     }
 
 
-    @GetMapping("/preFill")
-    @ApiOperation(value = "销售员中心预填信息", notes = "")
-    @ApiImplicitParams(value= {@ApiImplicitParam(paramType="header",value = "请求头",name="jwt-token")})
-    public SalerPreFillInfoVo getPreFill(@ApiIgnore H5LoginVO jwtUser){
-        SalerPreFillInfoVo salerPreFillInfoVo= new SalerPreFillInfoVo();
-        salerPreFillInfoVo.setDinghuoren(jwtUser.getMemberName());
-        salerPreFillInfoVo.setDinghuorendianhua(jwtUser.getMobile());
-        StringBuffer address = new StringBuffer("");
-        if (StringUtils.isNotBlank(jwtUser.getCustomerId())){
-            CustomerInfoView customerInfoView=baseCustomerService.getCustomerInfo(jwtUser.getCustomerId());
-            logger.info("准备从基础信息获取地址customerInfoView-{}",customerInfoView);
-            getAddress(address,customerInfoView);
-            salerPreFillInfoVo.setShouhuodizhi(address.toString());
-        }
-        return salerPreFillInfoVo;
-    }
-
-    private void getAddress(StringBuffer address, CustomerInfoView customerInfo) {
-        if (customerInfo != null) {
-            if (StringUtils.isNotBlank(customerInfo.getProvinceName())) {
-                address.append(customerInfo.getProvinceName());
-            }
-            if (StringUtils.isNotBlank(customerInfo.getCityName())) {
-                address.append(customerInfo.getCityName());
-            }
-            if (StringUtils.isNotBlank(customerInfo.getCountyName())) {
-                address.append(customerInfo.getCountyName());
-            }
-        }
-    }
 }

@@ -35,14 +35,15 @@ public enum CouponAcquireConditionEnum {
     
 	/**
 	 * 根据type获得对应的枚举类型
-	 * @param type
+	 * @param
 	 * @return
 	 */
 	public static CouponAcquireConditionEnum getConditionEnumByType(byte condition) {
 		CouponAcquireConditionEnum[] conditionEnums = CouponAcquireConditionEnum.values();
 		for(CouponAcquireConditionEnum conditionEnum : conditionEnums) {
-			if(conditionEnum.condition.byteValue() == condition)
-				return conditionEnum;
+			if(conditionEnum.condition.byteValue() == condition) {
+                return conditionEnum;
+            }
 		}
 		return null;
 	}
@@ -54,8 +55,9 @@ public enum CouponAcquireConditionEnum {
 	 */
 	public static String getConditionDescByType(byte type) {
 		CouponAcquireConditionEnum conditionEnum = getConditionEnumByType(type);
-		if(conditionEnum != null)
-			return conditionEnum.desc;
+		if(conditionEnum != null) {
+            return conditionEnum.desc;
+        }
 		return null;
 	}
 

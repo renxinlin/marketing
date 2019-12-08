@@ -213,7 +213,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		//获取活动实体
 		MarketingActivitySet mActivitySet = convertActivitySet(mSetParam,activitySetParam.getmReceivingPageParam(),organizationId,organizationName);
 		List<MarketingActivityProduct> upProductList = mProductMapper.selectByActivitySetId(activitySetId);
-        if(upProductList == null) upProductList = new ArrayList<>();
+        if(upProductList == null) {
+            upProductList = new ArrayList<>();
+        }
 		/************************查询需要去码平台删除关联关系的产品批次************************/
 		//绑定生码批次列表
 		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = new ArrayList<ProductAndBatchGetCodeMO>();
@@ -254,7 +256,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		List<SbatchUrlUnBindDto> deleteProductBatchList = new ArrayList<>();
 		//得到已经绑定过url的product
 		List<MarketingActivityProduct> maProductList = mProductMapper.selectByProductAndBatch(mList, ReferenceRoleEnum.ACTIVITY_MEMBER.getType());
-		if(maProductList == null) maProductList = new ArrayList<>();
+		if(maProductList == null) {
+            maProductList = new ArrayList<>();
+        }
 		maProductList.addAll(upProductList);
 		List<MarketingActivityProduct> marketingActivityProductList = maProductList.stream().distinct().collect(Collectors.toList());
 		StringBuffer sbatchIdBuffer = new StringBuffer();
@@ -356,7 +360,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 
 	/**
 	 * 校验活动创建时间
-	 * @param mActivitySet
+	 * @param
 	 * @throws SuperCodeException
 	 */
 	private void activityTimeCheck(String activityStartDate,String activityEndDate) throws SuperCodeException {
@@ -465,9 +469,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 	/**
 	 * 保存产品批次
-	 * @param maProductParams
-	 * @param activitySetId
-	 * @param memberType
+	 * @param
+	 * @param
+	 * @param
 	 * @return
 	 * @throws SuperCodeException
 	 */
@@ -501,8 +505,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		mList.forEach(marketingActivityProduct -> {
 			String key = marketingActivityProduct.getProductId()+","+marketingActivityProduct.getProductBatchId();
 			Map<String, Object> batchMap = paramsMap.get(key);
-			if(batchMap != null)
-				marketingActivityProduct.setSbatchId((String)batchMap.get("batchId"));
+			if(batchMap != null) {
+                marketingActivityProduct.setSbatchId((String)batchMap.get("batchId"));
+            }
 		});
 		//插入对应活动产品数据
 		mProductMapper.batchDeleteByProBatchsAndRole(mList, referenceRole);
@@ -647,7 +652,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	}
 	/**
 	 * 更新领取页中奖页
-	 * @param mUpdateParam
+	 * @param
 	 * @return
 	 */
 	@Transactional
@@ -681,7 +686,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	 * @param productId
 	 * @param codeTypeId
 	 * @param referenceRole
-	 * @param codeId
+	 * @param
 	 * @return
 	 * @throws SuperCodeException
 	 * @throws ParseException
@@ -952,8 +957,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		Collection<MarketingChannelParam> channelCollection = marketingChannelMap.values();
 		for(MarketingChannelParam marketingChannel : channelCollection) {
 			MarketingChannelParam channel = putChildrenChannel(marketingChannelMap, marketingChannel);
-			if(channel != null)
-				channelSet.add(channel);
+			if(channel != null) {
+                channelSet.add(channel);
+            }
 		}
 		return channelSet;
 	}
@@ -970,8 +976,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				parentChannel.setChildrens(Lists.newArrayList(channel));
 				reChannel = putChildrenChannel(marketingChannelMap, parentChannel);
 			} else {
-				if(!childList.contains(channel))
-					childList.add(channel);
+				if(!childList.contains(channel)) {
+                    childList.add(channel);
+                }
 			}
 		} else {
 			reChannel = channel;
@@ -1017,8 +1024,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 		MarketingActivitySetParam mActivitySetParam = mPreviewParam.getmActivitySetParam();
 		MarketingReceivingPageParam mReceivingPageParam = mPreviewParam.getmReceivingPageParam();
 		BeanUtils.copyProperties(mReceivingPageParam, marketingReceivingPage);
-		if(mActivitySetParam != null)
-			marketingReceivingPage.setActivityDesc(mActivitySetParam.getActivityDesc());
+		if(mActivitySetParam != null) {
+            marketingReceivingPage.setActivityDesc(mActivitySetParam.getActivityDesc());
+        }
 		restResult.setResults(marketingReceivingPage);
 		restResult.setState(200);
 		return restResult;

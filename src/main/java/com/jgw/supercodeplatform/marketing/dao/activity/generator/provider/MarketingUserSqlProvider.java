@@ -104,6 +104,21 @@ public class MarketingUserSqlProvider {
             VALUES("HaveIntegral", "#{haveIntegral,jdbcType=INTEGER}");
         }
 
+        if (record.getTotalIntegral() != null) {
+            VALUES("TotalIntegral"," #{totalIntegral,jdbcType=INTEGER}");
+        }
+
+
+        if (record.getSource() != null) {
+            VALUES("Source "," #{source,jdbcType=INTEGER}");
+        }
+
+
+        if (record.getLoginName() != null) {
+            VALUES("MechanismType "," #{mechanismType,jdbcType=INTEGER}");
+        }
+
+
         return SQL();
     }
 
@@ -190,9 +205,26 @@ public class MarketingUserSqlProvider {
         if (record.getDeviceType() != null) {
             SET("DeviceType = #{deviceType,jdbcType=TINYINT}");
         }
-        if (record.getHaveIntegral() != null) {
-            SET("HaveIntegral = #{haveIntegral,jdbcType=INTEGER}");
+
+
+        if (record.getTotalIntegral() != null) {
+            SET("TotalIntegral = #{totalIntegral,jdbcType=INTEGER}");
         }
+
+
+        if (record.getSource() != null) {
+            SET("Source = #{source,jdbcType=INTEGER}");
+        }
+
+
+        if (record.getLoginName() != null) {
+            SET("MechanismType = #{mechanismType,jdbcType=INTEGER}");
+        }
+
+
+
+
+
         WHERE("Id = #{id,jdbcType=BIGINT}");
         
         return SQL();

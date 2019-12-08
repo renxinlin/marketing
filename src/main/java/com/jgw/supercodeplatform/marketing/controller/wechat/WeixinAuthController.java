@@ -145,17 +145,19 @@ public class WeixinAuthController {
     		openid=userInfo.getString("openid");
     		StringBuffer h5BUf=new StringBuffer();
     		h5BUf.append("redirect:");
-    		if(statecode != null && statecode.intValue() == AccessProtocol.ACTIVITY_COUPON.getType()) 
-    			h5BUf.append(integralH5Pages.split(",")[0]);
-    		else
-    			h5BUf.append(integralH5Pages.split(",")[statecode]);
+    		if(statecode != null && statecode.intValue() == AccessProtocol.ACTIVITY_COUPON.getType()) {
+                h5BUf.append(integralH5Pages.split(",")[0]);
+            } else {
+                h5BUf.append(integralH5Pages.split(",")[statecode]);
+            }
     		h5BUf.append("?openid="+openid);
     		if (null!=statecode && 0==statecode.intValue()) {
     			h5BUf.append("&uuid="+statearr[2]);
 			}
     		h5BUf.append("&organizationId="+organizationId);
-    		if(statecode != null && statecode.intValue() == AccessProtocol.ACTIVITY_COUPON.getType()) 
-    			h5BUf.append("&uuid=").append(statearr[2]).append("&type=").append(statecode);
+    		if(statecode != null && statecode.intValue() == AccessProtocol.ACTIVITY_COUPON.getType()) {
+                h5BUf.append("&uuid=").append(statearr[2]).append("&type=").append(statecode);
+            }
 			memberWithWechat = marketingMembersService.selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
 			marketingWxMember = marketingMembersService.getWxMemberByOpenidAndOrgid(openid, organizationId);
     		Long memberParamId = loginMemberId(memberWithWechat);

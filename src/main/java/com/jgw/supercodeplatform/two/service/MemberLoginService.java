@@ -119,7 +119,8 @@ public class MemberLoginService {
                 result=marketingMembersMapper.updateById(exitMarketingMembers);
         }else{
             //不存在则将2.0的数据新增到3.0
-            MarketingMembers marketingMembersNew = memberTransfer.transferNotExists0(marketingMembersBindMobileParam, marketingMembersTwo, integralRule.getIntegralByRegister());
+            MarketingMembers marketingMembersNew = memberTransfer .transferNotExists0(marketingMembersBindMobileParam, marketingMembersTwo
+                , integralRule== null ? 0 : integralRule.getIntegralByRegister());
             result=marketingMembersMapper.insert(marketingMembersNew);
         }
 

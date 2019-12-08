@@ -23,8 +23,9 @@ public class BeanPropertyUtil {
 		Field.setAccessible(fields, true);
 		for (Field field : fields) {
 			try {
-				if(field.get(object)!=null)
-					map.put(field.getName(), field.get(object));
+				if(field.get(object)!=null) {
+                    map.put(field.getName(), field.get(object));
+                }
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -68,8 +69,9 @@ public class BeanPropertyUtil {
 			while (resultSet.next()) {
 				map = new HashMap<String, Object>();
 				for (int i = 0; i < size; i++) {
-					if(resultSet.getObject(columnName[i])!=null)
-						map.put(columnName[i].toLowerCase(), resultSet.getObject(columnName[i]));
+					if(resultSet.getObject(columnName[i])!=null) {
+                        map.put(columnName[i].toLowerCase(), resultSet.getObject(columnName[i]));
+                    }
 				}
 				list.add(map);
 			}
@@ -83,8 +85,9 @@ public class BeanPropertyUtil {
 		int count = 0;
 		char[] chars = string.toCharArray();
 		for (char ch : chars) {
-			if (ch == c)
-				count++;
+			if (ch == c) {
+                count++;
+            }
 		}
 		return count;
 	}
@@ -100,8 +103,9 @@ public class BeanPropertyUtil {
 					String name = field.getName();
 					if(map.containsKey(name)){
 						Object value = map.get(name);
-						if(value.getClass()==Date.class)
-							value = DateUtil.DateFormat(value, "yyyy/MM/dd HH:mm");
+						if(value.getClass()==Date.class) {
+                            value = DateUtil.DateFormat(value, "yyyy/MM/dd HH:mm");
+                        }
 						field.set(object, String.valueOf(value));
 					}
 				}

@@ -33,13 +33,13 @@ public abstract class AutoFetchChainAbs<T> {
             try {
                 ifDoBiz(datafromMq);
             } catch (Exception e) {
-                logger.error("{}调用 ifDoBiz({})异常{}", this.getClass().getName(), JSONObject.toJSONString(datafromMq),e.getMessage());
+                logger.warn("{}调用 ifDoBiz({})异常{}", this.getClass().getName(), JSONObject.toJSONString(datafromMq),e.getMessage());
             }
         }else {
             try {
                 ifNotBiz(datafromMq);
             } catch (Exception e) {
-                logger.error("{}调用 ifNotBiz({})异常{}", this.getClass().getName(), JSONObject.toJSONString(datafromMq),e.getMessage());
+                logger.warn("{}调用 ifNotBiz({})异常{}", this.getClass().getName(), JSONObject.toJSONString(datafromMq),e.getMessage());
             }
 
         }

@@ -58,7 +58,7 @@ public class SalerAutoUnderTask {
         }
         if(!CollectionUtils.isEmpty(readingToDb)){
             readingToDb.forEach(data->data.setStatus((byte)2));
-            logger.error(" 导购积分兑换红包=======================================update size is "+readingToDb.size()+" =======================================");
+            logger.info(" 导购积分兑换红包=======================================update size is "+readingToDb.size()+" =======================================");
             try {
                 salerRuleExchangeService.updateBatchById(readingToDb);
             } catch (Exception e) {
@@ -66,7 +66,7 @@ public class SalerAutoUnderTask {
                 e.printStackTrace();
             }
         }else{
-            logger.error(" 导购积分兑换红包=======================================update size is zero =======================================");
+            logger.info(" 导购积分兑换红包=======================================update size is zero =======================================");
         }
         if(logger.isInfoEnabled()){
             logger.info(" 导购积分兑换红包=======================================end timing off shelf=======================================");

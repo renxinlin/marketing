@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.exception.TableSaveException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketingsaler.order.vo.SalerPreFillInfoVo;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
@@ -24,6 +25,8 @@ import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +49,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapper, SalerOrderForm> {
+
+    private static Logger logger = LoggerFactory.getLogger(SalerOrderFormService.class);
 
     @Autowired
     private DynamicMapper dynamicMapper;
@@ -308,7 +313,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, H5LoginVO user) {
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()), "未获取对应组织");
         Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取订货信息");
-        validAllHaveColumn(columnnameAndValues,user.getOrganizationId());
+       // validAllHaveColumn(columnnameAndValues,user.getOrganizationId());
         StringBuffer address = new StringBuffer("");
         if (!StringUtils.isEmpty(user.getCustomerId())) {
             CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo(user.getCustomerId());
@@ -394,5 +399,24 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
     public List<Map<String, Object>> detailbyId(Long id) {
         return dynamicMapper.selectById(id,SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
+    }
+
+    /**
+     * 导购员中心预填信息
+     * @param jwtUser
+     * @return
+     */
+    public SalerPreFillInfoVo getPreFill(H5LoginVO jwtUser){
+        SalerPreFillInfoVo salerPreFillInfoVo= new SalerPreFillInfoVo();
+        salerPreFillInfoVo.setDinghuoren(jwtUser.getMemberName());
+        salerPreFillInfoVo.setDinghuorendianhua(jwtUser.getMobile());
+        StringBuffer address = new StringBuffer("");
+        if (org.apache.commons.lang.StringUtils.isNotBlank(jwtUser.getCustomerId())){
+            CustomerInfoView customerInfoView=baseCustomerService.getCustomerInfo(jwtUser.getCustomerId());
+            logger.info("准备从基础信息获取地址customerInfoView-{}",customerInfoView);
+            getAddress(address,customerInfoView);
+            salerPreFillInfoVo.setShouhuodizhi(address.toString());
+        }
+        return salerPreFillInfoVo;
     }
 }
