@@ -32,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -318,7 +319,12 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             getAddress(address, customerInfo);
         }
         SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues, user, address.toString());
-        dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
+        try {
+            // 企业可以未配置动态模板，导致动态表不存在
+            dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
+        } catch (RuntimeException e) {
+            throw new BizRuntimeException("保存动态订单失败...");
+        }
     }
 
 
