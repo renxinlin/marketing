@@ -56,7 +56,8 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class LotteryService {
-	protected static Logger logger = LoggerFactory.getLogger(LotteryService.class);
+
+	private static Logger logger = LoggerFactory.getLogger(LotteryService.class);
 
 	@Autowired
 	private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;

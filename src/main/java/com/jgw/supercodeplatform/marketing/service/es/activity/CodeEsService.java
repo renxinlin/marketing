@@ -70,7 +70,7 @@ public class CodeEsService extends AbstractEsSearch {
 	private TransportClient eClient;
 	public void addScanCodeRecord(String openId, String productId, String productBatchId, String codeId,
 								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId,Integer memberType,Long  userId) throws SuperCodeException {
-		if (StringUtils.isBlank(openId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
+		if (StringUtils.isBlank(openId) || StringUtils.isBlank(productId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
 				|| null == activitySetId|| StringUtils.isBlank(organizationId) || null == memberType|| null == userId) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
