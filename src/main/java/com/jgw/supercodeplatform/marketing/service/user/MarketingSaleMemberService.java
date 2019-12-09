@@ -370,8 +370,8 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 			MarketingUser marketingUser = new MarketingUser();
 			marketingUser.setSource(SourceType.H5); //    3、H5 4
 			BeanUtils.copyProperties(userDo, marketingUser);
-			marketingUser.setMechanismType(userInfo.getMechanismType() ==null ?null:userInfo.getMechanismType().byteValue());
-		//	setMechanismType(userInfo, marketingUser);
+//			marketingUser.setMechanismType(userInfo.getMechanismType() ==null ?null:userInfo.getMechanismType().byteValue());
+			setMechanismType(userInfo, marketingUser);
 			mapper.insertSelective(marketingUser);
 		}
 
