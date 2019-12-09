@@ -152,6 +152,7 @@ public class WXPayRequest {
             WXPayReport.getInstance(config).report(
                     uuid,
                     elapsedTimeMillis,
+                    config.getKey(),
                     domainInfo.domain,
                     domainInfo.primaryDomain,
                     connectTimeoutMs,
@@ -169,6 +170,7 @@ public class WXPayRequest {
             WXPayReport.getInstance(config).report(
                     uuid,
                     elapsedTimeMillis,
+                    config.getKey(),
                     domainInfo.domain,
                     domainInfo.primaryDomain,
                     connectTimeoutMs,
@@ -186,6 +188,7 @@ public class WXPayRequest {
             WXPayReport.getInstance(config).report(
                     uuid,
                     elapsedTimeMillis,
+                    config.getKey(),
                     domainInfo.domain,
                     domainInfo.primaryDomain,
                     connectTimeoutMs,
@@ -203,6 +206,7 @@ public class WXPayRequest {
             WXPayReport.getInstance(config).report(
                     uuid,
                     elapsedTimeMillis,
+                    config.getKey(),
                     domainInfo.domain,
                     domainInfo.primaryDomain,
                     connectTimeoutMs,
@@ -217,6 +221,7 @@ public class WXPayRequest {
             WXPayReport.getInstance(config).report(
                     uuid,
                     elapsedTimeMillis,
+                    config.getKey(),
                     domainInfo.domain,
                     domainInfo.primaryDomain,
                     connectTimeoutMs,

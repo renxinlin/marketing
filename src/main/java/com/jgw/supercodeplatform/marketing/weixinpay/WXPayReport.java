@@ -115,9 +115,7 @@ public class WXPayReport {
     private WXPayConfig config;
     private ExecutorService executorService;
 
-    private volatile static ConcurrentMap<String,WXPayReport> payReportMap = new ConcurrentHashMap<>();
-
-//    private volatile static WXPayReport INSTANCE;
+    private volatile static WXPayReport INSTANCE;
 
     private WXPayReport(final WXPayConfig config) {
         this.config = config;
@@ -181,35 +179,39 @@ public class WXPayReport {
      * @param config
      * @return
      */
-//    public static WXPayReport getInstance(WXPayConfig config) {
-//        if (INSTANCE == null) {
-//            synchronized (WXPayReport.class) {
-//                if (INSTANCE == null) {
-//                    INSTANCE = new WXPayReport(config);
-//                }
-//            }
-//        }
-//        return INSTANCE;
-//    }
-
     public static WXPayReport getInstance(WXPayConfig config) {
-        String appId = config.getAppID();
-        WXPayReport payReport = payReportMap.get(appId);
-        if (payReport == null) {
-            payReportMap.putIfAbsent(appId, new WXPayReport(config));
+        if (INSTANCE == null) {
+            synchronized (WXPayReport.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new WXPayReport(config);
+                }
+            }
         }
-        return payReportMap.get(appId);
+        return INSTANCE;
     }
 
+//    public void report(String uuid, long elapsedTimeMillis,
+//                       String firstDomain, boolean primaryDomain, int firstConnectTimeoutMillis, int firstReadTimeoutMillis,
+//                       boolean firstHasDnsError, boolean firstHasConnectTimeout, boolean firstHasReadTimeout) {
+//        long currentTimestamp = WXPayUtil.getCurrentTimestamp();
+//        ReportInfo reportInfo = new ReportInfo(uuid, currentTimestamp, elapsedTimeMillis,
+//                firstDomain, primaryDomain, firstConnectTimeoutMillis, firstReadTimeoutMillis,
+//                firstHasDnsError, firstHasConnectTimeout, firstHasReadTimeout);
+//        String data = reportInfo.toLineString(config.getKey());
+//        WXPayUtil.getLogger().info("report {}", data);
+//        if (data != null) {
+//            reportMsgQueue.offer(data);
+//        }
+//    }
 
-    public void report(String uuid, long elapsedTimeMillis,
+    public void report(String uuid, long elapsedTimeMillis, String key,
                        String firstDomain, boolean primaryDomain, int firstConnectTimeoutMillis, int firstReadTimeoutMillis,
                        boolean firstHasDnsError, boolean firstHasConnectTimeout, boolean firstHasReadTimeout) {
         long currentTimestamp = WXPayUtil.getCurrentTimestamp();
         ReportInfo reportInfo = new ReportInfo(uuid, currentTimestamp, elapsedTimeMillis,
                 firstDomain, primaryDomain, firstConnectTimeoutMillis, firstReadTimeoutMillis,
                 firstHasDnsError, firstHasConnectTimeout, firstHasReadTimeout);
-        String data = reportInfo.toLineString(config.getKey());
+        String data = reportInfo.toLineString(key);
         WXPayUtil.getLogger().info("report {}", data);
         if (data != null) {
             reportMsgQueue.offer(data);
