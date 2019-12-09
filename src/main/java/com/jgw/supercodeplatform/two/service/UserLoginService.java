@@ -12,8 +12,8 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingSaleUserBindMobileParam;
 import com.jgw.supercodeplatform.two.service.transfer.UserTransfer;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2019/11/14 14:15
  */
 @Service
+@Slf4j
 public class UserLoginService {
-    private static Logger logger = Logger.getLogger(UserLoginService.class);
-
+ 
     @Autowired
     private MarketingUserMapper marketingUserMapper;
 

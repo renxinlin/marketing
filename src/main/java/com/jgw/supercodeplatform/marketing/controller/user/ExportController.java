@@ -14,10 +14,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -36,9 +35,9 @@ import java.util.Map;
 @Controller
 @RequestMapping("/marketing/export")
 @Api(tags = "会员导购员导出")
+@Slf4j
 public class ExportController extends CommonUtil {
-    protected static Logger logger = LoggerFactory.getLogger(ExportController.class);
-
+ 
     @Autowired
     private MarketingMembersService marketingMembersService;
 
@@ -64,8 +63,8 @@ public class ExportController extends CommonUtil {
     @ApiOperation(value = "导出会员资料")
     @ApiImplicitParams({@ApiImplicitParam(paramType = "header", value = "token", name = "super-token")})
     public void exportInfo(HttpServletResponse response, HttpServletRequest request) throws Exception {
-        logger.info("导出会员资料入参==={}",JSONObject.toJSONString(request.getParameterMap()));
-        logger.info("导出会员资料入参==={}", request.getParameter("dataList"));
+        log.info("导出会员资料入参==={}",JSONObject.toJSONString(request.getParameterMap()));
+        log.info("导出会员资料入参==={}", request.getParameter("dataList"));
         List<MarketingMembers> list;
         //自定义表头
         String dataList = request.getParameter("dataList");
@@ -100,7 +99,7 @@ public class ExportController extends CommonUtil {
             }
             NEW_EXCEL_FIELD=NEW_EXCEL_FIELD.replaceAll("registrationApproach","registrationApproachStr");
         }
-        logger.info("-----------自定义表头-----------" + CUSTOMER_EXCEL_FIELD_MAP);
+        log.info("-----------自定义表头-----------" + CUSTOMER_EXCEL_FIELD_MAP);
         // step-3:处理excel字段映射 转换excel {filedMap:[ {key:英文} ,  {value:中文} ]} 有序
         Map filedMap = null;
         try {
@@ -138,7 +137,7 @@ public class ExportController extends CommonUtil {
         list = service.changeList(list);
 
         CUSTOMER_EXCEL_FIELD_MAP = request.getParameter("exportMetadata");
-        logger.info("-----------自定义表头-----------" + CUSTOMER_EXCEL_FIELD_MAP);
+        log.info("-----------自定义表头-----------" + CUSTOMER_EXCEL_FIELD_MAP);
         String NEW_USER_EXCEL_FIELD = null;
         if (CUSTOMER_EXCEL_FIELD_MAP.indexOf(MechanismTypeConstants.mechanismType)!=-1){
             NEW_USER_EXCEL_FIELD = CUSTOMER_EXCEL_FIELD_MAP.replaceAll("mechanismType","mechanismTypeStr");

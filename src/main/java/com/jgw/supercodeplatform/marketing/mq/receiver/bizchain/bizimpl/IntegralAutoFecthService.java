@@ -1,27 +1,20 @@
 package com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.bizimpl;
 
 import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Lists;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
 import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleProductMapperExt;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.AutoFetchChainAbs;
-import com.jgw.supercodeplatform.marketing.service.integral.IntegralRuleProductService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
-import org.apache.commons.lang3.ObjectUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class IntegralAutoFecthService extends AutoFetchChainAbs<List<Map<String, Object>>> {
 
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
+ 
     @Value("${marketing.domain.url}")
     private String marketingDomain;
 
@@ -59,10 +52,10 @@ public class IntegralAutoFecthService extends AutoFetchChainAbs<List<Map<String,
             String productId = (String)map.get("productId");
             String productBatchId = (String)map.get("productBatchId");
             String codeBatch = map.get("codeBatch") == null? null : map.get("codeBatch").toString();
-            logger.info("收到mq:productId=" + productId + ",productBatchId=" + productBatchId + ",codeBatch=" + codeBatch);
+            log.info("收到mq:productId=" + productId + ",productBatchId=" + productBatchId + ",codeBatch=" + codeBatch);
             // 校验
             if (StringUtils.isBlank(productId) || StringUtils.isBlank(codeBatch)) {
-                logger.error("获取码管理平台推送的新增批次mq消息，值有空值productId=" + productId + ",codeBatch=" + codeBatch);
+                log.error("获取码管理平台推送的新增批次mq消息，值有空值productId=" + productId + ",codeBatch=" + codeBatch);
                 continue;
             }
             long prodIdCount = integralRuleProductMapperExt.countProductId(productId);
@@ -82,9 +75,9 @@ public class IntegralAutoFecthService extends AutoFetchChainAbs<List<Map<String,
                 productSbatchMap.put(key, sbatchUrlDto);
             }
             List<SbatchUrlDto> sbatchUrlDtoList = new ArrayList<>(productSbatchMap.values());
-            logger.info("码管理绑定积分入参：{}", JSON.toJSONString(sbatchUrlDtoList));
+            log.info("码管理绑定积分入参：{}", JSON.toJSONString(sbatchUrlDtoList));
             RestResult bindBatchBody = getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(sbatchUrlDtoList);
-            logger.info("码管理绑定积分返回：{}", JSON.toJSONString(bindBatchBody));
+            log.info("码管理绑定积分返回：{}", JSON.toJSONString(bindBatchBody));
             int bindBatchstate=bindBatchBody.getState();
             if (200!=bindBatchstate) {
                 throw new SuperCodeExtException("积分设置时根据生码批次绑定url失败："+bindBatchBody, 500);

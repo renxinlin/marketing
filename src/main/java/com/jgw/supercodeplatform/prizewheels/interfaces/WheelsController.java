@@ -20,8 +20,7 @@ import com.jgw.supercodeplatform.prizewheels.interfaces.vo.WheelsDetailsVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -38,9 +37,10 @@ import java.util.Map;
 @Controller
 @RequestMapping("marketing/prizeWheels")
 @Api(value = "", tags = "大转盘")
+@Slf4j
+
 public class WheelsController extends SalerCommonController {
-    private static Logger logger = LoggerFactory.getLogger(WheelsController.class);
-    @Autowired
+     @Autowired
     private WheelsPublishAppication appication;
 
     @Autowired
@@ -137,7 +137,7 @@ public class WheelsController extends SalerCommonController {
         try {
             filedMap= JsonToMapUtil.toMap(EXCEL_FIELD_MAP);
         } catch (Exception e) {
-            logger.warn("{desc：记录表头解析异常"+e.getMessage()+"}");
+            log.warn("{desc：记录表头解析异常"+e.getMessage()+"}");
             throw new SuperCodeException("表头解析异常",500);
         }
         ExcelUtils.listToExcel(list, filedMap, "参与记录",response);
@@ -163,7 +163,7 @@ public class WheelsController extends SalerCommonController {
         try {
             filedMap= JsonToMapUtil.toMap(EXCEL_ORDER_FIELD_MAP);
         } catch (Exception e) {
-            logger.warn("{desc：记录表头解析异常"+e.getMessage()+"}");
+            log.warn("{desc：记录表头解析异常"+e.getMessage()+"}");
             throw new SuperCodeException("表头解析异常",500);
         }
         ExcelUtils.listToExcel(list, filedMap, "订单记录",response);
