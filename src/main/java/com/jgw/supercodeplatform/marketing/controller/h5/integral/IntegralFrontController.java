@@ -102,7 +102,7 @@ public class IntegralFrontController {
 	public RestResult<List<String>> receive(@RequestParam(name = "outerCodeId") String outerCodeId,
 			@RequestParam(name = "codeTypeId") String codeTypeId,
 			@RequestParam(name = "productId") String productId,
-			@RequestParam(name = "productBatchId") String productBatchId,
+			String productBatchId,
 			@RequestParam(name = "memberId", required = true) Long memberId,
 			HttpServletRequest request)
 			throws SuperCodeException, ParseException {

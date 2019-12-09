@@ -103,7 +103,10 @@ public class ScanCodeController {
     @RequestMapping(method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统路径", notes = "")
     public String bind(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId, @RequestParam String sBatchId, @RequestParam Integer businessType, HttpServletRequest request) throws Exception {
-    	Map<String, String> uriVariables = new HashMap<>();
+    	if (StringUtils.isBlank(productBatchId) || StringUtils.equalsIgnoreCase(productBatchId, "null")) {
+            productBatchId = null;
+        }
+        Map<String, String> uriVariables = new HashMap<>();
     	uriVariables.put("judgeType", "2");
     	uriVariables.put("outerCodeId", outerCodeId);
     	uriVariables.put("codeTypeId",codeTypeId);
@@ -148,7 +151,10 @@ public class ScanCodeController {
     @RequestMapping(value = "/saler",method = RequestMethod.GET)
     @ApiOperation(value = "码平台跳转营销系统导购路径", notes = "")
     public String daogou(@RequestParam String outerCodeId,@RequestParam String codeTypeId,@RequestParam String productId,@RequestParam String productBatchId,@RequestParam String sBatchId, @RequestParam String memberId) throws Exception {
-    	logger.info("导购扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+"sBatchId="+sBatchId);
+        if (StringUtils.isBlank(productBatchId) || StringUtils.equalsIgnoreCase(productBatchId, "null")) {
+            productBatchId = null;
+        }
+        logger.info("导购扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+"sBatchId="+sBatchId);
     	String	wxstate=commonUtil.getUUID();
     	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId,sBatchId, wxstate, ReferenceRoleEnum.ACTIVITY_SALER.getType());
         // 领取按钮对应的前端URL
