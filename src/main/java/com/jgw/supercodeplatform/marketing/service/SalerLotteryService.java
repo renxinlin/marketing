@@ -560,10 +560,6 @@ public class SalerLotteryService {
         if(scanCodeInfoMO.getProductId() == null ){
             throw new SuperCodeException("对不起，您所扫码的产品未参与活动");
         }
-        // 活动参数校验4
-        if(scanCodeInfoMO.getProductBatchId()  == null ){
-            throw new SuperCodeException("对不起，您所扫码的产品未参与活动");
-        }
         // 活动参数校验5:这个参数不在乐观锁判断;不校验
         //        if(scanCodeInfoMO.getCreateTime() == null ){
         //            throw new SuperCodeException("扫码时间不存在...");
