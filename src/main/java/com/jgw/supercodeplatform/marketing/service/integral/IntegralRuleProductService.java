@@ -1,26 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
-import java.util.*;
-import java.util.Map.Entry;
-
 import com.alibaba.fastjson.JSON;
-import com.google.gson.JsonArray;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -38,14 +18,30 @@ import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleProductMappe
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.Product;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 @Service
+@Slf4j
 public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
-    private Logger logger = LoggerFactory.getLogger(IntegralRuleProductService.class);
-  
+   
     @Autowired
     private IntegralRuleProductMapperExt dao;
 
@@ -245,7 +241,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
     		Map<String,String> headerMap=new HashMap<String, String>();
     		headerMap.put("super-token", superToken);
     		ResponseEntity<String> resopEntity=restTemplateUtil.putJsonDataAndReturnJosn(restUserUrl+CommonConstants.USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO, json, headerMap);
-    		logger.info("更新基础平台营销数据返回信息："+resopEntity.toString());
+    		log.info("更新基础平台营销数据返回信息："+resopEntity.toString());
     		String body=resopEntity.getBody();
     		JSONObject bodyJosn=JSONObject.parseObject(body);
     		Integer state=bodyJosn.getInteger("state");
@@ -356,9 +352,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			});
 			List<SbatchUrlUnBindDto> sbatchUrlUnBindDtoList = new ArrayList<>(sbatchUrlUnbindDtoMap.values());
 //			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
-			logger.info("积分请求删除绑定{}", JSON.toJSONString(sbatchUrlUnBindDtoList));
+			log.info("积分请求删除绑定{}", JSON.toJSONString(sbatchUrlUnBindDtoList));
 			RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(sbatchUrlUnBindDtoList);
-			logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
+			log.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
 			if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
 				throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
 			}
@@ -392,9 +388,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 				}
 			});
 			List<SbatchUrlDto> sbatchUrlDtoList = new ArrayList<>(sbatchUrlDtoMap.values());
-			logger.info("码管理绑定积分入参：{}", JSON.toJSONString(sbatchUrlDtoList));
+			log.info("码管理绑定积分入参：{}", JSON.toJSONString(sbatchUrlDtoList));
 			RestResult bindBatchBody=getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(sbatchUrlDtoList);
-			logger.info("码管理绑定积分返回：{}", JSON.toJSONString(bindBatchBody));
+			log.info("码管理绑定积分返回：{}", JSON.toJSONString(bindBatchBody));
 			int bindBatchstate=bindBatchBody.getState();
 			if (200!=bindBatchstate) {
 				throw new SuperCodeException("积分设置时根据生码批次绑定url失败："+bindBatchBody, 500);
@@ -418,12 +414,12 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		if (null!=productIds && !productIds.isEmpty()) {
 			params.put("excludeProductIds",String.join(",", productIds));
 		}
-		logger.info("CODEMANAGER_RELATION_PRODUCT_URL = /code/relation/list/relation/productRecord : params ==> {}",JSONObject.toJSONString(params));
+		log.info("CODEMANAGER_RELATION_PRODUCT_URL = /code/relation/list/relation/productRecord : params ==> {}",JSONObject.toJSONString(params));
 		Map<String, String> headerMap = new HashMap<>();
 		headerMap.put("super-token", getSuperToken());
 		ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, headerMap);
 		String body = responseEntity.getBody();
-		logger.info("接收到码管理进行过码关联的产品信息："+body);
+		log.info("接收到码管理进行过码关联的产品信息："+body);
 		JSONObject json=JSONObject.parseObject(body);
 		int state=json.getInteger("state");
 		List<IntegralRuleProduct> ruleproductList=new ArrayList<IntegralRuleProduct>();

@@ -1,60 +1,45 @@
 package com.jgw.supercodeplatform.marketing.controller.common;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
+import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.WriterException;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
+import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
+import com.jgw.supercodeplatform.marketing.common.model.RestResult;
+import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.dto.WxSignPram;
 import com.jgw.supercodeplatform.marketing.dto.common.CustomPreStore;
 import com.jgw.supercodeplatform.marketing.dto.coupon.UrlParam;
-import com.jgw.supercodeplatform.marketing.vo.activity.WxSignVo;
-import com.jgw.supercodeplatform.marketing.vo.common.WxMerchants;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import com.alibaba.fastjson.JSONObject;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
-import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.HttpRequestUtil;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
+import com.jgw.supercodeplatform.marketing.vo.activity.WxSignVo;
+import com.jgw.supercodeplatform.marketing.vo.common.WxMerchants;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/marketing/common")
 @Api(tags = "公共接口")
+@Slf4j
 public class CommonController extends CommonUtil {
-	protected static Logger logger = LoggerFactory.getLogger(CommonController.class);
-    @Autowired
+     @Autowired
     private CommonService service;
 
     @Autowired
@@ -94,7 +79,7 @@ public class CommonController extends CommonUtil {
         @ApiImplicitParam(name = "url", paramType = "query", defaultValue = "http://www.baidu.com", value = "签名页面url", required = true)
    })
     public RestResult<Map<String, String>> get(@RequestParam("organizationId")String organizationId,@RequestParam("url")String url) throws Exception {
-    	logger.info("签名信息,organizationId="+organizationId+",url="+url);
+    	log.info("签名信息,organizationId="+organizationId+",url="+url);
     	MarketingWxMerchants mWxMerchants=marketingWxMerchantsService.selectByOrganizationId(organizationId);
     	if (mWxMerchants == null) {
     	    mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
@@ -110,9 +95,9 @@ public class CommonController extends CommonUtil {
         // TODO 测试
     	HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
     	String tickContent=result.getContent();
-    	logger.info("获取到tick的数据："+tickContent);
+    	log.info("获取到tick的数据："+tickContent);
         String ticket = JSONObject.parseObject(tickContent).getString("ticket");
-        logger.info("获取到tick的数据："+ticket);
+        log.info("获取到tick的数据："+ticket);
         // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
         String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
     	long timestamp=WXPayUtil.getCurrentTimestamp();
@@ -125,9 +110,9 @@ public class CommonController extends CommonUtil {
     	//
         String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
     	String signature=CommonUtil.sha1Encrypt(sha1String1);
-        logger.info("==================start log=====================");
-    	logger.info(sha1String1);
-        logger.info(signature);
+        log.info("==================start log=====================");
+    	log.info(sha1String1);
+        log.info(signature);
     	
     	RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
     	restResult.setState(200);
@@ -160,9 +145,9 @@ public class CommonController extends CommonUtil {
         // TODO 测试
         HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
         String tickContent=result.getContent();
-        logger.info("获取到tick的数据："+tickContent);
+        log.info("获取到tick的数据："+tickContent);
         String ticket = JSONObject.parseObject(tickContent).getString("ticket");
-        logger.info("获取到tick的数据："+ticket);
+        log.info("获取到tick的数据："+ticket);
         // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
         String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
         long timestamp=WXPayUtil.getCurrentTimestamp();
@@ -175,8 +160,8 @@ public class CommonController extends CommonUtil {
         String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
         String signature=DigestUtils.sha1Hex(sha1String1);
         //String signature=CommonUtil.sha1Encrypt(sha1String1);
-        logger.info("签名前======>{}", sha1String1);
-        logger.info("签名后======>", signature);
+        log.info("签名前======>{}", sha1String1);
+        log.info("签名后======>", signature);
         RestResult<Map<String, String>> restResult=new RestResult<Map<String, String>>();
         restResult.setState(200);
         Map<String, String> data=new HashMap<String, String>();
@@ -196,11 +181,11 @@ public class CommonController extends CommonUtil {
         String appId = wxSignPram.getAppId();
         String appSecret = wxSignPram.getAppSecret();
         String url = wxSignPram.getUrl();
-        logger.info("签名信息,appid:{}，appsecret:{}", wxSignPram.getAppId(), wxSignPram.getAppSecret());
+        log.info("签名信息,appid:{}，appsecret:{}", wxSignPram.getAppId(), wxSignPram.getAppSecret());
         String access_token_url ="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appId+"&secret="+appSecret;
         HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(access_token_url);
         String body=reHttpClientResult.getContent();
-        logger.info("请求获取用户信息token返回;"+body);
+        log.info("请求获取用户信息token返回;"+body);
         if (!body.contains("access_token")) {
             return RestResult.fail("获取签名失败", null);
         }
@@ -208,17 +193,17 @@ public class CommonController extends CommonUtil {
         String accessToken=tokenObj.getString("access_token");
         HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
         String tickContent=result.getContent();
-        logger.info("获取到tick的数据："+tickContent);
+        log.info("获取到tick的数据："+tickContent);
         String ticket = JSONObject.parseObject(tickContent).getString("ticket");
-        logger.info("获取到tick的数据："+ticket);
+        log.info("获取到tick的数据："+ticket);
         // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
         String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
         long timestamp=WXPayUtil.getCurrentTimestamp();
         String sha1String1 = "jsapi_ticket="+ticket+"&noncestr="+noncestr+"&timestamp="+timestamp+"&url="+url;
         String signature=CommonUtil.sha1Encrypt(sha1String1);
-        logger.info("==================start log=====================");
-        logger.info(sha1String1);
-        logger.info(signature);
+        log.info("==================start log=====================");
+        log.info(sha1String1);
+        log.info(signature);
 
         WxSignVo wxSignVo = new WxSignVo();
         wxSignVo.setAppId(appId);

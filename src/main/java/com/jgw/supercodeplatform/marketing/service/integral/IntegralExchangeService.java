@@ -1,23 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
@@ -27,36 +9,33 @@ import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
 import com.jgw.supercodeplatform.marketing.common.util.SerialNumberGenerator;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
-import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.integral.ExchangeStatisticsMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralOrderMapperExt;
-import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
+import com.jgw.supercodeplatform.marketing.dao.integral.*;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
-import com.jgw.supercodeplatform.marketing.dto.integral.ExchangeProductParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeAddParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeDetailParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeSkuDetailAndAddress;
-import com.jgw.supercodeplatform.marketing.dto.integral.IntegralExchangeUpdateParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.ProductAddParam;
-import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
+import com.jgw.supercodeplatform.marketing.dto.integral.*;
 import com.jgw.supercodeplatform.marketing.enums.market.IntegralReasonEnum;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
-import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
-import com.jgw.supercodeplatform.marketing.pojo.integral.ExchangeStatistics;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
-import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
+import com.jgw.supercodeplatform.marketing.pojo.integral.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.util.*;
 
 /**
  * 积分兑换
  *
  */
 @Service
+@Slf4j
 public class IntegralExchangeService extends AbstractPageService<IntegralExchange> {
-    private static Logger logger = LoggerFactory.getLogger(IntegralExchangeService.class);
-    @Autowired
+     @Autowired
     private IntegralExchangeMapperExt mapper;
     @Autowired
     private MarketingMembersMapper membersMapper;
@@ -139,7 +118,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         IntegralExchange integralExchange = mapper.selectByPrimaryKey(id);
         int i = mapper.deleteByOrganizationId(id, organizationId);
         if(i != 1){
-            logger.error("{组织" + organizationId + "删除积分兑换记录记录" + id + " 共"+i+"条}" );
+            log.error("{组织" + organizationId + "删除积分兑换记录记录" + id + " 共"+i+"条}" );
             throw new SuperCodeException("兑换记录不存在",500);
         }
         // 更新时，先删除后更新；取出旧的数据用于赋值新的数据原始属性，属于业务需求
@@ -169,7 +148,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             // 准备上架
             i =  mapper.updateStatusUp(updateStatus);
             if(i != 1){
-                logger.error("{组织" + organizationId + "上架" + id + " 共"+i+"条}" );
+                log.error("{组织" + organizationId + "上架" + id + " 共"+i+"条}" );
                 throw new SuperCodeException("上架失败",500);
             }
 
@@ -177,7 +156,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             // 准备下架status 为 1手动下架
             i =  mapper.updateStatusLowwer(updateStatus);
             if(i != 1){
-                logger.error("{组织" + organizationId + "下架" + id + " 共"+i+"条}" );
+                log.error("{组织" + organizationId + "下架" + id + " 共"+i+"条}" );
                 throw new SuperCodeException("下架失败",500);
             }
         }
@@ -197,7 +176,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(organizationId.equals(integralExchange.getOrganizationId())){
             return integralExchange;
         }else {
-            logger.error("组织"+organizationId+"发生数据越权,数据id"+id );
+            log.error("组织"+organizationId+"发生数据越权,数据id"+id );
             throw new SuperCodeException("组织" + organizationId + "无法查看" +id +"数据");
         }
     }
@@ -238,7 +217,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
             integralExchangeDetailParam.setDetail((String) datailFromBaseServiceResult.getResults());
         }
         if(integralExchangeDetailParam.getDetail() == null){
-            logger.info("详情数据不存在,产品ID"+ integralExchangeDetailParam.getProductId());
+            log.info("详情数据不存在,产品ID"+ integralExchangeDetailParam.getProductId());
         }
         return integralExchangeDetailParam;
     }
@@ -257,7 +236,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                 String detail = parse.getJSONObject("results").getString("productDetails");
                 return RestResult.success("success",detail);
             }else {
-                logger.error("商品详情查询失败的返回数据"+response.getBody());
+                log.error("商品详情查询失败的返回数据"+response.getBody());
                 return RestResult.error(null);
             }
 
@@ -281,7 +260,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
 
     // hystrix方法
     public RestResult  getDetailByhystrix(IntegralExchangeDetailParam integralExchangeDetailParam,Byte exchangeResource) throws SuperCodeException{
-        logger.error("base service failure by hystrix!");
+        log.error("base service failure by hystrix!");
         return RestResult.error("");
     }
 
@@ -421,15 +400,15 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
                              mapper.updateByPrimaryKeySelective(shouldUndercarriageDO);
 
                          }catch (Exception e){
-                             if(logger.isErrorEnabled()){
-                                 logger.error("[自动下架失败]");
-                                 logger.error("[start desc========================================================");
+                             if(log.isErrorEnabled()){
+                                 log.error("[自动下架失败]");
+                                 log.error("[start desc========================================================");
                                  e.printStackTrace();
-                                 logger.error("[exception =>{}",e.getMessage());
-                                 logger.error("[row record id{}]",JSONObject.toJSONString(shouldUndercarriageDO));
-                                 logger.error("[user exchange param VO{}]",JSONObject.toJSONString(exchangeProductParam));
-                                 logger.error("[biz transfer param for doexchanging{}]",JSONObject.toJSONString(exchangeNumKey));
-                                 logger.error("[end desc========================================================");
+                                 log.error("[exception =>{}",e.getMessage());
+                                 log.error("[row record id{}]",JSONObject.toJSONString(shouldUndercarriageDO));
+                                 log.error("[user exchange param VO{}]",JSONObject.toJSONString(exchangeProductParam));
+                                 log.error("[biz transfer param for doexchanging{}]",JSONObject.toJSONString(exchangeNumKey));
+                                 log.error("[end desc========================================================");
                              }
                          }
 
@@ -536,7 +515,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 查看memberID存在
         MarketingMembers member = membersMapper.selectById(exchangeProductParam.getMemberId());
         if(member == null){
-            logger.error(" {会员ID"+exchangeProductParam.getMemberId()+"信息异常 ,统计出0条} ");
+            log.error(" {会员ID"+exchangeProductParam.getMemberId()+"信息异常 ,统计出0条} ");
             throw new SuperCodeException("会员不存在");
         }
         if(member.getState() == (byte)0){
@@ -545,7 +524,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         // 查看组织id - productID-sku-是否存在 开启锁，强制阻塞，加索引后基于行锁阻塞
         IntegralExchange exists = mapper.exists(exchangeProductParam.getOrganizationId(), exchangeProductParam.getProductId(), exchangeProductParam.getSkuId());
         if(exists == null){
-            logger.error(" {兑换信息不存在"+ JSONObject.toJSONString(exchangeProductParam) +"} ");
+            log.error(" {兑换信息不存在"+ JSONObject.toJSONString(exchangeProductParam) +"} ");
             throw new SuperCodeException("兑换信息不存在");
         }
         if(exists.getStatus() != 3){
@@ -599,7 +578,7 @@ public class IntegralExchangeService extends AbstractPageService<IntegralExchang
         if(exchangeProductParam == null){
             throw new SuperCodeException("兑换信息不全000001");
         }
-        logger.info("[兑换参数{}]",JSONObject.toJSONString(exchangeProductParam));
+        log.info("[兑换参数{}]",JSONObject.toJSONString(exchangeProductParam));
         if(exchangeProductParam.getMemberId() == null || exchangeProductParam.getMemberId() <= 0){
             throw new SuperCodeException("兑换信息不全000002");
         }

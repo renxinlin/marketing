@@ -41,11 +41,10 @@ import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
+ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -64,9 +63,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MarketingMembersService extends AbstractPageService<MarketingMembersListParam> {
-	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersService.class);
-	@Value("${cookie.domain}")
+ 	@Value("${cookie.domain}")
 	private String cookieDomain;
 	//	@Value( "${注册短信模板外部配置key}")
 	@Value( "亲爱的{{user}},恭喜成功注册成为{{organization}}的会员")
@@ -120,7 +119,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 	protected List<HashMap<String, Object>> searchResult(MarketingMembersListParam searchParams) throws Exception {
 
 		String listSQl = listSql(searchParams,false);
-		logger.info("listSQL----"+listSQl);
+		log.info("listSQL----"+listSQl);
 		List<HashMap<String, Object>> data=marketingMembersMapper.dynamicList(listSQl);
 		if (data != null) {
 			data.stream().forEach(dat -> {
@@ -210,7 +209,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		String from=" from marketing_members ";
 		String where=" where State!=2 and OrganizationId='"+organizationId+"'";
 		String sql=null;
-		logger.info("fieldsbuf---------"+fieldsbuf);
+		log.info("fieldsbuf---------"+fieldsbuf);
 		if (isCount) {
 			sql=" select count(*) "+from+where;
 			if (commonsearch) {
@@ -227,7 +226,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				sql+=" order by RegistDate desc limit "+startNum+","+pagesize;
 			}
 		}
-		logger.info("sql---------------"+sql);
+		log.info("sql---------------"+sql);
 		return sql;
 	}
 
@@ -277,7 +276,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		Integer allMarketingMembersCount = marketingMembersMapper.getAllMarketingMembersCount(map);
 
 		if(allMarketingMembersCount >= 1){
-			logger.error(mobile + "手机号已注册");
+			log.error(mobile + "手机号已注册");
 			throw  new SuperCodeException("手机号已注册",500);
 		}
 		String userId = getUUID();
@@ -359,8 +358,8 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 
 		} catch (Exception e) {
 			// 公共方法提示交给调用方
-			if(logger.isInfoEnabled()){
-				logger.info("短信发送失败"+e.getMessage());
+			if(log.isInfoEnabled()){
+				log.info("短信发送失败"+e.getMessage());
 			}
 			e.printStackTrace();
 		}
@@ -646,7 +645,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			}
 			trueMember=memberWithWechat;
 		}else {
-			logger.error("marketingMembersMapper.selectByOpenIdAndOrgIdWithTemp参数 openid{}organizationId{}",openid,organizationId);
+			log.error("marketingMembersMapper.selectByOpenIdAndOrgIdWithTemp参数 openid{}organizationId{}",openid,organizationId);
 			//MemberWithWechat memberWithWechatByOpenid= selectByOpenIdAndOrgIdWithTemp(openid, organizationId);
 			MarketingWxMember wxMemberByOpenid = marketingWxMemberMapper.selectOne(Wrappers.<MarketingWxMember>query().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType()));
 			if (wxMemberByOpenid == null) {

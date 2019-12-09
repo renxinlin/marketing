@@ -5,12 +5,10 @@ import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.dao.weixin.WXPayTradeOrderMapper;
 import com.jgw.supercodeplatform.marketing.enums.market.SalerAmountStatusEnum;
 import com.jgw.supercodeplatform.marketing.pojo.pay.WXPayTradeOrder;
-import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPay;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 /**
@@ -18,9 +16,9 @@ import java.util.Map;
  * @author czm
  *
  */
+@Slf4j
 public class WXPayAsynTask implements Runnable{
-	protected static Logger logger = LoggerFactory.getLogger(WXPayAsynTask.class);
-    private WXPay wxPay;
+     private WXPay wxPay;
     private String urlSuffix;
     private Map<String, String> reqData;
     private int connectTimeoutMs,  readTimeoutMs;
@@ -39,23 +37,23 @@ public class WXPayAsynTask implements Runnable{
 		try {
 			String partner_trade_no=reqData.get("partner_trade_no");
 			if (StringUtils.isBlank(partner_trade_no)) {
-				logger.error("支付时订单号partner_trade_no为空未能发起支付");
+				log.error("支付时订单号partner_trade_no为空未能发起支付");
 			}
 			WXPayTradeOrderMapper wxTradeNoMapper=SpringContextUtil.getBean(WXPayTradeOrderMapper.class);
 			IntegralRecordMapperExt integralRecordMapper=SpringContextUtil.getBean(IntegralRecordMapperExt.class);
 			WXPayTradeOrder wXTradeNo=wxTradeNoMapper.selectByTradeNo(partner_trade_no);
 			if (null==wXTradeNo) {
-				logger.error("根据订单号partner_trade_no="+partner_trade_no+" 无法查询到订单");
+				log.error("根据订单号partner_trade_no="+partner_trade_no+" 无法查询到订单");
 				return ;
 			}
 
 			if (wXTradeNo.getTradeStatus().equals((byte)1)) {
-				logger.error("根据订单号partner_trade_no="+partner_trade_no+" 查询到订单状态已经是支付成功，");
+				log.error("根据订单号partner_trade_no="+partner_trade_no+" 查询到订单状态已经是支付成功，");
 				return ;
 			}
 			wXTradeNo.setTradeStatus((byte)2);
 			String result=wxPay.requestWithCert(urlSuffix, reqData, connectTimeoutMs, readTimeoutMs);
-			logger.info("发起支付后返回数据为："+result);
+			log.info("发起支付后返回数据为："+result);
 			Map<String,String> mapResult=WXPayUtil.xmlToMap(result);
 			String return_code=mapResult.get("return_code");
 			String return_msg=mapResult.get("return_msg");
@@ -108,24 +106,24 @@ public class WXPayAsynTask implements Runnable{
 		WXPayTradeOrder wXTradeNo= null;
 		try {
 			if (StringUtils.isBlank(partner_trade_no)) {
-				logger.error("支付时订单号partner_trade_no为空未能发起支付");
+				log.error("支付时订单号partner_trade_no为空未能发起支付");
 				throw new Exception("支付时订单号partner_trade_no为空未能发起支付");
 			}
 			wxTradeNoMapper = SpringContextUtil.getBean(WXPayTradeOrderMapper.class);
 			wXTradeNo = wxTradeNoMapper.selectByTradeNo(partner_trade_no);
 			if (null==wXTradeNo) {
-				logger.error("根据订单号partner_trade_no="+partner_trade_no+" 无法查询到订单");
+				log.error("根据订单号partner_trade_no="+partner_trade_no+" 无法查询到订单");
 				throw new Exception("根据订单号partner_trade_no="+partner_trade_no+" 无法查询到订单");
 
 			}
 
 			if (wXTradeNo.getTradeStatus().equals((byte)1)) {
-				logger.error("根据订单号partner_trade_no="+partner_trade_no+" 查询到订单状态已经是支付成功，");
+				log.error("根据订单号partner_trade_no="+partner_trade_no+" 查询到订单状态已经是支付成功，");
 				throw new Exception("根据订单号partner_trade_no="+partner_trade_no+" 查询到订单状态已经是支付成功，");
 			}
 			wXTradeNo.setTradeStatus((byte)2);
 			String result=wxPay.requestWithCert(urlSuffix, reqData, connectTimeoutMs, readTimeoutMs);
-			logger.info("发起支付后返回数据为："+result);
+			log.info("发起支付后返回数据为："+result);
 			Map<String,String> mapResult=WXPayUtil.xmlToMap(result);
 			String return_code=mapResult.get("return_code");
 			String return_msg=mapResult.get("return_msg");
@@ -149,7 +147,7 @@ public class WXPayAsynTask implements Runnable{
 						wXTradeNo.setErrCodeDes(err_code_des);
 						//为SYSTEMERROR错误时使用原单号重试
 						if ("SYSTEMERROR".equals(err_code)) {
-							logger.error("根据订单号partner_trade_no="+partner_trade_no+" SYSTEMERROR，");
+							log.error("根据订单号partner_trade_no="+partner_trade_no+" SYSTEMERROR，");
 							throw new Exception("订单号partner_trade_no="+partner_trade_no+" SYSTEMERROR，");
 
 						}

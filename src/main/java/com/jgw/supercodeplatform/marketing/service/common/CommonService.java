@@ -1,41 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.common;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.fastjson.JSON;
-import com.jgw.supercodeplatform.common.pojo.common.JsonResult;
-import com.jgw.supercodeplatform.exception.SuperCodeExtException;
-import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity;
-import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity.OuterCode;
-import com.jgw.supercodeplatform.marketing.enums.CodeTypeEnum;
-import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.xcontent.XContentType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.BarcodeFormat;
@@ -44,7 +9,9 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.jgw.supercodeplatform.common.pojo.common.JsonResult;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.HttpClientResult;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
@@ -57,16 +24,41 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
 import com.jgw.supercodeplatform.marketing.constants.SystemLabelEnum;
 import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
+import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity;
+import com.jgw.supercodeplatform.marketing.dto.OuterCodesEntity.OuterCode;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
+import com.jgw.supercodeplatform.marketing.enums.CodeTypeEnum;
 import com.jgw.supercodeplatform.marketing.enums.EsIndex;
 import com.jgw.supercodeplatform.marketing.enums.EsType;
+import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+
 @Service
+@Slf4j
 public class CommonService {
-	protected static Logger logger = LoggerFactory.getLogger(CommonService.class);
-    @Autowired
+     @Autowired
     private CommonUtil commonUtil;
 
     @Autowired
@@ -138,7 +130,7 @@ public class CommonService {
 		Map<String,String> headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
 		ResponseEntity<String>  response=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+url, jsonData, headerMap);
-		logger.info("请求码管理批次信息返回数据:"+response.toString());
+		log.info("请求码管理批次信息返回数据:"+response.toString());
 		String batchInfoBody=response.getBody();
 		JSONObject obj=JSONObject.parseObject(batchInfoBody);
 		int batchInfostate=obj.getInteger("state");
@@ -285,7 +277,7 @@ public class CommonService {
 		Map<String,String> headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
 		ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_BIND_BATCH_TO_URL, bindJson, headerMap);
-		logger.info("请求码管理绑定批次与url返回数据:"+bindBatchresponse.toString());
+		log.info("请求码管理绑定批次与url返回数据:"+bindBatchresponse.toString());
 		String body=bindBatchresponse.getBody();
 		return body;
 	}
@@ -303,7 +295,7 @@ public class CommonService {
 		Map<String,String> headerMap=new HashMap<String, String>();
 		headerMap.put("super-token", superToken);
 		ResponseEntity<String>  bindBatchresponse=restTemplateUtil.postJsonDataAndReturnJosn(codeManagerUrl+WechatConstants.CODEMANAGER_DELETE_BATCH_TO_URL, deleteJson, headerMap);
-		logger.info("请求码管理删除批次与url返回数据:"+bindBatchresponse.toString());
+		log.info("请求码管理删除批次与url返回数据:"+bindBatchresponse.toString());
 		String body=bindBatchresponse.getBody();
 		return body;
 	}
@@ -334,7 +326,7 @@ public class CommonService {
 		params.put("productIds",String.join(",", productIds));
 		
 		ResponseEntity<String> response=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_PRODUCT_BATCH, params, headerMap);
-		logger.info("根据产品集合请求基础平台批次数据收到响应："+response.toString());
+		log.info("根据产品集合请求基础平台批次数据收到响应："+response.toString());
 		String body=response.getBody();
 		JSONObject jsonObject=JSONObject.parseObject(body);
 		Integer state=jsonObject.getInteger("state");
@@ -359,7 +351,7 @@ public class CommonService {
 //		superToken.put("super-token",commonUtil.getSuperToken());
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.USER_REQUEST_ORGANIZATION_BATCH, params, null);
 		String body=responseEntity.getBody();
-		logger.info("请求基础平台批量获取组织信息接口返回信息："+body);
+		log.info("请求基础平台批量获取组织信息接口返回信息："+body);
 
 		JSONObject jsonBody=JSONObject.parseObject(body);
 		Integer state=jsonBody.getInteger("state");
@@ -420,7 +412,7 @@ public class CommonService {
 			String access_token_url ="https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+appId+"&secret="+secret;
 			HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(access_token_url);
 			String body=reHttpClientResult.getContent();
-			logger.info("请求获取用户信息token返回;"+body);
+			log.info("请求获取用户信息token返回;"+body);
 			if (body.contains("access_token")) {
 				JSONObject tokenObj=JSONObject.parseObject(body);
 				String token=tokenObj.getString("access_token");
@@ -443,10 +435,10 @@ public class CommonService {
 	public String checkCodeValid(String codeId, String codeTypeId) {
 		Map<String, String> headerparams = new HashMap<String, String>();
 		headerparams.put("token",commonUtil.getCodePlatformToken() );
-		logger.info("根据码和码制获取码平台码信息入参outerCodeId{}，codeTypeId{}：",codeId,codeTypeId);
+		log.info("根据码和码制获取码平台码信息入参outerCodeId{}，codeTypeId{}：",codeId,codeTypeId);
 
 		ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(msCodeUrl + "/outer/info/one?outerCodeId="+codeId+"&codeTypeId="+codeTypeId, null, headerparams);
-		logger.info("根据码和码制获取码平台码信息："+responseEntity.toString());
+		log.info("根据码和码制获取码平台码信息："+responseEntity.toString());
 		if(responseEntity.getStatusCode() != HttpStatus.OK ){
 			throw new BizRuntimeException("码管理调用获取批次信息服务调用异常！");
 		}
@@ -543,7 +535,7 @@ public class CommonService {
 
     public void indexScanInfo(MarketingMemberAndScanCodeInfoParam infoParam) throws SuperCodeException{
 		if(infoParam.getMemberType() == null ){
-			logger.warn("扫码MemberType不存在{}",JSONObject.toJSONString(infoParam));
+			log.warn("扫码MemberType不存在{}",JSONObject.toJSONString(infoParam));
 			throw new SuperCodeException("扫码MemberType不存在");
 		}
 		JSONObject.toJSONString(infoParam);
