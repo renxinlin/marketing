@@ -323,7 +323,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             // 企业可以未配置动态模板，导致动态表不存在
             dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
         } catch (RuntimeException e) {
-            throw new BizRuntimeException("保存动态订单失败...");
+            throw new BizRuntimeException("管理员未配置表单内容...");
         }
     }
 
