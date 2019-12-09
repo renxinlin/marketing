@@ -233,7 +233,7 @@ public class CodeEsService extends AbstractEsSearch {
 	 */
 	public void addCodeIntegral(Long userId, String outerCodeId, String codeTypeId, String productId, String productBatchId,
 								String organizationId, Long scanCodeTime) throws SuperCodeException {
-		if (null==userId  || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
+		if (null==userId  || StringUtils.isBlank(productId)
 				|| StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(codeTypeId) || StringUtils.isBlank(organizationId)|| null== scanCodeTime) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
