@@ -12,8 +12,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
@@ -21,12 +20,11 @@ import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.exception.UserExpireException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-
+@Slf4j
 @WebFilter(urlPatterns = "/marketing/front/coupon/*",filterName = "CouponUserFilter")
 public class CouponUserFilter implements Filter {
 
-	private static Logger logger = LoggerFactory.getLogger(CouponUserFilter.class);
-	
+ 	
 	private final String[] memberPaths = {"/listCoupon","/obtainCoupon"};
 	
 	private final String[] salerPaths = {"/couponVerify","/listVerify"};
@@ -79,7 +77,7 @@ public class CouponUserFilter implements Filter {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("CouponUserFilter出错", e);
+			log.error("CouponUserFilter出错", e);
 			throw new ServletException(e.getMessage());
 		}
 	}

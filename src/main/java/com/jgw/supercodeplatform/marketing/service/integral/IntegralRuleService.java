@@ -6,8 +6,7 @@ import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleMapperExt;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +14,8 @@ import org.springframework.stereotype.Service;
  * 积分记录
  */
 @Service
+@Slf4j
 public class IntegralRuleService  extends AbstractPageService<IntegralRecord > {
-    private Logger logger  = LoggerFactory.getLogger(IntegralRuleService.class);
 
     
     

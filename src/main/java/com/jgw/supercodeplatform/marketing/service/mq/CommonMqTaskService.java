@@ -11,10 +11,9 @@ import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireCond
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -31,9 +30,9 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 
 @Component
+@Slf4j
 public class CommonMqTaskService {
-	protected static Logger logger = LoggerFactory.getLogger(CommonMqTaskService.class);
-	
+ 	
 	@Autowired
 	private MarketingActivityProductMapper mProductMapper;
 	
@@ -62,9 +61,9 @@ public class CommonMqTaskService {
 				Object productBatchId=map.get("productBatchId");
 				Object codeTotal=map.get("codeTotal");
 				Object codeBatch=map.get("codeBatch");
-				logger.info("收到mq:productId="+productId+",productBatchId="+productBatchId+",codeTotal="+codeTotal+",codeBatch="+codeBatch);
+				log.info("收到mq:productId="+productId+",productBatchId="+productBatchId+",codeTotal="+codeTotal+",codeBatch="+codeBatch);
 				if (null==productId || null==codeTotal|| null==codeBatch) {
-					logger.warn("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeTotal="+codeTotal+",codeBatch="+codeBatch);
+					log.warn("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeTotal="+codeTotal+",codeBatch="+codeBatch);
 					continue;
 				}
 				Long codeTotalLon=Long.parseLong(String.valueOf(codeTotal));
@@ -140,7 +139,7 @@ public class CommonMqTaskService {
 //				JSONObject batchobj=JSONObject.parseObject(batchBody);
 //				Integer batchstate=batchobj.getInteger("state");
 				if (restResult.getState() != HttpStatus.SC_OK) {
-					logger.error("处理码管理推送的mq消息时绑定生码批次与url的关系出错，错误信息："+JSON.toJSONString(restResult)+",批次信息：");
+					log.error("处理码管理推送的mq消息时绑定生码批次与url的关系出错，错误信息："+JSON.toJSONString(restResult)+",批次信息：");
 					return;
 				}
 //				if (!activityCodeSumMap.isEmpty()){

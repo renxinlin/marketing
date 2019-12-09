@@ -19,9 +19,9 @@ import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -51,10 +51,10 @@ import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
 /**
  * 导购员领奖
  */
+@Slf4j
 @Service
 public class SalerLotteryService {
-    protected static Logger logger = LoggerFactory.getLogger(SalerLotteryService.class);
-
+ 
     @Autowired
     private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
 
@@ -223,7 +223,7 @@ public class SalerLotteryService {
             }
         }
         // TODO 改成枚举
-        logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
+        log.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
         //保存订单
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         WXPayTradeOrder tradeOrder = new WXPayTradeOrder();
@@ -467,8 +467,8 @@ public class SalerLotteryService {
         // 业务数据初始校验
         if(marketingActivityProduct ==null || CollectionUtils.isEmpty(marketingPrizeTypes)
                 || marketingActivitySet == null){
-            if(logger.isErrorEnabled()){
-                logger.error("扫码信息如下:productId_productBatchId_activitySetId:{}_{}_{},数据库信息如下活动:{} 奖次{} 产品{}",
+            if(log.isErrorEnabled()){
+                log.error("扫码信息如下:productId_productBatchId_activitySetId:{}_{}_{},数据库信息如下活动:{} 奖次{} 产品{}",
                         productId,productBatchId,activitySetId,JSONObject.toJSONString(marketingActivitySet),
                         JSONObject.toJSONString(marketingPrizeTypes),JSONObject.toJSONString(marketingActivityProduct));
             }
@@ -523,8 +523,8 @@ public class SalerLotteryService {
         ScanCodeInfoMO scanCodeInfoMO=globalRamCache.getScanCodeInfoMO(wxstate);
         // 活动主体基本校验
         if(scanCodeInfoMO == null){
-            if(logger.isInfoEnabled()){
-                logger.info("扫码领奖没有获取到redis缓存:用户{},wxstate:{},now:{}", JSONObject.toJSONString(jwtUser),wxstate, new Date());
+            if(log.isInfoEnabled()){
+                log.info("扫码领奖没有获取到redis缓存:用户{},wxstate:{},now:{}", JSONObject.toJSONString(jwtUser),wxstate, new Date());
                 throw new SuperCodeException("无法获取扫码相关信息");
             }
         }
@@ -539,8 +539,8 @@ public class SalerLotteryService {
         // 组织校验
         String organizationId = scanCodeInfoMO.getOrganizationId();
         if(jwtUser.getOrganizationId() == null || !jwtUser.getOrganizationId().equals(organizationId)){
-            if(logger.isInfoEnabled() || jwtUser.getOrganizationId() != null){
-                logger.error("扫码时获取的组织Id与领奖时用户信息的组织Id不统一:scanCodeInfoMO的信息{},jwtUser信息:{},now:{}",
+            if(log.isInfoEnabled() || jwtUser.getOrganizationId() != null){
+                log.error("扫码时获取的组织Id与领奖时用户信息的组织Id不统一:scanCodeInfoMO的信息{},jwtUser信息:{},now:{}",
                         JSONObject.toJSONString(scanCodeInfoMO),JSONObject.toJSONString(jwtUser),JSONObject.toJSONString(jwtUser), new Date());
                 throw new SuperCodeException("无法获取扫码相关信息");
             }

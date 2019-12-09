@@ -8,8 +8,8 @@ import com.jgw.supercodeplatform.marketing.mq.receiver.bizchain.bizimpl.PrizeWhe
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
 import com.jgw.supercodeplatform.marketing.service.mq.CommonMqTaskService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.log4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +23,9 @@ import java.util.Map;
  *
  */
 @Component
+@Slf4j
 public class Receiver  implements InitializingBean {
 
-	private static Logger logger = Logger.getLogger(Receiver.class);
 
 	@Autowired
 	private CommonMqTaskService service;
@@ -63,13 +63,13 @@ public class Receiver  implements InitializingBean {
 	}
     @RabbitListener(queues = RabbitMqQueueName.PUSH_BATCH_DATA_QUEUE)
     public void doMessage(List<Map<String, Object>> batchList) {
-        logger.info("mq开始消费--------------->>>>>>>>>>接收到数据data="+batchList);
+        log.info("mq开始消费--------------->>>>>>>>>>接收到数据data="+batchList);
        if (null!=batchList && !batchList.isEmpty()) {
     	   service.handleNewBindBatch(batchList);
     	   // 业务解耦:处理抵扣券 大转盘
 		   autoFecthProcess.fireBiz(batchList);
 	   }
-        logger.info("mq消息消费完成");
+        log.info("mq消息消费完成");
     }
 
 	@Override

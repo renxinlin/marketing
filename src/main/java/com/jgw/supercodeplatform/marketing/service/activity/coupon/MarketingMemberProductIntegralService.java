@@ -22,12 +22,12 @@ import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityCha
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +37,10 @@ import java.util.Date;
 import java.util.List;
 
 @Service
+@Slf4j
 public class MarketingMemberProductIntegralService {
 	
-	private static Logger log = LoggerFactory.getLogger(MarketingMemberProductIntegralService.class);
-	
+ 	
 	@Autowired
 	private MarketingChannelMapper marketingChannelMapper;
 	

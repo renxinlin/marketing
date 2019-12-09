@@ -25,11 +25,10 @@ import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberServi
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Controller;
@@ -51,10 +50,10 @@ import java.util.List;
 @Controller
 @RequestMapping("/marketing/front/saler/v2")
 @Api(tags = "销售员登录注册")
+@Slf4j
 public class SalerRegisterAndLoginV2Controller {
 
-    private Logger logger = LoggerFactory.getLogger(SalerRegisterAndLoginV2Controller.class);
-
+ 
 //    redirect_uri域名与后台配置不一致则失败
     private final String redirctUrl              = "http://marketing.kf315.net/marketing/front/saler/register";
     private final String loginRedirctUrl              = "http://marketing.kf315.net/marketing/front/saler/update";

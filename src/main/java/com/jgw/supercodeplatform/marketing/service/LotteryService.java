@@ -33,12 +33,11 @@ import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingMembersService;
 import com.jgw.supercodeplatform.marketing.service.weixin.WXPayService;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayTradeNoGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,10 +54,10 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class LotteryService {
 
-	private static Logger logger = LoggerFactory.getLogger(LotteryService.class);
-
+ 
 	@Autowired
 	private MarketingPrizeTypeMapper mMarketingPrizeTypeMapper;
 
@@ -413,7 +412,7 @@ public class LotteryService {
 		try {
 			acquireLock = lock.lock(lockKey, 5000, 5, 200);
 			if(!acquireLock) {
-				logger.error("{锁获取失败:" +lockKey+ ",请检查}");
+				log.error("{锁获取失败:" +lockKey+ ",请检查}");
 				redisUtil.hmSet("marketing:lock:fail",lockKey,new Date());
 				return lotteryOprationDto.lotterySuccess("扫码人数过多,请稍后再试");
 			}
@@ -426,7 +425,7 @@ public class LotteryService {
 			//校验有没有设置活动用户扫码量限制
 			if (eachDayNumber != null && eachDayNumber > 0) {
 				long userscanNum = codeEsService.countByUserAndActivityQuantum(opneIdNoSpecialChactar, activitySetId, nowTimeMills);
-				logger.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+"获得的用户扫码记录次数为="+userscanNum+",当前活动扫码限制次数为："+eachDayNumber);
+				log.info("领取方法=====：根据openId="+opneIdNoSpecialChactar+",activitySetId="+activitySetId+"获得的用户扫码记录次数为="+userscanNum+",当前活动扫码限制次数为："+eachDayNumber);
 				if (userscanNum >= eachDayNumber) {
 					return lotteryOprationDto.lotterySuccess("您今日扫码已超过该活动限制数量");
 				}
@@ -435,7 +434,7 @@ public class LotteryService {
 			lotteryOprationDto.setSuccessLottory(1);
 			return lotteryOprationDto;
 		} catch (Exception e){
-			logger.error("扫码获取锁出错抽奖失败", e);
+			log.error("扫码获取锁出错抽奖失败", e);
 			return lotteryOprationDto.lotterySuccess("扫码人数过多,请稍后再试");
 		} finally {
 			if(acquireLock){
@@ -464,7 +463,7 @@ public class LotteryService {
 		if (StringUtils.isBlank(openId)) {
 			throw  new SuperCodeException("微信支付openid不能为空",500);
 		}
-		logger.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
+		log.error("{ 中奖记录保存：手机号=> + " + mobile +"==}");
 		//生成订单号
 		String partner_trade_no=wXPayTradeNoGenerator.tradeNo();
 		//保存订单

@@ -35,12 +35,11 @@ import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,11 +50,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Service
+@Slf4j
 public class CouponUpdateService {
 
 
-    private static Logger logger = LoggerFactory.getLogger(CouponService.class);
-
+ 
     private static SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
 
     @Value("${rest.codemanager.url}")
@@ -170,7 +169,7 @@ public class CouponUpdateService {
                 }
             });
         }
-//        logger.info(marketingActivityProductList.size()+"得到sbatch:{}", sbatchIdBuffer);
+//        log.info(marketingActivityProductList.size()+"得到sbatch:{}", sbatchIdBuffer);
 //        if(sbatchIdBuffer.length() > 0) {
 //            String sbatchIds = sbatchIdBuffer.substring(1);
 //            String[] sbatchIdArray = sbatchIds.split(",");
@@ -267,7 +266,7 @@ public class CouponUpdateService {
         JSONArray arr = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
         if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
             RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
-            logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
+            log.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
             if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
                 throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
             }
@@ -423,8 +422,8 @@ public class CouponUpdateService {
             try {
                 updateVo.setActivityEndDate(format.parse(ActivityDefaultConstant.activityEndDate));
             } catch (ParseException e) {
-                if(logger.isErrorEnabled()){
-                    logger.error("新建优惠券系统默认结束时间解析失败{}",e.getMessage());
+                if(log.isErrorEnabled()){
+                    log.error("新建优惠券系统默认结束时间解析失败{}",e.getMessage());
                 }
                 throw new SuperCodeException("新建优惠券活动时间解析失败");
             }

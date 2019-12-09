@@ -12,10 +12,9 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProduct
 import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,9 +23,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MarketingActivityProductService {
-	protected static Logger logger = LoggerFactory.getLogger(MarketingActivityProductService.class);
-    @Autowired
+     @Autowired
     private MarketingActivityProductMapper mapper;
 
     @Autowired
@@ -111,7 +110,7 @@ public class MarketingActivityProductService {
         superToken.put("super-token",commonUtil.getSuperToken());
 
 		ResponseEntity<String> responseEntity=restTemplateUtil.getRequestAndReturnJosn(codeManagerUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_PRODUCT_BATCH, params, superToken);
-		logger.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
+		log.info("获取码管理做过码关联的产品及批次信息："+responseEntity.toString());
 		String body=responseEntity.getBody();
 		JSONObject json=JSONObject.parseObject(body);
 		if (null==json.getString("results")) {
@@ -156,7 +155,7 @@ public class MarketingActivityProductService {
         superToken.put("super-token",commonUtil.getSuperToken());
 
         ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.CUSTOMER_ENABLE_PAGE_LIST, params, superToken);
-        logger.info("获取所有渠道信息："+responseEntity.toString());
+        log.info("获取所有渠道信息："+responseEntity.toString());
         String body=responseEntity.getBody();
         JSONObject json=JSONObject.parseObject(body);
         if (null==json.getString("results")) {
@@ -196,7 +195,7 @@ public class MarketingActivityProductService {
         superToken.put("super-token",commonUtil.getSuperToken());
 
         ResponseEntity<String>responseEntity=restTemplateUtil.getRequestAndReturnJosn(restUserUrl+CommonConstants.CUSTOMER_ENABLE_CHILD_PAGE_LIST, params, superToken);
-        logger.info("获取下级渠道信息："+responseEntity.toString());
+        log.info("获取下级渠道信息："+responseEntity.toString());
         String body=responseEntity.getBody();
         JSONObject json=JSONObject.parseObject(body);
         if (null==json.getString("results")) {
