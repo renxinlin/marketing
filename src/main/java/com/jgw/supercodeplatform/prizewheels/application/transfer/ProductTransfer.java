@@ -36,18 +36,26 @@ public class ProductTransfer {
         List<Product> products = new ArrayList<>();
         for(ProductUpdateDto productDto : productUpdateDtos){
             List<ProductBatchDto> productBatchParams = productDto.getProductBatchParams();
-            for(ProductBatchDto productBatchDto : productBatchParams) {
-                String productBatchId = productBatchDto.getProductBatchId();
-                String productBatchName = productBatchDto.getProductBatchName();
+            if(CollectionUtils.isEmpty(productBatchParams)){
                 Product product = modelMapper.map(productDto, Product.class);
                 product.setActivitySetId(activitySetId);
                 product.setAutoType(autoType);
-                product.setProductBatchId(productBatchId);
-                product.setProductBatchName(productBatchName);
                 product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
-
                 products.add(product);
+            }else{
+                for(ProductBatchDto productBatchDto : productBatchParams) {
+                    String productBatchId = productBatchDto.getProductBatchId();
+                    String productBatchName = productBatchDto.getProductBatchName();
+                    Product product = modelMapper.map(productDto, Product.class);
+                    product.setActivitySetId(activitySetId);
+                    product.setAutoType(autoType);
+                    product.setProductBatchId(productBatchId);
+                    product.setProductBatchName(productBatchName);
+                    product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
+                    products.add(product);
+                }
             }
+
         }
         return products;
 
@@ -58,16 +66,22 @@ public class ProductTransfer {
         List<Product> products = new ArrayList<>();
         for(ProductDto productDto : productDtos){
             List<ProductBatchDto> productBatchParams = productDto.getProductBatchParams();
-            for(ProductBatchDto productBatchDto : productBatchParams) {
-                String productBatchId = productBatchDto.getProductBatchId();
-                String productBatchName = productBatchDto.getProductBatchName();
+            if(CollectionUtils.isEmpty(productBatchParams)){
                 Product product = modelMapper.map(productDto, Product.class);
                 product.setAutoType(autoType);
-                product.setProductBatchId(productBatchId);
-                product.setProductBatchName(productBatchName);
                 product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
-
                 products.add(product);
+            }else {
+                for (ProductBatchDto productBatchDto : productBatchParams) {
+                    String productBatchId = productBatchDto.getProductBatchId();
+                    String productBatchName = productBatchDto.getProductBatchName();
+                    Product product = modelMapper.map(productDto, Product.class);
+                    product.setAutoType(autoType);
+                    product.setProductBatchId(productBatchId);
+                    product.setProductBatchName(productBatchName);
+                    product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
+                    products.add(product);
+                }
             }
         }
         return products;
