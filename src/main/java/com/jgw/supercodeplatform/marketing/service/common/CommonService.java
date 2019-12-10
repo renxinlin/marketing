@@ -402,6 +402,30 @@ public class CommonService {
 	}
 
 
+	public String getTicketByAccessToken(String appId,String secret,String organizationId) throws Exception {
+		if (StringUtils.isBlank(appId) || StringUtils.isBlank(secret)|| StringUtils.isBlank(organizationId)) {
+			throw new SuperCodeException("获取access_tokens的参数不能为空", 500);
+		}
+		String key = RedisKey.WECHAT_TICKET_PREFIX + organizationId;
+		String ticket = redisUtil.get(key);
+		if (StringUtils.isNotBlank(ticket)) {
+			return ticket;
+		}
+		String accessToken = getAccessTokenByOrgId(appId, secret, organizationId);
+		HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
+		String tickContent=result.getContent();
+		logger.info("获取到tick的数据："+tickContent);
+		if (!tickContent.contains("ticket")) {
+			throw new BizRuntimeException("获取tiket失败");
+		}
+		JSONObject tiketJson = JSON.parseObject(tickContent);
+		long expiresIn = tiketJson.getLongValue("expires_in") - 20;
+		ticket = tiketJson.getString("ticket");
+		redisUtil.set(key, ticket, expiresIn);
+		return ticket;
+	}
+
+
     /**
      * 获取access_token
      * @param organizationId
@@ -424,9 +448,8 @@ public class CommonService {
 			if (body.contains("access_token")) {
 				JSONObject tokenObj=JSONObject.parseObject(body);
 				String token=tokenObj.getString("access_token");
-				// TODO 影响调试
-				redisUtil.set(key, token);
-				redisUtil.expire(key, 5400, TimeUnit.SECONDS);
+				long expiresIn = tokenObj.getLongValue("expires_in") - 20;
+				redisUtil.set(key, token, expiresIn);
 				return token;
 			}
 			throw new SuperCodeException("获取微信access_toke失败："+body, 500);
