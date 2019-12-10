@@ -140,6 +140,7 @@ public class IntegralFrontController {
 			}
 			Integer sum=(Integer)data.get("integralSum");
 		    members.setHaveIntegral(haveIntegral+sum);
+			members.setTotalIntegral(members.getTotalIntegral() + sum);
 		    members.setIntegralReceiveDate(new Date());
 		    memberService.update(members);
 		    List<IntegralRecord> inRecords= (List<IntegralRecord>) data.get("integralRecords");
