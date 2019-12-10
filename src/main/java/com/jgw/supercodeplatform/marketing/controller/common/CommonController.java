@@ -91,14 +91,8 @@ public class CommonController extends CommonUtil {
                 mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
             }
 		}
-    	String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), organizationId);
-        // TODO 测试
-    	HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
-    	String tickContent=result.getContent();
-    	log.info("获取到tick的数据："+tickContent);
-        String ticket = JSONObject.parseObject(tickContent).getString("ticket");
-        log.info("获取到tick的数据："+ticket);
-        // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
+
+    	String ticket = service.getTicketByAccessToken(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), organizationId);
         String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
     	long timestamp=WXPayUtil.getCurrentTimestamp();
     	Map<String, String>sinMap=new HashMap<String, String>();
@@ -141,14 +135,7 @@ public class CommonController extends CommonUtil {
         if (mWxMerchants == null) {
             throw new SuperCodeExtException("未找到对应的微信配置信息");
         }
-        String accessToken=service.getAccessTokenByOrgId(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), mWxMerchants.getOrganizationId());
-        // TODO 测试
-        HttpClientResult result=HttpRequestUtil.doGet("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token="+accessToken+"&type=jsapi");
-        String tickContent=result.getContent();
-        log.info("获取到tick的数据："+tickContent);
-        String ticket = JSONObject.parseObject(tickContent).getString("ticket");
-        log.info("获取到tick的数据："+ticket);
-        // todo tickContent返回错误的处理，access_token错误的处理，之前日志好像抛出一次access_token错误
+        String ticket = service.getTicketByAccessToken(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), mWxMerchants.getOrganizationId());
         String noncestr=WXPayUtil.generateNonceStr().toLowerCase();
         long timestamp=WXPayUtil.getCurrentTimestamp();
         Map<String, String>sinMap=new HashMap<String, String>();
