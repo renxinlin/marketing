@@ -296,9 +296,12 @@ public class CouponService {
 				String globalBacthId = arr.getJSONObject(i).getString("globalBacthId");
 				String productId = arr.getJSONObject(i).getString("productId");
 				String productBatchId = arr.getJSONObject(i).getString("productBatchId");
+				if (StringUtils.isBlank(productBatchId)) {
+					productBatchId = null;
+				}
 				sbathIds.add(globalBacthId);
-				if(marketingActivityProduct.getProductId().equals(productId)
-						&& marketingActivityProduct.getProductBatchId().equals(productBatchId)){
+				if (StringUtils.equals(marketingActivityProduct.getProductId(), productId)
+						&& StringUtils.equals(marketingActivityProduct.getProductBatchId(), productBatchId)) {
 					sbathIds.add(globalBacthId);
 					productSbathIds.put(productId+productBatchId,sbathIds);
 				}
@@ -310,7 +313,6 @@ public class CouponService {
 				String sbatchId = StringUtils.join(sbathIdsDtoArray, SPILT);
 				marketingActivityProduct.setSbatchId(sbatchId);
 			}
-
 		});
 	}
 
