@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapper, SalerOrderForm> {
 
- 
+
     @Autowired
     private DynamicMapper dynamicMapper;
     @Autowired
@@ -418,6 +418,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             CustomerInfoView customerInfoView=baseCustomerService.getCustomerInfo(jwtUser.getCustomerId());
             log.info("准备从基础信息获取地址customerInfoView-{}",customerInfoView);
             getAddress(address,customerInfoView);
+            address.append(customerInfoView.getDetailedAddress());
             salerPreFillInfoVo.setShouhuodizhi(address.toString());
         }
         return salerPreFillInfoVo;
