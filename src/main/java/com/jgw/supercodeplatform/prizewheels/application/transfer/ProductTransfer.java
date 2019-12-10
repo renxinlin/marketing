@@ -104,15 +104,15 @@ public class ProductTransfer {
             if(!hashMap.keySet().contains(productId)){
                 // 产品批次列表
 
+                List<ProductBatchDto> productBatchParams = new ArrayList<>();
                 if(!StringUtils.isEmpty(productPojo.getProductBatchId())){
-                    List<ProductBatchDto> productBatchParams = new ArrayList<>();
                     ProductBatchDto productBatchDto = new ProductBatchDto();
                     productBatchDto.setProductBatchId(productPojo.getProductBatchId());
                     productBatchDto.setProductBatchName(productPojo.getProductBatchName());
                     productBatchParams.add(productBatchDto);
                     // 产品新增产品批次
-                    productDto.setProductBatchParams(productBatchParams);
                 }
+                productDto.setProductBatchParams(productBatchParams);
                 list.add(productDto);
                 // 元数据
                 hashMap.put(productPojo.getProductId(),productPojo.getProductBatchId());
@@ -124,10 +124,7 @@ public class ProductTransfer {
                             ProductBatchDto productBatchDto = new ProductBatchDto();
                             productBatchDto.setProductBatchId(productPojo.getProductBatchId());
                             productBatchDto.setProductBatchName(productPojo.getProductBatchName());
-                            List<ProductBatchDto> productBatchParams =
-                                    productUpdateDto.getProductBatchParams() == null
-                                    ? new ArrayList<>() : productUpdateDto.getProductBatchParams();
-                            productBatchParams.add(productBatchDto);
+                            productUpdateDto.getProductBatchParams().add(productBatchDto);
                         }
                         return;
                     }

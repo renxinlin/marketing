@@ -58,7 +58,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
                     }
                 });
             });
-            // 这里暂时没有判断是否所有的产品都有了sbatchId
+            // 这里暂时没有判断是否所有的产品都有了sbatchId 默认相信码管理的返回
             log.info("产品初始化生码批次信息之后如下 {}",JSONObject.toJSONString(products));
 
         }else {
