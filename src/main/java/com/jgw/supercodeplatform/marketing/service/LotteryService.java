@@ -311,6 +311,9 @@ public class LotteryService {
 		addWinRecord(outerCodeId, mobile, openId, activitySetId, activity, organizationId,lotteryOprationDto.getOrganizationName(), prizeTypeMO, amount, productId, productBatchId);
 		if (changeIntegral != 0) {
 			marketingMembersMapper.deleteIntegral(0 - changeIntegral, marketingMembersInfo.getId());
+			if (changeIntegral > 0) {
+				marketingMembersMapper.addAccumulateIntegral(changeIntegral, marketingMembersInfo.getId());
+			}
 		}
 		RestResult restResult = lotteryOprationDto.getRestResult();
 		restResult.setMsg(lotteryResultMO.getMsg());

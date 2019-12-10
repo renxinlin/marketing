@@ -619,8 +619,6 @@ public class CouponService {
 							throw new SuperCodeException("产品批次参数非法001");
 						}
 					}
-				}else{
-					throw new SuperCodeException("请选择批次信息...");
 				}
 			}
 		}
