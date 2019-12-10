@@ -233,7 +233,7 @@ public interface MarketingMembersMapper extends BaseMapper<MarketingMembers> {
     @Update("update marketing_members set  HaveIntegral = HaveIntegral - #{ingetralNum} where Id=#{id} ")
     int deleteIntegral(@Param("ingetralNum") Integer ingetralNum,@Param("id")Long id);
 
-    @Update("update marketing_members set TotalIntegral + #{accumulateIntegral} where Id=#{id} ")
+    @Update("update marketing_members set TotalIntegral = TotalIntegral + #{accumulateIntegral} where Id=#{id} ")
     int addAccumulateIntegral(@Param("accumulateIntegral") Integer accumulateIntegral,@Param("id")Long id);
 
 //
