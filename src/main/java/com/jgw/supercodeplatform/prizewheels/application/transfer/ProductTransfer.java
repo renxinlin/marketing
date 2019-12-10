@@ -112,8 +112,8 @@ public class ProductTransfer {
                     productBatchParams.add(productBatchDto);
                     // 产品新增产品批次
                     productDto.setProductBatchParams(productBatchParams);
-                    list.add(productDto);
                 }
+                list.add(productDto);
                 // 元数据
                 hashMap.put(productPojo.getProductId(),productPojo.getProductBatchId());
             }else {
