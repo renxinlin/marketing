@@ -313,6 +313,9 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 				Byte registerState=rule.getIntegralByRegisterStatus();
 				if (null!=registerState && registerState.intValue()==1) {
 					members.setHaveIntegral(rule.getIntegralByRegister());
+					int haveIntegral = members.getHaveIntegral() != null ? members.getHaveIntegral():0;
+					members.setTotalIntegral(
+							(members.getTotalIntegral() == null ? 0 : members.getTotalIntegral()) + haveIntegral);
 					marketingMembersMapper.updateById(members);
 					IntegralRecord integralRecord=new IntegralRecord();
 					integralRecord.setIntegralNum(rule.getIntegralByRegister());
