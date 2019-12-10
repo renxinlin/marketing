@@ -6,17 +6,15 @@ import com.jgw.supercodeplatform.marketing.dao.weixin.MarketingWxMerchantsMapper
 import com.jgw.supercodeplatform.marketing.mybatisplusdao.MarketingWxMerchantsExtMapper;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchantsExt;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
-
+@Slf4j
 public class WXPayMarketingConfig extends WXPayConfig{
-	protected static Logger logger = LoggerFactory.getLogger(WXPayMarketingConfig.class);
-	private String appId;
+ 	private String appId;
 	private String mchId;
 	private String key;
 	private String certificatePath;//证书路径为完整绝对路径
@@ -75,7 +73,7 @@ public class WXPayMarketingConfig extends WXPayConfig{
 		}
 		List<MarketingWxMerchantsExt> mwExtList = marketingWxMerchantsExtMapper.selectList(Wrappers.<MarketingWxMerchantsExt>query().eq("appid", appId).eq("OrganizationId", marketingWxMerchantsList.get(0).getOrganizationId()));
 		if (CollectionUtils.isEmpty(mwExtList)) {
-			logger.error("证书路径："+certificatePath+"，对应的证书不存在");
+			log.error("证书路径："+certificatePath+"，对应的证书不存在");
 			return null;
 		}
 		InputStream in=null;

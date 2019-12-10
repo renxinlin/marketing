@@ -25,10 +25,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,9 +49,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/marketing/saleMember/")
 @Api(tags = "销售员H5")
+@Slf4j
 public class SaleMemberController {
-    private static Logger logger = LoggerFactory.getLogger(SaleMemberController.class);
-    @Autowired
+     @Autowired
     private IntegralRecordService service;
     @Autowired
     private CodeEsService es;
@@ -155,8 +154,8 @@ public class SaleMemberController {
 
 
                 }catch (Exception e){
-                    logger.info("扫码信息插入失败");
-                    logger.info(e.getMessage(), e);
+                    log.info("扫码信息插入失败");
+                    log.info(e.getMessage(), e);
                 }
             }
         });
@@ -197,7 +196,7 @@ public class SaleMemberController {
             return false;
         }
         if(StringUtils.isBlank(wxstate)){
-            logger.error("导购领奖:获取微信state 失败");
+            log.error("导购领奖:获取微信state 失败");
         }
         return true;
     }

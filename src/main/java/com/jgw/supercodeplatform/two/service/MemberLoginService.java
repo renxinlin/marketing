@@ -3,7 +3,6 @@ package com.jgw.supercodeplatform.two.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.BindConstants;
-import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
@@ -15,10 +14,9 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingMembersBindMobileParam;
 import com.jgw.supercodeplatform.two.service.transfer.MemberTransfer;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,10 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2019/11/14 14:15
  */
 @Service
+@Slf4j
 public class MemberLoginService {
 
-    private static Logger logger = Logger.getLogger(MemberLoginService.class);
-
+ 
     @Autowired
     private MemberTransfer memberTransfer;
 

@@ -1,33 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.activity.coupon;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.jgw.supercodeplatform.marketing.enums.market.*;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -50,6 +22,7 @@ import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponAdd
 import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingActivityCouponUpdateParam;
 import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponAmoutAndDateVo;
 import com.jgw.supercodeplatform.marketing.dto.coupon.MarketingCouponVo;
+import com.jgw.supercodeplatform.marketing.enums.market.*;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponWithAllChannelEnum;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.DeductionChannelTypeEnum;
@@ -60,18 +33,36 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.http.HttpStatus;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 优惠券活动新增查看service
  */
 @Service
+@Slf4j
 public class CouponService {
 	/**
 	 * 批次ID中的分隔符
 	 */
 	private static final String SPILT ="," ;
-	private static Logger logger = LoggerFactory.getLogger(CouponService.class);
-
+ 
 	private static SimpleDateFormat format=new SimpleDateFormat("yyyy-MM-dd");
 
 	@Value("${rest.codemanager.url}")
@@ -197,7 +188,7 @@ public class CouponService {
                 }
             });
         }
-//		logger.info(marketingActivityProductList.size()+"得到sbatch:{}", sbatchIdBuffer);
+//		log.info(marketingActivityProductList.size()+"得到sbatch:{}", sbatchIdBuffer);
 //        if(sbatchIdBuffer.length() > 0) {
 //            String sbatchIds = sbatchIdBuffer.substring(1);
 //            String[] sbatchIdArray = sbatchIds.split(",");
@@ -257,7 +248,7 @@ public class CouponService {
 		JSONArray arr = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
 		if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
 			RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
-			logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
+			log.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
 			if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
 				throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
 			}
@@ -514,8 +505,8 @@ public class CouponService {
 			try {
 				addVO.setActivityEndDate(format.parse(ActivityDefaultConstant.activityEndDate));
 			} catch (ParseException e) {
-				if(logger.isErrorEnabled()){
-					logger.error("新建优惠券系统默认结束时间解析失败{}",e.getMessage());
+				if(log.isErrorEnabled()){
+					log.error("新建优惠券系统默认结束时间解析失败{}",e.getMessage());
 				}
 				throw new SuperCodeException("新建优惠券活动时间解析失败");
 			}

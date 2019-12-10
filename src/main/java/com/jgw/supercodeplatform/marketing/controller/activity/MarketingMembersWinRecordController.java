@@ -9,13 +9,14 @@ import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
 import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListParam;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMembersWinRecordListReturn;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.pay.RedPackageParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingMembersWinRecordService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingWxTradeOrderService;
-import io.swagger.annotations.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +29,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/marketing/winRecord")
 @Api(tags = "中奖管理")
+@Slf4j
 public class MarketingMembersWinRecordController extends CommonUtil {
-	protected static Logger logger = LoggerFactory.getLogger(MarketingMembersWinRecordController.class);
-
+ 
 	@Autowired
 	private MarketingMembersWinRecordService service;
 
@@ -88,7 +89,7 @@ public class MarketingMembersWinRecordController extends CommonUtil {
 		try {
 			filedMap = JsonToMapUtil.toMap(MARKET_WIN_RECORD_EXCEL_FIELD_MAP);
 		} catch (Exception e){
-			logger.error("{desc:营销中奖记录表头解析异常" + e.getMessage() + "}");
+			log.error("{desc:营销中奖记录表头解析异常" + e.getMessage() + "}");
 			throw new SuperCodeException("营销中奖记录表头解析异常",500);
 		}
 		// step-4: 导出前端

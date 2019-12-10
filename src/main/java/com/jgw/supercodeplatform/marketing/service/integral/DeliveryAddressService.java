@@ -6,9 +6,8 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.constants.PcccodeConstants;
 import com.jgw.supercodeplatform.marketing.dao.integral.DeliveryAddressMapperExt;
 import com.jgw.supercodeplatform.marketing.pojo.integral.DeliveryAddress;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,9 +19,9 @@ import java.util.List;
  * 积分兑换地址管理
  */
 @Service
+@Slf4j
 public class DeliveryAddressService {
-    private Logger logger = LoggerFactory.getLogger(DeliveryAddressService.class);
-
+ 
 
 
     @Autowired
@@ -190,7 +189,7 @@ public class DeliveryAddressService {
 //        areaCodes.add(deliveryAddress.getStreetCode());
 //        List<MarketingAdministrativeCode> codesNames = adminstrativeCodeMapper.getCodesName(areaCodes);
 //        if(CollectionUtils.isEmpty(codesNames) || codesNames.size() != 4){
-//            logger.error("查询行政编码异常:"+ JSONObject.toJSONString( deliveryAddress) +"结果" + JSONObject.toJSONString(codesNames));
+//            log.error("查询行政编码异常:"+ JSONObject.toJSONString( deliveryAddress) +"结果" + JSONObject.toJSONString(codesNames));
 //            throw new SuperCodeException("系统行政信息异常");
 //        }
 //        for (MarketingAdministrativeCode codesName: codesNames){

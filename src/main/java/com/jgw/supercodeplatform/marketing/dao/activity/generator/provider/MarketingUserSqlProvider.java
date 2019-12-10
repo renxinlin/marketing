@@ -114,7 +114,7 @@ public class MarketingUserSqlProvider {
         }
 
 
-        if (record.getLoginName() != null) {
+        if (record.getMechanismType() != null) {
             VALUES("MechanismType "," #{mechanismType,jdbcType=INTEGER}");
         }
 
@@ -217,7 +217,7 @@ public class MarketingUserSqlProvider {
         }
 
 
-        if (record.getLoginName() != null) {
+        if (record.getMechanismType() != null) {
             SET("MechanismType = #{mechanismType,jdbcType=INTEGER}");
         }
 

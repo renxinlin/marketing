@@ -18,9 +18,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,9 +32,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/marketing/front/receivingPag")
 @Api(tags = "h5页面获取领取页信息")
+@Slf4j
 public class MarketingReceivingPageFrontController {
-	protected static Logger logger = LoggerFactory.getLogger(MarketingReceivingPageFrontController.class);
-	@Autowired
+ 	@Autowired
 	private MarketingReceivingPageService service;
 	
 	@Autowired
@@ -80,7 +79,7 @@ public class MarketingReceivingPageFrontController {
 			}
 			try {
 				boolean flag=judgeUserSubsribeGZH(mWxMerchants.getMchAppid(), mWxMerchants.getMerchantSecret(), scInfoMO.getOpenId());
-				logger.info("获取判断是否关注公众号方法返回值="+flag);
+				log.info("获取判断是否关注公众号方法返回值="+flag);
 				if (flag) {
 					mReceivingPage.setIsQrcodeView((byte)0);
 				}
@@ -102,16 +101,16 @@ public class MarketingReceivingPageFrontController {
 		judgeUserSubsribeGZH("wx32ab5628a5951ecc", "e3fb09c9126cd8bc12399e56a35162c4", "oeVn5sq-wk7_MH4jN2BUQ_fSRv-A");
 	}
 	public static boolean  judgeUserSubsribeGZH(String appId,String sercert,String openId) throws Exception {
-		logger.info("判断是否关注过公众号方法参数appId="+appId+",sercert="+sercert+",openId="+openId);
+		log.info("判断是否关注过公众号方法参数appId="+appId+",sercert="+sercert+",openId="+openId);
 		HttpClientResult reHttpClientResult=HttpRequestUtil.doGet(WechatConstants.ACCESS_TOKEN_URL+"&appid="+appId+"&secret="+sercert);
 	    String body=reHttpClientResult.getContent();
-	    logger.info("判断是否关注过公众号方法获取acessetoken返回结果="+body);
+	    log.info("判断是否关注过公众号方法获取acessetoken返回结果="+body);
 	    if (body.contains("access_token")) {
 			JSONObject tokenObj=JSONObject.parseObject(body);
 			String token=tokenObj.getString("access_token");
 			HttpClientResult userInfoResult=HttpRequestUtil.doGet(WechatConstants.WECHAT_USER_INFO+"?access_token="+token+"&openid="+openId+"&lang=zh_CN");
 			String userInfoBody=userInfoResult.getContent();
-			logger.info("判断是否关注过公众号方法获取用户基本信息`返回结果="+userInfoBody);
+			log.info("判断是否关注过公众号方法获取用户基本信息`返回结果="+userInfoBody);
 			if (userInfoBody.contains("subscribe")) {
 				JSONObject userObj=JSONObject.parseObject(userInfoBody);
 				int subscribe=userObj.getInteger("subscribe");

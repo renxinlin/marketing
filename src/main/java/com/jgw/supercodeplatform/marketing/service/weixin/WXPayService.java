@@ -16,10 +16,9 @@ import com.jgw.supercodeplatform.marketing.weixinpay.WXPayConstants.SignType;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayMarketingConfig;
 import com.jgw.supercodeplatform.marketing.weixinpay.WXPayUtil;
 import com.jgw.supercodeplatform.marketing.weixinpay.requestparam.OrganizationPayRequestParam;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.util.Asserts;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,9 +34,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Service
+@Slf4j
 public class WXPayService {
-	protected static Logger logger = LoggerFactory.getLogger(WXPayService.class);
-    @Autowired
+     @Autowired
     private MarketingWxMerchantsMapper mWxMerchantsMapper;
     
     @Value("${weixin.certificate.path}")
@@ -92,7 +91,7 @@ public class WXPayService {
 			config.setCertificatePassword(certificatePassword);
 		}
 		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getCertificateAddress();
-		logger.info("微信企业支付到零钱证书完整路径："+wholePath);
+		log.info("微信企业支付到零钱证书完整路径："+wholePath);
 		config.setCertificatePath(wholePath);
 		//封装请求参数实体
 		OrganizationPayRequestParam oRequestParam=new OrganizationPayRequestParam();
@@ -125,12 +124,12 @@ public class WXPayService {
 	 */
 	public void qiyePayAsycPlatform(String  openid,String  spbill_create_ip,int amount,String  partner_trade_no, String organizationId) throws Exception {
 		if (StringUtils.isBlank(openid) || StringUtils.isBlank(spbill_create_ip)|| StringUtils.isBlank(partner_trade_no)|| StringUtils.isBlank(organizationId)) {
-			logger.info("发起微信支付参数不能为空,openid=" + openid + ",spbill_create_ip=" + spbill_create_ip + ",partner_trade_no=" + partner_trade_no + spbill_create_ip + ",organizationId=" + organizationId);
+			log.info("发起微信支付参数不能为空,openid=" + openid + ",spbill_create_ip=" + spbill_create_ip + ",partner_trade_no=" + partner_trade_no + spbill_create_ip + ",organizationId=" + organizationId);
 			return;
 		}
 		MarketingWxMerchants mWxMerchants=mWxMerchantsMapper.get(organizationId);
 		if (null==mWxMerchants) {
-			logger.info("当前企业"+organizationId+"未绑定公众号数据");
+			log.info("当前企业"+organizationId+"未绑定公众号数据");
 			return;
 		}
 		if (mWxMerchants.getMerchantType() == 1) {
@@ -140,13 +139,13 @@ public class WXPayService {
 				mWxMerchants = mWxMerchantsMapper.getDefaultJgw();
 			}
 		} else if (StringUtils.isBlank(mWxMerchants.getCertificateAddress())) {
-			logger.info("当前企业"+organizationId+"没有上传公众号证书");
+			log.info("当前企业"+organizationId+"没有上传公众号证书");
 			return;
 		}
 		String mechid=mWxMerchants.getMchid();
 		String mechappid=mWxMerchants.getMchAppid();
 		if (StringUtils.isBlank(mechid) || StringUtils.isBlank(mechappid)) {
-			logger.info("获取到的企业公众号支付参数有空值，mechid="+mechid+",mechappid="+mechappid);
+			log.info("获取到的企业公众号支付参数有空值，mechid="+mechid+",mechappid="+mechappid);
 			return;
 		}
 		String certificatePassword = mWxMerchants.getCertificatePassword();
@@ -162,7 +161,7 @@ public class WXPayService {
 			config.setCertificatePassword(certificatePassword);
 		}
 		String wholePath=certificatePath+File.separator+organizationId+File.separator+mWxMerchants.getCertificateAddress();
-		logger.info("微信企业支付到零钱证书完整路径："+wholePath);
+		log.info("微信企业支付到零钱证书完整路径："+wholePath);
 		config.setCertificatePath(wholePath);
 		//封装请求参数实体
 		OrganizationPayRequestParam oRequestParam=new OrganizationPayRequestParam();
@@ -194,7 +193,7 @@ public class WXPayService {
 	 * @throws Exception
 	 */
 	public void qiyePaySync(String  openid,String  spbill_create_ip,int amount,String  partner_trade_no, String organizationId) throws Exception {
-		logger.info("支付参数 opendid={} spbill_create_ip={} amount={} partner_trade_no={} organizationId={}",openid,spbill_create_ip,amount,partner_trade_no,organizationId);
+		log.info("支付参数 opendid={} spbill_create_ip={} amount={} partner_trade_no={} organizationId={}",openid,spbill_create_ip,amount,partner_trade_no,organizationId);
 
 		if (StringUtils.isBlank(openid) || StringUtils.isBlank(spbill_create_ip)|| StringUtils.isBlank(partner_trade_no)|| StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("发起微信支付参数不能为空,openid="+openid+",spbill_create_ip="+spbill_create_ip+",partner_trade_no="+partner_trade_no+spbill_create_ip+",organizationId="+organizationId, 500);
@@ -245,7 +244,7 @@ public class WXPayService {
 		String wholePath=certificatePath+File.separator+mWxMerchants.getOrganizationId()+File.separator+mWxMerchants.getCertificateAddress();
 		// 拉取db到磁盘
 		cacheToDiscIfNecssary(wholePath,certificatePath+File.separator+mWxMerchants.getOrganizationId(), mWxMerchants.getOrganizationId());
-		logger.info("微信企业支付到零钱证书完整路径："+wholePath);
+		log.info("微信企业支付到零钱证书完整路径："+wholePath);
 		config.setCertificatePath(wholePath);
 		//封装请求参数实体
 		OrganizationPayRequestParam oRequestParam=new OrganizationPayRequestParam();
@@ -279,7 +278,7 @@ public class WXPayService {
 	 * @throws Exception
 	 */
 	public void qiyePaySyncWithResend(String  openid,String  spbill_create_ip,int amount,String  partner_trade_no, String organizationId, int reSend) throws Exception {
-		logger.info("支付参数 opendid={} spbill_create_ip={} amount={} partner_trade_no={} organizationId={}",openid,spbill_create_ip,amount,partner_trade_no,organizationId);
+		log.info("支付参数 opendid={} spbill_create_ip={} amount={} partner_trade_no={} organizationId={}",openid,spbill_create_ip,amount,partner_trade_no,organizationId);
 
 		if (StringUtils.isBlank(openid) || StringUtils.isBlank(spbill_create_ip)|| StringUtils.isBlank(partner_trade_no)|| StringUtils.isBlank(organizationId)) {
 			throw new SuperCodeException("发起微信支付参数不能为空,openid="+openid+",spbill_create_ip="+spbill_create_ip+",partner_trade_no="+partner_trade_no+spbill_create_ip+",organizationId="+organizationId, 500);
@@ -331,7 +330,7 @@ public class WXPayService {
 		String wholePath=certificatePath+File.separator+mWxMerchants.getOrganizationId()+File.separator+mWxMerchants.getCertificateAddress();
 		// 拉取db到磁盘
 		cacheToDiscIfNecssary(wholePath,certificatePath+File.separator+mWxMerchants.getOrganizationId(), mWxMerchants.getOrganizationId());
-		logger.info("微信企业支付到零钱证书完整路径："+wholePath);
+		log.info("微信企业支付到零钱证书完整路径："+wholePath);
 		config.setCertificatePath(wholePath);
 		//封装请求参数实体
 		OrganizationPayRequestParam oRequestParam=new OrganizationPayRequestParam();

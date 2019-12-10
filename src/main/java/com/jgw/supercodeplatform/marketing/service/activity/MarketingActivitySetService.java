@@ -15,7 +15,10 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
-import com.jgw.supercodeplatform.marketing.constants.*;
+import com.jgw.supercodeplatform.marketing.constants.ActivityDefaultConstant;
+import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
+import com.jgw.supercodeplatform.marketing.constants.RedisKey;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.*;
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.MarketingSalerActivityCreateParam;
@@ -30,11 +33,10 @@ import com.jgw.supercodeplatform.pojo.cache.AccountCache;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,9 +51,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MarketingActivitySetService extends AbstractPageService<DaoSearchWithOrganizationIdParam> {
-	protected static Logger logger = LoggerFactory.getLogger(MarketingActivitySetService.class);
-
+ 
 	@Autowired
 	private MarketingActivitySetMapper mSetMapper;
 
@@ -478,9 +480,9 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 	public void saveProductBatchs(List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs, List<SbatchUrlUnBindDto> deleteProductBatchList, List<MarketingActivityProduct> mList, int referenceRole) throws SuperCodeException {
 		//如果是会员活动需要去绑定扫码连接到批次号
 		String superToken = commonUtil.getSuperToken();
-		logger.info("调用码管理平台获取生码批次信息入参：{}", JSON.toJSONString(productAndBatchGetCodeMOs));
+		log.info("调用码管理平台获取生码批次信息入参：{}", JSON.toJSONString(productAndBatchGetCodeMOs));
 		JSONArray arr = commonService.getBatchInfo(productAndBatchGetCodeMOs, superToken, WechatConstants.CODEMANAGER_GET_BATCH_CODE_INFO_URL);
-		logger.info("调用码管理平台获取生码批次信息返回：{}", arr.toJSONString());
+		log.info("调用码管理平台获取生码批次信息返回：{}", arr.toJSONString());
 		String bindUrl = marketingDomain + WechatConstants.SCAN_CODE_JUMP_URL;
 		if (referenceRole == ReferenceRoleEnum.ACTIVITY_SALER.getType().intValue()) {
 			bindUrl = marketingDomain + WechatConstants.SALER_SCAN_CODE_JUMP_URL;
@@ -489,7 +491,7 @@ public class MarketingActivitySetService extends AbstractPageService<DaoSearchWi
 				BusinessTypeEnum.MARKETING_ACTIVITY.getBusinessType(), referenceRole);
 		if(!CollectionUtils.isEmpty(deleteProductBatchList)) {
 			RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(deleteProductBatchList);
-			logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
+			log.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
 			if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
 				throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
 			}

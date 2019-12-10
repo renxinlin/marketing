@@ -9,7 +9,6 @@ import com.jgw.supercodeplatform.marketing.common.page.Page;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
 import com.jgw.supercodeplatform.marketing.exception.TableSaveException;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
-import com.jgw.supercodeplatform.marketingsaler.order.vo.SalerPreFillInfoVo;
 import com.jgw.supercodeplatform.marketingsaler.base.service.SalerCommonService;
 import com.jgw.supercodeplatform.marketingsaler.dynamic.mapper.DynamicMapper;
 import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
@@ -22,11 +21,10 @@ import com.jgw.supercodeplatform.marketingsaler.order.mapper.SalerOrderFormMappe
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.transfer.SalerOrderTransfer;
 import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
+import com.jgw.supercodeplatform.marketingsaler.order.vo.SalerPreFillInfoVo;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -46,11 +45,10 @@ import java.util.stream.Collectors;
  * @author renxinlin
  * @since 2019-09-02
  */
-@Slf4j
 @Service
+@Slf4j
 public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapper, SalerOrderForm> {
 
-    private static Logger logger = LoggerFactory.getLogger(SalerOrderFormService.class);
 
     @Autowired
     private DynamicMapper dynamicMapper;
@@ -321,7 +319,12 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             getAddress(address, customerInfo);
         }
         SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues, user, address.toString());
-        dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
+        try {
+            // 企业可以未配置动态模板，导致动态表不存在
+            dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
+        } catch (RuntimeException e) {
+            throw new BizRuntimeException("管理员未配置表单内容...");
+        }
     }
 
 
@@ -413,8 +416,9 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
         StringBuffer address = new StringBuffer("");
         if (org.apache.commons.lang.StringUtils.isNotBlank(jwtUser.getCustomerId())){
             CustomerInfoView customerInfoView=baseCustomerService.getCustomerInfo(jwtUser.getCustomerId());
-            logger.info("准备从基础信息获取地址customerInfoView-{}",customerInfoView);
+            log.info("准备从基础信息获取地址customerInfoView-{}",customerInfoView);
             getAddress(address,customerInfoView);
+            address.append(customerInfoView.getDetailedAddress());
             salerPreFillInfoVo.setShouhuodizhi(address.toString());
         }
         return salerPreFillInfoVo;

@@ -20,8 +20,7 @@ import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -51,9 +50,9 @@ import java.util.Map;
  *             3  对方没有我有:[解除马关联]对比后不可领取
  */
 @Service
+@Slf4j
 public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, Object>>> {
 
-    protected static Logger logger = LoggerFactory.getLogger(CouponAutoFecthService.class);
 
     @Autowired
     private MarketingActivityProductMapper mProductMapper;
@@ -104,10 +103,10 @@ public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, 
             Object productId=map.get("productId");
             Object productBatchId=map.get("productBatchId");
             Object codeBatch=map.get("codeBatch");
-            logger.info("收到mq:productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
+            log.info("收到mq:productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
             // 校验
             if (null==productId || null==codeBatch) {
-                logger.warn("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
+                log.warn("获取码管理平台推送的新增批次mq消息，值有空值productId="+productId+",productBatchId="+productBatchId+",codeBatch="+codeBatch);
                 continue;
             }
             // 校验
@@ -155,7 +154,7 @@ public class CouponAutoFecthService  extends AutoFetchChainAbs<List<Map<String, 
             sendToCodeManager(bindCouponActivitys);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.error("CouponAutoFecthService do biz error when custome code mamaner {}",e.getMessage());
+            log.error("CouponAutoFecthService do biz error when custome code mamaner {}",e.getMessage());
         }
 
     }

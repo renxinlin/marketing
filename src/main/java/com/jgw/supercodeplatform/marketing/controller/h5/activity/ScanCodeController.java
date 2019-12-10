@@ -17,10 +17,9 @@ import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+  import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -45,9 +44,9 @@ import java.util.Map;
 @Controller
 @RequestMapping("/marketing/front/scan")
 @Api(tags = "h5接收码管理跳转路径")
+@Slf4j
 public class ScanCodeController {
-	protected static Logger logger = LoggerFactory.getLogger(ScanCodeController.class);
-    //导购活动跳跳前端后缀
+     //导购活动跳跳前端后缀
 	private final static String salerUrlsuffix = "#/salesRedBag/index";
     @Autowired
     private CommonUtil commonUtil;
@@ -120,10 +119,10 @@ public class ScanCodeController {
     	try {
     		asyncRestTemplate.postForEntity(antismashinggoodsUrl+CommonConstants.JUDGE_FLEE_GOOD, requestEntity, JSONObject.class);
     	} catch (Exception e) {
-			logger.error("窜货接口错误", e);
+			log.error("窜货接口错误", e);
 		}
     	String wxstate=commonUtil.getUUID();
-        logger.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+",sBatchId="+sBatchId);
+        log.info("会员扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+",sBatchId="+sBatchId);
     	String url=activityJudege(outerCodeId, codeTypeId, productId, productBatchId, wxstate,(byte)0, sBatchId, businessType);
     	
         ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
@@ -154,7 +153,7 @@ public class ScanCodeController {
         if (StringUtils.isBlank(productBatchId) || StringUtils.equalsIgnoreCase(productBatchId, "null")) {
             productBatchId = null;
         }
-        logger.info("导购扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+"sBatchId="+sBatchId);
+        log.info("导购扫码接收到参数outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",productId="+productId+",productBatchId="+productBatchId+"sBatchId="+sBatchId);
     	String	wxstate=commonUtil.getUUID();
     	String url=activityJudegeBySaler(outerCodeId, codeTypeId, productId, productBatchId,sBatchId, wxstate, ReferenceRoleEnum.ACTIVITY_SALER.getType());
         // 领取按钮对应的前端URL
@@ -178,7 +177,7 @@ public class ScanCodeController {
 
         RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole);
         if (restResult.getState()==500) {
-            logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
+            log.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
             return h5pageUrl+salerUrlsuffix+"?wxstate=0_"+URLEncoder.encode(restResult.getMsg(),"utf-8");
         }
 
@@ -189,7 +188,7 @@ public class ScanCodeController {
         sCodeInfoMO.setOrganizationId(organizationId);
         globalRamCache.putScanCodeInfoMO(wxstate,sCodeInfoMO);
 
-        logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
+        log.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
         String url=h5pageUrl+salerUrlsuffix+"?wxstate="+wxstate+"&organizationId="+sCodeInfoMO.getOrganizationId();
         return url;
 
@@ -212,7 +211,7 @@ public class ScanCodeController {
     public String activityJudege(String outerCodeId,String codeTypeId,String productId,String productBatchId,String wxstate, byte referenceRole,String sbatchId, Integer businessType) throws UnsupportedEncodingException, ParseException {
     	RestResult<ScanCodeInfoMO> restResult=mActivitySetService.judgeActivityScanCodeParam(outerCodeId,codeTypeId,productId,productBatchId,referenceRole, businessType);
     	if (restResult.getState()==500) {
-    		logger.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
+    		log.info("扫码接口返回错误，错误信息为："+restResult.getMsg());
     		 return h5pageUrl+"?success=0&msg="+URLEncoder.encode(URLEncoder.encode(restResult.getMsg(),"utf-8"),"utf-8");
 		}
 
@@ -235,12 +234,12 @@ public class ScanCodeController {
         sCodeInfoMO.setSbatchId(sbatchId);
         sCodeInfoMO.setOrganizationId(organizationId);
         globalRamCache.putScanCodeInfoMO(wxstate,sCodeInfoMO);
-        logger.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
+        log.info("扫码后sCodeInfoMO信息："+sCodeInfoMO);
 
     	//微信授权需要对redirect_uri进行urlencode
         String wholeUrl=wxauthRedirectUri+"/marketing/front/auth/code";
     	String encoderedirectUri=URLEncoder.encode(wholeUrl, "utf-8");
-        logger.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid()+",h5pageUrl="+h5pageUrl);
+        log.info("扫码唯一标识wxstate="+wxstate+"，授权跳转路径url="+encoderedirectUri+",appid="+mWxMerchants.getMchAppid()+",h5pageUrl="+h5pageUrl);
         String url=h5pageUrl+"?wxstate="+wxstate+"&appid="+mWxMerchants.getMchAppid()+"&redirect_uri="+encoderedirectUri+"&success=1"+"&organizationId="+organizationId;
         return url;
     }
@@ -248,7 +247,7 @@ public class ScanCodeController {
     @GetMapping("/code/callback")
     @ApiOperation("微信静默授权")
     public String getWXCode(@RequestParam String code, @RequestParam String state) {
-        logger.info("微信授权回调获取code=" + code + ",state=" + state);
+        log.info("微信授权回调获取code=" + code + ",state=" + state);
         if (StringUtils.isBlank(state)) {
             throw new SuperCodeExtException("state不能为空", 500);
         }

@@ -11,9 +11,8 @@ import com.jgw.supercodeplatform.marketingsaler.integral.domain.mapper.UserMappe
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.User;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.MembersMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.MembersPojo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.MethodParameter;
@@ -32,10 +31,10 @@ import javax.servlet.http.HttpServletResponse;
  * 注意：凡是CONTROLLER接口参数注入JWTUSER全部会在这里被解析
  */
 @Component
+@Slf4j
 public class SecurityParamResolver implements HandlerMethodArgumentResolver {
     @Autowired private MembersMapper membersMapper;
     @Autowired private UserMapper userMapper;
-    private static Logger logger = LoggerFactory.getLogger(SecurityParamResolver.class);
 
     @Value("${cookie.domain}")
     private String domain;
@@ -60,7 +59,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
         String token = null;
         try {
             String methodName=methodParameter.getMethod().getName();
-            logger.info("开始解析方法："+methodName+"jwtToken");
+            log.info("开始解析方法："+methodName+"jwtToken");
             // HttpServletResponse response = nativeWebRequest.getNativeResponse(HttpServletResponse.class);
             HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
             // token = request.getHeader(CommonConstants.JWT_TOKEN);
@@ -85,7 +84,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
 
 
             if (jwtUser == null || jwtUser.getMemberId() == null) {
-                logger.error("jwt信息不全" + jwtUser);
+                log.error("jwt信息不全" + jwtUser);
                 // 重新登录的异常信息
                 throw new UserExpireException("用户信息不存在...");
             }
@@ -104,7 +103,7 @@ public class SecurityParamResolver implements HandlerMethodArgumentResolver {
             }
             return jwtUser;
         } catch (Exception e) {
-            logger.error("解析jwt异常" + token);
+            log.error("解析jwt异常" + token);
             e.printStackTrace();
             // 重新登录的异常信息
             throw new UserExpireException("用户信息获取失败...");

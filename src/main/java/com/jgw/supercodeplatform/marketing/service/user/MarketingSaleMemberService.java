@@ -32,11 +32,10 @@ import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.BaseCustomerFeignService;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CustomerIdDto;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
+ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -49,6 +48,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MarketingSaleMemberService extends AbstractPageService<MarketingMembersListParam> {
 	/**
 	 * 短信链接URI
@@ -64,8 +64,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 	private BaseCustomerFeignService baseCustomerFeignService;
 
 
-	protected static Logger logger = LoggerFactory.getLogger(MarketingSaleMemberService.class);
-	@Value("亲爱的{{user}}，您已通过审核，可登录销售员中心{{url}}")
+ 	@Value("亲爱的{{user}}，您已通过审核，可登录销售员中心{{url}}")
 	private String SHORT_MSG ;
 	@Autowired
 	private MarketingUserMapperExt mapper;
@@ -171,7 +170,7 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 				membersService.sendRegisterMessage(marketingUser.getMobile(),msg);
 			} catch (SuperCodeException e) {
 				e.printStackTrace();
-				logger.error("发送导购员审核通过失败:手机:{},信息:{}",marketingUser.getMobile(),msg);
+				log.error("发送导购员审核通过失败:手机:{},信息:{}",marketingUser.getMobile(),msg);
 			}
 		}
 		MarketingUser dto = new MarketingUser();
@@ -368,10 +367,10 @@ public class MarketingSaleMemberService extends AbstractPageService<MarketingMem
 		UserWithWechat userDo = changeToDo(userInfo);
 		if (StringUtils.isNotBlank(userDo.getMobile())) {
 			MarketingUser marketingUser = new MarketingUser();
-			marketingUser.setSource(SourceType.H5); //    3、H5 4
 			BeanUtils.copyProperties(userDo, marketingUser);
-			marketingUser.setMechanismType(userInfo.getMechanismType().byteValue());
-		//	setMechanismType(userInfo, marketingUser);
+			marketingUser.setMechanismType(userInfo.getMechanismType() ==null ?null:userInfo.getMechanismType().byteValue());
+			marketingUser.setSource(SourceType.H5);
+//			setMechanismType(userInfo, marketingUser);
 			mapper.insertSelective(marketingUser);
 		}
 

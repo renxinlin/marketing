@@ -23,9 +23,8 @@ import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.pojo.cache.AccountCache;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
 import com.jgw.supercodeplatform.utils.SpringContextUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.task.TaskExecutor;
@@ -45,9 +44,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MarketingActivitySalerSetService   {
-	protected static Logger logger = LoggerFactory.getLogger(MarketingActivitySalerSetService.class);
-
+ 
 	@Autowired
 	private MarketingActivitySetMapper mSetMapper;
 
@@ -746,12 +745,12 @@ public class MarketingActivitySalerSetService   {
 		TransactionStatus status = txManager.getTransaction(def);
 		transm.set(txManager);
 		transs.set(status);
-		logger.error("开启事务");
+		log.error("开启事务");
 
 	}
 
 	private void commitOrRollback(AtomicInteger successNum) {
-		logger.error("事务预提交数目{}",successNum.get());
+		log.error("事务预提交数目{}",successNum.get());
 		PlatformTransactionManager txManager = transm.get();
 		TransactionStatus status = transs.get();
 		if(TX_THREAD_NUM == successNum.get()){
