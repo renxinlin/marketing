@@ -713,31 +713,31 @@ public class CouponService {
 			return null;
 		}
 		// 产品批次转换成网页格式数据转换
-		Set<MarketingActivityProductParam> transferDatas = new HashSet<MarketingActivityProductParam>();
+		Map<String, MarketingActivityProductParam> transferDataMap = new HashMap<>();
 		for (MarketingActivityProduct marketingActivityProduct : marketingActivityProducts) {
-			// 数据转换 产品去重
-			MarketingActivityProductParam transferData = new MarketingActivityProductParam();
-			transferData.setProductId(marketingActivityProduct.getProductId());
-			transferData.setProductName(marketingActivityProduct.getProductName());
-			// 产品信息集合
-			transferDatas.add(transferData);
+			String productId = marketingActivityProduct.getProductId();
+			MarketingActivityProductParam transferData = transferDataMap.get(productId);
+			if (transferData == null) {
+				transferData = new MarketingActivityProductParam();
+				transferData.setProductId(productId);
+				transferData.setProductName(marketingActivityProduct.getProductName());
+				transferDataMap.put(productId, transferData);
+			}
 		}
-		// 产品批次转换成网页格式数据转换2==产品关联相关批次
-		for (MarketingActivityProductParam transferData : transferDatas) {
-			// 产品批次对象
+		transferDataMap.forEach((productId, value) -> {
 			List<ProductBatchParam> productParams = new ArrayList<>();
 			for (MarketingActivityProduct marketingActivityProduct : marketingActivityProducts) {
-				// 校验该批次是否属于该产品
-				if (transferData.getProductId().equals(marketingActivityProduct.getProductId())) {
+				String productBatchId = marketingActivityProduct.getProductBatchId();
+				if (productId.equals(marketingActivityProduct.getProductId()) && StringUtils.isNotBlank(productBatchId)) {
 					ProductBatchParam batch = new ProductBatchParam();
-					batch.setProductBatchId(marketingActivityProduct.getProductBatchId());
+					batch.setProductBatchId(productBatchId);
 					batch.setProductBatchName(marketingActivityProduct.getProductBatchName());
 					productParams.add(batch);
 				}
 			}
-			transferData.setProductBatchParams(productParams);
-		}
-		vo.setProductParams(new ArrayList<>(transferDatas));
+			value.setProductBatchParams(productParams);
+		});
+		vo.setProductParams(new ArrayList<>(transferDataMap.values()));
 		return vo;
 	}
 
