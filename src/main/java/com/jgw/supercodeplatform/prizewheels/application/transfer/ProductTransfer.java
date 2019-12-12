@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
@@ -36,18 +37,26 @@ public class ProductTransfer {
         List<Product> products = new ArrayList<>();
         for(ProductUpdateDto productDto : productUpdateDtos){
             List<ProductBatchDto> productBatchParams = productDto.getProductBatchParams();
-            for(ProductBatchDto productBatchDto : productBatchParams) {
-                String productBatchId = productBatchDto.getProductBatchId();
-                String productBatchName = productBatchDto.getProductBatchName();
+            if(CollectionUtils.isEmpty(productBatchParams)){
                 Product product = modelMapper.map(productDto, Product.class);
                 product.setActivitySetId(activitySetId);
                 product.setAutoType(autoType);
-                product.setProductBatchId(productBatchId);
-                product.setProductBatchName(productBatchName);
                 product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
-
                 products.add(product);
+            }else{
+                for(ProductBatchDto productBatchDto : productBatchParams) {
+                    String productBatchId = productBatchDto.getProductBatchId();
+                    String productBatchName = productBatchDto.getProductBatchName();
+                    Product product = modelMapper.map(productDto, Product.class);
+                    product.setActivitySetId(activitySetId);
+                    product.setAutoType(autoType);
+                    product.setProductBatchId(productBatchId);
+                    product.setProductBatchName(productBatchName);
+                    product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
+                    products.add(product);
+                }
             }
+
         }
         return products;
 
@@ -58,16 +67,22 @@ public class ProductTransfer {
         List<Product> products = new ArrayList<>();
         for(ProductDto productDto : productDtos){
             List<ProductBatchDto> productBatchParams = productDto.getProductBatchParams();
-            for(ProductBatchDto productBatchDto : productBatchParams) {
-                String productBatchId = productBatchDto.getProductBatchId();
-                String productBatchName = productBatchDto.getProductBatchName();
+            if(CollectionUtils.isEmpty(productBatchParams)){
                 Product product = modelMapper.map(productDto, Product.class);
                 product.setAutoType(autoType);
-                product.setProductBatchId(productBatchId);
-                product.setProductBatchName(productBatchName);
                 product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
-
                 products.add(product);
+            }else {
+                for (ProductBatchDto productBatchDto : productBatchParams) {
+                    String productBatchId = productBatchDto.getProductBatchId();
+                    String productBatchName = productBatchDto.getProductBatchName();
+                    Product product = modelMapper.map(productDto, Product.class);
+                    product.setAutoType(autoType);
+                    product.setProductBatchId(productBatchId);
+                    product.setProductBatchName(productBatchName);
+                    product.setUrlByCodeManagerCallBack(CallBackConstant.PRIZE_WHEELS_URL);
+                    products.add(product);
+                }
             }
         }
         return products;
@@ -88,24 +103,29 @@ public class ProductTransfer {
             String productId = productPojo.getProductId();
             if(!hashMap.keySet().contains(productId)){
                 // 产品批次列表
+
                 List<ProductBatchDto> productBatchParams = new ArrayList<>();
-                ProductBatchDto productBatchDto = new ProductBatchDto();
-                productBatchDto.setProductBatchId(productPojo.getProductBatchId());
-                productBatchDto.setProductBatchName(productPojo.getProductBatchName());
-                productBatchParams.add(productBatchDto);
-                // 产品新增产品批次
+                if(!StringUtils.isEmpty(productPojo.getProductBatchId())){
+                    ProductBatchDto productBatchDto = new ProductBatchDto();
+                    productBatchDto.setProductBatchId(productPojo.getProductBatchId());
+                    productBatchDto.setProductBatchName(productPojo.getProductBatchName());
+                    productBatchParams.add(productBatchDto);
+                    // 产品新增产品批次
+                }
                 productDto.setProductBatchParams(productBatchParams);
                 list.add(productDto);
                 // 元数据
                 hashMap.put(productPojo.getProductId(),productPojo.getProductBatchId());
             }else {
                 // 产品追加产品批次
-                list.forEach(productUpdateDto -> {
+                list.forEach(productUpdateDto -> { //todo 优化 剔除array遍历，采用散列定位
                     if(productUpdateDto.getProductId().equals(productId)){
-                        ProductBatchDto productBatchDto = new ProductBatchDto();
-                        productBatchDto.setProductBatchId(productPojo.getProductBatchId());
-                        productBatchDto.setProductBatchName(productPojo.getProductBatchName());
-                        productUpdateDto.getProductBatchParams().add(productBatchDto);
+                        if(!StringUtils.isEmpty(productPojo.getProductBatchId())){
+                            ProductBatchDto productBatchDto = new ProductBatchDto();
+                            productBatchDto.setProductBatchId(productPojo.getProductBatchId());
+                            productBatchDto.setProductBatchName(productPojo.getProductBatchName());
+                            productUpdateDto.getProductBatchParams().add(productBatchDto);
+                        }
                         return;
                     }
                 });

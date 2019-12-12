@@ -1,11 +1,9 @@
 package com.jgw.supercodeplatform.marketing.scheduled;
 
 
-import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralExchangeMapperExt;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,9 +17,9 @@ import java.util.List;
  * 定时下架
  */
 @Component
+@Slf4j
 public class TimingOffShelf {
-    private static Logger logger= LoggerFactory.getLogger(TimingOffShelf.class);
-    @Autowired
+     @Autowired
     private IntegralExchangeMapperExt mapper;
     /**
      * 每天凌晨00：00下架，1点确认
@@ -30,8 +28,8 @@ public class TimingOffShelf {
 //    @Scheduled(cron = "*/5 * * * * ?")
 
     public void shelf(){
-        if(logger.isInfoEnabled()){
-            logger.info(" =======================================start timing off shelf=======================================");
+        if(log.isInfoEnabled()){
+            log.info(" =======================================start timing off shelf=======================================");
         }
         List<IntegralExchange> readingToDb = new ArrayList<IntegralExchange>();
         List<IntegralExchange> needOffExchanges = mapper.getNeedOffExchange();
@@ -53,18 +51,18 @@ public class TimingOffShelf {
             }
         }
         if(!CollectionUtils.isEmpty(readingToDb)){
-            logger.error(" =======================================update size is "+readingToDb.size()+" =======================================");
+            log.error(" =======================================update size is "+readingToDb.size()+" =======================================");
             try {
                 mapper.undercarriage(readingToDb);
             } catch (Exception e) {
-                logger.error("自动下架出错"+e.getMessage());
+                log.error("自动下架出错"+e.getMessage());
                 e.printStackTrace();
             }
         }else{
-            logger.error(" =======================================update size is zero =======================================");
+            log.error(" =======================================update size is zero =======================================");
         }
-        if(logger.isInfoEnabled()){
-            logger.info(" =======================================end timing off shelf=======================================");
+        if(log.isInfoEnabled()){
+            log.info(" =======================================end timing off shelf=======================================");
         }
     }
 }

@@ -233,6 +233,9 @@ public interface MarketingMembersMapper extends BaseMapper<MarketingMembers> {
     @Update("update marketing_members set  HaveIntegral = HaveIntegral - #{ingetralNum} where Id=#{id} ")
     int deleteIntegral(@Param("ingetralNum") Integer ingetralNum,@Param("id")Long id);
 
+    @Update("update marketing_members set TotalIntegral = TotalIntegral + #{accumulateIntegral} where Id=#{id} ")
+    int addAccumulateIntegral(@Param("accumulateIntegral") Integer accumulateIntegral,@Param("id")Long id);
+
 //
 //    @Select(" SELECT "+selectSql+" FROM marketing_members a WHERE a.Openid = #{openid} AND OrganizationId = #{organizationId} and State != 2 ")
 //    MarketingMembers selectByOpenIdAndOrgId(@Param("openid")String openid, @Param("organizationId")String  organizationId);
@@ -324,7 +327,7 @@ public interface MarketingMembersMapper extends BaseMapper<MarketingMembers> {
             "Id, WxName, Openid, Mobile, UserId, UserName, Sex as sexStr, Sex as sex, Birthday, ProvinceCode, CountyCode, ",
             "CityCode, ProvinceName, CountyName, CityName, OrganizationId, CreateDate, UpdateDate, ",
             "CustomerName, CustomerId, PCCcode, WechatHeadImgUrl, MemberType, State, DeviceType,HaveIntegral,BabyBirthday as babyBirthday,RegistrationApproach as registrationApproach, " +
-                    " detailAddress,IDNumber as iDNumber ,TotalIntegral as totalIntegral ,CreateDate as createDate ,CreateDate as registDate  ",
+                    " detailAddress,IDNumber as iDNumber ,TotalIntegral as totalIntegral ,CreateDate as createDate ,CreateDate as registDate,HaveIntegral as haveIntegral ",
             "from marketing_members",
             "where OrganizationId = #{OrganizationId}"
     })

@@ -3,11 +3,9 @@ package com.jgw.supercodeplatform.marketingsaler.base.task;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.jgw.supercodeplatform.marketing.common.util.DateUtil;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.pojo.SalerRuleExchange;
 import com.jgw.supercodeplatform.marketingsaler.integral.domain.service.SalerRuleExchangeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -21,9 +19,9 @@ import java.util.List;
  * 定时下架:TODO 1优化采用scan 2设置status 而不是全部数据
  */
 @Component
+@Slf4j
 public class SalerAutoUnderTask {
-    private static Logger logger= LoggerFactory.getLogger(SalerAutoUnderTask.class);
-    @Autowired
+     @Autowired
     private SalerRuleExchangeService salerRuleExchangeService;
     /**
      * 每天凌晨00：00下架，1点确认
@@ -32,8 +30,8 @@ public class SalerAutoUnderTask {
     @Scheduled(cron = "0 0 1 * * ?")
 //    @Scheduled(cron = "*/5 * * * * ?")
     public void shelf(){
-        if(logger.isInfoEnabled()){
-            logger.info(" =======================================导购积分兑换红包定时任务=======================================");
+        if(log.isInfoEnabled()){
+            log.info(" =======================================导购积分兑换红包定时任务=======================================");
         }
         List<SalerRuleExchange> readingToDb = new ArrayList<>();
 
@@ -58,18 +56,18 @@ public class SalerAutoUnderTask {
         }
         if(!CollectionUtils.isEmpty(readingToDb)){
             readingToDb.forEach(data->data.setStatus((byte)2));
-            logger.error(" 导购积分兑换红包=======================================update size is "+readingToDb.size()+" =======================================");
+            log.info(" 导购积分兑换红包=======================================update size is "+readingToDb.size()+" =======================================");
             try {
                 salerRuleExchangeService.updateBatchById(readingToDb);
             } catch (Exception e) {
-                logger.error("自动下架出错"+e.getMessage());
+                log.error("自动下架出错"+e.getMessage());
                 e.printStackTrace();
             }
         }else{
-            logger.error(" 导购积分兑换红包=======================================update size is zero =======================================");
+            log.info(" 导购积分兑换红包=======================================update size is zero =======================================");
         }
-        if(logger.isInfoEnabled()){
-            logger.info(" 导购积分兑换红包=======================================end timing off shelf=======================================");
+        if(log.isInfoEnabled()){
+            log.info(" 导购积分兑换红包=======================================end timing off shelf=======================================");
         }
     }
 

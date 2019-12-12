@@ -6,8 +6,7 @@ import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.LotteryResultMO;
 import com.jgw.supercodeplatform.marketing.exception.base.UserSqlException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -39,19 +38,19 @@ import java.util.Set;
  */
 @ResponseBody
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 	@Value("${marketing.global.expetion.print:false}")
 	private boolean showErrorInfo;
 
-	private static Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
+ 
 	/**
 	 * 400 - Bad Request
 	 */
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(MissingServletRequestParameterException.class)
 	public RestResult handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-		logger.error("缺少请求参数", e);
+		log.warn("缺少请求参数", e);
 		RestResult RestResult = new RestResult();
 		RestResult.setState(HttpStatus.BAD_REQUEST.value());
 		RestResult.setMsg(e.getCause().getLocalizedMessage() == null ? e.getMessage() : e.getCause().getLocalizedMessage());
@@ -64,7 +63,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	public RestResult handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-		logger.error("参数解析失败", e);
+		log.warn("参数解析失败", e);
 		RestResult RestResult = new RestResult();
 		RestResult.setState(HttpStatus.BAD_REQUEST.value());
 		RestResult.setMsg("could_not_read_json");
@@ -77,7 +76,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public RestResult handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-		logger.error("参数验证失败", e);
+		log.warn("参数验证失败", e);
 		BindingResult result = e.getBindingResult();
 		FieldError error = result.getFieldError();
 		String code = error.getDefaultMessage();
@@ -91,7 +90,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(BindException.class)
 	public RestResult handleBindException(BindException e) {
-		logger.error("参数绑定失败", e);
+		log.warn("参数绑定失败", e);
 		BindingResult result = e.getBindingResult();
 		FieldError error = result.getFieldError();
 		String code = error.getDefaultMessage();
@@ -105,7 +104,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(ConstraintViolationException.class)
 	public RestResult handleServiceException(ConstraintViolationException e) {
-		logger.error("参数验证失败", e);
+		log.warn("参数验证失败", e);
 		Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
 		ConstraintViolation<?> violation = violations.iterator().next();
 		String message = violation.getMessage();
@@ -119,7 +118,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(ValidationException.class)
 	public RestResult handleValidationException(ValidationException e) {
-		logger.error("参数验证失败", e);
+		log.warn("参数验证失败", e);
 		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), e.getCause().getLocalizedMessage() == null ? e.getMessage() : e.getCause().getLocalizedMessage(), null);
 		return RestResult;
 	}
@@ -130,7 +129,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(InvalidFormatException.class)
 	public RestResult invalidFormatException(InvalidFormatException e) {
-		logger.error("参数验证失败", e);
+		log.warn("参数验证失败", e);
 		RestResult RestResult = new RestResult(HttpStatus.BAD_REQUEST.value(), e.getCause().getLocalizedMessage() == null ? e.getMessage() : e.getCause().getLocalizedMessage(), null);
 		return RestResult;
 	}
@@ -141,7 +140,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	public RestResult handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-		logger.error("不支持当前请求方法", e);
+		log.warn("不支持当前请求方法", e);
 		RestResult RestResult = new RestResult(HttpStatus.METHOD_NOT_ALLOWED.value(), HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase(), null);
 		return RestResult;
 	}
@@ -152,7 +151,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(HttpMediaTypeNotSupportedException.class)
 	public RestResult handleHttpMediaTypeNotSupportedException(Exception e) {
-		logger.error("不支持当前媒体类型", e);
+		log.warn("不支持当前媒体类型", e);
 		RestResult RestResult = new RestResult(HttpStatus.UNSUPPORTED_MEDIA_TYPE.value(), HttpStatus.UNSUPPORTED_MEDIA_TYPE.getReasonPhrase(), null);
 		return RestResult;
 	}
@@ -163,7 +162,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(Exception.class)
 	public RestResult handleException(Exception e) {
-		logger.error("系统异常:" + e.getClass(), e);
+		log.warn("系统异常:" + e.getClass(), e);
 		if(showErrorInfo){
 			RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "server error", e.getMessage());
 			return RestResult;
@@ -175,7 +174,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(RuntimeException.class)
 	public RestResult runtimeException(RuntimeException e) {
-		logger.error("运行时异常：" + e.getClass().getName(), e);
+		log.warn("运行时异常：" + e.getClass().getName(), e);
 		if(showErrorInfo){
 			RestResult RestResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(),  e.getMessage(), e.getMessage());
 			return RestResult;
@@ -188,7 +187,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(BizRuntimeException.class)
 	public RestResult bizException(BizRuntimeException e) {
-		logger.error("运行时异常：" + e.getClass().getName(), e);
+		log.warn("运行时异常：" + e.getClass().getName(), e);
 		RestResult restResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(),  e.getMessage(), e.getObject());
 		return restResult;
 	}
@@ -199,7 +198,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(PrizeWheelsWeixinPayException.class)
 	public RestResult bizException(PrizeWheelsWeixinPayException e) {
-		logger.error("运行时异常：" + e.getClass().getName(), e);
+		log.warn("运行时异常：" + e.getClass().getName(), e);
 		HashMap<Object, Object> weixinPayError = new HashMap<>();
 		weixinPayError.put("weixinPayError",1);
 		RestResult restResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(),  e.getMessage(),weixinPayError );
@@ -209,7 +208,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(IllegalStateException.class)
 	public RestResult bizException(IllegalStateException e) {
-		logger.error("运行时异常：" + e.getClass().getName(), e);
+		log.warn("运行时异常：" + e.getClass().getName(), e);
 		RestResult restResult = new RestResult(HttpStatus.INTERNAL_SERVER_ERROR.value(),  e.getMessage(), null);
 		return restResult;
 	}
@@ -238,7 +237,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public RestResult handleException(DataIntegrityViolationException e) {
-		logger.error("操作数据库出现异常:", e);
+		log.error("操作数据库出现异常:", e);
 		RestResult RestResult;
 
 		String eMessages = e.getMessage();
@@ -260,7 +259,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(SuperCodeException.class)
 	public RestResult codePlatformException(SuperCodeException e) {
-		logger.error("自义定异常：" + e.getClass().getName(), e);
+		log.warn("自义定异常：" + e.getClass().getName(), e);
 		RestResult RestResult = new RestResult(e.getStatus() == 0 ? HttpStatus.INTERNAL_SERVER_ERROR.value() : e.getStatus(), e.getMessage(), null);
 		return RestResult;
 	}
@@ -269,7 +268,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(PrizeWheelsForWxErcodeException.class)
 	public RestResult prizeWheelsException(PrizeWheelsForWxErcodeException e) {
-		logger.error("自义定异常：" + e.getClass().getName(), e);
+		log.warn("自义定异常：" + e.getClass().getName(), e);
 		HashMap hashMap = new HashMap<>();
 		hashMap.put("scanType",1); // 前端根据该字段提示相关错误
 		hashMap.put("wxErcode",e.getMessage());
@@ -281,7 +280,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(NotGetPrizeWheelsException.class)
 	public RestResult notGetPrizeWheelsException(NotGetPrizeWheelsException e) {
-		logger.error("大转盘概率计算器计算未获取奖：" + e.getClass().getName(), e);
+		log.warn("大转盘概率计算器计算未获取奖：" + e.getClass().getName(), e);
 		RestResult RestResult = new RestResult(200,"未中奖!!!" , e.getMessage());// 状态码前端需求
 		return RestResult;
 	}
@@ -295,7 +294,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(SuperCodeExtException.class)
 	public RestResult codePlatformException(SuperCodeExtException e) {
-		logger.error("自义定异常：" + e.getClass().getName(), e);
+		log.warn("自义定异常：" + e.getClass().getName(), e);
 		RestResult RestResult = new RestResult(e.getStatus() == 0 ? HttpStatus.INTERNAL_SERVER_ERROR.value() : e.getStatus(), e.getMessage(), null);
 		return RestResult;
 	}
@@ -310,7 +309,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(UserSqlException.class)
 	public RestResult<?> commonException(UserSqlException e) {
-		logger.error("自义定异常：" + e.getClass().getName(), e);
+		log.warn("自义定异常：" + e.getClass().getName(), e);
 		RestResult<?> RestResult = new RestResult<>(e.getStatus() == 0 ? HttpStatus.INTERNAL_SERVER_ERROR.value() : e.getStatus(), e.getMessage(), null);
 		return RestResult;
 	}
@@ -323,7 +322,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(UserExpireException.class)
 	public RestResult<?> handleMissingUserExpireException(UserExpireException e) {
 		// 未登录异常
-		logger.error("会员未登录异常{}",e.getMessage());
+		log.warn("会员未登录异常{}",e.getMessage());
 		RestResult<?> restResult = new RestResult<>();
 		restResult.setState(401);
 		restResult.setMsg(e.getMessage());
@@ -336,7 +335,7 @@ public class GlobalExceptionHandler {
 	@ResponseStatus(HttpStatus.OK)
 	@ExceptionHandler(SalerLotteryException.class)
 	public RestResult<LotteryResultMO> handlerSalerLotteryException(SalerLotteryException e) {
-		logger.error("会员未登录异常{}",e.getMessage());
+		log.warn("会员未登录异常{}",e.getMessage());
 		RestResult<LotteryResultMO> restResult = new RestResult<>();
 		// 前端格式:不可修改
 		restResult.setState(200);

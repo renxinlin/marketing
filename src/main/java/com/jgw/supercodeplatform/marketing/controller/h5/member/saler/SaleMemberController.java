@@ -6,7 +6,6 @@ import com.jgw.supercodeplatform.marketing.cache.GlobalRamCache;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService.PageResults;
-import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.JWTUtil;
 import com.jgw.supercodeplatform.marketing.constants.CommonConstants;
 import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
@@ -14,7 +13,6 @@ import com.jgw.supercodeplatform.marketing.dto.SaleInfo;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingMemberAndScanCodeInfoParam;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.UserWithWechat;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
@@ -22,13 +20,14 @@ import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.service.integral.IntegralRecordService;
 import com.jgw.supercodeplatform.marketing.service.user.MarketingSaleMemberService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import com.jgw.supercodeplatform.marketingsaler.integral.application.group.BaseCustomerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,9 +49,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/marketing/saleMember/")
 @Api(tags = "销售员H5")
+@Slf4j
 public class SaleMemberController {
-    private static Logger logger = LoggerFactory.getLogger(SaleMemberController.class);
-    @Autowired
+     @Autowired
     private IntegralRecordService service;
     @Autowired
     private CodeEsService es;
@@ -68,6 +67,12 @@ public class SaleMemberController {
 
     @Autowired
     private MarketingSaleMemberService marketingSaleMemberService;
+
+    @Autowired
+    private BaseCustomerService baseCustomerService;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Value("${cookie.domain}")
     private String cookieDomain;
@@ -149,8 +154,8 @@ public class SaleMemberController {
 
 
                 }catch (Exception e){
-                    logger.info("扫码信息插入失败");
-                    logger.info(e.getMessage(), e);
+                    log.info("扫码信息插入失败");
+                    log.info(e.getMessage(), e);
                 }
             }
         });
@@ -191,7 +196,7 @@ public class SaleMemberController {
             return false;
         }
         if(StringUtils.isBlank(wxstate)){
-            logger.error("导购领奖:获取微信state 失败");
+            log.error("导购领奖:获取微信state 失败");
         }
         return true;
     }
@@ -230,5 +235,6 @@ public class SaleMemberController {
         globalRamCache.putScanCodeInfoMO(wxstate,pMo);
         return RestResult.success("success","wxstate12345678900987654321");
     }
+
 
 }

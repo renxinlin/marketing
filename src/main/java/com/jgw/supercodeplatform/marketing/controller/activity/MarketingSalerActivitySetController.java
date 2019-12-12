@@ -16,13 +16,11 @@ import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStat
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivitySetStatusUpdateParam;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySalerSetService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingWxTradeOrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -33,9 +31,9 @@ import java.util.concurrent.BrokenBarrierException;
 @RestController
 @RequestMapping("/marketing/saler/activity/set")
 @Api(tags = "导购活动设置管理")
+@Slf4j
 public class MarketingSalerActivitySetController extends CommonUtil {
-    private static Logger logger = LoggerFactory.getLogger(MarketingSalerActivitySetController.class);
-
+ 
     @Autowired
     private MarketingActivitySetService service;
 
@@ -111,11 +109,11 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerAdd(@RequestBody MarketingSalerActivityCreateNewParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
         // TODO 产品覆盖
-        logger.error("导购活动add活动产品参数{}",JSONObject.toJSONString(activitySetParam));
-        logger.error("导购活动add产品参数{}",JSONObject.toJSONString(activitySetParam));
+        log.error("导购活动add活动产品参数{}",JSONObject.toJSONString(activitySetParam));
+        log.error("导购活动add产品参数{}",JSONObject.toJSONString(activitySetParam));
         long startTime = System.currentTimeMillis();
         RestResult<String> stringRestResult = marketingActivitySalerSetService.salerAdd(activitySetParam);
-        logger.error("响应时间{}",(System.currentTimeMillis()-startTime));
+        log.error("响应时间{}",(System.currentTimeMillis()-startTime));
         return stringRestResult;
 
     }
@@ -131,10 +129,10 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @ApiOperation("导购活动更新,需要携带产品productId,删除原来的信息")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerUpdate(@RequestBody MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
-        logger.error("导购活动更新产品参数{}",JSONObject.toJSONString(activitySetParam));
+        log.error("导购活动更新产品参数{}",JSONObject.toJSONString(activitySetParam));
         long startTime = System.currentTimeMillis();
         RestResult<String> stringRestResult = marketingActivitySalerSetService.salerUpdate(activitySetParam);
-        logger.error("响应时间{}",(System.currentTimeMillis()-startTime));
+        log.error("响应时间{}",(System.currentTimeMillis()-startTime));
         return stringRestResult;
     }
 
@@ -149,7 +147,7 @@ public class MarketingSalerActivitySetController extends CommonUtil {
     @ApiOperation("导购活动复制")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult<String> salerCopy(@RequestBody MarketingSalerActivityUpdateParam activitySetParam) throws SuperCodeException, BrokenBarrierException, InterruptedException {
-        logger.error("导购活动copy产品参数{}",JSONObject.toJSONString(activitySetParam));
+        log.error("导购活动copy产品参数{}",JSONObject.toJSONString(activitySetParam));
         return marketingActivitySalerSetService.salerCopy(activitySetParam);
     }
 

@@ -222,7 +222,9 @@ public class ExcelUtils {
             for (int i = 0; i < enFields.length; i++) {
                 Object objValue = getFieldValueByNameSequence(enFields[i], item);
                 String fieldValue = objValue == null ? "" : objValue.toString();
-                if(objValue instanceof Date) fieldValue = DateFormatUtils.format((Date)objValue, CommonConstants.DATE_PATTERNS[0]);
+                if(objValue instanceof Date) {
+                    fieldValue = DateFormatUtils.format((Date)objValue, CommonConstants.DATE_PATTERNS[0]);
+                }
                 Label label = new Label(i, rowNo, fieldValue);
                 sheet.addCell(label);
             }

@@ -1,8 +1,7 @@
 package com.jgw.supercodeplatform.marketing.config.redis;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
+import lombok.extern.slf4j.Slf4j;
+ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -20,10 +19,10 @@ import java.util.UUID;
  * <p>
  * Created by corbett on 2019/3/30.
  */
+@Slf4j
 public class RedisLockUtil extends AbstractRedisLock {
 
-    private final Logger logger = LoggerFactory.getLogger(RedisLockUtil.class);
-
+ 
     private StringRedisTemplate redisTemplate;
 
     private ThreadLocal<String> lockFlag = new ThreadLocal<>();
@@ -52,7 +51,7 @@ public class RedisLockUtil extends AbstractRedisLock {
         // 如果获取锁失败，按照传入的重试次数进行重试
         while ((!result) && retryTimes-- > 0) {
             try {
-                logger.debug("互殴锁失败，重试中:" + retryTimes);
+                log.debug("互殴锁失败，重试中:" + retryTimes);
                 Thread.sleep(sleepMillis);
             } catch (InterruptedException e) {
                 return false;
@@ -73,11 +72,11 @@ public class RedisLockUtil extends AbstractRedisLock {
                     return jedisCommands.set(key, uuid, "NX", "PX", expire);
                 }
             });
-            logger.debug("redis setnx执行结果：" + result);
+            log.debug("redis setnx执行结果：" + result);
             return !StringUtils.isEmpty(result);
         } catch (Exception e) {
             e.printStackTrace();
-            logger.warn("获取分布式锁出错：" + e.getMessage());
+            log.warn("获取分布式锁出错：" + e.getMessage());
         }
         return false;
     }
@@ -95,6 +94,7 @@ public class RedisLockUtil extends AbstractRedisLock {
             // spring自带的执行脚本方法中，集群模式直接抛出不支持执行脚本的异常，所以只能拿到原redis的connection来执行脚本
 
             Long result = redisTemplate.execute(new RedisCallback<Long>() {
+                @Override
                 public Long doInRedis(RedisConnection connection) throws DataAccessException {
                     Object nativeConnection = connection.getNativeConnection();
                     // 集群模式和单机模式虽然执行脚本的方法一样，但是没有共同的接口，所以只能分开执行
@@ -113,7 +113,7 @@ public class RedisLockUtil extends AbstractRedisLock {
 
             return result != null && result > 0;
         } catch (Exception e) {
-            logger.error("释放锁出错", e);
+            log.error("释放锁出错", e);
         }
         return false;
     }

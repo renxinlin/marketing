@@ -13,7 +13,9 @@ public interface RedisKey {
 	 String organizationId_prefix="marketing:organizationId:";
 	 
 	 String ACCESS_TOKEN_prefix="marketing:access_token:";
-	 
+
+	 String WECHAT_TICKET_PREFIX = "marketing:ticket:";
+
 	 String ACTIVITY_PREVIEW_PREFIX="marketing:activity_preview:";
 
 	 String ACTIVITY_PLATFORM_PREVIEW_PREFIX = "marketing:platform_preview:";

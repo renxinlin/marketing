@@ -19,7 +19,6 @@ public class CouponObtainParam {
 	@NotBlank(message = "outerCodeId不能为空")
 	@ApiModelProperty(value = "外码", required=true)
 	private String outerCodeId;
-	@NotBlank(message = "productBatchId不能为空")
 	@ApiModelProperty(value = "产品批次ID", required=true)
 	private String productBatchId;
 	

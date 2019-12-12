@@ -2,6 +2,7 @@ package com.jgw.supercodeplatform.marketingsaler.order.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,4 +25,6 @@ public class ColumnnameAndValueDto {
     @NotEmpty(message = "订货字段值不可为空")
     @ApiModelProperty("订货字段值")
     String columnValue;
+
+
 }

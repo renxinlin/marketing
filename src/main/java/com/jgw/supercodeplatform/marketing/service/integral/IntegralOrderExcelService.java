@@ -6,8 +6,7 @@ import com.jgw.supercodeplatform.marketing.dao.integral.IntegralOrderMapperExt;
 import com.jgw.supercodeplatform.marketing.dto.activity.MarketingDeliveryAddressParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.IntegralOrderPageParam;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralOrder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +17,11 @@ import java.util.List;
  * 订单分页查询优化
  */
 @Service
+@Slf4j
 public class IntegralOrderExcelService extends AbstractPageService<IntegralOrder> {
 
 
-    private static Logger logger = LoggerFactory.getLogger(IntegralExchangeService.class);
-
+ 
     @Autowired
     private IntegralOrderMapperExt mapper;
 

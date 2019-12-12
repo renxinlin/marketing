@@ -17,6 +17,7 @@ import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,15 +48,18 @@ public class ProductDomainServiceImpl implements ProductDomainService {
             esRelationcodes.forEach(esRelationcode -> {
                 products.forEach(product -> {
                     if(product.getProductId().equals(esRelationcode.getProductId())){
-                        if(product.getProductBatchId().equals(esRelationcode.getProductBatchId())){
+                        if(StringUtils.isEmpty(product.getProductBatchId())   && StringUtils.isEmpty(esRelationcode.getProductBatchId())){
+                            // 无产品批次
+                            product.appendSbatchId(esRelationcode.getGlobalBatchId());
+                        }
+                        if(!StringUtils.isEmpty(product.getProductBatchId()) &&product.getProductBatchId().equals(esRelationcode.getProductBatchId())){
                             product.appendSbatchId(esRelationcode.getGlobalBatchId());
                         }
                     }
                 });
-
             });
-
-
+            // 这里暂时没有判断是否所有的产品都有了sbatchId 默认相信码管理的返回
+            log.info("产品初始化生码批次信息之后如下 {}",JSONObject.toJSONString(products));
 
         }else {
             log.info("initSbatchIds(List<Product> products) =》 {}",JSONObject.toJSONString(getBatchInfoDtoList));

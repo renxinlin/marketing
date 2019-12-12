@@ -20,9 +20,8 @@ import com.jgw.supercodeplatform.marketingsaler.integral.application.group.CodeM
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.FromFakeOutCodeToMarketingInfoDto;
 import com.jgw.supercodeplatform.marketingsaler.integral.interfaces.dto.OutCodeInfoDto;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.feigns.CodeManagerFromFadeToMarketingFeign;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,9 +51,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/marketing/front/lottery")
 @Api(tags = "h5用户领奖方法")
+@Slf4j
 public class LotteryController extends CommonUtil {
-	private static Logger logger = LoggerFactory.getLogger(LotteryController.class);
-    @Autowired
+     @Autowired
     private LotteryService service;
 
     @Autowired

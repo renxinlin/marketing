@@ -4,11 +4,9 @@ import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRecordMapperExt;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRecord;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +18,9 @@ import java.util.Map;
  * 积分记录
  */
 @Service
+@Slf4j
 public class IntegralRecordService  extends AbstractPageService<IntegralRecord > {
-    private Logger logger  = LoggerFactory.getLogger(IntegralRecordService.class);
-
+ 
     @Autowired
     private IntegralRecordMapperExt recordMapper;
 

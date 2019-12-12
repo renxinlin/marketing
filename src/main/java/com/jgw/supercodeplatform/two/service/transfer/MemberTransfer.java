@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.two.service.transfer;
 
+import com.jgw.supercodeplatform.marketing.common.constants.MemberStateConstants;
 import com.jgw.supercodeplatform.marketing.common.constants.StateConstants;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
 import com.jgw.supercodeplatform.two.dto.MarketingMembersBindMobileParam;
@@ -21,7 +22,6 @@ public class MemberTransfer {
         );
 
 
-
     }
 
     /**
@@ -38,8 +38,7 @@ public class MemberTransfer {
 
         marketingMembersNew.setLoginName("");
         marketingMembersNew.setPassword("");
-
-        marketingMembersNew.setState(StateConstants.ENABLE);
+        marketingMembersNew.setState(MemberStateConstants.ok);
 
 
         return marketingMembersNew;

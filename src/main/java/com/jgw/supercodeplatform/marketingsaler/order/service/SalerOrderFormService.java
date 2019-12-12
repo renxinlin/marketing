@@ -21,6 +21,7 @@ import com.jgw.supercodeplatform.marketingsaler.order.mapper.SalerOrderFormMappe
 import com.jgw.supercodeplatform.marketingsaler.order.pojo.SalerOrderForm;
 import com.jgw.supercodeplatform.marketingsaler.order.transfer.SalerOrderTransfer;
 import com.jgw.supercodeplatform.marketingsaler.order.vo.H5SalerOrderFormVo;
+import com.jgw.supercodeplatform.marketingsaler.order.vo.SalerPreFillInfoVo;
 import com.jgw.supercodeplatform.marketingsaler.outservicegroup.dto.CustomerInfoView;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
@@ -31,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -43,9 +45,10 @@ import java.util.stream.Collectors;
  * @author renxinlin
  * @since 2019-09-02
  */
-@Slf4j
 @Service
+@Slf4j
 public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapper, SalerOrderForm> {
+
 
     @Autowired
     private DynamicMapper dynamicMapper;
@@ -308,7 +311,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
     public void saveOrder(List<ColumnnameAndValueDto> columnnameAndValues, H5LoginVO user) {
         Asserts.check(!StringUtils.isEmpty(user.getOrganizationId()), "未获取对应组织");
         Asserts.check(!CollectionUtils.isEmpty(columnnameAndValues), "未获取订货信息");
-        validAllHaveColumn(columnnameAndValues,user.getOrganizationId());
+       // validAllHaveColumn(columnnameAndValues,user.getOrganizationId());
         StringBuffer address = new StringBuffer("");
         if (!StringUtils.isEmpty(user.getCustomerId())) {
             CustomerInfoView customerInfo = baseCustomerService.getCustomerInfo(user.getCustomerId());
@@ -316,7 +319,12 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             getAddress(address, customerInfo);
         }
         SalerOrderTransfer.initDefaultColumnValue(columnnameAndValues, user, address.toString());
-        dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
+        try {
+            // 企业可以未配置动态模板，导致动态表不存在
+            dynamicMapper.saveOrder(columnnameAndValues, SalerOrderTransfer.initTableName(user.getOrganizationId()));
+        } catch (RuntimeException e) {
+            throw new BizRuntimeException("管理员未配置表单内容...");
+        }
     }
 
 
@@ -394,5 +402,26 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
 
     public List<Map<String, Object>> detailbyId(Long id) {
         return dynamicMapper.selectById(id,SalerOrderTransfer.initTableName(commonUtil.getOrganizationId()));
+    }
+
+    /**
+     * 导购员中心预填信息
+     * @param jwtUser
+     * @return
+     */
+    public SalerPreFillInfoVo getPreFill(H5LoginVO jwtUser){
+        SalerPreFillInfoVo salerPreFillInfoVo= new SalerPreFillInfoVo();
+        salerPreFillInfoVo.setDinghuoren(jwtUser.getMemberName());
+        salerPreFillInfoVo.setDinghuorendianhua(jwtUser.getMobile());
+        StringBuffer address = new StringBuffer("");
+        if (org.apache.commons.lang.StringUtils.isNotBlank(jwtUser.getCustomerId())){
+            CustomerInfoView customerInfoView=baseCustomerService.getCustomerInfo(jwtUser.getCustomerId());
+            log.info("准备从基础信息获取地址customerInfoView-{}",customerInfoView);
+            getAddress(address,customerInfoView);
+            String detailedAddress = customerInfoView.getDetailedAddress();
+            address.append(detailedAddress != null ? detailedAddress:"");
+            salerPreFillInfoVo.setShouhuodizhi(address.toString());
+        }
+        return salerPreFillInfoVo;
     }
 }

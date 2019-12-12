@@ -1,29 +1,6 @@
 package com.jgw.supercodeplatform.marketing.service.integral;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.alibaba.fastjson.JSON;
-import com.google.gson.JsonArray;
-import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
-import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
@@ -41,14 +18,30 @@ import com.jgw.supercodeplatform.marketing.dao.integral.IntegralRuleProductMappe
 import com.jgw.supercodeplatform.marketing.dto.DaoSearchWithOrganizationIdParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.BatchSetProductRuleParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.Product;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRule;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralRuleProduct;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.GetSbatchIdsByPrizeWheelsFeign;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlDto;
+import com.jgw.supercodeplatform.prizewheels.infrastructure.feigns.dto.SbatchUrlUnBindDto;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 @Service
+@Slf4j
 public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
-    private Logger logger = LoggerFactory.getLogger(IntegralRuleProductService.class);
-  
+   
     @Autowired
     private IntegralRuleProductMapperExt dao;
 
@@ -103,10 +96,10 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 	 	throw new SuperCodeException("产品id不能为空", 500);
 	  }
       String superToken = commonUtil.getSuperToken();
-      List<IntegralRuleProduct> productList = dao.selectByProductIdsAndOrgId(productIds, commonUtil.getOrganizationId());
-		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
+//      List<IntegralRuleProduct> productList = dao.selectByProductIdsAndOrgId(productIds, commonUtil.getOrganizationId());
+//		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
 		//构建请求生码批次参数
-		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByProductIds(productIds);
 		integralUrlUnBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
 		  dao.deleteByProductIds(productIds);
 	}
@@ -154,9 +147,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		}
 		String superToken=commonUtil.getSuperToken();
 		//根据产品id集合去基础平台请求对应的产品批次
-		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
+//		JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
 		//构建请求生码批次参数
-		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByProductIds(productIds);
 		List<Map<String, Object>> updateProductList=new ArrayList<Map<String,Object>>();
 		for (Product product : products) {
 			String productId=product.getProductId();
@@ -209,9 +202,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			
 			productIds.add(productId);
 			//根据产品id集合去基础平台请求对应的产品批次
-			JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
+//			JSONArray jsonArray= commonService.requestPriductBatchIds(productIds, superToken);
 			//构建请求生码批次参数
-			List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByPPArr(jsonArray);
+			List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOs = constructProductAndBatchMOByProductIds(productIds);
 			integralUrlBindBatch(BusinessTypeEnum.INTEGRAL.getBusinessType(),superToken, productAndBatchGetCodeMOs);
 			
 			//更新产品营销信息
@@ -248,7 +241,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
     		Map<String,String> headerMap=new HashMap<String, String>();
     		headerMap.put("super-token", superToken);
     		ResponseEntity<String> resopEntity=restTemplateUtil.putJsonDataAndReturnJosn(restUserUrl+CommonConstants.USER_BATCH_UPDATE_PRODUCT_MARKETING_INFO, json, headerMap);
-    		logger.info("更新基础平台营销数据返回信息："+resopEntity.toString());
+    		log.info("更新基础平台营销数据返回信息："+resopEntity.toString());
     		String body=resopEntity.getBody();
     		JSONObject bodyJosn=JSONObject.parseObject(body);
     		Integer state=bodyJosn.getInteger("state");
@@ -257,6 +250,20 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
     		}
 		}
     }
+
+	private List<ProductAndBatchGetCodeMO> constructProductAndBatchMOByProductIds(Collection<String> productIds) {
+		List<ProductAndBatchGetCodeMO> productAndBatchGetCodeMOList = new ArrayList<>();
+		if (productIds == null) {
+			return productAndBatchGetCodeMOList;
+		}
+		productIds.forEach(productId -> {
+			ProductAndBatchGetCodeMO productAndBatchGetCodeMO = new ProductAndBatchGetCodeMO();
+			productAndBatchGetCodeMO.setProductId(productId);
+			productAndBatchGetCodeMO.setProductBatchList(new ArrayList<>());
+			productAndBatchGetCodeMOList.add(productAndBatchGetCodeMO);
+		});
+		return productAndBatchGetCodeMOList;
+	}
 
 	/**
      * 通过产品及产品批次对象集合封装通过产品及产品批次请求生码批次的参数
@@ -312,7 +319,7 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 				String productBatchId=batchobj.getString("productBatchId");
 				Long codeTotal=batchobj.getLong("codeTotal");
 				String codeBatch=batchobj.getString("globalBatchId");
-				if (StringUtils.isBlank(productId)||StringUtils.isBlank(productBatchId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
+				if (StringUtils.isBlank(productId)||StringUtils.isBlank(codeBatch) || null==codeTotal) {
 					throw new SuperCodeException("获取码管理批次信息返回数据不合法有参数为空，对应产品id及产品批次为"+productId+","+productBatchId, 500);
 				}
 				String[] sbatchIdArray = codeBatch.split(",");
@@ -345,9 +352,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 			});
 			List<SbatchUrlUnBindDto> sbatchUrlUnBindDtoList = new ArrayList<>(sbatchUrlUnbindDtoMap.values());
 //			List<Map<String, Object>> batchInfoparams=commonService.getUrlToBatchParam(obj.getJSONArray("results"), marketingDomain+WechatConstants.SCAN_CODE_JUMP_URL,businessType);
-			logger.info("积分请求删除绑定{}", JSON.toJSONString(sbatchUrlUnBindDtoList));
+			log.info("积分请求删除绑定{}", JSON.toJSONString(sbatchUrlUnBindDtoList));
 			RestResult<Object> objectRestResult = getSbatchIdsByPrizeWheelsFeign.removeOldProduct(sbatchUrlUnBindDtoList);
-			logger.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
+			log.info("删除绑定返回：{}", JSON.toJSONString(objectRestResult));
 			if (objectRestResult == null || objectRestResult.getState().intValue() != 200) {
 				throw new SuperCodeException("请求码删除生码批次和url错误：" + objectRestResult, 500);
 			}
@@ -381,9 +388,9 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 				}
 			});
 			List<SbatchUrlDto> sbatchUrlDtoList = new ArrayList<>(sbatchUrlDtoMap.values());
-			logger.info("码管理绑定积分入参：{}", JSON.toJSONString(sbatchUrlDtoList));
+			log.info("码管理绑定积分入参：{}", JSON.toJSONString(sbatchUrlDtoList));
 			RestResult bindBatchBody=getSbatchIdsByPrizeWheelsFeign.bindingUrlAndBizType(sbatchUrlDtoList);
-			logger.info("码管理绑定积分返回：{}", JSON.toJSONString(bindBatchBody));
+			log.info("码管理绑定积分返回：{}", JSON.toJSONString(bindBatchBody));
 			int bindBatchstate=bindBatchBody.getState();
 			if (200!=bindBatchstate) {
 				throw new SuperCodeException("积分设置时根据生码批次绑定url失败："+bindBatchBody, 500);
@@ -407,12 +414,12 @@ public class IntegralRuleProductService extends AbstractPageService<DaoSearch>{
 		if (null!=productIds && !productIds.isEmpty()) {
 			params.put("excludeProductIds",String.join(",", productIds));
 		}
-		logger.info("CODEMANAGER_RELATION_PRODUCT_URL = /code/relation/list/relation/productRecord : params ==> {}",JSONObject.toJSONString(params));
+		log.info("CODEMANAGER_RELATION_PRODUCT_URL = /code/relation/list/relation/productRecord : params ==> {}",JSONObject.toJSONString(params));
 		Map<String, String> headerMap = new HashMap<>();
 		headerMap.put("super-token", getSuperToken());
 		ResponseEntity<String> responseEntity = restTemplateUtil.getRequestAndReturnJosn(codeManagerRestUrl+CommonConstants.CODEMANAGER_RELATION_PRODUCT_URL, params, headerMap);
 		String body = responseEntity.getBody();
-		logger.info("接收到码管理进行过码关联的产品信息："+body);
+		log.info("接收到码管理进行过码关联的产品信息："+body);
 		JSONObject json=JSONObject.parseObject(body);
 		int state=json.getInteger("state");
 		List<IntegralRuleProduct> ruleproductList=new ArrayList<IntegralRuleProduct>();

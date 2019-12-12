@@ -1,21 +1,5 @@
 package com.jgw.supercodeplatform.marketing.service.activity.coupon;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSON;
 import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
@@ -30,23 +14,33 @@ import com.jgw.supercodeplatform.marketing.dao.coupon.MarketingMemberProductInte
 import com.jgw.supercodeplatform.marketing.dto.coupon.CouponConditionDto;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.enums.market.coupon.CouponAcquireConditionEnum;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySet;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivitySetCondition;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.*;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberCoupon;
 import com.jgw.supercodeplatform.marketing.pojo.integral.MarketingMemberProductIntegral;
+import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
 import com.jgw.supercodeplatform.marketing.service.common.CommonService;
 import com.jgw.supercodeplatform.marketing.service.es.activity.CodeEsService;
 import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
+
+ import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
+@Slf4j
 public class MarketingMemberProductIntegralService {
 	
-	private static Logger log = LoggerFactory.getLogger(MarketingMemberProductIntegralService.class);
-	
+ 	
 	@Autowired
 	private MarketingChannelMapper marketingChannelMapper;
 	
@@ -141,8 +135,9 @@ public class MarketingMemberProductIntegralService {
 				CouponAcquireConditionEnum couponAcquireConditionEnum = CouponAcquireConditionEnum.getConditionEnumByType(activityCondtion.getAcquireCondition());
 				switch (couponAcquireConditionEnum) {
 				case FIRST:
-					if(marketingMemberProductIntegral == null)
-						addMarketingMemberCoupon( marketingCouponList, members, productId, productName,outerCodeId,marketingChannel);
+					if(marketingMemberProductIntegral == null) {
+                        addMarketingMemberCoupon( marketingCouponList, members, productId, productName,outerCodeId,marketingChannel);
+                    }
 					break;
 				case ONCE_LIMIT:
 					onceLimit(acquireConditionIntegral, accrueIntegral, marketingCouponList, members, productId, productName,outerCodeId,marketingChannel);
@@ -217,8 +212,8 @@ public class MarketingMemberProductIntegralService {
 	
 	/**
 	 * 用户扫码指定产品领取抵扣券
-	 * @param activitySetId
-	 * @param productId
+	 * @param
+	 * @param
 	 * @param jwtUser
 	 * @throws Exception 
 	 * @throws SuperCodeException

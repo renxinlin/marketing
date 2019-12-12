@@ -14,6 +14,7 @@ import com.jgw.supercodeplatform.marketing.enums.EsType;
 import com.jgw.supercodeplatform.marketing.pojo.PieChartVo;
 import com.jgw.supercodeplatform.marketing.service.es.AbstractEsSearch;
 import com.jgw.supercodeplatform.marketing.vo.platform.ActivityOrganizationDataVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.elasticsearch.action.index.IndexRequest;
@@ -45,8 +46,6 @@ import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsAggregationBuilder;
 import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCount;
 import org.elasticsearch.search.aggregations.metrics.valuecount.ValueCountAggregationBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -61,8 +60,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CodeEsService extends AbstractEsSearch {
-	protected static Logger logger = LoggerFactory.getLogger(CodeEsService.class);
 
 
 	@Autowired
@@ -70,13 +69,13 @@ public class CodeEsService extends AbstractEsSearch {
 	private TransportClient eClient;
 	public void addScanCodeRecord(String openId, String productId, String productBatchId, String codeId,
 								  String codeType, Long activitySetId, Long scanCodeTime, String organizationId,Integer memberType,Long  userId) throws SuperCodeException {
-		if (StringUtils.isBlank(openId) || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
+		if (StringUtils.isBlank(openId) || StringUtils.isBlank(productId)
 				|| StringUtils.isBlank(codeId) || StringUtils.isBlank(codeType) || null== scanCodeTime
 				|| null == activitySetId|| StringUtils.isBlank(organizationId) || null == memberType|| null == userId) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
 
-		logger.info("es保存 openId="+openId+",productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime
+		log.info("es保存 openId="+openId+",productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime
 				+",memberType="+memberType+",userId="+userId);
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
@@ -233,12 +232,12 @@ public class CodeEsService extends AbstractEsSearch {
 	 */
 	public void addCodeIntegral(Long userId, String outerCodeId, String codeTypeId, String productId, String productBatchId,
 								String organizationId, Long scanCodeTime) throws SuperCodeException {
-		if (null==userId  || StringUtils.isBlank(productId) || StringUtils.isBlank(productBatchId)
+		if (null==userId  || StringUtils.isBlank(productId)
 				|| StringUtils.isBlank(outerCodeId) || StringUtils.isBlank(codeTypeId) || StringUtils.isBlank(organizationId)|| null== scanCodeTime) {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
 
-		logger.info("es保存 userId="+userId+",productId="+productId+",productBatchId="+productBatchId+",outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",organizationId="+organizationId);
+		log.info("es保存 userId="+userId+",productId="+productId+",productBatchId="+productBatchId+",outerCodeId="+outerCodeId+",codeTypeId="+codeTypeId+",organizationId="+organizationId);
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
 		addParam.put("productBatchId", productBatchId);
@@ -490,8 +489,8 @@ public class CodeEsService extends AbstractEsSearch {
             eClient.prepareIndex(EsIndex.MARKET_SCAN_INFO.getIndex(), EsType.INFO.getType())
 					.setSource(JSONObject.toJSONString(sCodeInfoMO), XContentType.JSON).get();
         }catch (Exception e){
-            logger.debug("扫码信息插入失败");
-            logger.debug(e.getMessage(), e);
+            log.debug("扫码信息插入失败");
+            log.debug(e.getMessage(), e);
         }
     }
 
@@ -572,8 +571,8 @@ public class CodeEsService extends AbstractEsSearch {
 			eClient.prepareIndex(EsIndex.MARKET_SALER_INFO.getIndex(), EsType.INFO.getType())
 					.setSource(JSONObject.toJSONString(param), XContentType.JSON).setRefreshPolicy(RefreshPolicy.IMMEDIATE).get();
 		}catch (Exception e){
-			logger.error("扫码信息插入失败");
-			logger.error(e.getMessage(), e);
+			log.error("扫码信息插入失败");
+			log.error(e.getMessage(), e);
 			throw new SuperCodeException("保存导购领奖的扫码信息失败...");
 		}
 	}
@@ -622,7 +621,7 @@ public class CodeEsService extends AbstractEsSearch {
 			throw new SuperCodeExtException("新增扫码记录出错，有参数为空", 500);
 		}
 
-		logger.info("es保存productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
+		log.info("es保存productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
 		addParam.put("productBatchId", productBatchId);
@@ -675,7 +674,7 @@ public class CodeEsService extends AbstractEsSearch {
 			throw new SuperCodeException("新增扫码记录出错，有参数为空", 500);
 		}
 
-		logger.info("es保存productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
+		log.info("es保存productId="+productId+",productBatchId="+productBatchId+",codeId="+codeId+",codeType="+codeType+",activitySetId="+activitySetId+",scanCodeTime="+scanCodeTime);
 		Map<String, Object> addParam = new HashMap<String, Object>();
 		addParam.put("productId", productId);
 		addParam.put("productBatchId", productBatchId);

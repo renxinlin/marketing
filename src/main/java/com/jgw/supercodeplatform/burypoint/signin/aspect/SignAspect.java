@@ -5,13 +5,12 @@ import com.jgw.supercodeplatform.burypoint.signin.model.BuryPointOuterChainTb;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.prizewheels.domain.model.Publisher;
 import com.jgw.supercodeplatform.prizewheels.interfaces.dto.WheelsDto;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,8 +20,8 @@ import org.springframework.stereotype.Component;
  */
 @Aspect
 @Component
+@Slf4j
 public class SignAspect {
-    private Logger logger = LoggerFactory.getLogger(SignAspect.class);
     @Autowired
     private SignBuryPointOuterChainTbMapper signBuryPointOuterChainTbMapper;
 
@@ -44,7 +43,7 @@ public class SignAspect {
      */
     @AfterReturning(value = "signControllerAspect()")
     public void afterReturn(JoinPoint joinPoint){
-        logger.info("进入切面--------------切点："+joinPoint.getSignature());
+        log.info("进入切面--------------切点："+joinPoint.getSignature());
         //获取参数
         Object[] argsList=joinPoint.getArgs();
         WheelsDto wheelsDto= (WheelsDto) argsList[0];
@@ -58,9 +57,9 @@ public class SignAspect {
         try {
             signBuryPointOuterChainTbMapper.insert(buryPointOuterChainTb);
         } catch (Exception e) {
-            logger.error("插入b端签到链接埋点数据出错："+buryPointOuterChainTb.toString());
+            log.info("插入b端签到链接埋点数据出错："+buryPointOuterChainTb.toString());
             e.printStackTrace();
         }
-        logger.info("成功插入b端签到链接埋点数据："+buryPointOuterChainTb.toString());
+        log.info("成功插入b端签到链接埋点数据："+buryPointOuterChainTb.toString());
     }
 }

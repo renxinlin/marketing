@@ -12,8 +12,8 @@ import com.jgw.supercodeplatform.marketing.vo.activity.H5LoginVO;
 import com.jgw.supercodeplatform.two.constants.JudgeBindConstants;
 import com.jgw.supercodeplatform.two.dto.MarketingSaleUserBindMobileParam;
 import com.jgw.supercodeplatform.two.service.transfer.UserTransfer;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
  * @date 2019/11/14 14:15
  */
 @Service
+@Slf4j
 public class UserLoginService {
-    private static Logger logger = Logger.getLogger(UserLoginService.class);
-
+ 
     @Autowired
     private MarketingUserMapper marketingUserMapper;
 
@@ -88,17 +88,17 @@ public class UserLoginService {
         if (marketingUserTwo.getBinding() != null && marketingUserTwo.getBinding().byteValue() == JudgeBindConstants.HAVEBIND){
             throw new SuperCodeException("用户已经绑定"); //导购员:手机号全局唯一
         }
-        // .............................................
-        //       ......                      ......
-        //
-        //               采用3.0的注册送
-        //               ............
-        // .............................................
         QueryWrapper queryWrapper=new QueryWrapper();
         queryWrapper.eq("Mobile",marketingSaleUserBindMobileParam.getMobile());
         MarketingUser exitMarketingUser=marketingUserMapper.selectOne(queryWrapper);
+
+
         Integer result = null;
         if (exitMarketingUser != null){
+            if(!exitMarketingUser.getOrganizationId().equals(marketingUserTwo.getOrganizationId())){
+                throw new BizRuntimeException("该手机号已注册其他企业");
+            }
+
             //说明3.0数据中已绑定手机号 进行积分转移 可用积分和总积分
             userTransfer.transferExists(marketingUserTwo,exitMarketingUser);
             result=marketingUserMapper.updateById(exitMarketingUser);

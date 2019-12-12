@@ -23,10 +23,9 @@ import com.jgw.supercodeplatform.marketing.dto.integral.ProductPageParam;
 import com.jgw.supercodeplatform.marketing.dto.integral.SkuInfo;
 import com.jgw.supercodeplatform.marketing.pojo.integral.IntegralExchange;
 import com.jgw.supercodeplatform.marketing.pojo.integral.ProductUnsale;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +36,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 @Service
+@Slf4j
 public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
-    private Logger logger = LoggerFactory.getLogger(UnsaleProductService.class);
     @Value("${rest.user.url}")
     private  String baseService;
 
@@ -240,8 +239,8 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             // Map map = modelMapper.map(queryCondition, HashMap.class); 无法转换
 
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.SALE_PRODUCT_URL,queryConditionMap, header);
-            if(logger.isInfoEnabled()){
-                logger.info("{调用基础信息耗时}"+(System.currentTimeMillis()-startTime));
+            if(log.isInfoEnabled()){
+                log.info("{调用基础信息耗时}"+(System.currentTimeMillis()-startTime));
             }
             // 待优化区间 start 耗时严重  取消序列化工具提高性能
             JSONObject restResultJson = JSONObject.parseObject(response.getBody());
@@ -309,8 +308,8 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
         }else{
             // 非自卖产品
             ResponseEntity<String> response = restTemplateUtil.getRequestAndReturnJosn(baseService + CommonConstants.UN_SALE_PRODUCT_URL,queryConditionMap, header);
-            if(logger.isInfoEnabled()){
-                logger.info("{调用基础信息耗时}"+(System.currentTimeMillis()-startTime));
+            if(log.isInfoEnabled()){
+                log.info("{调用基础信息耗时}"+(System.currentTimeMillis()-startTime));
             }
             RestResult restResult = JSONObject.parseObject(response.getBody(), RestResult.class);
 
@@ -437,12 +436,12 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
 
             listVO.add(towebProductVo);
         }
-        logger.info("{基础信息具体转换耗时1}"+(System.currentTimeMillis()-startTime));
+        log.info("{基础信息具体转换耗时1}"+(System.currentTimeMillis()-startTime));
 
         // 转换完成
         AbstractPageService.PageResults<List<ProductAndSkuVo>> pageVO = new AbstractPageService.PageResults( listVO,page);
         pageVO.setOther(other);
-        logger.info("{基础信息具体转换耗时2}"+(System.currentTimeMillis()-startTime));
+        log.info("{基础信息具体转换耗时2}"+(System.currentTimeMillis()-startTime));
 
         return  RestResult.success("",pageVO);
     }
@@ -547,7 +546,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             try {
                 skuJsonString = JSONObject.toJSONString(skuChild);
             } catch (Exception e) {
-                logger.error("sku转化失败:"+skuChild);
+                log.error("sku转化失败:"+skuChild);
                 e.printStackTrace();
                 throw new SuperCodeException("sku转化失败");
             }
@@ -595,7 +594,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             try {
                 skuJsonString = JSONObject.toJSONString(skuChild);
             } catch (Exception e) {
-                logger.error("sku转化失败:" + skuChild);
+                log.error("sku转化失败:" + skuChild);
                 e.printStackTrace();
                 throw new SuperCodeException("更新非自卖产品sku转化失败");
             }
@@ -622,7 +621,7 @@ public class UnsaleProductService extends AbstractPageService<ProductUnsale> {
             throw new SuperCodeException("删除的信息不存在");
         }
         if(!productUnsale.getOrganizationId().equals(organizationId)){
-            logger.error("组织id"+organizationId+"删除非自卖产品"+id+"发送越权");
+            log.error("组织id"+organizationId+"删除非自卖产品"+id+"发送越权");
             throw new SuperCodeException("组织越权");
         }
         int i = mapper.deleteByPrimaryKey(id);
