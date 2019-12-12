@@ -528,6 +528,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 		BeanUtils.copyProperties(marketingWxMember, memberWithWechat);
 		memberWithWechat.setWxMemberId(marketingWxMember.getId());
 		BeanUtils.copyProperties(marketingMembers, memberWithWechat);
+		memberWithWechat.setOpenid(openid);
 		memberWithWechat.setMemberId(marketingMembers.getId());
 		return memberWithWechat;
 	}
