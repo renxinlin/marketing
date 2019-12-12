@@ -14,9 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,11 +53,12 @@ public class ProductRepositoryImpl implements ProductRepository {
             }
         });
         // 刪除出入ku
-        QueryWrapper<ProductPojo> deleteChuRuKuwrapper1 = new QueryWrapper<>();
-        deleteChuRuKuwrapper1.in("ProductId",deleteChuRuKu);
-        deleteChuRuKuwrapper1.isNull("ProductBatchId");
-        productMapper.delete(deleteChuRuKuwrapper1);
-
+        if(!CollectionUtils.isEmpty(deleteChuRuKu)){
+            QueryWrapper<ProductPojo> deleteChuRuKuwrapper1 = new QueryWrapper<>();
+            deleteChuRuKuwrapper1.in("ProductId",deleteChuRuKu);
+            deleteChuRuKuwrapper1.isNull("ProductBatchId");
+            productMapper.delete(deleteChuRuKuwrapper1);
+        }
         // 删除当前的产品已经存在于数据库的
         QueryWrapper<ProductPojo> wrapper = new QueryWrapper<>();
         wrapper.in("ProductBatchId",productBatchIds);
