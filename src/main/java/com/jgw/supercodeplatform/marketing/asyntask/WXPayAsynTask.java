@@ -89,7 +89,7 @@ public class WXPayAsynTask implements Runnable{
 			}
 			//更新导购红包
 			if (wXTradeNo.getReferenceRole() != null && wXTradeNo.getReferenceRole().intValue() == 1) {
-				integralRecordMapper.updateSalerPrizeRecord(status, wXTradeNo.getWinningCode(), wXTradeNo.getOrganizationId());
+				integralRecordMapper.updateSalerPrizeRecord(status, wXTradeNo.getWinningCode(), wXTradeNo.getPartnerTradeNo());
 			}
 			wxTradeNoMapper.update(wXTradeNo);
 		} catch (Exception e) {
