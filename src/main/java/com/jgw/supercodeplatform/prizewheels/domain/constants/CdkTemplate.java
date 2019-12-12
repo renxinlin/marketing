@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2019/11/8 9:02
  */
 @Configuration
-public class CdkTemplate implements InitializingBean {
+public class CdkTemplate   {
     public static String URL;
 
     public  String getCdkKey() {
@@ -22,8 +22,5 @@ public class CdkTemplate implements InitializingBean {
         URL =cdkKey;
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        URL =  QiNiuYunConfigConstant.URL +URL;
-    }
+
 }
