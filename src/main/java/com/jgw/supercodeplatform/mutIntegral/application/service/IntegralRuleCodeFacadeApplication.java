@@ -5,6 +5,7 @@ import com.jgw.supercodeplatform.mutIntegral.application.transfer.IntegralRuleTr
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.agg.IntegralRuleDomain;
 import com.jgw.supercodeplatform.mutIntegral.domain.repository.IntegralRuleRepository;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
+import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.rulerewardproduct.IntegralRewardSettingAggDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,9 @@ public class IntegralRuleCodeFacadeApplication {
 
 
 
-
+    public IntegralRewardSettingAggDto getIntegralRewardSettingAgg(){
+        return null;
+    }
 
 
 }

@@ -34,6 +34,8 @@ import javax.sql.DataSource;
         "com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper",
         //大转盘埋点
         "com.jgw.supercodeplatform.burypoint.prizewheels.mapper",
+        // 多級积分
+        "com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao",
         //签到埋点
         "com.jgw.supercodeplatform.burypoint.signin.mapper"},
         sqlSessionFactoryRef="marketingsalerSqlSessionFactory")

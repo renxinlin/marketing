@@ -6,7 +6,9 @@ import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 
 import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
 import com.jgw.supercodeplatform.mutIntegral.application.service.IntegralRuleApplication;
+import com.jgw.supercodeplatform.mutIntegral.application.service.IntegralRuleCodeFacadeApplication;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
+import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.rulerewardproduct.IntegralRewardSettingAggDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 
 
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRule;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -37,6 +38,10 @@ public class IntegralRuleController  extends SalerCommonController{
 
     @Autowired
     private IntegralRuleApplication application;
+
+
+    @Autowired
+    private IntegralRuleCodeFacadeApplication ruleCodeFacadeApplication;
 
     @PostMapping("/save")
     @ApiOperation(value = "积分通用规则配置", notes = "")
@@ -71,6 +76,16 @@ public class IntegralRuleController  extends SalerCommonController{
         application.deleteById(id);
         return success();
     }
+
+    @GetMapping("/get")
+    @ApiOperation(value = "积分通用规则列表项删除", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<IntegralRewardSettingAggDto> deleteById()   {
+        IntegralRewardSettingAggDto integralRewardSettingAgg = ruleCodeFacadeApplication.getIntegralRewardSettingAgg();
+        return success(integralRewardSettingAgg);
+    }
+
+
 
 
 

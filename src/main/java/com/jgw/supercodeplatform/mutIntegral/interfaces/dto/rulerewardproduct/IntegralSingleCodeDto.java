@@ -28,18 +28,7 @@ public class IntegralSingleCodeDto implements Serializable {
 
 private static final long serialVersionUID=1L;
 
-    /**
-     * Id
-     */
-    @ApiModelProperty("主键")
-    private Long id;
-
-    /**
-     * 积分主键
-     */
-    @ApiModelProperty("积分设置主表ID")
-
-    private Long integralRuleId;
+  
 
     /**
      * 单码积分

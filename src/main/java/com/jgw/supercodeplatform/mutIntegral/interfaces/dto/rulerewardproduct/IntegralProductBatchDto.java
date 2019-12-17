@@ -17,7 +17,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @ApiModel("积分批次产品")
 
 public class IntegralProductBatchDto {
-    @NotEmpty(message = "产品批次ID")
     @ApiModelProperty("产品批次ID")
     private String productBatchId;
 
