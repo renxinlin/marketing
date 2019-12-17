@@ -34,7 +34,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("/marketing/mutiIntegral/integralRule/export")
-@Api(value = "积分规则导出", tags = "")
+@Api(value = "积分规则导出", tags = "积分规则导出")
 public class IntegralRuleExportController extends SalerCommonController{
     private  static  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     @Autowired

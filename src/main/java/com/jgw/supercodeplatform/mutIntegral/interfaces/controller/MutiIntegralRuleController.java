@@ -33,7 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/marketing/mutiIntegral/integralRule")
-@Api(value = "积分通用规则", tags = "")
+@Api(value = "积分通用规则", tags = "积分通用规则")
 public class MutiIntegralRuleController  extends SalerCommonController{
 
     @Autowired
