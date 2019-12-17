@@ -50,5 +50,15 @@ private static final long serialVersionUID=1L;
     @TableField("EndSegmentCode")
     private String endSegmentCode;
 
+    /**
+     * 组织id
+     */
+    @TableField("OrganizationId")
+    private String organizationId;
 
+    /**
+     * 组织名称
+     */
+    @TableField("OrganizationName")
+    private String organizationName;
 }

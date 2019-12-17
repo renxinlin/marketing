@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -71,6 +72,18 @@ public class IntegralRuleRewardDomian implements Serializable {
      * 经销商级别上级1上上级2以此类推
      */
     private Integer level;
+
+
+    /**
+     * 概率
+     */
+    private Integer probability;
+
+
+    /**
+     * 每人每天領取上限
+     */
+    private Integer customerLimitNum;
 
 
 }

@@ -58,6 +58,14 @@ public class IntegralRuleRewardDto implements Serializable {
     @ApiModelProperty("经销商级别上级1上上级2以此类推")
     private Integer level;
 
+    @ApiModelProperty("概率")
+    private Integer probability;
+
+
+    @ApiModelProperty("每人每天領取上限")
+    private Integer customerLimitNum;
+
+
 
 
 }

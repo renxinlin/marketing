@@ -85,4 +85,18 @@ public class IntegralRuleReward implements Serializable {
     private Integer level;
 
 
+    /**
+     * 概率
+     */
+    @TableField("Probability")
+    private Integer probability;
+
+
+    /**
+     * 每人每天領取上限
+     */
+    @TableField("CustomerLimitNum")
+    private Integer customerLimitNum;
+
+
 }

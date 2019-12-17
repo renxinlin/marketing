@@ -43,6 +43,16 @@ private static final long serialVersionUID=1L;
      */
     @TableField("SbatchId")
     private String sbatchId;
+    /**
+     * 组织id
+     */
+    @TableField("OrganizationId")
+    private String organizationId;
 
+    /**
+     * 组织名称
+     */
+    @TableField("OrganizationName")
+    private String organizationName;
 
 }
