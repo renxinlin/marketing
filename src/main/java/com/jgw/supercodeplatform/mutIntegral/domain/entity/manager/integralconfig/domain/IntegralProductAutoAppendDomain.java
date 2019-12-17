@@ -18,7 +18,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class IntegralProductAutoAppendDto implements Serializable {
+public class IntegralProductAutoAppendDomain implements Serializable {
 
 private static final long serialVersionUID=1L;
 

@@ -13,12 +13,16 @@ import java.util.List;
 @Accessors(chain = true)
 @ApiModel("通用积分奖励产品,,,单码设置")
 public class IntegralRewardSettingAggDto {
+
     @ApiModelProperty("单码设置")
     private List<IntegralSingleCodeDto> singleCodeDtos;
+
     @ApiModelProperty("号段码设置")
     private List<IntegralSegmentCodeDto> segmentCodeDtos;
+
     @ApiModelProperty("批次码设置")
     private List<IntegralSbatchDto> sbatchDtos;
+
     @ApiModelProperty("码关联产品设置")
     private IntegralProductAggDto productAggDto;
 }

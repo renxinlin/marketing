@@ -55,4 +55,15 @@ private static final long serialVersionUID=1L;
     @TableField("OrganizationName")
     private String organizationName;
 
+    /**
+     * 营销码
+     */
+    @TableField("MarketingCode")
+    private String marketingCode;
+    /**
+     * 防伪码
+     */
+    @TableField("FakeCode")
+    private String fakeCode;
+
 }

@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class IntegralSbatchDto implements Serializable {
+public class IntegralSingleCodeDomain implements Serializable {
 
 private static final long serialVersionUID=1L;
 
@@ -33,9 +33,20 @@ private static final long serialVersionUID=1L;
     private Long integralRuleId;
 
     /**
-     * 批次，批次不需要做码管理
+     * 单码积分
      */
-    private String sbatchId;
+    private String singleCode;
+
+    /**
+     * 营销码
+     */
+    private String marketingCode;
+    /**
+     * 防伪码
+     */
+    private String fakeCode;
+
+
     private String organizationId;
 
     /**
