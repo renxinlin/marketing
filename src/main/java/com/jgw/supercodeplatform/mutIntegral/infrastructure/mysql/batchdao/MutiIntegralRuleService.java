@@ -4,7 +4,7 @@ package com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.batchdao;
 import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRule;
-import    com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.IntegralRuleMapper;
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.MutiIntegralRuleMapper;
 import   com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
@@ -15,7 +15,7 @@ import   com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
  * @since 2019-12-13
  */
 @Service
-public class IntegralRuleService extends ServiceImpl<IntegralRuleMapper, IntegralRule> {
+public class MutiIntegralRuleService extends ServiceImpl<MutiIntegralRuleMapper, IntegralRule> {
 
 
 }

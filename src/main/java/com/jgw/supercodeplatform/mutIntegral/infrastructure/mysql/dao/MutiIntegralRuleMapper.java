@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author renxinlin
  * @since 2019-12-13
  */
-public interface IntegralRuleMapper extends BaseMapper<IntegralRule> {
+public interface MutiIntegralRuleMapper extends BaseMapper<IntegralRule> {
 
 
 }

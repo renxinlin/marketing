@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author renxinlin
  * @since 2019-12-13
  */
-public interface IntegralRecordMapper extends BaseMapper<IntegralRecord> {
+public interface MutiIntegralRecordMapper extends BaseMapper<IntegralRecord> {
 
 
 }

@@ -1,10 +1,10 @@
 package com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.batchdao;
 
 
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.MutiIntegralRecordMapper;
 import org.springframework.stereotype.Service;
 
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRecord;
-import    com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.IntegralRecordMapper;
 import   com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 /**
@@ -15,7 +15,7 @@ import   com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
  * @since 2019-12-13
  */
 @Service
-public class IntegralRecordService extends ServiceImpl<IntegralRecordMapper, IntegralRecord> {
+public class MutiIntegralRecordService extends ServiceImpl<MutiIntegralRecordMapper, IntegralRecord> {
 
 
 }

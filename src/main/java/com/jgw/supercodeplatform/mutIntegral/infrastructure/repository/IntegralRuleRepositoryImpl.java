@@ -1,13 +1,12 @@
 package com.jgw.supercodeplatform.mutIntegral.infrastructure.repository;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.jgw.supercodeplatform.mutIntegral.application.transfer.IntegralRuleTransfer;
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.agg.IntegralRuleDomain;
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralRuleRewardCommonDomain;
 import com.jgw.supercodeplatform.mutIntegral.domain.repository.IntegralRuleRepository;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.constants.MutiIntegralCommonConstants;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.batchdao.IntegralRuleRewardCommonService;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.IntegralRuleMapper;
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.MutiIntegralRuleMapper;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.IntegralRuleRewardCommonMapper;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRule;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRuleRewardCommon;
@@ -16,13 +15,12 @@ import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
 import java.util.List;
 
 @Repository
 public class IntegralRuleRepositoryImpl implements IntegralRuleRepository {
     @Autowired
-    private IntegralRuleMapper mapper;
+    private MutiIntegralRuleMapper mapper;
 
     @Autowired
     private IntegralRuleRewardCommonMapper commonMapper;

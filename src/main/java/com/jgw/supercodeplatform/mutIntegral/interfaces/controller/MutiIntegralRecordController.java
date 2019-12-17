@@ -4,6 +4,7 @@ package com.jgw.supercodeplatform.mutIntegral.interfaces.controller;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.batchdao.MutiIntegralRecordService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 
 
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.batchdao.IntegralRecordService;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRecord;
 
 /**
@@ -27,11 +27,11 @@ import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralR
 @RestController
 @RequestMapping("/marketing/mutiIntegral/integralRecord")
 @Api(value = "", tags = "")
-public class IntegralRecordController  extends SalerCommonController{
+public class MutiIntegralRecordController  extends SalerCommonController{
         // 可在模版中添加相应的controller通用方法，编辑模版在resources/templates/controller.java.vm文件中
 
     @Autowired
-    private IntegralRecordService service;
+    private MutiIntegralRecordService service;
 
     @PostMapping("/save")
     @ApiOperation(value = "", notes = "")

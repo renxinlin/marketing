@@ -1,15 +1,6 @@
 package com.jgw.supercodeplatform.mutIntegral.domain.repository;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.agg.IntegralRuleDomain;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.IntegralRuleMapper;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.IntegralRuleRewardCommonMapper;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.IntegralRuleRewardMapper;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRule;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRuleReward;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRuleRewardCommon;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 /**
