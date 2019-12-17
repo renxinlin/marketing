@@ -207,8 +207,8 @@ public interface IntegralRecordMapperExt extends IntegralRecordMapper,CommonSql 
 	@Select("SELECT "+allFileds+" FROM marketing_integral_record WHERE OuterCodeId = #{outerCodeId} AND memberType = 0 AND Status = '1' AND IntegralNum > 0")
 	List<IntegralRecord> getMemberIntegralRecord(@Param("outerCodeId") String outerCodeId);
 
-	@Update("UPDATE marketing_integral_record SET Status = #{status} WHERE OuterCodeId = #{outerCodeId} AND OrganizationId = #{organizationId} AND MemberType = 1 AND SalerAmount > 0 AND Status != '2'")
-	int updateSalerPrizeRecord(@Param("status") String status, @Param("outerCodeId") String outerCodeId, @Param("organizationId") String organizationId);
+	@Update("UPDATE marketing_integral_record SET Status = #{status} WHERE OuterCodeId = #{outerCodeId} AND TradeNo = #{tradeNo} AND MemberType = 1 AND SalerAmount > 0 AND Status != '2'")
+	int updateSalerPrizeRecord(@Param("status") String status, @Param("outerCodeId") String outerCodeId, @Param("tradeNo") String tradeNo);
 
 	@Select("select count(1) from marketing_integral_record where organizationId = #{organizationId} and SalerId = #{salerId} and memberType = #{memberType} and SalerAmount is not null")
 	int countScanCodeNum(@Param("salerId") Long salerId, @Param("memberType") Byte memberType, @Param("organizationId") String organizationId);

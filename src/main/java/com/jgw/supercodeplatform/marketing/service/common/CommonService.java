@@ -472,7 +472,7 @@ public class CommonService {
 		if(results == null){
 			throw new BizRuntimeException("码管理调用获取批次信息异常！！");
 		}
-		String sBatchId=results.getString("sbatchId");
+		String sBatchId=results.getString("sBatchId");
 		if (StringUtils.isBlank(sBatchId)) {
 			throw  new SuperCodeExtException("对不起,该码不存在",500);
 		}

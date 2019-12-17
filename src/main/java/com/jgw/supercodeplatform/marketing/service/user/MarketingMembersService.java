@@ -481,6 +481,7 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 			marketingWxMember.setCreateTime(new Date());
 			marketingWxMember.setUpdateTime(new Date());
 			marketingWxMember.setMemberId(members.getId());
+			marketingWxMember.setMemberType((byte)0);
 			marketingWxMemberMapper.insert(marketingWxMember);
 		} else {
 			UpdateWrapper<MarketingWxMember> updateWrapper = Wrappers.<MarketingWxMember>update().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.VIP.getType());

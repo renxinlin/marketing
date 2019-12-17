@@ -144,6 +144,9 @@ public class SalerLotteryService {
         // step-2 活动主体数据获取
         String productId           = scanCodeInfoMO.getProductId();
         String productBatchId = scanCodeInfoMO.getProductBatchId();
+        if ("".equals(productBatchId)) {
+            productBatchId = null;
+        }
         Long activitySetId     = scanCodeInfoMO.getActivitySetId();
         //   活动数据
         Map<String, Object> map = getBizData(productId, productBatchId, activitySetId);

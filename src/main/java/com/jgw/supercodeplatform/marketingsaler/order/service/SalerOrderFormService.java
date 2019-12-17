@@ -418,7 +418,7 @@ public class SalerOrderFormService extends SalerCommonService<SalerOrderFormMapp
             CustomerInfoView customerInfoView=baseCustomerService.getCustomerInfo(jwtUser.getCustomerId());
             log.info("准备从基础信息获取地址customerInfoView-{}",customerInfoView);
             getAddress(address,customerInfoView);
-            String detailedAddress = customerInfoView.getDetailedAddress();
+            String detailedAddress = customerInfoView == null ? "" : customerInfoView.getDetailedAddress()  ;
             address.append(detailedAddress != null ? detailedAddress:"");
             salerPreFillInfoVo.setShouhuodizhi(address.toString());
         }

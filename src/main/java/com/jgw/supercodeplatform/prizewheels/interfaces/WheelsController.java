@@ -9,6 +9,7 @@ import com.jgw.supercodeplatform.marketing.common.util.JsonToMapUtil;
 import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.prizewheels.application.service.WheelsPublishAppication;
 import com.jgw.supercodeplatform.prizewheels.domain.constants.CdkTemplate;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.QiNiuYunConfigConstant;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.domainserviceimpl.CdkEventSubscriberImplV2;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.PrizeWheelsOrderPojo;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRecordPojo;
@@ -183,7 +184,7 @@ public class WheelsController extends SalerCommonController {
         response.setHeader("Content-Disposition", "attachment;fileName=cdktemplate.xls");
 
         // 读取excel流
-        InputStream in = cdkEventSubscriberImplV2.downExcelStream(CdkTemplate.URL);
+        InputStream in = cdkEventSubscriberImplV2.downExcelStream(QiNiuYunConfigConstant.URL+CdkTemplate.URL);
         ServletOutputStream outputStream = response.getOutputStream();
         try {
             byte[] buf=new byte[1024];
