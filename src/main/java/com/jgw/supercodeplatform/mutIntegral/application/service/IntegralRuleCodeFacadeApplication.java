@@ -44,6 +44,7 @@ public class IntegralRuleCodeFacadeApplication {
      * @return
      */
     public IntegralRewardSettingAggDto getIntegralRewardSettingAgg(){
+        // 获取配置快照
         return readSettingInfoRepository.getSnapshotInfo();
     }
 
@@ -74,7 +75,7 @@ public class IntegralRuleCodeFacadeApplication {
 
         // TODO 需要发送码管理新的跳转信息
 
-        // TODO 读请求快照
+        //  读请求快照
         readSettingInfoRepository.updateSnapshotInfo(integralRewardSettingAggDto);
 
 
