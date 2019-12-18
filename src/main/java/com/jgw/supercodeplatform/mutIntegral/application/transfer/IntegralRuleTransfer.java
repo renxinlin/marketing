@@ -2,9 +2,13 @@ package com.jgw.supercodeplatform.mutIntegral.application.transfer;
 
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.agg.IntegralRuleDomain;
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralRuleRewardCommonDomain;
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.constants.ChooseedIntegralConsants;
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.constants.RewardMonryTypeConstants;
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.constants.RewardTypeConstants;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardCommonDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
+import com.jgw.supercodeplatform.prizewheels.domain.constants.RewardTypeConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +53,18 @@ public class IntegralRuleTransfer {
         integralRuleDomain.setIntegralRuleRewardCommonDomains(
                 integralRuleRewardCommons.stream().map(integralRuleRewardCommonDto -> {
                     IntegralRuleRewardCommonDomain domain = mapper.map(integralRuleRewardCommonDto, IntegralRuleRewardCommonDomain.class);
+                    // 未选择前端不传递值 做初始化
+                    domain.setChooseedIntegral(
+                            domain.getChooseedIntegral() == null
+                                    ? ChooseedIntegralConsants.noChoose
+                                    : domain.getChooseedIntegral()
+                            );
+                    domain.setRewardMoneyType(
+                            domain.getRewardMoneyType() == null
+                                    ? RewardMonryTypeConstants.nosend
+                                    : domain.getRewardMoneyType()
+                            );
+
                     domain.setOrganizationId(organizationId);
                     domain.setOrganizationName(organizationName);
                     return domain;
