@@ -1,13 +1,12 @@
 package com.jgw.supercodeplatform.mutIntegral.interfaces.controller;
 
 
-
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
-
-import com.jgw.supercodeplatform.marketing.common.util.ExcelUtils;
+import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
 import com.jgw.supercodeplatform.mutIntegral.application.service.IntegralRuleApplication;
 import com.jgw.supercodeplatform.mutIntegral.application.service.IntegralRuleCodeFacadeApplication;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
+import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.rulerewardproduct.IntegralRewardSettingAggDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
 import io.swagger.annotations.Api;
@@ -15,10 +14,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonController;
-
-
 
 import javax.validation.Valid;
 import java.util.List;
@@ -42,6 +37,7 @@ public class MutiIntegralRuleController  extends SalerCommonController{
 
     @Autowired
     private IntegralRuleCodeFacadeApplication ruleCodeFacadeApplication;
+
 
     @PostMapping("/save")
     @ApiOperation(value = "积分通用规则配置", notes = "")
@@ -91,6 +87,15 @@ public class MutiIntegralRuleController  extends SalerCommonController{
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult setSettingInfo(@Valid  @RequestBody  IntegralRewardSettingAggDto integralRewardSettingAggDto)   {
         ruleCodeFacadeApplication.setSettingInfo(integralRewardSettingAggDto);
+        return success();
+    }
+
+
+    @PostMapping("/saveIntegral")
+    @ApiOperation(value = "保存并设置积分", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult saveIntegral(@Valid  @RequestBody  List<IntegralRuleRewardDto> ruleRewardDto)   {
+        application.saveIntegral(ruleRewardDto);
         return success();
     }
 

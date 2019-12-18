@@ -38,6 +38,9 @@ public class ReadSettingInfoRepositoryImpl implements ReadSettingInfoRepository 
                                                 ,new ArrayList<>()));
         }
         // todo 转换成dto
+        // todo 转换成dto
+        // todo 转换成dto
+        // todo 转换成dto
         IntegralRewardSettingAggDto integralRewardSettingAggDto = JSONObject.parseObject(integralRewardSettingAggDtoStr, IntegralRewardSettingAggDto.class);
         return integralRewardSettingAggDto;
     }

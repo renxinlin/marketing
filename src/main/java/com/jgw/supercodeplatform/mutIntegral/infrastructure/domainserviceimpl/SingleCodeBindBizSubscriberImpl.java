@@ -37,8 +37,8 @@ public class SingleCodeBindBizSubscriberImpl implements SingleCodeBindBizSubscri
             LambdaQueryWrapper<BizRoute> deleteWrapper = new LambdaQueryWrapper<>();
             deleteWrapper.eq(BizRoute::getOrganizationId, organizationId);
             deleteWrapper.eq(BizRoute::getBizType, BizRoutePriorityConstants.SingleCode);
-
             mapper.delete(deleteWrapper);
+            return;
         }
         List<IntegralSingleCodeDomain> singleCodeDomains = singleCodeBindBizEvents.getSingleCodeDomains();
         List<BizRoute> bizRoutes = transfer.transferSingleCodeToBizRoutePojo(singleCodeDomains);

@@ -9,4 +9,5 @@ public interface RewardMonryTypeConstants {
     String lowerRandomMoneyError = "随机金额下限填写错误";
     String highRandomMoneyError = "随机金额上限填写错误" ;
     String highShouldPlusError = "金额上限应该大于下限";
+
 }

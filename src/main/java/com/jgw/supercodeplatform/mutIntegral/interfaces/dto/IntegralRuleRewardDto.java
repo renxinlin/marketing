@@ -4,10 +4,13 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.constants.MutiIntegralCommonConstants;
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.constants.RewardTypeConstants;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.http.util.Asserts;
 
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
@@ -24,10 +27,9 @@ import java.util.concurrent.Executors;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class IntegralRuleRewardDto implements Serializable {
+public class IntegralRuleRewardDto implements Serializable,Cloneable {
 
 
-    @TableId(value = "Id", type = IdType.AUTO)
     private Long id;
 
     @ApiModelProperty("积分规则Id")
@@ -67,5 +69,6 @@ public class IntegralRuleRewardDto implements Serializable {
 
 
 
-
+    @ApiModelProperty("类型1积分2 红包")
+    private Integer rewardType;
 }

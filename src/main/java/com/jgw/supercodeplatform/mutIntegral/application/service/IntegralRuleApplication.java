@@ -1,10 +1,14 @@
 package com.jgw.supercodeplatform.mutIntegral.application.service;
 
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
+import com.jgw.supercodeplatform.mutIntegral.application.transfer.IntegralRuleRewardTransfer;
 import com.jgw.supercodeplatform.mutIntegral.application.transfer.IntegralRuleTransfer;
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.agg.IntegralRuleDomain;
+import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralRuleRewardDomian;
 import com.jgw.supercodeplatform.mutIntegral.domain.repository.IntegralRuleRepository;
+import com.jgw.supercodeplatform.mutIntegral.domain.service.IntegralRuleRewardDomianServie;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
+import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +26,12 @@ public class IntegralRuleApplication {
     @Autowired
     private IntegralRuleTransfer integralRuleTransfer;
 
+    @Autowired
+    private IntegralRuleRewardTransfer ruleRewardTransfer;
 
     // 领域
+    @Autowired
+    private IntegralRuleRewardDomianServie rewardDomianServie;
 
     // 基础设置
     @Autowired
@@ -83,5 +91,20 @@ public class IntegralRuleApplication {
 
     public void deleteById(Integer id) {
          ruleCommonRepository.deleteTermById(id);
+    }
+
+    /**
+     * 保存并设置积分奖励;包括积分红包
+     * @param ruleRewardDtos
+     */
+    public void saveIntegral(List<IntegralRuleRewardDto> ruleRewardDtos) {
+        // 需要产生一份未中奖信息
+        String organizationId = commonUtil.getOrganizationId();
+        String organizationName = commonUtil.getOrganizationName();
+        List<IntegralRuleRewardDomian>  ruleRewardDomains = ruleRewardTransfer.transferDtoToDomain(ruleRewardDtos,organizationId,organizationName);
+        rewardDomianServie.checkMoney(ruleRewardDtos);
+        rewardDomianServie.checkIntegral(ruleRewardDtos);
+        rewardDomianServie.getUnrewardProbability(ruleRewardDtos);
+
     }
 }

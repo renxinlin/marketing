@@ -98,5 +98,19 @@ public class IntegralRuleReward implements Serializable {
     @TableField("CustomerLimitNum")
     private Integer customerLimitNum;
 
+    @TableField("OrganizationId")
+    private String organizationId;
+    @TableField("OrganizationName")
+    private String organizationName;
+    /**
+     * 类型1积分2 红包
+     */
+    @TableField("UnRewardFlag")
+    private Integer rewardType;
+    /**
+     * 红包未中奖标志:1中奖2未中奖
+     */
+    @TableField("UnRewardFlag")
+    private Integer  unRewardFlag;
 
 }
