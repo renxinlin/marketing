@@ -31,4 +31,9 @@ public class IntegralRuleRewardAggDto implements Serializable,Cloneable {
 
     @ApiModelProperty("1已选择送积分2未选择积分送")
     private Integer chooseedIntegral;
+
+
+    @ApiModelProperty("1会员2导购3门店4经销商")
+    private Integer integralRuleType;
+
 }

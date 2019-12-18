@@ -7,14 +7,17 @@ import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfi
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralRuleRewardDomian;
 import com.jgw.supercodeplatform.mutIntegral.domain.repository.IntegralRuleRepository;
 import com.jgw.supercodeplatform.mutIntegral.domain.service.IntegralRuleRewardDomianServie;
+import com.jgw.supercodeplatform.mutIntegral.domain.repository.IntegralRuleRewardRepository;
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.constants.MutiIntegralCommonConstants;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardAggDto;
-import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -40,6 +43,11 @@ public class IntegralRuleApplication {
 
     @Autowired
     private IntegralRuleRepository ruleCommonRepository;
+
+
+
+    @Autowired
+    private IntegralRuleRewardRepository rewardRepository;
 
 
     /**
@@ -96,16 +104,22 @@ public class IntegralRuleApplication {
 
     /**
      * 保存并设置积分奖励;包括积分红包
-     * @param ruleRewardDtos
+     * @param ruleRewardAggDtos
      */
     public void saveIntegral(List<IntegralRuleRewardAggDto> ruleRewardAggDtos) {
+        Asserts.check(CollectionUtils.isEmpty(ruleRewardAggDtos), MutiIntegralCommonConstants.nullError);
         // 需要产生一份未中奖信息
         String organizationId = commonUtil.getOrganizationId();
         String organizationName = commonUtil.getOrganizationName();
-//        List<IntegralRuleRewardDomian>  ruleRewardDomains = ruleRewardTransfer.transferDtoToDomain(ruleRewardAggDtos,organizationId,organizationName);
-//        rewardDomianServie.checkMoney(ruleRewardDomains);
-//        rewardDomianServie.checkIntegral(ruleRewardDomains);
-//        rewardDomianServie.getUnrewardProbability(ruleRewardDomains);
+        //  外层的list是 会员 门店 渠道 经销商[1~n] 内层是配置的积分红包列表信息
+        List<List<IntegralRuleRewardDomian>>  ruleRewardDomains = ruleRewardTransfer.transferDtoToDomain(ruleRewardAggDtos,organizationId,organizationName);
+        rewardDomianServie.checkMoney(ruleRewardDomains);
+        rewardDomianServie.buildUnRewardInfo(ruleRewardDomains);
+
+
+
+        // TODO 产生读请求快照
+        rewardRepository.updateSnapshotInfo(ruleRewardAggDtos);
 
     }
 }

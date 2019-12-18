@@ -12,6 +12,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.apache.http.util.Asserts;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,7 +34,7 @@ public class IntegralRuleRewardDto implements Serializable,Cloneable {
 
     private Long id;
 
-
+    @NotNull
     @ApiModelProperty("1会员2导购3门店4经销商")
     private Integer integralRuleType;
 
@@ -40,11 +42,15 @@ public class IntegralRuleRewardDto implements Serializable,Cloneable {
     @ApiModelProperty("1固定2随机3不送红包")
     private Integer rewardMoneyType;
 
+    @Min(0)
     @ApiModelProperty("固定金额")
     private Double fixedMoney;
 
+    @Min(0)
     @ApiModelProperty("随机金额上限")
     private Double highRandomMoney;
+
+    @Min(0)
     @ApiModelProperty("随机金额下限")
     private Double lowerRandomMoney;
 
