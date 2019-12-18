@@ -2,9 +2,12 @@ package com.jgw.supercodeplatform.mutIntegral.interfaces.dto.rulerewardproduct;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -12,6 +15,8 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel("通用积分奖励产品,,,单码设置")
+@AllArgsConstructor
+@NoArgsConstructor
 public class IntegralRewardSettingAggDto {
 
     @ApiModelProperty("单码设置")

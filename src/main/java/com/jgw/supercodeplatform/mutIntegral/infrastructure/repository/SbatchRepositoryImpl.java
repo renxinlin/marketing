@@ -30,7 +30,7 @@ public class SbatchRepositoryImpl implements SbatchRepository {
 
 
     @Override
-    public void deleteOldSetting(List<IntegralSbatchDomain> sbatchDomains) {
+    public void deleteOldSetting( ) {
         LambdaQueryWrapper<IntegralSbatch> deleteByMarketingCodes = new LambdaQueryWrapper<>();
         deleteByMarketingCodes.in(IntegralSbatch::getOrganizationId,commonUtil.getOrganizationId());
         mapper.delete(deleteByMarketingCodes);

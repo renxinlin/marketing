@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.mutIntegral.infrastructure.transfer;
 
+import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralProductDomain;
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralSbatchDomain;
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralSegmentCodeDomain;
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralSingleCodeDomain;
@@ -73,5 +74,21 @@ public class BizRouteTransfer {
             return bizRoute;
         }).collect(Collectors.toList());
 
+    }
+
+    public List<BizRoute> transferProductToBizRoutePojo(List<IntegralProductDomain> productDomins) {
+        log.info("BizRouteTransfer transferProductToBizRoutePojo sbatchDomains => {}",productDomins);
+        if(CollectionUtils.isEmpty(productDomins)){
+            return new ArrayList<>();
+        }
+
+        return productDomins.stream().map(productDomin->{
+            BizRoute bizRoute = modelMapper.map(productDomin, BizRoute.class);
+            // todo 补充其他属性
+            bizRoute.setPriority(BizRoutePriorityConstants.product);
+            bizRoute.setBizType(MutiIntegralConstants.TYPE);
+            bizRoute.setBizUrl(MutiIntegralConstants.URL);
+            return bizRoute;
+        }).collect(Collectors.toList());
     }
 }

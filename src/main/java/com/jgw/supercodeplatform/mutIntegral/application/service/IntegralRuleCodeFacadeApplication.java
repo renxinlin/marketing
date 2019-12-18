@@ -1,24 +1,15 @@
 package com.jgw.supercodeplatform.mutIntegral.application.service;
 
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.exception.BizRuntimeException;
-import com.jgw.supercodeplatform.mutIntegral.application.transfer.IntegralRuleTransfer;
-import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.agg.IntegralRuleDomain;
-import com.jgw.supercodeplatform.mutIntegral.domain.repository.IntegralRuleRepository;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.constants.ErrorConstants;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralSegmentCode;
-import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
+import com.jgw.supercodeplatform.mutIntegral.domain.repository.ReadSettingInfoRepository;
+import com.jgw.supercodeplatform.mutIntegral.infrastructure.constants.MutiIntegralCommonConstants;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.rulerewardproduct.IntegralRewardSettingAggDto;
-import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.Asserts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-
-import java.util.List;
 
 /**
  * 积分设置按产品按号段按批次按单码 门面
@@ -45,9 +36,15 @@ public class IntegralRuleCodeFacadeApplication {
     @Autowired
     private IntegralProductApplication productApplication;
 
+    @Autowired
+    private ReadSettingInfoRepository readSettingInfoRepository;
 
+    /**
+     * 获取快照信息
+     * @return
+     */
     public IntegralRewardSettingAggDto getIntegralRewardSettingAgg(){
-        return null;
+        return readSettingInfoRepository.getSnapshotInfo();
     }
 
     /**
@@ -63,7 +60,7 @@ public class IntegralRuleCodeFacadeApplication {
          */
         // TODO 转到领域服务业务校验
         // todo 为null的时候不设置但进行删除[业务，业务元信息]
-        checkHaveSetting(integralRewardSettingAggDto);
+        checkCanBeenSetting(integralRewardSettingAggDto);
         singleCodeApplication.setsingleCodeForIntegralRule(integralRewardSettingAggDto.getSingleCodeDtos());
         segmentCodeApplication.setsegmentCodeForIntegralRule(integralRewardSettingAggDto.getSegmentCodeDtos());
         sBatchApplication.setsBatchForIntegralRule(integralRewardSettingAggDto.getSbatchDtos());
@@ -73,20 +70,27 @@ public class IntegralRuleCodeFacadeApplication {
 
 
         // 发送最新的业务给码管理
-        // TODO 需要发送吗
+        // TODO 删除旧的码管理跳转信息
+
+        // TODO 需要发送码管理新的跳转信息
+
+        // TODO 读请求快照
+        readSettingInfoRepository.updateSnapshotInfo(integralRewardSettingAggDto);
+
+
 
 
     }
 
-    private void checkHaveSetting(IntegralRewardSettingAggDto integralRewardSettingAggDto) {
-        Asserts.check(integralRewardSettingAggDto != null, ErrorConstants.nullError);
+    private void checkCanBeenSetting(IntegralRewardSettingAggDto integralRewardSettingAggDto) {
+        Asserts.check(integralRewardSettingAggDto != null, MutiIntegralCommonConstants.nullError);
         if(
                 integralRewardSettingAggDto.getProductAggDto() == null
                         && CollectionUtils.isEmpty(integralRewardSettingAggDto.getSingleCodeDtos() )
                         && CollectionUtils.isEmpty(integralRewardSettingAggDto.getSegmentCodeDtos() )
                         && CollectionUtils.isEmpty(integralRewardSettingAggDto.getSbatchDtos() )
         ){
-            throw new BizRuntimeException(ErrorConstants.nullError);
+            throw new BizRuntimeException(MutiIntegralCommonConstants.nullError);
         }
     }
 

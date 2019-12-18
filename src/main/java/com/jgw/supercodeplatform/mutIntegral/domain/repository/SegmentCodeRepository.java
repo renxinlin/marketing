@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface SegmentCodeRepository {
-      void deleteOldSetting(List<IntegralSegmentCodeDomain> segmentCodeDomains);
+      void deleteOldSetting();
       void saveNewSetting(List<IntegralSegmentCodeDomain> segmentCodeDomains);
 }

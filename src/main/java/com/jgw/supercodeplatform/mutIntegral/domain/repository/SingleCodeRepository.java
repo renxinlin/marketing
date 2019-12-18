@@ -9,7 +9,7 @@ import java.util.List;
 public interface SingleCodeRepository {
 
 
-    void deleteOldSetting(List<IntegralSingleCodeDomain> singledomains);
+    void deleteOldSetting();
 
     void saveNewSetting(List<IntegralSingleCodeDomain> singledomains);
 }

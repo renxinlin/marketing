@@ -47,22 +47,20 @@ public class IntegralSegmentCodeApplication {
     private SegmentCodeRepository segmentCodeRepository;
 
     public void setsegmentCodeForIntegralRule(List<IntegralSegmentCodeDto> segmentCodeDtos) {
-        // 哨兵校验
-        if(CollectionUtils.isEmpty(segmentCodeDtos)){
-            return;
-        }
+        //  根据营销码删除这批码相关的码
+        segmentCodeRepository.deleteOldSetting();
+
         // 数据获取与转换
         String organizationId = commonUtil.getOrganizationId();
         String organizationName = commonUtil.getOrganizationName();
         List<IntegralSegmentCodeDomain> segmentCodeDomains = segmentCodeTransfer.transferDtoToDomain(segmentCodeDtos,organizationId,organizationName);
 
-        //  码管理校验: 校验号段码
-        segmentCodeDomainService.judgeCodeCanbeSettingByIntegralFromCodeManager(segmentCodeDomains);
-
-        //  根据营销码删除这批码相关的码
-        segmentCodeRepository.deleteOldSetting(segmentCodeDomains);
-        // 持久化配置信息
-        segmentCodeRepository.saveNewSetting(segmentCodeDomains);
+        if(CollectionUtils.isEmpty(segmentCodeDomains)){
+            //  码管理校验: 校验号段码
+            segmentCodeDomainService.judgeCodeCanbeSettingByIntegralFromCodeManager(segmentCodeDomains);
+            // 持久化配置信息
+            segmentCodeRepository.saveNewSetting(segmentCodeDomains);
+        }
 
         // 发送单码业务事件 该事件用于码管理接口获取业务
         segmentCodeBindBizPublisher.addSubscriber(segmentCodeBindBizSubscriber);

@@ -87,7 +87,7 @@ public class MutiIntegralRuleController  extends SalerCommonController{
 
 
     @PostMapping("/setSettingInfo")
-    @ApiOperation(value = "获取积分产品,,,单码配置信息", notes = "")
+    @ApiOperation(value = "设置积分产品,,,单码配置信息", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult setSettingInfo(@Valid  @RequestBody  IntegralRewardSettingAggDto integralRewardSettingAggDto)   {
         ruleCodeFacadeApplication.setSettingInfo(integralRewardSettingAggDto);

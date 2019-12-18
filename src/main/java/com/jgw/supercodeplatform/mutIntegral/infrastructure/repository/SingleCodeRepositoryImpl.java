@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class SingleCodeRepositoryImpl implements SingleCodeRepository {
@@ -27,7 +26,7 @@ public class SingleCodeRepositoryImpl implements SingleCodeRepository {
     @Autowired private CommonUtil commonUtil;
 
     @Override
-    public void deleteOldSetting(List<IntegralSingleCodeDomain> singledomains) {
+    public void deleteOldSetting() {
         // 简单的数据转换直接写
         LambdaQueryWrapper<IntegralSingleCode> deleteByMarketingCodes = new LambdaQueryWrapper<>();
         deleteByMarketingCodes.in(IntegralSingleCode::getOrganizationId,commonUtil.getOrganizationId());

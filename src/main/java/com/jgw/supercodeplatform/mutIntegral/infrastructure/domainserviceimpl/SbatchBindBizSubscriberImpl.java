@@ -14,6 +14,7 @@ import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.BizRoute;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.transfer.BizRouteTransfer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 @Component
@@ -30,16 +31,19 @@ public class SbatchBindBizSubscriberImpl implements SbatchBindBizSubscriber {
 
     @Override
     public void handle(SbatchBindBizEvent sbatchBindBizEvent) {
+        if(CollectionUtils.isEmpty(sbatchBindBizEvent.getSbatchDomains())){
+            String organizationId = commonUtil.getOrganizationId();
+            LambdaQueryWrapper<BizRoute> deleteWrapper = new LambdaQueryWrapper<>();
+            deleteWrapper.eq(BizRoute::getOrganizationId, organizationId);
+            deleteWrapper.eq(BizRoute::getBizType, BizRoutePriorityConstants.SbatchId);
+            mapper.delete(deleteWrapper);
+            return;
+        }
         List<IntegralSbatchDomain> sbatchDomains = sbatchBindBizEvent.getSbatchDomains();
         List<BizRoute> bizRoutes = transfer.transferSbatchCodeToBizRoutePojo(sbatchDomains);
-        String organizationId = commonUtil.getOrganizationId();
-        LambdaQueryWrapper<BizRoute> deleteWrapper = new LambdaQueryWrapper<>();
-        deleteWrapper.eq(BizRoute::getOrganizationId, organizationId);
-        deleteWrapper.eq(BizRoute::getBizType, BizRoutePriorityConstants.SbatchId);
-        mapper.delete(deleteWrapper);
         batchMapper.saveBatch(bizRoutes);
-    }
 
+    }
 
 
 

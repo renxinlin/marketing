@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface SbatchRepository {
-    void deleteOldSetting(List<IntegralSbatchDomain> sbatchDomains);
+    void deleteOldSetting();
 
     void saveNewSetting(List<IntegralSbatchDomain> sbatchDomains);
 }

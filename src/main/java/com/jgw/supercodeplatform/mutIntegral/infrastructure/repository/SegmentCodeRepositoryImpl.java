@@ -32,7 +32,7 @@ public class SegmentCodeRepositoryImpl implements SegmentCodeRepository {
     @Autowired private CommonUtil commonUtil;
 
     @Override
-    public void deleteOldSetting(List<IntegralSegmentCodeDomain> segmentCodeDomains) {
+    public void deleteOldSetting() {
         LambdaQueryWrapper<IntegralSegmentCode> deleteByMarketingCodes = new LambdaQueryWrapper<>();
         deleteByMarketingCodes.in(IntegralSegmentCode::getOrganizationId,commonUtil.getOrganizationId());
         mapper.delete(deleteByMarketingCodes);

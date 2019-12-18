@@ -41,22 +41,19 @@ public class IntegralSingleCodeApplication {
     private SingleCodeRepository singleCodeRepository;
 
     public void setsingleCodeForIntegralRule(List<IntegralSingleCodeDto> singleCodeDtos) {
-        // 哨兵校验
-        if(CollectionUtils.isEmpty(singleCodeDtos)){
-            return;
-        }
+        //  根据营销码删除这批码相关的码
+        singleCodeRepository.deleteOldSetting();
+
         // 数据获取与转换
         String organizationId = commonUtil.getOrganizationId();
         String organizationName = commonUtil.getOrganizationName();
         List<IntegralSingleCodeDomain> singledomains = singleCodeTransfer.transferDtoToDomain(singleCodeDtos,organizationId,organizationName);
-
-        //  码管理校验:  返回这批码具体为防伪码还是营销码
-        singledomains = singleCodeDomainService.judgeCodeCanbeSettingByIntegralFromCodeManager(singledomains);
-
-        //  根据营销码删除这批码相关的码
-        singleCodeRepository.deleteOldSetting(singledomains);
-        // 持久化配置信息
-        singleCodeRepository.saveNewSetting(singledomains);
+        if(CollectionUtils.isEmpty(singledomains)){
+            //  码管理校验:  返回这批码具体为防伪码还是营销码
+            singledomains = singleCodeDomainService.judgeCodeCanbeSettingByIntegralFromCodeManager(singledomains);
+            // 持久化配置信息
+            singleCodeRepository.saveNewSetting(singledomains);
+        }
 
         // 发送单码业务事件 该事件用于码管理接口获取业务
         singleCodeBindBizPublisher.addSubscriber(singleCodeBindBizSubscriber);

@@ -41,22 +41,20 @@ public class IntegralSBatchApplication {
 
 
     public void setsBatchForIntegralRule(List<IntegralSbatchDto> sbatchDtos) {
-        // 哨兵校验
-        if(CollectionUtils.isEmpty(sbatchDtos)){
-            return;
-        }
+        //  根据营销码删除这批码相关的码
+        sbatchRepository.deleteOldSetting();
+
         // 数据获取与转换
         String organizationId = commonUtil.getOrganizationId();
         String organizationName = commonUtil.getOrganizationName();
         List<IntegralSbatchDomain> sbatchDomains = sbatchTransfer.transferDtoToDomain(sbatchDtos,organizationId,organizationName);
+        if(CollectionUtils.isEmpty(sbatchDomains)){
+            //  码管理校验: 校验号段码
+            sbatchDomainService.judgeCodeCanbeSettingByIntegralFromCodeManager(sbatchDomains);
+            // 持久化配置信息
+            sbatchRepository.saveNewSetting(sbatchDomains);
+        }
 
-        //  码管理校验: 校验号段码
-        sbatchDomainService.judgeCodeCanbeSettingByIntegralFromCodeManager(sbatchDomains);
-
-        //  根据营销码删除这批码相关的码
-        sbatchRepository.deleteOldSetting(sbatchDomains);
-        // 持久化配置信息
-        sbatchRepository.saveNewSetting(sbatchDomains);
 
         // 发送单码业务事件 该事件用于码管理接口获取业务
         sbatchBindBizPublisher.addSubscriber(sbatchBindBizSubscriber);
