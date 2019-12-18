@@ -8,6 +8,7 @@ import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfi
 import com.jgw.supercodeplatform.mutIntegral.domain.repository.IntegralRuleRepository;
 import com.jgw.supercodeplatform.mutIntegral.domain.service.IntegralRuleRewardDomianServie;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
+import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardAggDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
 import lombok.extern.slf4j.Slf4j;
@@ -97,14 +98,14 @@ public class IntegralRuleApplication {
      * 保存并设置积分奖励;包括积分红包
      * @param ruleRewardDtos
      */
-    public void saveIntegral(List<IntegralRuleRewardDto> ruleRewardDtos) {
+    public void saveIntegral(List<IntegralRuleRewardAggDto> ruleRewardAggDtos) {
         // 需要产生一份未中奖信息
         String organizationId = commonUtil.getOrganizationId();
         String organizationName = commonUtil.getOrganizationName();
-        List<IntegralRuleRewardDomian>  ruleRewardDomains = ruleRewardTransfer.transferDtoToDomain(ruleRewardDtos,organizationId,organizationName);
-        rewardDomianServie.checkMoney(ruleRewardDtos);
-        rewardDomianServie.checkIntegral(ruleRewardDtos);
-        rewardDomianServie.getUnrewardProbability(ruleRewardDtos);
+//        List<IntegralRuleRewardDomian>  ruleRewardDomains = ruleRewardTransfer.transferDtoToDomain(ruleRewardAggDtos,organizationId,organizationName);
+//        rewardDomianServie.checkMoney(ruleRewardDomains);
+//        rewardDomianServie.checkIntegral(ruleRewardDomains);
+//        rewardDomianServie.getUnrewardProbability(ruleRewardDomains);
 
     }
 }

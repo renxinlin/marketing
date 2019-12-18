@@ -32,8 +32,6 @@ public class IntegralRuleRewardDto implements Serializable,Cloneable {
 
     private Long id;
 
-    @ApiModelProperty("积分规则Id")
-    private Long integralRuleId;
 
     @ApiModelProperty("1会员2导购3门店4经销商")
     private Integer integralRuleType;
@@ -50,12 +48,6 @@ public class IntegralRuleRewardDto implements Serializable,Cloneable {
     @ApiModelProperty("随机金额下限")
     private Double lowerRandomMoney;
 
-    @ApiModelProperty("1已选择送积分2未选择积分送")
-    private Integer chooseedIntegral;
-
-    @ApiModelProperty("赠送积分数值")
-    private Integer sendIntegral;
-
 
     @ApiModelProperty("经销商级别上级1上上级2以此类推")
     private Integer level;
@@ -67,8 +59,4 @@ public class IntegralRuleRewardDto implements Serializable,Cloneable {
     @ApiModelProperty("每人每天領取上限")
     private Integer customerLimitNum;
 
-
-
-    @ApiModelProperty("类型1积分2 红包")
-    private Integer rewardType;
 }

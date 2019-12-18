@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonContr
 import com.jgw.supercodeplatform.mutIntegral.application.service.IntegralRuleApplication;
 import com.jgw.supercodeplatform.mutIntegral.application.service.IntegralRuleCodeFacadeApplication;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
+import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardAggDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.rulerewardproduct.IntegralRewardSettingAggDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
@@ -94,8 +95,8 @@ public class MutiIntegralRuleController  extends SalerCommonController{
     @PostMapping("/saveIntegral")
     @ApiOperation(value = "保存并设置积分", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult saveIntegral(@Valid  @RequestBody  List<IntegralRuleRewardDto> ruleRewardDto)   {
-        application.saveIntegral(ruleRewardDto);
+    public RestResult saveIntegral(@Valid  @RequestBody  List<IntegralRuleRewardAggDto> ruleRewardAggDtos)   {
+        application.saveIntegral(ruleRewardAggDtos);
         return success();
     }
 
