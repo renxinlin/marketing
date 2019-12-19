@@ -202,4 +202,41 @@ private static final long serialVersionUID=1L;
     private Double recommendMoney;
 
 
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * 推荐人
+     */
+    @TableField("ChannelId")
+    private String channelId;
+
+    /**
+     * 推荐人
+     */
+    @TableField("ChannelName")
+    private String channelName;
+
+    @TableField("ChannelNum")
+    private Integer channelNum;
+
+    /**
+     * 推荐人
+     */
+    @TableField("ChannelMoney")
+    private Double channelMoney;
+
+
+
+
+
+
 }

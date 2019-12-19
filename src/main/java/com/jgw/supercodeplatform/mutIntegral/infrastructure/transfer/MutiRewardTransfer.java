@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.mutIntegral.infrastructure.transfer;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralRuleRewardDomian;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRuleReward;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.util.List;
 public class MutiRewardTransfer  extends MutiIntegralCommonTransfer{
 
     public List<IntegralRuleReward> transferRewardDomiansToPojos(List<List<IntegralRuleRewardDomian>> ruleRewardDomainWithTypes) {
+        log.info(" MutiRewardTransfer transferRewardDomiansToPojos ruleRewardDomainWithTypes=>{} ", JSONObject.toJSONString(ruleRewardDomainWithTypes));
         List<IntegralRuleReward> pojos =  new ArrayList<>();
         if(CollectionUtils.isEmpty(ruleRewardDomainWithTypes)){
             return pojos;
