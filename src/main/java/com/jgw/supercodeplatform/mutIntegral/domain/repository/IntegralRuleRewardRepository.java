@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.mutIntegral.domain.repository;
 
+import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.integralconfig.domain.IntegralRuleRewardDomian;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardAggDto;
 
 import java.util.List;
@@ -18,4 +19,12 @@ public interface IntegralRuleRewardRepository {
      * @param
      */
     List<IntegralRuleRewardAggDto>  getSnapshotInfo();
+
+    /**
+     * 保存会员导购门店经销商的相关配置信息
+     * @param ruleRewardDomains
+     */
+    void saveintegralRewardInfo(List<List<IntegralRuleRewardDomian>> ruleRewardDomains);
+
+    void deleteOldByOrganization();
 }

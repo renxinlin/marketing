@@ -101,6 +101,22 @@ public class MutiIntegralRuleController  extends SalerCommonController{
     }
 
 
+    @PostMapping("/getsavedIntegral")
+    @ApiOperation(value = "读取【保存并设置积分】", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult<List<IntegralRuleRewardAggDto>> getsavedIntegral()   {
+        return success(application.getSaved());
+    }
+
+
+    @PostMapping("/sendMessageAfterConfig")
+    @ApiOperation(value = "读取【保存并设置积分】", notes = "")
+    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
+    public RestResult sendMessageAfterConfig()   {
+        application.sendMessageAfterConfig();
+        return success();
+    }
+
 
 
 

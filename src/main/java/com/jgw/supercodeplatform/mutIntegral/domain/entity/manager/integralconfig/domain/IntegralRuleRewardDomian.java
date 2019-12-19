@@ -117,11 +117,6 @@ public class IntegralRuleRewardDomian implements Serializable {
             unreward.unRewardFlag =RewardTypeConstants.unrewardFlag;
             return  unreward;
     }
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        // 基本属性+String 深拷贝
-        return super.clone();
-    }
 
 
 }
