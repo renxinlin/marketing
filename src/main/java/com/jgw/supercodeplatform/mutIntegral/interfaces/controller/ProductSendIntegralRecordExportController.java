@@ -34,7 +34,7 @@ import java.util.Map;
  * @since 2019-12-13
  */
 @Controller
-@RequestMapping("/marketing/mutiIntegral/integralRecord")
+@RequestMapping("/marketing/mutiIntegral/productSendIntegralRecord")
 @Api(value = "积分派送记录导出", tags = "积分派送记录导出")
 public class ProductSendIntegralRecordExportController extends SalerCommonController{
 
