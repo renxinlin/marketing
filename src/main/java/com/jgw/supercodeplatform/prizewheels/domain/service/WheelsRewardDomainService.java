@@ -202,12 +202,12 @@ public class WheelsRewardDomainService {
                     ,user.getOrganizationId());
 
 
-            recordRepository.newRecordWhenH5Reward(wheelsRecord);
+            WheelsRecord wheelsRecordWithId = recordRepository.newRecordWhenH5Reward(wheelsRecord);
 
             //
 
             H5RewardInfo rewardInfo = new H5RewardInfo();
-            rewardInfo.initRealReward(finalReward.getId(),finalReward.getPicture(),finalReward.getName(),finalReward.getSendDay());
+            rewardInfo.initRealReward(finalReward.getId(),finalReward.getPicture(),finalReward.getName(),finalReward.getSendDay(),wheelsRecordWithId.getId());
             return rewardInfo;
 
 

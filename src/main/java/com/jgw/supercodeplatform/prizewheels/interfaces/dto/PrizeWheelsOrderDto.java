@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -29,7 +30,9 @@ import java.util.Date;
 public class PrizeWheelsOrderDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    @NotNull(message = "中奖记录ID不能为bull")
+    @ApiModelProperty("中奖记录ID")
+    private Long recordId;
 
     @NotEmpty(message = "请填写实物地址")
     @ApiModelProperty("实物地址")
