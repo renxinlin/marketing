@@ -6,9 +6,13 @@ import com.jgw.supercodeplatform.mutIntegral.domain.entity.manager.sendIntegral.
 import com.jgw.supercodeplatform.mutIntegral.domain.service.SendIntegralPersonDomainService;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.MembersMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.MembersPojo;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
+@Slf4j
 public class SendIntegralPersonDomainServiceImpl implements SendIntegralPersonDomainService {
 
     @Autowired
