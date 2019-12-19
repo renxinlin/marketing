@@ -6,6 +6,7 @@ import com.jgw.supercodeplatform.prizewheels.domain.model.WheelsRecord;
 import com.jgw.supercodeplatform.prizewheels.domain.repository.RecordRepository;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.mapper.WheelsRecordMapper;
 import com.jgw.supercodeplatform.prizewheels.infrastructure.mysql.pojo.WheelsRecordPojo;
+import com.jgw.supercodeplatform.prizewheels.interfaces.dto.PrizeWheelsOrderDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -24,8 +25,20 @@ public class RecordRepositoryImpl implements RecordRepository {
     }
 
     @Override
-    public void newRecordWhenH5Reward(WheelsRecord wheelsRecord) {
+    public WheelsRecord newRecordWhenH5Reward(WheelsRecord wheelsRecord) {
         WheelsRecordPojo wheelsRecordPojo =modelMapper.map(wheelsRecord,WheelsRecordPojo.class);
-        recordMapper.insert(wheelsRecordPojo);
+        int insert = recordMapper.insert(wheelsRecordPojo);
+        wheelsRecord.setId(wheelsRecordPojo.getId());
+        return wheelsRecord;
+    }
+
+    @Override
+    public void updateRecordInfoWhenReal(PrizeWheelsOrderDto prizeWheelsOrderDto) {
+        WheelsRecordPojo recordPojo = new WheelsRecordPojo();
+        recordPojo.setId(prizeWheelsOrderDto.getRecordId());
+        recordPojo.setAddress(prizeWheelsOrderDto.getAddress());
+        recordPojo.setRevicerMobile(prizeWheelsOrderDto.getReceiverMobile());
+        recordPojo.setRevicerName(prizeWheelsOrderDto.getReceiverName());
+        recordMapper.updateById(recordPojo);
     }
 }

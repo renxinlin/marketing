@@ -67,4 +67,10 @@ public class WheelsRecordPojo implements Serializable {
 
     @TableField("Cdk")
     private String cdk;
+
+    @TableField("RevicerMobile")
+    private String  revicerMobile ;
+
+    @TableField("RevicerName")
+    private String  revicerName ;
 }

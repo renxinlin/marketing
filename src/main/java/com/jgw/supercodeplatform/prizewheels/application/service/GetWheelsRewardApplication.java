@@ -89,6 +89,9 @@ public class GetWheelsRewardApplication {
     private PrizeWheelsOrderRepository prizeWheelsOrderRepository;
 
     @Autowired
+    private RecordRepository recordRepository;
+
+    @Autowired
     private RedisLockUtil lock;
 
     /**
@@ -217,10 +220,14 @@ public class GetWheelsRewardApplication {
         return wheelsDetailsVo;
     }
 
+    @Transactional
     public void setAdddress(PrizeWheelsOrderDto prizeWheelsOrderDto,H5LoginVO user) {
         PrizeWheelsOrder prizeWheelsOrder = prizeWheelsOrderTransfer.tranferToDomain(prizeWheelsOrderDto);
         prizeWheelsOrder.initRealRewardInfo(user.getMemberId(),user.getMobile(),user.getMemberName(),user.getOrganizationId(),user.getOrganizationName());
         prizeWheelsOrderRepository.addOrder(prizeWheelsOrder);
+
+
+        recordRepository.updateRecordInfoWhenReal(prizeWheelsOrderDto);
 
     }
 
