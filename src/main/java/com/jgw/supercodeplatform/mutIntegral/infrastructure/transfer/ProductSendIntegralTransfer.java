@@ -8,12 +8,13 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.IntegralRecord;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.ProductSendIntegral;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
 
 import static com.jgw.supercodeplatform.marketingsaler.integral.domain.transfer.CommonTransfer.defaultSize;
-
+@Component
 public class ProductSendIntegralTransfer {
     public AbstractPageService.PageResults<List<ProductSendIntegral>> toPageResult(IPage<ProductSendIntegral> productSendIntegralIPage) {
         List<ProductSendIntegral> records = productSendIntegralIPage.getRecords();
