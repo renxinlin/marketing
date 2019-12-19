@@ -26,9 +26,8 @@ import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.ProductRe
  */
 @RestController
 @RequestMapping("/marketing/mutiIntegral/productReturnIntegral")
-@Api(value = "", tags = "")
+@Api(value = "会员退货", tags = "会员退货")
 public class ProductReturnIntegralController  extends SalerCommonController{
-        // 可在模版中添加相应的controller通用方法，编辑模版在resources/templates/controller.java.vm文件中
 
     @Autowired
     private ProductReturnIntegralService service;
