@@ -619,15 +619,15 @@ public class MarketingMembersService extends AbstractPageService<MarketingMember
 //		h5LoginVO=new H5LoginVO();
 //		h5LoginVO.setMobile(mobile);			//积分登录openid不一定存在
 		MemberWithWechat trueMember=null;
-		MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
-		if (marketingWxMerchants.getMerchantType() == 1) {
-			organizationId = marketingWxMerchants.getOrganizationId();
-			if (marketingWxMerchants.getJgwId() != null) {
-				marketingWxMerchants = mWxMerchantsService.getJgw(marketingWxMerchants.getJgwId());
-			} else {
-				marketingWxMerchants = mWxMerchantsService.getDefaultJgw();
-			}
-		}
+//		MarketingWxMerchants marketingWxMerchants = mWxMerchantsService.get(organizationId);
+//		if (marketingWxMerchants.getMerchantType() == 1) {
+//			organizationId = marketingWxMerchants.getOrganizationId();
+//			if (marketingWxMerchants.getJgwId() != null) {
+//				marketingWxMerchants = mWxMerchantsService.getJgw(marketingWxMerchants.getJgwId());
+//			} else {
+//				marketingWxMerchants = mWxMerchantsService.getDefaultJgw();
+//			}
+//		}
 		if (StringUtils.isBlank(openid)) {
 			MemberWithWechat memberWithWechat = selectByMobileOrgid(mobile, organizationId);
 			if (null==memberWithWechat) {
