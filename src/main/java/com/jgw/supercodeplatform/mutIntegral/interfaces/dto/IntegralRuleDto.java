@@ -1,5 +1,6 @@
 package com.jgw.supercodeplatform.mutIntegral.interfaces.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,11 +32,12 @@ public class IntegralRuleDto implements Serializable {
     @Range(min = 1,max = 2,message = "积分有效期填写不合法")
     @ApiModelProperty("积分有效期1永久2到期时间")  private Integer expiredType;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty("积分有效期过期时间")        private Date expiredDate;
 
     @ApiModelProperty("积分上限")                 private Integer integralLimit;
 
-    @Range(min = 1,max = 2,message = "积分上限")
+    @Range(min = 1,max = 2,message = "积分上限integralLimitType错误")
     @ApiModelProperty("1无上限2有上限")           private Integer integralLimitType;
 
     @NotNull(message = "通用积分规则必须设置")

@@ -109,7 +109,7 @@ public class MutiIntegralRuleController  extends SalerCommonController{
 
 
     @PostMapping("/sendMessageAfterConfig")
-    @ApiOperation(value = "读取【保存并设置积分】", notes = "")
+    @ApiOperation(value = "短信发送", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult sendMessageAfterConfig()   {
         application.sendMessageAfterConfig();

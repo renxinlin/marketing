@@ -46,13 +46,13 @@ public class IntegralRuleRewardRepositoryImpl implements IntegralRuleRewardRepos
     @Override
     public void updateSnapshotInfo(List<IntegralRuleRewardAggDto> ruleRewardAggDtos) {
 
-        redisUtil.set(ruleRewardAggDtos+commonUtil.getOrganizationId(), JSONObject.toJSONString(ruleRewardAggDtos));
+        redisUtil.set(ruleRewardAggDtosPrefix+commonUtil.getOrganizationId(), JSONObject.toJSONString(ruleRewardAggDtos));
     }
 
 
     @Override
     public List<IntegralRuleRewardAggDto>  getSnapshotInfo() {
-        String integralRuleRewardAggDtoStr = redisUtil.get(ruleRewardAggDtos+commonUtil.getOrganizationId());
+        String integralRuleRewardAggDtoStr = redisUtil.get(ruleRewardAggDtosPrefix+commonUtil.getOrganizationId());
         if(StringUtils.isEmpty(integralRuleRewardAggDtoStr)){
             return  new ArrayList<>();
         }
