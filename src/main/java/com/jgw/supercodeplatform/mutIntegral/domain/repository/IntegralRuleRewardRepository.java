@@ -6,7 +6,7 @@ import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardAg
 import java.util.List;
 
 public interface IntegralRuleRewardRepository {
-     String ruleRewardAggDtos = "marketing:mutiintegralreward-snapshot:";
+     String ruleRewardAggDtosPrefix = "marketing:mutiintegralreward-snapshot:";
 
     /**
      * 积分奖励设置 会员导购门店 的写请求快照
