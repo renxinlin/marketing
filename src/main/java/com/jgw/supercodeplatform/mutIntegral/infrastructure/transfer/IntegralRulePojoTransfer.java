@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +35,24 @@ public class IntegralRulePojoTransfer {
 
     public IntegralRuleDomain transferPojoToDomain(IntegralRule integralRule, List<IntegralRuleRewardCommon> commonsRules) {
         log.info("通用积分查询配置 integralRule=>{}, commonsRules=>{}", integralRule, commonsRules);
-        IntegralRuleDomain domain = modelMapper.map(integralRule, IntegralRuleDomain.class);
+        IntegralRuleDomain domain = null;
+        if(integralRule == null){
+            domain = new IntegralRuleDomain();
+         }else {
 
-        List<IntegralRuleRewardCommonDomain> integralRuleRewardCommonDomains = commonsRules.stream().map(commonsRule -> {
-            IntegralRuleRewardCommonDomain commonDomain = modelMapper.map(commonsRule, IntegralRuleRewardCommonDomain.class);
-            return commonDomain;
-        }).collect(Collectors.toList());
+          domain = modelMapper.map(integralRule, IntegralRuleDomain.class);
+        }
+        List<IntegralRuleRewardCommonDomain> integralRuleRewardCommonDomains = null;
+        if(CollectionUtils.isEmpty(commonsRules)){
+            integralRuleRewardCommonDomains = new ArrayList<>();
+        }else {
+            integralRuleRewardCommonDomains = commonsRules.stream().map(commonsRule -> {
+                IntegralRuleRewardCommonDomain commonDomain = modelMapper.map(commonsRule, IntegralRuleRewardCommonDomain.class);
+                return commonDomain;
+            }).collect(Collectors.toList());
+        }
+
+
 
         domain.setIntegralRuleRewardCommonDomains(integralRuleRewardCommonDomains);
         return domain;
