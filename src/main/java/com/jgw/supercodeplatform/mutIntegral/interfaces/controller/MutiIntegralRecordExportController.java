@@ -39,7 +39,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/marketing/mutiIntegral/integralRecord")
-@Api(value = "积分记录导出", tags = "积分记录导出")
+@Api(value = "积分记录", tags = "积分记录")
 public class MutiIntegralRecordExportController extends SalerCommonController{
 
     @Autowired
@@ -69,7 +69,7 @@ public class MutiIntegralRecordExportController extends SalerCommonController{
 
 
     @GetMapping("/export")
-    @ApiOperation(value = "积分通用规则列表项导出", notes = "")
+    @ApiOperation(value = "积分记录导出", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public void list(DaoSearch daoSearch,HttpServletResponse response) throws ExcelException {
         // execl导出无须遵守设计模型

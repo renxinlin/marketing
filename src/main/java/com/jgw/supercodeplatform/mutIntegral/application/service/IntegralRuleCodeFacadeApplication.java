@@ -59,8 +59,6 @@ public class IntegralRuleCodeFacadeApplication {
         /**
          *
          */
-        // TODO 转到领域服务业务校验
-        // todo 为null的时候不设置但进行删除[业务，业务元信息]
         checkCanBeenSetting(integralRewardSettingAggDto);
         singleCodeApplication.setsingleCodeForIntegralRule(integralRewardSettingAggDto.getSingleCodeDtos());
         segmentCodeApplication.setsegmentCodeForIntegralRule(integralRewardSettingAggDto.getSegmentCodeDtos());

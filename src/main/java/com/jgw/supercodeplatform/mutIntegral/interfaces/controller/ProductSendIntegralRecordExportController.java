@@ -35,7 +35,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/marketing/mutiIntegral/productSendIntegralRecord")
-@Api(value = "积分派送记录导出", tags = "积分派送记录导出")
+@Api(value = "积分派送", tags = "积分派送")
 public class ProductSendIntegralRecordExportController extends SalerCommonController{
 
 
@@ -57,7 +57,7 @@ public class ProductSendIntegralRecordExportController extends SalerCommonContro
 
 
     @GetMapping("/export")
-    @ApiOperation(value = "积分通用规则列表项导出", notes = "")
+    @ApiOperation(value = "积分派送导出", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public void list(DaoSearch daoSearch,HttpServletResponse response) throws ExcelException {
         // execl导出无须遵守设计模型
