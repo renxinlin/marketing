@@ -5,11 +5,8 @@ import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
 import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.ProductReturnIntegralMapper;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.dao.ProductSendIntegralMapper;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.ProductReturnIntegral;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.ProductSendIntegral;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.transfer.ProductReturnIntegralTransfer;
-import com.jgw.supercodeplatform.mutIntegral.infrastructure.transfer.ProductSendIntegralTransfer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

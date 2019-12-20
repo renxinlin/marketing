@@ -52,7 +52,7 @@ public class RecordTransfer {
                     .or().like("userName",daoSearch.getSearch())
                     .or().like("RewardName",daoSearch.getSearch())
                     .or().like("Address",daoSearch.getSearch())
-                    .or().apply("CreateTime  LIKE binary CONCAT('%',#{0},'%') ",daoSearch.getSearch())
+                    .or().apply("CreateTime  LIKE binary CONCAT('%',{0},'%') ",daoSearch.getSearch())
             );
         }
         queryWrapper.orderByDesc("CreateTime");

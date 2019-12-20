@@ -45,7 +45,7 @@ public class ProductSendIntegralTransfer {
                             .or().like(ProductSendIntegral::getIntegralNum,daoSearch.getSearch())
                             .or().like(ProductSendIntegral::getOperaterName,daoSearch.getSearch())
                             .or().like(ProductSendIntegral::getRemark,daoSearch.getSearch())
-                             .or().apply("operationTime  LIKE binary CONCAT('%',#{0},'%') ",daoSearch.getSearch())
+                             .or().apply("operationTime  LIKE binary CONCAT('%',{0},'%') ",daoSearch.getSearch())
             );
         }
         queryWrapper.orderByDesc(ProductSendIntegral::getOperationTime);

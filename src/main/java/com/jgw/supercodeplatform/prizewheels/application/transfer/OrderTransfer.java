@@ -34,7 +34,7 @@ public class OrderTransfer {
                     .or().like("receiverName",daoSearch.getSearch())
                     .or().like("receiverMobile",daoSearch.getSearch())
                     .or().like("Address",daoSearch.getSearch())
-                    .or().apply("CreateTime  LIKE binary CONCAT('%',#{0},'%') ",daoSearch.getSearch())
+                    .or().apply("CreateTime  LIKE binary CONCAT('%',{0},'%') ",daoSearch.getSearch())
             );
         }
         queryWrapper.orderByDesc("CreateTime");

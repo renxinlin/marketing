@@ -34,7 +34,7 @@ public class MutiIntegralRecordTransfer  extends MutiIntegralCommonTransfer{
                             .or().like(IntegralRecord::getIntegralMoney,daoSearch.getSearch())
                             .or().like(IntegralRecord::getIntegralReason,daoSearch.getSearch())
                             .or().like(IntegralRecord::getOuterCodeId,daoSearch.getSearch())
-                            .or().apply("CreateTime  LIKE binary CONCAT('%',#{0},'%') ",daoSearch.getSearch())
+                            .or().apply("CreateTime  LIKE binary CONCAT('%',{0},'%') ",daoSearch.getSearch())
             );
         }
         queryWrapper.orderByDesc(IntegralRecord::getCreateDate);

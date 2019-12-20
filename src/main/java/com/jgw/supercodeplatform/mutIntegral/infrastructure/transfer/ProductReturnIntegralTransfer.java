@@ -41,8 +41,8 @@ public class ProductReturnIntegralTransfer {
                             .or().like(ProductReturnIntegral::getReason,daoSearch.getSearch())
                             .or().like(ProductReturnIntegral::getTotalIntegral,daoSearch.getSearch())
                             .or().like(ProductReturnIntegral::getHaveIntegral,daoSearch.getSearch())
-                            .or().apply("IntegralTime  LIKE binary CONCAT('%',#{0},'%') ",daoSearch.getSearch())
-                            .or().apply("ReturnTime  LIKE binary CONCAT('%',#{0},'%') ",daoSearch.getSearch())
+                            .or().apply("IntegralTime  LIKE binary CONCAT('%',{0},'%') ",daoSearch.getSearch())
+                            .or().apply("ReturnTime  LIKE binary CONCAT('%',{0},'%') ",daoSearch.getSearch())
             );
         }
         queryWrapper.orderByDesc(ProductReturnIntegral::getReturnTime);
