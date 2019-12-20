@@ -7,7 +7,6 @@ import com.jgw.supercodeplatform.mutIntegral.application.service.IntegralRuleApp
 import com.jgw.supercodeplatform.mutIntegral.application.service.IntegralRuleCodeFacadeApplication;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardAggDto;
-import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.IntegralRuleRewardDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.rulerewardproduct.IntegralRewardSettingAggDto;
 import com.jgw.supercodeplatform.mutIntegral.interfaces.view.IntegralRuleRewardCommonVo;
 import io.swagger.annotations.Api;

@@ -26,40 +26,19 @@ import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.ActivityR
  */
 @RestController
 @RequestMapping("/marketing/mutiIntegral/activityReward")
-@Api(value = "", tags = "")
+@Api(value = "活动关联奖励设置", tags = "活动关联奖励设置")
 public class ActivityRewardController  extends SalerCommonController{
-        // 可在模版中添加相应的controller通用方法，编辑模版在resources/templates/controller.java.vm文件中
 
     @Autowired
     private ActivityRewardService service;
 
     @PostMapping("/save")
-    @ApiOperation(value = "", notes = "")
+    @ApiOperation(value = "活动关联积分设置", notes = "活动关联积分设置")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
     public RestResult save(@RequestBody ActivityReward obj)   {
         return success();
     }
 
-    @PostMapping("/update")
-    @ApiOperation(value = "", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult update(@RequestBody ActivityReward obj)   {
-        return success();
-    }
-
-    @GetMapping("/{id}")
-    @ApiOperation(value = "", notes = "")
-    public RestResult getById(@PathVariable("id") String id)   {
-        service.getById(id);
-        return null;
-    }
-
-    @GetMapping("/list")
-    @ApiOperation(value = "", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult list(ActivityReward obj)   {
-        return null;
-    }
 
 
 

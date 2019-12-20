@@ -59,7 +59,7 @@ public class IntegralRuleRewardDto implements Serializable,Cloneable {
     private Integer level;
 
     @ApiModelProperty("概率")
-    private Integer probability;
+    private double probability;
 
 
     @ApiModelProperty("每人每天領取上限")

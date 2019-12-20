@@ -49,7 +49,7 @@ public class IntegralRuleRewardDomianServie {
         log.info("IntegralRuleRewardDomianServie buildUnRewardInfo ruleRewardDomainWithTypes{}", JSONObject.toJSONString(ruleRewardDomainWithTypes));
         for(List<IntegralRuleRewardDomian>ruleRewardDomains : ruleRewardDomainWithTypes){
             if(CollectionUtils.isEmpty(ruleRewardDomains)){continue;}
-            int totalProbability = 0;
+            double totalProbability = 0D;
             boolean haveMoneyReward = false;
             for(IntegralRuleRewardDomian ruleRewardDomain: ruleRewardDomains){
                 if(ruleRewardDomain.getRewardType() == RewardTypeConstants.reward_money){

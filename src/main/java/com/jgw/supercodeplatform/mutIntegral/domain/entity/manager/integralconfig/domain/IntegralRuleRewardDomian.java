@@ -81,7 +81,7 @@ public class IntegralRuleRewardDomian implements Serializable {
     /**
      * 概率
      */
-    private Integer probability;
+    private double probability;
 
 
     /**
@@ -107,8 +107,8 @@ public class IntegralRuleRewardDomian implements Serializable {
      * @param unRewardprobability
      * @return
      */
-    public IntegralRuleRewardDomian cloneUnrewardInfo(int unRewardprobability ){
-        Asserts.check(unRewardprobability >=0 && unRewardprobability<=100 , MutiIntegralCommonConstants.RewardprobabilityError);
+    public IntegralRuleRewardDomian cloneUnrewardInfo(double unRewardprobability ){
+        Asserts.check(unRewardprobability >=MutiIntegralCommonConstants.emptyProbability && unRewardprobability<=MutiIntegralCommonConstants.fullProbability , MutiIntegralCommonConstants.RewardprobabilityError);
             IntegralRuleRewardDomian unreward = new IntegralRuleRewardDomian();
             // 设置未中奖信息的属性，包括  未中獎只需要关注概率 红包未中奖标志:1中奖2未中奖
             unreward.rewardType = RewardTypeConstants.reward_money;

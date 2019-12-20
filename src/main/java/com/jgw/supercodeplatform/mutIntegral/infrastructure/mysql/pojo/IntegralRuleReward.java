@@ -89,7 +89,7 @@ public class IntegralRuleReward implements Serializable {
      * 概率
      */
     @TableField("Probability")
-    private Integer probability;
+    private double probability;
 
 
     /**

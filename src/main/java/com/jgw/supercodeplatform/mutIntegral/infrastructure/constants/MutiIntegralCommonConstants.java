@@ -5,5 +5,6 @@ public interface MutiIntegralCommonConstants {
     String nullError="参数不存在";
     Integer ZERO = 0;
     String RewardprobabilityError = "中奖概率不在合法范围";
-    int fullProbability = 100;
+    double fullProbability = 100.00D;
+    double emptyProbability = 0.00D;
 }
