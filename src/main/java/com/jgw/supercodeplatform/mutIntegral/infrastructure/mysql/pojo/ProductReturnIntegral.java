@@ -36,8 +36,8 @@ private static final long serialVersionUID=1L;
     /**
      * 积分主键
      */
-    @TableField("CodeId")
-    private String codeId;
+    @TableField("OutCodeId")
+    private String outCodeId;
 
     /**
      * 会员
@@ -129,5 +129,9 @@ private static final long serialVersionUID=1L;
     @TableField("ReturnTime")
     private Date returnTime;
 
+    @TableField("OrganizationId")
+    private String organizationId;
 
+    @TableField("OrganizationName")
+    private String organizationName;
 }

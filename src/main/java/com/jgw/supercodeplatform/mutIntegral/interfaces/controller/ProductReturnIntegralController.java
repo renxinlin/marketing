@@ -4,6 +4,10 @@ package com.jgw.supercodeplatform.mutIntegral.interfaces.controller;
 
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 
+import com.jgw.supercodeplatform.marketing.common.page.AbstractPageService;
+import com.jgw.supercodeplatform.marketing.common.page.DaoSearch;
+import com.jgw.supercodeplatform.mutIntegral.application.service.ProductReturnIntegralApplication;
+import com.jgw.supercodeplatform.mutIntegral.interfaces.dto.ProductReturnIntegralDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -15,6 +19,9 @@ import com.jgw.supercodeplatform.marketingsaler.base.controller.SalerCommonContr
 
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.batchdao.ProductReturnIntegralService;
 import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.ProductReturnIntegral;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * <p>
@@ -30,34 +37,21 @@ import com.jgw.supercodeplatform.mutIntegral.infrastructure.mysql.pojo.ProductRe
 public class ProductReturnIntegralController  extends SalerCommonController{
 
     @Autowired
-    private ProductReturnIntegralService service;
+    private ProductReturnIntegralApplication application;
 
     @PostMapping("/save")
-    @ApiOperation(value = "", notes = "")
+    @ApiOperation(value = "积分减扣", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult save(@RequestBody ProductReturnIntegral obj)   {
+    public RestResult save(@Valid  @RequestBody ProductReturnIntegralDto productReturnIntegralDto)   {
+        application.returnBack(productReturnIntegralDto);
         return success();
-    }
-
-    @PostMapping("/update")
-    @ApiOperation(value = "", notes = "")
-    @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult update(@RequestBody ProductReturnIntegral obj)   {
-        return success();
-    }
-
-    @GetMapping("/{id}")
-    @ApiOperation(value = "", notes = "")
-    public RestResult getById(@PathVariable("id") String id)   {
-        service.getById(id);
-        return null;
     }
 
     @GetMapping("/list")
-    @ApiOperation(value = "", notes = "")
+    @ApiOperation(value = "退货列表", notes = "")
     @ApiImplicitParam(name = "super-token", paramType = "header", defaultValue = "64b379cd47c843458378f479a115c322", value = "token信息", required = true)
-    public RestResult list(ProductReturnIntegral obj)   {
-        return null;
+    public RestResult< AbstractPageService.PageResults<List<ProductReturnIntegral>>> list(DaoSearch daoSearch){
+        return success(application.returnBackList(daoSearch));
     }
 
 
