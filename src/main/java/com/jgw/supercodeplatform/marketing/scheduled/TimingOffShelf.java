@@ -44,7 +44,7 @@ public class TimingOffShelf {
             if(needOffExchange.getUndercarriageSetWay() == (byte) 1){
                 // 时间到了自动下架
                 Date underCarriage = needOffExchange.getUnderCarriage();
-                if(new Date().getTime() >= underCarriage.getTime()){
+                if(System.currentTimeMillis()>= underCarriage.getTime()){
                     // 需要下架
                     readingToDb.add(needOffExchange);
                 }
