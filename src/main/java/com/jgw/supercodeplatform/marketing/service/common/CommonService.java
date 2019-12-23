@@ -147,6 +147,9 @@ public class CommonService {
 			String productId = batchobj.getString("productId");
 			String productBatchId = batchobj.getString("productBatchId");
 			String codeBatch = batchobj.getString("globalBatchId");
+			if (StringUtils.isBlank(codeBatch) || "null".equalsIgnoreCase(codeBatch)) {
+				continue;
+			}
 			String key = productId + "," + productBatchId + "," + codeBatch;
 			if (map.get(key) == null) {
 				map.put(key, batchobj);
