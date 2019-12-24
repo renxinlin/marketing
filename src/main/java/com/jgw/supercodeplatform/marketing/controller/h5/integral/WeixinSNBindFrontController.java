@@ -1,6 +1,5 @@
 package com.jgw.supercodeplatform.marketing.controller.h5.integral;
 
-import com.jgw.supercodeplatform.exception.SuperCodeException;
 import com.jgw.supercodeplatform.marketing.common.model.RestResult;
 import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
@@ -38,7 +37,7 @@ public class WeixinSNBindFrontController extends CommonUtil {
     @RequestMapping(value = "/get",method = RequestMethod.GET)
     @ApiOperation(value = "获取授权微信商户信息及授权地址", notes = "")
     @ApiImplicitParam(name = "organizationId", paramType = "query", defaultValue = "64b379cd47c843458378f479a115c322", value = "组织id", required = true)
-    public RestResult<Map<String, String>> get(String organizationId, Integer jgw) throws Exception {
+    public RestResult<? extends Object> get(String organizationId, Integer jgw) throws Exception {
         MarketingWxMerchants mWxMerchants = null;
         if (jgw != null && jgw.intValue() == 1) {
             mWxMerchants = marketingWxMerchantsService.getDefaultJgw();
@@ -56,7 +55,7 @@ public class WeixinSNBindFrontController extends CommonUtil {
     	restResult.setState(200);
     	Map<String, String> data=new HashMap<String, String>();
     	if (null==mWxMerchants) {
-            throw new SuperCodeException("该企业还未绑定公众号哦，请联系管理员");
+            return new RestResult<>(500, "该企业还未绑定公众号哦，请联系管理员", 1);
         }
     	data.put("appId", mWxMerchants.getMchAppid());
     	//微信授权需要对redirect_uri进行urlencode
