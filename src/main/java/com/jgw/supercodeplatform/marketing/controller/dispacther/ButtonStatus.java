@@ -17,9 +17,9 @@ public interface ButtonStatus {
     /**
      * 开启
      */
-    int openInt =1 ;
+    Integer openInt =1 ;
     /**
      * 关闭
      */
-    int closeInt =2 ;
+    Integer closeInt =2 ;
 }

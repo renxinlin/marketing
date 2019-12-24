@@ -259,19 +259,6 @@ public class Swagger2Config {
     }
 
 
-    @Bean("3.0营销多级积分")
-    public Docket mutiIntegral() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("3.0营销多级积分")
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.jgw.supercodeplatform.mutIntegral.interfaces.controller"))
-                .paths(PathSelectors.any())
-                .build()
-                .apiInfo(apiInfo())
-                .enable(enable);
-    }
-
-
 
 
 }

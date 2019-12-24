@@ -138,7 +138,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
             autoUndercarriageService.listenAutoUnder(H5SalerRuleExchangeTransfer.buildAutoUndercarriageEvent(salerRuleExchange.getId()));
         }
         if(salerRuleExchange.getUndercarriageSetWay().intValue() == UndercarriageSetWayConstant.timecoming
-                && System.currentTimeMillis() > salerRuleExchange.getUnderCarriage().getTime()
+                && new Date().getTime() > salerRuleExchange.getUnderCarriage().getTime()
         ) {
             autoUndercarriageService.listenAutoUnder(H5SalerRuleExchangeTransfer.buildAutoUndercarriageEvent(salerRuleExchange.getId()));
         }
@@ -155,7 +155,7 @@ public class H5SalerRuleExchangeService  extends SalerCommonService<SalerRuleExc
         Asserts.check(salerRuleExchange.getPreHaveStock()!=null&& salerRuleExchange.getPreHaveStock()>0,"兑换库存不足");
         // todo 需要保持时钟同步 现象时间最早的节点优先达到后兑换不可用
         if(salerRuleExchange.getUndercarriageSetWay().intValue() == UndercarriageSetWayConstant.timecoming
-                && System.currentTimeMillis() > salerRuleExchange.getUnderCarriage().getTime()
+                && new Date().getTime() > salerRuleExchange.getUnderCarriage().getTime()
         ) {
             throw new BizRuntimeException("当前兑换正在下架中...");
         }
