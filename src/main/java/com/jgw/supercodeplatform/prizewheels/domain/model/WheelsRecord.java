@@ -75,4 +75,17 @@ public class WheelsRecord implements Serializable {
         this.setOrganizatioIdName(organizationName);
         this.setOrganizationId(organizationId);
     }
+
+    public void initmoneyInfo(String mobile, String name, String memberId, String memberName, Long prizeWheelsId, Long id, String organizationName, String organizationId) {
+        this.setCreateTime(new Date());
+        this.setMobile(mobile);
+        this.setRewardName(name);
+        this.setType(RewardTypeConstant.money);
+        this.setUserId(memberId);
+        this.setUserName(memberName);
+        this.setPrizeWheelId(prizeWheelsId);
+        this.setRewardId(id);
+        this.setOrganizatioIdName(organizationName);
+        this.setOrganizationId(organizationId);
+    }
 }

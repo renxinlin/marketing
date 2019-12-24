@@ -231,7 +231,7 @@ public class WheelsRewardDomainService {
             }
             WheelsRecord wheelsRecord = new WheelsRecord();
             // TODO money 奖励记录等产品提出需求，那些字段
-            wheelsRecord.initrealInfo(
+            wheelsRecord.initmoneyInfo(
                     user.getMobile()
                     ,finalReward.getName()
                     ,user.getMemberId().toString()
