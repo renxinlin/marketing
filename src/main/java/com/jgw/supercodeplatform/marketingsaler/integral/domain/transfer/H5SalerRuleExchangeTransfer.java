@@ -15,7 +15,21 @@ public class H5SalerRuleExchangeTransfer {
         return event;
     }
 
+    public static Wrapper<SalerRuleExchange> reduceStock(SalerRuleExchange updateDo ,SalerRuleExchange params) {
+        UpdateWrapper<SalerRuleExchange> updateWrapper = new UpdateWrapper<>(updateDo);
+        // 预减一个库存
+        updateWrapper.apply("  HaveStock -{0} > 0 and Id = #{1} ",1,params.getId()).set("payWay "," 1 , HaveStock = HaveStock - 1" );
+        return updateWrapper;
 
+    }
+
+    public static Wrapper<SalerRuleExchange> reducePreStock(SalerRuleExchange updateDo, SalerRuleExchange params) {
+        UpdateWrapper<SalerRuleExchange> updateWrapper = new UpdateWrapper<>(updateDo);
+        // 减一个库存
+        // update table set x = x -1 where x - 1 > 0 and id  = 1 PreHaveStock = PreHaveStock - {0}
+        updateWrapper.apply("  PreHaveStock -{0} > 0 and Id = #{1} ",1,params.getId()).set("payWay "," 1 , PreHaveStock = PreHaveStock - 1" );
+        return updateWrapper;
+    }
 
     public static SalerRuleReward getRewardValueObject(ProductInfoByCodeDto productByCode) {
         SalerRuleReward reward = new SalerRuleReward();
