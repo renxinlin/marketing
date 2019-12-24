@@ -50,7 +50,9 @@ public class WheelsController extends SalerCommonController {
     @Value("")
     private String cdkKey;
 
-    @Value("{\"userName\":\"姓名\",\"mobile\":\"手机号\", \"rewardName\":\"奖项名称\",\"createTime\":\"领奖时间\"}")
+    @Value("{\"userName\":\"姓名\",\"mobile\":\"手机号\", \"rewardName\":\"奖项名称\"" +
+            ",\"revicerName\":\"收货人\",\"address\":\"收货地址\",\"revicerMobile\":\"收货人手机\"" +
+            ",\"createTime\":\"领奖时间\"}")
     private String EXCEL_FIELD_MAP;
 
     @Value("{\"organizationId\":\"组织ID\",\"organizationName\":\"组织名称\", \"receiverName\":\"收货人\",\"mobile\":\"用户手机\",\"receiverMobile\":\"收货手机\",\"address\":\"用户地址\",\"content\":\"物品\",\"createDate\":\"下单时间\"}")
