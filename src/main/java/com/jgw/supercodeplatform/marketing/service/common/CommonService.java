@@ -475,7 +475,6 @@ public class CommonService {
 		if(results == null){
 			throw new BizRuntimeException("码管理调用获取批次信息异常！！");
 		}
-		// 测试小b  正式大B
 		String sBatchId=results.getString("sbatchId");
 		if (StringUtils.isBlank(sBatchId)) {
 			throw  new SuperCodeExtException("对不起,该码不存在",500);
