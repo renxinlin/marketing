@@ -227,7 +227,7 @@ public class GetWheelsRewardApplication {
         prizeWheelsOrderRepository.addOrder(prizeWheelsOrder);
 
 
-        // recordRepository.updateRecordInfoWhenReal(prizeWheelsOrderDto);
+         recordRepository.updateRecordInfoWhenReal(prizeWheelsOrderDto);
 
     }
 
