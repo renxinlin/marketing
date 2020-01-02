@@ -51,4 +51,25 @@ public class LoginWithWechatController {
         return RestResult.success();
     }
 
+    @ApiOperation("导购员登录")
+    @PostMapping("/userLogin")
+    public RestResult<?> userLogin(@RequestBody @Valid LoginWithWechat loginWithWechat, HttpServletResponse response) throws SuperCodeException {
+        H5LoginVO h5LoginVO = loginWithWechatService.userLogin(loginWithWechat);
+        if (h5LoginVO == null) {
+            return RestResult.fail("根据openid无法登录");
+        }
+        String jwtToken= JWTUtil.createTokenWithClaim(h5LoginVO);
+        Cookie jwtTokenCookie = new Cookie(CommonConstants.JWT_TOKEN,jwtToken);
+        // jwt有效期为2小时，保持一致
+        jwtTokenCookie.setMaxAge(60*60*2);
+        // 待补充： 其他参数基于传递状况
+        jwtTokenCookie.setPath("/");
+        jwtTokenCookie.setDomain(cookieDomain);
+        response.addCookie(jwtTokenCookie);
+        response.addHeader("Access-Control-Allow-Origin", "");
+        response.addHeader("Access-Control-Allow-Credentials", "true");
+        response.addHeader("Access-Control-Allow-Headers", "Content-Type, ActivitySet-Cookie, *");
+        return RestResult.success();
+    }
+
 }

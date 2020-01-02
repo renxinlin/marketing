@@ -13,6 +13,7 @@ import com.jgw.supercodeplatform.marketing.common.model.activity.ScanCodeInfoMO;
 import com.jgw.supercodeplatform.marketing.constants.SystemLabelEnum;
 import com.jgw.supercodeplatform.marketing.dto.WxOrderPayDto;
 import com.jgw.supercodeplatform.marketing.dto.activity.LotteryOprationDto;
+import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingChannel;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivityChannelService;
 import com.jgw.supercodeplatform.marketing.service.activity.MarketingActivitySetService;
@@ -84,8 +85,14 @@ public class LotteryController extends CommonUtil {
 
     @GetMapping("/lottery")
     @ApiOperation(value = "用户点击领奖方法", notes = "")
-    public RestResult<LotteryResultMO> lottery(String wxstate) throws Exception {
+    public RestResult<LotteryResultMO> lottery(@ApiIgnore H5LoginVO jwtUser,String wxstate) throws Exception {
+        if(jwtUser.getMemberType() == null || MemberTypeEnums.VIP.getType().intValue() != jwtUser.getMemberType() ){
+            throw new SuperCodeException("用户角色错误");
+        }
         ScanCodeInfoMO scanCodeInfoMO = globalRamCache.getScanCodeInfoMO(wxstate);
+        scanCodeInfoMO.setUserId(jwtUser.getMemberId());
+        scanCodeInfoMO.setOpenId(jwtUser.getOpenid());
+        scanCodeInfoMO.setMobile(jwtUser.getMobile());
         LotteryOprationDto lotteryOprationDto = new LotteryOprationDto();
         MarketingChannel marketingChannel = marketingActivityChannelService.checkCodeIdConformChannel(scanCodeInfoMO.getCodeTypeId(), scanCodeInfoMO.getCodeId(), scanCodeInfoMO.getActivitySetId());
         if (marketingChannel == null){

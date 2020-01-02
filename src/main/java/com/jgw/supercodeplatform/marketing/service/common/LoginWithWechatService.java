@@ -8,11 +8,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.jgw.supercodeplatform.exception.SuperCodeExtException;
 import com.jgw.supercodeplatform.marketing.config.redis.RedisUtil;
 import com.jgw.supercodeplatform.marketing.constants.RedisKey;
+import com.jgw.supercodeplatform.marketing.dao.activity.generator.mapper.MarketingUserMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingMembersMapper;
 import com.jgw.supercodeplatform.marketing.dao.user.MarketingWxMemberMapper;
 import com.jgw.supercodeplatform.marketing.dto.common.LoginWithWechat;
 import com.jgw.supercodeplatform.marketing.enums.market.MemberTypeEnums;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingMembers;
+import com.jgw.supercodeplatform.marketing.pojo.MarketingUser;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMember;
 import com.jgw.supercodeplatform.marketing.pojo.MarketingWxMerchants;
 import com.jgw.supercodeplatform.marketing.service.weixin.MarketingWxMerchantsService;
@@ -36,6 +38,8 @@ public class LoginWithWechatService {
     private RedisUtil redisUtil;
     @Autowired
     private MarketingMembersMapper marketingMembersMapper;
+    @Autowired
+    private MarketingUserMapper marketingUserMapper;
 
     public H5LoginVO memberLogin(LoginWithWechat loginWithWechat){
         String openid = loginWithWechat.getOpenid();
@@ -90,7 +94,7 @@ public class LoginWithWechatService {
         }
         MarketingMembers member = marketingMembersMapper.selectById(memberId);
         if (member == null) {
-            throw new SuperCodeExtException("找不到对应的用户信息");
+            throw new SuperCodeExtException("用户信息未完善");
         }
         H5LoginVO h5LoginVO=new H5LoginVO();
         h5LoginVO.setMemberType((byte)0);
@@ -126,6 +130,77 @@ public class LoginWithWechatService {
         }
         marketingWxMerchants.setOrganizatioIdlName(organizationName);
         return marketingWxMerchants;
+    }
+
+
+    public H5LoginVO userLogin(LoginWithWechat loginWithWechat){
+        String openid = loginWithWechat.getOpenid();
+        String openidKey = RedisKey.WECHAT_OPENID_INFO + openid;
+        String userObjJson = redisUtil.get(openidKey);
+        redisUtil.remove(openidKey);
+        if (StringUtils.isBlank(userObjJson)) {
+            throw new SuperCodeExtException("微信用户信息已过期，请重新发起登录");
+        }
+        JSONObject userObj = JSON.parseObject(userObjJson);
+        String organizationId = loginWithWechat.getOrganizationId();
+        if (!organizationId.equals(userObj.getString("organizationId"))) {
+            throw new SuperCodeExtException("组织ID有误");
+        }
+        MarketingWxMerchants marketingWxMerchants = getMerchantsByOrgId(organizationId);
+        QueryWrapper<MarketingWxMember> openidWrapper = Wrappers.<MarketingWxMember>query().eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.SALER.getType());
+        MarketingWxMember marketingWxMember = marketingWxMemberMapper.selectOne(openidWrapper);
+        if (marketingWxMember == null) {
+            marketingWxMember = new MarketingWxMember();
+            marketingWxMember.setOrganizationId(organizationId);
+            marketingWxMember.setUpdateTime(new Date());
+            marketingWxMember.setCreateTime(new Date());
+            marketingWxMember.setCurrentUse((byte)0);
+            marketingWxMember.setOpenid(openid);
+            marketingWxMember.setOrganizationFullName(marketingWxMerchants.getOrganizatioIdlName());
+            marketingWxMember.setMemberType(MemberTypeEnums.SALER.getType());
+            marketingWxMember.setAppid(marketingWxMerchants.getMchAppid());
+            marketingWxMember.setJgwType(marketingWxMerchants.getBelongToJgw());
+            marketingWxMember.setWxName(userObj.getString("nickname"));
+            marketingWxMember.setWechatHeadImgUrl(userObj.getString("headimgurl"));
+            marketingWxMember.setWxSex(userObj.getByte("sex"));
+            marketingWxMemberMapper.insert(marketingWxMember);
+            UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte) 1).eq("MemberType", MemberTypeEnums.SALER.getType());
+            marketingWxMemberMapper.update(null, nouseUpdateWrapper);
+            UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.SALER.getType());
+            marketingWxMemberMapper.update(null, currentUpdateWrapper);
+            return null;
+        } else {
+            marketingWxMember.setUpdateTime(new Date());
+            marketingWxMember.setWxName(userObj.getString("nickname"));
+            marketingWxMember.setWechatHeadImgUrl(userObj.getString("headimgurl"));
+            marketingWxMember.setWxSex(userObj.getByte("sex"));
+            marketingWxMemberMapper.updateById(marketingWxMember);
+            UpdateWrapper<MarketingWxMember> nouseUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 0).eq("OrganizationId", organizationId).eq("CurrentUse", (byte) 1).eq("MemberType", MemberTypeEnums.SALER.getType());
+            marketingWxMemberMapper.update(null, nouseUpdateWrapper);
+            UpdateWrapper<MarketingWxMember> currentUpdateWrapper = Wrappers.<MarketingWxMember>update().set("CurrentUse", (byte) 1).eq("Openid", openid).eq("OrganizationId", organizationId).eq("MemberType", MemberTypeEnums.SALER.getType());
+            marketingWxMemberMapper.update(null, currentUpdateWrapper);
+        }
+        Long memberId = marketingWxMember.getMemberId();
+        if (memberId == null) {
+            return null;
+        }
+        MarketingUser user = marketingUserMapper.selectById(memberId);
+        if (user == null) {
+            throw new SuperCodeExtException("找不到对应的用户信息");
+        }
+        H5LoginVO h5LoginVO=new H5LoginVO();
+        h5LoginVO.setMemberType((byte)0);
+        h5LoginVO.setCustomerId(user.getCustomerId());
+        h5LoginVO.setCustomerName(user.getCustomerName());
+        h5LoginVO.setHaveIntegral(user.getHaveIntegral());
+        h5LoginVO.setMemberId(memberId);
+        h5LoginVO.setMobile(user.getMobile());
+        h5LoginVO.setWechatHeadImgUrl(marketingWxMember.getWechatHeadImgUrl());
+        h5LoginVO.setMemberName(StringUtils.isEmpty(user.getUserName())?marketingWxMember.getWxName():user.getUserName());
+        h5LoginVO.setOrganizationId(user.getOrganizationId());
+        h5LoginVO.setOpenid(marketingWxMember.getOpenid());
+        h5LoginVO.setOrganizationName(marketingWxMember.getOrganizationFullName());
+        return h5LoginVO;
     }
 
 }

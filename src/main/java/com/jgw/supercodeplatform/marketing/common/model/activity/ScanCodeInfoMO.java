@@ -21,7 +21,7 @@ public class ScanCodeInfoMO implements Serializable{
 	private String productName;
 
 	// 目前没用到，防止后期产品多维度查询
-	private Long activityId;//用户id
+	private Long activityId;//活动类型ID
 	private Byte activityType;//用户id
 	private Date scanCodeTime;//扫码时间
 

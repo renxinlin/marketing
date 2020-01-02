@@ -3,6 +3,7 @@
 *.classpath
 .settings/
 /.idea/*
+logs/*
 .jar
 /src/main/resources/templates/
 /src/main/java/com/jgw/supercodeplatform/GeneratorServiceEntityUtil.java

@@ -15,6 +15,7 @@ public enum ActivityIdEnum {
     ACTIVITY_2((byte)2,(byte)1,"锦鲤翻牌"),
     ACTIVITY_SALER((byte)3,(byte)2,"导购红包"),
     ACTIVITY_COUPON((byte)4,(byte)1,"抵扣券"),
+    ACTIVITY_PLATFORM_RED_BAG((byte)5,(byte)3,"红包雨"),
 
     /**
      * 判断入参是否在最值之间
