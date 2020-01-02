@@ -86,7 +86,7 @@ public class H5SalerRuleRewardService  extends SalerCommonService<SalerRuleRewar
             int realRewardIntegral = H5SalerRuleRewardTransfer.computeIntegral(rewardPojo);
             rewardPojo.setRewardIntegral(realRewardIntegral);
 
-            SalerRecord salerRecord = SalerRecordTranser.getSalerRecord(outCodeId, reward, user, userPojo, rewardPojo);
+            SalerRecord salerRecord = SalerRecordTranser.getSalerRecord(outCodeId,codeTypeId, reward, user, userPojo, rewardPojo);
             salerRecordService.save(salerRecord);
             // 导购积分添加
             userService.addIntegral(realRewardIntegral,userPojo);

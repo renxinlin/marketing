@@ -11,9 +11,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class SalerRecordTranser {
-    public static SalerRecord getSalerRecord(String outCodeId, SalerRuleReward reward, H5LoginVO user, User userPojo, SalerRuleReward rewardPojo) {
+    public static SalerRecord getSalerRecord(String outCodeId, String codeTypeId, SalerRuleReward reward, H5LoginVO user, User userPojo, SalerRuleReward rewardPojo) {
         SalerRecord salerRecord = new SalerRecord();
-        salerRecord.setCodeTypeId(UserConstants.MARKETING_CODE_TYPE);
+        salerRecord.setCodeTypeId(codeTypeId);
         salerRecord.setOuterCodeId(outCodeId);
         salerRecord.setCreateDate(new Date());
         salerRecord.setCustomerId(userPojo.getCustomerId());
