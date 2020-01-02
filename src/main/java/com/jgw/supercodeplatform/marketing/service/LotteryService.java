@@ -318,6 +318,9 @@ public class LotteryService {
 		RestResult restResult = lotteryOprationDto.getRestResult();
 		restResult.setMsg(lotteryResultMO.getMsg());
 		if(awardType.intValue() == 4 && amount != null && amount > 0) {
+			if (StringUtils.isBlank(openId)) {
+				throw new SuperCodeExtException("请先进行微信登录");
+			}
 			WxOrderPayDto wxOrderPayDto = new WxOrderPayDto();
 			wxOrderPayDto.setAmount(amount * 100);
 			wxOrderPayDto.setMobile(mobile);
