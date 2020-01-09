@@ -1,40 +1,20 @@
 package com.jgw.supercodeplatform;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpStatus;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.jgw.supercodeplatform.exception.SuperCodeException;
+import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
+import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.CollectionUtils;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
-import com.jgw.supercodeplatform.exception.SuperCodeException;
-import com.jgw.supercodeplatform.marketing.common.model.activity.ProductAndBatchGetCodeMO;
-import com.jgw.supercodeplatform.marketing.common.util.CommonUtil;
-import com.jgw.supercodeplatform.marketing.common.util.RestTemplateUtil;
-import com.jgw.supercodeplatform.marketing.constants.BusinessTypeEnum;
-import com.jgw.supercodeplatform.marketing.constants.WechatConstants;
-import com.jgw.supercodeplatform.marketing.dao.activity.MarketingActivityProductMapper;
-import com.jgw.supercodeplatform.marketing.dto.activity.MarketingActivityProductParam;
-import com.jgw.supercodeplatform.marketing.dto.activity.ProductBatchParam;
-import com.jgw.supercodeplatform.marketing.enums.market.ReferenceRoleEnum;
-import com.jgw.supercodeplatform.marketing.pojo.MarketingActivityProduct;
-import com.jgw.supercodeplatform.marketing.service.activity.coupon.CouponService;
-import com.jgw.supercodeplatform.marketing.service.common.CommonService;
-import com.netflix.discovery.converters.Auto;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
 @SpringBootTest(classes = SuperCodeMarketingApplication.class)
